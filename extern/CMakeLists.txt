@@ -18,13 +18,13 @@ set( FETCHCONTENT_UPDATES_DISCONNECTED ON )
 FetchContent_Declare(
 	daw_header_libraries
 	GIT_REPOSITORY https://github.com/beached/header_libraries.git
-	GIT_TAG v1.21.1
+	GIT_TAG v1.29.0
 )
 
 FetchContent_Declare(
 	daw_utf_range
 	GIT_REPOSITORY https://github.com/beached/utf_range.git
-	GIT_TAG v2.1.0
+	GIT_TAG v2.2.0
 )
 
 FetchContent_MakeAvailable(daw_header_libraries daw_utf_range)

@@ -2,7 +2,7 @@ name: MacOS
 
 on:
   push:
-    branches: release
+    branches: [ release, develop ]
   pull_request:
     push:
       branches-ignore: develop
@@ -10,24 +10,94 @@ on:
       branches-ignore: develop
 
 jobs:
-  debug:
-    runs-on: [macOS-latest]
+  catalina_appleclang_debug_17:
+    runs-on: [ macOS-10.15 ]
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
-        run: ./ci_scripts/ci_macos_deps.sh Debug
+        run: ./ci_scripts/ci_macos_deps.sh Debug 17 clang clang++
       - name: Build
         run: ./ci_scripts/ci_macos_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_macos_test.sh Debug
-  release:
-    runs-on: [macOS-latest]
+      - name: InstallTest
+        run: ./ci_scripts/ci_macos_install_test.sh Debug
+  catalina_appleclang_release_17:
+    runs-on: [ macOS-10.15 ]
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
-        run: ./ci_scripts/ci_macos_deps.sh Release
+        run: ./ci_scripts/ci_macos_deps.sh Release 17 clang clang++
       - name: Build
         run: ./ci_scripts/ci_macos_build.sh Release
       - name: Test
         run: ./ci_scripts/ci_macos_test.sh Release
+  bigsur_appleclang_debug_17:
+    runs-on: [ macOS-11 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_macos_deps.sh Debug 17 clang clang++
+      - name: Build
+        run: ./ci_scripts/ci_macos_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_macos_test.sh Debug
+      - name: InstallTest
+        run: ./ci_scripts/ci_macos_install_test.sh Debug
+  bigsur_appleclang_release_17:
+    runs-on: [ macOS-11 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_macos_deps.sh Release 17 clang clang++
+      - name: Build
+        run: ./ci_scripts/ci_macos_build.sh Release
+      - name: Test
+        run: ./ci_scripts/ci_macos_test.sh Release
+  bigsur_gcc11_debug_17:
+    runs-on: [ macOS-11 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_macos_deps.sh Debug 17 gcc-11 g++-11
+      - name: Build
+        run: ./ci_scripts/ci_macos_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_macos_test.sh Debug
+      - name: InstallTest
+        run: ./ci_scripts/ci_macos_install_test.sh Debug
+  bigsur_gcc11_release_17:
+    runs-on: [ macOS-11 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_macos_deps.sh Release 17 gcc-11 g++-11
+      - name: Build
+        run: ./ci_scripts/ci_macos_build.sh Release
+      - name: Test
+        run: ./ci_scripts/ci_macos_test.sh Release
+  bigsur_gcc11_debug_20:
+    runs-on: [ macOS-11 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_macos_deps.sh Debug 20 gcc-11 g++-11
+      - name: Build
+        run: ./ci_scripts/ci_macos_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_macos_test.sh Debug
+      - name: InstallTest
+        run: ./ci_scripts/ci_macos_install_test.sh Debug
+  bigsur_gcc11_release_20:
+    runs-on: [ macOS-11 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_macos_deps.sh Release 20 gcc-11 g++-11
+      - name: Build
+        run: ./ci_scripts/ci_macos_build.sh Release
+      - name: Test
+        run: ./ci_scripts/ci_macos_test.sh Release
+
+
 

@@ -2,32 +2,16 @@ name: Ubuntu
 
 on:
   push:
-    branches: release
+    branches: [ release, develop ]
   pull_request:
     push:
       branches-ignore: develop
     pull_request:
-      branches-ignore: develop        
+      branches-ignore: develop
 
 jobs:
-  debug17:
-    runs-on: [ubuntu-latest]
-    steps:
-    - uses: actions/checkout@v1
-    - name: Add LLVM Repo
-      run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-    - name: Download & Build Dependencies
-      run: |        
-        sudo apt update
-        sudo apt install clang-12 libc++-12-dev libc++abi-12-dev
-    - name: Build Dependencies
-      run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17
-    - name: Build
-      run: ./ci_scripts/ci_ubuntu_build.sh Debug
-    - name: Test
-      run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  release17:
-    runs-on: [ubuntu-latest]
+  ubuntu2004_clang12_debug_17:
+    runs-on: [ ubuntu-20.04 ]
     steps:
       - uses: actions/checkout@v1
       - name: Add LLVM Repo
@@ -35,31 +19,17 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Release
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Release
-  debug20:
-    runs-on: [ubuntu-latest]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-12 clang++-12
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  release20:
-    runs-on: [ubuntu-latest]
+      - name: InstallTest
+        run: ./ci_scripts/ci_ubuntu_install_test.sh Debug
+  ubuntu2004_clang12_release_17:
+    runs-on: [ ubuntu-20.04 ]
     steps:
       - uses: actions/checkout@v1
       - name: Add LLVM Repo
@@ -67,12 +37,43 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 20
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-12 clang++-12
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Release
-
+  ubuntu2004_clang12_debug_20:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-12 clang++-12
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
+  ubuntu2004_clang12_release_20:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 clang-12 clang++-12
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Release
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Release
 
