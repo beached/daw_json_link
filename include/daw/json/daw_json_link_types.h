@@ -962,8 +962,8 @@ namespace daw::json {
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
-				  daw::json::json_variant<NewName, Variant, json_elements, Constructor,
-				                          nullable>;
+				  daw::json::json_variant<NewName, Variant, JsonElements, Constructor,
+				                          Nullable>;
 				using without_name = json_variant;
 			};
 		} // namespace json_base
@@ -1078,7 +1078,7 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_tagged_variant<NewName, T, TagMember, Switcher,
-				                                 JsonElements, Constructor, nullable>;
+				                                 JsonElements, Constructor, Nullable>;
 				using without_name = json_tagged_variant;
 			};
 		} // namespace json_base
@@ -1295,9 +1295,8 @@ namespace daw::json {
 				  JsonBaseParseTypes::Array;
 
 				template<JSONNAMETYPE NewName>
-				using with_name =
-				  daw::json::json_array<NewName, json_element_t, container_t,
-				                        constructor_t, nullable>;
+				using with_name = daw::json::json_array<NewName, JsonElement, Container,
+				                                        Constructor, Nullable>;
 				using without_name = json_array;
 			};
 		} // namespace json_base
@@ -1405,8 +1404,8 @@ namespace daw::json {
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
-				  daw::json::json_sized_array<NewName, json_element_t, SizeMember,
-				                              container_t, constructor_t, nullable>;
+				  daw::json::json_sized_array<NewName, JsonElement, SizeMember,
+				                              Container, Constructor, Nullable>;
 				using without_name = json_sized_array;
 			};
 		} // namespace json_base
@@ -1840,7 +1839,7 @@ std::pair<typename json_key_t::parse_to_t const,
 				using with_name =
 				  daw::json::json_intrusive_variant<NewName, Variant, TagMember,
 				                                    Switcher, AlternativeMappings,
-				                                    Constructor, nullable>;
+				                                    Constructor, Nullable>;
 				using without_name = json_intrusive_variant;
 			};
 		} // namespace json_base
@@ -1967,7 +1966,7 @@ std::pair<typename json_key_t::parse_to_t const,
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
-				  daw::json::json_raw<NewName, T, Constructor, nullable>;
+				  daw::json::json_raw<NewName, T, Constructor, Nullable>;
 				using without_name = json_raw;
 			};
 		} // namespace json_base
