@@ -53,8 +53,25 @@
 ## Intro 
 ###### [Top](#content)
 
-The DAW JSON Link library allows declarative mappings of JSON to your C++ data 
-structures, in addition to other ways of serialization/deserialization.  The benefit of this design is that the parse directly to the mapped types and not an intermediary type(DOM). This allows the known structure of the document to be exploited for greater checking and performance.  Alternatively, there is an event passing(SAX) interface that can parse to generic types(double, string, bool,...) or can use the same type restricted parsers as the static parser previously mentioned.  A generic DOM(lazy) based parser is provided that iterates over the document structure too, again it can use the generic parsers or the type based restricted versions.  One can mix the three modes of parsing to form more complicated systems.  For serialization, the first declarative mapping method is required, there is no json value type in the library. The library is, also, non-intrusive into your data structures and does not require member's to be declared/defined within them. This allows keeping the mapping in a separate header file from the data structures themselves.
+The DAW JSON Link library is a declarative mapping library between C++ and JSON. This allows for:
+  * Direct parsing of JSON to mapped data structures
+  * Less code to convert JSON to C++ data structures
+  * Earlier error reporting
+  * Lower memory requirement, parser requires a small amount of stack above that of mapped data strucutes
+  * Optimization based on data types
+  * Does not require intrusion into data structures.  This allows the usage of third party types.
+
+The library supports other parsing modes that can be mixed too.
+  * A lazy(PULL) JSON dom parser that allows for exploration of the document and selective parsing
+  * A SAX(PUSH) event based parser for tasks like minimization
+  * For large JSON array documents, one can use the `json_array_iterator` or `json_array_range` types. 
+
+Some other notable features are:
+  * Support for JSON tuple and variant/tagged variant like mappings.
+  * Automatic mapping of Containers, including the Map based Associative Structures
+  * Able to parse to/from other numeric types like `boost::multiprecision::cpp_int` or GNU BigNum/Rational `mpq_t`
+  * Optional Comment support
+  * trailing comma support
 
 The library is using the [BSL](LICENSE) license
 
@@ -73,7 +90,7 @@ json_value val = daw::json::json_value( json_string );
 
 The `from_json` and `to_json` methods allow access most of the parsing needs.
 
-The event based parser(SAX) can be called via `daw::json::json_event_parser`.  It takes two arguments, a json document and an event handler.  The event handler can opt into events by having the following members:
+The event based parser(SAX) can be called via `daw::json::json_event_parser`.  It takes two arguments, a json document and an event handler.  The event handler can opt into events by having any of the following members:
 * handle_on_value
 * handle_on_array_start
 * handle_on_array_end
@@ -167,7 +184,20 @@ struct daw::json::json_data_contract<MyType> {
 ## Installing/Using
 ###### [Top](#content)
 
-### Including in cmake project
+### vcpkg
+One can use [vcpkg](https://github.com/microsoft/vcpkg/) to grab the latest release, the port is called `daw-json-link`
+
+### Using in cmake
+```cmake
+find_package( daw-json-link )
+#...
+target_link_libraries( MyTarget daw::daw-json-link )
+```
+
+### As header only
+The library is header only and can be cloned, along with it's two dependencies, followed by adding the `include/` subfolders of each to the include path
+
+### Including in cmake project via FetchContent
 To use daw_json_link in your cmake projects, adding the following should allow it to pull it in along with the dependencies:
 ```cmake
 include( FetchContent )
@@ -177,11 +207,10 @@ FetchContent_Declare(
 				GIT_TAG release
 )
 FetchContent_MakeAvailable(daw_json_link)
+#...
+target_link_libraries( MyTarget daw::daw-json-link )
 ```
-Then in the targets that need it:
-```cmake
-target_link_libraries( MyTarget daw::json_link )
-```
+
 ### Installing 
 On a system with bash, it is similar on other systems too, the following can install for the system 
 ```bash
@@ -192,6 +221,7 @@ cd build
 cmake ..
 cmake --install . 
 ```
+This will allow for a cmake find_package install or using it as a regular header as long as the install prefix's include folder is included in the incude paths of the compiler
 
 ### Testing
 The following will build and run the tests. 
@@ -213,7 +243,7 @@ After the build there the individual examples can be tested too. ```city_test_bi
 ## Performance considerations
 ###### [Top](#content)
 
-The order of the members in the data structures should generally match that of the JSON data. The parser is faster if it doesn't have to back track for values. Optional values, when missing in the JSON data, can slow down the parsing too. If possible have them sent as null. The parser does not allocate. The parsed to data types may and this allows one to use custom allocators or a mix as their data structures will do the allocation. The defaults for arrays is to use the std::vector<T> and if this isn't desirable, you must supply the type.
+The order of the members in the data structures should generally match that of the JSON data, if possible. The parser is faster if it doesn't have to back track for values. Optional values, when missing in the JSON data, can slow down the parsing too. If possible have them sent as null. The parser does not allocate. The parsed to data types may and this allows one to use custom allocators or a mix as their data structures will do the allocation. The defaults for arrays is to use the std::vector<T> and if this isn't desirable, you must supply the type.
 
 ### Benchmarks
 * [Kostya results](docs/kostya_benchmark_results.md) using [test_dawjsonlink.
