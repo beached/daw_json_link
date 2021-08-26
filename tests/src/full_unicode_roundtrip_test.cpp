@@ -132,7 +132,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -157,8 +157,7 @@ int main( int argc, char **argv )
 	                                 daw::json::runtime_exec_tag> ) {
 		test<daw::json::simd_exec_tag>( json_str, json_str_escaped );
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

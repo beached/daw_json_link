@@ -263,12 +263,12 @@ void test( char **argv, AllocType &alloc ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
-	static auto alloc = AllocType( 100'000'000ULL );
-#ifdef DAW_USE_JSON_EXCEPTIONS
+	auto alloc = AllocType( 100'000'000ULL );
+#ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
 		using namespace daw::json;
@@ -288,14 +288,14 @@ int main( int argc, char **argv )
 			test<daw::json::runtime_exec_tag>( argv, alloc );
 		}
 		test<daw::json::simd_exec_tag>( argv, alloc );
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
 #endif
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

@@ -45,19 +45,19 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<City> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_string<"country">, json_string<"name">,
-		                   json_number<"lat", float, LiteralAsStringOpt::Always>,
-		                   json_number<"lng", float, LiteralAsStringOpt::Always>>;
+		using type = json_member_list<
+		  json_string<"country">, json_string<"name">,
+		  json_number<"lat", float, number_opt( LiteralAsStringOpt::Always )>,
+		  json_number<"lng", float, number_opt( LiteralAsStringOpt::Always )>>;
 #else
 		static constexpr char const country[] = "country";
 		static constexpr char const name[] = "name";
 		static constexpr char const lat[] = "lat";
 		static constexpr char const lng[] = "lng";
-		using type =
-		  json_member_list<json_string<country>, json_string<name>,
-		                   json_number<lat, float, LiteralAsStringOpt::Always>,
-		                   json_number<lng, float, LiteralAsStringOpt::Always>>;
+		using type = json_member_list<
+		  json_string<country>, json_string<name>,
+		  json_number<lat, float, number_opt( LiteralAsStringOpt::Always )>,
+		  json_number<lng, float, number_opt( LiteralAsStringOpt::Always )>>;
 #endif
 
 		static inline auto to_json_data( City const &c ) {
@@ -67,7 +67,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -75,7 +75,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cities.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto file_data = *daw::read_file( argv[1] );
+	auto const file_data = *daw::read_file( argv[1] );
 	auto const json_data =
 	  std::string_view( file_data.data( ), file_data.size( ) );
 
@@ -193,7 +193,7 @@ int main( int argc, char **argv )
 
 	std::cout << "mid_lat2 of all is: " << mid_lat2 << '\n';
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

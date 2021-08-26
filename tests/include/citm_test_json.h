@@ -22,25 +22,19 @@
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::citm::events_value_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"id", std::int64_t>,
-		                   json_string_raw_null<"logo", std::string_view>,
-		                   json_string_raw<"name", std::string_view>,
-		                   json_array<"subTopicIds", std::int64_t>,
-		                   json_array<"topicIds", std::int64_t>>;
-#else
+		using ignore_unknown_members = void;
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const logo[] = "logo";
 		static inline constexpr char const name[] = "name";
 		static inline constexpr char const subTopicIds[] = "subTopicIds";
 		static inline constexpr char const topicIds[] = "topicIds";
-		using type = json_member_list<json_number<id, std::int64_t>,
-		                              json_string_raw_null<logo, std::string_view>,
-		                              json_string_raw<name, std::string_view>,
-		                              json_array<subTopicIds, std::int64_t>,
-		                              json_array<topicIds, std::int64_t>>;
-#endif
+		using type =
+		  json_member_list<json_link<id, std::int64_t>,
+		                   json_string_raw_null<logo, std::string_view>,
+		                   json_link<name, std::string_view>,
+		                   json_link<subTopicIds, std::vector<std::int64_t>>,
+		                   json_link<topicIds, std::vector<std::int64_t>>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::citm::events_value_t const &value ) {
 			return std::forward_as_tuple( value.id, value.logo, value.name,
@@ -50,21 +44,15 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::prices_element_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"amount", std::int64_t>,
-		                   json_number<"audienceSubCategoryId", std::int64_t>,
-		                   json_number<"seatCategoryId", std::int64_t>>;
-#else
 		static inline constexpr char const amount[] = "amount";
 		static inline constexpr char const audienceSubCategoryId[] =
 		  "audienceSubCategoryId";
 		static inline constexpr char const seatCategoryId[] = "seatCategoryId";
 		using type =
-		  json_member_list<json_number<amount, std::int64_t>,
-		                   json_number<audienceSubCategoryId, std::int64_t>,
-		                   json_number<seatCategoryId, std::int64_t>>;
-#endif
+		  json_member_list<json_link<amount, std::int64_t>,
+		                   json_link<audienceSubCategoryId, std::int64_t>,
+		                   json_link<seatCategoryId, std::int64_t>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::citm::prices_element_t const &value ) {
 			return std::forward_as_tuple( value.amount, value.audienceSubCategoryId,
@@ -74,12 +62,11 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::areas_element_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_number<"areaId", std::int64_t>>;
-#else
+		using ignore_unknown_members = void;
+
 		static inline constexpr char const areaId[] = "areaId";
-		using type = json_member_list<json_number<areaId, std::int64_t>>;
-#endif
+		using type = json_member_list<json_link<areaId, std::int64_t>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::citm::areas_element_t const &value ) {
 			return std::forward_as_tuple( value.areaId );
@@ -88,16 +75,12 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::seatCategories_element_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_array<"areas", daw::citm::areas_element_t>,
-		                   json_number<"seatCategoryId", std::int64_t>>;
-#else
 		static inline constexpr char const areas[] = "areas";
 		static inline constexpr char const seatCategoryId[] = "seatCategoryId";
-		using type = json_member_list<json_array<areas, daw::citm::areas_element_t>,
-		                              json_number<seatCategoryId, std::int64_t>>;
-#endif
+		using type = json_member_list<
+		  json_link<areas, std::vector<daw::citm::areas_element_t>>,
+		  json_link<seatCategoryId, std::int64_t>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::citm::seatCategories_element_t const &value ) {
 			return std::forward_as_tuple( value.areas, value.seatCategoryId );
@@ -106,15 +89,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::performances_element_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<
-		  json_number<"eventId", std::int64_t>, json_number<"id", std::int64_t>,
-		  json_string_raw_null<"logo", std::string_view>,
-		  json_array<"prices", daw::citm::prices_element_t>,
-		  json_array<"seatCategories", daw::citm::seatCategories_element_t>,
-		  json_number<"start", std::int64_t>,
-		  json_string_raw<"venueCode", std::string_view>>;
-#else
+		using ignore_unknown_members = void;
 		static inline constexpr char const eventId[] = "eventId";
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const logo[] = "logo";
@@ -123,13 +98,13 @@ namespace daw::json {
 		static inline constexpr char const start[] = "start";
 		static inline constexpr char const venueCode[] = "venueCode";
 		using type = json_member_list<
-		  json_number<eventId, std::int64_t>, json_number<id, std::int64_t>,
+		  json_link<eventId, std::int64_t>, json_link<id, std::int64_t>,
 		  json_string_raw_null<logo, std::string_view>,
-		  json_array<prices, daw::citm::prices_element_t>,
-		  json_array<seatCategories, daw::citm::seatCategories_element_t>,
-		  json_number<start, std::int64_t>,
-		  json_string_raw<venueCode, std::string_view>>;
-#endif
+		  json_link<prices, std::vector<daw::citm::prices_element_t>>,
+		  json_link<seatCategories,
+		            std::vector<daw::citm::seatCategories_element_t>>,
+		  json_link<start, std::int64_t>, json_link<venueCode, std::string_view>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::citm::performances_element_t const &value ) {
 			return std::forward_as_tuple( value.eventId, value.id, value.logo,
@@ -156,21 +131,24 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::citm_object_t> {
+		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
-		  json_key_value<
-		    "areaNames", std::unordered_map<std::int64_t, std::string_view>,
-		    json_string_raw<no_name, std::string_view>,
-		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
-		  json_key_value<
-		    "audienceSubCategoryNames",
-		    std::unordered_map<std::int64_t, std::string_view>,
-		    json_string_raw<no_name, std::string_view>,
-		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
+		  json_key_value<"areaNames",
+		                 std::unordered_map<std::int64_t, std::string_view>,
+		                 json_link_no_name<std::string_view>,
+		                 json_number_no_name<
+		                   std::int64_t, number_opt( LiteralAsStringOpt::Always )>>,
+		  json_key_value<"audienceSubCategoryNames",
+		                 std::unordered_map<std::int64_t, std::string_view>,
+		                 json_string_raw_no_name<std::string_view>,
+		                 json_number_no_name<
+		                   std::int64_t, number_opt( LiteralAsStringOpt::Always )>>,
 		  json_key_value<
 		    "events", std::unordered_map<std::int64_t, daw::citm::events_value_t>,
-		    json_class<no_name, daw::citm::events_value_t>,
-		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
+		    json_class_no_name<daw::citm::events_value_t>,
+		    json_number_no_name<std::int64_t,
+		                        number_opt( LiteralAsStringOpt::Always )>>,
 		  json_array<"performances", daw::citm::performances_element_t>,
 		  json_key_value<"seatCategoryNames",
 		                 std::unordered_map<std::string_view, std::string_view>,
@@ -200,18 +178,21 @@ namespace daw::json {
 		static inline constexpr char const venueNames[] = "venueNames";
 
 		using type = json_member_list<
-		  json_key_value<
-		    areaNames, std::unordered_map<std::int64_t, std::string_view>,
-		    std::string_view,
-		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
-		  json_key_value<
-		    audienceSubCategoryNames,
-		    std::unordered_map<std::int64_t, std::string_view>, std::string_view,
-		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
+		  json_key_value<areaNames,
+		                 std::unordered_map<std::int64_t, std::string_view>,
+		                 std::string_view,
+		                 json_number_no_name<
+		                   std::int64_t, number_opt( LiteralAsStringOpt::Always )>>,
+		  json_key_value<audienceSubCategoryNames,
+		                 std::unordered_map<std::int64_t, std::string_view>,
+		                 std::string_view,
+		                 json_number_no_name<
+		                   std::int64_t, number_opt( LiteralAsStringOpt::Always )>>,
 		  json_key_value<
 		    events, std::unordered_map<std::int64_t, daw::citm::events_value_t>,
-		    json_class<no_name, daw::citm::events_value_t>,
-		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
+		    daw::citm::events_value_t,
+		    json_number_no_name<std::int64_t,
+		                        number_opt( LiteralAsStringOpt::Always )>>,
 		  json_array<performances, daw::citm::performances_element_t>,
 		  json_key_value<seatCategoryNames,
 		                 std::unordered_map<std::string_view, std::string_view>,

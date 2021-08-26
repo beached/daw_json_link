@@ -1,5 +1,5 @@
-![logo image](images/json_link_logo_128.png)
-# DAW JSON Link v2 
+![logo image](docs/images/json_link_logo_128.png)
+# DAW JSON Link v3 
 
 [![Build Status Macos](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AMacOS)
 
@@ -8,52 +8,55 @@
 [![Build Status Windows - MSVC](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows)
 
 ## Content 
-* [Intro](#intro)
+  * [Intro](#intro)
   * [Default Mapping of Types](#default-mapping-of-types)
-* [API Documentation](https://beached.github.io/daw_json_link/html/) - Member mapping classes and methods
-* [Cookbook](cookbook/readme.md) Get cooking and putting it all together 
-  * [Arrays](cookbook/array.md)
-  * [Classes](cookbook/class.md)
-  * [Class from Array](cookbook/class_from_array.md)
-  * [Dates](cookbook/dates.md)
-  * [Enums](cookbook/enums.md)
-  * [Graphs](cookbook/graphs.md)
-  * [Key Values](cookbook/key_values.md) - Map and Dictionary like things
-  * [Numbers](cookbook/numbers.md)
-  * [Optional/Nullable Values](cookbook/optional_values.md)
-  * [Parsing Individual Members](cookbook/parsing_individual_members.md)
-  * [Parser Policies](cookbook/parser_policies.md)
-  * [Strings](cookbook/strings.md)
-  * [Unknown JSON and Delayed Parsing](cookbook/unknown_types_and_delayed_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
-  * [Variant](cookbook/variant.md)
-  * [Automatic Code Generation](cookbook/automated_code_generation.md)
-* [Intro](#intro)
-* [Installing/Using](#installingusing)
-* [Performance considerations](#performance-considerations)
+  * [API Documentation](https://beached.github.io/daw_json_link/html/) - Member mapping classes and methods
+  * [Cookbook](docs/cookbook/readme.md) Get cooking and putting it all together 
+  * [Arrays](docs/cookbook/array.md)
+  * [Classes](docs/cookbook/class.md)
+  * [Class from Array](docs/cookbook/class_from_array.md)
+  * [Dates](docs/cookbook/dates.md)
+  * [Enums](docs/cookbook/enums.md)
+  * [Graphs](docs/cookbook/graphs.md)
+  * [Key Values](docs/cookbook/key_values.md) - Map and Dictionary like things
+  * [Numbers](docs/cookbook/numbers.md)
+  * [Optional/Nullable Values](docs/cookbook/optional_values.md)
+  * [Parsing Individual Members](docs/cookbook/parsing_individual_members.md)
+  * [Parser Options](docs/cookbook/parser_policies.md)
+  * [Strings](docs/cookbook/strings.md)
+  * [Unknown JSON and Raw Parsing](docs/cookbook/unknown_types_and_raw_parsing.
+  * md) - 
+  * Browsing the JSON Document and delaying of parsing of specified members
+  * [Variant](docs/cookbook/variant.md)
+  * [Automatic Code Generation](docs/cookbook/automated_code_generation.md)
+  * [Intro](#intro)
+  * [Installing/Using](#installingusing)
+  * [Performance considerations](#performance-considerations)
   * [Benchmarks](#benchmarks)
-* [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
-* [Differences between C++17 and C++20](#differences-between-c17-and-c20)
+  * [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
+  * [Differences between C++17 and C++20](#differences-between-c17-and-c20)
   * [C++ 17 Naming of members](#naming-of-json-members)
   * [C++ 20 Naming of members](#c-20-naming-of-json-members)
-* [Using data types](#using-mapped-data-types)
-* [Error Handling](#error-handling)
+  * [Using data types](#using-mapped-data-types)
+  * [Error Handling](#error-handling)
   * [Parsing call](#parsing-call)
   * [Global](#global)
-* [Deserializing/Parsing](#deserializingparsing)
+  * [Deserializing/Parsing](#deserializingparsing)
   * [Member Paths](#member-paths) 
-* [Serialization](#serialization)
-* [Build Configuration Points](#build-configuration-points)
-* [Requirements](#requirements)
+  * [Serialization](#serialization)
+  * [Build Configuration Points](#build-configuration-points)
+  * [Requirements](#requirements)
   * [For building tests](#for-building-tests)
-* [Limitations](#limitations)
+  * [Limitations](#limitations)
 
 
 ## Intro 
 ###### [Top](#content)
 
-The DAW JSON Link library provides multiple ways to serialization/deserialization JSON documents in C++.  The primary one is parsing of JSON directly to your C++ data structures.  This allows the known structure of the document to be exploited for greater checking and performance.  Alternatively, there is an event passing(SAX) interface that can parse to generic types(double, string, bool,...) or can use the same type restricted parsers as the static parser previously mentioned.  A generic DOM(lazy) based parser is provided that can be iterate over the document structure too, again it can use the generic parsers or the type based restricted versions.  One can mix the three modes of parsing to form more complicated systems.  For serialization, the first static mapping method is required, there is no json value type in the library. The library is, also, non-intrusive into your data structures and does not require member's to be declared/defined within them. This allows keeping the mapping in a separate header file from the data structures themselves.
+The DAW JSON Link library allows declarative mappings of JSON to your C++ data 
+structures, in addition to other ways of serialization/deserialization.  The primary one is parsing of JSON directly to your C++ data structures.  This allows the known structure of the document to be exploited for greater checking and performance.  Alternatively, there is an event passing(SAX) interface that can parse to generic types(double, string, bool,...) or can use the same type restricted parsers as the static parser previously mentioned.  A generic DOM(lazy) based parser is provided that iterates over the document structure too, again it can use the generic parsers or the type based restricted versions.  One can mix the three modes of parsing to form more complicated systems.  For serialization, the first declarative mapping method is required, there is no json value type in the library. The library is, also, non-intrusive into your data structures and does not require member's to be declared/defined within them. This allows keeping the mapping in a separate header file from the data structures themselves.
 
-The library is using the [BSL](LICENSE) licensed
+The library is using the [BSL](LICENSE) license
 
 When the structure of the JSON document is known, parsing is like the following:
 ```c++
@@ -83,8 +86,8 @@ The event based parser(SAX) can be called via `daw::json::json_event_parser`.  I
 * handle_on_error
 
 ## Code Examples
-* The  [Cookbook](cookbook/readme.md) section has precanned tasks and working code examples
-* [Tests](tests/) provide another source of working code samples. 
+* The  [Cookbook](docs/cookbook/readme.md) section has pre-canned tasks and working code examples
+* [Tests](tests) provide another source of working code samples. 
 * Some video walkthroughs
   * [Making a config parser](https://youtu.be/iiRDn0CR_sU)
   * [I Like BigInt's](https://www.youtube.com/watch?v=mhlrYvd1qso)
@@ -143,10 +146,10 @@ namespace daw::json {
 }
 ``` 
  The ordering of the members returned as a tuple need to match the mapping in the type alias `type`.  This allows for passing the result of accessor methods too, if the data members are not public.
- * Note: The return type of `to_json_data` does not have to return a tuple of references to the existing object members, but can return calculated values too.
+ * Note: The return type of `to_json_data` does not have to return a tuple of references to the existing object members, but can return calculated values too.  It does not allow rvalues through as they are often temporaries and it can result in long distance debugging.  The library will static_assert on this and suggest including `<daw/daw_tuple_forward.h>` and calling `daw::forward_nonrvalue_as_tuple( ... )` which store temporaries and forward other reference types.
 
 The parsers work by constructing each argument in place in the call to the classes constructor. The individual argument parsers can be tuned for the specified circumstances of the data(e.g. floating point and integral numbers). Then with our type trait defining the arguments needed to construct the C++ class and their order we are able to look at each member in the JSON. Now we construct the value with the result of each parser; similar to `T{ parse<0, json_string<"name">>( data ), parse<1, json_number<"age", unsigned>>( data ), parse<json_number<2, "number>>( data )}`. For each member, the data stream will be moved forward until we find the member we need to parse, storing interested locations for later parsing. This process allows us to parse other classes as members too via the `json_class<"member_name", Type>` mapping type. So that each mapping trait only has to deal with it's specific members and not their details.
-![general parsing flow](images/parse_flow.jpg)
+![general parsing flow](docs/images/parse_flow.jpg)
 
 ## Default mapping of types
 ###### [Top](#content)
@@ -213,11 +216,10 @@ After the build there the individual examples can be tested too. ```city_test_bi
 The order of the members in the data structures should generally match that of the JSON data. The parser is faster if it doesn't have to back track for values. Optional values, when missing in the JSON data, can slow down the parsing too. If possible have them sent as null. The parser does not allocate. The parsed to data types may and this allows one to use custom allocators or a mix as their data structures will do the allocation. The defaults for arrays is to use the std::vector<T> and if this isn't desirable, you must supply the type.
 
 ### Benchmarks
-* [Kostya results](kostya_benchmark_results.md) using [test_dawjsonlink.cpp](tests/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks) for latest results.
+* [Kostya results](docs/kostya_benchmark_results.md) using [test_dawjsonlink.
+* cpp](tests/src/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks#json) for latest results.
 
-![chart desribing kostya benmark results](images/kostya_bench_chart.png)
-
-* [Parial NativeJson](partial_nativejson_benchmark.md)
+![chart describing kostya benmark results](docs/images/kostya_bench_chart_2021_04_03.png)
 
 ## Escaping/Unescaping of member names
 ###### [Top](#content)
@@ -298,7 +300,7 @@ std::string my_json_data = to_json_array( arry );
 ## Parsing call
 ###### [Top](#content)
 
-Error checking can be modified on a per parse basis.  the from_json/from_json_array calls can be supplied a Parser Policy.  The current policies are
+Error checking can be modified on a per parse basis.  the from_json/from_json_array calls can be supplied a Parser Option.  The current policies are
 
 * `NoCommentSkippingPolicyChecked` - No comments allowed, checks enabled
 * `NoCommentSkippingPolicyUnchecked` - No comments allowed, assumes perfect JSON
@@ -572,26 +574,41 @@ std::cout << values << '\n';
 ```
 A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_json_iostream_test.cpp) 
 
+## Common errors
+* ```error: pointer to subobject of string literal is not allowed in a template argument```
+	* Your compiler does not support Class Non-Type Template Parameters, or is not in C++20 mode.  If you do not have compiler support, you can the C++17 naming style above 
+      * e.g. ```cpp
+		constexpr char const member_name[] = "member_name";
+		//...
+		json_link<member_name, Type>```
+
 ## Build configuration points
 There are a few defines that affect how JSON Link operates
 * `DAW_JSON_DONT_USE_EXCEPTIONS` - Controls if exceptions are allowed. If they are not, an `std::terminate()` on errors will occur
-* `DAW_ALLOW_SSE42` - Allow experimental SSE3 mode
+* `DAW_ALLOW_SSE42` - Allow experimental SSE42 mode, generally the constexpr mode is faster
 * `DAW_JSON_NO_CONST_EXPR` - This can be used to allow classes without move/copy special members to be constructed from JSON data prior to C++ 20. This mode does not work in a constant expression prior to C++20 when this flag is no longer needed. 
 
 ## Requirements
 ###### [Top](#content)
 
 * C++ 17 compiler 
-* GCC(8/9)/Clang(7/8/9/10) have been tested. 
-* MSVC 19.21 has been tested. 
+* GCC(9/10/11) have been tested
+	* gcc-7/8 may work in some cases
+* Clang(7/8/9/10/11/12) have been tested. 
+* MSVC 19.29 has been tested. 
 
 ### For building tests
 * git
 * cmake
 
 #### Contact
-Darrell Wright
-json_link@dawdevel.ca
+* Darrell Wright
+* json_link@dawdevel.ca
 
 # Limitations
-* When parsing classes, the first member with a mapped name will be used. If you want to parse a class that can have more than one of any member by name, either parse as a `json_value` see or as a `json_key_value` that is mapped to a `std::multimap` or a `std::vector` with a pair of key type(`string`) and value type(s). [Cookbook Key Values](cookbook/key_values.md) demonstrates these methods. If a `json_key_value` is used and the mapped data type does not support duplicate keys, it will insert for each key. This may result in the last item being the value reflected after serializing. If the duplicate member is the tag type in a `json_tagged_variant`, it is undefined what the behaviour for parsing is.
+* When parsing classes, 
+  the default is unspecified when duplicate names are encounters as to which is used.  
+  One can guarantee that both can be parsed or order by using `json_key_value` parse type.  
+  When used with `std::multimap<std::string, T>` or `std::vector<std::pair<std::string, T>>` all members are preserved with the former in order.  Alternatively, the `json_value` type will allow iteration over the class members and lazy parsing of the correct one. 
+  See [Cookbook Key Values](docs/cookbook/key_values.md) which demonstrates these methods.
+* Trailing commas, the parser makes no effort to detect trailing commas.

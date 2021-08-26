@@ -1,4 +1,0 @@
-var searchData=
-[
-  ['literalasstringopt_763',['LiteralAsStringOpt',['../namespacedaw_1_1json.html#a713c6c85e86696909be442b84c8ec135',1,'daw::json']]]
-];

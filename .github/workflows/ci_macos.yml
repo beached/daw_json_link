@@ -20,8 +20,6 @@ jobs:
         run: ./ci_scripts/ci_macos_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_macos_test.sh Debug
-      - name: InstallTest
-        run: ./ci_scripts/ci_macos_install_test.sh Debug
   catalina_appleclang_release_17:
     runs-on: [ macOS-10.15 ]
     steps:
@@ -42,8 +40,6 @@ jobs:
         run: ./ci_scripts/ci_macos_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_macos_test.sh Debug
-      - name: InstallTest
-        run: ./ci_scripts/ci_macos_install_test.sh Debug
   bigsur_appleclang_release_17:
     runs-on: [ macOS-11 ]
     steps:
@@ -64,8 +60,6 @@ jobs:
         run: ./ci_scripts/ci_macos_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_macos_test.sh Debug
-      - name: InstallTest
-        run: ./ci_scripts/ci_macos_install_test.sh Debug
   bigsur_gcc11_release_17:
     runs-on: [ macOS-11 ]
     steps:
@@ -86,8 +80,6 @@ jobs:
         run: ./ci_scripts/ci_macos_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_macos_test.sh Debug
-      - name: InstallTest
-        run: ./ci_scripts/ci_macos_install_test.sh Debug
   bigsur_gcc11_release_20:
     runs-on: [ macOS-11 ]
     steps:

@@ -15,6 +15,7 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_memory_mapped_file.h>
 #include <daw/daw_read_file.h>
 
 #include <cstdint>
@@ -54,7 +55,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -67,7 +68,7 @@ int main( int, char ** )
 	  }
 	*/
 	auto const json_data = *daw::read_file( "/tmp/1.json" );
-	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
+	//auto json_data = daw::filesystem::memory_mapped_file_t<>( "/tmp/1.json" );
 
 	using range_t =
 	  daw::json::json_array_range<coordinate_t, NoCommentSkippingPolicyUnchecked>;
@@ -78,19 +79,20 @@ int main( int, char ** )
 	uint_fast32_t sz = 0U;
 
 	// first will be json_array_iterator to the array coordinates in root object
-	for( auto c : range_t( json_sv, "coordinates" ) ) {
-		++sz;
-		x += c.x;
-		y += c.y;
-		z += c.z;
+	for( std::size_t n=0; n<10; ++n ) {
+		for( auto c : range_t( json_data, "coordinates" ) ) {
+			++sz;
+			x += c.x;
+			y += c.y;
+			z += c.z;
+		}
 	}
 
 	auto const dsz = static_cast<double>( sz );
 	std::cout << x / dsz << '\n';
 	std::cout << y / dsz << '\n';
 	std::cout << z / dsz << '\n';
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

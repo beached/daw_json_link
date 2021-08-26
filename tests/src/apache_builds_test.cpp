@@ -96,7 +96,7 @@ void test( std::string_view json_sv1 ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -105,7 +105,7 @@ int main( int argc, char **argv )
 		std::cerr << "Must supply a path to apache_builds.json\n";
 		exit( 1 );
 	}
-	auto fname = argv[1];
+	auto *fname = argv[1];
 	auto const json_data1 = *daw::read_file( fname );
 	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 	auto const json_sv1 =
@@ -129,7 +129,7 @@ int main( int argc, char **argv )
 		  json_sv1 );
 	}
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

@@ -9,7 +9,6 @@
 #include "defines.h"
 
 #include <daw/json/daw_json_link.h>
-#include <daw/json/impl/daw_json_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
 #include <daw/daw_benchmark.h>
@@ -22,10 +21,10 @@ bool test_null_literal_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number_null<no_name, std::optional<int>>;
+	using my_number = json_number_null_no_name<std::optional<int>>;
 	DAW_CONSTEXPR std::string_view sv = "null,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Null>{ } );
 	return not v;
 }
 
@@ -33,10 +32,10 @@ bool test_null_literal_known( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number_null<no_name, std::optional<int>>;
+	using my_number = json_number_null_no_name<std::optional<int>>;
 	auto rng = DefaultParsePolicy( );
 	auto v =
-	  parse_value<my_number, true>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	  parse_value<my_number, true>( rng, ParseTag<JsonParseTypes::Null>{ } );
 	return not v;
 }
 
@@ -44,10 +43,10 @@ bool test_null_number_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number_null<no_name, std::optional<int>>;
+	using my_number = json_number_null_no_name<std::optional<int>>;
 	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Null>{ } );
 	return v and *v == 5;
 }
 
@@ -55,10 +54,10 @@ bool test_null_number_trusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number_null<no_name, std::optional<int>>;
+	using my_number = json_number_null_no_name<std::optional<int>>;
 	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Null>{ } );
 	return v and *v == 5;
 }
 
@@ -66,11 +65,11 @@ bool test_null_number_untrusted_known( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number_null<no_name, std::optional<int>>;
+	using my_number = json_number_null_no_name<std::optional<int>>;
 	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) - 1 );
 	auto v =
-	  parse_value<my_number, true>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	  parse_value<my_number, true>( rng, ParseTag<JsonParseTypes::Null>{ } );
 	return v and *v == 5;
 }
 
@@ -84,6 +83,7 @@ bool test_null_number_untrusted_known( ) {
 	do {                                                                   \
 	} while( false )
 
+/*
 #define do_fail_test( ... )                                   \
 	do {                                                        \
 		try {                                                     \
@@ -92,9 +92,10 @@ bool test_null_number_untrusted_known( ) {
 		std::cerr << "Expected exception, but none thrown in '"   \
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
+*/
 
 int main( )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -103,8 +104,7 @@ int main( )
 	do_test( test_null_number_untrusted( ) );
 	do_test( test_null_number_trusted( ) );
 	do_test( test_null_number_untrusted_known( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

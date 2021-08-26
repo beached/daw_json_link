@@ -42,67 +42,73 @@ namespace apache_builds {
 	};
 } // namespace apache_builds
 
+#if not defined( DAW_JSON_TEST_NO_EXTERN_TEMPLATE )
+
 namespace daw::json {
 	extern template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
-	          daw::json::SIMDNoCommentSkippingPolicyChecked<
-	            daw::json::constexpr_exec_tag>>( std::string_view json_data,
-	                                             std::string_view json_path );
+	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data,
+	                                         std::string_view json_path );
 
 	extern template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
-	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-	            daw::json::constexpr_exec_tag>>( std::string_view json_data,
-	                                             std::string_view json_path );
-
-	extern template apache_builds::apache_builds from_json<
-	  apache_builds::apache_builds,
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
-	  std::string_view json_data, std::string_view json_path );
+	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data,
+	                                         std::string_view json_path );
 
 	extern template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
-	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-	            daw::json::runtime_exec_tag>>( std::string_view json_data,
-	                                           std::string_view json_path );
-
-	extern template apache_builds::apache_builds from_json<
-	  apache_builds::apache_builds,
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
-	  std::string_view json_data, std::string_view json_path );
-
-	extern template apache_builds::apache_builds from_json<
-	  apache_builds::apache_builds,
-	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
-	  std::string_view json_data, std::string_view json_path );
+	          SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data,
+	                                         std::string_view json_path );
 
 	extern template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
-	          daw::json::SIMDNoCommentSkippingPolicyChecked<
-	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data,
+	                                         std::string_view json_path );
 
 	extern template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
-	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
-
-	extern template apache_builds::apache_builds from_json<
-	  apache_builds::apache_builds,
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
-	  std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data,
+	                                         std::string_view json_path );
 
 	extern template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
-	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-	            daw::json::runtime_exec_tag>>( std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data,
+	                                         std::string_view json_path );
 
-	extern template apache_builds::apache_builds from_json<
-	  apache_builds::apache_builds,
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
-	  std::string_view json_data );
+	extern template apache_builds::apache_builds
+	from_json<apache_builds::apache_builds,
+	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data );
 
-	extern template apache_builds::apache_builds from_json<
-	  apache_builds::apache_builds,
-	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
-	  std::string_view json_data );
+	extern template apache_builds::apache_builds
+	from_json<apache_builds::apache_builds,
+	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data );
+
+	extern template apache_builds::apache_builds
+	from_json<apache_builds::apache_builds,
+	          SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data );
+
+	extern template apache_builds::apache_builds
+	from_json<apache_builds::apache_builds,
+	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data );
+
+	extern template apache_builds::apache_builds
+	from_json<apache_builds::apache_builds,
+	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data );
+
+	extern template apache_builds::apache_builds
+	from_json<apache_builds::apache_builds,
+	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data );
 } // namespace daw::json
+#endif

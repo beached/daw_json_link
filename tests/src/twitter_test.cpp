@@ -29,7 +29,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-namespace {
+inline namespace {
 	template<typename ExecTag>
 	void test( std::string_view json_data ) {
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
@@ -54,7 +54,7 @@ namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 
@@ -70,7 +70,7 @@ namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 
@@ -86,7 +86,7 @@ namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
@@ -102,7 +102,7 @@ namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 #endif
@@ -118,7 +118,7 @@ namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
@@ -134,7 +134,7 @@ namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 #endif
@@ -151,7 +151,7 @@ namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 
@@ -167,7 +167,7 @@ namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
@@ -229,8 +229,7 @@ int main( int argc, char **argv )
 	daw::do_not_optimize( twitter_result2 );
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
   defined( _CPPUNWIND )
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: "
 	          << to_formatted_string( jex, nullptr ) << std::endl;
 	exit( 1 );

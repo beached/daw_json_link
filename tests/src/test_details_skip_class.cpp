@@ -8,7 +8,6 @@
 
 #include "defines.h"
 
-#include <daw/json/impl/daw_json_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
 #include <daw/daw_benchmark.h>
@@ -173,11 +172,11 @@ bool test_class_close_mid_array_without_open( ) {
 	} while( false )
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
-	/*do_test( test_empty_quoted( ) );
+	do_test( test_empty_quoted( ) );
 	do_fail_test( test_end_of_stream( ) );
 	do_fail_test( test_extra_slash( ) );
 	do_test( test_trailing_comma( ) );
@@ -188,10 +187,9 @@ int main( int, char ** )
 	do_test( test_classes_001( ) );
 	do_test( test_classes_002( ) );
 	do_test( test_embedded_class( ) );
-	do_fail_test( test_embedded_class_broken_001( ) );*/
+	do_fail_test( test_embedded_class_broken_001( ) );
 	do_fail_test( test_class_close_mid_array_without_open( ) );
-}
-catch( json_exception const &jex ) {
+} catch( json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

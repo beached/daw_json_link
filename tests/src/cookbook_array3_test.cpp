@@ -58,7 +58,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -70,19 +70,19 @@ int main( int argc, char **argv )
 
 	using namespace daw::json;
 
-	auto const my_array_class = from_json<daw::cookbook_array3::MyArrayClass1>(
-	  { data.data( ), data.size( ) } );
+	auto const my_array_class =
+	  from_json<daw::cookbook_array3::MyArrayClass1>( data );
 
 	test_assert( my_array_class.member1.size( ) == 5, "Expected 5 items" );
 	test_assert( my_array_class.member2.size( ) == 2, "Expected 2 items" );
 	auto const str = to_json( my_array_class );
 	puts( str.c_str( ) );
-	auto const my_array_class2 = from_json<daw::cookbook_array3::MyArrayClass1>(
-	  { str.data( ), str.size( ) } );
+	auto const my_array_class2 =
+	  from_json<daw::cookbook_array3::MyArrayClass1>( str );
 
 	test_assert( my_array_class == my_array_class2, "Round trip failed" );
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

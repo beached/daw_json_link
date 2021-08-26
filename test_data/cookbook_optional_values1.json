@@ -1,7 +1,8 @@
 [
   {
     "member0": 5,
-    "member1": "hello"
+    "member1": "hello",
+		"member2": null
   },
   {
     "member1": "world",

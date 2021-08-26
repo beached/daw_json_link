@@ -45,10 +45,9 @@ struct JSONToNano {
 	constexpr std::chrono::nanoseconds operator( )( std::string_view sv ) const {
 		auto rng = daw::json::NoCommentSkippingPolicyChecked(
 		  sv.data( ), sv.data( ) + sv.size( ) );
-		return std::chrono::nanoseconds(
-		  daw::json::json_details::parse_value<
-		    daw::json::json_number<daw::json::no_name, long long>>(
-		    daw::json::ParseTag<daw::json::JsonParseTypes::Signed>{ }, rng ) );
+		return std::chrono::nanoseconds( daw::json::json_details::parse_value<
+		                                 daw::json::json_number_no_name<long long>>(
+		  rng, daw::json::ParseTag<daw::json::JsonParseTypes::Signed>{ } ) );
 	}
 
 	std::string operator( )( std::chrono::nanoseconds t ) const {
@@ -59,8 +58,10 @@ struct JSONToNano {
 namespace daw::json {
 	template<JSONNAMETYPE Name>
 	using json_nanosecond =
-	  json_custom<Name, std::chrono::nanoseconds, JSONToNano, JSONToNano,
-	              CustomJsonTypes::Literal>;
+	  json_custom_lit<Name, std::chrono::nanoseconds, JSONToNano, JSONToNano>;
+
+	using json_nanosecond_no_name =
+	  json_custom_lit_no_name<std::chrono::nanoseconds, JSONToNano, JSONToNano>;
 
 	template<>
 	struct json_data_contract<daw::bench::bench_result> {
@@ -89,7 +90,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_string<name>, json_date<test_time>,
 		  json_number<data_size, std::size_t>,
-		  json_array<run_times, json_nanosecond<no_name>>,
+		  json_array<run_times, json_nanosecond_no_name>,
 		  json_nanosecond<duration_min>, json_nanosecond<duration_25th_percentile>,
 		  json_nanosecond<duration_50th_percentile>,
 		  json_nanosecond<duration_75th_percentile>, json_nanosecond<duration_max>,

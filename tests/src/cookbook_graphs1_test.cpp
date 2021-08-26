@@ -58,15 +58,15 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::GraphNode> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"id", size_t, LiteralAsStringOpt::Always>,
-		                   json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
+		using type = json_member_list<
+		  json_number<"id", size_t, number_opt( LiteralAsStringOpt::Always )>,
+		  json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
 #else
 		static constexpr char const id[] = "id";
 		static constexpr char const metadata[] = "metadata";
-		using type =
-		  json_member_list<json_number<id, size_t, LiteralAsStringOpt::Always>,
-		                   json_class<metadata, daw::cookbook_graphs1::Metadata>>;
+		using type = json_member_list<
+		  json_number<id, size_t, number_opt( LiteralAsStringOpt::Always )>,
+		  json_class<metadata, daw::cookbook_graphs1::Metadata>>;
 #endif
 	};
 
@@ -74,14 +74,14 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_graphs1::GraphEdge> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
-		  json_number<"source", size_t, LiteralAsStringOpt::Always>,
-		  json_number<"target", size_t, LiteralAsStringOpt::Always>>;
+		  json_number<"source", size_t, number_opt( LiteralAsStringOpt::Always )>,
+		  json_number<"target", size_t, number_opt( LiteralAsStringOpt::Always )>>;
 #else
 		static constexpr char const source[] = "source";
 		static constexpr char const target[] = "target";
-		using type =
-		  json_member_list<json_number<source, size_t, LiteralAsStringOpt::Always>,
-		                   json_number<target, size_t, LiteralAsStringOpt::Always>>;
+		using type = json_member_list<
+		  json_number<source, size_t, number_opt( LiteralAsStringOpt::Always )>,
+		  json_number<target, size_t, number_opt( LiteralAsStringOpt::Always )>>;
 #endif
 	};
 } // namespace daw::json
@@ -94,7 +94,7 @@ struct Node {
 };
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -167,7 +167,7 @@ int main( int argc, char **argv )
 
 	return 0;
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <daw/daw_do_n.h>
 #include <daw/daw_endian.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
@@ -19,20 +20,46 @@
 
 namespace daw {
 	namespace murmur3_details {
-		[[nodiscard]] inline constexpr UInt32 murmur3_32_scramble( UInt32 k ) {
-			k *= 0xcc9e'2d51_u32;
+		[[nodiscard]] DAW_ATTRIB_FLATTEN inline constexpr UInt32
+		murmur3_32_scramble( UInt32 k ) {
+			using prime1 = daw::constant<0xcc9e'2d51_u32>;
+			using prime2 = daw::constant<0x1b87'3593_u32>;
+			k *= prime1::value;
 			k = rotate_left<15>( k );
-			k *= 0x1b87'3593_u32;
+			k *= prime2::value;
 			return k;
 		}
 	} // namespace murmur3_details
 
-	template<typename StringView>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr UInt32
-	fnv1a_32( StringView &&key ) {
-		std::size_t const len = std::size( key );
-		char const *ptr = std::data( key );
-		UInt32 hash = 0x811c'9dc5_u32;
+	template<std::size_t N, typename CharT>
+	[[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32
+	fnv1a_32_N( CharT *first, UInt32 hash = 0x811c'9dc5_u32 ) {
+		daw::algorithm::do_n_arg<N>( [&]( std::size_t n ) {
+			hash ^= static_cast<UInt32>( first[n] );
+			hash *= 0x0100'0193_u32;
+		} );
+		return hash;
+	}
+
+	template<bool expect_long_strings, typename StringView>
+	[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr auto fnv1a_32( StringView key )
+	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
+	                      UInt32> {
+		std::size_t len = std::size( key );
+		auto *ptr = std::data( key );
+		auto hash = 0x811c'9dc5_u32;
+		if constexpr( expect_long_strings ) {
+			while( len >= 8 ) {
+				hash = fnv1a_32_N<8>( ptr, hash );
+				len -= 8;
+				ptr += 8;
+			}
+			while( len >= 4 ) {
+				hash = fnv1a_32_N<4>( ptr, hash );
+				len -= 4;
+				ptr += 4;
+			}
+		}
 		for( std::size_t n = 0; n < len; ++n ) {
 			hash ^= static_cast<unsigned char>( ptr[n] );
 			hash *= 0x0100'0193_u32;
@@ -40,31 +67,35 @@ namespace daw {
 		return hash;
 	}
 
-	template<typename StringView>
-	[[nodiscard]] constexpr UInt32 name_hash( StringView &&key,
-	                                          std::uint32_t seed = 0 ) {
-		(void)seed;
-		auto const Sz = std::size( key );
-		if( Sz <= sizeof( UInt32 ) ) {
+	template<bool expect_long_strings, typename StringView>
+	[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr auto
+	name_hash( StringView key )
+	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
+	                      UInt32> {
+		if( auto const Sz = std::size( key );
+		    DAW_LIKELY( Sz <= sizeof( UInt32 ) ) ) {
 			auto result = 0_u32;
+			auto const *ptr = std::data( key );
 			for( std::size_t n = 0; n < Sz; ++n ) {
 				result <<= 8U;
-				result |= static_cast<unsigned char>( key[n] );
+				result |= static_cast<unsigned char>( ptr[n] );
 			}
 			return result;
 		}
-		return fnv1a_32( key );
+		return fnv1a_32<expect_long_strings>( key );
 	}
 
 	template<typename StringView>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr UInt32
-	murmur3_32( StringView &&key, std::uint32_t seed = 0 ) {
+	[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr auto
+	murmur3_32( StringView key, std::uint32_t seed = 0 )
+	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
+	                      UInt32> {
 		UInt32 h = to_uint32( seed );
 		UInt32 k = 0_u32;
 		char const *first = std::data( key );
 		char const *const last = daw::data_end( key );
 		while( ( last - first ) >= 4 ) {
-			// Here is a source of differing results across endiannesses.
+			// Here is a source of differing results across endianness.
 			// A swap here has no effects on hash properties though.
 			k = daw::to_uint32_buffer( first );
 			first += 4;

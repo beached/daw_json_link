@@ -70,10 +70,9 @@ void test_lots_of_doubles( ) {
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
-			  using json_member =
-			    daw::json::json_details::unnamed_default_type_mapping<float>;
+			  using json_member = daw::json::json_details::json_deduced_type<float>;
 			  auto const r = daw::json::json_details::parse_value<json_member, false>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -84,10 +83,9 @@ void test_lots_of_doubles( ) {
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
-			  using json_member =
-			    daw::json::json_details::unnamed_default_type_mapping<double>;
+			  using json_member = daw::json::json_details::json_deduced_type<double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, false>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -99,9 +97,9 @@ void test_lots_of_doubles( ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
 			  using json_member =
-			    daw::json::json_details::unnamed_default_type_mapping<long double>;
+			    daw::json::json_details::json_deduced_type<long double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, false>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -112,10 +110,9 @@ void test_lots_of_doubles( ) {
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
-			  using json_member =
-			    daw::json::json_details::unnamed_default_type_mapping<float>;
+			  using json_member = daw::json::json_details::json_deduced_type<float>;
 			  auto const r = daw::json::json_details::parse_value<json_member, true>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -126,10 +123,9 @@ void test_lots_of_doubles( ) {
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
-			  using json_member =
-			    daw::json::json_details::unnamed_default_type_mapping<double>;
+			  using json_member = daw::json::json_details::json_deduced_type<double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, true>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -141,9 +137,9 @@ void test_lots_of_doubles( ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
 			  using json_member =
-			    daw::json::json_details::unnamed_default_type_mapping<long double>;
+			    daw::json::json_details::json_deduced_type<long double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, true>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -163,13 +159,13 @@ void test_lots_of_doubles( ) {
 }
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
 	test_lots_of_doubles( );
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

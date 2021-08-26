@@ -69,11 +69,11 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_enums1::MyClass1> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_array<
-		  "member0", json_custom<no_name, daw::cookbook_enums1::Colours>>>;
+		  "member0", json_custom_no_name<daw::cookbook_enums1::Colours>>>;
 #else
 		constexpr inline static char const member0[] = "member0";
 		using type = json_member_list<
-		  json_array<member0, json_custom<no_name, daw::cookbook_enums1::Colours>>>;
+		  json_array<member0, json_custom_no_name<daw::cookbook_enums1::Colours>>>;
 #endif
 		static inline auto
 		to_json_data( daw::cookbook_enums1::MyClass1 const &value ) {
@@ -83,7 +83,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -112,7 +112,7 @@ int main( int argc, char **argv )
 
 	test_assert( cls == cls2, "Unexpected round trip error" );
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

@@ -7,7 +7,9 @@
 //
 //  This test will benchmark the performance of parsing apache_builds.json file
 //  in the test_data folder.  This is one of the many common JSON parsing
-//  benchmark files
+//  benchmark files.  It also shows how to enable parsing of documents with
+//  C/C++ style comments.  Note that it is the same parser mappings as the other
+//  apache builds tests, but the parse options with from_json have changed
 //
 
 #include "defines.h"
@@ -95,7 +97,7 @@ void test( std::string_view json_sv1 ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -127,7 +129,7 @@ int main( int argc, char **argv )
 		  json_sv1 );
 	}
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

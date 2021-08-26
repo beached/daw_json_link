@@ -20,8 +20,6 @@ jobs:
         run: .\ci_scripts\ci_windows_build.cmd Debug
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd Debug
-      - name: InstallTest
-        run: .\ci_scripts\ci_windows_install_test.cmd Debug
   windows2019_msvc2019_x64_release_17:
     runs-on: [ windows-2019 ]
     steps:

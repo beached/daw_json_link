@@ -8,7 +8,6 @@
 
 #include "defines.h"
 
-#include <daw/json/impl/daw_json_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
 #include <daw/daw_benchmark.h>
@@ -54,6 +53,7 @@ bool test_number_space( ) {
 	do {                                                                   \
 	} while( false )
 
+/*
 #define do_fail_test( ... )                                   \
 	do {                                                        \
 		try {                                                     \
@@ -62,17 +62,17 @@ bool test_number_space( ) {
 		std::cerr << "Expected exception, but none thrown in '"   \
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
+*/
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
 	do_test( test_number_in_class( ) );
 	do_test( test_number( ) );
 	do_test( test_number_space( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

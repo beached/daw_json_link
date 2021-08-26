@@ -64,7 +64,7 @@ DAW_CONSTEXPR bool test_string_raw_trail( ) {
 	DAW_CONSTEXPR std::string_view json_data =
 	  R"({"b": 5, "c": true, "a": "hello", } )";
 
-	DAW_CONSTEXPR auto const result = daw::json::from_json<string_raw_trail>( json_data );
+	auto const result = daw::json::from_json<string_raw_trail>( json_data );
 
 	test_assert( result.a == "hello", "Unexpected result" );
 	return true;
@@ -185,6 +185,8 @@ struct daw::json::json_data_contract<array_member_trail> {
 };
 
 bool test_array_member_trail( ) {
+	std::string a;
+
 	static DAW_CONSTEXPR std::string_view json_data =
 	  R"({"b": 5, "c": true, "a": [1,2,3,4], } )";
 	try {
@@ -214,7 +216,7 @@ bool test_array_trail( ) {
 }
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -231,8 +233,7 @@ int main( int, char ** )
 	daw::expecting( test_string_trail( ) );
 	daw::expecting( test_array_member_trail( ) );
 	daw::expecting( test_array_trail( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

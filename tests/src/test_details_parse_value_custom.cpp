@@ -9,7 +9,6 @@
 #include "defines.h"
 
 #include <daw/json/daw_json_link.h>
-#include <daw/json/impl/daw_json_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
 #include <daw/daw_benchmark.h>
@@ -31,8 +30,8 @@ bool empty_array_empty_json_array( ) {
 	DAW_CONSTEXPR std::string_view sv = R"({ "a": "20200130" })";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	rng.remove_prefix( 7 );
-	auto v = parse_value<json_custom<no_name, std::string_view, NoOp>>(
-	  ParseTag<JsonParseTypes::Custom>{ }, rng );
+	auto v = parse_value<json_custom_no_name<std::string_view, NoOp>>(
+	  rng, ParseTag<JsonParseTypes::Custom>{ } );
 	return v.size( ) == 8;
 }
 
@@ -46,6 +45,7 @@ bool empty_array_empty_json_array( ) {
 	do {                                                                   \
 	} while( false )
 
+/*
 #define do_fail_test( ... )                                   \
 	do {                                                        \
 		try {                                                     \
@@ -54,15 +54,15 @@ bool empty_array_empty_json_array( ) {
 		std::cerr << "Expected exception, but none thrown in '"   \
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
+*/
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
 	do_test( empty_array_empty_json_array( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

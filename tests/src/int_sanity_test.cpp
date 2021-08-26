@@ -42,7 +42,7 @@ void test( ) {
 
 		json_data += "                "; // Ensure SIMD has enough rooom to go full
 		std::vector<unsigned> const parsed_1 =
-		  from_json_array<json_number<no_name, unsigned>, std::vector<unsigned>,
+		  from_json_array<json_number_no_name<unsigned>, std::vector<unsigned>,
 		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
 		test_assert( parsed_1 == data, "Failure to parse unsigned" );
 	}
@@ -56,14 +56,14 @@ void test( ) {
 
 		json_data += "        "; // so that SSE has enough room to safely parse
 		std::vector<signed> const parsed_1 =
-		  from_json_array<json_number<no_name, signed>, std::vector<signed>,
+		  from_json_array<json_number_no_name<signed>, std::vector<signed>,
 		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
 		test_assert( parsed_1 == data, "Failure to parse signed" );
 	}
 }
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -73,8 +73,7 @@ int main( int, char ** )
 	                                 daw::json::runtime_exec_tag> ) {
 		test<daw::json::simd_exec_tag, 1000>( );
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

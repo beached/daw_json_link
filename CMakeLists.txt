@@ -9,43 +9,49 @@
 cmake_minimum_required(VERSION 3.14)
 
 project("daw-json-link"
-        VERSION "2.10.2"
+        VERSION "3.0.0"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
         LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Options used. Those tagged with Define are also the name of the source definition
 option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
-if( NOT DAW_USE_PACKAGE_MANAGEMENT ) 
-	add_subdirectory(extern)
-else( )	
-	find_package( daw-header-libraries REQUIRED )
-	find_package( daw-utf-range REQUIRED )
-endif( )
+option(DAW_ENABLE_TESTING "Build unit tests and examples" OFF)
+option(DAW_JSON_PARSER_DIAGNOSTICS "Define: Output debug info while parsing" OFF)
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  # gcc has difficulty and takes too long to compile
+	option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
+else ()
+	option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
+endif ()
+option(DAW_JSON_NO_FAIL_ON_NO_NAME_NAME "Define: Ensure that no named mapping uses no_name as it's name.  Using it can slow down compilation" ON)
+option(DAW_JSON_FORCE_INT128 "Define: Force support for 128bit int" OFF )
+option(DAW_USE_EXCEPTIONS "Define: Throw exceptions when json errors occur or terminate" ON )
 
-option(DAW_ENABLE_TESTING "Build unit tests" OFF)
-
-include(GNUInstallDirs)
+set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(json_link_INSTALL_CMAKEDIR
         "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
         CACHE STRING
         "The install directory to use for CMake package config files")
 
-set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
+add_compile_definitions(DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD})
 
-set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
-if (DAW_JSON_NO_CONST_EXPR)
-    message("DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
-    add_definitions(-DDAW_JSON_NO_CONST_EXPR)
-else ()
-    message("DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
+if (NOT DAW_USE_PACKAGE_MANAGEMENT)
+    add_subdirectory(extern)
+else( )
+	find_package( daw-header-libraries REQUIRED )
+	find_package( daw-utf-range REQUIRED )
 endif ()
 
-set(DAW_JSON_FORCE_INT128 OFF CACHE STRING "Force support for 128bit int")
+if (DAW_JSON_PARSER_DIAGNOSTICS)
+    message("Building with parser diagnostics enabled")
+    add_compile_definitions(DAW_JSON_PARSER_DIAGNOSTICS)
+endif ()
+
+include(GNUInstallDirs)
 if (DAW_JSON_FORCE_INT128)
     if (DAW_JSON_NO_INT128)
     else ()
@@ -54,33 +60,30 @@ if (DAW_JSON_FORCE_INT128)
     endif ()
 endif ()
 
-set(DAW_USE_JSON_EXCEPTIONS ON CACHE STRING "Throw exceptions when json errors occur")
-if (DAW_USE_JSON_EXCEPTIONS)
-    message("DAW_USE_JSON_EXCEPTIONS=ON: Errors throw json_exception")
-    add_definitions(-DDAW_USE_JSON_EXCEPTIONS=true)
+if (DAW_USE_EXCEPTIONS)
+    message("DAW_USE_EXCEPTIONS=ON: Errors throw json_exception")
+    add_definitions(-DDAW_USE_EXCEPTIONS=true)
 else ()
-    message("DAW_USE_JSON_EXCEPTIONS=OFF: Errors call std::terminate")
-    add_definitions(-DDAW_DONT_USE_JSON_EXCEPTIONS=true)
+    message("DAW_USE_EXCEPTIONS=OFF: Errors call std::terminate")
+    add_definitions(-DDAW_DONT_USE_EXCEPTIONS=true)
 endif ()
-
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    # G++ has difficulty and takes too long to compile
-    option(DAW_NO_FLATTEN "Disable function flattening optimization" ON )
-else( )
-    option(DAW_NO_FLATTEN "Disable function flattening optimization" OFF )
-endif()
 
 if (DAW_NO_FLATTEN)
     message("DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
     add_definitions(-DDAW_NO_FLATTEN)
 endif ()
 
+if (DAW_JSON_NO_FAIL_ON_NO_NAME_NAME)
+    message("DAW_JSON_NO_FAIL_ON_NO_NAME_NAME=ON: Disabling check for no_name named members")
+    add_definitions(-DDAW_JSON_NO_FAIL_ON_NO_NAME_NAME)
+endif ()
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 add_library(daw::json_link ALIAS ${PROJECT_NAME})
-
-target_link_libraries(${PROJECT_NAME} INTERFACE daw::daw-header-libraries daw::daw-utf-range)
+if (NOT DAW_USE_PACKAGE_MANAGEMENT)
+    target_link_libraries(${PROJECT_NAME} INTERFACE daw::daw-header-libraries daw::daw-utf-range)
+endif ()
 
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 target_include_directories(${PROJECT_NAME}

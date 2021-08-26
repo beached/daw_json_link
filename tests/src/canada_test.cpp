@@ -86,7 +86,7 @@ void test( std::string_view json_sv1 ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -141,7 +141,7 @@ int main( int argc, char **argv )
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "canada bench(to_json_string2)", sz,
 		  [&]( auto const &tr ) {
-			  auto out_it = str.data( );
+			  auto *out_it = str.data( );
 			  daw::json::to_json( tr, out_it );
 			  daw::do_not_optimize( str );
 		  },
@@ -153,7 +153,7 @@ int main( int argc, char **argv )
 	                 "Expected round trip to produce same result" );
 	                 */
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: "
 	          << to_formatted_string( jex, nullptr ) << std::endl;

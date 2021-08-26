@@ -231,7 +231,7 @@ int main( int argc, char **argv )
   try
 #endif
 {
-	static auto alloc = AllocType( 1'000'000ULL );
+	auto alloc = AllocType( 10'000'000ULL );
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -280,8 +280,7 @@ int main( int argc, char **argv )
 	daw::do_not_optimize( twitter_result2 );
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
   defined( _CPPUNWIND )
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: "
 	          << to_formatted_string( jex, nullptr ) << std::endl;
 	exit( 1 );

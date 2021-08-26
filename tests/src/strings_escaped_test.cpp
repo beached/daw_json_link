@@ -38,7 +38,7 @@ constexpr void clear( Container &c ) {
 }
 
 template<typename ExecTag>
-std::size_t test( std::string_view json_data ) {
+auto test( std::string_view json_data ) {
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
 	using namespace daw::json;
@@ -100,7 +100,7 @@ std::size_t test( std::string_view json_data ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -120,8 +120,7 @@ int main( int argc, char **argv )
 		auto const h2 = test<daw::json::simd_exec_tag>( json_string );
 		test_assert( h0 == h2, "constexpr/fast exec model hashes do not match" );
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

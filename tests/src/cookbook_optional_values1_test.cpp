@@ -20,6 +20,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace daw::cookbook_optional_values1 {
 	namespace details {
@@ -75,22 +76,16 @@ namespace daw::cookbook_optional_values1 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_optional_values1::MyOptionalStuff1> {
-#if defined( __cpp_nontype_template_parameter_class )
-		using type = json_member_list<
-		  json_number_null<"member0", std::optional<int>>, json_string<"member1">,
-		  json_bool_null<
-		    "member2", std::unique_ptr<bool>, LiteralAsStringOpt::Never,
-		    daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
-#else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 		using type = json_member_list<
 		  json_number_null<member0, std::optional<int>>, json_string<member1>,
-		  json_bool_null<
-		    member2, std::unique_ptr<bool>, LiteralAsStringOpt::Never,
-		    daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
-#endif
+		  json_bool<member2, std::unique_ptr<bool>,
+		            bool_opt( LiteralAsStringOpt::Never,
+		                      JsonNullable::NullVisible ),
+		            daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
+
 		static inline auto to_json_data(
 		  daw::cookbook_optional_values1::MyOptionalStuff1 const &value ) {
 			return std::forward_as_tuple( value.member0, value.member1,
@@ -100,7 +95,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -112,9 +107,8 @@ int main( int argc, char **argv )
 	puts( "Original" );
 	puts( std::string( data.data( ), data.size( ) ).c_str( ) );
 
-	std::vector<daw::cookbook_optional_values1::MyOptionalStuff1> stuff =
-	  daw::json::from_json_array<
-	    daw::cookbook_optional_values1::MyOptionalStuff1>( data );
+	auto stuff = daw::json::from_json_array<
+	  daw::cookbook_optional_values1::MyOptionalStuff1>( data );
 
 	test_assert( stuff.size( ) == 2, "Unexpected size" );
 	test_assert( not stuff.front( ).member2, "Unexpected value" );
@@ -132,7 +126,9 @@ int main( int argc, char **argv )
 	test_assert( stuff == stuff2, "Unexpected round trip error" );
 	return 0;
 }
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

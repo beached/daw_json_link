@@ -13,6 +13,7 @@
 #include <daw/daw_read_file.h>
 
 #include "daw/json/daw_json_link.h"
+#include <daw/daw_fnv1a_hash.h>
 
 #include <chrono>
 #include <cstdint>
@@ -53,10 +54,11 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_dates3::MyClass3> {
 #if defined( __cpp_nontype_template_parameter_class )
-		using type = json_member_list<
-		  json_string<"title">, json_number<"id", unsigned>,
-		  json_number<"dateAdded", int64_t, LiteralAsStringOpt::Always>,
-		  json_number<"lastModified", int64_t>>;
+		using type =
+		  json_member_list<json_string<"title">, json_number<"id", unsigned>,
+		                   json_number<"dateAdded", int64_t,
+		                               number_opt( LiteralAsStringOpt::Always )>,
+		                   json_number<"lastModified", int64_t>>;
 #else
 		static constexpr char const title[] = "title";
 		static constexpr char const id[] = "id";
@@ -64,7 +66,7 @@ namespace daw::json {
 		static constexpr char const lastModified[] = "lastModified";
 		using type = json_member_list<
 		  json_string<title>, json_number<id, unsigned>,
-		  json_number<dateAdded, int64_t, LiteralAsStringOpt::Always>,
+		  json_number<dateAdded, int64_t, number_opt( LiteralAsStringOpt::Always )>,
 		  json_number<lastModified, int64_t>>;
 #endif
 		static inline auto to_json_data( daw::cookbook_dates3::MyClass3 const &v ) {
@@ -83,7 +85,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -105,7 +107,7 @@ int main( int argc, char **argv )
 
 	test_assert( cls == cls2, "Unexpected round trip error" );
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

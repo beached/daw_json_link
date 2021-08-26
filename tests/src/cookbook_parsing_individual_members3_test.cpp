@@ -20,7 +20,7 @@
 #include <unordered_map>
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -40,12 +40,11 @@ int main( int argc, char **argv )
 	test_assert( value == "is", "Unexpected value" );
 
 	std::string_view opt_value =
-	  from_json<json_string_raw_null<no_name, std::string_view>>(
+	  from_json<json_string_raw_null_no_name<std::string_view>>(
 	    json_data, "member1[1000]" );
 
 	test_assert( opt_value.empty( ), "Unexpected result" );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
