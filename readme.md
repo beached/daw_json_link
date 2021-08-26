@@ -297,7 +297,7 @@ MyClass my_class = from_json<MyClass, NoCommentSkippingPolicyUnchecked>( json_st
 JSON documents with array root's use the `from_json_array` function to parse 
 ```c++
 std::vector<MyClass> my_data = from_json_array<MyClass>( json_str );
-```
+```	
 Alternatively, if the input is trusted, the less checked version can be faster 
 ```c++
 std::vector<MyClass> my_data = from_json_array<MyClass, std::vector<MyClass>, NoCommentSkippingPolicyUnchecked>( json_str );
@@ -327,6 +327,13 @@ std::vector<MyClass> arry = ...;
 std::string my_json_data = to_json_array( arry );
 ```
 # Error Handling
+
+## Exceptions
+The supported way to handle parsing erros is to throw a `daw::json::json_exception` with informations about the reason and location of failure.
+
+## -fno-exception
+If exceptions are disabled the library will terminate upon a parse error.
+
 ## Parsing call
 ###### [Top](#content)
 
