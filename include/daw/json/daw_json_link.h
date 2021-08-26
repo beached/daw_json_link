@@ -27,9 +27,11 @@ constexpr daw::json::json_value operator"" _dawjson( char const *ptr,
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		constexpr std::string_view json_link_version( ) {
-#define DAW_STR( x ) #x
-			constexpr std::string_view version = DAW_STR( DAW_JSON_VER );
+#define DAW_XSTR( x ) DAW_STR( x )
+#define DAW_STR( x ) std::string_view( #x )
+			constexpr std::string_view version = DAW_XSTR( DAW_JSON_VER );
 #undef DAW_STR
+#undef DAW_XSTR
 			return version;
 		}
 	} // namespace DAW_JSON_VER

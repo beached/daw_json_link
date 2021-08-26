@@ -1080,6 +1080,7 @@ int main( int, char ** )
 	constexpr auto v1 = from_json<empty_ordered>( std::string_view( "[]" ) );
 	auto v1str = to_json( v1 );
 	(void)v1str;
+	std::cout << "JSON Link Version: " << json_link_version( ) << '\n';
 	std::cout << "done";
 }
 #ifdef DAW_USE_EXCEPTIONS
