@@ -57,7 +57,7 @@ The DAW JSON Link library is a declarative mapping library between C++ and JSON.
   * Direct parsing of JSON to mapped data structures
   * Less code to convert JSON to C++ data structures
   * Earlier error reporting
-  * Lower memory requirement, parser requires a small amount of stack above that of mapped data strucutes
+  * Lower memory requirement, parser requires a small amount of stack above that of mapped data structures
   * Optimization based on data types
   * Does not require intrusion into data structures.  This allows the usage of third party types.
 
@@ -79,11 +79,11 @@ When the structure of the JSON document is known, parsing is like the following:
 ```c++
 MyThing thing = daw::json::from_json<MyThing>( json_string );
 ```
-or for array documents, where the root of the document is an array, there is a helper method to make it easier and it can be parsed like the following:
+or for array documents, where the root of the document is an array, there is a helper method to make it easier, and it can be parsed like the following:
 ```c++
 std::vector<MyThing> things = daw::json::from_json_array<MyThing>( json_string2 );
 ```
-If the structure of the JSON document is unknown, one can construct a `json_value` that acts as a container and allows iteration and parsing on demand.  It is a lazy parser and will only parse when asked to. The following is an example of opening a `json_value` from JSON data:
+If the structure of the JSON document is unknown, one can construct a `json_value` that acts as a container and allows iteration and pull parsing on demand. The following is an example of opening a `json_value` from JSON data:
 ```c++
 json_value val = daw::json::json_value( json_string );
 ```
@@ -105,7 +105,7 @@ The event based parser(SAX) can be called via `daw::json::json_event_parser`.  I
 ## Code Examples
 * The  [Cookbook](docs/cookbook/readme.md) section has pre-canned tasks and working code examples
 * [Tests](tests) provide another source of working code samples. 
-* Some video walkthroughs
+* Some video walkthroughs:
   * [Making a config parser](https://youtu.be/iiRDn0CR_sU)
   * [I Like BigInt's](https://www.youtube.com/watch?v=mhlrYvd1qso)
 * Links to other examples  
@@ -163,15 +163,15 @@ namespace daw::json {
 }
 ``` 
  The ordering of the members returned as a tuple need to match the mapping in the type alias `type`.  This allows for passing the result of accessor methods too, if the data members are not public.
- * Note: The return type of `to_json_data` does not have to return a tuple of references to the existing object members, but can return calculated values too.  It does not allow rvalues through as they are often temporaries and it can result in long distance debugging.  The library will static_assert on this and suggest including `<daw/daw_tuple_forward.h>` and calling `daw::forward_nonrvalue_as_tuple( ... )` which store temporaries and forward other reference types.
+ * Note: The return type of `to_json_data` does not have to return a tuple of references to the existing object members, but can return calculated values too.  It does not allow rvalues through as they are often temporaries, and it can result in long distance debugging.  The library will static_assert on this and suggest including `<daw/daw_tuple_forward.h>` and calling `daw::forward_nonrvalue_as_tuple( ... )` which store temporaries and forward other reference types.
 
-The parsers work by constructing each argument in place in the call to the classes constructor. The individual argument parsers can be tuned for the specified circumstances of the data(e.g. floating point and integral numbers). Then with our type trait defining the arguments needed to construct the C++ class and their order we are able to look at each member in the JSON. Now we construct the value with the result of each parser; similar to `T{ parse<0, json_string<"name">>( data ), parse<1, json_number<"age", unsigned>>( data ), parse<json_number<2, "number>>( data )}`. For each member, the data stream will be moved forward until we find the member we need to parse, storing interested locations for later parsing. This process allows us to parse other classes as members too via the `json_class<"member_name", Type>` mapping type. So that each mapping trait only has to deal with it's specific members and not their details.
+The parsers work by constructing each argument in place in the call to the class's constructor. The individual argument parsers can be tuned for the specified circumstances of the data(e.g. floating point and integral numbers). Then with our type trait defining the arguments needed to construct the C++ class and their order we are able to look at each member in the JSON. Now we construct the value with the result of each parser; similar to `T{ parse<0, json_string<"name">>( data ), parse<1, json_number<"age", unsigned>>( data ), parse<json_number<2, "number>>( data )}`. For each member, the data stream will be moved forward until we find the member we need to parse, storing interested locations for later parsing. This process allows us to parse other classes as members too via the `json_class<"member_name", Type>` mapping type. So that each mapping trait only has to deal with its specific members and not their details.
 ![general parsing flow](docs/images/parse_flow.jpg)
 
 ## Default mapping of types
 ###### [Top](#content)
 
-In unnamed contexts, such as the root value, array elements, some key value types, and variant element lists where the name would be `no_name`, one can use some native C++ data types instead of the the JSON mapping types. This includes, integer, floating point, bool, std::string, std::string_view, and previously mapped classes. 
+In unnamed contexts, such as the root value, array elements, some key value types, and variant element lists where the name would be `no_name`, one can use some native C++ data types instead of the JSON mapping types. This includes, integer, floating point, bool, std::string, std::string_view, and previously mapped classes. 
 
 For example, to map an array of string's.
 ```c++
@@ -195,7 +195,7 @@ target_link_libraries( MyTarget daw::daw-json-link )
 ```
 
 ### As header only
-The library is header only and can be cloned, along with it's two dependencies, followed by adding the `include/` subfolders of each to the include path
+The library is header only and can be cloned, along with it's two dependencies, followed by adding the `include/` subfolders of each to the compiler's include path
 
 ### Including in cmake project via FetchContent
 To use daw_json_link in your cmake projects, adding the following should allow it to pull it in along with the dependencies:
@@ -221,7 +221,7 @@ cd build
 cmake ..
 cmake --install . 
 ```
-This will allow for a cmake find_package install or using it as a regular header as long as the install prefix's include folder is included in the incude paths of the compiler
+This will allow for a cmake find_package install or using it as a regular header as long as the install prefix's include folder is included in the include paths of the compiler
 
 ### Testing
 The following will build and run the tests. 
@@ -246,10 +246,9 @@ After the build there the individual examples can be tested too. ```city_test_bi
 The order of the members in the data structures should generally match that of the JSON data, if possible. The parser is faster if it doesn't have to back track for values. Optional values, when missing in the JSON data, can slow down the parsing too. If possible have them sent as null. The parser does not allocate. The parsed to data types may and this allows one to use custom allocators or a mix as their data structures will do the allocation. The defaults for arrays is to use the std::vector<T> and if this isn't desirable, you must supply the type.
 
 ### Benchmarks
-* [Kostya results](docs/kostya_benchmark_results.md) using [test_dawjsonlink.
-* cpp](tests/src/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks#json) for latest results.
+* [Kostya results](docs/kostya_benchmark_results.md) using [test_dawjsonlink.cpp](tests/src/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks#json) for latest results.
 
-![chart describing kostya benmark results](docs/images/kostya_bench_chart_2021_04_03.png)
+![chart describing Kostya benchmark results](docs/images/kostya_bench_chart_2021_04_03.png)
 
 ## Escaping/Unescaping of member names
 ###### [Top](#content)
@@ -271,7 +270,7 @@ namespace daw::json {
 }
 ```
 # C++ 20 Naming of JSON members
-When compiled within C++20 compiler, in addition to passing a `char const *` as in C++17, the member names can be specified as string literals directly.  C++20 compiler support is still really early and here be dragons.  There are known issues with g++9.x and it's only tested with g++10.  Here be dragons
+When compiled within C++20 compiler, in addition to passing a `char const *` as in C++17, the member names can be specified as string literals directly.  C++20 compiler support is still really early and here be dragons.  There are known issues with g++9.x in C++20 mode, and it's only tested with g++10/11.  Here be dragons
 ```c++
 namespace daw::json {
   template<>
@@ -309,7 +308,7 @@ Iterating over array's in JSON data can be done via the `json_array_iterator`
 using iterator_t = json_array_iterator<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
-Alternatively, if the input is trusted you can called the less checked version
+Alternatively, if the input is trusted you can call the less checked version
 ```c++
 using iterator_t = daw::json::json_array_iterator_trusted<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
@@ -329,7 +328,7 @@ std::string my_json_data = to_json_array( arry );
 # Error Handling
 
 ## Exceptions
-The supported way to handle parsing erros is to throw a `daw::json::json_exception` with informations about the reason and location of failure.
+The supported way to handle parsing errors is to throw a `daw::json::json_exception` that includes information about the reason and location of failure.
 
 ## -fno-exception
 If exceptions are disabled the library will terminate upon a parse error.
@@ -337,7 +336,7 @@ If exceptions are disabled the library will terminate upon a parse error.
 ## Parsing call
 ###### [Top](#content)
 
-Error checking can be modified on a per parse basis.  the from_json/from_json_array calls can be supplied a Parser Option.  The current policies are
+Error checking can be modified on a per-parse basis.  the from_json/from_json_array calls can be supplied a Parser Option.  The current policies are
 
 * `NoCommentSkippingPolicyChecked` - No comments allowed, checks enabled
 * `NoCommentSkippingPolicyUnchecked` - No comments allowed, assumes perfect JSON
@@ -350,7 +349,7 @@ The unchecked variants can sometimes provide a 5-15% performance increase, but a
 ## Global
 ###### [Top](#content)
 
-There are two possible ways of handling errors. The default is to throw a `daw::json::json_exception` on an error in the data. `json_exception` has a member function `std::string_view reason( ) const` akin to `std::exception`'s `what( )`.  Second, calling `std::terminate( );` on an error in data. If you want to disable exceptions in an environment that has them, you can defined `DAW_JSON_DONT_USE_EXCEPTIONS` to disable exception throwing by the library. 
+There are two possible ways of handling errors. The default is to throw a `daw::json::json_exception` on an error in the data. `json_exception` has a member function `std::string_view reason( ) const` akin to `std::exception`'s `what( )`.  Second, calling `std::terminate( );` on an error in data. If you want to disable exceptions in an environment that has them, you can define `DAW_JSON_DONT_USE_EXCEPTIONS` to disable exception throwing by the library. 
 
 # Deserializing/Parsing
 ###### [Top](#content)
@@ -360,43 +359,40 @@ This can be accomplished by writing a function called json_data_contract_for wit
 ```c++
 #include <daw/json/daw_json_link.h>
 
+#include <string>
+#include <string_view>
+#include <vector>
+
 struct TestClass {
   int i = 0;
   double d = 0.0;
   bool b = false;
-  daw::string_view s{};
+  std::string s{};
   std::vector<int> y{};
 
-  TestClass( int Int, double Double, bool Bool, daw::string_view S, std::vector<int> Y ) 
-    : i( Int )
-    , d( Double )
-    , b( Bool )
-    , s( S )
-    , y( Y ) {}
+  TestClass(int Int, double Double, bool Bool, std::string S,
+            std::vector<int> Y)
+      : i(Int), d(Double), b(Bool), s(std::move( S ) ), y(std::move( Y )) {}
 };
 
 namespace daw::json {
-  template<>
-  struct json_data_contract<TestClass> {
-  using type = json_member_list<
-    json_number<"i", int>,
-    json_number<"d">,
-    json_bool<"b">,
-    json_string<"s", daw::string_view>,
-    json_array<"y", int>
-   >;
-  };
-}
+template <> 
+struct json_data_contract<TestClass> {
+  using type =
+      json_member_list<json_number<"i", int>, json_number<"d">, json_bool<"b">,
+                       json_string<"s">, json_array<"y", int>>;
+};
+} // namespace daw::json
 
-int main( ) {
-  std::string test_001_t_json_data = R"({
+int main() {
+  static constexpr std::string_view test_001_t_json_data = R"({
     "i":5,
     "d":2.2e4,
     "b":false,
     "s":"hello world",
     "y":[1,2,3,4] 
     })";
-  std::string json_array_data = R"([{
+  static constexpr std::string_view json_array_data = R"([{
     "i":5,
     "d":2.2e4,
     "b":false,
@@ -410,11 +406,16 @@ int main( ) {
     "y":[4,3,1,4] 
     }])";
 
-  TestClass test_class = daw::json::from_json<TestClass>( test_001_t_json_data );
-  std::vector<TestClass> arry_of_test_class = daw::json::from_json_array<TestClass>( test_001_t_json_data );
+  TestClass test_class = daw::json::from_json<TestClass>(test_001_t_json_data);
+  std::vector<TestClass> arry_of_test_class =
+      daw::json::from_json_array<TestClass>(test_001_t_json_data);
 }
 ```
-Both aggregate and user constructors are supported. The description provides the values needed to construct your type and the order. The order specified is the order they are placed into the constructor. There are customization points to provide a way of constructing your type too(TODO discuss customization points)  A class like:
+See on Compiler Explorer
+  * [C++ 20 - gcc](https://gcc.godbolt.org/z/33Y6Tca34)
+  * [C++ 17 - clang](https://gcc.godbolt.org/z/raPnK78zo)
+
+Both aggregate and user constructors are supported. The description provides the values needed to construct your type and the order. The order specified is the order they are placed into the constructor. There are customization points to provide a way of constructing your type too.  A class like:
 
 ```c++
 #include <daw/json/daw_json_link.h>
@@ -476,12 +477,15 @@ namespace daw::json {
 }
 ```
 
-The above maps a class MyClass that has another class that is described AggClass. Also, you can see that the member names of the C++ class do not have to match that of the mapped JSON names and that strings can use `std::string_view` as the result type. This is an important performance enhancement if you can guarantee the buffer containing the JSON file will exist as long as the class does.
+The above maps a class `MyClass` that has another class that is described AggClass. Also, you can see that the member names of the C++ class do not have to match that of the mapped JSON names and that strings can use `std::string_view` as the result type. This is an important performance enhancement if you can guarantee the buffer containing the JSON file will exist as long as the class does.
 
 Iterating over JSON arrays. The input iterator ```daw::json::json_array_iterator<JsonElement>``` allows one to iterator over the array of JSON elements. It is technically an input iterator but can be stored and reused like a forward iterator. It does not return a reference but a value.
 ```c++
 
 #include <daw/json/daw_json_link.h>
+#include <daw/json/daw_json_iterator.h>
+
+#include <iostream>
 
 struct AggClass {
   int a{};
@@ -489,16 +493,12 @@ struct AggClass {
 };
 
 namespace daw::json {
-  template<>
-  struct json_data_contract<AggClass> {
-    using type = json_member_list<
-      json_number<"a", int>,
-      json_number<"b">
-    >;
-  };
-}
+template <> struct json_data_contract<AggClass> {
+  using type = json_member_list<json_number<"a", int>, json_number<"b">>;
+};
+} // namespace daw::json
 
-int main( ) {
+int main() {
   std::string json_array_data = R"([
     {"a":5,"b":2.2},
     {"a":5,"b":3.14},
@@ -506,9 +506,10 @@ int main( ) {
     {"a":5334,"b":34342.2}
      ])";
   using iterator_t = daw::json::json_array_iterator<AggClass>;
-  auto pos = std::find_if( iterator_t( json_array_data ), iterator_t( ),
-    []( AggData const & element ) { return element.b > 1000.0; } );
-  if( pos == iterator_t( ) ) {
+  auto pos =
+      std::find_if(iterator_t(json_array_data), iterator_t(),
+                   [](AggClass const &element) { return element.b > 1000.0; });
+  if (pos == iterator_t()) {
     std::cout << "Not found\n";
   } else {
     std::cout << "Found\n";
@@ -517,13 +518,18 @@ int main( ) {
 ```
 
 ## Member Paths
-Parsing can begin at a specific member. An optional member path to `from_json_array`, `from_json_array_unchecked`, `from_json_array`, or `from_json_array_unchecked` can be specified.
+Parsing can begin at a specific member. An optional member path to `from_json` and `from_json_array` can be specified.
 The format is a dot separated list of member names and optionally an array index such as `member0.member1` or `member0[5].member1`.
 
 ## Comments
-Comments are supported when the parser policy for them is used. Currently there are two forms of comment policies. C++ style `//` and `/* */`. Comments can be placed anywhere there is whitespace allowed
-
-* Hash style
+Comments are supported when the parser policy for them is used. Currently, there are two forms of comment policies. 
+  * C++ style `//` line comments and C style `/* */` comments. 
+```json
+{ // This is a comment
+    "a" /*this is also a comment*/: "a's value"
+}
+```
+  * Hash style `#` line comments
 ```
 { # This is a comment
     "a" #this is also a comment
@@ -531,18 +537,12 @@ Comments are supported when the parser policy for them is used. Currently there 
 }
 ```
 
-* C++ style
-```
-{ // This is a comment
-    "a" /*this is also a comment*/: "a's value"
-}
-```
 To change the parser policy, you add another argument to `from_json` and call like `from_json<MyType, CppCommentParsePolicy>( json_data )`
 
 ## Serialization
 ###### [Top](#content)
 
-To enable serialization one must create an additional function in your specialization of `json_data_contract` called `to_json_data( Thing const & );` It will provide a mapping from your type to the arguments provided in the class description. To serialize to a JSON string, one calls `to_json( my_thing );` where value is a registered type or one of the fundamental types like string, bool, and numbers. The result of  `to_json_data( Thing const & )` is a tuple who's elements match order in json_data_contract's type alias `type`. Using the example above lets add that
+To enable serialization one must create an additional static function in your specialization of `json_data_contract` called `tuple to_json_data( Thing const & );` It will provide a mapping from your type to the arguments provided in the class description. To serialize to a JSON string, one calls `to_json( my_thing );` where value is a registered type or one of the fundamental types like Containers, Maps, Strings, bool, and numbers. The result of the `to_json_data( Thing const & )` static method is a tuple who's elements match order in json_data_contract's type alias `type`. Because of the way the method is used, tuple's with rvalue's result in a use after destruction bug.  The compiler will error if this happens.  Often it is the result of calculated tuple elements. Using the example above lets add a `to_json_data` method
 
 ```c++
 #include <daw/json/daw_json_link.h>
@@ -575,8 +575,8 @@ std::vector<AggData> values = //...;
 std::string json_array_data = to_json_array( values );
 ```
 
-Alternatively there is an optional `iostreams` interface. In you types `json_data_constract`
-add a type alias named `opt_into_iostreams` the type it aliases doesn't matter, and include `daw_json_iostream.h` . For example  
+Alternatively there is an optional `iostreams` interface. In your type's `json_data_constract`
+add a type alias named `opt_into_iostreams` the type it aliases doesn't matter, and include `daw/json/daw_json_iostream.h` . For example  
 ```c++
 #include <daw/json/daw_json_link.h>
 #include <daw/json/daw_json_iostream.h>
@@ -609,7 +609,7 @@ std::cout << value << '\n';
 std::vector<AggData> values = //...;
 std::cout << values << '\n';
 ```
-A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_json_iostream_test.cpp) 
+A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_json_iostream_test.cpp) or on [compiler explorer](https://gcc.godbolt.org/z/qGGnvvYsd)
 
 ## Common errors
 * ```error: pointer to subobject of string literal is not allowed in a template argument```
@@ -621,7 +621,7 @@ A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_jso
 
 ## Build configuration points
 There are a few defines that affect how JSON Link operates
-* `DAW_JSON_DONT_USE_EXCEPTIONS` - Controls if exceptions are allowed. If they are not, an `std::terminate()` on errors will occur
+* `DAW_JSON_DONT_USE_EXCEPTIONS` - Controls if exceptions are allowed. If they are not, an `std::terminate()` on errors will occur.  This is automatic if exceptions are disabled(e.g `-fno-exceptions`)
 * `DAW_ALLOW_SSE42` - Allow experimental SSE42 mode, generally the constexpr mode is faster
 * `DAW_JSON_NO_CONST_EXPR` - This can be used to allow classes without move/copy special members to be constructed from JSON data prior to C++ 20. This mode does not work in a constant expression prior to C++20 when this flag is no longer needed. 
 
@@ -635,8 +635,9 @@ There are a few defines that affect how JSON Link operates
 * MSVC 19.29 has been tested. 
 
 ### For building tests
-* git
-* cmake
+  * git
+  * cmake
+  * c++17 compiler
 
 #### Contact
 * Darrell Wright
