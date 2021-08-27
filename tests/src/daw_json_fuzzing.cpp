@@ -141,9 +141,9 @@ extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
 	auto json_doc =
 	  std::string_view( reinterpret_cast<char const *>( data ), size );
 	try {
+		char c = static_cast<char>( json_doc.size( ) ) + 240; // Testing fuzzing artifacts
 		auto jv =
 		  daw::json::basic_json_value<daw::json::ConformancePolicy>( json_doc );
-		char c = static_cast<char>( jv.size( ) ) + 240; // Testing fuzzing artifacts
 		switch( jv.type( ) ) {
 		case daw::json::JsonBaseParseTypes::Number:
 			ofile << daw::json::from_json<double>( jv );
