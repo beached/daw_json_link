@@ -37,13 +37,16 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-exit-time-destructors
                 -Wno-c++98-compat-pedantic
                 -Wno-missing-prototypes
-                -Wno-return-std-move-in-c++11
                 -Wno-float-equal
                 -Wno-documentation
                 -Wno-newline-eof
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
                 -Wno-mismatched-tags
         )
+        if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION LESS_EQUAL 13.0.0)
+            # This was removed in clang-13
+            add_compile_options(-Wno-return-std-move-in-c++11)
+        endif ()
         if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0)
             add_compile_options(-Wno-poison-system-directories)
         endif ()
