@@ -51,7 +51,9 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
             add_compile_options(-Wno-poison-system-directories)
         endif ()
         if (DAW_WERROR)
-            add_compile_options(-Werror -pedantic-errors)
+            if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR CMAKE_CXX_COMPILER_VERSION LESS 13.0.0)
+                add_compile_options(-Werror -pedantic-errors)
+            endif ()
             # Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
             # https://bugs.llvm.org/show_bug.cgi?id=16404
             string(FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX)

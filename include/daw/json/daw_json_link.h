@@ -15,14 +15,16 @@
 #include "impl/daw_json_value.h"
 #include "impl/version.h"
 
-/***
- * Construct a json_value from a string literal
- * @return A json_value representing the json document
- */
-constexpr daw::json::json_value operator"" _dawjson( char const *ptr,
-                                                     std::size_t sz ) {
-	return daw::json::json_value( std::string_view( ptr, sz ) );
-}
+namespace daw::json::literals {
+	/***
+	 * Construct a json_value from a string literal
+	 * @return A json_value representing the json document
+	 */
+	constexpr daw::json::json_value operator"" _dawjson( char const *ptr,
+	                                                     std::size_t sz ) {
+		return daw::json::json_value( std::string_view( ptr, sz ) );
+	}
+} // namespace daw::json::literals
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
