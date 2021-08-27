@@ -10,6 +10,38 @@ on:
       branches-ignore: develop
 
 jobs:
+  ubuntu2004_clang13_debug_20_libcxx:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-13 libc++-13-dev libc++abi-13-dev libunwind-dev
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-13 clang++-13 -stdlib=libc++
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
+  ubuntu2004_clang13_release_20_libcxx:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-13 libc++-13-dev libc++abi-13-dev libunwind-dev
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 clang-13 clang++-13 -stdlib=libc++
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Release
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Release
   ubuntu2004_clang12_debug_17:
     runs-on: [ ubuntu-20.04 ]
     steps:
