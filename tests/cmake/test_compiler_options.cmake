@@ -43,7 +43,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
                 -Wno-mismatched-tags
         )
-        if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION LESS_EQUAL 13.0.0)
+        if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR CMAKE_CXX_COMPILER_VERSION LESS 13.0.0)
             # This was removed in clang-13
             add_compile_options(-Wno-return-std-move-in-c++11)
         endif ()
