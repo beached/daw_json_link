@@ -24,9 +24,7 @@
   * [Parsing Individual Members](docs/cookbook/parsing_individual_members.md)
   * [Parser Options](docs/cookbook/parser_policies.md)
   * [Strings](docs/cookbook/strings.md)
-  * [Unknown JSON and Raw Parsing](docs/cookbook/unknown_types_and_raw_parsing.
-  * md) - 
-  * Browsing the JSON Document and delaying of parsing of specified members
+  * [Unknown JSON and Raw Parsing](docs/cookbook/unknown_types_and_raw_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
   * [Variant](docs/cookbook/variant.md)
   * [Automatic Code Generation](docs/cookbook/automated_code_generation.md)
   * [Intro](#intro)
@@ -612,12 +610,13 @@ std::cout << values << '\n';
 A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_json_iostream_test.cpp) or on [compiler explorer](https://gcc.godbolt.org/z/qGGnvvYsd)
 
 ## Common errors
-* ```error: pointer to subobject of string literal is not allowed in a template argument```
-	* Your compiler does not support Class Non-Type Template Parameters, or is not in C++20 mode.  If you do not have compiler support, you can the C++17 naming style above 
-      * e.g. ```cpp
+  * ```error: pointer to subobject of string literal is not allowed in a template argument```
+    * Your compiler does not support Class Non-Type Template Parameters, or is not in C++20 mode.  If you do not have compiler support, you can the C++17 naming style above e.g. 
+```cpp
 		constexpr char const member_name[] = "member_name";
 		//...
-		json_link<member_name, Type>```
+		json_link<member_name, Type>
+```
 
 ## Build configuration points
 There are a few defines that affect how JSON Link operates
@@ -650,3 +649,4 @@ There are a few defines that affect how JSON Link operates
   When used with `std::multimap<std::string, T>` or `std::vector<std::pair<std::string, T>>` all members are preserved with the former in order.  Alternatively, the `json_value` type will allow iteration over the class members and lazy parsing of the correct one. 
   See [Cookbook Key Values](docs/cookbook/key_values.md) which demonstrates these methods.
 * Trailing commas, the parser makes no effort to detect trailing commas.
+	
