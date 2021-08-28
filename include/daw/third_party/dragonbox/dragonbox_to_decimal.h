@@ -20,11 +20,13 @@
 #include "../../json/impl/version.h"
 #include <daw/daw_algorithm.h>
 #include <daw/daw_bit_cast.h>
+#include <daw/daw_likely.h>
 
 #include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <limits>
+#include <climits>
 #include <type_traits>
 
 // Suppress additional buffer overrun check
@@ -313,6 +315,9 @@ namespace daw::jkj::dragonbox {
 			namespace bits {
 				template<class UInt>
 				[[nodiscard]] inline int countr_zero( UInt n ) noexcept {
+					if( DAW_UNLIKELY( n == 0 ) ) {
+						return sizeof( UInt ) * CHAR_BIT;
+					}
 					static_assert( std::is_unsigned_v<UInt> && value_bits<UInt> <= 64 );
 #if( defined( __GNUC__ ) || defined( __clang__ ) ) && defined( __x86_64__ )
 #define JKJ_HAS_COUNTR_ZERO_INTRINSIC 1
@@ -707,7 +712,7 @@ namespace daw::jkj::dragonbox {
 						for( int i = 0; i < N; ++i ) {
 							tbl.mod_inv[i] = UInt( pow_of_mod_inverse );
 							tbl.max_quotients[i] =
-							  UInt( (std::numeric_limits<UInt>::max)( ) / pow_of_a );
+							  UInt( ( std::numeric_limits<UInt>::max )( ) / pow_of_a );
 
 							pow_of_mod_inverse *= mod_inverse;
 							pow_of_a *= a;
@@ -774,7 +779,7 @@ namespace daw::jkj::dragonbox {
 					n *= info::magic_number;
 					constexpr std::uint32_t comparison_mask =
 					  info::bits_for_comparison >= 32
-					    ? (std::numeric_limits<std::uint32_t>::max)( )
+					    ? ( std::numeric_limits<std::uint32_t>::max )( )
 					    : std::uint32_t(
 					        ( std::uint32_t( 1 ) << info::bits_for_comparison ) - 1 );
 
@@ -2869,7 +2874,7 @@ namespace daw::jkj::dragonbox {
 				remove_trailing_zeros( carrier_uint &n ) noexcept {
 					constexpr auto max_power = [] {
 						auto max_possible_significand =
-						  (std::numeric_limits<carrier_uint>::max)( ) /
+						  ( std::numeric_limits<carrier_uint>::max )( ) /
 						  compute_power<kappa + 1>( std::uint32_t( 10 ) );
 
 						int k = 0;
@@ -2925,7 +2930,7 @@ namespace daw::jkj::dragonbox {
 								constexpr auto mod_inverse =
 								  std::uint32_t( divtable.mod_inv[1] );
 								constexpr auto max_quotient =
-								  (std::numeric_limits<std::uint32_t>::max)( ) / 5;
+								  ( std::numeric_limits<std::uint32_t>::max )( ) / 5;
 
 								int s = 8;
 								for( ; s < t; ++s ) {
@@ -2948,7 +2953,7 @@ namespace daw::jkj::dragonbox {
 
 						constexpr auto mod_inverse = std::uint32_t( divtable.mod_inv[1] );
 						constexpr auto max_quotient =
-						  (std::numeric_limits<std::uint32_t>::max)( ) / 5;
+						  ( std::numeric_limits<std::uint32_t>::max )( ) / 5;
 
 						if( t == 0 || remainder * mod_inverse > max_quotient ) {
 							return 0;

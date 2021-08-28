@@ -9,7 +9,7 @@ The predefined policies are:
 Hash comments, a `#` in whitespace until end of line is comment.
 * `daw::json::HashCommentSkippingPolicyChecked`
 * `daw::json::HashCommentSkippingPolicyUnchecked`
-```
+```json
 {
   "a": 234, # This is comment
   "b": "This is not a comment"
@@ -18,7 +18,7 @@ Hash comments, a `#` in whitespace until end of line is comment.
 C++ comments, either a `//` in whitespace until end of line, or between `/*` and `*/` in whitespace, are commments.
 * `daw::json::CppCommentSkippingPolicyChecked`
 * `daw::json::CppCommentSkippingPolicyUnchecked`
-```
+```json
 {
   "a": 234, // This is comment
   "b": "This is not a comment", /* but these
@@ -34,5 +34,8 @@ To change the policy from the default one for parsing, the following types/metho
 
 An example of parsing with C++ comments could be:
 ```c++
-MyType value = daw::json::from_json<MyType, daw::json::CppCommentSkippingPolicyChecked>( json_string );
+MyType value = daw::json::from_json<
+		MyType, 
+		daw::json::CppCommentSkippingPolicyChecked
+	>( json_string );
 ```
