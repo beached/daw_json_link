@@ -17,6 +17,8 @@
 #include "daw_json_skip.h"
 #include "version.h"
 
+#include <daw/daw_consteval.h>
+#include <daw/daw_constinit.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
@@ -198,14 +200,21 @@ namespace daw::json {
 				};
 			} // namespace
 
-			// Prior to C++20, this will guarantee the data structure is
-			// initialized at compile time.  In the future, constinit should be
-			// fine.
 #if not defined( _MSC_VER ) or defined( __clang__ )
 			template<typename ParseState, typename... JsonMembers>
 			inline constexpr auto
 			  known_locations_v = make_locations_info<ParseState, JsonMembers...>( );
 #endif
+#if defined( DAW_HAS_CONSTEVAL )
+			template<typename T>
+			consteval T const_eval( T &&v ) {
+				return DAW_FWD2( T, v );
+			}
+#define DAW_CONST_EVALUATE( ... ) const_eval( __VA_ARGS__ )
+#else
+#define DAW_CONST_EVALUATE( ... ) ( __VA_ARGS__ )
+#endif
+
 			/***
 			 * Parse to the user supplied class.  The parser will run left->right if
 			 * it can when the JSON document's order matches that of the order of
@@ -248,8 +257,8 @@ namespace daw::json {
 					  ( JsonMembers::must_be_class_member or ... ) )>;
 
 #if defined( _MSC_VER ) and not defined( __clang__ )
-					auto known_locations =
-					  make_locations_info<ParseState, JsonMembers...>( );
+					auto known_locations = DAW_CONST_EVALUATE(
+					  make_locations_info<ParseState, JsonMembers...>( ) );
 #else
 					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
 #endif
