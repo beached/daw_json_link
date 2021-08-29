@@ -205,15 +205,6 @@ namespace daw::json {
 			inline constexpr auto
 			  known_locations_v = make_locations_info<ParseState, JsonMembers...>( );
 #endif
-#if defined( DAW_HAS_CONSTEVAL )
-			template<typename T>
-			consteval T const_eval( T &&v ) {
-				return DAW_FWD2( T, v );
-			}
-#define DAW_CONST_EVALUATE( ... ) const_eval( __VA_ARGS__ )
-#else
-#define DAW_CONST_EVALUATE( ... ) ( __VA_ARGS__ )
-#endif
 
 			/***
 			 * Parse to the user supplied class.  The parser will run left->right if
@@ -257,8 +248,8 @@ namespace daw::json {
 					  ( JsonMembers::must_be_class_member or ... ) )>;
 
 #if defined( _MSC_VER ) and not defined( __clang__ )
-					auto known_locations = DAW_CONST_EVALUATE(
-					  make_locations_info<ParseState, JsonMembers...>( ) );
+					auto known_locations =
+					  make_locations_info<ParseState, JsonMembers...>( );
 #else
 					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
 #endif
