@@ -11,6 +11,7 @@
 #include "daw_murmur3.h"
 #include "version.h"
 
+#include <daw/daw_consteval.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
@@ -145,7 +146,7 @@ namespace daw::json {
 
 			// Should never be called outside a consteval context
 			template<typename... MemberNames>
-			inline constexpr bool do_hashes_collide( ) {
+			inline DAW_CONSTEVAL bool do_hashes_collide( ) {
 				daw::UInt32 hashes[sizeof...( MemberNames )]{
 				  name_hash<false>( MemberNames::name )... };
 
@@ -159,7 +160,7 @@ namespace daw::json {
 
 			// Should never be called outside a consteval context
 			template<typename ParseState, typename... JsonMembers>
-			DAW_ATTRIB_FLATINLINE inline constexpr auto make_locations_info( ) {
+			DAW_ATTRIB_FLATINLINE inline DAW_CONSTEVAL auto make_locations_info( ) {
 				using CharT = typename ParseState::CharT;
 #if defined( DAW_JSON_PARSER_DIAGNOSTICS ) or \
   ( defined( __MSC_VER ) and not defined( __clang__ ) )

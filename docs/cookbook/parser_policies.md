@@ -1,5 +1,7 @@
 # Parser Options
 
+## Parser option presets
+
 The default parser policy is validating and disallows comments.  The `Unchecked` variants will skip most error checks and can give a good performance boost; this is useful when you can trust and know the data will be free of malicious errors.
 
 The predefined policies are:
@@ -39,3 +41,16 @@ MyType value = daw::json::from_json<
 		daw::json::CppCommentSkippingPolicyChecked
 	>( json_string );
 ```
+
+## Individual parser options
+
+`ExecModeTypes` - There are 3 paths here, with only `compile_time` being fully supported.  It is also the fastest generally
+  * `ExecModeTypes::compile_time` - This option provides constexpr parsing and is the normal path.  In the future the other modes maybe faster and better supported.  It may use builtins and runtime only methods when appropriate and one can detect if the current evaluaton is constexpr.
+  * `ExecModeTypes::runtime` - This mode includes baseline methods that cannot run during compiletime.  
+  * `ExecModeTypes::simd` - This mode will utilize SIMD enhanced methods for certain functions
+
+`ZeroTerminatedString` - The string data passed to `from_json` is zero terminated.  This allows some potential optimizations around bounds checking.  If the type passed to `from_json` has a specialization of `daw::json::is_zero_terminated_string` it will be assumed to be zero terminated.  By default std::basic_string evaluates to being a zero terminated string.
+  * `ZeroTerminatedString::no` - Default for non-specialized types of `daw::json::is_zero_terminated_string`
+  * `ZeroTerminatedString::yes` - The string passed to `from_json` is zero terminated
+
+`PolicyCommentTypes`

@@ -388,7 +388,7 @@ namespace daw::json {
 				class_last = new_pos.l;
 			}
 
-			inline constexpr class_pos_t get_class_position( ) const {
+			[[nodiscard]] inline constexpr class_pos_t get_class_position( ) const {
 				return { class_first, class_last };
 			}
 

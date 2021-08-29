@@ -531,12 +531,15 @@ namespace daw::json {
 		 * guarantees it.
 		 */
 		template<typename>
-		inline constexpr bool is_zero_terminated_string_v = false;
+		struct is_zero_terminated_string : std::false_type {};
 
 		template<typename CharT, typename Traits, typename Alloc>
-		inline constexpr bool
-		  is_zero_terminated_string_v<std::basic_string<CharT, Traits, Alloc>> =
-		    true;
+		struct is_zero_terminated_string<std::basic_string<CharT, Traits, Alloc>>
+		  : std::true_type {};
+
+		template<typename T>
+		inline constexpr bool is_zero_terminated_string_v =
+		  is_zero_terminated_string<T>::value;
 
 		namespace json_details {
 			template<typename ParsePolicy, auto Option>
