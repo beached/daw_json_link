@@ -19,7 +19,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-13 libc++-13-dev libc++abi-13-dev libunwind-dev ninja
+          sudo apt install clang-13 libc++-13-dev libc++abi-13-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-13 clang++-13 -stdlib=libc++
       - name: Build
@@ -35,7 +35,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-13 libc++-13-dev libc++abi-13-dev libunwind-dev ninja
+          sudo apt install clang-13 libc++-13-dev libc++abi-13-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 clang-13 clang++-13 -stdlib=libc++
       - name: Build
@@ -51,7 +51,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-12 clang++-12
       - name: Build
@@ -67,7 +67,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-12 clang++-12
       - name: Build
@@ -85,7 +85,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-12 clang++-12 -fno-exceptions
       - name: Build
@@ -101,7 +101,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-12 clang++-12 -fno-exceptions
       - name: Build
@@ -117,7 +117,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-11 libc++-11-dev libc++abi-11-dev libunwind-dev ninja
+          sudo apt install clang-11 libc++-11-dev libc++abi-11-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-11 clang++-11
       - name: Build
@@ -133,7 +133,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-11 libc++-11-dev libc++abi-11-dev libunwind-dev ninja
+          sudo apt install clang-11 libc++-11-dev libc++abi-11-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-11 clang++-11
       - name: Build
@@ -151,7 +151,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-10 libc++-10-dev libc++abi-10-dev libunwind-dev ninja
+          sudo apt install clang-10 libc++-10-dev libc++abi-10-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-10 clang++-10
       - name: Build
@@ -167,7 +167,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-10 libc++-10-dev libc++abi-10-dev libunwind-dev ninja
+          sudo apt install clang-10 libc++-10-dev libc++abi-10-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-10 clang++-10
       - name: Build
@@ -185,7 +185,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-9 libc++-9-dev libc++abi-9-dev libunwind-dev ninja
+          sudo apt install clang-9 libc++-9-dev libc++abi-9-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-9 clang++-9
       - name: Build
@@ -201,7 +201,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-9 libc++-9-dev libc++abi-9-dev libunwind-dev ninja
+          sudo apt install clang-9 libc++-9-dev libc++abi-9-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-9 clang++-9
       - name: Build
@@ -219,7 +219,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-8 libc++-8-dev libc++abi-8-dev libunwind-dev ninja
+          sudo apt install clang-8 libc++-8-dev libc++abi-8-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-8 clang++-8
       - name: Build
@@ -235,7 +235,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-8 libc++-8-dev libc++abi-8-dev libunwind-dev ninja
+          sudo apt install clang-8 libc++-8-dev libc++abi-8-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-8 clang++-8
       - name: Build
@@ -253,7 +253,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-12 clang++-12
       - name: Build
@@ -279,7 +279,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 clang-12 clang++-12
       - name: Build
