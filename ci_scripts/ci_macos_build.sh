@@ -3,5 +3,5 @@
 cd build
 
 echo "Starting full build"
-cmake --build . --config $1 -j 2
+cmake --build . --target full --config $1 -j 2
 

@@ -755,7 +755,6 @@ if (GIT_FOUND)
     if (DEFINED MSVC AND NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
         add_compile_options("/bigobj")
     endif ()
-    add_dependencies(full json_benchmark)
 
     cmake_host_system_information(RESULT _proc_desc QUERY PROCESSOR_DESCRIPTION)
     string(REPLACE "#" "" _proc_desc ${_proc_desc})
