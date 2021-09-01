@@ -307,7 +307,7 @@ jobs:
           sudo apt update
           sudo apt install gcc-10 g++-10
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 gcc-10 g++-10
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 gcc-10 g++-10 ninja-build
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
@@ -321,7 +321,7 @@ jobs:
           sudo apt update
           sudo apt install gcc-10 g++-10
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 gcc-10 g++-10
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 gcc-10 g++-10 ninja-build
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
@@ -335,7 +335,7 @@ jobs:
           sudo apt update
           sudo apt install gcc-10 g++-10
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 gcc-10 g++-10
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 gcc-10 g++-10 ninja-build
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
@@ -349,7 +349,7 @@ jobs:
           sudo apt update
           sudo apt install gcc-10 g++-10
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 gcc-10 g++-10
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 gcc-10 g++-10 ninja-build
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
@@ -361,7 +361,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install gcc-9 g++-9
+          sudo apt install gcc-9 g++-9 ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 gcc-9 g++-9
       - name: Build
@@ -375,7 +375,7 @@ jobs:
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install gcc-9 g++-9
+          sudo apt install gcc-9 g++-9 ninja-build
       - name: Build Dependencies
         run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 gcc-9 g++-9
       - name: Build
