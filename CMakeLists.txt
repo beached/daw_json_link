@@ -17,18 +17,25 @@ project("daw-json-link"
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 
 # Options used. Those tagged with Define are also the name of the source definition
+set(DAW_JSON_VER_OVERRIDE OFF CACHE STRING "Override the default inline namespace name used for API versioning")
 option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
 option(DAW_ENABLE_TESTING "Build unit tests and examples" OFF)
 option(DAW_JSON_PARSER_DIAGNOSTICS "Define: Output debug info while parsing" OFF)
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  # gcc has difficulty and takes too long to compile
-	option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
+    # gcc has difficulty and takes too long to compile
+    option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
 else ()
-	option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
+    option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
 endif ()
 option(DAW_JSON_NO_FAIL_ON_NO_NAME_NAME "Define: Ensure that no named mapping uses no_name as it's name.  Using it can slow down compilation" ON)
-option(DAW_JSON_FORCE_INT128 "Define: Force support for 128bit int" OFF )
-option(DAW_USE_EXCEPTIONS "Define: Throw exceptions when json errors occur or terminate" ON )
+option(DAW_JSON_FORCE_INT128 "Define: Force support for 128bit int" OFF)
+include(CMakeDependentOption)
+cmake_dependent_option(DAW_JSON_USE_STDEXCEPT "daw::json::json_exception will inherit from std::exception" OFF "DAW_USE_EXCEPTIONS" OFF)
+
+if (DAW_JSON_VER_OVERRIDE)
+    message("DAW_JSON_VER_OVERRIDE is set to '${DAW_JSON_VER_OVERRIDE}', overriding inline namespace for API version")
+    add_compile_definitions(DAW_JSON_VER_OVERRIDE=${DAW_JSON_VER_OVERRIDE})
+endif ()
 
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(json_link_INSTALL_CMAKEDIR
@@ -41,9 +48,9 @@ add_compile_definitions(DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD})
 
 if (NOT DAW_USE_PACKAGE_MANAGEMENT)
     add_subdirectory(extern)
-else( )
-	find_package( daw-header-libraries REQUIRED )
-	find_package( daw-utf-range REQUIRED )
+else ()
+    find_package(daw-header-libraries REQUIRED)
+    find_package(daw-utf-range REQUIRED)
 endif ()
 
 if (DAW_JSON_PARSER_DIAGNOSTICS)
@@ -63,9 +70,15 @@ endif ()
 if (DAW_USE_EXCEPTIONS)
     message("DAW_USE_EXCEPTIONS=ON: Errors throw json_exception")
     add_definitions(-DDAW_USE_EXCEPTIONS=true)
+
 else ()
     message("DAW_USE_EXCEPTIONS=OFF: Errors call std::terminate")
     add_definitions(-DDAW_DONT_USE_EXCEPTIONS=true)
+endif ()
+
+if (DAW_JSON_USE_STDEXCEPT)
+    message("DAW_JSON_USE_STDEXCEPT=ON: daw::json::json_exception will inherit from std::exception")
+    add_definitions(-DDAW_JSON_USE_STDEXCEPT)
 endif ()
 
 if (DAW_NO_FLATTEN)
