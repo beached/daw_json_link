@@ -89,7 +89,7 @@ public:
 			auto rng = p.value.get_raw_state( );
 			auto s =
 			  daw::string_view( rng.first, rng.size( ) ).pop_front( 10 ).to_string( );
-#if DAW_USE_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			throw std::runtime_error( s );
 #else
 			std::abort( );
@@ -170,7 +170,7 @@ extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
 		case daw::json::JsonBaseParseTypes::Null:
 			break;
 		case daw::json::JsonBaseParseTypes::None:
-#if DAW_USE_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			throw std::exception( );
 #else
 		std::abort( );
