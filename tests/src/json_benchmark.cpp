@@ -472,7 +472,11 @@ inline namespace {
 	}
 } // namespace
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv )
+#ifdef DAW_USE_EXCEPTIONS
+  try
+#endif
+{
 #if defined( NDEBUG ) or not defined( DEBUG )
 	std::cout << "Release build\n";
 #else
@@ -536,3 +540,16 @@ int main( int argc, char **argv ) {
 	out_file.write( out_data.data( ),
 	                static_cast<std::streamsize>( out_data.size( ) ) );
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

@@ -56,7 +56,17 @@ int main( )
 	auto const val2 = daw::json::from_json<Thing>( json );
 	test_assert( my_thing.raw_json == val2.raw_json,
 	             "Unexpected round trip error" );
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
-	exit( 1 );
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

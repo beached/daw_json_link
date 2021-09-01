@@ -26,14 +26,19 @@ int main( int argc, char **argv ) {
 	auto const json_data1 = *daw::read_file( argv[1] );
 	auto const json_sv1 =
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
-	try {
+#ifdef DAW_USE_EXCEPTIONS
+	try
+#endif
+	{
 		auto const twitter_result =
 		  daw::json::from_json<daw::twitter2::twitter_object_t>( json_sv1 );
 		daw::do_not_optimize( twitter_result );
 		test_assert( not twitter_result.statuses.empty( ), "Expected values" );
 		test_assert( twitter_result.statuses.front( ).user.id == "1186275104",
 		             "Missing value" );
-	} catch( daw::json::json_exception const &jex ) {
+	}
+#ifdef DAW_USE_EXCEPTIONS
+	catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Exception thrown by parser: "
 		          << to_formatted_string( jex, json_data1.data( ) ) << '\n';
 		if( jex.parse_location( ) ) {
@@ -43,4 +48,5 @@ int main( int argc, char **argv ) {
 		}
 		exit( 1 );
 	}
+#endif
 }

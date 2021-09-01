@@ -855,7 +855,7 @@ namespace daw::json {
 
 			template<typename Result, typename TypeList, std::size_t pos = 0,
 			         typename ParseState>
-			DAW_ATTRIB_FLATINLINE constexpr Result
+			DAW_ATTRIB_INLINE constexpr Result
 			parse_visit( std::size_t idx, ParseState &parse_state ) {
 				if( idx == pos ) {
 					using JsonMember = pack_element_t<pos, TypeList>;
@@ -1095,7 +1095,7 @@ namespace daw::json {
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState,
 			         std::size_t... Is>
-			DAW_ATTRIB_FLATINLINE constexpr json_result<JsonMember>
+			DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_tuple_value( ParseState &parse_state, std::index_sequence<Is...> ) {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
@@ -1230,7 +1230,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			DAW_ATTRIB_FLATINLINE constexpr json_result<JsonMember>
+			DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Tuple> ) {
 				using element_pack =
 				  typename JsonMember::sub_member_list; // tuple_elements_pack<tuple_t>;
@@ -1241,7 +1241,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			DAW_ATTRIB_FLATINLINE constexpr json_result<JsonMember>
+			DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::Unknown> ) {
 				using constructor_t = typename JsonMember::constructor_t;
@@ -1259,7 +1259,7 @@ namespace daw::json {
 
 			template<std::size_t N, typename JsonClass, bool KnownBounds,
 			         typename... JsonClasses, typename ParseState>
-			DAW_ATTRIB_FLATTEN constexpr json_result<JsonClass>
+			DAW_ATTRIB_INLINE constexpr json_result<JsonClass>
 			parse_nth_class( std::size_t idx, ParseState &parse_state ) {
 				// Precondition of caller to verify/ensure.
 				DAW_ASSUME( idx < sizeof...( JsonClasses ) );

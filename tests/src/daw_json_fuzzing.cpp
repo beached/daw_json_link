@@ -88,7 +88,11 @@ public:
 			auto rng = p.value.get_raw_state( );
 			auto s =
 			  daw::string_view( rng.first, rng.size( ) ).pop_front( 10 ).to_string( );
+#if DAW_USE_EXCEPTIONS
 			throw std::runtime_error( s );
+#else
+			std::abort( );
+#endif
 		}
 		}
 	}
@@ -140,7 +144,9 @@ extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
 	auto ofile = std::ofstream( "/dev/null", std::ios::trunc | std::ios::binary );
 	auto json_doc =
 	  std::string_view( reinterpret_cast<char const *>( data ), size );
+#ifdef DAW_USE_EXCEPTIONS
 	try {
+#endif
 		auto jv =
 		  daw::json::basic_json_value<daw::json::ConformancePolicy>( json_doc );
 		switch( jv.type( ) ) {
@@ -162,8 +168,14 @@ extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
 		case daw::json::JsonBaseParseTypes::Null:
 			break;
 		case daw::json::JsonBaseParseTypes::None:
+#if DAW_USE_EXCEPTIONS
 			throw std::exception( );
+#else
+		std::abort( );
+#endif
 		}
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( ... ) {}
+#endif
 	return 0;
 }

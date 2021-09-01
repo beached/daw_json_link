@@ -21,7 +21,11 @@
 
 #include <cstdio>
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv )
+#ifdef DAW_USE_EXCEPTIONS
+  try
+#endif
+{
 	if( argc < 2 ) {
 		puts( "Must supply a file name\n" );
 		exit( 1 );
@@ -51,3 +55,13 @@ int main( int argc, char **argv ) {
 	}
 #endif
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

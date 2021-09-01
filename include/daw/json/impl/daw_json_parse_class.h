@@ -45,7 +45,7 @@ namespace daw::json {
 			/// @pre parse_state.front( ) == '['
 			///
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_ordered_class_member( template_param<JsonMember>,
 			                            std::size_t &member_index,
 			                            ParseState &parse_state ) {
@@ -96,7 +96,7 @@ namespace daw::json {
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
 			         typename ParseState, std::size_t N, typename CharT, bool B>
-			[[nodiscard]] constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_class_member( ParseState &parse_state,
 			                    locations_info_t<N, CharT, B> &locations ) {
 				parse_state.move_next_member_or_end( );

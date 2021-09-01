@@ -51,20 +51,31 @@ coordinate_t calc( std::string_view text ) {
 	return coordinate_t{ x / len, y / len, z / len };
 }
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv )
+#ifdef DAW_USE_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		std::cout << "Must supply path to test_stateful_json_value.json file\n";
 		exit( EXIT_FAILURE );
 	}
 	auto const json_data = *daw::read_file( argv[1] );
-	try {
-		auto coords = calc( json_data );
-		daw::do_not_optimize( coords );
-		std::cout << "x: " << coords.x << " y: " << coords.y << " z: " << coords.z
-		          << '\n';
-	} catch( daw::json::json_exception const &jex ) {
-		std::cerr << "Exception while parsing: " << to_formatted_string( jex )
-		          << '\n';
-		return EXIT_FAILURE;
-	}
+	auto coords = calc( json_data );
+	daw::do_not_optimize( coords );
+	std::cout << "x: " << coords.x << " y: " << coords.y << " z: " << coords.z
+	          << '\n';
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

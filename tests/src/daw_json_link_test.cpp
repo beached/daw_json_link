@@ -717,7 +717,7 @@ int main( int, char ** )
 		daw::expecting( not v.b );
 	}
 
-#if (defined( __GNUC__ ) and __GNUC__ <= 9) or (defined(_MSC_VER))
+#if( defined( __GNUC__ ) and __GNUC__ <= 9 ) or ( defined( _MSC_VER ) )
 #define CX
 #elif defined( DAW_JSON_NO_CONST_EXPR )
 #define CX
@@ -1032,15 +1032,21 @@ int main( int, char ** )
 	static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 
 	auto const test_bad_float = []( ) -> bool {
+#ifdef DAW_USE_EXCEPTIONS
 		try {
+#endif
 			(void)from_json<double>( "0e "sv );
+#ifdef DAW_USE_EXCEPTIONS
 		} catch( daw::json::json_exception const & ) { return true; }
+#endif
 		return false;
 	};
 	daw_json_assert( test_bad_float( ), ErrorReason::Unknown );
 
 	auto const test_empty_map = []( ) -> bool {
+#ifdef DAW_USE_EXCEPTIONS
 		try {
+#endif
 			auto m = from_json<std::map<std::string, std::string>>( "{}"sv );
 			if( not m.empty( ) ) {
 				return false;
@@ -1048,19 +1054,25 @@ int main( int, char ** )
 			auto const s = to_json( m );
 
 			return s == "{}";
+#ifdef DAW_USE_EXCEPTIONS
 		} catch( daw::json::json_exception const &jex ) {
 			std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 			throw;
 		}
+#endif
 	};
 	daw_json_assert( test_empty_map( ), ErrorReason::Unknown );
 
 	auto const test_leading_zero = []( auto i ) {
 		using test_t = daw::remove_cvref_t<decltype( i )>;
+#ifdef DAW_USE_EXCEPTIONS
 		try {
+#endif
 			auto l0 = from_json<test_t>( "01.0"sv );
 			(void)l0;
+#ifdef DAW_USE_EXCEPTIONS
 		} catch( daw::json::json_exception const & ) { return true; }
+#endif
 		return false;
 	};
 	daw_json_assert( test_leading_zero( 0.0 ), ErrorReason::Unknown );

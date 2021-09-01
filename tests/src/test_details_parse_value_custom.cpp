@@ -35,6 +35,7 @@ bool empty_array_empty_json_array( ) {
 	return v.size( ) == 8;
 }
 
+#ifdef DAW_USE_EXCEPTIONS
 #define do_test( ... )                                                   \
 	try {                                                                  \
 		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );              \
@@ -44,16 +45,21 @@ bool empty_array_empty_json_array( ) {
 	}                                                                      \
 	do {                                                                   \
 	} while( false )
-
+#else
+#define do_test( ... )                                    \
+	daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ ); \
+	do {                                                    \
+	} while( false )
+#endif
 /*
 #define do_fail_test( ... )                                   \
-	do {                                                        \
-		try {                                                     \
-			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ ); \
-		} catch( daw::json::json_exception const & ) { break; }   \
-		std::cerr << "Expected exception, but none thrown in '"   \
-		          << "" #__VA_ARGS__ << "'\n";                    \
-	} while( false )
+  do {                                                        \
+    try {                                                     \
+      daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ ); \
+    } catch( daw::json::json_exception const & ) { break; }   \
+    std::cerr << "Expected exception, but none thrown in '"   \
+              << "" #__VA_ARGS__ << "'\n";                    \
+  } while( false )
 */
 
 int main( int, char ** )
@@ -62,7 +68,17 @@ int main( int, char ** )
 #endif
 {
 	do_test( empty_array_empty_json_array( ) );
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
-	exit( 1 );
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

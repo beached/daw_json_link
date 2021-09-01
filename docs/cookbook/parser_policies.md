@@ -53,4 +53,15 @@ MyType value = daw::json::from_json<
   * `ZeroTerminatedString::no` - Default for non-specialized types of `daw::json::is_zero_terminated_string`
   * `ZeroTerminatedString::yes` - The string passed to `from_json` is zero terminated
 
-`PolicyCommentTypes`
+`PolicyCommentTypes` - Are comments in whitespace allowed(defaults to no) and, if so, what kind
+  * `PolicyCommentTypes::none` - Comments are not allowed.  This is conformant with JSON and the fastests
+  * `PolicyCommentTypes::cpp` - Allow C++ style comments, both `/* comment */` and `// comment until newline` are allowed in places where whitespaced is allowed/required
+  * `PolicyCommentTypes::hash` - Allow `# comment until newline` hash style line comments
+
+`CheckedParseMode` - Do a checked parse or not.  If the data is known to be trustworthy and generated correctly, one can disable checking of a parse and gain performance(measured 15% in some documents).
+  * `CheckedParseMode::yes` - Default and safest option.  Check for parse irregularities
+  * `CheckedParseMode::no` - Disable many parse time checks
+
+`MinifiedDocument` - Assume the document in minified and there is no whitespace.  This may offer performance benefits(measured 5% in some minified documents).  This option is incompatable with comments.
+  * `MinifiedDocument::no` - Default and assumes there is whitespace in document.
+  * `MinifiedDcoument::yes` - Does not skip whitespce in documents.

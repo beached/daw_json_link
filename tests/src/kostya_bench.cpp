@@ -68,7 +68,7 @@ int main( int, char ** )
 	  }
 	*/
 	auto const json_data = *daw::read_file( "/tmp/1.json" );
-	//auto json_data = daw::filesystem::memory_mapped_file_t<>( "/tmp/1.json" );
+	// auto json_data = daw::filesystem::memory_mapped_file_t<>( "/tmp/1.json" );
 
 	using range_t =
 	  daw::json::json_array_range<coordinate_t, NoCommentSkippingPolicyUnchecked>;
@@ -79,7 +79,7 @@ int main( int, char ** )
 	uint_fast32_t sz = 0U;
 
 	// first will be json_array_iterator to the array coordinates in root object
-	for( std::size_t n=0; n<10; ++n ) {
+	for( std::size_t n = 0; n < 10; ++n ) {
 		for( auto c : range_t( json_data, "coordinates" ) ) {
 			++sz;
 			x += c.x;
@@ -92,7 +92,17 @@ int main( int, char ** )
 	std::cout << x / dsz << '\n';
 	std::cout << y / dsz << '\n';
 	std::cout << z / dsz << '\n';
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
-	exit( 1 );
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

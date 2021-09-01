@@ -175,8 +175,9 @@ int main( int argc, char **argv ) {
 	auto data = daw::filesystem::memory_mapped_file_t<>( args[0].value );
 
 #ifdef DAW_USE_EXCEPTIONS
-	try {
+	try
 #endif
+	{
 		if( args.size( ) > 1 and args[1].name.empty( ) ) {
 			test_assert( data.size( ) > 0, "Invalid JSON document" );
 			auto ofile = std::ofstream( args[1].value.to_string( ).c_str( ),
@@ -186,11 +187,18 @@ int main( int argc, char **argv ) {
 		} else {
 			minify( args, data, std::ostreambuf_iterator<char>( std::cout ) );
 		}
+	}
 #ifdef DAW_USE_EXCEPTIONS
-	} catch( daw::json::json_exception const &jex ) {
-		std::cerr << "Exception thrown by parser\n"
-		          << to_formatted_string( jex, data.data( ) ) << '\n';
+	catch( daw::json::json_exception const &jex ) {
+		std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 		exit( 1 );
+	} catch( std::exception const &ex ) {
+		std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+		          << '\n';
+		exit( 1 );
+	} catch( ... ) {
+		std::cerr << "Unknown exception thrown during testing\n";
+		throw;
 	}
 #endif
 }
