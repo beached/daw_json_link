@@ -76,6 +76,38 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_test.sh Release
       - name: Run fuzz test
         run: ./ci_scripts/ci_ubuntu_fuzz.sh
+  ubuntu2004_clang12_debug_noexcept17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-12 clang++-12 -fno-exceptions
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
+  ubuntu2004_clang12_debug_noexcept20:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-12 clang++-12 -fno-exceptions
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
   ubuntu2004_clang11_debug_17:
     runs-on: [ ubuntu-20.04 ]
     steps:
