@@ -21,6 +21,7 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_cast.h>
+#include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_likely.h>
 
 #include <cassert>
@@ -424,10 +425,18 @@ namespace daw::jkj::dragonbox {
 					}
 
 					constexpr uint128 &operator+=( std::uint64_t n ) &noexcept {
+#if defined( DAW_IS_CONSTANT_EVALUATED )
+						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+							auto sum = low_ + n;
+							high_ += ( sum < low_ ? 1 : 0 );
+							low_ = sum;
+							return *this;
+						}
 #if defined( _MSC_VER ) and defined( _M_X64 )
 						auto carry = _addcarry_u64( 0, low_, n, &low_ );
 						_addcarry_u64( carry, high_, 0, &high_ );
 						return *this;
+#endif
 #else
 						auto sum = low_ + n;
 						high_ += ( sum < low_ ? 1 : 0 );
@@ -438,7 +447,8 @@ namespace daw::jkj::dragonbox {
 #endif
 				};
 
-				// Get 128-bit result of multiplication of two 64-bit unsigned integers
+				// Get 128-bit result of multiplication of two 64-bit unsigned
+				// integers
 				[[nodiscard]] JKJ_SAFEBUFFERS inline constexpr uint128
 				umul128( std::uint64_t x, std::uint64_t y ) noexcept {
 #if( defined( __GNUC__ ) or defined( __clang__ ) ) and \
@@ -513,8 +523,8 @@ namespace daw::jkj::dragonbox {
 #endif
 				}
 
-				// Get upper 64-bits of multiplication of a 64-bit unsigned integer and
-				// a 128-bit unsigned integer
+				// Get upper 64-bits of multiplication of a 64-bit unsigned integer
+				// and a 128-bit unsigned integer
 				[[nodiscard]] JKJ_SAFEBUFFERS inline constexpr std::uint64_t
 				umul192_upper64( std::uint64_t x, uint128 y ) noexcept {
 					auto g0 = umul128( x, y.high( ) );
@@ -522,15 +532,15 @@ namespace daw::jkj::dragonbox {
 					return g0.high( );
 				}
 
-				// Get upper 32-bits of multiplication of a 32-bit unsigned integer and
-				// a 64-bit unsigned integer
+				// Get upper 32-bits of multiplication of a 32-bit unsigned integer
+				// and a 64-bit unsigned integer
 				[[nodiscard]] inline constexpr std::uint32_t
 				umul96_upper32( std::uint32_t x, std::uint64_t y ) noexcept {
 					return std::uint32_t( umul128_upper64( x, y ) );
 				}
 
-				// Get middle 64-bits of multiplication of a 64-bit unsigned integer and
-				// a 128-bit unsigned integer
+				// Get middle 64-bits of multiplication of a 64-bit unsigned integer
+				// and a 128-bit unsigned integer
 				[[nodiscard]] JKJ_SAFEBUFFERS inline constexpr std::uint64_t
 				umul192_middle64( std::uint64_t x, uint128 y ) noexcept {
 					auto g01 = x * y.high( );
@@ -538,8 +548,8 @@ namespace daw::jkj::dragonbox {
 					return g01 + g10;
 				}
 
-				// Get middle 32-bits of multiplication of a 32-bit unsigned integer and
-				// a 64-bit unsigned integer
+				// Get middle 32-bits of multiplication of a 32-bit unsigned integer
+				// and a 64-bit unsigned integer
 				[[nodiscard]] inline constexpr std::uint64_t
 				umul96_lower64( std::uint32_t x, std::uint64_t y ) noexcept {
 					return x * y;
@@ -2540,7 +2550,8 @@ namespace daw::jkj::dragonbox {
 									ret_value.significand += dist;
 
 									// Check z^(f) >= epsilon^(f)
-									// We have either yi == zi - epsiloni or yi == (zi - epsiloni)
+									// We have either yi == zi - epsiloni or yi == (zi -
+									// epsiloni)
 									// - 1, where yi == zi - epsiloni if and only if z^(f) >=
 									// epsilon^(f) Since there are only 2 possibilities, we only
 									// need to care about the parity Also, zi and r should have
@@ -2550,9 +2561,9 @@ namespace daw::jkj::dragonbox {
 										--ret_value.significand;
 									} else {
 										// If z^(f) >= epsilon^(f), we might have a tie
-										// when z^(f) == epsilon^(f), or equivalently, when y is an
-										// integer For tie-to-up case, we can just choose the upper
-										// one
+										// when z^(f) == epsilon^(f), or equivalently, when y is
+										// an integer For tie-to-up case, we can just choose the
+										// upper one
 										if constexpr( CorrectRoundingPolicy::tag !=
 										              policy_impl::correct_rounding::tag_t::
 										                away_from_zero ) {
@@ -2570,9 +2581,9 @@ namespace daw::jkj::dragonbox {
 							}
 							// Is dist not divisible by 2^kappa?
 							else {
-								// Since we know dist is small, we might be able to optimize the
-								// division better than the compiler; we are computing dist /
-								// small_divisor here
+								// Since we know dist is small, we might be able to optimize
+								// the division better than the compiler; we are computing
+								// dist / small_divisor here
 								ret_value.significand +=
 								  div::small_division_by_pow10<kappa>( dist );
 							}
@@ -2925,7 +2936,8 @@ namespace daw::jkj::dragonbox {
 						constexpr auto const &divtable =
 						  div::table_holder<carrier_uint, 5, decimal_digits>::table;
 
-						// If the number is divisible by 1'0000'0000, work with the quotient
+						// If the number is divisible by 1'0000'0000, work with the
+						// quotient
 						if( t >= 8 ) {
 							auto quotient_candidate = n * divtable.mod_inv[8];
 
@@ -3153,10 +3165,10 @@ namespace daw::jkj::dragonbox {
 
 			namespace policy_impl {
 				// The library will specify a list of accepted kinds of policies and
-				// their defaults, and the user will pass a list of policies. The aim of
-				// helper classes/functions here is to do the following:
-				//   1. Check if the policy parameters given by the user are all valid;
-				//   that means,
+				// their defaults, and the user will pass a list of policies. The aim
+				// of helper classes/functions here is to do the following:
+				//   1. Check if the policy parameters given by the user are all
+				//   valid; that means,
 				//      each of them should be of the kinds specified by the library.
 				//      If that's not the case, then the compilation fails.
 				//   2. Check if multiple policy parameters for the same kind is
@@ -3220,8 +3232,8 @@ namespace daw::jkj::dragonbox {
 				template<class... BaseDefaultPairs>
 				struct base_default_pair_list {};
 
-				// Check if a given policy belongs to one of the kinds specified by the
-				// library
+				// Check if a given policy belongs to one of the kinds specified by
+				// the library
 				template<class Policy>
 				[[nodiscard]] constexpr bool
 				check_policy_validity( Policy, base_default_pair_list<> ) {
