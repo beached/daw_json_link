@@ -684,6 +684,32 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
+constexpr bool cxdbl_tostr1( ) {
+	using namespace daw::json;
+	constexpr auto dbl_half = from_json<double>( "0.5" );
+	char buffer[128]{ };
+	auto buff_end = to_json( dbl_half, buffer );
+	auto buff_sv =
+	  std::string_view( buffer, static_cast<std::size_t>( buff_end - buffer ) );
+	daw_json_assert( buff_sv == "0.5", ErrorReason::InvalidString );
+	(void)from_json<double>( buff_sv );
+	return true;
+}
+static_assert( cxdbl_tostr1( ) );
+
+constexpr bool cxdbl_tostr2( ) {
+	using namespace daw::json;
+	constexpr auto dbl_half = from_json<double>( "1024.5" );
+	char buffer[128]{ };
+	auto buff_end = to_json( dbl_half, buffer );
+	auto buff_sv =
+	  std::string_view( buffer, static_cast<std::size_t>( buff_end - buffer ) );
+	daw_json_assert( buff_sv == "1024.5", ErrorReason::InvalidString );
+	(void)from_json<double>( buff_sv );
+	return true;
+}
+static_assert( cxdbl_tostr2( ) );
+
 int main( int, char ** )
 #ifdef DAW_USE_EXCEPTIONS
   try
@@ -1092,6 +1118,7 @@ int main( int, char ** )
 	constexpr auto v1 = from_json<empty_ordered>( std::string_view( "[]" ) );
 	auto v1str = to_json( v1 );
 	(void)v1str;
+
 	std::cout << "JSON Link Version: " << json_link_version( ) << '\n';
 	std::cout << "done";
 }
