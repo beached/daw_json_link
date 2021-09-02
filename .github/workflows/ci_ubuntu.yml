@@ -42,208 +42,6 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Release
-  ubuntu2004_clang12_debug_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-12 clang++-12 -stdlib=libc++
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  ubuntu2004_clang12_release_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-12 clang++-12 -stdlib=libc++
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Release
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Release
-      - name: Run fuzz test
-        run: ./ci_scripts/ci_ubuntu_fuzz.sh
-  ubuntu2004_clang12_debug_noexcept17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-12 clang++-12 "-stdlib=libc++ -fno-exceptions"
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  ubuntu2004_clang12_debug_noexcept20:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-12 clang++-12 "-stdlib=libc++ -fno-exceptions"
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  ubuntu2004_clang11_debug_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-11 libc++-11-dev libc++abi-11-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-11 clang++-11 -stdlib=libc++
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  ubuntu2004_clang11_release_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-11 libc++-11-dev libc++abi-11-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-11 clang++-11 -stdlib=libc++
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Release
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Release
-      - name: Run fuzz test
-        run: ./ci_scripts/ci_ubuntu_fuzz.sh
-  ubuntu2004_clang10_debug_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-10 libc++-10-dev libc++abi-10-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-10 clang++-10 -stdlib=libc++
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  ubuntu2004_clang10_release_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-10 libc++-10-dev libc++abi-10-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-10 clang++-10 -stdlib=libc++
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Release
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Release
-      - name: Run fuzz test
-        run: ./ci_scripts/ci_ubuntu_fuzz.sh
-  ubuntu2004_clang9_debug_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-9 libc++-9-dev libc++abi-9-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-9 clang++-9 -stdlib=libc++
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  ubuntu2004_clang9_release_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-9 libc++-9-dev libc++abi-9-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-9 clang++-9 -stdlib=libc++
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Release
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Release
-      - name: Run fuzz test
-        run: ./ci_scripts/ci_ubuntu_fuzz.sh
-  ubuntu2004_clang8_debug_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-8 libc++-8-dev libc++abi-8-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-8 clang++-8 -stdlib=libc++
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  ubuntu2004_clang8_release_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
-        run: |
-          sudo apt update
-          sudo apt install clang-8 libc++-8-dev libc++abi-8-dev libunwind-dev ninja-build
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-8 clang++-8 -stdlib=libc++
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Release
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Release
-      - name: Run fuzz test
-        run: ./ci_scripts/ci_ubuntu_fuzz.sh
   ubuntu2004_clang12_debug_20:
     runs-on: [ ubuntu-20.04 ]
     steps:
@@ -255,11 +53,13 @@ jobs:
           sudo apt update
           sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-12 clang++-12 -stdlib=libc++
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-12 clang++-12
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Debug
+      - name: Run fuzz test
+        run: ./ci_scripts/ci_ubuntu_fuzz.sh
       - name: Archive any crashes as an artifact
         uses: actions/upload-artifact@v2
         if: always()
@@ -281,7 +81,7 @@ jobs:
           sudo apt update
           sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 clang-12 clang++-12 -stdlib=libc++
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 clang-12 clang++-12
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
@@ -298,6 +98,199 @@ jobs:
             leak-*
             timeout-*
           if-no-files-found: ignore
+  ubuntu2004_clang12_debug_17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-12 clang++-12 
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
+  ubuntu2004_clang12_release_17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-12 clang++-12 
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Release
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Release
+  ubuntu2004_clang12_debug_noexcept17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-12 clang++-12 " -fno-exceptions"
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
+  ubuntu2004_clang12_debug_noexcept20:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-12 clang++-12 " -fno-exceptions"
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
+  ubuntu2004_clang11_debug_17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-11 libc++-11-dev libc++abi-11-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-11 clang++-11 
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
+  ubuntu2004_clang11_release_17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-11 libc++-11-dev libc++abi-11-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-11 clang++-11 
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Release
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Release
+  ubuntu2004_clang10_debug_17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-10 libc++-10-dev libc++abi-10-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-10 clang++-10 
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
+  ubuntu2004_clang10_release_17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-10 libc++-10-dev libc++abi-10-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-10 clang++-10 
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Release
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Release
+  ubuntu2004_clang9_debug_17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-9 libc++-9-dev libc++abi-9-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-9 clang++-9 
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
+  ubuntu2004_clang9_release_17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-9 libc++-9-dev libc++abi-9-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-9 clang++-9 
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Release
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Release
+  ubuntu2004_clang8_debug_17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-8 libc++-8-dev libc++abi-8-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-8 clang++-8 
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Debug
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Debug
+  ubuntu2004_clang8_release_17:
+    runs-on: [ ubuntu-20.04 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Add LLVM Repo
+        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
+      - name: Download & Build Dependencies
+        run: |
+          sudo apt update
+          sudo apt install clang-8 libc++-8-dev libc++abi-8-dev libunwind-dev ninja-build
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-8 clang++-8 
+      - name: Build
+        run: ./ci_scripts/ci_ubuntu_build.sh Release
+      - name: Test
+        run: ./ci_scripts/ci_ubuntu_test.sh Release
+
   ubuntu2004_gcc10_debug_17:
     runs-on: [ ubuntu-20.04 ]
     steps:
