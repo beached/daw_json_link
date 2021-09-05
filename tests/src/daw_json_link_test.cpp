@@ -684,6 +684,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
+#if defined( DAW_CX_BIT_CAST )
 constexpr bool cxdbl_tostr1( ) {
 	using namespace daw::json;
 	constexpr auto dbl_half = from_json<double>( "0.5" );
@@ -709,6 +710,7 @@ constexpr bool cxdbl_tostr2( ) {
 	return true;
 }
 static_assert( cxdbl_tostr2( ) );
+#endif
 
 int main( int, char ** )
 #ifdef DAW_USE_EXCEPTIONS
