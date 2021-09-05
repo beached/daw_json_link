@@ -481,7 +481,7 @@ unsigned long long test_dblparse( std::string_view num,
 
 		std::cout.precision( old_precision );
 		std::cout << std::dec << "unsigned diff: " << diff << '\n';
-		std::terminate( );
+		throw std::logic_error( "Ulp diff too large" );
 	}
 #endif
 	return diff;
@@ -555,7 +555,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 
 		std::cout.precision( old_precision );
 		std::cout << std::dec << "unsigned diff: " << diff << '\n';
-		std::terminate( );
+		throw std::logic_error( "Ulp diff too large" );
 	}
 #else
 	(void)orig;
