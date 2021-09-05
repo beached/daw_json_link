@@ -2475,7 +2475,7 @@ namespace daw::jkj::dragonbox {
 					// Step 1: integer promotion & Schubfach multiplier calculation
 					//////////////////////////////////////////////////////////////////////
 
-					ReturnType ret_value;
+					ReturnType ret_value{ };
 
 					SignPolicy::handle_sign( br, ret_value );
 
