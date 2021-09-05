@@ -314,6 +314,7 @@ namespace daw::jkj::dragonbox {
 			////////////////////////////////////////////////////////////////////////////////////////
 
 			namespace bits {
+				/*
 				template<class UInt>
 				[[nodiscard]] inline constexpr int countr_zero( UInt n ) noexcept {
 					if( DAW_UNLIKELY( n == 0 ) ) {
@@ -368,6 +369,7 @@ namespace daw::jkj::dragonbox {
 					return count;
 #endif
 				}
+				 */
 			} // namespace bits
 
 			////////////////////////////////////////////////////////////////////////////////////////
@@ -425,24 +427,18 @@ namespace daw::jkj::dragonbox {
 					}
 
 					constexpr uint128 &operator+=( std::uint64_t n ) &noexcept {
-#if defined( DAW_IS_CONSTANT_EVALUATED )
-						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
-							auto sum = low_ + n;
-							high_ += ( sum < low_ ? 1 : 0 );
-							low_ = sum;
+#if defined( DAW_IS_CONSTANT_EVALUATED ) and defined( _MSC_VER ) and \
+  defined( _M_X64 )
+						if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+							auto carry = _addcarry_u64( 0, low_, n, &low_ );
+							_addcarry_u64( carry, high_, 0, &high_ );
 							return *this;
 						}
-#if defined( _MSC_VER ) and defined( _M_X64 )
-						auto carry = _addcarry_u64( 0, low_, n, &low_ );
-						_addcarry_u64( carry, high_, 0, &high_ );
-						return *this;
 #endif
-#else
 						auto sum = low_ + n;
 						high_ += ( sum < low_ ? 1 : 0 );
 						low_ = sum;
 						return *this;
-#endif
 					}
 #endif
 				};
@@ -501,8 +497,11 @@ namespace daw::jkj::dragonbox {
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-#elif defined( _MSC_VER ) and defined( _M_X64 )
-					return __umulh( x, y );
+#elif defined( DAW_IS_CONSTANT_EVALUATED ) and defined( _MSC_VER ) and \
+  defined( _M_X64 )
+					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+						return __umulh( x, y );
+					}
 #else
 					constexpr auto mask =
 					  ( std::uint64_t( 1 ) << 32 ) - std::uint64_t( 1 );
@@ -746,14 +745,17 @@ namespace daw::jkj::dragonbox {
 				divisible_by_power_of_2( UInt x, unsigned exp ) noexcept {
 					assert( exp >= 1 );
 					assert( x != 0 );
+					return daw::cxmath::count_trailing_zeros( x ) >= exp;
+					/*
 #if JKJ_HAS_COUNTR_ZERO_INTRINSIC
 					return bits::countr_zero( x ) >= int( exp );
 #else
 					if( exp >= int( value_bits<UInt> ) ) {
-						return false;
+					  return false;
 					}
 					return x == ( ( x >> exp ) << exp );
 #endif
+					 */
 				}
 
 				// Replace n by floor(n / 5^N)
@@ -2902,7 +2904,7 @@ namespace daw::jkj::dragonbox {
 						return k;
 					}( );
 
-					auto t = bits::countr_zero( n );
+					auto t = static_cast<int>( daw::cxmath::count_trailing_zeros( n ) ); // bits::countr_zero( n );
 					if( t > max_power ) {
 						t = max_power;
 					}
