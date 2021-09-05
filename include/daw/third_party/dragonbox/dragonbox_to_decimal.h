@@ -317,56 +317,56 @@ namespace daw::jkj::dragonbox {
 				/*
 				template<class UInt>
 				[[nodiscard]] inline constexpr int countr_zero( UInt n ) noexcept {
-					if( DAW_UNLIKELY( n == 0 ) ) {
-						return sizeof( UInt ) * CHAR_BIT;
-					}
-					static_assert( std::is_unsigned_v<UInt> and value_bits<UInt> <= 64 );
+				  if( DAW_UNLIKELY( n == 0 ) ) {
+				    return sizeof( UInt ) * CHAR_BIT;
+				  }
+				  static_assert( std::is_unsigned_v<UInt> and value_bits<UInt> <= 64 );
 #if( defined( __GNUC__ ) or defined( __clang__ ) ) and defined( __x86_64__ )
 #define JKJ_HAS_COUNTR_ZERO_INTRINSIC 1
-					if constexpr( std::is_same_v<UInt, unsigned long> ) {
-						return __builtin_ctzl( n );
-					} else if constexpr( std::is_same_v<UInt, unsigned long long> ) {
-						return __builtin_ctzll( n );
-					} else {
-						static_assert( sizeof( UInt ) <= sizeof( unsigned ) );
-						return __builtin_ctz( static_cast<unsigned>( n ) );
-					}
+				  if constexpr( std::is_same_v<UInt, unsigned long> ) {
+				    return __builtin_ctzl( n );
+				  } else if constexpr( std::is_same_v<UInt, unsigned long long> ) {
+				    return __builtin_ctzll( n );
+				  } else {
+				    static_assert( sizeof( UInt ) <= sizeof( unsigned ) );
+				    return __builtin_ctz( static_cast<unsigned>( n ) );
+				  }
 #elif defined( _MSC_VER ) and defined( _M_X64 )
 #define JKJ_HAS_COUNTR_ZERO_INTRINSIC 1
-					if constexpr( std::is_same_v<UInt, unsigned __int64> ) {
-						return int( _tzcnt_u64( n ) );
-					} else {
-						static_assert( sizeof( UInt ) <= sizeof( unsigned ) );
-						return int( _tzcnt_u32( (unsigned)n ) );
-					}
+				  if constexpr( std::is_same_v<UInt, unsigned __int64> ) {
+				    return int( _tzcnt_u64( n ) );
+				  } else {
+				    static_assert( sizeof( UInt ) <= sizeof( unsigned ) );
+				    return int( _tzcnt_u32( (unsigned)n ) );
+				  }
 #else
 #define JKJ_HAS_COUNTR_ZERO_INTRINSIC 0
-					int count = int( value_bits<UInt> );
+				  int count = int( value_bits<UInt> );
 
-					auto n32 = std::uint32_t( n );
-					if constexpr( value_bits < UInt >> 32 ) {
-						if( n32 == 0 ) {
-							n32 = std::uint32_t( n >> 32 );
-						} else if( n == n32 ) {
-							count -= static_cast<int>( value_bits<UInt> - 32 );
-						}
-					}
-					if constexpr( value_bits < UInt >> 16 ) {
-						if( ( n32 & 0x0000ffff ) != 0 )
-							count -= 16;
-					}
-					if constexpr( value_bits < UInt >> 8 ) {
-						if( ( n32 & 0x00ff00ff ) != 0 )
-							count -= 8;
-					}
-					if( ( n32 & 0x0f0f0f0f ) != 0 )
-						count -= 4;
-					if( ( n32 & 0x33333333 ) != 0 )
-						count -= 2;
-					if( ( n32 & 0x55555555 ) != 0 )
-						count -= 1;
+				  auto n32 = std::uint32_t( n );
+				  if constexpr( value_bits < UInt >> 32 ) {
+				    if( n32 == 0 ) {
+				      n32 = std::uint32_t( n >> 32 );
+				    } else if( n == n32 ) {
+				      count -= static_cast<int>( value_bits<UInt> - 32 );
+				    }
+				  }
+				  if constexpr( value_bits < UInt >> 16 ) {
+				    if( ( n32 & 0x0000ffff ) != 0 )
+				      count -= 16;
+				  }
+				  if constexpr( value_bits < UInt >> 8 ) {
+				    if( ( n32 & 0x00ff00ff ) != 0 )
+				      count -= 8;
+				  }
+				  if( ( n32 & 0x0f0f0f0f ) != 0 )
+				    count -= 4;
+				  if( ( n32 & 0x33333333 ) != 0 )
+				    count -= 2;
+				  if( ( n32 & 0x55555555 ) != 0 )
+				    count -= 1;
 
-					return count;
+				  return count;
 #endif
 				}
 				 */
@@ -458,7 +458,27 @@ namespace daw::jkj::dragonbox {
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-#elif defined( _MSC_VER ) and defined( _M_X64 )
+#elif defined( _MSC_VER ) and defined( _M_X64 ) and \
+  defined( DAW_IS_CONSTANT_EVALUATED )
+					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+						constexpr auto mask =
+						  ( std::uint64_t( 1 ) << 32 ) - std::uint64_t( 1 );
+
+						auto a = x >> 32;
+						auto b = x & mask;
+						auto c = y >> 32;
+						auto d = y & mask;
+
+						auto ac = a * c;
+						auto bc = b * c;
+						auto ad = a * d;
+						auto bd = b * d;
+
+						auto intermediate = ( bd >> 32 ) + ( ad & mask ) + ( bc & mask );
+
+						return { ac + ( intermediate >> 32 ) + ( ad >> 32 ) + ( bc >> 32 ),
+						         ( intermediate << 32 ) + ( bd & mask ) };
+					}
 					uint128 result;
 					result.low_ = _umul128( x, y, &result.high_ );
 					return result;
@@ -2904,7 +2924,8 @@ namespace daw::jkj::dragonbox {
 						return k;
 					}( );
 
-					auto t = static_cast<int>( daw::cxmath::count_trailing_zeros( n ) ); // bits::countr_zero( n );
+					auto t = static_cast<int>(
+					  daw::cxmath::count_trailing_zeros( n ) ); // bits::countr_zero( n );
 					if( t > max_power ) {
 						t = max_power;
 					}
