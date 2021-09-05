@@ -519,7 +519,24 @@ namespace daw::jkj::dragonbox {
 #endif
 #elif defined( DAW_IS_CONSTANT_EVALUATED ) and defined( _MSC_VER ) and \
   defined( _M_X64 )
-					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+						constexpr auto mask =
+						  ( std::uint64_t( 1 ) << 32 ) - std::uint64_t( 1 );
+
+						auto a = x >> 32;
+						auto b = x & mask;
+						auto c = y >> 32;
+						auto d = y & mask;
+
+						auto ac = a * c;
+						auto bc = b * c;
+						auto ad = a * d;
+						auto bd = b * d;
+
+						auto intermediate = ( bd >> 32 ) + ( ad & mask ) + ( bc & mask );
+
+						return ac + ( intermediate >> 32 ) + ( ad >> 32 ) + ( bc >> 32 );
+					} else {
 						return __umulh( x, y );
 					}
 #else
