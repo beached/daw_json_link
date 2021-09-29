@@ -624,17 +624,17 @@ namespace daw::json {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 
-				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+				if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
 					// This relies on non-trivial dtor's being allowed.  So C++20
 					// constexpr or not in a constant expression.  It does allow for
 					// construction of classes without move/copy special members
-					if constexpr( not KnownBounds ) {
-						auto const run_after_parse =
-						  trim_left_cleanup<ParseState>{ parse_state };
-						(void)run_after_parse;
+					if constexpr( KnownBounds ) {
 						return json_data_contract_trait_t<element_t>::parse_to_class(
 						  parse_state, template_arg<JsonMember> );
 					} else {
+						auto const run_after_parse =
+						  trim_left_cleanup<ParseState>{ parse_state };
+						(void)run_after_parse;
 						return json_data_contract_trait_t<element_t>::parse_to_class(
 						  parse_state, template_arg<JsonMember> );
 					}
@@ -1166,7 +1166,7 @@ namespace daw::json {
 							                      parse_state );
 						}
 						++ClassIdx;
-						if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+						if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
 							auto const run_after_parse = daw::on_exit_success(
 							  [&] { parse_state.move_next_member_or_end( ); } );
 							(void)run_after_parse;
@@ -1189,7 +1189,7 @@ namespace daw::json {
 				parse_state.trim_left( );
 
 				std::size_t class_idx = 0;
-				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+				if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
 					auto const run_after_parse = ordered_class_cleanup<
 					  json_details::all_json_members_must_exist_v<JsonMember, ParseState>,
 					  ParseState, decltype( old_class_pos )>{ parse_state,

@@ -237,7 +237,7 @@ $(function() {
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160; </div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        <span class="keyword">auto</span> <a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a> = m_state;</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160; </div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <span class="keywordflow">if</span> constexpr( json_details::is_guaranteed_rvo_v&lt;ParsePolicy&gt; ) {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <span class="keywordflow">if</span> constexpr( json_details::use_direct_construction_v&lt;ParsePolicy&gt; ) {</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> run_after_parse =</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;            op_star_cleanup&lt;CharT, ParseState&gt;{ <a class="code" href="daw__json__iterator_8h.html#a3d0dbfee825ad0eb1e13aea4f5b24df7">m_can_skip</a>, <a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a> };</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;          (void)run_after_parse;</div>

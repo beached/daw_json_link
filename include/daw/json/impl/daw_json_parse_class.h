@@ -114,7 +114,8 @@ namespace daw::json {
 					if constexpr( NeedsClassPositions ) {
 						auto const cf = parse_state.class_first;
 						auto const cl = parse_state.class_last;
-						if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+						if constexpr( use_direct_construction_v<
+						                ParseState, without_name<JsonMember>> ) {
 							auto const after_parse = daw::on_scope_exit( [&] {
 								parse_state.class_first = cf;
 								parse_state.class_last = cl;
@@ -242,7 +243,12 @@ namespace daw::json {
 					  json_details::all_json_members_must_exist_v<T, ParseState>>(
 					  parse_state, old_class_pos );
 
-					return construct_value( template_args<T, Constructor>, parse_state );
+					if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
+						return T{ };
+					} else {
+						return construct_value( template_args<T, Constructor>,
+						                        parse_state );
+					}
 				} else {
 					using NeedClassPositions = std::bool_constant<(
 					  ( JsonMembers::must_be_class_member or ... ) )>;
@@ -254,7 +260,7 @@ namespace daw::json {
 					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
 #endif
 
-					if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+					if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
 						auto const run_after_parse = class_cleanup<
 						  json_details::all_json_members_must_exist_v<T, ParseState>,
 						  ParseState, decltype( old_class_pos )>{ parse_state,
@@ -329,7 +335,7 @@ namespace daw::json {
 
 				size_t current_idx = 0;
 
-				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+				if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
 					auto const run_after_parse = ordered_class_cleanup<
 					  json_details::all_json_members_must_exist_v<T, ParseState>,
 					  ParseState, decltype( old_class_pos )>{ parse_state,

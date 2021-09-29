@@ -53,11 +53,11 @@ namespace daw::jkj::dragonbox {
 	inline namespace DAW_JSON_VER {
 		namespace detail {
 			template<class T>
-			constexpr std::size_t physical_bits =
+			inline constexpr std::size_t physical_bits =
 			  sizeof( T ) * std::numeric_limits<unsigned char>::digits;
 
 			template<class T>
-			constexpr std::size_t value_bits =
+			inline constexpr std::size_t value_bits =
 			  std::numeric_limits<std::enable_if_t<std::is_unsigned_v<T>, T>>::digits;
 		} // namespace detail
 
@@ -309,69 +309,6 @@ namespace daw::jkj::dragonbox {
 		ieee754_bits( T ) -> ieee754_bits<T>;
 
 		namespace detail {
-			////////////////////////////////////////////////////////////////////////////////////////
-			// Bit operation intrinsics
-			////////////////////////////////////////////////////////////////////////////////////////
-
-			namespace bits {
-				/*
-				template<class UInt>
-				[[nodiscard]] inline constexpr int countr_zero( UInt n ) noexcept {
-				  if( DAW_UNLIKELY( n == 0 ) ) {
-				    return sizeof( UInt ) * CHAR_BIT;
-				  }
-				  static_assert( std::is_unsigned_v<UInt> and value_bits<UInt> <= 64 );
-#if( defined( __GNUC__ ) or defined( __clang__ ) ) and defined( __x86_64__ )
-#define JKJ_HAS_COUNTR_ZERO_INTRINSIC 1
-				  if constexpr( std::is_same_v<UInt, unsigned long> ) {
-				    return __builtin_ctzl( n );
-				  } else if constexpr( std::is_same_v<UInt, unsigned long long> ) {
-				    return __builtin_ctzll( n );
-				  } else {
-				    static_assert( sizeof( UInt ) <= sizeof( unsigned ) );
-				    return __builtin_ctz( static_cast<unsigned>( n ) );
-				  }
-#elif defined( _MSC_VER ) and defined( _M_X64 )
-#define JKJ_HAS_COUNTR_ZERO_INTRINSIC 1
-				  if constexpr( std::is_same_v<UInt, unsigned __int64> ) {
-				    return int( _tzcnt_u64( n ) );
-				  } else {
-				    static_assert( sizeof( UInt ) <= sizeof( unsigned ) );
-				    return int( _tzcnt_u32( (unsigned)n ) );
-				  }
-#else
-#define JKJ_HAS_COUNTR_ZERO_INTRINSIC 0
-				  int count = int( value_bits<UInt> );
-
-				  auto n32 = std::uint32_t( n );
-				  if constexpr( value_bits < UInt >> 32 ) {
-				    if( n32 == 0 ) {
-				      n32 = std::uint32_t( n >> 32 );
-				    } else if( n == n32 ) {
-				      count -= static_cast<int>( value_bits<UInt> - 32 );
-				    }
-				  }
-				  if constexpr( value_bits < UInt >> 16 ) {
-				    if( ( n32 & 0x0000ffff ) != 0 )
-				      count -= 16;
-				  }
-				  if constexpr( value_bits < UInt >> 8 ) {
-				    if( ( n32 & 0x00ff00ff ) != 0 )
-				      count -= 8;
-				  }
-				  if( ( n32 & 0x0f0f0f0f ) != 0 )
-				    count -= 4;
-				  if( ( n32 & 0x33333333 ) != 0 )
-				    count -= 2;
-				  if( ( n32 & 0x55555555 ) != 0 )
-				    count -= 1;
-
-				  return count;
-#endif
-				}
-				 */
-			} // namespace bits
-
 			////////////////////////////////////////////////////////////////////////////////////////
 			// Utilities for wide unsigned integer arithmetic
 			////////////////////////////////////////////////////////////////////////////////////////
@@ -651,21 +588,21 @@ namespace daw::jkj::dragonbox {
 					                         shift_amount );
 				}
 
-				static constexpr std::uint64_t log10_2_fractional_digits{
+				inline constexpr std::uint64_t log10_2_fractional_digits{
 				  0x4d10'4d42'7de7'fbcc };
-				static constexpr std::uint64_t log10_4_over_3_fractional_digits{
+				inline constexpr std::uint64_t log10_4_over_3_fractional_digits{
 				  0x1ffb'fc2b'bc78'0375 };
-				constexpr std::size_t floor_log10_pow2_shift_amount = 22;
+				inline constexpr std::size_t floor_log10_pow2_shift_amount = 22;
 
-				static constexpr std::uint64_t log2_10_fractional_digits{
+				inline constexpr std::uint64_t log2_10_fractional_digits{
 				  0x5269'e12f'346e'2bf9 };
-				constexpr std::size_t floor_log2_pow10_shift_amount = 19;
+				inline constexpr std::size_t floor_log2_pow10_shift_amount = 19;
 
-				static constexpr std::uint64_t log5_2_fractional_digits{
+				inline constexpr std::uint64_t log5_2_fractional_digits{
 				  0x6e40'd1a4'143d'cb94 };
-				static constexpr std::uint64_t log5_3_fractional_digits{
+				inline constexpr std::uint64_t log5_3_fractional_digits{
 				  0xaebf'4791'5d44'3b24 };
-				constexpr std::size_t floor_log5_pow2_shift_amount = 20;
+				inline constexpr std::size_t floor_log5_pow2_shift_amount = 20;
 
 				// For constexpr computation
 				// Returns -1 when n = 0
@@ -2291,80 +2228,78 @@ namespace daw::jkj::dragonbox {
 
 		namespace policy {
 			namespace sign {
-				static inline constexpr auto ignore =
-				  detail::policy_impl::sign::ignore{ };
-				static inline constexpr auto return_sign =
+				inline constexpr auto ignore = detail::policy_impl::sign::ignore{ };
+				inline constexpr auto return_sign =
 				  detail::policy_impl::sign::return_sign{ };
 			} // namespace sign
 
 			namespace trailing_zero {
-				static inline constexpr auto ignore =
+				inline constexpr auto ignore =
 				  detail::policy_impl::trailing_zero::ignore{ };
-				static inline constexpr auto remove =
+				inline constexpr auto remove =
 				  detail::policy_impl::trailing_zero::remove{ };
-				static inline constexpr auto report =
+				inline constexpr auto report =
 				  detail::policy_impl::trailing_zero::report{ };
 			} // namespace trailing_zero
 
 			namespace rounding_mode {
-				static inline constexpr auto nearest_to_even =
+				inline constexpr auto nearest_to_even =
 				  detail::policy_impl::rounding_mode::nearest_to_even{ };
-				static inline constexpr auto nearest_to_odd =
+				inline constexpr auto nearest_to_odd =
 				  detail::policy_impl::rounding_mode::nearest_to_odd{ };
-				static inline constexpr auto nearest_toward_plus_infinity =
+				inline constexpr auto nearest_toward_plus_infinity =
 				  detail::policy_impl::rounding_mode::nearest_toward_plus_infinity{ };
-				static inline constexpr auto nearest_toward_minus_infinity =
+				inline constexpr auto nearest_toward_minus_infinity =
 				  detail::policy_impl::rounding_mode::nearest_toward_minus_infinity{ };
-				static inline constexpr auto nearest_toward_zero =
+				inline constexpr auto nearest_toward_zero =
 				  detail::policy_impl::rounding_mode::nearest_toward_zero{ };
-				static inline constexpr auto nearest_away_from_zero =
+				inline constexpr auto nearest_away_from_zero =
 				  detail::policy_impl::rounding_mode::nearest_away_from_zero{ };
 
-				static inline constexpr auto nearest_to_even_static_boundary = detail::
+				inline constexpr auto nearest_to_even_static_boundary = detail::
 				  policy_impl::rounding_mode::nearest_to_even_static_boundary{ };
-				static inline constexpr auto nearest_to_odd_static_boundary =
+				inline constexpr auto nearest_to_odd_static_boundary =
 				  detail::policy_impl::rounding_mode::nearest_to_odd_static_boundary{ };
-				static inline constexpr auto
-				  nearest_toward_plus_infinity_static_boundary = detail::policy_impl::
-				    rounding_mode::nearest_toward_plus_infinity_static_boundary{ };
-				static inline constexpr auto
-				  nearest_toward_minus_infinity_static_boundary = detail::policy_impl::
-				    rounding_mode::nearest_toward_minus_infinity_static_boundary{ };
+				inline constexpr auto nearest_toward_plus_infinity_static_boundary =
+				  detail::policy_impl::rounding_mode::
+				    nearest_toward_plus_infinity_static_boundary{ };
+				inline constexpr auto nearest_toward_minus_infinity_static_boundary =
+				  detail::policy_impl::rounding_mode::
+				    nearest_toward_minus_infinity_static_boundary{ };
 
-				static inline constexpr auto toward_plus_infinity =
+				inline constexpr auto toward_plus_infinity =
 				  detail::policy_impl::rounding_mode::toward_plus_infinity{ };
-				static inline constexpr auto toward_minus_infinity =
+				inline constexpr auto toward_minus_infinity =
 				  detail::policy_impl::rounding_mode::toward_minus_infinity{ };
-				static inline constexpr auto toward_zero =
+				inline constexpr auto toward_zero =
 				  detail::policy_impl::rounding_mode::toward_zero{ };
-				static inline constexpr auto away_from_zero =
+				inline constexpr auto away_from_zero =
 				  detail::policy_impl::rounding_mode::away_from_zero{ };
 			} // namespace rounding_mode
 
 			namespace correct_rounding {
-				static inline constexpr auto do_not_care =
+				inline constexpr auto do_not_care =
 				  detail::policy_impl::correct_rounding::do_not_care{ };
-				static inline constexpr auto to_even =
+				inline constexpr auto to_even =
 				  detail::policy_impl::correct_rounding::to_even{ };
-				static inline constexpr auto to_odd =
+				inline constexpr auto to_odd =
 				  detail::policy_impl::correct_rounding::to_odd{ };
-				static inline constexpr auto away_from_zero =
+				inline constexpr auto away_from_zero =
 				  detail::policy_impl::correct_rounding::away_from_zero{ };
-				static inline constexpr auto toward_zero =
+				inline constexpr auto toward_zero =
 				  detail::policy_impl::correct_rounding::toward_zero{ };
 			} // namespace correct_rounding
 
 			namespace cache {
-				static inline constexpr auto normal =
-				  detail::policy_impl::cache::normal{ };
-				static inline constexpr auto compressed =
+				inline constexpr auto normal = detail::policy_impl::cache::normal{ };
+				inline constexpr auto compressed =
 				  detail::policy_impl::cache::compressed{ };
 			} // namespace cache
 
 			namespace input_validation {
-				static inline constexpr auto assert_finite =
+				inline constexpr auto assert_finite =
 				  detail::policy_impl::input_validation::assert_finite{ };
-				static inline constexpr auto do_nothing =
+				inline constexpr auto do_nothing =
 				  detail::policy_impl::input_validation::do_nothing{ };
 			} // namespace input_validation
 		}   // namespace policy

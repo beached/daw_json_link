@@ -190,7 +190,6 @@ int main( int argc, char **argv )
 		  return result / static_cast<float>( lats.size( ) );
 	  },
 	  json_data );
-
 	std::cout << "mid_lat2 of all is: " << mid_lat2 << '\n';
 }
 #ifdef DAW_USE_EXCEPTIONS

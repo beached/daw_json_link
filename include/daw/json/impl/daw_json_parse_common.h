@@ -952,6 +952,16 @@ namespace daw::json {
 			  json_details::is_a_json_type_v<T>, has_json_link_quick_map_v<T>,
 			  is_container_v<T>>::type;
 
+			/***
+			 * Some types cannot use construct_value or dont needed it.
+			 */
+			template<typename ParsePolicy, typename JsonMember>
+			inline constexpr bool use_direct_construction_v =
+			  ParsePolicy::exec_tag_t::always_rvo or
+			  ( not ParsePolicy::has_allocator and
+			    is_default_constructor_v<
+			      typename json_deduced_type<JsonMember>::constructor_t> );
+
 			template<typename T>
 			using has_json_deduced_type = daw::not_trait<
 			  std::is_same<json_deduced_type<T>, missing_json_data_contract_for<T>>>;

@@ -227,6 +227,16 @@ namespace daw::json {
 			}
 		};
 
+		template<typename, typename = void>
+		struct is_default_constructor : std::false_type {};
+
+		template<typename T>
+		struct is_default_constructor<default_constructor<T>> : std::true_type {};
+
+		template<typename T>
+		inline constexpr bool is_default_constructor_v =
+		  is_default_constructor<T>::value;
+
 		namespace json_details {
 			template<typename>
 			struct is_std_allocator : std::false_type {};
