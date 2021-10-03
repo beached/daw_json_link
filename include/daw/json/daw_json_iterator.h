@@ -29,7 +29,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		inline namespace {
 			template<typename CharT, typename ParseState>
 			struct op_star_cleanup {
@@ -333,5 +333,5 @@ namespace daw::json {
 				return m_first == m_last;
 			}
 		};
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

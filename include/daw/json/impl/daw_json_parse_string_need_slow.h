@@ -13,8 +13,8 @@
 #include <cstddef>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
-		namespace json_details DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			/***
 			 * When skip_string encounters escaping, it will note this as a non-zero
 			 * value
@@ -24,5 +24,5 @@ namespace daw::json {
 				return static_cast<std::ptrdiff_t>( parse_state.counter ) >= 0;
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

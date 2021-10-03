@@ -17,7 +17,7 @@
 #include <utility>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		/// The tags used by the parser to determine what parser to call.
 		enum class JsonParseTypes : std::uint_fast8_t {
 			Real,          /// Number - Floating Point
@@ -95,7 +95,7 @@ namespace daw::json {
 		 */
 		inline constexpr JsonNullable JsonNullDefault = JsonNullable::Nullable;
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<JsonNullable nullable>
 			using is_nullable_json_value =
 			  std::bool_constant<nullable != JsonNullable::MustExist>;
@@ -110,7 +110,7 @@ namespace daw::json {
 			inline constexpr JsonParseTypes get_parse_type_v =
 			  json_details::is_nullable_json_value_v<Nullable> ? JsonParseTypes::Null
 			                                                   : ParseType;
-		} // namespace details
+		} // namespace DAW_ATTRIB_HIDDEN
 
 		/**
 		 * Tag lookup for parsing overload selection
@@ -118,5 +118,5 @@ namespace daw::json {
 		template<JsonParseTypes v>
 		using ParseTag = daw::constant<v>;
 
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

@@ -12,7 +12,7 @@
 #include "version.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		/***
 		 * Allows for alternate mappings of types.
 		 * @tparam C Base type to map to
@@ -31,5 +31,5 @@ namespace daw::json {
 		 */
 		template<typename T, std::size_t I>
 		struct default_constructor<json_alt<T, I>> : default_constructor<T> {};
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

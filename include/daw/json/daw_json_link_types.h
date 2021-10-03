@@ -23,7 +23,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		/**
 		 *
 		 * @tparam JsonMembers JSON classes that map the relation ship from the json
@@ -202,7 +202,7 @@ namespace daw::json {
 		  [[deprecated( "Use json_tuple_member, removal in v4" )]] =
 		    json_tuple_member<Index, JsonMember>;
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<typename JsonMember>
 			using json_tuple_member_wrapper =
 			  std::conditional_t<is_an_ordered_member_v<JsonMember>, JsonMember,
@@ -2083,5 +2083,5 @@ std::pair<typename json_key_t::parse_to_t const,
 		template<typename T>
 		using json_link_no_name =
 		  json_details::ensure_mapped_t<json_details::json_deduced_type<T>>;
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

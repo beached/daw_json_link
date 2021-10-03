@@ -21,8 +21,8 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
-		namespace json_details DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			[[nodiscard]] inline constexpr UInt8 to_nibble( unsigned char chr ) {
 				int const b = static_cast<int>( chr );
 				int const maskLetter = ( ( '9' - b ) >> 31 );
@@ -70,7 +70,7 @@ namespace daw::json {
 					cp = ( cp - 0xD800U ) * 0x400U;
 					++first;
 					daw_json_assert_weak(
-						(parse_state.last - first >= 5) and *first == 'u',
+					  ( parse_state.last - first >= 5 ) and *first == 'u',
 					  ErrorReason::InvalidUTFEscape,
 					  parse_state ); // Expected parse_state to start with a \\u
 					++first;
@@ -316,5 +316,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

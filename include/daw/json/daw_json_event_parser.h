@@ -23,9 +23,9 @@
 #include <vector>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		enum json_parse_handler_result { Continue, SkipClassArray, Complete };
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			struct handler_result_holder {
 				json_parse_handler_result value = json_parse_handler_result::Continue;
 
@@ -561,5 +561,5 @@ namespace daw::json {
 			return json_event_parser( basic_json_value<ParsePolicy>( json_document ),
 			                          DAW_FWD2( Handler, handler ) );
 		}
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

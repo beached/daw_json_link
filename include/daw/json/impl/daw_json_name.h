@@ -20,7 +20,7 @@
 #include <utility>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		// If the compiler supports CNTTP types allow for strings in json data
 		// contracts.  Both support passing local char const[], but the type is
 		// different.  To keep old behaviour when using C++20, define
@@ -102,7 +102,7 @@ namespace daw::json {
 		inline constexpr JSONNAMETYPE no_name{ "\a" };
 		inline constexpr daw::string_view no_name_sv = daw::string_view( no_name );
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			inline constexpr JSONNAMETYPE default_key_name{ "key" };
 			inline constexpr JSONNAMETYPE default_value_name{ "value" };
 		} // namespace json_details
@@ -112,19 +112,19 @@ namespace daw::json {
 		// Convenience for array members that are required to be unnamed
 		inline constexpr char const no_name[] = "\a";
 		inline constexpr daw::string_view no_name_sv = daw::string_view( no_name );
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 
 			inline constexpr char const default_key_name[] = "key";
 			inline constexpr char const default_value_name[] = "value";
 
 		} // namespace json_details
 #endif
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<typename JsonMember>
 			using is_no_name = std::bool_constant<( JsonMember::name == no_name_sv )>;
 
 			template<typename JsonMember>
 			inline constexpr bool is_no_name_v = is_no_name<JsonMember>::value;
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

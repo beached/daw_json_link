@@ -26,7 +26,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		struct NoCommentSkippingPolicy final {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
@@ -366,5 +366,5 @@ namespace daw::json {
 				DAW_UNREACHABLE( );
 			}
 		};
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

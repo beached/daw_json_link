@@ -24,7 +24,7 @@
 #include <cstdint>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		namespace parse_utils {
 			template<typename Result, std::size_t count>
 			constexpr Result parse_unsigned( char const *digit_str ) {
@@ -435,5 +435,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace datetime
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

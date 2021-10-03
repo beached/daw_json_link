@@ -26,8 +26,8 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
-		namespace json_details DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<bool skip_end_check, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE inline constexpr void
 			parse_digits_until_last( char const *first, char const *const last,
@@ -442,5 +442,5 @@ namespace daw::json {
 				                static_cast<Result>( significant_digits ), exponent );
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

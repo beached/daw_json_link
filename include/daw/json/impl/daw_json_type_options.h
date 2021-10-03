@@ -12,7 +12,7 @@
 #include "daw_json_option_bits.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		/***
 		 * Control whether a type can be missing or null.
 		 * MustExist - members make it an error if their value is null or they are
@@ -20,7 +20,7 @@ namespace daw::json {
 		 * Nullable - members can have a value of null or be missing
 		 * NullVisible - members must exist but can have a value of null
 		 */
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<JsonNullable> = 2;
 
@@ -37,7 +37,7 @@ namespace daw::json {
 		 */
 		enum class LiteralAsStringOpt : unsigned { Never, Maybe, Always }; // 2bits
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<LiteralAsStringOpt> = 2;
 
@@ -51,7 +51,7 @@ namespace daw::json {
 		 */
 		enum class JsonRangeCheck : unsigned { Never, CheckForNarrowing }; // 1bit
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<JsonRangeCheck> = 1;
 
@@ -71,7 +71,7 @@ namespace daw::json {
 			AllowNanInf
 		};
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<JsonNumberErrors> = 2;
 
@@ -89,7 +89,7 @@ namespace daw::json {
 			// Decimal
 		};
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<FPOutputFormat> = 2;
 
@@ -131,7 +131,7 @@ namespace daw::json {
 		 */
 		enum class EmptyStringNull : unsigned { no, yes }; // 1bit
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<EmptyStringNull> = 1;
 
@@ -145,7 +145,7 @@ namespace daw::json {
 			AllowFull = true
 		}; // 1bit
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<EightBitModes> = 1;
 
@@ -177,7 +177,7 @@ namespace daw::json {
 			NotBeforeDblQuote, /// There will never be a \" sequence inside the
 			                   /// string.  This allows very fast parsing
 		};
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<AllowEscapeCharacter> =
 			  1;
@@ -236,7 +236,7 @@ namespace daw::json {
 		 */
 		enum class JsonCustomTypes : unsigned { String, Literal, Any }; // 2 bits
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<JsonCustomTypes> = 2;
 
@@ -258,5 +258,5 @@ namespace daw::json {
 		json_custom_opt( Options... options ) {
 			return json_custom_opts_t::options( options... );
 		}
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

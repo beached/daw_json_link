@@ -17,7 +17,7 @@
 #include <string_view>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		/**
 		 * Construct the JSONMember from the JSON document argument.
 		 * @tparam JsonMember any bool, arithmetic, string, string_view,
@@ -35,7 +35,8 @@ namespace daw::json {
 		         bool KnownBounds = false,
 		         typename Result = json_details::from_json_result_t<JsonMember>,
 		         typename String>
-		[[maybe_unused, nodiscard]] constexpr auto from_json( String &&json_data )
+		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC auto
+		from_json( String &&json_data )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>;
 
 		/**
@@ -163,5 +164,5 @@ namespace daw::json {
 		from_json_array( String &&json_data, std::string_view member_path = "" )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
 		                      Container>;
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

@@ -13,7 +13,7 @@
 #include "impl/version.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		/**
 		 *
 		 * @tparam OutputIterator Iterator to character data to
@@ -26,7 +26,7 @@ namespace daw::json {
 		  typename Value,
 		  typename JsonClass = typename json_details::json_deduced_type<Value>,
 		  typename OutputIterator>
-		[[maybe_unused]] constexpr OutputIterator to_json( Value const &value,
+		[[maybe_unused]] constexpr DAW_ATTRIB_PUBLIC OutputIterator to_json( Value const &value,
 		                                                   OutputIterator out_it );
 
 		/**
@@ -43,9 +43,9 @@ namespace daw::json {
 		  typename Result = std::string, typename Value,
 		  typename JsonClass = typename json_details::json_deduced_type<Value>,
 		  typename SerializationPolicy = use_default_serialization_policy>
-		[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value );
+		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC Result to_json( Value const &value );
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			/***
 			 * Tag type to indicate that the element of a Container is not being
 			 * specified.  This is the default.
@@ -64,7 +64,7 @@ namespace daw::json {
 		 */
 		template<typename JsonElement = json_details::auto_detect_array_element,
 		         typename Container, typename OutputIterator>
-		[[maybe_unused]] constexpr OutputIterator
+		[[maybe_unused]] constexpr DAW_ATTRIB_PUBLIC OutputIterator
 		to_json_array( Container const &c, OutputIterator out_it );
 
 		/**
@@ -79,6 +79,6 @@ namespace daw::json {
 		         typename JsonElement = json_details::auto_detect_array_element,
 		         typename SerializationPolicy = use_default_serialization_policy,
 		         typename Container>
-		[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c );
-	} // namespace DAW_JSON_VER
+		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC Result to_json_array( Container &&c );
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

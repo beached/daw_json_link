@@ -20,7 +20,7 @@
 #include <string_view>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		/**
 		 * Construct the JSONMember from the JSON document argument.
 		 * @tparam JsonMember any bool, arithmetic, string, string_view,
@@ -33,7 +33,8 @@ namespace daw::json {
 		 */
 		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
 		         typename Result, typename String>
-		[[maybe_unused, nodiscard]] constexpr auto from_json( String &&json_data )
+		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC auto
+		from_json( String &&json_data )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
 			daw_json_assert( std::data( json_data ) != nullptr,
@@ -435,5 +436,5 @@ namespace daw::json {
 				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
 			}
 		}
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

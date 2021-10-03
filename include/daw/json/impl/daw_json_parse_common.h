@@ -35,14 +35,14 @@
 #include <vector>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 
 		struct json_deduce_type;
 
 		template<typename ParseState>
 		class basic_json_value;
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<typename T>
 			using ordered_member_subtype_test = typename T::json_member;
 
@@ -439,7 +439,7 @@ namespace daw::json {
 			using json_raw_null = json_raw<T, Constructor, JsonNullDefault>;
 		} // namespace json_base
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<typename T>
 			inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
 				static_assert( daw::is_arithmetic<T>::value, "Unexpected non-number" );
@@ -998,5 +998,5 @@ namespace daw::json {
 			inline constexpr bool has_dependent_member_v =
 			  daw::is_detected_v<dependent_member_t, JsonMember>;
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

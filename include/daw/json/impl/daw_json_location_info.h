@@ -26,8 +26,8 @@
 #endif
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
-		namespace json_details DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<bool FullNameMatch, typename CharT>
 			struct location_info_t {
 				daw::string_view name;
@@ -291,6 +291,6 @@ namespace daw::json {
 					  locations[pos].get_range( template_arg<ParseState> ), known };
 				}
 			}
-		} // namespace DAW_ATTRIB_HIDDEN
-	}   // namespace DAW_JSON_VER
+		} // namespace json_details
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

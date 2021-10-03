@@ -28,8 +28,8 @@
 #endif
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
-		namespace json_details DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
+		namespace json_details {
 			struct missing_member {
 				char const *member_name;
 
@@ -107,7 +107,7 @@ namespace daw::json {
 			TrailingComma
 		};
 
-		constexpr std::string_view reason_message( ErrorReason er ) {
+		constexpr DAW_ATTRIB_PUBLIC std::string_view reason_message( ErrorReason er ) {
 			using namespace std::string_view_literals;
 			switch( er ) {
 			case ErrorReason::Unknown:
@@ -230,7 +230,7 @@ namespace daw::json {
 		class json_exception_impl;
 
 		template<>
-		class json_exception_impl DAW_JSON_EXCEPTION_PARENT {
+		class DAW_ATTRIB_PUBLIC json_exception_impl DAW_JSON_EXCEPTION_PARENT {
 			ErrorReason m_reason = ErrorReason::Unknown;
 			union data_t {
 				char const *pointer;
@@ -331,7 +331,7 @@ namespace daw::json {
 		 * @param je json_exception to be formatted
 		 * @return string representation of json_exception
 		 */
-		inline std::string
+		inline DAW_ATTRIB_PUBLIC std::string
 		to_formatted_string( json_exception const &je,
 		                     char const *json_document = nullptr ) {
 			using namespace std::string_literals;
@@ -363,7 +363,7 @@ namespace daw::json {
 #endif
 			return result;
 		}
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json
 #if defined( DAW_JSON_EXCEPTION_PARENT )
 #undef DAW_JSON_EXCEPTION_PARENT

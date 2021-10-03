@@ -20,8 +20,8 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
-		namespace json_details DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<typename ParseState, bool>
 			struct json_parse_array_iterator_base {
 				using iterator_category = std::input_iterator_tag;
@@ -165,5 +165,5 @@ namespace daw::json {
 				}
 			};
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

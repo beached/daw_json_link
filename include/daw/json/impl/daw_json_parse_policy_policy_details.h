@@ -13,7 +13,7 @@
 #include <daw/daw_attributes.h>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		namespace parse_policy_details {
 			template<char... keys>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool in( char c ) {
@@ -122,5 +122,5 @@ namespace daw::json {
 				return false;
 			}
 		} // namespace parse_policy_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

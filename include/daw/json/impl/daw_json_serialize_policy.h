@@ -20,7 +20,7 @@
 #include <iterator>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		/***
 		 * Create the parser options flag for BasicParsePolicy
 		 * @tparam Policies Policy types that satisfy the `is_policy_flag` trait.
@@ -50,8 +50,7 @@ namespace daw::json {
 			std::size_t indentation_level = 0;
 
 			constexpr serialization_policy( OutputIterator it )
-			  : json_details::iterator_wrapper<OutputIterator>{ DAW_MOVE( it ) } {
-			}
+			  : json_details::iterator_wrapper<OutputIterator>{ DAW_MOVE( it ) } {}
 
 			static constexpr SerializationFormat serialization_format =
 			  json_details::serialization::get_bits_for<SerializationFormat>(
@@ -121,5 +120,5 @@ namespace daw::json {
 		template<typename OutputIterator, json_details::json_options_t PolicyFlags>
 		struct is_serialization_policy<
 		  serialization_policy<OutputIterator, PolicyFlags>> : std::true_type {};
-	} // namespace DAW_JSON_VER
+	} // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

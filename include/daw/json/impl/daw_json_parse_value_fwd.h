@@ -15,8 +15,8 @@
 #include <ciso646>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
-		namespace json_details DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
@@ -136,5 +136,5 @@ namespace daw::json {
 			inline constexpr bool can_random_v = IsKnown;
 #endif
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

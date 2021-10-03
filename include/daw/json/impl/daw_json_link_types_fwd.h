@@ -28,7 +28,7 @@
 #include <string>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		/**
 		 * NOTE:
 		 * Some of the basic json types used for deduction are in
@@ -449,7 +449,7 @@ namespace daw::json {
 		              json_details::json_custom_opts_set<
 		                Options, JsonCustomTypes::Literal, JsonNullDefault>>;
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<JsonBaseParseTypes PT>
 			constexpr std::size_t
 			find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
@@ -546,7 +546,7 @@ namespace daw::json {
 			                     typename tuple_types_list<
 			                       detected_underlying_nullable_type<Tuple>>::type,
 			                     cannot_deduce_tuple_types_list<Nullable, Tuple>>>;
-		} // namespace DAW_ATTRIB_HIDDEN
+		} // namespace json_details
 
 		/***
 		 * Link to a variant like data type.  The JSON member can be any one of the
@@ -681,7 +681,7 @@ typename json_details::json_deduced_type<JsonElement>::parse_to_t>,*/
 		             json_details::tuple_opts_set<Options, JsonNullDefault>,
 		             JsonTupleTypesList>;
 
-		namespace json_details DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<typename T>
 			struct ensure_mapped {
 				static_assert( is_a_json_type_v<T>,
@@ -692,5 +692,5 @@ typename json_details::json_deduced_type<JsonElement>::parse_to_t>,*/
 			template<typename T>
 			using ensure_mapped_t = typename ensure_mapped<T>::type;
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

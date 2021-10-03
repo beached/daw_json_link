@@ -17,7 +17,7 @@
 #include <iterator>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		namespace json_details DAW_ATTRIB_PUBLIC {
 			template<typename OutputIterator>
 			struct iterator_wrapper : OutputIterator {
@@ -285,5 +285,5 @@ namespace daw::json {
 			    "        ";
 
 		} // namespace json_details::serialization
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

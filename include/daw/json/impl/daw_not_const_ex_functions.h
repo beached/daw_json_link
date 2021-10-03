@@ -36,8 +36,8 @@
 #include <cstring>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
-		namespace json_details DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			DAW_ATTRIB_INLINE inline constexpr bool
 			is_escaped( char const *ptr, char const *min_ptr ) {
 				if( *( ptr - 1 ) != '\\' ) {
@@ -446,5 +446,5 @@ namespace daw::json {
 				return first;
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

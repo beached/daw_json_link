@@ -17,8 +17,8 @@
 #include <ciso646>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
-		namespace json_details DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			namespace name::name_parser {
 				/*
 				 * end of string " -> name value separating : -> any white space
@@ -211,5 +211,5 @@ namespace daw::json {
 				return std::pair{ true, parse_state };
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json

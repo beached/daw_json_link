@@ -18,8 +18,8 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
-		namespace json_details DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+		namespace json_details {
 			template<typename T>
 			using is_opted_into_json_iostreams =
 			  typename json_data_contract<T>::opt_into_iostreams;
@@ -36,7 +36,7 @@ namespace daw::json {
 			inline constexpr bool is_container_opted_into_json_iostreams_v =
 			  daw::is_detected<is_container_opted_into_json_iostreams, T>::value;
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	}   // namespace DAW_ATTRIB_HIDDEN
 } // namespace daw::json
 
 template<typename T>
