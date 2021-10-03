@@ -30,8 +30,8 @@
 #include <iterator>
 #include <type_traits>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		/***
 		 * Handles the bounds and policy items for parsing execution and comments.
 		 * @tparam PolicyFlags set via parse_options method to change compile time

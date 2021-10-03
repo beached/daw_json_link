@@ -22,8 +22,8 @@
 #include <optional>
 #include <string_view>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		template<JsonNullable>
 		struct construct_from_iso8601_timestamp {
 			using result_type =

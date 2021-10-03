@@ -20,8 +20,8 @@
 
 #include <ciso646>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		/***
 		 * Allow skipping C++ style comments in JSON document
 		 */

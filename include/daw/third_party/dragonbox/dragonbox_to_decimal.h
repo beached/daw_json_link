@@ -49,8 +49,8 @@
 #include <intrin.h> // this includes immintrin.h as well
 #endif
 
-namespace daw::jkj::dragonbox DAW_ATTRIB_HIDDEN {
-	inline namespace DAW_JSON_VER {
+namespace daw::jkj::dragonbox {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		namespace detail {
 			template<class T>
 			inline constexpr std::size_t physical_bits =
@@ -3365,8 +3365,8 @@ namespace daw::jkj::dragonbox DAW_ATTRIB_HIDDEN {
 				}
 			} );
 		}
-	} // namespace DAW_JSON_VER
-} // namespace daw::jkj::dragonboxDAW_ATTRIB_HIDDEN
+	} // namespace DAW_ATTRIB_HIDDEN
+} // namespace daw::jkj::dragonbox
 
 #undef JKJ_HAS_COUNTR_ZERO_INTRINSIC
 #undef JKJ_SAFEBUFFERS

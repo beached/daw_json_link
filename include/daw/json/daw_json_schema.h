@@ -14,8 +14,8 @@
 #include "impl/daw_json_serialize_policy.h"
 #include "impl/to_daw_json_string.h"
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace utils {
 			template<typename OutputIterator>
 			inline constexpr OutputIterator output_kv( OutputIterator it,

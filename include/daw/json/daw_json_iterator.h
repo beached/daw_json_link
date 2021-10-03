@@ -28,8 +28,8 @@
 #include <string_view>
 #include <type_traits>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		inline namespace {
 			template<typename CharT, typename ParseState>
 			struct op_star_cleanup {

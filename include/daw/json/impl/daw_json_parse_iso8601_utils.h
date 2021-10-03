@@ -23,8 +23,8 @@
 #include <ciso646>
 #include <cstdint>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace parse_utils {
 			template<typename Result, std::size_t count>
 			constexpr Result parse_unsigned( char const *digit_str ) {

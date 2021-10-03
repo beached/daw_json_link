@@ -25,8 +25,8 @@
 #include <iostream>
 #endif
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<bool FullNameMatch, typename CharT>
 			struct location_info_t {

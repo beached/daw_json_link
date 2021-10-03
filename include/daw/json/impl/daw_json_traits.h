@@ -29,8 +29,8 @@
  * Customization point traits
  *
  */
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			using has_op_bool_test =

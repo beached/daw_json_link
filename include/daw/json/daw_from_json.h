@@ -19,8 +19,8 @@
 #include <iterator>
 #include <string_view>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		/**
 		 * Construct the JSONMember from the JSON document argument.
 		 * @tparam JsonMember any bool, arithmetic, string, string_view,

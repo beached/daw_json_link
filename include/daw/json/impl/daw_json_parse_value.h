@@ -40,8 +40,8 @@
 #define CPP20CONSTEXPR
 #endif
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace json_details DAW_ATTRIB_HIDDEN {
 			/***
 			 * Depending on the type of literal, it may always be quoted, sometimes,

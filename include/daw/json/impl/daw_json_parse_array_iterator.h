@@ -19,8 +19,8 @@
 #include <ciso646>
 #include <type_traits>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename ParseState, bool>
 			struct json_parse_array_iterator_base {

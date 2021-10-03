@@ -27,8 +27,8 @@
 #include <optional>
 #include <string>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		/**
 		 * NOTE:
 		 * Some of the basic json types used for deduction are in

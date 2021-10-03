@@ -12,8 +12,8 @@
 #include "impl/daw_json_serialize_policy.h"
 #include "impl/version.h"
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		/**
 		 *
 		 * @tparam OutputIterator Iterator to character data to

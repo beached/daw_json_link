@@ -15,8 +15,8 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace json_details DAW_ATTRIB_HIDDEN {
 			inline constexpr auto is_digit = []( char c ) -> daw::UInt8 {
 				return static_cast<unsigned>( static_cast<unsigned char>( c ) ) -

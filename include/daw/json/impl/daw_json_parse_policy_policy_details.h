@@ -12,8 +12,8 @@
 
 #include <daw/daw_attributes.h>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace parse_policy_details {
 			template<char... keys>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool in( char c ) {

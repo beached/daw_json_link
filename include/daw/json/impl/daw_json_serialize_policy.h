@@ -19,8 +19,8 @@
 #include <cstddef>
 #include <iterator>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		/***
 		 * Create the parser options flag for BasicParsePolicy
 		 * @tparam Policies Policy types that satisfy the `is_policy_flag` trait.

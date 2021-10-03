@@ -24,8 +24,8 @@
 #include <utility>
 #include <vector>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename ParseState>
 			struct basic_stateful_json_value_state {

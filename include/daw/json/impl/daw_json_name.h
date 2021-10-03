@@ -19,8 +19,8 @@
 #include <string_view>
 #include <utility>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		// If the compiler supports CNTTP types allow for strings in json data
 		// contracts.  Both support passing local char const[], but the type is
 		// different.  To keep old behaviour when using C++20, define

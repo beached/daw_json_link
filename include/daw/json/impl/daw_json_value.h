@@ -25,8 +25,8 @@
 #include <string_view>
 #include <tuple>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		/***
 		 * A container for arbitrary JSON values
 		 * @tparam ParseState see IteratorRange
@@ -96,8 +96,8 @@ namespace std {
 	  : public std::integral_constant<std::size_t, 2> {};
 } // namespace std
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		/***
 		 * Iterator for iterating over arbitrary JSON members and array elements
 		 * @tparam ParseState see IteratorRange

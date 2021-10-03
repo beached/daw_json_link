@@ -22,8 +22,8 @@
 #include <cstdint>
 #include <utility>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		/***
 		 * Allow for different optimizations.  Currently only the compile_time path
 		 * is fully supported. The others may offer faster parsing. The default is

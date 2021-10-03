@@ -11,8 +11,8 @@
 #include "daw_json_traits.h"
 #include "version.h"
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		/***
 		 * Allows for alternate mappings of types.
 		 * @tparam C Base type to map to

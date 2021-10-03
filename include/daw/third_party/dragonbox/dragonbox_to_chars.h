@@ -22,8 +22,8 @@
 
 #include <daw/daw_algorithm.h>
 
-namespace daw::jkj::dragonbox DAW_ATTRIB_HIDDEN {
-	inline namespace DAW_JSON_VER {
+namespace daw::jkj::dragonbox {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
 		namespace to_chars_detail {
 			inline char *to_chars( unsigned_fp_t<float> v, char *buffer );
 			inline char *to_chars( unsigned_fp_t<double> v, char *buffer );
@@ -89,5 +89,5 @@ namespace daw::jkj::dragonbox DAW_ATTRIB_HIDDEN {
 			*ptr = '\0';
 			return ptr;
 		}
-	} // namespace DAW_JSON_VER
-} // namespace daw::jkj::dragonboxDAW_ATTRIB_HIDDEN
+	} // namespace DAW_ATTRIB_HIDDEN
+} // namespace daw::jkj::dragonbox

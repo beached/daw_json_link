@@ -20,8 +20,8 @@
 #include <string_view>
 #include <type_traits>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		template<typename Value, typename JsonClass, typename OutputIterator>
 		[[maybe_unused]] constexpr OutputIterator to_json( Value const &value,
 		                                                   OutputIterator out_it ) {

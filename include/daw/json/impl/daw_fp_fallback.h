@@ -17,8 +17,8 @@
 #include <charconv>
 #endif
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace json_details DAW_ATTRIB_HIDDEN {
 
 			template<typename Real, std::enable_if_t<std::is_floating_point_v<Real>,

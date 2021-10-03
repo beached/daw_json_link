@@ -20,8 +20,8 @@
 #include <string>
 #include <type_traits>
 
-namespace daw::json DAW_ATTRIB_PUBLIC {
-	inline namespace DAW_JSON_VER {
+namespace daw::json {
+	inline namespace DAW_JSON_VER DAW_ATTRIB_PUBLIC {
 		namespace json_details DAW_ATTRIB_HIDDEN {
 			[[nodiscard]] inline constexpr UInt8 to_nibble( unsigned char chr ) {
 				int const b = static_cast<int>( chr );
