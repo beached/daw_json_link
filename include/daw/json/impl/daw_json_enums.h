@@ -17,7 +17,7 @@
 #include <utility>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/// The tags used by the parser to determine what parser to call.
 		enum class JsonParseTypes : std::uint_fast8_t {
 			Real,          /// Number - Floating Point

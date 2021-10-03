@@ -23,7 +23,7 @@
 #include <utility>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/***
 		 * Allow for different optimizations.  Currently only the compile_time path
 		 * is fully supported. The others may offer faster parsing. The default is
@@ -331,5 +331,5 @@ namespace daw::json {
 			}
 			return result;
 		}
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

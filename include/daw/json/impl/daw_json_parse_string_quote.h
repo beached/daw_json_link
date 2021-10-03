@@ -20,7 +20,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		namespace json_details::string_quote {
 			template<std::size_t N, char c>
 			inline constexpr UInt8 test_at_byte( UInt64 b ) {

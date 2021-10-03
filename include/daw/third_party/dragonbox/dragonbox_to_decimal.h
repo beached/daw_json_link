@@ -50,7 +50,7 @@
 #endif
 
 namespace daw::jkj::dragonbox {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		namespace detail {
 			template<class T>
 			inline constexpr std::size_t physical_bits =

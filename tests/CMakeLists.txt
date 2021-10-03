@@ -204,8 +204,7 @@ target_link_libraries(nativejson_bench_basic PRIVATE twitter_parser_cx_ch geojso
 add_test(NAME nativejson_bench_basic COMMAND nativejson_bench_basic ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_bench_basic)
 
-
-if (DAW_USE_EXCEPTIONS AND NOT (DEFINED MSVC AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"))
+if (DAW_USE_EXCEPTIONS AND NOT DEFINED MSVC AND NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
     add_executable(nativejson_bench_nanobench src/nativejson_bench_nanobench.cpp)
     target_link_libraries(nativejson_bench_nanobench PRIVATE twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test nanobench fmt::fmt)
 endif ()

@@ -19,7 +19,7 @@
 #include <utility>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		namespace json_details {
 
 			template<typename T, std::size_t Capacity>
@@ -176,5 +176,5 @@ namespace daw::json {
 				return it;
 			}
 		} // namespace json_details
-	}   // namespace DAW_ATTRIB_HIDDEN
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

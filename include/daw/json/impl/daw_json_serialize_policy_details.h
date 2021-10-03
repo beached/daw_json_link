@@ -17,8 +17,8 @@
 #include <iterator>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
-		namespace json_details DAW_ATTRIB_PUBLIC {
+	inline namespace DAW_JSON_VER {
+		namespace json_details {
 			template<typename OutputIterator>
 			struct iterator_wrapper : OutputIterator {
 				inline constexpr OutputIterator get( ) const {

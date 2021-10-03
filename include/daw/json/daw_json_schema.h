@@ -15,7 +15,7 @@
 #include "impl/to_daw_json_string.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		namespace utils {
 			template<typename OutputIterator>
 			inline constexpr OutputIterator output_kv( OutputIterator it,
@@ -812,5 +812,5 @@ namespace daw::json {
 			(void)to_json_schema<T>( policy( iter_t( result ) ), id, title );
 			return result;
 		}
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

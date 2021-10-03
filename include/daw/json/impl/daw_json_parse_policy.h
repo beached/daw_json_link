@@ -31,7 +31,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/***
 		 * Handles the bounds and policy items for parsing execution and comments.
 		 * @tparam PolicyFlags set via parse_options method to change compile time
@@ -650,5 +650,5 @@ namespace daw::json {
 		using ConformancePolicy = BasicParsePolicy<parse_options(
 		  AllowEscapedNames::yes, MustVerifyEndOfDataIsValid::yes,
 		  IEEE754Precise::yes, ExcludeSpecialEscapes::yes )>;
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

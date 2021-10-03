@@ -13,7 +13,7 @@
 #include "impl/version.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/**
 		 *
 		 * @tparam OutputIterator Iterator to character data to
@@ -26,8 +26,8 @@ namespace daw::json {
 		  typename Value,
 		  typename JsonClass = typename json_details::json_deduced_type<Value>,
 		  typename OutputIterator>
-		[[maybe_unused]] constexpr DAW_ATTRIB_PUBLIC OutputIterator to_json( Value const &value,
-		                                                   OutputIterator out_it );
+		[[maybe_unused]] constexpr DAW_ATTRIB_PUBLIC OutputIterator
+		to_json( Value const &value, OutputIterator out_it );
 
 		/**
 		 * Serialize a value to JSON.  Some types(std::string, string_view.
@@ -43,7 +43,8 @@ namespace daw::json {
 		  typename Result = std::string, typename Value,
 		  typename JsonClass = typename json_details::json_deduced_type<Value>,
 		  typename SerializationPolicy = use_default_serialization_policy>
-		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC Result to_json( Value const &value );
+		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC Result
+		to_json( Value const &value );
 
 		namespace json_details {
 			/***
@@ -79,6 +80,7 @@ namespace daw::json {
 		         typename JsonElement = json_details::auto_detect_array_element,
 		         typename SerializationPolicy = use_default_serialization_policy,
 		         typename Container>
-		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC Result to_json_array( Container &&c );
-	} // namespace DAW_ATTRIB_HIDDEN
+		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC Result
+		to_json_array( Container &&c );
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

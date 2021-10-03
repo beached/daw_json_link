@@ -15,7 +15,7 @@
 #include <string_view>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		struct constexpr_exec_tag {
 			static constexpr std::string_view name = "constexpr";
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )

@@ -41,7 +41,7 @@
 #endif
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			/***
 			 * Depending on the type of literal, it may always be quoted, sometimes,

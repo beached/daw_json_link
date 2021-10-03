@@ -30,7 +30,7 @@
  *
  */
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename T>
 			using has_op_bool_test =
@@ -763,5 +763,5 @@ namespace daw::json {
 			  typename std::conditional_t<is_nullable_json_value_v<Nullable>,
 			                              unwrapped_impl::unwrapped_t_impl<T>, T>;
 		} // namespace json_details
-	}   // namespace DAW_ATTRIB_HIDDEN
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

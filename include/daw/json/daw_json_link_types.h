@@ -23,7 +23,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/**
 		 *
 		 * @tparam JsonMembers JSON classes that map the relation ship from the json
@@ -2083,5 +2083,5 @@ std::pair<typename json_key_t::parse_to_t const,
 		template<typename T>
 		using json_link_no_name =
 		  json_details::ensure_mapped_t<json_details::json_deduced_type<T>>;
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

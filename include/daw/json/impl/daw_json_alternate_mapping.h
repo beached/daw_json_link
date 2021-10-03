@@ -12,7 +12,7 @@
 #include "version.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/***
 		 * Allows for alternate mappings of types.
 		 * @tparam C Base type to map to

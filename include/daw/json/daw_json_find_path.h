@@ -26,7 +26,7 @@
 #include <vector>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		class json_path_node;
 
 		[[nodiscard]] inline std::vector<json_path_node>
@@ -324,5 +324,5 @@ namespace daw::json {
 		find_column_number_of( json_path_node const &node, char const *doc_start ) {
 			return find_column_number_of( node.value_start( ), doc_start );
 		}
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

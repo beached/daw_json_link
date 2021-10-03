@@ -23,7 +23,7 @@
 #include <vector>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		enum json_parse_handler_result { Continue, SkipClassArray, Complete };
 		namespace json_details {
 			struct handler_result_holder {
@@ -561,5 +561,5 @@ namespace daw::json {
 			return json_event_parser( basic_json_value<ParsePolicy>( json_document ),
 			                          DAW_FWD2( Handler, handler ) );
 		}
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

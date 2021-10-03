@@ -18,7 +18,7 @@
 #include <utility>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			using json_options_t = std::uint32_t;
 

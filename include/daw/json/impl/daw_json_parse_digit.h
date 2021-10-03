@@ -13,7 +13,7 @@
 #include <daw/daw_attributes.h>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			DAW_ATTRIB_FLATINLINE [[nodiscard]] static inline constexpr unsigned
 			parse_digit( char c ) {

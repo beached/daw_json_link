@@ -107,7 +107,8 @@ namespace daw::json {
 			TrailingComma
 		};
 
-		constexpr DAW_ATTRIB_PUBLIC std::string_view reason_message( ErrorReason er ) {
+		constexpr DAW_ATTRIB_PUBLIC std::string_view
+		reason_message( ErrorReason er ) {
 			using namespace std::string_view_literals;
 			switch( er ) {
 			case ErrorReason::Unknown:
@@ -363,7 +364,7 @@ namespace daw::json {
 #endif
 			return result;
 		}
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json
 #if defined( DAW_JSON_EXCEPTION_PARENT )
 #undef DAW_JSON_EXCEPTION_PARENT

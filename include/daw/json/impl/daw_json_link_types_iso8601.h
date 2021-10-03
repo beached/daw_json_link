@@ -23,7 +23,7 @@
 #include <string_view>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		template<JsonNullable>
 		struct construct_from_iso8601_timestamp {
 			using result_type =

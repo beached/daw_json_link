@@ -12,7 +12,7 @@
 #include "version.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/***
 		 * Choose whether to produce minified or pretty output
 		 */

@@ -26,7 +26,7 @@
 #include <tuple>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/***
 		 * A container for arbitrary JSON values
 		 * @tparam ParseState see IteratorRange
@@ -75,7 +75,7 @@ namespace daw::json {
 				return DAW_MOVE( parse_state.value );
 			}
 		}
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json
 
 namespace std {
@@ -97,7 +97,7 @@ namespace std {
 } // namespace std
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/***
 		 * Iterator for iterating over arbitrary JSON members and array elements
 		 * @tparam ParseState see IteratorRange
@@ -595,5 +595,5 @@ namespace daw::json {
 			template<typename T>
 			inline constexpr bool is_string_view_like_v<basic_json_value<T>> = false;
 		}
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

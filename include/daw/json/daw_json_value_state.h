@@ -25,7 +25,7 @@
 #include <vector>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename ParseState>
 			struct basic_stateful_json_value_state {
@@ -371,5 +371,5 @@ namespace daw::json {
 
 		using json_value_state =
 		  basic_stateful_json_value<NoCommentSkippingPolicyChecked>;
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

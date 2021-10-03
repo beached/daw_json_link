@@ -21,7 +21,7 @@
 #include <ciso646>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/***
 		 * Allow skipping C++ style comments in JSON document
 		 */
@@ -337,5 +337,5 @@ namespace daw::json {
 				DAW_UNREACHABLE( );
 			}
 		};
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -12,7 +12,7 @@
 #include "daw_json_option_bits.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER DAW_ATTRIB_HIDDEN {
+	inline namespace DAW_JSON_VER {
 		/***
 		 * Control whether a type can be missing or null.
 		 * MustExist - members make it an error if their value is null or they are
@@ -258,5 +258,5 @@ namespace daw::json {
 		json_custom_opt( Options... options ) {
 			return json_custom_opts_t::options( options... );
 		}
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json
