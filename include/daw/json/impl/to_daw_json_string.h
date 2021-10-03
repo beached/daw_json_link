@@ -37,9 +37,9 @@
 #include <type_traits>
 #include <variant>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<FPOutputFormat fp_output_format, typename OutputIterator,
 			         typename Real>
 			constexpr OutputIterator to_chars( Real const &value,
@@ -77,7 +77,7 @@ namespace daw::json {
 			inline constexpr bool has_to_string_v = has_to_string<T>::value;
 
 		} // namespace json_details::to_strings
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			using from_string_test = decltype( from_string(
 			  std::declval<daw::tag_t<T>>( ), std::declval<std::string_view>( ) ) );
@@ -218,7 +218,7 @@ namespace daw::json {
 			}
 		};
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename JsonMember, typename OutputIterator,
 			         typename parse_to_t>
 			[[nodiscard]] inline OutputIterator constexpr to_daw_json_string(
@@ -566,7 +566,7 @@ namespace daw::json {
 			}
 		} // namespace utils
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename JsonMember, typename OutputIterator,
 			         typename parse_to_t>
 			[[nodiscard]] constexpr OutputIterator
@@ -905,7 +905,7 @@ namespace daw::json {
 			}
 		} // namespace utils
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename JsonMember, typename OutputIterator,
 			         typename parse_to_t>
 			[[nodiscard]] inline constexpr OutputIterator

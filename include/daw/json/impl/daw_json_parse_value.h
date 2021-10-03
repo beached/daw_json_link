@@ -40,9 +40,9 @@
 #define CPP20CONSTEXPR
 #endif
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			/***
 			 * Depending on the type of literal, it may always be quoted, sometimes,
 			 * or never.  This method handles the always and sometimes cases.
@@ -1583,6 +1583,6 @@ namespace daw::json {
 					    ParseTag<cur_json_class_t::base_expected_type>{ } ) );
 				}
 			}
-		} // namespace json_details
+		} // namespace DAW_ATTRIB_HIDDEN
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

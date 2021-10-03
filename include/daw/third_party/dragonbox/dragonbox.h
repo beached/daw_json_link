@@ -44,7 +44,7 @@
 
 #include <daw/daw_algorithm.h>
 
-namespace daw::jkj::dragonbox {
+namespace daw::jkj::dragonbox DAW_ATTRIB_HIDDEN {
 	inline namespace DAW_JSON_VER {
 		namespace to_chars_detail {
 			inline constexpr char radix_100_table[] = {
@@ -296,4 +296,4 @@ namespace daw::jkj::dragonbox {
 			}
 		} // namespace to_chars_detail
 	}   // namespace DAW_JSON_VER
-} // namespace daw::jkj::dragonbox
+} // namespace daw::jkj::dragonboxDAW_ATTRIB_HIDDEN

@@ -11,7 +11,7 @@
 #include "daw_json_option_bits.h"
 #include "version.h"
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		/***
 		 * Choose whether to produce minified or pretty output
@@ -23,7 +23,7 @@ namespace daw::json {
 			Pretty
 		}; // 1bit
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<SerializationFormat> = 1;
 
@@ -55,7 +55,7 @@ namespace daw::json {
 			Space8,
 		};
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<IndentationType> = 3;
 
@@ -77,7 +77,7 @@ namespace daw::json {
 			OnlyAllow7bitsStrings
 		};
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<RestrictedStringOutput> =
 			  1;
@@ -89,7 +89,7 @@ namespace daw::json {
 
 		enum class NewLineDelimiter : unsigned { n, rn };
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<NewLineDelimiter> = 1;
 
@@ -99,7 +99,7 @@ namespace daw::json {
 		} // namespace json_details
 
 		enum class OutputTrailingComma : unsigned { No, Yes };
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<OutputTrailingComma> = 1;
 

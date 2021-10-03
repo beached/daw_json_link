@@ -22,10 +22,10 @@
 #include <utility>
 #include <vector>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		enum json_parse_handler_result { Continue, SkipClassArray, Complete };
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			struct handler_result_holder {
 				json_parse_handler_result value = json_parse_handler_result::Continue;
 

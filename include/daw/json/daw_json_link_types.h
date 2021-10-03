@@ -22,7 +22,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		/**
 		 *
@@ -202,7 +202,7 @@ namespace daw::json {
 		  [[deprecated( "Use json_tuple_member, removal in v4" )]] =
 		    json_tuple_member<Index, JsonMember>;
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename JsonMember>
 			using json_tuple_member_wrapper =
 			  std::conditional_t<is_an_ordered_member_v<JsonMember>, JsonMember,

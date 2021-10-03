@@ -25,7 +25,7 @@
 #include <string_view>
 #include <tuple>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		/***
 		 * A container for arbitrary JSON values
@@ -96,7 +96,7 @@ namespace std {
 	  : public std::integral_constant<std::size_t, 2> {};
 } // namespace std
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		/***
 		 * Iterator for iterating over arbitrary JSON members and array elements
@@ -591,7 +591,7 @@ namespace daw::json {
 		template<typename ParseState>
 		basic_json_value( ParseState ) -> basic_json_value<ParseState>;
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			inline constexpr bool is_string_view_like_v<basic_json_value<T>> = false;
 		}

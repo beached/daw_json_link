@@ -16,9 +16,9 @@
 
 #include <ciso646>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			namespace name::name_parser {
 				/*
 				 * end of string " -> name value separating : -> any white space

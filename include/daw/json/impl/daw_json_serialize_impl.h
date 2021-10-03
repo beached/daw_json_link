@@ -18,9 +18,9 @@
 #include <cstddef>
 #include <utility>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 
 			template<typename T, std::size_t Capacity>
 			struct basic_array_t {

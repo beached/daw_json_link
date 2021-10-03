@@ -25,7 +25,7 @@
 #include <string_view>
 #include <vector>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		class json_path_node;
 

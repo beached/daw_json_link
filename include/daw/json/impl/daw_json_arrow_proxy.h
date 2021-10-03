@@ -9,9 +9,9 @@
 
 #include "version.h"
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			struct arrow_proxy {
 				T value;

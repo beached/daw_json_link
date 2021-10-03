@@ -18,9 +18,9 @@
 
 #include <ciso646>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename ParseState, bool>
 			struct json_parse_kv_array_iterator_base {
 				using iterator_category = std::input_iterator_tag;
@@ -155,6 +155,6 @@ namespace daw::json {
 					return not( lhs == rhs );
 				}
 			};
-		} // namespace json_details
+		} // namespace DAW_ATTRIB_HIDDEN
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

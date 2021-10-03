@@ -23,7 +23,7 @@
 #include <ciso646>
 #include <cstdint>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		namespace parse_utils {
 			template<typename Result, std::size_t count>

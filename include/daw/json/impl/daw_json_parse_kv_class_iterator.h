@@ -19,9 +19,9 @@
 #include <cstddef>
 #include <iterator>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename ParseState, bool>
 			struct json_parse_kv_class_iterator_base {
 				using iterator_category = std::input_iterator_tag;

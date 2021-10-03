@@ -27,7 +27,7 @@
 #include <optional>
 #include <string>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		/**
 		 * NOTE:
@@ -449,8 +449,7 @@ namespace daw::json {
 		              json_details::json_custom_opts_set<
 		                Options, JsonCustomTypes::Literal, JsonNullDefault>>;
 
-		namespace json_details {
-
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<JsonBaseParseTypes PT>
 			constexpr std::size_t
 			find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
@@ -547,7 +546,7 @@ namespace daw::json {
 			                     typename tuple_types_list<
 			                       detected_underlying_nullable_type<Tuple>>::type,
 			                     cannot_deduce_tuple_types_list<Nullable, Tuple>>>;
-		} // namespace json_details
+		} // namespace DAW_ATTRIB_HIDDEN
 
 		/***
 		 * Link to a variant like data type.  The JSON member can be any one of the
@@ -682,7 +681,7 @@ typename json_details::json_deduced_type<JsonElement>::parse_to_t>,*/
 		             json_details::tuple_opts_set<Options, JsonNullDefault>,
 		             JsonTupleTypesList>;
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			struct ensure_mapped {
 				static_assert( is_a_json_type_v<T>,

@@ -34,7 +34,7 @@
 #include <string_view>
 #include <vector>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 
 		struct json_deduce_type;
@@ -42,7 +42,7 @@ namespace daw::json {
 		template<typename ParseState>
 		class basic_json_value;
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			using ordered_member_subtype_test = typename T::json_member;
 
@@ -439,7 +439,7 @@ namespace daw::json {
 			using json_raw_null = json_raw<T, Constructor, JsonNullDefault>;
 		} // namespace json_base
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
 				static_assert( daw::is_arithmetic<T>::value, "Unexpected non-number" );
@@ -957,10 +957,12 @@ namespace daw::json {
 			 */
 			template<typename ParsePolicy, typename JsonMember>
 			inline constexpr bool use_direct_construction_v =
-			  ParsePolicy::exec_tag_t::always_rvo or
+			  ParsePolicy::exec_tag_t::always_rvo;
+			// TODO DAW implement this so that it work
+			/* or
 			  ( not ParsePolicy::has_allocator and
 			    is_default_constructor_v<
-			      typename json_deduced_type<JsonMember>::constructor_t> );
+			      typename json_deduced_type<JsonMember>::constructor_t> );*/
 
 			template<typename T>
 			using has_json_deduced_type = daw::not_trait<

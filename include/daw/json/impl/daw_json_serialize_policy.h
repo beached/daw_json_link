@@ -19,7 +19,7 @@
 #include <cstddef>
 #include <iterator>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		/***
 		 * Create the parser options flag for BasicParsePolicy

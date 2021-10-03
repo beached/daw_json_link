@@ -31,9 +31,9 @@
 #endif
 #endif
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename Signed, typename Unsigned>
 			constexpr Signed to_signed( Unsigned &&u, Signed sign ) {
 				using unsigned_t = daw::remove_cvref_t<Unsigned>;

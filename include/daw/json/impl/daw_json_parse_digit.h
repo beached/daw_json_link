@@ -12,9 +12,9 @@
 
 #include <daw/daw_attributes.h>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			DAW_ATTRIB_FLATINLINE [[nodiscard]] static inline constexpr unsigned
 			parse_digit( char c ) {
 				return static_cast<unsigned>(
@@ -29,6 +29,6 @@ namespace daw::json {
 				static inline constexpr unsigned plus_char = parse_digit( '+' );
 				static inline constexpr unsigned minus_char = parse_digit( '-' );
 			} // namespace parsed_constants
-		}   // namespace json_details
+		}   // namespace DAW_ATTRIB_HIDDEN
 	}     // namespace DAW_JSON_VER
 } // namespace daw::json

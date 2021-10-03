@@ -16,7 +16,7 @@
 #include <ciso646>
 #include <string_view>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		/**
 		 * Construct the JSONMember from the JSON document argument.

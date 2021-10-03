@@ -30,7 +30,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		/***
 		 * Handles the bounds and policy items for parsing execution and comments.
@@ -559,7 +559,7 @@ namespace daw::json {
 		using NoCommentZeroSkippingPolicyUnchecked = BasicParsePolicy<parse_options(
 		  CheckedParseMode::no, ZeroTerminatedString::yes )>;
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename>
 			struct exec_mode_from_tag_t;
 

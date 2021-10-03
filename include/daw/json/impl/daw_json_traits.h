@@ -29,9 +29,9 @@
  * Customization point traits
  *
  */
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			using has_op_bool_test =
 			  decltype( static_cast<bool>( std::declval<T>( ) ) );
@@ -99,7 +99,7 @@ namespace daw::json {
 			// clang-format on
 		} // namespace json_details
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename JsonMember>
 			using without_name = typename JsonMember::without_name;
 
@@ -138,7 +138,7 @@ namespace daw::json {
 		using test_valid_json_data_contract_trait_t =
 		  typename json_data_contract_trait_t<T>::i_am_a_json_member_list;
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			using json_map_alias_test =
 			  typename json_data_contract_trait_t<T>::i_am_a_json_map_alias;
@@ -179,7 +179,7 @@ namespace daw::json {
 		inline constexpr bool force_aggregate_construction_v =
 		  force_aggregate_construction<T>::value;
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			T uneval_func( );
 		}
@@ -237,7 +237,7 @@ namespace daw::json {
 		inline constexpr bool is_default_constructor_v =
 		  is_default_constructor<T>::value;
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename>
 			struct is_std_allocator : std::false_type {};
 
@@ -437,7 +437,7 @@ namespace daw::json {
 		struct can_single_allocation_string<
 		  std::basic_string<Char, CharTrait, Allocator>> : std::true_type {};
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			using json_type_t = typename T::i_am_a_json_type;
 
@@ -550,7 +550,7 @@ namespace daw::json {
 		inline constexpr bool is_zero_terminated_string_v =
 		  is_zero_terminated_string<T>::value;
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename ParsePolicy, auto Option>
 			using apply_policy_option_t =
 			  typename ParsePolicy::template SetPolicyOptions<Option>;
@@ -607,7 +607,7 @@ namespace daw::json {
 		template<typename>
 		struct ignore_unknown_members : std::false_type {};
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			using has_exact_mapping_trait_in_class_map =
 			  typename json_data_contract<T>::exact_class_mapping;
@@ -636,7 +636,7 @@ namespace daw::json {
 		  daw::is_detected<json_details::has_exact_mapping_trait_in_class_map,
 		                   T>>::value;
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T, typename ParseState>
 			inline constexpr bool all_json_members_must_exist_v =
 			  not ignore_unknown_members_v<T> and
@@ -701,7 +701,7 @@ namespace daw::json {
 			}
 		};
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			using tuple_test = typename tuple_elements_pack<T>::type;
 

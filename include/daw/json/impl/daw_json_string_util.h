@@ -25,9 +25,9 @@
 #define DAW_CAN_CONSTANT_EVAL( ... ) true
 #endif
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			/// Search for a character in a string.
 			/// \tparam c character to find in string
 			/// \tparam ExecTag The current execution policy

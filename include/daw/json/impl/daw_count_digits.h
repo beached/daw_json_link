@@ -15,9 +15,9 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			inline constexpr auto is_digit = []( char c ) -> daw::UInt8 {
 				return static_cast<unsigned>( static_cast<unsigned char>( c ) ) -
 				             static_cast<unsigned>(
@@ -87,6 +87,6 @@ namespace daw::json {
 				}
 				return first;
 			}
-		} // namespace json_details
+		} // namespace DAW_ATTRIB_HIDDEN
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -28,9 +28,9 @@
 #include <ciso646>
 #include <iterator>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			/***
 			 * Skip a string, after the initial quote has been skipped already
 			 */

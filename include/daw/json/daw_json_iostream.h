@@ -17,9 +17,9 @@
 #include <iostream>
 #include <type_traits>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename T>
 			using is_opted_into_json_iostreams =
 			  typename json_data_contract<T>::opt_into_iostreams;

@@ -19,7 +19,7 @@
 #include <string_view>
 #include <utility>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		// If the compiler supports CNTTP types allow for strings in json data
 		// contracts.  Both support passing local char const[], but the type is
@@ -102,7 +102,7 @@ namespace daw::json {
 		inline constexpr JSONNAMETYPE no_name{ "\a" };
 		inline constexpr daw::string_view no_name_sv = daw::string_view( no_name );
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			inline constexpr JSONNAMETYPE default_key_name{ "key" };
 			inline constexpr JSONNAMETYPE default_value_name{ "value" };
 		} // namespace json_details
@@ -112,14 +112,14 @@ namespace daw::json {
 		// Convenience for array members that are required to be unnamed
 		inline constexpr char const no_name[] = "\a";
 		inline constexpr daw::string_view no_name_sv = daw::string_view( no_name );
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 
 			inline constexpr char const default_key_name[] = "key";
 			inline constexpr char const default_value_name[] = "value";
 
 		} // namespace json_details
 #endif
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename JsonMember>
 			using is_no_name = std::bool_constant<( JsonMember::name == no_name_sv )>;
 

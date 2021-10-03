@@ -12,9 +12,9 @@
 
 #include <cstddef>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			/***
 			 * When skip_string encounters escaping, it will note this as a non-zero
 			 * value

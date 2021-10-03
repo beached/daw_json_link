@@ -22,7 +22,7 @@
 #include <cstdint>
 #include <utility>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		/***
 		 * Allow for different optimizations.  Currently only the compile_time path
@@ -36,7 +36,7 @@ namespace daw::json {
 			simd     /* testing */
 		};         // 2bits
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<ExecModeTypes> = 2;
 
@@ -52,7 +52,7 @@ namespace daw::json {
 		 * buffer does not end in zero.
 		 */
 		enum class ZeroTerminatedString : unsigned { no, yes }; // 1bit
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN 	{
 			template<>
 			inline constexpr unsigned json_option_bits_width<ZeroTerminatedString> =
 			  1;
@@ -68,7 +68,7 @@ namespace daw::json {
 		 * allowed
 		 */
 		enum class PolicyCommentTypes : unsigned { none, cpp, hash }; // 2bits
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<PolicyCommentTypes> = 2;
 
@@ -81,7 +81,7 @@ namespace daw::json {
 		 * no still does some checking and can be faster.
 		 */
 		enum class CheckedParseMode : unsigned { yes, no }; // 1bit
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<CheckedParseMode> = 1;
 
@@ -95,7 +95,7 @@ namespace daw::json {
 		 * the document. Not all policies support this.
 		 */
 		enum class MinifiedDocument : unsigned { no, yes }; // 1 bit
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<MinifiedDocument> = 1;
 
@@ -110,7 +110,7 @@ namespace daw::json {
 		 * matching only needs to look for a `"`, not skip `\"` in names.
 		 */
 		enum class AllowEscapedNames : unsigned { no, yes }; // 1bit
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<AllowEscapedNames> = 1;
 
@@ -125,7 +125,7 @@ namespace daw::json {
 		 * results is much faster parsing with very small errors of 0-2ulp.
 		 */
 		enum class IEEE754Precise : unsigned { no, yes }; // 1bit
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<IEEE754Precise> = 1;
 
@@ -140,7 +140,7 @@ namespace daw::json {
 		 * can force a full string check by setting to yes.
 		 */
 		enum class ForceFullNameCheck : unsigned { no, yes }; // 1bit
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<ForceFullNameCheck> = 1;
 
@@ -154,7 +154,7 @@ namespace daw::json {
 		 * exact_class_mapping traits to set overrides
 		 */
 		enum class UseExactMappingsByDefault : unsigned { no, yes }; // 1bit
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned
 			  json_option_bits_width<UseExactMappingsByDefault> = 1;
@@ -170,7 +170,7 @@ namespace daw::json {
 		 * top level object is parsed from from_json
 		 */
 		enum class MustVerifyEndOfDataIsValid : unsigned { no, yes };
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned
 			  json_option_bits_width<MustVerifyEndOfDataIsValid> = 1;
@@ -182,7 +182,7 @@ namespace daw::json {
 		} // namespace json_details
 
 		enum class ExpectLongStrings : unsigned { no, yes };
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<ExpectLongStrings> = 1;
 
@@ -197,7 +197,7 @@ namespace daw::json {
 		 * buffer is not mutable, it will not be enabled.
 		 */
 		enum class TemporarilyMutateBuffer : unsigned { no, yes }; // 1bit
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned
 			  json_option_bits_width<TemporarilyMutateBuffer> = 1;
@@ -211,7 +211,7 @@ namespace daw::json {
 		 * Exclude characters under 0x20 that are not explicitly allowed.
 		 */
 		enum class ExcludeSpecialEscapes : unsigned { no, yes }; // 1bit
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<>
 			inline constexpr unsigned json_option_bits_width<ExcludeSpecialEscapes> =
 			  1;
@@ -223,7 +223,7 @@ namespace daw::json {
 		/* *****************************************
 		 * Implementation details
 		 */
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			using policy_list = typename option_list_impl<
 			  ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
 			  CheckedParseMode, AllowEscapedNames, IEEE754Precise, ForceFullNameCheck,

@@ -234,9 +234,6 @@ target_link_libraries(twitter_test PRIVATE twitter_parser_cx_ch twitter_parser_r
 add_test(NAME twitter_test COMMAND twitter_test ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full twitter_test)
 
-add_executable(twitter_test_Vector src/twitter_test_Vector.cpp)
-target_link_libraries(twitter_test_Vector PRIVATE json_test)
-
 add_executable(twitter_test_alloc EXCLUDE_FROM_ALL src/twitter_test_alloc.cpp)
 target_link_libraries(twitter_test_alloc PRIVATE json_test)
 add_dependencies(full twitter_test_alloc)

@@ -16,9 +16,9 @@
 #include <cstddef>
 #include <iterator>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_PUBLIC {
 			template<typename OutputIterator>
 			struct iterator_wrapper : OutputIterator {
 				inline constexpr OutputIterator get( ) const {
@@ -157,7 +157,7 @@ namespace daw::json {
 				}
 			};
 
-		} // namespace json_details
+		} // namespace DAW_ATTRIB_PUBLIC
 
 		namespace json_details::serialization {
 			using policy_list =

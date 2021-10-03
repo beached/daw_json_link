@@ -12,7 +12,7 @@
 #include "impl/daw_json_serialize_policy.h"
 #include "impl/version.h"
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		/**
 		 *
@@ -45,7 +45,7 @@ namespace daw::json {
 		  typename SerializationPolicy = use_default_serialization_policy>
 		[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value );
 
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			/***
 			 * Tag type to indicate that the element of a Container is not being
 			 * specified.  This is the default.

@@ -20,9 +20,9 @@
 #include <string>
 #include <type_traits>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			[[nodiscard]] inline constexpr UInt8 to_nibble( unsigned char chr ) {
 				int const b = static_cast<int>( chr );
 				int const maskLetter = ( ( '9' - b ) >> 31 );

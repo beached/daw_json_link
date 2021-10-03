@@ -17,9 +17,9 @@
 #include <cstdint>
 #include <utility>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			using json_options_t = std::uint32_t;
 
 			template<typename>
@@ -208,6 +208,6 @@ namespace daw::json {
 			static inline constexpr json_options_t default_option_flag =
 			  default_option_flag_t<OptionList>::value;
 
-		} // namespace json_details
+		} // namespace DAW_ATTRIB_HIDDEN
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

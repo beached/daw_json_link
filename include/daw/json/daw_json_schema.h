@@ -14,7 +14,7 @@
 #include "impl/daw_json_serialize_policy.h"
 #include "impl/to_daw_json_string.h"
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		namespace utils {
 			template<typename OutputIterator>
@@ -28,7 +28,7 @@ namespace daw::json {
 				return it;
 			}
 		} // namespace utils
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename JsonMember, bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Bool>,
@@ -510,7 +510,7 @@ namespace daw::json {
 				return out_it;
 			}
 
-			namespace json_details {
+			namespace json_details DAW_ATTRIB_HIDDEN {
 				template<typename Tuple, bool is_root, typename OutputIterator,
 				         std::size_t... Is>
 				constexpr OutputIterator

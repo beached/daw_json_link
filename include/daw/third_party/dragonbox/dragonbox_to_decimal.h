@@ -49,7 +49,7 @@
 #include <intrin.h> // this includes immintrin.h as well
 #endif
 
-namespace daw::jkj::dragonbox {
+namespace daw::jkj::dragonbox DAW_ATTRIB_HIDDEN {
 	inline namespace DAW_JSON_VER {
 		namespace detail {
 			template<class T>
@@ -3366,7 +3366,7 @@ namespace daw::jkj::dragonbox {
 			} );
 		}
 	} // namespace DAW_JSON_VER
-} // namespace daw::jkj::dragonbox
+} // namespace daw::jkj::dragonboxDAW_ATTRIB_HIDDEN
 
 #undef JKJ_HAS_COUNTR_ZERO_INTRINSIC
 #undef JKJ_SAFEBUFFERS

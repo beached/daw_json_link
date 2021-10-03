@@ -19,7 +19,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		namespace json_details::string_quote {
 			template<std::size_t N, char c>

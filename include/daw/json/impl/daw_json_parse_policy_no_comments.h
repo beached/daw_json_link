@@ -25,7 +25,7 @@
 #include <cstdint>
 #include <type_traits>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		struct NoCommentSkippingPolicy final {
 			template<typename ParseState>

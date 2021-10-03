@@ -32,7 +32,7 @@ inline constexpr bool use_daw_json_exceptions_v = true;
 inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
 		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE void

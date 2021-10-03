@@ -17,9 +17,9 @@
 #include <memory>
 #include <type_traits>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 			template<typename Alloc, bool /*is_empty*/>
 			class AllocatorWrapperBase {
 				using allocator_t = std::remove_reference_t<Alloc>;
@@ -105,6 +105,6 @@ namespace daw::json {
 					return std::allocator<T>( );
 				}
 			};
-		} // namespace json_details
+		} // namespace DAW_ATTRIB_HIDDEN
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

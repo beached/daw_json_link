@@ -28,9 +28,9 @@
 #include <exception>
 #include <type_traits>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+		namespace json_details DAW_ATTRIB_HIDDEN {
 
 			///
 			/// Parse a class member in an ordered json class(class as array).  These
@@ -376,6 +376,6 @@ namespace daw::json {
 					return result;
 				}
 			}
-		} // namespace json_details
+		} // namespace DAW_ATTRIB_HIDDEN
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

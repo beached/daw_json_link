@@ -28,7 +28,7 @@
 #include <string_view>
 #include <type_traits>
 
-namespace daw::json {
+namespace daw::json DAW_ATTRIB_PUBLIC {
 	inline namespace DAW_JSON_VER {
 		inline namespace {
 			template<typename CharT, typename ParseState>
