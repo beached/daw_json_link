@@ -233,7 +233,7 @@ namespace daw::json {
 		template<>
 		class DAW_ATTRIB_PUBLIC json_exception_impl DAW_JSON_EXCEPTION_PARENT {
 			ErrorReason m_reason = ErrorReason::Unknown;
-			union data_t {
+			union DAW_ATTRIB_PUBLIC data_t {
 				char const *pointer;
 				char token;
 
