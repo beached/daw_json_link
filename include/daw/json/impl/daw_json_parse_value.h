@@ -1137,7 +1137,7 @@ namespace daw::json {
 					if constexpr( sizeof...( Is ) > 1 ) {
 						++ClassIdx;
 						if( parse_state2.first == parse_state.first ) {
-							if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+							if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
 								auto const run_after_parse = daw::on_exit_success(
 								  [&] { parse_state.move_next_member_or_end( ); } );
 								(void)run_after_parse;
