@@ -31,24 +31,18 @@ jobs:
         cpp_version: [ 17, 20 ]
         build_type: [ Debug, Release ]
         arch: [ x64, Win32 ]
-        os:
-          - name: windows-2019
-          - name: windows-2022
-        compiler:
-          - name: cl
-            toolset: v142
-          - name: clang-cl
-            toolset: ClangCL
+        os: [ windows-2019, windows-2022 ]
+        toolset: [ v142, ClangCL ]
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.compiler.name }}_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
+    name: ${{ matrix.toolset }}_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
     steps:
       - uses: actions/checkout@v2
       - name: Create Build
         run: |
-          md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.compiler.name }}
+          md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.toolset }}
       - name: CMake Config
         run: |
-          cmake -T ${{ matrix.compiler.toolset }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
+          cmake -T ${{ matrix.toolset }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
       - name: Build
         run: |
           cmake --build build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ --target full
