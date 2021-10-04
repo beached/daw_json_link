@@ -36,6 +36,7 @@ jobs:
       - name: Create Build
         run: |
           md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
+          dir /o/w
           cd build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
       - name: CMake Config
         #run: cmake -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON .
