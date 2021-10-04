@@ -14,6 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        stdver: [ 17, 20 ]
+        build_type: [ Debug, Release ]
         config:
           - {
             arch: x64,
@@ -27,8 +29,6 @@ jobs:
             msvc_path: "C:/PROGRAM FILES/MICROSOFT VISUAL STUDIO/2022/ENTERPRISE",
             environment_script: "C:/PROGRAM FILES/MICROSOFT VISUAL STUDIO/2022/ENTERPRISE/VC/Auxiliary/Build/vcvars64.bat" amd64
           }
-        stdver: [ 17, 20 ]
-        build_type: [ Debug, Release ]
     runs-on: ${{ matrix.config.os }}
     steps:
       - uses: actions/checkout@v1
