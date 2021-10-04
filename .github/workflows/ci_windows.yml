@@ -29,15 +29,13 @@ jobs:
           md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
       - name: CMake Config
         run: |
-          cmake -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/
+          cmake -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
       - name: Build
         run: |
-          cd build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
-          cmake --target full --config ${{ matrix.build_type }} -j 3
+          cmake --target full --config ${{ matrix.build_type }} -j 3 build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/
       - name: Test
         run: |
-          cd build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
-          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200
+          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir  build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
 
 #  Win_clang-cl:
 #    strategy:
