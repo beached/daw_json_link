@@ -35,7 +35,7 @@ namespace daw::json {
 		         bool KnownBounds = false,
 		         typename Result = json_details::from_json_result_t<JsonMember>,
 		         typename String>
-		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC auto
+		[[maybe_unused, nodiscard]] constexpr auto
 		from_json( String &&json_data )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>;
 

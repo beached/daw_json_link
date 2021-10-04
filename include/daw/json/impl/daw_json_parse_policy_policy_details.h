@@ -81,8 +81,9 @@ namespace daw::json {
 					if( parse_state.size( ) > 1 ) {
 						auto const dig = static_cast<unsigned>(
 						  static_cast<unsigned char>( *( parse_state.first + 1 ) ) );
+						auto const tst = dig - static_cast<unsigned char>( '0' );
 						// Cannot be a digit
-						daw_json_assert( dig - static_cast<unsigned char>( '0' ) >= 10U,
+						daw_json_assert( tst >= 10U,
 						                 ErrorReason::InvalidNumberStart, parse_state );
 					}
 					break;

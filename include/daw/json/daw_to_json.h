@@ -23,7 +23,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		template<typename Value, typename JsonClass, typename OutputIterator>
-		[[maybe_unused]] constexpr DAW_ATTRIB_PUBLIC OutputIterator
+		[[maybe_unused]] constexpr  OutputIterator
 		to_json( Value const &value, OutputIterator out_it ) {
 			if constexpr( std::is_pointer<OutputIterator>::value ) {
 				daw_json_assert( out_it, ErrorReason::NullOutputIterator );
@@ -42,7 +42,7 @@ namespace daw::json {
 
 		template<typename Result, typename Value, typename JsonClass,
 		         typename SerializationPolicy>
-		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC Result
+		[[maybe_unused, nodiscard]] constexpr  Result
 		to_json( Value const &value ) {
 			Result result{ };
 			if constexpr( std::is_same_v<Result, std::string> ) {
@@ -63,7 +63,7 @@ namespace daw::json {
 		}
 
 		template<typename JsonElement, typename Container, typename OutputIterator>
-		[[maybe_unused]] constexpr DAW_ATTRIB_PUBLIC OutputIterator
+		[[maybe_unused]] constexpr  OutputIterator
 		to_json_array( Container const &c, OutputIterator it ) {
 			static_assert(
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
@@ -120,7 +120,7 @@ namespace daw::json {
 
 		template<typename Result, typename JsonElement,
 		         typename SerializationPolicy, typename Container>
-		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC Result
+		[[maybe_unused, nodiscard]] constexpr  Result
 		to_json_array( Container &&c ) {
 			static_assert(
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,

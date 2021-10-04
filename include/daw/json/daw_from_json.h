@@ -33,7 +33,7 @@ namespace daw::json {
 		 */
 		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
 		         typename Result, typename String>
-		[[maybe_unused, nodiscard]] constexpr DAW_ATTRIB_PUBLIC auto
+		[[maybe_unused, nodiscard]] constexpr  auto
 		from_json( String &&json_data )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
