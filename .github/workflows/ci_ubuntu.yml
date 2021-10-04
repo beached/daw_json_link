@@ -48,7 +48,7 @@ jobs:
       - name: Install Clang Dependencies
         if: startsWith( matrix.toolset, 'clang' )
         run: |
-          sudo apt install clang-${{ env.DAW_CLANG_VER  }} libc++-${{ env.DAW_CLANG_VER }}-dev libc++abi-${{ env.DAW_CLANG_VER }}-dev ${{ matrix.toolset }}
+          sudo apt install clang-${{ env.DAW_CLANG_VER  }} libc++-${{ env.DAW_CLANG_VER }}-dev libc++abi-${{ env.DAW_CLANG_VER }}-dev
       - name: Get GCC version
         if: startsWith( matrix.toolset, 'g++' )
         run: |
