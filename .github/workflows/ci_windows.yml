@@ -1,5 +1,4 @@
 name: Windows
-
 on:
   push:
     branches: [ release, develop ]
@@ -42,36 +41,23 @@ jobs:
         if: ${{ matrix.toolset == 'MSVC' }}
         run: echo "Using MSVC"
         env:
-          TOOLSET_CMD: ""
+          DAW_TOOLSET_CMD: ""
       - name: "Using ClangCL"
         if: ${{ matrix.toolset == 'ClangCL' }}
         run: echo "Using ClangCL"
         env:
-          TOOLSET_CMD: "-T ClangCL"
+          DAW_TOOLSET_CMD: "-T ClangCL"
       - name: Create Build
+        env:
+          DAW_BUILD_DIR: "build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.toolset }}"
         run: |
-          md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.toolset }}
+          md ${{ env.DAW_BUILD_DIR }}
       - name: CMake Config
         run: |
-          cmake ${{ env.TOOLSET_CMD }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
+          cmake ${{ env.DAW_TOOLSET_CMD }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
       - name: Build
         run: |
-          cmake --build build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ --target full
+          cmake --build ${{ env.DAW_BUILD_DIR }}/ --target full
       - name: Test
         run: |
-          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir  build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
-
-#  Win_clang-cl:
-#    strategy:
-#      matrix:
-#        os: [ 2019 ]
-#        cpp_version: [ 17, 20 ]
-#        build_type: [ Debug, Release ]
-#    runs-on: windows-${{ matrix.os }}
-#    steps:
-#      - uses: actions/checkout@v1
-#      - name: Build
-#        run: .\ci_scripts\ci_windows_build_clangcl.cmd { matrix.os }} ${{ matrix.build_type }} ${{ matrix.cpp_version }}
-#      - name: Test
-#        run: .\ci_scripts\ci_windows_test.cmd ${{ matrix.os }} ${{ matrix.build_type }}
-#
+          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 ${{ env.DAW_BUILD_DIR }}/
