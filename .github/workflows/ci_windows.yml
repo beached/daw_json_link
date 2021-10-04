@@ -27,9 +27,8 @@ jobs:
       - name: Create Build
         run: |
           md build
-          dir /o/w
       - name: CMake Config
-        run: cmake -Bbuild -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON ..
+        run: cmake -Bbuild -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON .
       - name: Build
         run: cmake --build build/ --target full --config ${{ matrix.build_type }} -j 3
       - name: Test
