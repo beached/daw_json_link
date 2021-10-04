@@ -16,20 +16,16 @@ jobs:
       matrix:
         cpp_version: [ 17, 20 ]
         build_type: [ Debug, Release ]
-        arch: [ x64, x86 ]
+        arch: [ x64, Win32 ]
         os: [ windows-2019, windows-2022 ]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
-      - name: Set up Visual Studio shell
-        uses: egor-tensin/vs-shell@v2
-        with:
-          arch: ${{ matrix.arch }}
       - name: Create Build
         run: |
           md build
       - name: CMake Config
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON ..
+        run: cmake -Bbuild -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON ..
       - name: Build
         run: cmake --build build/ --target full --config ${{ matrix.build_type }} -j 3
       - name: Test
