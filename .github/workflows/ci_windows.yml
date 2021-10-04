@@ -11,6 +11,9 @@ on:
 
 jobs:
   MSVC:
+    defaults:
+      run:
+        shell: cmd
     strategy:
       fail-fast: false
       matrix:
@@ -32,16 +35,17 @@ jobs:
       - name: Test
         run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build/
 
-  Win_clang-cl:
-    strategy:
-      matrix:
-        os: [ 2019 ]
-        cpp_version: [ 17, 20 ]
-        build_type: [ Debug, Release ]
-    runs-on: windows-${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd { matrix.os }} ${{ matrix.build_type }} ${{ matrix.cpp_version }}
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd ${{ matrix.os }} ${{ matrix.build_type }}
+#  Win_clang-cl:
+#    strategy:
+#      matrix:
+#        os: [ 2019 ]
+#        cpp_version: [ 17, 20 ]
+#        build_type: [ Debug, Release ]
+#    runs-on: windows-${{ matrix.os }}
+#    steps:
+#      - uses: actions/checkout@v1
+#      - name: Build
+#        run: .\ci_scripts\ci_windows_build_clangcl.cmd { matrix.os }} ${{ matrix.build_type }} ${{ matrix.cpp_version }}
+#      - name: Test
+#        run: .\ci_scripts\ci_windows_test.cmd ${{ matrix.os }} ${{ matrix.build_type }}
+#
