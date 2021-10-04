@@ -40,10 +40,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: UseMSVC
         if: ${{ matrix.toolset == 'MSVC' }}
+        run: echo "Using MSVC"
         env:
           TOOLSET_CMD: ""
       - name: UseClangCL
         if: ${{ matrix.toolset == 'ClangCL' }}
+        run: echo "Using ClangCL"
         env:
           TOOLSET_CMD: "-T ClangCL"
       - name: Create Build
