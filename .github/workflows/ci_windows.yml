@@ -35,15 +35,15 @@ jobs:
         os: [ windows-2019, windows-2022 ]
         toolset: [ MSVC, ClangCL ]
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.toolset }}_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
+    name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.arch }} ${{ matrix.build_type }}"
     steps:
       - uses: actions/checkout@v2
-      - name: UseMSVC
+      - name: "Using MSVC"
         if: ${{ matrix.toolset == 'MSVC' }}
         run: echo "Using MSVC"
         env:
           TOOLSET_CMD: ""
-      - name: UseClangCL
+      - name: "Using ClangCL"
         if: ${{ matrix.toolset == 'ClangCL' }}
         run: echo "Using ClangCL"
         env:
