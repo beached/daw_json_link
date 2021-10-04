@@ -12,21 +12,21 @@ on:
 jobs:
   Win_MSVC_x64:
     strategy:
+      fail-fast: false
       matrix:
-        config: [
-            - {
-              arch: x64,
-              os: "windows-2019",
-              msvc_path: "C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/ENTERPRISE",
-              environment_script: "C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/ENTERPRISE/VC/Auxiliary/Build/vcvars64.bat" amd64
-            },
-            - {
-              arch: amd64,
-              os: "windows-2022",
-              msvc_path: "C:/PROGRAM FILES/MICROSOFT VISUAL STUDIO/2022/ENTERPRISE",
-              environment_script: "C:/PROGRAM FILES/MICROSOFT VISUAL STUDIO/2022/ENTERPRISE/VC/Auxiliary/Build/vcvars64.bat" amd64
-            }
-        ]
+        config:
+          - {
+            arch: x64,
+            os: "windows-2019",
+            msvc_path: "C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/ENTERPRISE",
+            environment_script: "C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/ENTERPRISE/VC/Auxiliary/Build/vcvars64.bat" amd64
+          },
+          - {
+            arch: amd64,
+            os: "windows-2022",
+            msvc_path: "C:/PROGRAM FILES/MICROSOFT VISUAL STUDIO/2022/ENTERPRISE",
+            environment_script: "C:/PROGRAM FILES/MICROSOFT VISUAL STUDIO/2022/ENTERPRISE/VC/Auxiliary/Build/vcvars64.bat" amd64
+          }
         stdver: [ 17, 20 ]
         build_type: [ Debug, Release ]
     runs-on: ${{ matrix.config.os }}
