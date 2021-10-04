@@ -34,12 +34,11 @@ jobs:
         os:
           - name: windows-2019
           - name: windows-2022
-        compiler: [
+        compiler:
           - name: cl
             toolset: v142
           - name: clang-cl
             toolset: ClangCL
-        ]
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.compiler.name }}_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
     steps:
