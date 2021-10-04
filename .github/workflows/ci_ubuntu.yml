@@ -45,12 +45,12 @@ jobs:
         if: startsWith( matrix.toolset, 'clang' )
         run: |
           echo "daw_clang_ver=$(echo ${{matrix.toolset}} | cut -d- -f2)" >> $GITHUB_ENV
-          sudo apt install clang-${{daw_clang_ver}} libc++-${{daw_clang_ver-dev}} libc++abi-${{daw_clang_ver-dev}}  ${{matrix.toolset}}
+          sudo apt install clang-${{ env.daw_clang_ver  }} libc++-${{ env.daw_clang_ver }}-dev libc++abi-${{ env.daw_clang_ver}}-dev ${{matrix.toolset}}
       - name: GCC Dependencies
         if: startsWith( matrix.toolset, 'g++' )
         run: |
           echo "daw_gcc_ver=$(echo ${{matrix.toolset}} | cut -d- -f2)" >> $GITHUB_ENV
-          sudo apt install gcc-${{daw_clang_ver}} g++-${{daw_clang_ver}}
+          sudo apt install gcc-${{ env.daw_gcc_ver }} g++-${{ env.daw_gcc_ver }}
       - name: Create Build
         run: |
           mkdir build
