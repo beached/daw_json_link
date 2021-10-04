@@ -18,8 +18,6 @@ jobs:
   runs-on: ${{ matrix.os }}
   steps:
     - uses: actions/checkout@v1
-      name: CMake Check
-        run: cmake --version
 
   MSVC_run:
     needs: MSVC_setup
