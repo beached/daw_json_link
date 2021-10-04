@@ -37,6 +37,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.toolset }}_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
     steps:
+      - uses: actions/checkout@v2
       - name: UseMSVC
         if: ${{ matrix.toolset == 'MSVC' }}
         env:
@@ -45,7 +46,6 @@ jobs:
         if: ${{ matrix.toolset == 'ClangCL' }}
         env:
           TOOLSET_CMD: "-T ClangCL"
-      - uses: actions/checkout@v2
       - name: Create Build
         run: |
           md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.toolset }}
