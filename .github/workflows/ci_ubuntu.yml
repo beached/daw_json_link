@@ -2,7 +2,7 @@ name: Ubuntu
 
 on:
   push:
-    branches: [ release, develop ]
+    branches: [ release ]
   pull_request:
     push:
       branches-ignore: develop
@@ -29,6 +29,17 @@ jobs:
         build_type: [ Debug, Release ]
         os: [ ubuntu-20.04 ]
         toolset: [ g++-9, g++-10, clang++-8, clang++-9, clang++-10, clang++-11, clang++-12, clang++-13 ]
+        exclude:
+          - toolset: clang-8
+            cpp_version: 20
+          - toolset: clang-9
+            cpp_version: 20
+          - toolset: clang-10
+            cpp_version: 20
+          - toolset: clang-11
+            cpp_version: 20
+          - toolset: g++-9
+            cpp_version: 20
     runs-on: ${{ matrix.os }}
     name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.build_type }}"
     steps:
