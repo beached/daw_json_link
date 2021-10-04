@@ -10,11 +10,11 @@ on:
       branches-ignore: develop
 
 jobs:
-  Win_MSVC_x64:
+  MSVC:
     strategy:
       fail-fast: false
       matrix:
-        stdver: [ 17, 20 ]
+        cpp_version: [ 17, 20 ]
         build_type: [ Debug, Release ]
         arch: [ x64, x86 ]
         os: [ windows-2019, windows-2022 ]
@@ -28,28 +28,13 @@ jobs:
       - name: Create Build
         run: |
           md build
-          cd build
       - name: CMake Config
-        run: cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=cl.exe -DCMAKE_C_COMPILER=cl.exe -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -DCMAKE_CXX_STANDARD=${{ matrix.stdver }} ..
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON ..
       - name: Build
-        run: cmake --build . --target full --config ${{ matrix.build_type }} -j 3
+        run: cmake --build build/ --target full --config ${{ matrix.build_type }} -j 3
       - name: Test
-        run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200
-  Win_MSVC_x86:
-    strategy:
-      matrix:
-        os: [ 2019, 2022 ]
-        stdver: [ 17, 20 ]
-        cfg: [ Debug, Release ]
-    runs-on: windows-${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd ${{ matrix.os }} ${{ matrix.cfg }} ${{ matrix.stdver }}
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd ${{ matrix.os }} ${{ matrix.cfg }}
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd ${{ matrix.os }} ${{ matrix.cfg }}
+        run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build/
+
   Win_clang-cl:
     strategy:
       matrix:
