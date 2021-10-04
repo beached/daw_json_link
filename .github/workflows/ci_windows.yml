@@ -10,7 +10,7 @@ on:
       branches-ignore: develop
 
 jobs:
-  Windows_MSVC:
+  Win_MSVC_x64:
     strategy:
       matrix:
         os: [2019, 2022]
@@ -25,57 +25,31 @@ jobs:
         run: .\ci_scripts\ci_windows_build.cmd ${{ matrix.os }} ${{ matrix.cfg }}
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd ${{ matrix.os }} ${{ matrix.cfg }}
-
-  windows2019_msvc2019_x86_debug_17:
-    runs-on: [ windows-2019 ]
+  Win_MSVC_x86:
+    strategy:
+      matrix:
+        os: [2019, 2022]
+        stdver: [17, 20]
+        cfg: [Debug, Release]
+    runs-on: windows-${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd 2019 Debug 17
+        run: .\ci_scripts\ci_windows_deps_x86.cmd ${{ matrix.os }} ${{ matrix.cfg }} ${{ matrix.stdver }}
       - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd 2019 Debug
+        run: .\ci_scripts\ci_windows_build.cmd ${{ matrix.os }} ${{ matrix.cfg }}
       - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd 2019 Debug
-  windows2019_msvc2019_x86_release_17:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd 2019 Release 17
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd 2019 Release
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd 2019 Release
-
-  windows2019_clangcl_x64_debug_17:
-    runs-on: [ windows-2019 ]
+        run: .\ci_scripts\ci_windows_test.cmd ${{ matrix.os }} ${{ matrix.cfg }}
+  Win_clang-cl:
+    strategy:
+      matrix:
+        os: [2019]
+        stdver: [17, 20]
+        cfg: [Debug, Release]
+    runs-on: windows-${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
       - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd 2019 Debug 17
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd { matrix.os }} ${{ matrix.cfg }} ${{ matrix.stdver }}
       - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd 2019 Debug
-  windows2019_clangcl_x64_release_17:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd 2019 Release 17
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd 2019 Release
-  windows2019_clangcl_x64_debug_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd 2019 Debug 20
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd 2019 Debug
-  wwindows2019_clangcl_x64_release_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd 2019 Release 20
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd 2019 Release
+        run: .\ci_scripts\ci_windows_test.cmd ${{ matrix.os }} ${{ matrix.cfg }}
