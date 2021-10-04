@@ -68,6 +68,7 @@ jobs:
         env:
           CC: clang-${{ env.DAW_CLANG_VER }}
           CXX: clang++-${{ env.DAW_CLANG_VER }}
+          CXXFLAGS: --stdlib=libc++
       - name: Get GCC version
         if: startsWith( matrix.toolset, 'g++' )
         run: |
@@ -87,7 +88,7 @@ jobs:
           CXX: ${{ matrix.toolset }}
         run: cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DDAW_ALLOW_SSE42=ON -DDAW_JSON_USE_SANITIZERS=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -Bbuild/ .
       - name: Build
-        run: cmake --build build/ --target full
+        run: cmake --build build/ --target full -- -k
       - name: Test
         run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build/
 #
