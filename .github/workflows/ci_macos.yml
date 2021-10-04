@@ -40,7 +40,7 @@ jobs:
           md ${{ env.DAW_BUILD_DIR }}
       - name: Build Dependencies
         env:
-          CXX=${{ matrix.toolset }}
+          CXX: ${{ matrix.toolset }}
         run: cmake -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DDAW_ALLOW_SSE42=ON -DDAW_JSON_USE_SANITIZERS=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }}
       - name: Build
         run: cmake --build ${{ env.DAW_BUILD_DIR }}/ --target full
