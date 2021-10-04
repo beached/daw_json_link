@@ -49,6 +49,9 @@ jobs:
         if: startsWith( matrix.toolset, 'clang' )
         run: |
           sudo apt install clang-${{ env.DAW_CLANG_VER  }} libc++-${{ env.DAW_CLANG_VER }}-dev libc++abi-${{ env.DAW_CLANG_VER }}-dev
+        env:
+          CC: clang-${{ env.DAW_CLANG_VER }}
+          CXX: clang++-${{ env.DAW_CLANG_VER }}
       - name: Get GCC version
         if: startsWith( matrix.toolset, 'g++' )
         run: |
@@ -57,6 +60,9 @@ jobs:
         if: startsWith( matrix.toolset, 'g++' )
         run: |
           sudo apt install gcc-${{ env.DAW_GCC_VER }} g++-${{ env.DAW_GCC_VER }}
+        env:
+          CC: gcc-${{ env.DAW_CLANG_VER }}
+          CXX: g++-${{ env.DAW_CLANG_VER }}
       - name: Create Build
         run: |
           mkdir build
