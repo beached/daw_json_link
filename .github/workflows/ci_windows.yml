@@ -24,22 +24,21 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      #      - name: Create Build
-      #        run: |
-      #          dir /o/w
-      #          md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
-      #          dir /o/w
-      - name: CMake Config
-        #run: cmake -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON .
+      - name: Create Build
         run: |
-          dir /o/w
+          md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
+      - name: CMake Config
+        run: |
+          cd build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
           cmake -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON ..
       - name: Build
-        #run: cmake --build build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ --target full --config ${{ matrix.build_type }} -j 3
-        run: cmake --target full --config ${{ matrix.build_type }} -j 3
+        run: |
+          cd build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
+          cmake --target full --config ${{ matrix.build_type }} -j 3
       - name: Test
-        run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200
-        #run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/
+        run: |
+          cd build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
+          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200
 
 #  Win_clang-cl:
 #    strategy:
