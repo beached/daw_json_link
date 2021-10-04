@@ -15,87 +15,87 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps.cmd Debug 17
+        run: .\ci_scripts\ci_windows_deps.cmd 2019 Debug 17
       - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Debug
+        run: .\ci_scripts\ci_windows_build.cmd 2019 Debug
       - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Debug
+        run: .\ci_scripts\ci_windows_test.cmd 2019 Debug
   windows2019_msvc2019_x64_release_17:
     runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps.cmd Release 17
+        run: .\ci_scripts\ci_windows_deps.cmd 2019 Release 17
       - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Release
+        run: .\ci_scripts\ci_windows_build.cmd 2019 Release
       - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Release
-  windows2019_msvc2019_x64_debug_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps.cmd Debug 20
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Debug
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Debug
-  windows2019_msvc2019_x64_release_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps.cmd Release 20
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Release
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Release
+        run: .\ci_scripts\ci_windows_test.cmd 2019 Release
+#  windows2019_msvc2019_x64_debug_20:
+#    runs-on: [ windows-2019 ]
+#    steps:
+#      - uses: actions/checkout@v1
+#      - name: Build Dependencies
+#        run: .\ci_scripts\ci_windows_deps.cmd 2019 Debug 20
+#      - name: Build
+#        run: .\ci_scripts\ci_windows_build.cmd 2019 Debug
+#      - name: Test
+#        run: .\ci_scripts\ci_windows_test.cmd 2019 Debug
+#  windows2019_msvc2019_x64_release_20:
+#    runs-on: [ windows-2019 ]
+#    steps:
+#      - uses: actions/checkout@v1
+#      - name: Build Dependencies
+#        run: .\ci_scripts\ci_windows_deps.cmd 2019 Release 20
+#      - name: Build
+#        run: .\ci_scripts\ci_windows_build.cmd 2019 Release
+#      - name: Test
+#        run: .\ci_scripts\ci_windows_test.cmd 2019 Release
   windows2019_msvc2019_x86_debug_17:
     runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd Debug 17
+        run: .\ci_scripts\ci_windows_deps_x86.cmd 2019 Debug 17
       - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Debug
+        run: .\ci_scripts\ci_windows_build.cmd 2019 Debug
       - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Debug
+        run: .\ci_scripts\ci_windows_test.cmd 2019 Debug
   windows2019_msvc2019_x86_release_17:
     runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd Release 17
+        run: .\ci_scripts\ci_windows_deps_x86.cmd 2019 Release 17
       - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Release
+        run: .\ci_scripts\ci_windows_build.cmd 2019 Release
       - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Release
-  windows2019_msvc2019_x86_debug_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd Debug 20
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Debug
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Debug
-  windows2019_msvc2019_x86_release_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd Release 20
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Release
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Release
+        run: .\ci_scripts\ci_windows_test.cmd 2019 Release
+#  windows2019_msvc2019_x86_debug_20:
+#    runs-on: [ windows-2019 ]
+#    steps:
+#      - uses: actions/checkout@v1
+#      - name: Build Dependencies
+#        run: .\ci_scripts\ci_windows_deps_x86.cmd 2019 Debug 20
+#      - name: Build
+#        run: .\ci_scripts\ci_windows_build.cmd 2019 Debug
+#      - name: Test
+#        run: .\ci_scripts\ci_windows_test.cmd 2019 Debug
+#  windows2019_msvc2019_x86_release_20:
+#    runs-on: [ windows-2019 ]
+#    steps:
+#      - uses: actions/checkout@v1
+#      - name: Build Dependencies
+#        run: .\ci_scripts\ci_windows_deps_x86.cmd 2019 Release 20
+#      - name: Build
+#        run: .\ci_scripts\ci_windows_build.cmd 2019 Release
+#      - name: Test
+#        run: .\ci_scripts\ci_windows_test.cmd 2019 Release
   windows2019_clangcl_x64_debug_17:
     runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
       - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd Debug 17
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd 2019 Debug 17
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd
   windows2019_clangcl_x64_release_17:
@@ -103,7 +103,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd Release 17
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd 2019 Release 17
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd
   windows2019_clangcl_x64_debug_20:
@@ -111,7 +111,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd Debug 20
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd 2019 Debug 20
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd
   wwindows2019_clangcl_x64_release_20:
@@ -119,6 +119,26 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd Release 20
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd 2019 Release 20
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd
+  windows2022_msvc2022_x64_debug_20:
+    runs-on: [ windows-2022 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Dependencies
+        run: .\ci_scripts\ci_windows_deps.cmd 2022 Debug 20
+      - name: Build
+        run: .\ci_scripts\ci_windows_build.cmd 2022 Debug
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd 2022 Debug
+  windows2022_msvc2022_x64_release_20:
+    runs-on: [ windows-2022 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Dependencies
+        run: .\ci_scripts\ci_windows_deps.cmd 2022 Release 20
+      - name: Build
+        run: .\ci_scripts\ci_windows_build.cmd 2022 Release
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd 2022 Release
