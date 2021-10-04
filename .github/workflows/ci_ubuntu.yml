@@ -44,7 +44,11 @@ jobs:
     name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.build_type }}"
     steps:
       - uses: actions/checkout@v1
-
+      - name: Cache Apt packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            /var/cache/apt
       - name: Setup APT and Base Dependencies
         run: |
           sudo wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
