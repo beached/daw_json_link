@@ -32,7 +32,7 @@ jobs:
           cmake -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
       - name: Build
         run: |
-          cmake --target full --config ${{ matrix.build_type }} -j 3 build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/
+          cmake --target full --config ${{ matrix.build_type }} build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/
       - name: Test
         run: |
           ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir  build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
