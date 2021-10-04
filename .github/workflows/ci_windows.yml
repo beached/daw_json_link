@@ -22,6 +22,7 @@ jobs:
       repository-projects: none
       security-events: none
       statuses: none
+
     defaults:
       run:
         shell: cmd
@@ -32,17 +33,25 @@ jobs:
         build_type: [ Debug, Release ]
         arch: [ x64, Win32 ]
         os: [ windows-2019, windows-2022 ]
-        toolset: [ v142, ClangCL ]
+        toolset: [ MSVC, ClangCL ]
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.toolset }}_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
     steps:
+      - name: UseMSVC
+        if: ${{ matrix.toolset == 'MSVC' }}
+        env:
+          TOOLSET_CMD: ""
+      - name: UseClangCL
+        if: ${{ matrix.toolset == 'ClangCL' }}
+        env:
+          TOOLSET_CMD: "-T ClangCL"
       - uses: actions/checkout@v2
       - name: Create Build
         run: |
           md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.toolset }}
       - name: CMake Config
         run: |
-          cmake -T ${{ matrix.toolset }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
+          cmake ${{ env.TOOLSET_CMD }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
       - name: Build
         run: |
           cmake --build build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ --target full
