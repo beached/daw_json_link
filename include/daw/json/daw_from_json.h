@@ -33,8 +33,7 @@ namespace daw::json {
 		 */
 		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
 		         typename Result, typename String>
-		[[maybe_unused, nodiscard]] constexpr  auto
-		from_json( String &&json_data )
+		[[maybe_unused, nodiscard]] constexpr auto from_json( String &&json_data )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
 			daw_json_assert( std::data( json_data ) != nullptr,

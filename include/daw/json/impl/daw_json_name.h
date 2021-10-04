@@ -126,5 +126,5 @@ namespace daw::json {
 			template<typename JsonMember>
 			inline constexpr bool is_no_name_v = is_no_name<JsonMember>::value;
 		} // namespace json_details
-	}   // namespace DAW_ATTRIB_HIDDEN
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

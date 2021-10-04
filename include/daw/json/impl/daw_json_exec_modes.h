@@ -41,5 +41,5 @@ namespace daw::json {
 		struct simd_exec_tag : runtime_exec_tag {};
 #endif
 		using default_exec_tag = constexpr_exec_tag;
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

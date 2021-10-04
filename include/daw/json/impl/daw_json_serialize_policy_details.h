@@ -157,7 +157,7 @@ namespace daw::json {
 				}
 			};
 
-		} // namespace
+		} // namespace json_details
 
 		namespace json_details::serialization {
 			using policy_list =
@@ -285,5 +285,5 @@ namespace daw::json {
 			    "        ";
 
 		} // namespace json_details::serialization
-	}   // namespace DAW_ATTRIB_HIDDEN
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

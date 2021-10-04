@@ -24,5 +24,5 @@ namespace daw::json {
 				return static_cast<std::ptrdiff_t>( parse_state.counter ) >= 0;
 			}
 		} // namespace json_details
-	}   // namespace DAW_ATTRIB_HIDDEN
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

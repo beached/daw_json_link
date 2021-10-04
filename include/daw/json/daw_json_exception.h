@@ -107,8 +107,7 @@ namespace daw::json {
 			TrailingComma
 		};
 
-		constexpr  std::string_view
-		reason_message( ErrorReason er ) {
+		constexpr std::string_view reason_message( ErrorReason er ) {
 			using namespace std::string_view_literals;
 			switch( er ) {
 			case ErrorReason::Unknown:
@@ -231,9 +230,9 @@ namespace daw::json {
 		class json_exception_impl;
 
 		template<>
-		class  json_exception_impl DAW_JSON_EXCEPTION_PARENT {
+		class json_exception_impl DAW_JSON_EXCEPTION_PARENT {
 			ErrorReason m_reason = ErrorReason::Unknown;
-			union  data_t {
+			union data_t {
 				char const *pointer;
 				char token;
 
@@ -332,7 +331,7 @@ namespace daw::json {
 		 * @param je json_exception to be formatted
 		 * @return string representation of json_exception
 		 */
-		inline  std::string
+		inline std::string
 		to_formatted_string( json_exception const &je,
 		                     char const *json_document = nullptr ) {
 			using namespace std::string_literals;

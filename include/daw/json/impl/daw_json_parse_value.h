@@ -1137,7 +1137,8 @@ namespace daw::json {
 					if constexpr( sizeof...( Is ) > 1 ) {
 						++ClassIdx;
 						if( parse_state2.first == parse_state.first ) {
-							if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
+							if constexpr( use_direct_construction_v<ParseState,
+							                                        JsonMember> ) {
 								auto const run_after_parse = daw::on_exit_success(
 								  [&] { parse_state.move_next_member_or_end( ); } );
 								(void)run_after_parse;
@@ -1584,5 +1585,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_ATTRIB_HIDDEN
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

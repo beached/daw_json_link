@@ -692,5 +692,5 @@ typename json_details::json_deduced_type<JsonElement>::parse_to_t>,*/
 			template<typename T>
 			using ensure_mapped_t = typename ensure_mapped<T>::type;
 		} // namespace json_details
-	}   // namespace DAW_ATTRIB_HIDDEN
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

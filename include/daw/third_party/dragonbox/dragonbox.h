@@ -295,5 +295,5 @@ namespace daw::jkj::dragonbox {
 				return to_chars_impl( v, buffer, digit_count );
 			}
 		} // namespace to_chars_detail
-	}   // namespace DAW_ATTRIB_HIDDEN
+	}   // namespace DAW_JSON_VER
 } // namespace daw::jkj::dragonbox

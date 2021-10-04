@@ -998,5 +998,5 @@ namespace daw::json {
 			inline constexpr bool has_dependent_member_v =
 			  daw::is_detected_v<dependent_member_t, JsonMember>;
 		} // namespace json_details
-	}   // namespace DAW_ATTRIB_HIDDEN
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

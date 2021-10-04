@@ -89,5 +89,5 @@ namespace daw::jkj::dragonbox {
 			*ptr = '\0';
 			return ptr;
 		}
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::jkj::dragonbox

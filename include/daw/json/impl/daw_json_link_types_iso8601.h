@@ -52,5 +52,5 @@ namespace daw::json {
 			}
 		};
 
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

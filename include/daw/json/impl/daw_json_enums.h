@@ -105,12 +105,12 @@ namespace daw::json {
 			  is_nullable_json_value<nullable>::value;
 		} // namespace json_details
 
-		inline namespace details DAW_ATTRIB_HIDDEN {
+		inline namespace details {
 			template<JsonParseTypes ParseType, JsonNullable Nullable>
 			inline constexpr JsonParseTypes get_parse_type_v =
 			  json_details::is_nullable_json_value_v<Nullable> ? JsonParseTypes::Null
 			                                                   : ParseType;
-		} // namespace DAW_ATTRIB_HIDDEN
+		} // namespace details
 
 		/**
 		 * Tag lookup for parsing overload selection
@@ -118,5 +118,5 @@ namespace daw::json {
 		template<JsonParseTypes v>
 		using ParseTag = daw::constant<v>;
 
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

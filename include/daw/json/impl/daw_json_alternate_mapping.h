@@ -31,5 +31,5 @@ namespace daw::json {
 		 */
 		template<typename T, std::size_t I>
 		struct default_constructor<json_alt<T, I>> : default_constructor<T> {};
-	} // namespace DAW_ATTRIB_HIDDEN
+	} // namespace DAW_JSON_VER
 } // namespace daw::json
