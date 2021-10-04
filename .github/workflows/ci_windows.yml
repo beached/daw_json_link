@@ -11,6 +11,7 @@ on:
 
 jobs:
   MSVC_setup:
+    steps:
     - uses: actions/checkout@v1
   MSVC_run:
     needs: MSVC_setup
