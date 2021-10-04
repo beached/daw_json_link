@@ -13,24 +13,41 @@ jobs:
   Win_MSVC_x64:
     strategy:
       matrix:
-        os: [2019, 2022]
-        stdver: [17, 20]
-        cfg: [Debug, Release]
-    runs-on: windows-${{ matrix.os }}
+        config: [
+            - {
+              arch: x64,
+              os: "windows-2019",
+              msvc_path: "C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/ENTERPRISE",
+              environment_script: "C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/ENTERPRISE/VC/Auxiliary/Build/vcvars64.bat" amd64
+            },
+            - {
+              arch: amd64,
+              os: "windows-2022",
+              msvc_path: "C:/PROGRAM FILES/MICROSOFT VISUAL STUDIO/2022/ENTERPRISE",
+              environment_script: "C:/PROGRAM FILES/MICROSOFT VISUAL STUDIO/2022/ENTERPRISE/VC/Auxiliary/Build/vcvars64.bat" amd64
+            }
+        ]
+        stdver: [ 17, 20 ]
+        build_type: [ Debug, Release ]
+    runs-on: ${{ matrix.config.os }}
     steps:
       - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps.cmd ${{ matrix.os }} ${{ matrix.cfg }} ${{ matrix.stdver }}
+      - name: Create Build
+        run: |
+          md build
+          cd build
+      - name: CMake Config
+        run: cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=cl.exe -DCMAKE_C_COMPILER=cl.exe -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -DCMAKE_CXX_STANDARD=${{ matrix.stdver }} ..
       - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd ${{ matrix.os }} ${{ matrix.cfg }}
+        run: cmake --build . --target full --config ${{ matrix.build_type }} -j 2
       - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd ${{ matrix.os }} ${{ matrix.cfg }}
+        run: ctest -C ${{ matrix.build_type }} -j5 -VV --timeout 1200
   Win_MSVC_x86:
     strategy:
       matrix:
-        os: [2019, 2022]
-        stdver: [17, 20]
-        cfg: [Debug, Release]
+        os: [ 2019, 2022 ]
+        stdver: [ 17, 20 ]
+        cfg: [ Debug, Release ]
     runs-on: windows-${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
@@ -43,13 +60,13 @@ jobs:
   Win_clang-cl:
     strategy:
       matrix:
-        os: [2019]
-        stdver: [17, 20]
-        cfg: [Debug, Release]
+        os: [ 2019 ]
+        cpp_version: [ 17, 20 ]
+        build_type: [ Debug, Release ]
     runs-on: windows-${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
       - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd { matrix.os }} ${{ matrix.cfg }} ${{ matrix.stdver }}
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd { matrix.os }} ${{ matrix.build_type }} ${{ matrix.cpp_version }}
       - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd ${{ matrix.os }} ${{ matrix.cfg }}
+        run: .\ci_scripts\ci_windows_test.cmd ${{ matrix.os }} ${{ matrix.build_type }}
