@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Create Build
         run: |
-          md ${{ env.DAW_BUILD_DIR }}
+          mkdir ${{ env.DAW_BUILD_DIR }}
       - name: Build Dependencies
         env:
           CXX: ${{ matrix.toolset }}
