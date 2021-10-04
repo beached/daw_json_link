@@ -11,13 +11,13 @@ on:
 
 jobs:
   MSVC_setup:
-  strategy:
-    fail-fast: false
-    matrix:
-      os: [ windows-2019, windows-2022 ]
-  runs-on: ${{ matrix.os }}
-  steps:
-    - uses: actions/checkout@v1
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-2019, windows-2022 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
 
   MSVC_run:
     needs: MSVC_setup
