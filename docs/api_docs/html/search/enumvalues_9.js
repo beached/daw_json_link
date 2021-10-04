@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['real_2021',['Real',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a7f80fcc452c2f1ed2bb51b39d0864df1',1,'daw::json::DAW_JSON_VER']]],
-  ['runtime_2022',['runtime',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a54815d846b87e4fa7226e92f2d52bc1eab4a619251c5c397f26d05c9b0e7bf97a',1,'daw::json::DAW_JSON_VER']]]
+  ['onlyallow7bitsstrings_0',['OnlyAllow7bitsStrings',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ac7d5c0a0c5e201a1083c6d26ae974aa0a61449c874d0307a5017a811403b7ff8c',1,'daw::json::DAW_JSON_VER']]]
 ];
