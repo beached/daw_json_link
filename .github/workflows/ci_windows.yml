@@ -31,12 +31,11 @@ jobs:
         cpp_version: [ 17, 20 ]
         build_type: [ Debug, Release ]
         arch: [ x64, Win32 ]
-        os: [
+        os:
           - name: windows-2019
             prefix: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
           - name: windows-2022
             prefix: "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
-        ]
         compiler: [
           - name: cl
             toolset: v142
