@@ -11,6 +11,17 @@ on:
 
 jobs:
   MSVC:
+    permissions:
+      actions: none
+      checks: none
+      contents: none
+      deployments: none
+      issues: none
+      packages: none
+      pull-requests: none
+      repository-projects: none
+      security-events: none
+      statuses: none
     defaults:
       run:
         shell: cmd
@@ -20,22 +31,34 @@ jobs:
         cpp_version: [ 17, 20 ]
         build_type: [ Debug, Release ]
         arch: [ x64, Win32 ]
-        os: [ windows-2019, windows-2022 ]
+        os: [
+          - name: windows-2019
+            prefix: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
+          - name: windows-2022
+            prefix: "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+        ]
+        compiler: [
+          - name: cl
+            toolset: v142
+          - name: clang-cl
+            toolset: ClangCL
+        ]
     runs-on: ${{ matrix.os }}
+    name: ${{ matrix.compiler.name }}_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
     steps:
       - uses: actions/checkout@v2
       - name: Create Build
         run: |
-          md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
+          md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.compiler.name }}
       - name: CMake Config
         run: |
-          cmake -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
+          cmake -T ${{ matrix.compiler.toolset }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
       - name: Build
         run: |
           cmake --build build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ --target full
       - name: Test
         run: |
-          ctest -j2 -VV --timeout 1200 --test-dir  build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
+          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir  build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
 
 #  Win_clang-cl:
 #    strategy:
