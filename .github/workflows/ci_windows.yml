@@ -16,22 +16,15 @@ jobs:
       matrix:
         stdver: [ 17, 20 ]
         build_type: [ Debug, Release ]
-        config:
-          - {
-            arch: x64,
-            os: "windows-2019",
-            msvc_path: "C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/ENTERPRISE",
-            environment_script: "C:/PROGRAM FILES (X86)/MICROSOFT VISUAL STUDIO/2019/ENTERPRISE/VC/Auxiliary/Build/vcvars64.bat" amd64
-          },
-          - {
-            arch: amd64,
-            os: "windows-2022",
-            msvc_path: "C:/PROGRAM FILES/MICROSOFT VISUAL STUDIO/2022/ENTERPRISE",
-            environment_script: "C:/PROGRAM FILES/MICROSOFT VISUAL STUDIO/2022/ENTERPRISE/VC/Auxiliary/Build/vcvars64.bat" amd64
-          }
-    runs-on: ${{ matrix.config.os }}
+        arch: [ x64, x86 ]
+        os: [ windows-2019, windows-2022 ]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: ${{ matrix.arch }}
       - name: Create Build
         run: |
           md build
@@ -39,9 +32,9 @@ jobs:
       - name: CMake Config
         run: cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=cl.exe -DCMAKE_C_COMPILER=cl.exe -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -DCMAKE_CXX_STANDARD=${{ matrix.stdver }} ..
       - name: Build
-        run: cmake --build . --target full --config ${{ matrix.build_type }} -j 2
+        run: cmake --build . --target full --config ${{ matrix.build_type }} -j 3
       - name: Test
-        run: ctest -C ${{ matrix.build_type }} -j5 -VV --timeout 1200
+        run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200
   Win_MSVC_x86:
     strategy:
       matrix:
