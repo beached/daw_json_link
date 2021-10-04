@@ -35,18 +35,18 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Setup APT and Base Dependencies
-          - run: |
-              sudo wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-              sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
-              sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-13 main'
-              sudo apt-udate
-              sudo apt install ninja-build libunwind-dev
+        run: |
+          sudo wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-13 main'
+          sudo apt-udate
+          sudo apt install ninja-build libunwind-dev
       - name: Clang Dependencies
-          if: startsWith( ${{matrix.toolset}}, 'clang' )
-          run: |
-            daw_clang_ver = $(echo ${{matrix.toolset}} | cut -d- -f2)
-            sudo apt install clang-$daw_clang_ver libc++-$daw_clang_ver-dev libc++abi-$daw_clang_ver-dev  ${{matrix.toolset}}
-    - name: GCC Dependencies
+        if: startsWith( ${{matrix.toolset}}, 'clang' )
+        run: |
+          daw_clang_ver = $(echo ${{matrix.toolset}} | cut -d- -f2)
+          sudo apt install clang-$daw_clang_ver libc++-$daw_clang_ver-dev libc++abi-$daw_clang_ver-dev  ${{matrix.toolset}}
+      - name: GCC Dependencies
         if: startsWith( ${{matrix.toolset}}, 'g++' )
         run: |
           daw_gcc_ver = $(echo ${{matrix.toolset}} | cut -d- -f2)
