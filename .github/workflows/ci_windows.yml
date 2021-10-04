@@ -57,7 +57,7 @@ jobs:
           cmake ${{ env.DAW_TOOLSET_CMD }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ .
       - name: Build
         run: |
-          cmake --build ${{ env.DAW_BUILD_DIR }}/ --target full
+          cmake --build ${{ env.DAW_BUILD_DIR }} --target full
       - name: Test
         run: |
-          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 ${{ env.DAW_BUILD_DIR }}/
+          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 ${{ env.DAW_BUILD_DIR }}
