@@ -42,12 +42,12 @@ jobs:
           sudo apt update
           sudo apt install ninja-build libunwind-dev
       - name: Clang Dependencies
-        if: startsWith( ${{matrix.toolset}}, 'clang' )
+        if: startsWith( ${{matrix.toolset}}, 'clang' ) == true
         run: |
           set daw_clang_ver = $(echo ${{matrix.toolset}} | cut -d- -f2)
           sudo apt install clang-$daw_clang_ver libc++-$daw_clang_ver-dev libc++abi-$daw_clang_ver-dev  ${{matrix.toolset}}
       - name: GCC Dependencies
-        if: startsWith( ${{matrix.toolset}}, 'g++' )
+        if: startsWith( ${{matrix.toolset}}, 'g++' ) == true
         run: |
           set daw_gcc_ver = $(echo ${{matrix.toolset}} | cut -d- -f2)
           sudo apt install gcc-$daw_clang_ver g++-$daw_clang_ver
