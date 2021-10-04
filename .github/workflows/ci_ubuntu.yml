@@ -49,6 +49,7 @@ jobs:
         with:
           path: |
             /var/cache/apt
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pkgcache.bin') }}
       - name: Setup APT and Base Dependencies
         run: |
           sudo wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
