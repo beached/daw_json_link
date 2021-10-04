@@ -1,0 +1,48 @@
+name: MacOS
+
+on:
+  push:
+    branches: [ release, develop ]
+  pull_request:
+    push:
+      branches-ignore: develop
+    pull_request:
+      branches-ignore: develop
+
+jobs:
+  CI_Tests:
+    permissions:
+      actions: none
+      checks: none
+      contents: none
+      deployments: none
+      issues: none
+      packages: none
+      pull-requests: none
+      repository-projects: none
+      security-events: none
+      statuses: none
+    strategy:
+      fail-fast: false
+      matrix:
+        cpp_version: [ 17, 20 ]
+        build_type: [ Debug, Release ]
+        os: [ macOS-10.15, macOS-11  ]
+        toolset: [ g++-11, clang++ ]
+    runs-on: ${{ matrix.os }}
+    name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.build_type }}"
+    env:
+      DAW_BUILD_DIR: "build_${{ matrix.cpp_version }}_${{ matrix.build_type }}_${{ matrix.toolset }}"
+    steps:
+      - uses: actions/checkout@v1
+      - name: Create Build
+        run: |
+          md ${{ env.DAW_BUILD_DIR }}
+      - name: Build Dependencies
+        env:
+          CXX=${{ matrix.toolset }}
+        run: cmake -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DDAW_ALLOW_SSE42=ON -DDAW_JSON_USE_SANITIZERS=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }}
+      - name: Build
+        run: cmake --build ${{ env.DAW_BUILD_DIR }}/ --target full
+      - name: Test
+        run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir ${{ env.DAW_BUILD_DIR }}/
