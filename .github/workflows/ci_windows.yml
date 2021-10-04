@@ -10,7 +10,7 @@ on:
       branches-ignore: develop
 
 jobs:
-  MSVC_setup:
+  GIT_setup:
     strategy:
       fail-fast: false
       matrix:
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v1
 
   MSVC_run:
-    needs: MSVC_setup
+    needs: GIT_setup
     defaults:
       run:
         shell: cmd
@@ -36,12 +36,16 @@ jobs:
       - name: Create Build
         run: |
           md build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
+          cd build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}
       - name: CMake Config
-        run: cmake -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON .
+        #run: cmake -Bbuild_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON .
+        run: cmake -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON ..
       - name: Build
-        run: cmake --build build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ --target full --config ${{ matrix.build_type }} -j 3
+        #run: cmake --build build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/ --target full --config ${{ matrix.build_type }} -j 3
+        run: cmake --target full --config ${{ matrix.build_type }} -j 3
       - name: Test
-        run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/
+        #run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}/
+        run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200
 
 #  Win_clang-cl:
 #    strategy:
