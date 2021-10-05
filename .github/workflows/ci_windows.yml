@@ -53,17 +53,17 @@ jobs:
         if: matrix.arch == 'x64'
         run: echo "Using Ninja to build"
         env:
-          DAW_FLAGS: "-NNinja"
+          DAW_CMAKE_FLAGS: "-NNinja"
       - name: "x86 Flags"
         if: matrix.arch == 'x86'
         run: echo "Using MSVC Solutions to build"
         env:
-          DAW_FLAGS: "-A x86"
+          DAW_CMAKE_FLAGS: "-A x86"
       - name: Setup Build Environment
         run: |
           md ${{ env.DAW_BUILD_DIR }}
       - name: CMake Config
-        run: cmake.exe ${{ env.DAW_TOOLSET_CMD }} ${{ env.DAW_FLAGS }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
+        run: cmake.exe ${{ env.DAW_TOOLSET_CMD }} ${{ env.DAW_CMAKE_FLAGS }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
       - name: Build
         run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full --config ${{ matrix.build_type }}
       - name: Test
