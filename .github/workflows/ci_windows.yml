@@ -29,22 +29,22 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "" }
-          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "" }
-          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "" }
-          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "" }
-          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "" }
-          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "" }
-          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "" }
-          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "" }
-          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
-          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
-          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
-          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
-          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
-          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
-          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
-          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC }
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC }
+          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC }
+          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC }
+          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC }
+          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC }
+          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC }
+          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC }
+          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC }
+          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC }
           - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL" }
           - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL" }
           - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: " -T ClangCL" }
@@ -59,11 +59,14 @@ jobs:
       DAW_BUILD_DIR: "build_${{ matrix.config.cpp_version }}_${{ matrix.config.arch }}_${{ matrix.config.build_type }}_${{ matrix.config.toolset }}"
     steps:
       - uses: actions/checkout@v1
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.config.arch }}
       - name: Setup Build Environment
         run: |
           md ${{ env.DAW_BUILD_DIR }}
       - name: CMake Config
-        run: cmake.exe ${{ matrix.config.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.config.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
+        run: cmake.exe -GNinja ${{ matrix.config.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.config.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
       - name: Build
         run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full --config ${{ matrix.config.build_type }}
       - name: Test
