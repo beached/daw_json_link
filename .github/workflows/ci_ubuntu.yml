@@ -63,14 +63,10 @@ jobs:
           echo "DAW_CLANG_VER=$(echo ${{matrix.toolset}} | cut -d- -f2)" >> $GITHUB_ENV
       - name: Get Clang Environment
         if: startsWith( matrix.toolset, 'clang' )
-        env:
-          CC: clang-${{ env.DAW_CLANG_VER }}
-          CXX: clang++-${{ env.DAW_CLANG_VER }}
-          CXXFLAGS: -stdlib=libc++
         run: |
-          echo ${{ env.CC }}
-          echo ${{ env.CXX }}
-          echo ${{ env.CXXFLAGS }}
+          echo "CC=$(echo clang-${{ env.DAW_CLANG_VER }})" >> $GITHUB_ENV
+          echo "CXX=$(echo clang++-${{ env.DAW_CLANG_VER }})" >> $GITHUB_ENV
+          echo "CXXFLAGS='-stdlib=libc++'" >> $GITHUB_ENV
       - name: Install Clang Environment
         if: startsWith( matrix.toolset, 'clang' )
         run: |
@@ -81,14 +77,9 @@ jobs:
           echo "DAW_GCC_VER=$(echo ${{matrix.toolset}} | cut -d- -f2)" >> $GITHUB_ENV
       - name: Set GCC Environment
         if: startsWith( matrix.toolset, 'g++' )
-        env:
-          CC: gcc-${{ env.DAW_CLANG_VER }}
-          CXX: g++-${{ env.DAW_CLANG_VER }}
-          CXXFLAGS: ""
         run: |
-          echo ${{ env.CC }}
-          echo ${{ env.CXX }}
-          echo ${{ env.CXXFLAGS }}
+          echo "CC=$(echo gcc-${{ env.DAW_GCC_VER }})" >> $GITHUB_ENV
+          echo "CXX=$(echo g++-${{ env.DAW_GCC_VER }})" >> $GITHUB_ENV
       - name: Install GCC Environment
         if: startsWith( matrix.toolset, 'g++' )
         run: |
