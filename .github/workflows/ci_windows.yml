@@ -29,7 +29,6 @@ jobs:
       fail-fast: false
       matrix:
         config:
-# x64
           - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja" }
           - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja" }
           - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja" }
@@ -38,7 +37,6 @@ jobs:
           - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja" }
           - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja" }
           - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja" }
-# Win32
           - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
           - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
           - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
@@ -47,7 +45,6 @@ jobs:
           - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
           - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
           - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
-# ClangCL
           - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
           - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
           - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
@@ -56,22 +53,21 @@ jobs:
           - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
           - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
           - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
-
-    runs-on: ${{ matrix.os }}
-    name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.arch }} ${{ matrix.build_type }}"
+    runs-on: ${{ matrix.config.os }}
+    name: "${{ matrix.config.os }} ${{ matrix.config.toolset }} ${{ matrix.config.cpp_version }} ${{ matrix.config.arch }} ${{ matrix.config.build_type }}"
     env:
-      DAW_BUILD_DIR: "build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.toolset }}"
+      DAW_BUILD_DIR: "build_${{ matrix.config.cpp_version }}_${{ matrix.config.arch }}_${{ matrix.config.build_type }}_${{ matrix.config.toolset }}"
     steps:
       - uses: actions/checkout@v1
       - name: Setup Build Environment
         run: |
           md ${{ env.DAW_BUILD_DIR }}
       - name: CMake Config
-        run: cmake.exe ${{ matrix.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
+        run: cmake.exe ${{ matrix.config.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.config.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
       - name: Build
-        run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full --config ${{ matrix.build_type }}
+        run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full --config ${{ matrix.config.build_type }}
       - name: Test
-        run: ctest.exe -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir ${{ env.DAW_BUILD_DIR }}/
+        run: ctest.exe -C ${{ matrix.config.build_type }} -j2 -VV --timeout 1200 --test-dir ${{ env.DAW_BUILD_DIR }}/
       - name: Archive any crashes as an artifact
         uses: actions/upload-artifact@v2
         if: always( )
