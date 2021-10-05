@@ -52,7 +52,7 @@ jobs:
           md ${{ env.DAW_BUILD_DIR }}
       - name: CMake Config
         run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{matrix.config.arch}}
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{matrix.config.arch}}
           cmake.exe ${{ matrix.config.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.config.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
       - name: Build
         run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full --config ${{ matrix.config.build_type }}
@@ -112,7 +112,7 @@ jobs:
           md ${{ env.DAW_BUILD_DIR }}
       - name: CMake Config
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{matrix.config.arch}}
+          "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{matrix.config.arch}}
           cmake.exe ${{ matrix.config.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.config.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
       - name: Build
         run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full --config ${{ matrix.config.build_type }}
