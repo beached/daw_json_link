@@ -63,12 +63,12 @@ jobs:
           echo "DAW_CLANG_VER=$(echo ${{matrix.toolset}} | cut -d- -f2)" >> $GITHUB_ENV
       - name: Install Clang Dependencies
         if: startsWith( matrix.toolset, 'clang' )
-        run: |
-          sudo apt install clang-${{ env.DAW_CLANG_VER  }} libc++-${{ env.DAW_CLANG_VER }}-dev libc++abi-${{ env.DAW_CLANG_VER }}-dev
         env:
           CC: clang-${{ env.DAW_CLANG_VER }}
           CXX: clang++-${{ env.DAW_CLANG_VER }}
-          CXXFLAGS: --stdlib=libc++
+          CXXFLAGS: -stdlib=libc++
+        run: |
+          sudo apt install clang-${{ env.DAW_CLANG_VER  }} libc++-${{ env.DAW_CLANG_VER }}-dev libc++abi-${{ env.DAW_CLANG_VER }}-dev
       - name: Get GCC version
         if: startsWith( matrix.toolset, 'g++' )
         run: |
@@ -83,6 +83,9 @@ jobs:
       - name: Create Build
         run: |
           mkdir build
+      - name: Environment
+        run: |
+          echo "CC=${{ env.CC }}\nCXX=${{ env.CXX }}\nCXXFLAGS=${{ env.CXXFLAGS }}"
       - name: Build Dependencies
         env:
           CXX: ${{ matrix.toolset }}
