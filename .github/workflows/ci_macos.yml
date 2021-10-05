@@ -57,4 +57,5 @@ jobs:
             leak-*
             timeout-*
             **/LastTest.log
+            /cores/**
           if-no-files-found: ignore
