@@ -49,6 +49,8 @@ jobs:
         with:
           path: |
             /var/cache/apt
+            !/var/cache/apt/archives/lock
+            !/var/cache/apt/archives/partial
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.os }}-${{ matrix.toolset }}-${{ matrix.cpp_version }}-${{ matrix.build_type }}-${{ hashFiles('**/pkgcache.bin') }}
       - name: Setup APT and Base Dependencies
         run: |
@@ -112,5 +114,5 @@ jobs:
             crash-*
             leak-*
             timeout-*
-            **LastTest.log
+            **/LastTest.log
           if-no-files-found: ignore

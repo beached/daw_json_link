@@ -40,20 +40,35 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: "Using MSVC"
-        if: ${{ matrix.toolset == 'MSVC' }}
+        if: matrix.toolset == 'MSVC'
         run: echo "Using MSVC"
         env:
           DAW_TOOLSET_CMD: ""
       - name: "Using ClangCL"
-        if: ${{ matrix.toolset == 'ClangCL' }}
+        if: matrix.toolset == 'ClangCL'
         run: echo "Using ClangCL"
         env:
           DAW_TOOLSET_CMD: "-T ClangCL"
-      - name: Create Build
+      - name: Set VCVars Path 2019
+        if: matrix.os == 'windows-2019'
+        run: |
+          echo "DAW_VC_VARS_CMD=C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" >> $GITHUB_ENV
+      - name: Set VCVars Path 2019
+        if: matrix.os == 'windows-2022'
+        run: |
+          echo "DAW_VC_VARS_CMD=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat" >> $GITHUB_ENV
+      - name: Setup Build Environment(Win32)
+        if: matrix.arch == 'Win32'
         run: |
           md ${{ env.DAW_BUILD_DIR }}
+          call ${{ env.DAW_VC_VARS_CMD }} x86
+      - name: Setup Build Environment(Win32)
+        if: matrix.arch == 'x64'
+        run: |
+          md ${{ env.DAW_BUILD_DIR }}
+          call ${{ env.DAW_VC_VARS_CMD }} amd64
       - name: CMake Config
-        run: cmake ${{ env.DAW_TOOLSET_CMD }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
+        run: cmake -GNinja ${{ env.DAW_TOOLSET_CMD }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
       - name: Build
         run: cmake --build ${{ env.DAW_BUILD_DIR }}/ --target full
       - name: Test
@@ -67,5 +82,5 @@ jobs:
             crash-*
             leak-*
             timeout-*
-            **LastTest.log
+            **/LastTest.log
           if-no-files-found: ignore

@@ -56,5 +56,5 @@ jobs:
             crash-*
             leak-*
             timeout-*
-            **LastTest.log
+            **/LastTest.log
           if-no-files-found: ignore
