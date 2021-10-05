@@ -28,31 +28,46 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cpp_version: [ 17, 20 ]
-        build_type: [ Debug, Release ]
-        arch: [ x64, Win32 ]
-        os: [ windows-2019, windows-2022 ]
-        toolset: [ MSVC, ClangCL ]
+        config:
+# x64
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja" }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja" }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja" }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja" }
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja" }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja" }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja" }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja" }
+# Win32
+          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
+          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
+          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
+          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-A x86" }
+          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
+          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
+          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
+          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-A x86" }
+# ClangCL
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-G Ninja -T ClangCL" }
+
     runs-on: ${{ matrix.os }}
     name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.arch }} ${{ matrix.build_type }}"
     env:
       DAW_BUILD_DIR: "build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.toolset }}"
     steps:
       - uses: actions/checkout@v1
-      - name: "If using ClangCL"
-        if: matrix.toolset == 'ClangCL'
-        run: echo "DAW_TOOLSET_CMD=-T ClangCL" >> $GITHUB_ENV
-      - name: "x64 Flags"
-        if: matrix.arch == 'x64'
-        run: echo "DAW_CMAKE_FLAGS=-GNinja" >> $GITHUB_ENV
-      - name: "x86 Flags"
-        if: matrix.arch == 'x86'
-        run: echo "DAW_CMAKE_FLAGS=-A x86" >> $GITHUB_ENV
       - name: Setup Build Environment
         run: |
           md ${{ env.DAW_BUILD_DIR }}
       - name: CMake Config
-        run: cmake.exe ${{ env.DAW_TOOLSET_CMD }} ${{ env.DAW_CMAKE_FLAGS }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
+        run: cmake.exe ${{ matrix.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
       - name: Build
         run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full --config ${{ matrix.build_type }}
       - name: Test
