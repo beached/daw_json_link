@@ -29,93 +29,39 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
 #          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
 #          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
 #          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
 #          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
 #          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
 #          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
-          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
+#          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
           - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: " -T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
-          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
+ #         - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+#          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+#          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+#          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+#          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+#          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
     runs-on: ${{ matrix.config.os }}
     name: "${{ matrix.config.os }} ${{ matrix.config.toolset }} ${{ matrix.config.cpp_version }} ${{ matrix.config.arch }} ${{ matrix.config.build_type }}"
     env:
       DAW_BUILD_DIR: "build_${{ matrix.config.cpp_version }}_${{ matrix.config.arch }}_${{ matrix.config.build_type }}_${{ matrix.config.toolset }}"
     steps:
       - uses: actions/checkout@v1
-      - name: Setup Build Environment
-        run: |
-          md ${{ env.DAW_BUILD_DIR }}
-      - name: CMake Config
-        run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{matrix.config.arch}}
-          echo "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\Llvm\x64\bin" >> $GITHUB_PATH
-          cmake.exe ${{ matrix.config.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.config.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
-      - name: Build
-        run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full --config ${{ matrix.config.build_type }}
-      - name: Test
-        run: ctest.exe -C ${{ matrix.config.build_type }} -j2 -VV --timeout 1200 --test-dir ${{ env.DAW_BUILD_DIR }}/
-      - name: Archive any crashes as an artifact
-        uses: actions/upload-artifact@v2
-        if: always( )
+      - uses: beached/msvc-dev-cmd@285e7c0b9b57a02c900951da93a77e656425d783
         with:
-          name: crashes
-          path: |
-            crash-*
-            leak-*
-            timeout-*
-            **/LastTest.log
-          if-no-files-found: ignore
-  Windows2022:
-    permissions:
-      actions: none
-      checks: none
-      contents: none
-      deployments: none
-      issues: none
-      packages: none
-      pull-requests: none
-      repository-projects: none
-      security-events: none
-      statuses: none
-
-    defaults:
-      run:
-        shell: cmd
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          #          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-          #          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-          #          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-          #          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-          #          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-          #          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-          #          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-          #          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2022, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
-          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
-          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
-          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
-    runs-on: ${{ matrix.config.os }}
-    name: "${{ matrix.config.os }} ${{ matrix.config.toolset }} ${{ matrix.config.cpp_version }} ${{ matrix.config.arch }} ${{ matrix.config.build_type }}"
-    env:
-      DAW_BUILD_DIR: "build_${{ matrix.config.cpp_version }}_${{ matrix.config.arch }}_${{ matrix.config.build_type }}_${{ matrix.config.toolset }}"
-    steps:
-      - uses: actions/checkout@v1
+          arch: ${{ matrix.config.arch }}
       - name: Setup Build Environment
-        run: |
-          md ${{ env.DAW_BUILD_DIR }}
+        run: md ${{ env.DAW_BUILD_DIR }}
       - name: CMake Config
-        run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{matrix.config.arch}}
-          echo "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\Llvm\x64\bin" >> $GITHUB_PATH
-          cmake.exe ${{ matrix.config.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.config.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
+        run: cmake.exe ${{ matrix.config.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.config.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
       - name: Build
         run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full --config ${{ matrix.config.build_type }}
       - name: Test
