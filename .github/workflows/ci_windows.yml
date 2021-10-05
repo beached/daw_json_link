@@ -52,11 +52,11 @@ jobs:
       - name: Set VCVars Path 2019
         if: matrix.os == 'windows-2019'
         run: |
-          echo "DAW_VC_VARS_CMD=C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" >> $GITHUB_ENV
+          echo "DAW_VC_VARS_CMD=\"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat\"" >> $GITHUB_ENV
       - name: Set VCVars Path 2019
         if: matrix.os == 'windows-2022'
         run: |
-          echo "DAW_VC_VARS_CMD=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat" >> $GITHUB_ENV
+          echo "DAW_VC_VARS_CMD=\"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat\"" >> $GITHUB_ENV
       - name: Setup Build Environment(Win32)
         if: matrix.arch == 'Win32'
         run: |
