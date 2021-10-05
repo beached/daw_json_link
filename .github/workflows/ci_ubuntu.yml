@@ -99,7 +99,7 @@ jobs:
           ulimit -c unlimited
           ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build/
       - name: Fuzzing
-        if: matrix.toolset == 'clang++-13'
+        if: matrix.toolset == 'clang++-12'
         run: |
           ulimit -c unlimited
           cmake --build build/ --target=daw_json_fuzzing
