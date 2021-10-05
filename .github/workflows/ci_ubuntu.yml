@@ -68,6 +68,7 @@ jobs:
           echo "CC=$(echo clang-${{ env.DAW_CLANG_VER }})" >> $GITHUB_ENV
           echo "CXX=$(echo clang++-${{ env.DAW_CLANG_VER }})" >> $GITHUB_ENV
           echo "CXXFLAGS='-stdlib=libc++'" >> $GITHUB_ENV
+          echo "UBSAN_OPTIONS='halt_on_errors=1'" >> $GITHUB_ENV
       - name: Install Clang Environment
         if: startsWith( matrix.toolset, 'clang' )
         run: |
@@ -94,3 +95,7 @@ jobs:
         run: cmake --build build/ --target full -- -k 0
       - name: Test
         run: ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build/
+      - name: Fuzzing
+        if: matrix.toolset == 'clang++-13'
+        run: |
+          ./build/tests/daw_json_fuzzing -max_len=4000 -max_total_time=120
