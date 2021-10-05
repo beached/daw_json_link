@@ -1,7 +1,7 @@
 name: Windows
 on:
   push:
-    branches: [ release ]
+    branches: [ release, develop ]
   pull_request:
     push:
       branches-ignore: develop
