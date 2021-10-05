@@ -59,7 +59,7 @@ jobs:
       DAW_BUILD_DIR: "build_${{ matrix.config.cpp_version }}_${{ matrix.config.arch }}_${{ matrix.config.build_type }}_${{ matrix.config.toolset }}"
     steps:
       - uses: actions/checkout@v1
-      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: beached/msvc-dev-cmd@v1.10.0
         with:
           arch: ${{ matrix.config.arch }}
       - name: Setup Build Environment
