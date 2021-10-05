@@ -52,13 +52,12 @@ jobs:
       - name: Setup Build Environment
         run: |
           md ${{ env.DAW_BUILD_DIR }}
-          cd ${{ env.DAW_BUILD_DIR }}
       - name: CMake Config
-        run: cmake.exe ${{ env.DAW_TOOLSET_CMD }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON ..
+        run: cmake.exe ${{ env.DAW_TOOLSET_CMD }} -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
       - name: Build
-        run: cmake.exe --build . --target full
+        run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full
       - name: Test
-        run: cmake.exe -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 .
+        run: ctest.exe -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir ${{ env.DAW_BUILD_DIR }}/
       - name: Archive any crashes as an artifact
         uses: actions/upload-artifact@v2
         if: always( )
