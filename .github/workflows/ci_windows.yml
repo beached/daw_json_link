@@ -21,7 +21,6 @@ jobs:
       repository-projects: none
       security-events: none
       statuses: none
-
     defaults:
       run:
         shell: cmd
@@ -30,25 +29,25 @@ jobs:
       matrix:
         config:
           - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
-#          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
           - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: " -T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
- #         - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
           - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
-#          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
     runs-on: ${{ matrix.config.os }}
     name: "${{ matrix.config.os }} ${{ matrix.config.toolset }} ${{ matrix.config.cpp_version }} ${{ matrix.config.arch }} ${{ matrix.config.build_type }}"
     env:

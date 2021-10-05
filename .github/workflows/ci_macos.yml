@@ -1,0 +1,61 @@
+name: MacOS
+
+on:
+  push:
+    branches: [ release ]
+  pull_request:
+    push:
+      branches-ignore: develop
+    pull_request:
+      branches-ignore: develop
+
+jobs:
+  CI_Tests:
+    permissions:
+      actions: none
+      checks: none
+      contents: none
+      deployments: none
+      issues: none
+      packages: none
+      pull-requests: none
+      repository-projects: none
+      security-events: none
+      statuses: none
+    strategy:
+      fail-fast: false
+      matrix:
+        cpp_version: [ 17, 20 ]
+        build_type: [ Debug, Release ]
+        os: [ macOS-10.15, macOS-11  ]
+        toolset: [ g++-11, clang++ ]
+    runs-on: ${{ matrix.os }}
+    name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.build_type }}"
+    steps:
+      - uses: actions/checkout@v1
+      - name: Create Build
+        run: |
+          mkdir build
+          brew install ninja
+      - name: Build Dependencies
+        env:
+          CXX: ${{ matrix.toolset }}
+        run: cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DDAW_ALLOW_SSE42=ON -DDAW_JSON_USE_SANITIZERS=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -Bbuild/ .
+      - name: Build
+        run: cmake --build build/ --target full -- -k 0
+      - name: Test
+        run: |
+          ulimit -c unlimited
+          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build/
+      - name: Archive any crashes as an artifact
+        uses: actions/upload-artifact@v2
+        if: always( )
+        with:
+          name: crashes
+          path: |
+            crash-*
+            leak-*
+            timeout-*
+            **/LastTest.log
+            /cores/**
+          if-no-files-found: ignore
