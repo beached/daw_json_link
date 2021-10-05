@@ -67,6 +67,10 @@ jobs:
           CC: clang-${{ env.DAW_CLANG_VER }}
           CXX: clang++-${{ env.DAW_CLANG_VER }}
           CXXFLAGS: -stdlib=libc++
+        run: |
+          echo ${{ env.CC }}
+          echo ${{ env.CXX }}
+          echo ${{ env.CXXFLAGS }}
       - name: Install Clang Environment
         if: startsWith( matrix.toolset, 'clang' )
         run: |
@@ -81,6 +85,10 @@ jobs:
           CC: gcc-${{ env.DAW_CLANG_VER }}
           CXX: g++-${{ env.DAW_CLANG_VER }}
           CXXFLAGS: ""
+        run: |
+          echo ${{ env.CC }}
+          echo ${{ env.CXX }}
+          echo ${{ env.CXXFLAGS }}
       - name: Install GCC Environment
         if: startsWith( matrix.toolset, 'g++' )
         run: |
@@ -88,12 +96,7 @@ jobs:
       - name: Create Build
         run: |
           mkdir build
-      - name: Environment
-        run: |
-          echo "CC=${{ env.CC }}\nCXX=${{ env.CXX }}\nCXXFLAGS=${{ env.CXXFLAGS }}"
       - name: Build Dependencies
-        env:
-          CXX: ${{ matrix.toolset }}
         run: cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DDAW_ALLOW_SSE42=ON -DDAW_JSON_USE_SANITIZERS=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -Bbuild/ .
       - name: Build
         run: cmake --build build/ --target full -- -k 0
