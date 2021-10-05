@@ -39,7 +39,7 @@ jobs:
       DAW_BUILD_DIR: "build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.toolset }}"
     steps:
       - uses: actions/checkout@v1
-      - name: "Using ClangCL"
+      - name: "If using ClangCL"
         if: matrix.toolset == 'ClangCL'
         run: echo "DAW_TOOLSET_CMD=-T ClangCL" >> $GITHUB_ENV
       - name: "x64 Flags"
