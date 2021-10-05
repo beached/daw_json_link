@@ -39,26 +39,15 @@ jobs:
       DAW_BUILD_DIR: "build_${{ matrix.cpp_version }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.toolset }}"
     steps:
       - uses: actions/checkout@v1
-      - name: "Using MSVC"
-        if: matrix.toolset == 'MSVC'
-        run: echo "Using MSVC"
-        env:
-          DAW_TOOLSET_CMD: ""
       - name: "Using ClangCL"
         if: matrix.toolset == 'ClangCL'
-        run: echo "Using ClangCL"
-        env:
-          DAW_TOOLSET_CMD: "-T ClangCL"
+        run: echo "DAW_TOOLSET_CMD=-T ClangCL" >> $GITHUB_ENV
       - name: "x64 Flags"
         if: matrix.arch == 'x64'
-        run: echo "Using Ninja to build"
-        env:
-          DAW_CMAKE_FLAGS: "-NNinja"
+        run: echo "DAW_CMAKE_FLAGS=-GNinja" >> $GITHUB_ENV
       - name: "x86 Flags"
         if: matrix.arch == 'x86'
-        run: echo "Using MSVC Solutions to build"
-        env:
-          DAW_CMAKE_FLAGS: "-A x86"
+        run: echo "DAW_CMAKE_FLAGS=-A x86" >> $GITHUB_ENV
       - name: Setup Build Environment
         run: |
           md ${{ env.DAW_BUILD_DIR }}
