@@ -28,7 +28,7 @@ jobs:
         cpp_version: [ 17, 20 ]
         build_type: [ Debug, Release ]
         os: [ macOS-10.15, macOS-11  ]
-        toolset: [ g++-11, clang++ ]
+        toolset: [ clang++ ]
     runs-on: ${{ matrix.os }}
     name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.build_type }}"
     steps:
