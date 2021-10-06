@@ -116,4 +116,5 @@ jobs:
             **/LastTest.log
             build/core*
             core*
+            /var/lib/systemd/coredump/*
           if-no-files-found: ignore
