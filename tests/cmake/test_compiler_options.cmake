@@ -43,13 +43,13 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
                 -Wno-mismatched-tags
         )
-        if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-            if (CLANG_VERSION_MAJOR EQUAL 13)
-                add_compile_options(
-                        -Wno-reserved-identifier
-                )
-            endif ()
-        endif ()
+        #if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+        #    if (CLANG_VERSION_MAJOR EQUAL 13)
+        #        add_compile_options(
+        #                -Wno-reserved-identifier
+        #        )
+        #    endif ()
+        #endif ()
         if (DAW_JSON_USE_STDEXCEPT)
             # When std::exception is the parent, this warning is emitted because the destructor is defined inline
             add_compile_options(-Wno-weak-vtables)
