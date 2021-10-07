@@ -99,7 +99,7 @@ jobs:
           sudo service apport stop
           ulimit -c unlimited
           ulimit -c
-          echo "core.%e.%p" > /proc/sys/kernel/core_pattern
+          sudo sysctl -w kernel.core_pattern=core.%e.%p
           ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build/
       - name: Fuzzing
         if: matrix.toolset == 'clang++-12'
