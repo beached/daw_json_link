@@ -65,16 +65,20 @@ static void test_json_array_iterator( std::string_view json_sv ) {
 
 template<size_t NUMVALUES>
 void test_func( ) {
+#ifdef DAW_USE_EXCEPTIONS
 	try {
+#endif
 		using int_type = uintmax_t;
 		auto const json_str = make_int_array_data<NUMVALUES, int_type>( );
 		auto const json_sv = std::string_view( json_str.data( ), json_str.size( ) );
 		test_from_json_array<NUMVALUES, int_type>( json_sv );
 		test_json_array_iterator<int_type>( json_sv );
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cout << "Exception while processing: " << je.reason( ) << '\n';
-		return;
+		exit( 1 );
 	}
+#endif
 }
 
 int main( int argc, char ** )
@@ -87,7 +91,17 @@ int main( int argc, char ** )
 	} else {
 		test_func<1'000ULL>( );
 	}
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
-	exit( 1 );
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

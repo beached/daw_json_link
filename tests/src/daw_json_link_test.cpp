@@ -480,8 +480,11 @@ unsigned long long test_dblparse( std::string_view num,
 		std::cout << "diff: " << ( lib_parse_dbl - strod_parse_dbl ) << '\n';
 
 		std::cout.precision( old_precision );
-		std::cout << std::dec << "unsigned diff: " << diff << '\n';
-		std::terminate( );
+		std::cout << std::dec << "ULP diff: " << diff << '\n';
+		if( diff > 3 ) {
+			std::cerr << "ERROR: Number parsed out of range\n";
+			exit( 1 );
+		}
 	}
 #endif
 	return diff;
@@ -555,7 +558,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 
 		std::cout.precision( old_precision );
 		std::cout << std::dec << "unsigned diff: " << diff << '\n';
-		std::terminate( );
+		daw::json::daw_json_error( daw::json::ErrorReason::NumberOutOfRange );
 	}
 #else
 	(void)orig;
@@ -684,6 +687,34 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
+#if defined( DAW_CX_BIT_CAST )
+constexpr bool cxdbl_tostr1( ) {
+	using namespace daw::json;
+	constexpr auto dbl_half = from_json<double>( "0.5" );
+	char buffer[128]{ };
+	auto buff_end = to_json( dbl_half, buffer );
+	auto buff_sv =
+	  std::string_view( buffer, static_cast<std::size_t>( buff_end - buffer ) );
+	daw_json_assert( buff_sv == "0.5", ErrorReason::InvalidString );
+	(void)from_json<double>( buff_sv );
+	return true;
+}
+static_assert( cxdbl_tostr1( ) );
+
+constexpr bool cxdbl_tostr2( ) {
+	using namespace daw::json;
+	constexpr auto dbl_half = from_json<double>( "1024.5" );
+	char buffer[128]{ };
+	auto buff_end = to_json( dbl_half, buffer );
+	auto buff_sv =
+	  std::string_view( buffer, static_cast<std::size_t>( buff_end - buffer ) );
+	daw_json_assert( buff_sv == "1024.5", ErrorReason::InvalidString );
+	(void)from_json<double>( buff_sv );
+	return true;
+}
+static_assert( cxdbl_tostr2( ) );
+#endif
+
 int main( int, char ** )
 #ifdef DAW_USE_EXCEPTIONS
   try
@@ -717,7 +748,7 @@ int main( int, char ** )
 		daw::expecting( not v.b );
 	}
 
-#if (defined( __GNUC__ ) and __GNUC__ <= 9) or (defined(_MSC_VER))
+#if( defined( __GNUC__ ) and __GNUC__ <= 9 ) or ( defined( _MSC_VER ) )
 #define CX
 #elif defined( DAW_JSON_NO_CONST_EXPR )
 #define CX
@@ -946,6 +977,7 @@ int main( int, char ** )
 	std::cout << "result: " << from_json<long double>( "1e-10000" ) << '\n';
 	test_dblparse( "1e-214748364", true );
 	test_dblparse( "0.89", true );
+	test_dblparse( "10070988951557009.8178168006534510403e-302", true );
 	test_dblparse(
 	  "2."
 	  "22507385850720113605740979670913197593481954635164564802342610972482222202"
@@ -1032,15 +1064,21 @@ int main( int, char ** )
 	static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 
 	auto const test_bad_float = []( ) -> bool {
+#ifdef DAW_USE_EXCEPTIONS
 		try {
+#endif
 			(void)from_json<double>( "0e "sv );
+#ifdef DAW_USE_EXCEPTIONS
 		} catch( daw::json::json_exception const & ) { return true; }
+#endif
 		return false;
 	};
 	daw_json_assert( test_bad_float( ), ErrorReason::Unknown );
 
 	auto const test_empty_map = []( ) -> bool {
+#ifdef DAW_USE_EXCEPTIONS
 		try {
+#endif
 			auto m = from_json<std::map<std::string, std::string>>( "{}"sv );
 			if( not m.empty( ) ) {
 				return false;
@@ -1048,19 +1086,25 @@ int main( int, char ** )
 			auto const s = to_json( m );
 
 			return s == "{}";
+#ifdef DAW_USE_EXCEPTIONS
 		} catch( daw::json::json_exception const &jex ) {
 			std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 			throw;
 		}
+#endif
 	};
 	daw_json_assert( test_empty_map( ), ErrorReason::Unknown );
 
 	auto const test_leading_zero = []( auto i ) {
 		using test_t = daw::remove_cvref_t<decltype( i )>;
+#ifdef DAW_USE_EXCEPTIONS
 		try {
+#endif
 			auto l0 = from_json<test_t>( "01.0"sv );
 			(void)l0;
+#ifdef DAW_USE_EXCEPTIONS
 		} catch( daw::json::json_exception const & ) { return true; }
+#endif
 		return false;
 	};
 	daw_json_assert( test_leading_zero( 0.0 ), ErrorReason::Unknown );
@@ -1080,6 +1124,8 @@ int main( int, char ** )
 	constexpr auto v1 = from_json<empty_ordered>( std::string_view( "[]" ) );
 	auto v1str = to_json( v1 );
 	(void)v1str;
+
+	std::cout << "JSON Link Version: " << json_link_version( ) << '\n';
 	std::cout << "done";
 }
 #ifdef DAW_USE_EXCEPTIONS

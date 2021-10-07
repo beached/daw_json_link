@@ -165,7 +165,8 @@ namespace daw::json {
 
 				auto tmp = m_state;
 
-				if constexpr( json_details::is_guaranteed_rvo_v<ParsePolicy> ) {
+				if constexpr( json_details::use_direct_construction_v<ParsePolicy,
+				                                                      JsonElement> ) {
 					auto const run_after_parse =
 					  op_star_cleanup<CharT, ParseState>{ m_can_skip, tmp };
 					(void)run_after_parse;

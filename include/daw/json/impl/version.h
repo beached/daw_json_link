@@ -10,8 +10,10 @@
 
 /// The version string used in namespace definitions.  Must be a valid namespace
 /// name.
-#if not defined( DAW_JSON_VER )
-#define DAW_JSON_VER v3_0_0
+#if not defined( DAW_JSON_VER_OVERRIDE )
+#define DAW_JSON_VER v3_0_0_beta
+#else
+#define DAW_JSON_VER DAW_JSON_VER_OVERRIDE
 #endif
 
 #if defined( __GNUC__ ) and not defined( __clang__ ) and \

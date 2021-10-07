@@ -88,7 +88,11 @@ public:
 			auto rng = p.value.get_raw_state( );
 			auto s =
 			  daw::string_view( rng.first, rng.size( ) ).pop_front( 10 ).to_string( );
+#ifdef DAW_USE_EXCEPTIONS
 			throw std::runtime_error( s );
+#else
+			std::abort( );
+#endif
 		}
 		}
 	}
@@ -140,30 +144,38 @@ extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
 	auto ofile = std::ofstream( "/dev/null", std::ios::trunc | std::ios::binary );
 	auto json_doc =
 	  std::string_view( reinterpret_cast<char const *>( data ), size );
+#ifdef DAW_USE_EXCEPTIONS
 	try {
+#endif
 		auto jv =
 		  daw::json::basic_json_value<daw::json::ConformancePolicy>( json_doc );
 		switch( jv.type( ) ) {
-		case daw::json::v3_0_0::JsonBaseParseTypes::Number:
+		case daw::json::JsonBaseParseTypes::Number:
 			ofile << daw::json::from_json<double>( jv );
 			break;
-		case daw::json::v3_0_0::JsonBaseParseTypes::Bool:
+		case daw::json::JsonBaseParseTypes::Bool:
 			ofile << daw::json::from_json<bool>( jv );
 			break;
-		case daw::json::v3_0_0::JsonBaseParseTypes::String:
+		case daw::json::JsonBaseParseTypes::String:
 			ofile << daw::json::from_json<std::string>( jv );
 			break;
-		case daw::json::v3_0_0::JsonBaseParseTypes::Class:
+		case daw::json::JsonBaseParseTypes::Class:
 			minify( json_doc, std::ostreambuf_iterator<char>( ofile ) );
 			break;
-		case daw::json::v3_0_0::JsonBaseParseTypes::Array:
+		case daw::json::JsonBaseParseTypes::Array:
 			minify( json_doc, std::ostreambuf_iterator<char>( ofile ) );
 			break;
-		case daw::json::v3_0_0::JsonBaseParseTypes::Null:
+		case daw::json::JsonBaseParseTypes::Null:
 			break;
-		case daw::json::v3_0_0::JsonBaseParseTypes::None:
+		case daw::json::JsonBaseParseTypes::None:
+#ifdef DAW_USE_EXCEPTIONS
 			throw std::exception( );
+#else
+		std::abort( );
+#endif
 		}
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( ... ) {}
+#endif
 	return 0;
 }

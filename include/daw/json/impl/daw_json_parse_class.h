@@ -17,6 +17,8 @@
 #include "daw_json_skip.h"
 #include "version.h"
 
+#include <daw/daw_consteval.h>
+#include <daw/daw_constinit.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
@@ -43,7 +45,7 @@ namespace daw::json {
 			/// @pre parse_state.front( ) == '['
 			///
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_ordered_class_member( template_param<JsonMember>,
 			                            std::size_t &member_index,
 			                            ParseState &parse_state ) {
@@ -94,7 +96,7 @@ namespace daw::json {
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
 			         typename ParseState, std::size_t N, typename CharT, bool B>
-			[[nodiscard]] constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_class_member( ParseState &parse_state,
 			                    locations_info_t<N, CharT, B> &locations ) {
 				parse_state.move_next_member_or_end( );
@@ -112,7 +114,8 @@ namespace daw::json {
 					if constexpr( NeedsClassPositions ) {
 						auto const cf = parse_state.class_first;
 						auto const cl = parse_state.class_last;
-						if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+						if constexpr( use_direct_construction_v<
+						                ParseState, without_name<JsonMember>> ) {
 							auto const after_parse = daw::on_scope_exit( [&] {
 								parse_state.class_first = cf;
 								parse_state.class_last = cl;
@@ -198,14 +201,12 @@ namespace daw::json {
 				};
 			} // namespace
 
-			// Prior to C++20, this will guarantee the data structure is
-			// initialized at compile time.  In the future, constinit should be
-			// fine.
 #if not defined( _MSC_VER ) or defined( __clang__ )
 			template<typename ParseState, typename... JsonMembers>
 			inline constexpr auto
 			  known_locations_v = make_locations_info<ParseState, JsonMembers...>( );
 #endif
+
 			/***
 			 * Parse to the user supplied class.  The parser will run left->right if
 			 * it can when the JSON document's order matches that of the order of
@@ -242,7 +243,12 @@ namespace daw::json {
 					  json_details::all_json_members_must_exist_v<T, ParseState>>(
 					  parse_state, old_class_pos );
 
-					return construct_value( template_args<T, Constructor>, parse_state );
+					if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
+						return T{ };
+					} else {
+						return construct_value( template_args<T, Constructor>,
+						                        parse_state );
+					}
 				} else {
 					using NeedClassPositions = std::bool_constant<(
 					  ( JsonMembers::must_be_class_member or ... ) )>;
@@ -254,7 +260,7 @@ namespace daw::json {
 					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
 #endif
 
-					if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+					if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
 						auto const run_after_parse = class_cleanup<
 						  json_details::all_json_members_must_exist_v<T, ParseState>,
 						  ParseState, decltype( old_class_pos )>{ parse_state,
@@ -329,7 +335,7 @@ namespace daw::json {
 
 				size_t current_idx = 0;
 
-				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+				if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
 					auto const run_after_parse = ordered_class_cleanup<
 					  json_details::all_json_members_must_exist_v<T, ParseState>,
 					  ParseState, decltype( old_class_pos )>{ parse_state,

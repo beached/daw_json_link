@@ -53,7 +53,9 @@ void test( char **argv, AllocType &alloc ) {
 	std::optional<daw::twitter::twitter_object_t> twitter_result{ };
 	std::optional<daw::citm::citm_object_t> citm_result{ };
 	std::optional<daw::geojson::Polygon> canada_result{ };
+#ifdef DAW_USE_EXCEPTIONS
 	try {
+#endif
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_twitter bench", json_sv1.size( ),
 		  [&]( auto f1 ) {
@@ -66,10 +68,12 @@ void test( char **argv, AllocType &alloc ) {
 		  json_sv1 );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Error while testing twitter.json\n";
 		std::cerr << to_formatted_string( jex ) << '\n';
 	}
+#endif
 	test_assert( twitter_result, "Missing value -> twitter_result" );
 	test_assert( not twitter_result->statuses.empty( ),
 	             "Expected values: twitter_result is empty" );
@@ -297,7 +301,14 @@ int main( int argc, char **argv )
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

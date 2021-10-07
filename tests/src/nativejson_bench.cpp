@@ -69,7 +69,10 @@ void test( char **argv ) {
 	std::optional<daw::citm::citm_object_t> citm_result{ };
 	std::optional<daw::geojson::Polygon> canada_result{ };
 
-	try {
+#ifdef DAW_USE_EXCEPTIONS
+	try
+#endif
+	{
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_twitter bench", std::size( json_sv1 ),
 		  [&twitter_result]( auto const &f1 ) {
@@ -78,10 +81,13 @@ void test( char **argv ) {
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( twitter_result );
-	} catch( json_exception const &jex ) {
+	}
+#ifdef DAW_USE_EXCEPTIONS
+	catch( json_exception const &jex ) {
 		std::cerr << "Error while testing twitter.json\n";
 		std::cerr << to_formatted_string( jex ) << '\n';
 	}
+#endif
 	test_assert( twitter_result, "Missing value -> twitter_result" );
 	test_assert( not twitter_result->statuses.empty( ),
 	             "Expected values: twitter_result is empty" );
@@ -250,31 +256,25 @@ int main( int argc, char **argv )
   try
 #endif
 {
-	try {
 #if defined( NDEBUG ) and not defined( DEBUG )
-		std::cout << "release run\n";
+	std::cout << "release run\n";
 #else
-		std::cout << "debug run\n";
+	std::cout << "debug run\n";
 #endif
-		if( argc < 4 ) {
-			std::cerr << "Must supply a filenames to open\n";
-			std::cerr << "twitter citm canada\n";
-			exit( 1 );
-		}
-		test<constexpr_exec_tag>( argv );
-
-		if constexpr( not std::is_same_v<simd_exec_tag, runtime_exec_tag> ) {
-			test<runtime_exec_tag>( argv );
-		}
-		test<simd_exec_tag>( argv );
-
-	} catch( json_exception const &je ) {
-		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
-		exit( EXIT_FAILURE );
+	if( argc < 4 ) {
+		std::cerr << "Must supply a filenames to open\n";
+		std::cerr << "twitter citm canada\n";
+		exit( 1 );
 	}
+	test<constexpr_exec_tag>( argv );
+
+	if constexpr( not std::is_same_v<simd_exec_tag, runtime_exec_tag> ) {
+		test<runtime_exec_tag>( argv );
+	}
+	test<simd_exec_tag>( argv );
 }
 #ifdef DAW_USE_EXCEPTIONS
-catch( json_exception const &jex ) {
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {

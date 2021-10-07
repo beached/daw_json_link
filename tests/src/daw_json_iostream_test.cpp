@@ -9,9 +9,12 @@
 #include "defines.h"
 
 #include <daw/json/daw_json_iostream.h>
+#include <daw/json/daw_json_link.h>
 
 #include <deque>
+#include <iostream>
 #include <list>
+#include <string_view>
 #include <vector>
 
 struct NumberX {

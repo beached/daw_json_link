@@ -155,7 +155,11 @@ void roundtrip( daw::Arguments const &args, std::string_view data,
 	}
 }
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv )
+#ifdef DAW_USE_EXCEPTIONS
+  try
+#endif
+{
 	std::ios::sync_with_stdio( false );
 
 	auto args = daw::Arguments( argc, argv );
@@ -192,3 +196,13 @@ int main( int argc, char **argv ) {
 	}
 #endif
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

@@ -450,7 +450,6 @@ namespace daw::json {
 		                Options, JsonCustomTypes::Literal, JsonNullDefault>>;
 
 		namespace json_details {
-
 			template<JsonBaseParseTypes PT>
 			constexpr std::size_t
 			find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {

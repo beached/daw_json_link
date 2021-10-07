@@ -190,12 +190,18 @@ int main( int argc, char **argv )
 		  return result / static_cast<float>( lats.size( ) );
 	  },
 	  json_data );
-
 	std::cout << "mid_lat2 of all is: " << mid_lat2 << '\n';
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

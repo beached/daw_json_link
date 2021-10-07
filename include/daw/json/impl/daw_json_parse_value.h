@@ -624,17 +624,17 @@ namespace daw::json {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 
-				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+				if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
 					// This relies on non-trivial dtor's being allowed.  So C++20
 					// constexpr or not in a constant expression.  It does allow for
 					// construction of classes without move/copy special members
-					if constexpr( not KnownBounds ) {
-						auto const run_after_parse =
-						  trim_left_cleanup<ParseState>{ parse_state };
-						(void)run_after_parse;
+					if constexpr( KnownBounds ) {
 						return json_data_contract_trait_t<element_t>::parse_to_class(
 						  parse_state, template_arg<JsonMember> );
 					} else {
+						auto const run_after_parse =
+						  trim_left_cleanup<ParseState>{ parse_state };
+						(void)run_after_parse;
 						return json_data_contract_trait_t<element_t>::parse_to_class(
 						  parse_state, template_arg<JsonMember> );
 					}
@@ -855,7 +855,7 @@ namespace daw::json {
 
 			template<typename Result, typename TypeList, std::size_t pos = 0,
 			         typename ParseState>
-			DAW_ATTRIB_FLATINLINE constexpr Result
+			DAW_ATTRIB_INLINE constexpr Result
 			parse_visit( std::size_t idx, ParseState &parse_state ) {
 				if( idx == pos ) {
 					using JsonMember = pack_element_t<pos, TypeList>;
@@ -1095,7 +1095,7 @@ namespace daw::json {
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState,
 			         std::size_t... Is>
-			DAW_ATTRIB_FLATINLINE constexpr json_result<JsonMember>
+			DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_tuple_value( ParseState &parse_state, std::index_sequence<Is...> ) {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
@@ -1137,7 +1137,8 @@ namespace daw::json {
 					if constexpr( sizeof...( Is ) > 1 ) {
 						++ClassIdx;
 						if( parse_state2.first == parse_state.first ) {
-							if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+							if constexpr( use_direct_construction_v<ParseState,
+							                                        JsonMember> ) {
 								auto const run_after_parse = daw::on_exit_success(
 								  [&] { parse_state.move_next_member_or_end( ); } );
 								(void)run_after_parse;
@@ -1166,7 +1167,7 @@ namespace daw::json {
 							                      parse_state );
 						}
 						++ClassIdx;
-						if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+						if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
 							auto const run_after_parse = daw::on_exit_success(
 							  [&] { parse_state.move_next_member_or_end( ); } );
 							(void)run_after_parse;
@@ -1189,7 +1190,7 @@ namespace daw::json {
 				parse_state.trim_left( );
 
 				std::size_t class_idx = 0;
-				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+				if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
 					auto const run_after_parse = ordered_class_cleanup<
 					  json_details::all_json_members_must_exist_v<JsonMember, ParseState>,
 					  ParseState, decltype( old_class_pos )>{ parse_state,
@@ -1230,7 +1231,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			DAW_ATTRIB_FLATINLINE constexpr json_result<JsonMember>
+			DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Tuple> ) {
 				using element_pack =
 				  typename JsonMember::sub_member_list; // tuple_elements_pack<tuple_t>;
@@ -1241,7 +1242,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			DAW_ATTRIB_FLATINLINE constexpr json_result<JsonMember>
+			DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::Unknown> ) {
 				using constructor_t = typename JsonMember::constructor_t;
@@ -1259,7 +1260,7 @@ namespace daw::json {
 
 			template<std::size_t N, typename JsonClass, bool KnownBounds,
 			         typename... JsonClasses, typename ParseState>
-			DAW_ATTRIB_FLATTEN constexpr json_result<JsonClass>
+			DAW_ATTRIB_INLINE constexpr json_result<JsonClass>
 			parse_nth_class( std::size_t idx, ParseState &parse_state ) {
 				// Precondition of caller to verify/ensure.
 				DAW_ASSUME( idx < sizeof...( JsonClasses ) );

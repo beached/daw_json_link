@@ -47,8 +47,11 @@ int main( int argc, char **argv )
 	// This works around a bug in MSVC and an error about
 	// '__builtin_array_init_helper' not being defined or constexpr during
 	// constexpr evaluation
+	// https://developercommunity.visualstudio.com/t/predefined-c-types-compiler-internal-warning-c4834/1491646
 #if defined( _MSC_VER ) and not defined( __clang__ ) and DAW_CXX_STANDARD == 20
+#if _MS_VER >= 1429
 #define NO_CX_TEST
+#endif
 #endif
 
 #if not defined( NO_CX_TEST )
@@ -57,8 +60,13 @@ int main( int argc, char **argv )
 	"a":[1,"Hi ♥️ ", true, 55]
 }
 )";
-
+#if defined( _MSVC_LANG ) and _MSVC_LANG > 201703L
+	// MSVC has a bug that can prevent constexpr evaluation
+	// https://developercommunity.visualstudio.com/t/error-C3615:-constexpr-function-__builti/1546452
+	static auto const cxf = daw::json::from_json<Foo>( json_data );
+#else
 	static constexpr auto const cxf = daw::json::from_json<Foo>( json_data );
+#endif
 
 	if( not( std::get<3>( cxf.a ) == 55 ) ) {
 		assert( std::get<3>( cxf.a ) == 55 );
@@ -86,7 +94,14 @@ int main( int argc, char **argv )
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

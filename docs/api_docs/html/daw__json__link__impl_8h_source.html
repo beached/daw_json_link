@@ -501,7 +501,7 @@ $(function() {
 <div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;      <span class="keyword">auto</span> known_locations = make_locations_info&lt;Range, JsonMembers...&gt;( );</div>
 <div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160; </div>
 <div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;      <span class="keywordflow">if</span> constexpr( is_guaranteed_rvo_v&lt;Range&gt; ) {</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;      <span class="keywordflow">if</span> constexpr( use_direct_construction_v&lt;Range&gt; ) {</div>
 <div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;        <span class="keyword">struct </span>cleanup_t {</div>
 <div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;          Range *rng_ptr;</div>
 <div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;          <a class="code" href="daw__json__parse__common_8h.html#a3280ece7a36714608b5f84386378dd9c">CPP20CONSTEXPR</a> <span class="keyword">inline</span> ~cleanup_t( ) noexcept( false ) {</div>
@@ -578,7 +578,7 @@ $(function() {
 <div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;    <span class="keyword">using</span> tp_t = decltype( std::forward_as_tuple(</div>
 <div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;      parse_ordered_class_member&lt;JsonMembers&gt;( current_idx, rng )... ) );</div>
 <div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160; </div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;    <span class="keywordflow">if</span> constexpr( is_guaranteed_rvo_v&lt;Range&gt; ) {</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;    <span class="keywordflow">if</span> constexpr( use_direct_construction_v&lt;Range&gt; ) {</div>
 <div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;      <span class="keyword">struct </span>cleanup_t {</div>
 <div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;        Range *ptr;</div>
 <div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;        <a class="code" href="daw__json__parse__common_8h.html#a3280ece7a36714608b5f84386378dd9c">CPP20CONSTEXPR</a> <span class="keyword">inline</span> ~cleanup_t( ) noexcept( false ) {</div>

@@ -34,12 +34,14 @@ int main( int argc, char **argv )
   try
 #endif
 {
+#ifdef DAW_USE_EXCEPTIONS
 	try {
+#endif
 		using namespace daw::json;
 #if defined( NDEBUG ) and not defined( DEBUG )
 		std::cout << "release run\n";
 #else
-		std::cout << "debug run\n";
+	std::cout << "debug run\n";
 #endif
 		if( argc < 4 ) {
 			std::cerr << "Must supply a filenames to open\n";
@@ -225,11 +227,20 @@ int main( int argc, char **argv )
 		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
 		             "Incorrect value" );
 		test_assert( canada_result, "Missing value" );
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
-	exit( 1 );
+#endif
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

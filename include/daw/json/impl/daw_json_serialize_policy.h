@@ -50,8 +50,7 @@ namespace daw::json {
 			std::size_t indentation_level = 0;
 
 			constexpr serialization_policy( OutputIterator it )
-			  : json_details::iterator_wrapper<OutputIterator>{ DAW_MOVE( it ) } {
-			}
+			  : json_details::iterator_wrapper<OutputIterator>{ DAW_MOVE( it ) } {}
 
 			static constexpr SerializationFormat serialization_format =
 			  json_details::serialization::get_bits_for<SerializationFormat>(

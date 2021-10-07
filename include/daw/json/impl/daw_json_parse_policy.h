@@ -388,7 +388,7 @@ namespace daw::json {
 				class_last = new_pos.l;
 			}
 
-			inline constexpr class_pos_t get_class_position( ) const {
+			[[nodiscard]] inline constexpr class_pos_t get_class_position( ) const {
 				return { class_first, class_last };
 			}
 
@@ -650,16 +650,5 @@ namespace daw::json {
 		using ConformancePolicy = BasicParsePolicy<parse_options(
 		  AllowEscapedNames::yes, MustVerifyEndOfDataIsValid::yes,
 		  IEEE754Precise::yes, ExcludeSpecialEscapes::yes )>;
-
-		namespace json_details {
-			/***
-			 * We are either not in a constexpr context or we have constexpr dtors.
-			 * This is generally used so that we can call cleanup code after parsing
-			 * the member
-			 */
-			template<typename ParsePolicy>
-			inline constexpr bool is_guaranteed_rvo_v =
-			  ParsePolicy::exec_tag_t::always_rvo;
-		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

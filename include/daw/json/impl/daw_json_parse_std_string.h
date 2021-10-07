@@ -70,7 +70,7 @@ namespace daw::json {
 					cp = ( cp - 0xD800U ) * 0x400U;
 					++first;
 					daw_json_assert_weak(
-						(parse_state.last - first >= 5) and *first == 'u',
+					  ( parse_state.last - first >= 5 ) and *first == 'u',
 					  ErrorReason::InvalidUTFEscape,
 					  parse_state ); // Expected parse_state to start with a \\u
 					++first;

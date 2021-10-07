@@ -342,7 +342,8 @@ namespace daw::json {
 			 * @return A T object
 			 */
 			template<typename JsonClass, typename ParseState>
-			[[maybe_unused, nodiscard]] static inline constexpr json_details::
+			[[maybe_unused,
+			  nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
 			  from_json_result_t<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type<JsonClass>::value );

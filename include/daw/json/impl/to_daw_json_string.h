@@ -278,7 +278,7 @@ namespace daw::json {
 
 			template<typename JsonMember, typename OutputIterator,
 			         typename parse_to_t>
-			[[nodiscard]] inline OutputIterator
+			[[nodiscard]] constexpr OutputIterator
 			to_daw_json_string( ParseTag<JsonParseTypes::Real>, OutputIterator it,
 			                    parse_to_t const &value );
 
@@ -657,7 +657,7 @@ namespace daw::json {
 
 			template<typename JsonMember, typename OutputIterator,
 			         typename parse_to_t>
-			[[nodiscard]] inline OutputIterator
+			[[nodiscard]] constexpr OutputIterator
 			to_daw_json_string( ParseTag<JsonParseTypes::Real>, OutputIterator it,
 			                    parse_to_t const &value ) {
 
@@ -1346,6 +1346,17 @@ namespace daw::json {
 			template<typename>
 			struct missing_required_mapping_for {};
 
+			// This is only ever called in a constant expression. But will not compile
+			// if exceptions are disabled and it tries to throw
+			template<typename Name>
+			missing_required_mapping_for<Name> missing_required_mapping_error( ) {
+#ifdef DAW_USE_EXCEPTIONS
+				throw missing_required_mapping_for<Name>{ };
+#else
+				std::terminate( );
+#endif
+			}
+
 			template<typename, typename...>
 			struct find_names_in_pack;
 
@@ -1363,7 +1374,7 @@ namespace daw::json {
 						}
 					}
 					if( n >= sizeof...( Haystack ) ) {
-						throw missing_required_mapping_for<Needle>{ };
+						missing_required_mapping_error<Needle>( );
 					}
 					DAW_UNREACHABLE( );
 				}

@@ -34,15 +34,19 @@ struct daw::json::json_data_contract<string_trail> {
 };
 
 bool test_string_trail( ) {
+#ifdef DAW_USE_EXCEPTIONS
 	try {
+#endif
 		static DAW_CONSTEXPR std::string_view json_data =
 		  R"({"b": 5, "c": true, "a": "hello", } )";
 		auto const result = daw::json::from_json<string_trail>( json_data );
 		test_assert( result.a == "hello", "Unexpected result" );
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "string trail parsing failed: " << je.reason( ) << '\n';
 		return false;
 	}
+#endif
 	return true;
 }
 /***********************************************/
@@ -189,29 +193,37 @@ bool test_array_member_trail( ) {
 
 	static DAW_CONSTEXPR std::string_view json_data =
 	  R"({"b": 5, "c": true, "a": [1,2,3,4], } )";
+#ifdef DAW_USE_EXCEPTIONS
 	try {
+#endif
 		auto const result = daw::json::from_json<array_member_trail>( json_data );
 		test_assert( result.a.size( ) == 4, "Unexpected result" );
 		test_assert( result.a[0] == 1, "Unexpected result" );
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "array_member trail parsing failed: " << je.reason( ) << '\n';
 		return false;
 	}
+#endif
 	return true;
 }
 
 bool test_array_trail( ) {
 	static DAW_CONSTEXPR std::string_view json_data = "[1,2,3,4,5,]";
+#ifdef DAW_USE_EXCEPTIONS
 	try {
+#endif
 		std::vector<int> const result =
 		  daw::json::from_json_array<int>( json_data );
 		test_assert( result.size( ) == 5, "Unexpected result" );
 		test_assert( result[0] == 1, "Unexpected result" );
 		test_assert( result[4] == 5, "Unexpected result" );
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "array trail parsing failed: " << je.reason( ) << '\n';
 		return false;
 	}
+#endif
 	return true;
 }
 
@@ -233,7 +245,17 @@ int main( int, char ** )
 	daw::expecting( test_string_trail( ) );
 	daw::expecting( test_array_member_trail( ) );
 	daw::expecting( test_array_trail( ) );
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
-	exit( 1 );
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

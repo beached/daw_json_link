@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include <daw/daw_consteval.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_string_view.h>
@@ -39,11 +40,12 @@ namespace daw::json {
 
 		private:
 			template<std::size_t... Is>
-			constexpr json_name( char const ( &ptr )[N], std::index_sequence<Is...> )
+			DAW_CONSTEVAL json_name( char const ( &ptr )[N],
+			                         std::index_sequence<Is...> )
 			  : m_data{ ptr[Is]... } {}
 
 		public:
-			constexpr json_name( char const ( &ptr )[N] )
+			DAW_CONSTEVAL json_name( char const ( &ptr )[N] )
 			  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
 
 			constexpr operator daw::string_view( ) const {
