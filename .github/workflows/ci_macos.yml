@@ -46,6 +46,7 @@ jobs:
       - name: Test
         run: |
           ulimit -c unlimited
+          ulimit -c
           ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build/
       - name: Archive any crashes as an artifact
         uses: actions/upload-artifact@v2
@@ -56,6 +57,5 @@ jobs:
             crash-*
             leak-*
             timeout-*
-            **/LastTest.log
             /cores/**
           if-no-files-found: ignore
