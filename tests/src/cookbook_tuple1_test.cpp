@@ -60,8 +60,13 @@ int main( int argc, char **argv )
 	"a":[1,"Hi ♥️ ", true, 55]
 }
 )";
-
+#if defined( _MSVC_LANG ) and _MSVC_LANG > 201703L
+	// MSVC has a bug that can prevent constexpr evaluation
+	// https://developercommunity.visualstudio.com/t/error-C3615:-constexpr-function-__builti/1546452
+	static auto const cxf = daw::json::from_json<Foo>( json_data );
+#else
 	static constexpr auto const cxf = daw::json::from_json<Foo>( json_data );
+#endif
 
 	if( not( std::get<3>( cxf.a ) == 55 ) ) {
 		assert( std::get<3>( cxf.a ) == 55 );
