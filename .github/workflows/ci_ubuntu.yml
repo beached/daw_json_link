@@ -96,6 +96,7 @@ jobs:
         run: cmake --build build/ --target full -- -k 0
       - name: Test
         run: |
+          sudo service apport stop
           ulimit -c unlimited
           ulimit -c
           echo "core.%e.%p" > /proc/sys/kernel/core_pattern
