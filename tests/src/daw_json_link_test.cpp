@@ -480,8 +480,11 @@ unsigned long long test_dblparse( std::string_view num,
 		std::cout << "diff: " << ( lib_parse_dbl - strod_parse_dbl ) << '\n';
 
 		std::cout.precision( old_precision );
-		std::cout << std::dec << "unsigned diff: " << diff << '\n';
-		daw::json::daw_json_error( daw::json::ErrorReason::NumberOutOfRange );
+		std::cout << std::dec << "ULP diff: " << diff << '\n';
+		if( diff > 3 ) {
+			std::cerr << "ERROR: Number parsed out of range\n";
+			exit( 1 );
+		}
 	}
 #endif
 	return diff;
@@ -974,6 +977,7 @@ int main( int, char ** )
 	std::cout << "result: " << from_json<long double>( "1e-10000" ) << '\n';
 	test_dblparse( "1e-214748364", true );
 	test_dblparse( "0.89", true );
+	test_dblparse( "10070988951557009.8178168006534510403e-302", true );
 	test_dblparse(
 	  "2."
 	  "22507385850720113605740979670913197593481954635164564802342610972482222202"
