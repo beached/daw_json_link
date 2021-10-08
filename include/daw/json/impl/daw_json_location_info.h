@@ -119,7 +119,7 @@ namespace daw::json {
 				}
 
 				template<bool expect_long_strings, std::size_t start_pos>
-				DAW_ATTRIB_INLINE [[nodiscard]] inline constexpr std::size_t
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t
 				find_name( daw::template_vals_t<start_pos>,
 				           daw::string_view key ) const {
 					UInt32 const hash = name_hash<expect_long_strings>( key );

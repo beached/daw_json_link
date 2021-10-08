@@ -68,7 +68,7 @@ namespace daw {
 	}
 
 	template<bool expect_long_strings, typename StringView>
-	[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr auto
+	[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
 	name_hash( StringView key )
 	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
 	                      UInt32> {

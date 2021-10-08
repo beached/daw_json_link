@@ -38,7 +38,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			DAW_ATTRIB_INLINE inline constexpr bool
+			DAW_ATTRIB_INLINE constexpr bool
 			is_escaped( char const *ptr, char const *min_ptr ) {
 				if( *( ptr - 1 ) != '\\' ) {
 					return false;
@@ -88,7 +88,7 @@ namespace daw::json {
 			}
 
 #if defined( DAW_ALLOW_SSE42 )
-			DAW_ATTRIB_INLINE inline __m128i
+			DAW_ATTRIB_INLINE __m128i
 			set_reverse( char c0, char c1 = 0, char c2 = 0, char c3 = 0, char c4 = 0,
 			             char c5 = 0, char c6 = 0, char c7 = 0, char c8 = 0,
 			             char c9 = 0, char c10 = 0, char c11 = 0, char c12 = 0,
@@ -97,18 +97,18 @@ namespace daw::json {
 				                     c4, c3, c2, c1, c0 );
 			}
 
-			DAW_ATTRIB_INLINE inline __m128i uload16_char_data( sse42_exec_tag,
+			DAW_ATTRIB_INLINE __m128i uload16_char_data( sse42_exec_tag,
 			                                                    char const *ptr ) {
 				return _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) );
 			}
 
-			DAW_ATTRIB_INLINE inline __m128i load16_char_data( sse42_exec_tag,
+			DAW_ATTRIB_INLINE __m128i load16_char_data( sse42_exec_tag,
 			                                                   char const *ptr ) {
 				return _mm_load_si128( reinterpret_cast<__m128i const *>( ptr ) );
 			}
 
 			template<char k>
-			DAW_ATTRIB_INLINE inline UInt32 mem_find_eq( sse42_exec_tag,
+			DAW_ATTRIB_INLINE UInt32 mem_find_eq( sse42_exec_tag,
 			                                             __m128i block ) {
 				__m128i const keys = _mm_set1_epi8( k );
 				__m128i const found = _mm_cmpeq_epi8( block, keys );
@@ -116,7 +116,7 @@ namespace daw::json {
 			}
 
 			template<unsigned char k>
-			DAW_ATTRIB_INLINE inline UInt32 mem_find_gt( sse42_exec_tag,
+			DAW_ATTRIB_INLINE UInt32 mem_find_gt( sse42_exec_tag,
 			                                             __m128i block ) {
 				static __m128i const keys = _mm_set1_epi8( k );
 				__m128i const found = _mm_cmpgt_epi8( block, keys );
@@ -124,7 +124,7 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, char... keys, typename CharT>
-			DAW_ATTRIB_INLINE inline CharT *mem_move_to_next_of( sse42_exec_tag tag,
+			DAW_ATTRIB_INLINE CharT *mem_move_to_next_of( sse42_exec_tag tag,
 			                                                     CharT *first,
 			                                                     CharT *const last ) {
 
@@ -151,7 +151,7 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, char... keys, typename CharT>
-			DAW_ATTRIB_INLINE inline CharT *
+			DAW_ATTRIB_INLINE CharT *
 			mem_move_to_next_not_of( sse42_exec_tag tag, CharT *first, CharT *last ) {
 				using keys_len = daw::constant<static_cast<int>( sizeof...( keys ) )>;
 				using compare_mode = daw::constant<static_cast<int>(
@@ -180,7 +180,7 @@ namespace daw::json {
 			}
 
 			template<typename U32>
-			DAW_ATTRIB_INLINE inline bool add_overflow( U32 value1, U32 value2,
+			DAW_ATTRIB_INLINE bool add_overflow( U32 value1, U32 value2,
 			                                            U32 &result ) {
 				static_assert( sizeof( U32 ) <= sizeof( unsigned long long ) );
 				static_assert( sizeof( U32 ) == 4 );
@@ -212,7 +212,7 @@ namespace daw::json {
 
 			// Adapted from
 			// https://github.com/simdjson/simdjson/blob/master/src/generic/stage1/json_string_scanner.h#L79
-			DAW_ATTRIB_INLINE inline constexpr UInt32
+			DAW_ATTRIB_INLINE constexpr UInt32
 			find_escaped_branchless( constexpr_exec_tag, UInt32 &prev_escaped,
 			                         UInt32 backslashes ) {
 				backslashes &= ~prev_escaped;
@@ -233,7 +233,7 @@ namespace daw::json {
 				return ( even_bits::value ^ invert_mask ) & follow_escape;
 			}
 
-			DAW_ATTRIB_INLINE inline UInt32 prefix_xor( sse42_exec_tag,
+			DAW_ATTRIB_INLINE UInt32 prefix_xor( sse42_exec_tag,
 			                                            UInt32 bitmask ) {
 				__m128i const all_ones = _mm_set1_epi8( '\xFF' );
 				__m128i const result = _mm_clmulepi64_si128(
@@ -349,7 +349,7 @@ namespace daw::json {
 
 #endif
 			template<bool is_unchecked_input, char... keys, typename CharT>
-			DAW_ATTRIB_INLINE inline CharT *
+			DAW_ATTRIB_INLINE CharT *
 			mem_move_to_next_of( runtime_exec_tag, CharT *first, CharT *last ) {
 				if constexpr( sizeof...( keys ) == 1 ) {
 					char const key[]{ keys... };
@@ -376,7 +376,7 @@ namespace daw::json {
 			  bool is_unchecked_input, typename ExecTag, typename CharT,
 			  std::enable_if_t<std::is_base_of<runtime_exec_tag, ExecTag>::value,
 			                   std::nullptr_t> = nullptr>
-			DAW_ATTRIB_INLINE inline CharT *
+			DAW_ATTRIB_INLINE CharT *
 			mem_skip_string( ExecTag const &tag, CharT *first, CharT *const last ) {
 				return mem_move_to_next_of<is_unchecked_input, '"', '\\'>( tag, first,
 				                                                           last );
@@ -386,7 +386,7 @@ namespace daw::json {
 			  bool is_unchecked_input, typename ExecTag, typename CharT,
 			  std::enable_if_t<std::is_base_of<runtime_exec_tag, ExecTag>::value,
 			                   std::nullptr_t> = nullptr>
-			DAW_ATTRIB_INLINE inline CharT *
+			DAW_ATTRIB_INLINE CharT *
 			mem_skip_until_end_of_string( ExecTag const &tag, CharT *first,
 			                              CharT *const last ) {
 				if constexpr( not is_unchecked_input ) {
@@ -414,7 +414,7 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename CharT>
-			DAW_ATTRIB_INLINE inline CharT *
+			DAW_ATTRIB_INLINE CharT *
 			mem_skip_until_end_of_string( runtime_exec_tag tag, CharT *first,
 			                              CharT *const last,
 			                              std::ptrdiff_t &first_escape ) {

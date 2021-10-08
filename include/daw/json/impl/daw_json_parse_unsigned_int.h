@@ -59,16 +59,27 @@ namespace daw::json {
 				// The copy to local buffer is to get the compiler to treat it like a
 				// reinterpret_cast
 
-				std::byte const buff[8]{
-				  static_cast<std::byte>( ptr[0] ), static_cast<std::byte>( ptr[1] ),
-				  static_cast<std::byte>( ptr[2] ), static_cast<std::byte>( ptr[3] ),
-				  static_cast<std::byte>( ptr[4] ), static_cast<std::byte>( ptr[5] ),
-				  static_cast<std::byte>( ptr[6] ), static_cast<std::byte>( ptr[7] ) };
+				std::array<unsigned char, 8> buff{
+				  static_cast<unsigned char>( ptr[0] ),
+				  static_cast<unsigned char>( ptr[1] ),
+				  static_cast<unsigned char>( ptr[2] ),
+				  static_cast<unsigned char>( ptr[3] ),
+				  static_cast<unsigned char>( ptr[4] ),
+				  static_cast<unsigned char>( ptr[5] ),
+				  static_cast<unsigned char>( ptr[6] ),
+				  static_cast<unsigned char>( ptr[7] ) };
 
-				UInt64 val = UInt64( );
-				for( std::size_t n = 0; n < 8; ++n ) {
-					val |= to_uint64( buff[n] ) << ( 8 * n );
-				}
+				UInt64 val = [&] {
+#if defined( DAW_CX_BIT_CAST )
+					return DAW_BIT_CAST( UInt64, buff );
+#else
+					UInt64 result{ };
+					for( std::size_t n = 0; n < 8; ++n ) {
+						result |= to_uint64( buff[n] ) << ( 8 * n );
+					}
+					return result;
+#endif
+				}( );
 				return ( ( ( val & 0xF0F0'F0F0'F0F0'F0F0_u64 ) |
 				           ( ( ( val + 0x0606'0606'0606'0606_u64 ) &
 				               0xF0F0'F0F0'F0F0'F0F0_u64 ) >>
@@ -113,6 +124,27 @@ namespace daw::json {
 			}
 			static_assert( parse_8_digits( "12345678" ) == 1234'5678_u64,
 			               "8 digit parser does not work on this platform" );
+
+			inline constexpr UInt32 parse_4_digits( const char *const str ) {
+				auto const chunk = to_uint32_buffer( str );
+				// 1-byte mask trick (works on 4 pairs of single digits)
+				auto const lower_digits = ( chunk & 0x0F'00'0F'00_u32 ) >> 8U;
+				auto const upper_digits = ( chunk & 0x00'0F'00'0F_u32 ) * 10U;
+				auto const chunk2 = lower_digits + upper_digits;
+
+				// 2-byte mask trick (works on 2 pairs of two digits)
+				auto const lower_digits2 = ( chunk2 & 0x00'FF'00'00_u32 ) >> 16U;
+				auto const upper_digits2 = ( chunk2 & 0x00'00'00'FF_u32 ) * 100U;
+				auto const chunk3 = lower_digits2 + upper_digits2;
+
+				// 4-byte mask trick (works on pair of four digits)
+				auto const lower_digits3 = ( chunk3 & 0x00'00'FF'FF_u32 );
+				auto const chunk4 = lower_digits3;
+
+				return chunk4;
+			}
+			static_assert( parse_4_digits( "1234" ) == 1234_u32 );
+
 			inline constexpr UInt64 parse_16_digits( const char *const str ) {
 				auto const upper = parse_8_digits( str );
 				auto const lower = parse_8_digits( str + 8 );

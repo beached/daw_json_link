@@ -37,7 +37,7 @@ namespace daw::json {
 				ParseState &tmp;
 
 				DAW_ATTRIB_INLINE
-				DAW_SG_CXDTOR inline ~op_star_cleanup( ) noexcept( false ) {
+				DAW_SG_CXDTOR ~op_star_cleanup( ) noexcept( false ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 						m_can_skip = tmp.first;

@@ -91,7 +91,7 @@ namespace daw::json {
 				}
 
 				DAW_ATTRIB_INLINE
-				inline constexpr value_type operator*( ) {
+				constexpr value_type operator*( ) {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
@@ -100,8 +100,7 @@ namespace daw::json {
 					  *base::parse_state, ParseTag<element_t::expected_type>{ } );
 				}
 
-				DAW_ATTRIB_INLINE inline constexpr json_parse_array_iterator &
-				operator++( ) {
+				DAW_ATTRIB_INLINE constexpr json_parse_array_iterator &operator++( ) {
 					daw_json_assert_weak( base::parse_state,
 					                      ErrorReason::UnexpectedEndOfData,
 					                      *base::parse_state );

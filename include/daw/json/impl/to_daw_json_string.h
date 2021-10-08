@@ -1391,7 +1391,7 @@ namespace daw::json {
 			         typename VisitedMembers,
 			         std::enable_if_t<not has_dependent_member_v<JsonMember>,
 			                          std::nullptr_t> = nullptr>
-			DAW_ATTRIB_INLINE inline constexpr void
+			DAW_ATTRIB_INLINE constexpr void
 			dependent_member_to_json_str( bool &, OutputIterator const &,
 			                              TpArgs const &, Value const &,
 			                              VisitedMembers const & ) {

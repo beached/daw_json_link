@@ -197,7 +197,7 @@ namespace daw::json {
 		 */
 		template<typename T>
 		struct default_constructor {
-			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr T operator( )( ) const {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T operator( )( ) const {
 				return T{ };
 			}
 
@@ -206,7 +206,7 @@ namespace daw::json {
 			  std::enable_if_t<std::conjunction_v<std::is_constructible<T, Args...>,
 			                                      not_trait<is_empty_pack<Args...>>>,
 			                   std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr T
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
 			operator( )( Args &&...args ) const {
 
 				return T( DAW_FWD2( Args, args )... );
@@ -219,7 +219,7 @@ namespace daw::json {
 			                       daw::not_trait<is_empty_pack<Args...>>,
 			                       daw::traits::is_list_constructible<T, Args...>>,
 			    std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr T
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
 			operator( )( Args &&...args ) const
 			  noexcept( noexcept( T{ DAW_FWD2( Args, args )... } ) ) {
 
@@ -251,7 +251,7 @@ namespace daw::json {
 				Iterator &it;
 
 				DAW_ATTRIB_INLINE
-				DAW_SG_CXDTOR inline ~construct_array_cleanup( ) noexcept( false ) {
+				DAW_SG_CXDTOR ~construct_array_cleanup( ) noexcept( false ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 						++it;
@@ -310,19 +310,19 @@ namespace daw::json {
 		template<typename T, typename Alloc>
 		struct default_constructor<std::vector<T, Alloc>> {
 			// DAW
-			DAW_ATTRIB_INLINE inline std::vector<T, Alloc> operator( )( ) const
+			DAW_ATTRIB_INLINE std::vector<T, Alloc> operator( )( ) const
 			  noexcept( noexcept( std::vector<T, Alloc>( ) ) ) {
 				return { };
 			}
 
-			DAW_ATTRIB_INLINE inline std::vector<T, Alloc> &&
+			DAW_ATTRIB_INLINE std::vector<T, Alloc> &&
 			operator( )( std::vector<T, Alloc> &&v ) const
 			  noexcept( noexcept( std::vector<T, Alloc>( v ) ) ) {
 				return DAW_MOVE( v );
 			}
 
 			template<typename Iterator>
-			DAW_ATTRIB_INLINE inline std::vector<T, Alloc>
+			DAW_ATTRIB_INLINE std::vector<T, Alloc>
 			operator( )( Iterator first, Iterator last,
 			             Alloc const &alloc = Alloc{ } ) const {
 				if constexpr( std::is_same_v<std::random_access_iterator_tag,
@@ -360,7 +360,7 @@ namespace daw::json {
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr auto
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
 			operator( )( Args &&...args ) const
 			  noexcept( std::is_nothrow_constructible<
 			            std::optional<T>, std::in_place_t, Args...>::value )
@@ -373,7 +373,7 @@ namespace daw::json {
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr auto
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
 			operator( )( Args &&...args ) const noexcept(
 			  std::conjunction<traits::is_nothrow_list_constructible<T, Args...>,
 			                   std::is_nothrow_move_constructible<T>>::value )
@@ -391,13 +391,13 @@ namespace daw::json {
 		struct nullable_constructor<std::unique_ptr<T, Deleter>> {
 			using value_type = T;
 
-			DAW_ATTRIB_INLINE inline constexpr std::unique_ptr<T, Deleter>
+			DAW_ATTRIB_INLINE constexpr std::unique_ptr<T, Deleter>
 			operator( )( ) const noexcept {
 				return std::unique_ptr<T, Deleter>{ };
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE inline auto
+			[[nodiscard]] DAW_ATTRIB_INLINE auto
 			operator( )( Args &&...args ) const
 			  noexcept( std::is_nothrow_constructible<T, Args...>::value )
 			    -> std::enable_if_t<( sizeof...( Args ) > 0 and
@@ -409,7 +409,7 @@ namespace daw::json {
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE inline auto
+			[[nodiscard]] DAW_ATTRIB_INLINE auto
 			operator( )( Args &&...args ) const
 			  noexcept( traits::is_nothrow_list_constructible<T, Args...>::value )
 			    -> std::enable_if_t<

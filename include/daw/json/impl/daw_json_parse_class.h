@@ -154,7 +154,7 @@ namespace daw::json {
 
 			inline namespace {
 				template<bool IsExactClass, typename ParseState, typename OldClassPos>
-				DAW_ATTRIB_INLINE inline constexpr void
+				DAW_ATTRIB_INLINE constexpr void
 
 				class_cleanup_now( ParseState &parse_state,
 				                   OldClassPos const &old_class_pos ) {
@@ -183,7 +183,7 @@ namespace daw::json {
 					OldClassPos const &old_class_pos;
 
 					DAW_ATTRIB_INLINE
-					CPP20CONSTEXPR inline ~class_cleanup( ) noexcept( false ) {
+					CPP20CONSTEXPR ~class_cleanup( ) noexcept( false ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 							class_cleanup_now<AllMembersMustExist>( parse_state,

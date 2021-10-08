@@ -31,7 +31,7 @@ namespace daw::json {
 			}
 
 			template<std::size_t N, char c>
-			DAW_ATTRIB_INLINE inline constexpr UInt8 test_at_byte( UInt32 b ) {
+			DAW_ATTRIB_INLINE constexpr UInt8 test_at_byte( UInt32 b ) {
 				auto const lhs = b & ( 0xFF_u32 << ( N * 8U ) );
 				using rhs = daw::constant<to_uint32( static_cast<unsigned char>( c ) )
 				                          << ( N * 8U )>;
