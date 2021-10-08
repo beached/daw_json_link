@@ -629,10 +629,10 @@ There are a few defines that affect how JSON Link operates
 
 * C++ 17 compiler 
 * GCC(9/10/11) have been tested
-	* gcc-7/8 may work in some cases
+    * gcc-7/8 may work in some cases
 * Clang(7/8/9/10/11/12) have been tested. 
-* MSVC 19.29 has been tested. 
-
+* MSVC 19.29 has been tested.(MSVC has an issue with string literals in debug builds, it is recommended to explicitly enable /GF to enable string pooling. [Bug Report](https://developercommunity.visualstudio.com/t/codegen:-constexpr-pointer-to-trailing-z/900648)) 
+* MSVC constexpr evaluation in C++20 mode has a bug, [Bugreport](https://developercommunity.visualstudio.com/t/error-C3615:-constexpr-function-__builti/1546452) that may break constexpr JSON parsing.
 ### For building tests
   * git
   * cmake
@@ -649,4 +649,3 @@ There are a few defines that affect how JSON Link operates
   When used with `std::multimap<std::string, T>` or `std::vector<std::pair<std::string, T>>` all members are preserved with the former in order.  Alternatively, the `json_value` type will allow iteration over the class members and lazy parsing of the correct one. 
   See [Cookbook Key Values](docs/cookbook/key_values.md) which demonstrates these methods.
 * Trailing commas, the parser makes no effort to detect trailing commas.
-	
