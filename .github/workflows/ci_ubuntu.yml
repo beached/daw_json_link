@@ -35,7 +35,7 @@ jobs:
           - { toolset: clang++-11, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
           - { toolset: clang++-12, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
           - { toolset: clang++-13, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exception }
+          - { toolset: clang++-13, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exceptions }
           # debug, c++-20
           - { toolset: g++-9,      build_type: debug,    cpp_version: 20, os: ubuntu-20.04 }
           - { toolset: g++-11,     build_type: debug,    cpp_version: 20, os: ubuntu-20.04 }
@@ -45,7 +45,7 @@ jobs:
           - { toolset: clang++-11, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
           - { toolset: clang++-12, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
           - { toolset: clang++-13, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exception }
+          - { toolset: clang++-13, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exceptions }
           # release, c++-17
           - { toolset: g++-9,      build_type: release,  cpp_version: 17, os: ubuntu-20.04 }
           - { toolset: g++-11,     build_type: release,  cpp_version: 17, os: ubuntu-20.04 }
@@ -55,7 +55,7 @@ jobs:
           - { toolset: clang++-11, build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
           - { toolset: clang++-12, build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
           - { toolset: clang++-13, build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exception }
+          - { toolset: clang++-13, build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exceptions }
           # release, c++-20
           - { toolset: g++-9,      build_type: release,  cpp_version: 20, os: ubuntu-20.04 }
           - { toolset: g++-11,     build_type: release,  cpp_version: 20, os: ubuntu-20.04 }
@@ -65,7 +65,7 @@ jobs:
           - { toolset: clang++-11, build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
           - { toolset: clang++-12, build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
           - { toolset: clang++-13, build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exception }
+          - { toolset: clang++-13, build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exceptions }
     runs-on: ${{ matrix.config.os }}
     name: "${{ matrix.config.os }} ${{ matrix.config.toolset }} ${{ matrix.config.cpp_version }} ${{ matrix.config.build_type }} ${{ matrix.config.cxx_flags }}"
     steps:
