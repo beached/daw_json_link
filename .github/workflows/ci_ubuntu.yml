@@ -43,7 +43,13 @@ jobs:
         include:
           - toolset: clang++-13
             cpp_version: 17
+            cxx_flags:
+          - toolset: clang++-13
+            cpp_version: 17
             cxx_flags: -fnoexceptions
+          - toolset: clang++-13
+            cpp_version: 20
+            cxx_flags:
           - toolset: clang++-13
             cpp_version: 20
             cxx_flags: -fnoexceptions
