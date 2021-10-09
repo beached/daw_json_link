@@ -51,6 +51,21 @@ namespace daw::json {
 							++first;
 						}
 					} else {
+						while( DAW_LIKELY( last - first >= 4 ) ) {
+							bool const checks[4] = {
+								static_cast<unsigned>( static_cast<unsigned char>( first[0] )	) - 1U < 0x1FU,
+								static_cast<unsigned>( static_cast<unsigned char>( first[1] )	) - 1U < 0x1FU,
+								static_cast<unsigned>( static_cast<unsigned char>( first[2] )	) - 1U < 0x1FU,
+								static_cast<unsigned>( static_cast<unsigned char>( first[3] )	) - 1U < 0x1FU,
+							};
+							for( std::size_t n=0; n<4; ++n ) {
+								if( not checks[n] ) {
+									parse_state.first = first + n;
+									return;
+								}
+							}
+							first += 4;
+						}
 						while(
 						  DAW_LIKELY( first < last ) and
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
