@@ -113,21 +113,23 @@ namespace daw::json {
 					(void)last;
 
 					if( ParseState::is_zero_terminated_string ) {
-						daw_json_assert_weak( first < last and *first != '\0',
+						daw_json_assert_weak( ( last - first != 0 ) and *first != '\0',
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
 						while( not parse_policy_details::in<keys...>( *first ) ) {
 							++first;
 						}
-						daw_json_assert_weak( *first != 0, ErrorReason::UnexpectedEndOfData,
-						                      parse_state );
-					} else {
 						daw_json_assert_weak(
-						  first < last, ErrorReason::UnexpectedEndOfData, parse_state );
+						  *first != '\0', ErrorReason::UnexpectedEndOfData, parse_state );
+					} else {
+						daw_json_assert_weak( ( last - first != 0 ),
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
 						while( not parse_policy_details::in<keys...>( *first ) ) {
 							++first;
-							daw_json_assert_weak(
-							  first < last, ErrorReason::UnexpectedEndOfData, parse_state );
+							daw_json_assert_weak( ( last - first != 0 ),
+							                      ErrorReason::UnexpectedEndOfData,
+							                      parse_state );
 						}
 					}
 					parse_state.first = first;
