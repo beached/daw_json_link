@@ -280,8 +280,8 @@ add_dependencies(full kv_map_test)
 
 add_executable(json_test_suite src/json_test_suite.cpp)
 target_link_libraries(json_test_suite PRIVATE json_test)
-add_test(NAME json_test_suite_test COMMAND json_test_suite . WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/json_test_suite/")
-add_dependencies(full json_test_suite)
+#add_test(NAME json_test_suite_test COMMAND json_test_suite . WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/json_test_suite/")
+#add_dependencies(full json_test_suite)
 
 add_executable(cookbook_kv1_test src/cookbook_kv1_test.cpp)
 target_link_libraries(cookbook_kv1_test PRIVATE json_test)
