@@ -97,7 +97,8 @@ namespace daw::json {
 
 				using visit_size = daw::constant<(
 				  sizeof...( JsonMembers ) +
-				  ( static_cast<std::size_t>( has_dependent_member_v<JsonMembers> ) +
+				  ( static_cast<std::size_t>(
+				      has_dependent_member_v<without_name<JsonMembers>> ) +
 				    ... + 0 ) )>;
 				auto visited_members =
 				  basic_array_t<std::string_view, visit_size::value>{ };

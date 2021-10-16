@@ -42,7 +42,7 @@ namespace apache_builds {
 	};
 } // namespace apache_builds
 
-#if not defined( DAW_JSON_TEST_NO_EXTERN_TEMPLATE )
+#if defined( DAW_JSON_TEST_EXTERN_TEMPLATE )
 
 namespace daw::json {
 	extern template apache_builds::apache_builds

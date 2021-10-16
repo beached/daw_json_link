@@ -645,7 +645,8 @@ namespace daw::json {
 		                   Allocator>;
 
 		using ConformancePolicy = BasicParsePolicy<parse_options(
-		  AllowEscapedNames::yes, MustVerifyEndOfDataIsValid::yes,
-		  IEEE754Precise::yes, ExcludeSpecialEscapes::yes )>;
+		  PolicyCommentTypes::none, AllowEscapedNames::yes, CheckedParseMode::yes,
+		  MustVerifyEndOfDataIsValid::yes, IEEE754Precise::yes,
+		  ExcludeSpecialEscapes::yes )>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

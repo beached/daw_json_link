@@ -8,7 +8,9 @@
 
 #pragma once
 
+#if defined( DAW_JSON_TEST_EXTERN_TEMPLATE )
 #include <daw/json/daw_from_json_fwd.h>
+#endif
 
 #include <cstdint>
 #include <optional>
@@ -70,8 +72,7 @@ namespace daw::citm {
 	citm_object_t parse_citm( std::string_view json_doc );
 } // namespace daw::citm
 
-#if not defined( DAW_JSON_TEST_NO_EXTERN_TEMPLATE )
-
+#if defined( DAW_JSON_TEST_EXTERN_TEMPLATE )
 namespace daw::json {
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,

@@ -299,10 +299,10 @@ $(function() {
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><span class="comment">     * type matches the compiler define and has a different name</span></div>
 <div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="comment">     */</span></div>
 <div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> <span class="comment">/*uses std::exception*/</span>&gt;</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keyword">class </span>json_exception_impl;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keyword">class </span>basic_json_exception;</div>
 <div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
 <div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keyword">class </span>json_exception_impl <a class="code hl_define" href="daw__json__exception_8h.html#a4df022e7d5c532b5f135ed27efc628fe">DAW_JSON_EXCEPTION_PARENT</a> {</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keyword">class </span>basic_json_exception <a class="code hl_define" href="daw__json__exception_8h.html#a4df022e7d5c532b5f135ed27efc628fe">DAW_JSON_EXCEPTION_PARENT</a> {</div>
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>      ErrorReason m_reason = ErrorReason::Unknown;</div>
 <div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>      <span class="keyword">union </span>data_t {</div>
 <div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keywordtype">char</span> <span class="keyword">const</span> *pointer;</div>
@@ -316,38 +316,38 @@ $(function() {
 <div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>      <span class="keywordtype">char</span> <span class="keyword">const</span> *m_parse_loc = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
 <div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>      <a class="code hl_define" href="daw__json__exception_8h.html#a9a43de33cc1e857c6be8e12f6c3250a2">DAW_JSON_EXCEPTION_CONSTEXPR</a> json_exception_impl( ) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>      <a class="code hl_define" href="daw__json__exception_8h.html#a9a43de33cc1e857c6be8e12f6c3250a2">DAW_JSON_EXCEPTION_CONSTEXPR</a> basic_json_exception( ) = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>      <span class="keyword">explicit</span> <a class="code hl_define" href="daw__json__exception_8h.html#a9a43de33cc1e857c6be8e12f6c3250a2">DAW_JSON_EXCEPTION_CONSTEXPR</a></div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>      json_exception_impl( ErrorReason reason )</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>      basic_json_exception( ErrorReason reason )</div>
 <div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        : m_reason( reason ) {}</div>
 <div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
 <div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>      <span class="keyword">explicit</span> <a class="code hl_define" href="daw__json__exception_8h.html#a9a43de33cc1e857c6be8e12f6c3250a2">DAW_JSON_EXCEPTION_CONSTEXPR</a></div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>      json_exception_impl( json_details::missing_member mm )</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>      basic_json_exception( json_details::missing_member mm )</div>
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        : m_reason( ErrorReason::MemberNotFound )</div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        , m_data( mm.member_name ) {}</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>      <span class="keyword">explicit</span> <a class="code hl_define" href="daw__json__exception_8h.html#a9a43de33cc1e857c6be8e12f6c3250a2">DAW_JSON_EXCEPTION_CONSTEXPR</a></div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>      json_exception_impl( json_details::missing_token mt )</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>      basic_json_exception( json_details::missing_token mt )</div>
 <div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        : m_reason( ErrorReason::ExpectedTokenNotFound )</div>
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        , m_data( mt.token ) {}</div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>      <span class="keyword">explicit</span> <a class="code hl_define" href="daw__json__exception_8h.html#a9a43de33cc1e857c6be8e12f6c3250a2">DAW_JSON_EXCEPTION_CONSTEXPR</a></div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>      json_exception_impl( json_details::missing_member mm,</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>      basic_json_exception( json_details::missing_member mm,</div>
 <div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                           std::string_view location )</div>
 <div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        : m_reason( ErrorReason::MemberNotFound )</div>
 <div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        , m_data( mm.member_name )</div>
 <div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        , m_parse_loc( std::data( location ) ) {}</div>
 <div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
 <div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>      <span class="keyword">explicit</span> <a class="code hl_define" href="daw__json__exception_8h.html#a9a43de33cc1e857c6be8e12f6c3250a2">DAW_JSON_EXCEPTION_CONSTEXPR</a></div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>      json_exception_impl( json_details::missing_token mt,</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>      basic_json_exception( json_details::missing_token mt,</div>
 <div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                           <span class="keywordtype">char</span> <span class="keyword">const</span> *location )</div>
 <div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        : m_reason( ErrorReason::ExpectedTokenNotFound )</div>
 <div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        , m_data( mt.token )</div>
 <div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        , m_parse_loc( location ) {}</div>
 <div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
 <div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>      <span class="keyword">explicit</span> <a class="code hl_define" href="daw__json__exception_8h.html#a9a43de33cc1e857c6be8e12f6c3250a2">DAW_JSON_EXCEPTION_CONSTEXPR</a></div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>      json_exception_impl( ErrorReason reason, <span class="keywordtype">char</span> <span class="keyword">const</span> *location )</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>      basic_json_exception( ErrorReason reason, <span class="keywordtype">char</span> <span class="keyword">const</span> *location )</div>
 <div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        : m_reason( reason )</div>
 <div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        , m_parse_loc( location ) {}</div>
 <div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
@@ -387,16 +387,16 @@ $(function() {
 <div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <span class="comment">// reason_message returns a string_view to a literal</span></div>
 <div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        <span class="keywordflow">return</span> reason_message( m_reason ).data( );</div>
 <div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>      }</div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>      json_exception_impl( json_exception_impl <span class="keyword">const</span> &amp; ) = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>      json_exception_impl( json_exception_impl &amp;&amp; ) noexcept = default;</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>      json_exception_impl &amp;operator=( json_exception_impl const &amp; ) = default;</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>      json_exception_impl &amp;</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>      operator=( json_exception_impl &amp;&amp; ) noexcept = default;</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>      inline ~json_exception_impl( ) override = default;</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>      basic_json_exception( basic_json_exception <span class="keyword">const</span> &amp; ) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>      basic_json_exception( basic_json_exception &amp;&amp; ) noexcept = default;</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>      basic_json_exception &amp;operator=( basic_json_exception const &amp; ) = default;</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>      basic_json_exception &amp;</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>      operator=( basic_json_exception &amp;&amp; ) noexcept = default;</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>      inline ~basic_json_exception( ) override = default;</div>
 <div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    };</div>
 <div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    <span class="keyword">using</span> json_exception = json_exception_impl&lt;DAW_JSON_STDEXCEPTION_FLAG&gt;;</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    <span class="keyword">using</span> json_exception = basic_json_exception&lt;DAW_JSON_STDEXCEPTION_FLAG&gt;;</div>
 <div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span> </div>
 <div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span><span class="comment">    /***</span></div>
 <div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span><span class="comment">     * Helper to provide output formatted information about json_exception</span></div>

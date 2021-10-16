@@ -36,8 +36,7 @@ namespace daw::json {
 				}
 
 				template<typename ParseState>
-				[[nodiscard,
-				  maybe_unused]] DAW_ATTRIB_INLINE constexpr daw::string_view
+				[[nodiscard, maybe_unused]] DAW_ATTRIB_INLINE constexpr daw::string_view
 				parse_nq( ParseState &parse_state ) {
 					if constexpr( ParseState::allow_escaped_names ) {
 						auto r = skip_string_nq( parse_state );

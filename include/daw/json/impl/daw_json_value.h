@@ -187,9 +187,12 @@ namespace daw::json {
 				if( good( ) ) {
 					if( is_class( ) ) {
 						(void)json_details::parse_name( m_state );
+						(void)json_details::skip_value( m_state );
+						m_state.move_next_member_or_end( );
+					} else {
+						(void)json_details::skip_value( m_state );
+						m_state.move_next_member_or_end( );
 					}
-					(void)json_details::skip_value( m_state );
-					m_state.move_next_member_or_end( );
 				}
 				return *this;
 			}

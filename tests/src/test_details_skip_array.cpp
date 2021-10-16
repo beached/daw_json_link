@@ -9,6 +9,7 @@
 #include "defines.h"
 
 #include <daw/json/impl/daw_json_parse_common.h>
+#include <daw/json/impl/daw_json_parse_policy.h>
 
 #include <daw/daw_benchmark.h>
 

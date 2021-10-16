@@ -25,8 +25,24 @@ namespace daw::json {
 		// contracts.  Both support passing local char const[], but the type is
 		// different.  To keep old behaviour when using C++20, define
 		// DAW_USE_CPP17_ABI
-#if defined( __cpp_nontype_template_parameter_class ) and \
-  not defined( DAW_USE_CPP17_ABI )
+#if not defined( DAW_USE_CPP17_ABI )
+#if defined( __cpp_nontype_template_parameter_class )
+#define DAW_JSON_USE_CNTTP_NAMES
+#elif defined( __cpp_nontype_template_args )
+#if __cpp_nontype_template_args >= 201911L
+#define DAW_JSON_USE_CNTTP_NAMES
+#elif defined( __apple_build_version__ ) and __cplusplus >= 202002
+#if __apple_build_version__ >= 13000000
+#define DAW_JSON_USE_CNTTP_NAMES
+#endif
+#elif defined( __clang_major__ ) and __cplusplus >= 202002
+#if __clang_major__ >= 12
+#define DAW_JSON_USE_CNTTP_NAMES
+#endif
+#endif
+#endif
+#endif
+#if defined( DAW_JSON_USE_CNTTP_NAMES )
 		// C++ 20 Non-Type Class Template Arguments
 
 		/**
@@ -98,10 +114,6 @@ namespace daw::json {
 		json_name( char const ( & )[N] ) -> json_name<N>;
 
 #define JSONNAMETYPE ::daw::json::json_name
-		// Convenience for array members that are required to be unnamed
-		inline constexpr JSONNAMETYPE no_name{ "\a" };
-		inline constexpr daw::string_view no_name_sv = daw::string_view( no_name );
-
 		namespace json_details {
 			inline constexpr JSONNAMETYPE default_key_name{ "key" };
 			inline constexpr JSONNAMETYPE default_value_name{ "value" };
@@ -109,22 +121,10 @@ namespace daw::json {
 
 #else
 #define JSONNAMETYPE char const *
-		// Convenience for array members that are required to be unnamed
-		inline constexpr char const no_name[] = "\a";
-		inline constexpr daw::string_view no_name_sv = daw::string_view( no_name );
 		namespace json_details {
-
 			inline constexpr char const default_key_name[] = "key";
 			inline constexpr char const default_value_name[] = "value";
-
 		} // namespace json_details
 #endif
-		namespace json_details {
-			template<typename JsonMember>
-			using is_no_name = std::bool_constant<( JsonMember::name == no_name_sv )>;
-
-			template<typename JsonMember>
-			inline constexpr bool is_no_name_v = is_no_name<JsonMember>::value;
-		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

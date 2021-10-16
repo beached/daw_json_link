@@ -10,7 +10,9 @@
 
 #include "defines.h"
 
+#if defined( DAW_JSON_TEST_EXTERN_TEMPLATE )
 #include <daw/json/daw_from_json_fwd.h>
+#endif
 
 #include <array>
 #include <cstdint>
@@ -50,7 +52,7 @@ namespace daw::geojson {
 	}; // FeatureCollection
 } // namespace daw::geojson
 
-#if not defined( DAW_JSON_TEST_NO_EXTERN_TEMPLATE )
+#if defined( DAW_JSON_TEST_EXTERN_TEMPLATE )
 namespace daw::json {
 	extern template daw::geojson::Polygon
 	from_json<daw::geojson::Polygon,

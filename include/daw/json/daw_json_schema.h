@@ -362,8 +362,8 @@ namespace daw::json {
 					out_it = utils::copy_to_iterator( out_it, JsonMember::name );
 					out_it = utils::copy_to_iterator( out_it, R"(":)" );
 					out_it.output_space( );
-					out_it = to_json_schema<JsonMember>(
-					  ParseTag<JsonMember::base_expected_type>{ }, out_it );
+					out_it = to_json_schema<without_name<JsonMember>>(
+					  ParseTag<without_name<JsonMember>::base_expected_type>{ }, out_it );
 					if constexpr( Idx + 1 < sizeof...( JsonMembers ) ) {
 						*out_it++ = ',';
 						out_it.next_member( );
@@ -383,7 +383,8 @@ namespace daw::json {
 				template<typename JsonMember>
 				static constexpr OutputIterator
 				output_required_member( OutputIterator &out_it, bool &is_first ) {
-					if constexpr( JsonMember::nullable == JsonNullable::MustExist ) {
+					if constexpr( without_name<JsonMember>::nullable ==
+					              JsonNullable::MustExist ) {
 						if( not is_first ) {
 							*out_it++ = ',';
 						} else {
@@ -400,7 +401,7 @@ namespace daw::json {
 				template<typename JsonMember>
 				static constexpr OutputIterator
 				output_dependency( OutputIterator &out_it, bool &is_first ) {
-					if constexpr( has_dependent_member_v<JsonMember> ) {
+					if constexpr( has_dependent_member_v<without_name<JsonMember>> ) {
 						if( not is_first ) {
 							*out_it++ = ',';
 						} else {
@@ -479,7 +480,7 @@ namespace daw::json {
 						is_first = false;
 					}
 					out_it.next_member( );
-					out_it = to_json_schema<JsonMember>(
+					out_it = to_json_schema<without_name<JsonMember>>(
 					  ParseTag<JsonMember::base_expected_type>{ }, out_it );
 					return out_it;
 				}
@@ -539,8 +540,9 @@ namespace daw::json {
 							using JsonMember = json_deduced_type<
 							  typename pack_element::template element_t<index>>;
 
-							out_it = to_json_schema<JsonMember>(
-							  ParseTag<JsonMember::base_expected_type>{ }, out_it );
+							out_it = to_json_schema<without_name<JsonMember>>(
+							  ParseTag<without_name<JsonMember>::base_expected_type>{ },
+							  out_it );
 						};
 
 						daw::Empty expander[] = {
@@ -618,7 +620,7 @@ namespace daw::json {
 				out_it.next_member( );
 				out_it = utils::output_kv( out_it, R"("additionalProperties")", "" );
 				using element_t = typename JsonMember::json_element_t;
-				out_it = to_json_schema<element_t>(
+				out_it = to_json_schema<without_name<element_t>>(
 				  ParseTag<element_t::base_expected_type>{ }, out_it );
 				if constexpr( not is_root ) {
 					out_it.del_indent( );

@@ -65,8 +65,8 @@ namespace daw::json {
 				using iterator_category = typename base::iterator_category;
 				using json_key_t = typename JsonMember::json_key_t;
 				using json_element_t = typename JsonMember::json_value_t;
-				using value_type = std::pair<typename json_key_t::parse_to_t const,
-				                             typename json_element_t::parse_to_t>;
+				using value_type =
+				  std::pair<json_result<json_key_t> const, json_result<json_element_t>>;
 				using reference = value_type;
 				using pointer = arrow_proxy<value_type>;
 				using parse_state_t = ParseState;

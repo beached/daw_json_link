@@ -44,7 +44,7 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename T>
-			using ordered_member_subtype_test = typename T::json_member;
+			using ordered_member_subtype_test = typename without_name<T>::json_member;
 
 			template<typename T>
 			using ordered_member_subtype_t =
@@ -197,7 +197,9 @@ namespace daw::json {
 			  daw::is_detected<detect_insert_end, Container, Value>::value;
 
 			template<typename JsonMember>
-			using json_result = typename JsonMember::parse_to_t;
+			using json_result = typename std::conditional_t<
+			  is_no_name_v<JsonMember>, traits::identity<JsonMember>,
+			  without_name_t<JsonMember>>::type::parse_to_t;
 
 			template<typename JsonMember>
 			using json_base_type = typename JsonMember::base_type;
@@ -875,9 +877,6 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			using parse_to_t_test = typename T::parse_to_t;
-
-			template<typename T>
 			struct as_json_class {
 				using type = json_base::json_class<
 				  T, json_class_constructor_t<T, default_constructor<T>>>;
@@ -907,10 +906,12 @@ namespace daw::json {
 			         /*bool Contract, bool JsonType,*/ bool QuickMap, bool Container>
 			struct json_type_deducer<T, false, false, true, QuickMap, Container> {
 				static_assert( not std::is_same_v<T, void> );
+
 				using type =
 				  typename std::conditional_t<is_json_class_map_v<T>,
 				                              json_class_map_type<T>,
 				                              daw::traits::identity<T>>::type;
+
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
 				static_assert(
@@ -977,11 +978,15 @@ namespace daw::json {
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_impl2 = decltype(
-			  Constructor{ }( std::declval<typename Members::parse_to_t &&>( )... ) );
+			  Constructor{ }( std::declval<json_result<Members> &&>( )... ) );
 
 			template<typename Constructor, typename... Members>
-			using json_class_parse_result_impl =
-			  daw::detected_t<json_class_parse_result_impl2, Constructor, Members...>;
+			struct unable_determine_class_parse_result;
+
+			template<typename Constructor, typename... Members>
+			using json_class_parse_result_impl = daw::detected_or_t<
+			  unable_determine_class_parse_result<Constructor, Members...>,
+			  json_class_parse_result_impl2, Constructor, Members...>;
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_t = daw::remove_cvref_t<
@@ -989,7 +994,7 @@ namespace daw::json {
 
 			template<typename Constructor, typename... Members>
 			inline constexpr bool can_defer_construction_v =
-			  std::is_invocable_v<Constructor, typename Members::parse_to_t...>;
+			  std::is_invocable_v<Constructor, json_result<Members>...>;
 
 			template<typename JsonMember>
 			using dependent_member_t = typename JsonMember::dependent_member;

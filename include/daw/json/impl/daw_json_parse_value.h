@@ -293,9 +293,7 @@ namespace daw::json {
 							  template_args<json_result<JsonMember>, constructor_t>,
 							  parse_state );
 						} else {
-							daw_json_error( missing_member(
-							  std::string_view( std::data( JsonMember::name ),
-							                    std::size( JsonMember::name ) ) ) );
+							daw_json_error( missing_member( "non-nullable member" ) );
 						}
 					}
 					return parse_value<JsonMember, true>(
@@ -322,7 +320,12 @@ namespace daw::json {
 					return parse_value<JsonMember>(
 					  parse_state, ParseTag<JsonMember::base_expected_type>{ } );
 				} else {
-					if( parse_state.starts_with( "null" ) ) {
+					if( parse_state.is_null( ) ) {
+						return construct_value(
+						  template_args<json_result<JsonMember>, constructor_t>,
+						  parse_state );
+					}
+					if( parse_state.is_null( ) or parse_state.starts_with( "null" ) ) {
 						parse_state.remove_prefix( 4 );
 						daw_json_assert_weak(
 						  not parse_state.has_more( ) or

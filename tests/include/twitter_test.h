@@ -8,7 +8,9 @@
 
 #pragma once
 
+#if defined( DAW_JSON_TEST_EXTERN_TEMPLATE )
 #include <daw/json/daw_from_json_fwd.h>
+#endif
 
 #include <chrono>
 #include <cstdint>
@@ -186,7 +188,7 @@ namespace daw::twitter {
 	}; // twitter_object_t
 } // namespace daw::twitter
 
-#if not defined( DAW_JSON_TEST_NO_EXTERN_TEMPLATE )
+#if defined( DAW_JSON_TEST_EXTERN_TEMPLATE )
 namespace daw::json {
 	extern template daw::twitter::twitter_object_t
 	from_json<daw::twitter::twitter_object_t,

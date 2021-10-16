@@ -38,19 +38,11 @@ namespace daw::json {
 				           ( traits::not_same<StringView, missing_member>::value ),
 				           std::nullptr_t> = nullptr>
 				explicit constexpr missing_member( StringView name )
-				  : member_name( std::data( name ) ) {
-					if( member_name and member_name[0] == '\a' ) {
-						member_name = "no_name";
-					}
-				}
+				  : member_name( std::data( name ) ) {}
 
 				template<std::size_t N>
 				explicit constexpr missing_member( char const ( &s )[N] )
-				  : member_name( s ) {
-					if( member_name and member_name[0] == '\a' ) {
-						member_name = "no_name";
-					}
-				}
+				  : member_name( s ) {}
 			};
 
 			struct missing_token {
@@ -60,7 +52,6 @@ namespace daw::json {
 			};
 		} // namespace json_details
 
-		// enum class ErrorType { Unknown, MissingMember, UnexpectedCharacter };
 		enum class ErrorReason {
 			Unknown,
 			UnexpectedEndOfData,
@@ -104,7 +95,8 @@ namespace daw::json {
 			ExpectedMemberNotFound,
 			ExpectedTokenNotFound,
 			UnexpectedJSONVariantType,
-			TrailingComma
+			TrailingComma,
+			UnexpectedToken
 		};
 
 		constexpr std::string_view reason_message( ErrorReason er ) {
@@ -202,8 +194,14 @@ namespace daw::json {
 				return "Unexpected JSON Variant Type"sv;
 			case ErrorReason::TrailingComma:
 				return "Trailing comma"sv;
+			case ErrorReason::UnexpectedToken:
+				return "Unexpected token"sv;
 			}
+#ifdef NDEBUG
 			DAW_UNREACHABLE( );
+#else
+			std::terminate( );
+#endif
 		}
 
 		/***
@@ -227,10 +225,10 @@ namespace daw::json {
 		 * type matches the compiler define and has a different name
 		 */
 		template<bool /*uses std::exception*/>
-		class json_exception_impl;
+		class basic_json_exception;
 
 		template<>
-		class json_exception_impl DAW_JSON_EXCEPTION_PARENT {
+		class basic_json_exception DAW_JSON_EXCEPTION_PARENT {
 			ErrorReason m_reason = ErrorReason::Unknown;
 			union data_t {
 				char const *pointer;
@@ -244,38 +242,38 @@ namespace daw::json {
 			char const *m_parse_loc = nullptr;
 
 		public:
-			DAW_JSON_EXCEPTION_CONSTEXPR json_exception_impl( ) = default;
+			DAW_JSON_EXCEPTION_CONSTEXPR basic_json_exception( ) = default;
 
 			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( ErrorReason reason )
+			basic_json_exception( ErrorReason reason )
 			  : m_reason( reason ) {}
 
 			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( json_details::missing_member mm )
+			basic_json_exception( json_details::missing_member mm )
 			  : m_reason( ErrorReason::MemberNotFound )
 			  , m_data( mm.member_name ) {}
 
 			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( json_details::missing_token mt )
+			basic_json_exception( json_details::missing_token mt )
 			  : m_reason( ErrorReason::ExpectedTokenNotFound )
 			  , m_data( mt.token ) {}
 
 			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( json_details::missing_member mm,
-			                     std::string_view location )
+			basic_json_exception( json_details::missing_member mm,
+			                      std::string_view location )
 			  : m_reason( ErrorReason::MemberNotFound )
 			  , m_data( mm.member_name )
 			  , m_parse_loc( std::data( location ) ) {}
 
 			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( json_details::missing_token mt,
-			                     char const *location )
+			basic_json_exception( json_details::missing_token mt,
+			                      char const *location )
 			  : m_reason( ErrorReason::ExpectedTokenNotFound )
 			  , m_data( mt.token )
 			  , m_parse_loc( location ) {}
 
 			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( ErrorReason reason, char const *location )
+			basic_json_exception( ErrorReason reason, char const *location )
 			  : m_reason( reason )
 			  , m_parse_loc( location ) {}
 
@@ -315,25 +313,25 @@ namespace daw::json {
 				// reason_message returns a string_view to a literal
 				return reason_message( m_reason ).data( );
 			}
-			json_exception_impl( json_exception_impl const & ) = default;
-			json_exception_impl( json_exception_impl && ) noexcept = default;
-			json_exception_impl &operator=( json_exception_impl const & ) = default;
-			json_exception_impl &
-			operator=( json_exception_impl && ) noexcept = default;
-			inline ~json_exception_impl( ) override = default;
+			basic_json_exception( basic_json_exception const & ) = default;
+			basic_json_exception( basic_json_exception && ) noexcept = default;
+			basic_json_exception &operator=( basic_json_exception const & ) = default;
+			basic_json_exception &
+			operator=( basic_json_exception && ) noexcept = default;
+			inline ~basic_json_exception( ) override = default;
 #endif
 		};
 
-		using json_exception = json_exception_impl<DAW_JSON_STDEXCEPTION_FLAG>;
+		using json_exception = basic_json_exception<DAW_JSON_STDEXCEPTION_FLAG>;
 
 		/***
 		 * Helper to provide output formatted information about json_exception
 		 * @param je json_exception to be formatted
 		 * @return string representation of json_exception
 		 */
-		inline std::string
-		to_formatted_string( json_exception const &je,
-		                     char const *json_document = nullptr ) {
+		template<bool B>
+		std::string to_formatted_string( basic_json_exception<B> const &je,
+		                                 char const *json_document = nullptr ) {
 			using namespace std::string_literals;
 			std::string result = "reason: "s + je.reason( );
 			if( json_document == nullptr or je.parse_location( ) == nullptr ) {

@@ -44,18 +44,33 @@ namespace daw::json {
 
 					if constexpr( ParseState::is_zero_terminated_string ) {
 						// Ensure that zero terminator isn't included in skipable value
-						while( DAW_UNLIKELY(
-						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-						    1U ) <= 0x1FU ) ) {
+						if constexpr( ParseState::exclude_special_escapes ) {
+							while(
+							  parse_policy_details::in<' ', '\n', '\r', '\t'>( *first ) ) {
+								++first;
+							}
+						} else {
+							while( DAW_UNLIKELY( ( static_cast<unsigned>(
+							                         static_cast<unsigned char>( *first ) ) -
+							                       1U ) <= 0x1FU ) ) {
 
-							++first;
+								++first;
+							}
 						}
 					} else {
-						while(
-						  DAW_LIKELY( last - first != 0 ) and
-						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-						    1U ) <= 0x1FU ) {
-							++first;
+						if constexpr( ParseState::exclude_special_escapes ) {
+							while(
+							  DAW_LIKELY( first < last ) and
+							  parse_policy_details::in<' ', '\n', '\r', '\t'>( *first ) ) {
+								++first;
+							}
+						} else {
+							while( DAW_LIKELY( first < last ) and
+							       ( static_cast<unsigned>(
+							           static_cast<unsigned char>( *first ) ) -
+							         1U ) <= 0x1FU ) {
+								++first;
+							}
 						}
 					}
 					parse_state.first = first;
@@ -162,7 +177,7 @@ namespace daw::json {
 				if constexpr( ParseState::is_zero_terminated_string ) {
 					daw_json_assert( ptr_first < ptr_last,
 					                 ErrorReason::UnexpectedEndOfData, parse_state );
-					while( *ptr_first != 0 ) {
+					while( *ptr_first != '\0' ) {
 						switch( *ptr_first ) {
 						case '\\':
 							++ptr_first;

@@ -307,7 +307,6 @@ namespace daw::json {
 			auto const json_data = value.get_string_view( );
 			auto parse_state =
 			  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) );
-
 			return json_details::parse_value<json_member, KnownBounds>(
 			  parse_state, ParseTag<json_member::expected_type>{ } );
 		}

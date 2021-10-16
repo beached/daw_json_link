@@ -119,12 +119,10 @@ namespace daw::json {
 					                 ErrorReason::InvalidNull, parse_state );
 					parse_state.remove_prefix( 3 );
 				}
-				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				parse_state.trim_left( );
 				daw_json_assert_weak( not parse_state.has_more( ) or
 				                        parse_state.is_at_token_after_value( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::InvalidEndOfValue, parse_state );
 				auto result = parse_state;
 				result.first = nullptr;
 				result.last = nullptr;

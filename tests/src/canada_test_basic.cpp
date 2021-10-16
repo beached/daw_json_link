@@ -10,6 +10,7 @@
 //  benchmark files and was included in the nativejson benchmark and this file
 //  provides a cleaner way to profile without the benchmarking harness
 //
+#include "defines.h"
 
 #include "geojson_json.h"
 

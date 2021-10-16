@@ -79,7 +79,7 @@ namespace daw::json {
 						                parse_state );
 					}
 				}
-				return parse_value<without_name<json_member_t>>(
+				return parse_value<json_member_t>(
 				  parse_state, ParseTag<json_member_t::expected_type>{ } );
 			}
 
@@ -96,7 +96,8 @@ namespace daw::json {
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
 			         typename ParseState, std::size_t N, typename CharT, bool B>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<
+			  without_name<JsonMember>>
 			parse_class_member( ParseState &parse_state,
 			                    locations_info_t<N, CharT, B> &locations ) {
 				parse_state.move_next_member_or_end( );
@@ -106,7 +107,7 @@ namespace daw::json {
 				                      parse_state );
 
 				auto [loc, known] = find_class_member<member_position, must_exist>(
-				  parse_state, locations, is_json_nullable_v<JsonMember>,
+				  parse_state, locations, is_json_nullable_v<without_name<JsonMember>>,
 				  JsonMember::name );
 
 				// If the member was found loc will have it's position
@@ -131,25 +132,24 @@ namespace daw::json {
 						}
 					} else {
 						return parse_value<without_name<JsonMember>>(
-						  parse_state, ParseTag<JsonMember::expected_type>{ } );
+						  parse_state,
+						  ParseTag<without_name<JsonMember>::expected_type>{ } );
 					}
 				}
 				// We cannot find the member, check if the member is nullable
 				if( loc.is_null( ) ) {
-					if constexpr( is_json_nullable_v<JsonMember> ) {
+					if constexpr( is_json_nullable_v<without_name<JsonMember>> ) {
 						return parse_value<without_name<JsonMember>, true>(
-						  loc, ParseTag<JsonMember::expected_type>{ } );
+						  loc, ParseTag<without_name<JsonMember>::expected_type>{ } );
 					} else {
-						daw_json_error( missing_member( std::string_view(
-						                  std::data( JsonMember::name ),
-						                  std::size( JsonMember::name ) ) ),
-						                parse_state );
+						constexpr auto member_name = JsonMember::name;
+						daw_json_error( missing_member( member_name ), parse_state );
 					}
 				}
 
 				// Member was previously skipped
 				return parse_value<without_name<JsonMember>, true>(
-				  loc, ParseTag<JsonMember::expected_type>{ } );
+				  loc, ParseTag<without_name<JsonMember>::expected_type>{ } );
 			}
 
 			inline namespace {
@@ -251,7 +251,7 @@ namespace daw::json {
 					}
 				} else {
 					using NeedClassPositions = std::bool_constant<(
-					  ( JsonMembers::must_be_class_member or ... ) )>;
+					  ( without_name<JsonMembers>::must_be_class_member or ... ) )>;
 
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					auto known_locations =

@@ -22,6 +22,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 
@@ -31,7 +32,23 @@
  */
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		template<JSONNAMETYPE Name, typename JsonMember>
+		struct json_named_member {
+			static constexpr std::string_view name = Name;
+			using without_name = JsonMember;
+		};
+
 		namespace json_details {
+			template<typename>
+			struct is_no_name : std::true_type {};
+
+			template<JSONNAMETYPE Name, typename JsonMember>
+			struct is_no_name<json_named_member<Name, JsonMember>> : std::false_type {
+			};
+
+			template<typename JsonMember>
+			inline constexpr bool is_no_name_v = is_no_name<JsonMember>::value;
+
 			template<typename T>
 			using has_op_bool_test =
 			  decltype( static_cast<bool>( std::declval<T>( ) ) );
@@ -100,12 +117,22 @@ namespace daw::json {
 		} // namespace json_details
 
 		namespace json_details {
+			template<typename T>
+			struct without_name_t {
+				using type = T;
+			};
+
+			template<JSONNAMETYPE Name, typename JsonMember>
+			struct without_name_t<json_named_member<Name, JsonMember>> {
+				using type = JsonMember;
+			};
+
 			template<typename JsonMember>
-			using without_name = typename JsonMember::without_name;
+			using without_name = typename without_name_t<JsonMember>::type;
 
 			template<typename JsonMember, JSONNAMETYPE NewName, bool Cond>
 			using copy_name_when = std::conditional_t<
-			  Cond, typename JsonMember::template with_name<NewName>, JsonMember>;
+			  Cond, json_named_member<NewName, without_name<JsonMember>>, JsonMember>;
 
 			template<typename JsonMember, JSONNAMETYPE NewName>
 			using copy_name_when_noname =
@@ -397,8 +424,7 @@ namespace daw::json {
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE auto
-			operator( )( Args &&...args ) const
+			[[nodiscard]] DAW_ATTRIB_INLINE auto operator( )( Args &&...args ) const
 			  noexcept( std::is_nothrow_constructible<T, Args...>::value )
 			    -> std::enable_if_t<( sizeof...( Args ) > 0 and
 			                          std::is_constructible<T, Args...>::value ),
@@ -409,8 +435,7 @@ namespace daw::json {
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE auto
-			operator( )( Args &&...args ) const
+			[[nodiscard]] DAW_ATTRIB_INLINE auto operator( )( Args &&...args ) const
 			  noexcept( traits::is_nothrow_list_constructible<T, Args...>::value )
 			    -> std::enable_if_t<
 			      ( ( sizeof...( Args ) > 0 ) and
@@ -442,8 +467,23 @@ namespace daw::json {
 			using json_type_t = typename T::i_am_a_json_type;
 
 			template<typename T>
+			using json_named_type_t = typename T::without_name::i_am_a_json_type;
+
+			template<typename T>
+			using is_a_named_json_type = daw::is_detected<json_named_type_t, T>;
+			template<typename T>
+			inline constexpr bool is_a_named_json_type_v =
+			  is_a_named_json_type<T>::value;
+
+			template<typename T>
+			using is_an_unnamed_json_type = daw::is_detected<json_type_t, T>;
+			template<typename T>
+			inline constexpr bool is_an_unnamed_json_type_v =
+			  is_an_unnamed_json_type<T>::value;
+
+			template<typename T>
 			using is_a_json_type =
-			  std::bool_constant<daw::is_detected_v<json_type_t, T>>;
+			  std::disjunction<is_an_unnamed_json_type<T>, is_a_named_json_type<T>>;
 
 			template<typename T>
 			inline constexpr bool is_a_json_type_v = is_a_json_type<T>::value;

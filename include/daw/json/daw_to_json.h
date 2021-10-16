@@ -40,11 +40,22 @@ namespace daw::json {
 			return out_it;
 		}
 
+		/**
+		 * Serialize a value to JSON.  Some types(std::string, string_view.
+		 * integer's and floating point numbers do not need a mapping setup).  For
+		 * user classes, a json_data_contract specialization is needed.
+		 * @tparam Result std::string like type to put result into
+		 * @tparam JsonClass Type that has json_parser_description and to_json_data
+		 * function overloads
+		 * @param value  value to serialize
+		 * @return  JSON string data
+		 */
 		template<typename Result, typename Value, typename JsonClass,
 		         typename SerializationPolicy>
 		[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value ) {
 			Result result{ };
 			if constexpr( std::is_same_v<Result, std::string> ) {
+				// Reduce allocation calls
 				result.reserve( 4096 );
 			}
 
@@ -86,11 +97,10 @@ namespace daw::json {
 			while( first != last ) {
 				auto const &v = *first;
 				using v_type = DAW_TYPEOF( v );
-				constexpr bool is_auto_detect_v =
-				  std::is_same<JsonElement,
-				               json_details::auto_detect_array_element>::value;
+				using is_auto_detect =
+				  std::is_same<JsonElement, json_details::auto_detect_array_element>;
 				using JsonMember =
-				  std::conditional_t<is_auto_detect_v,
+				  std::conditional_t<is_auto_detect::value,
 				                     json_details::json_deduced_type<v_type>,
 				                     JsonElement>;
 
