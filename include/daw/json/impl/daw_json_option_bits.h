@@ -12,6 +12,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 
 #include <climits>
