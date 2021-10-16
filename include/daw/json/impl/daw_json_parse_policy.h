@@ -31,7 +31,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		/***
 		 * Handles the bounds and policy items for parsing execution and comments.
 		 * @tparam PolicyFlags set via parse_options method to change compile time
@@ -139,6 +139,9 @@ namespace daw::json {
 			static constexpr bool expect_long_strings =
 			  json_details::get_bits_for<ExpectLongStrings>( PolicyFlags ) ==
 			  ExpectLongStrings::yes;
+
+			static constexpr GlobalEightBitModes eight_bit_mode =
+			  json_details::get_bits_for<GlobalEightBitModes>( PolicyFlags );
 
 			using CommentPolicy =
 			  switch_t<json_details::get_bits_for<PolicyCommentTypes, std::size_t>(
@@ -646,7 +649,8 @@ namespace daw::json {
 
 		using ConformancePolicy = BasicParsePolicy<parse_options(
 		  PolicyCommentTypes::none, AllowEscapedNames::yes, CheckedParseMode::yes,
-		  MustVerifyEndOfDataIsValid::yes, IEEE754Precise::yes,
+		  MustVerifyEndOfDataIsValid::yes, IEEE754Precise::yes, ValidateUTF8::yes,
 		  ExcludeSpecialEscapes::yes )>;
+
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

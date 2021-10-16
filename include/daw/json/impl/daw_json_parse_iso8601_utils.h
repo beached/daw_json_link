@@ -24,7 +24,7 @@
 #include <cstdint>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace parse_utils {
 			template<typename Result, std::size_t count>
 			constexpr Result parse_unsigned( char const *digit_str ) {

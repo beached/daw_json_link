@@ -13,7 +13,7 @@
 #include <cstddef>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			/***
 			 * When skip_string encounters escaping, it will note this as a non-zero

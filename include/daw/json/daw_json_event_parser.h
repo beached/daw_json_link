@@ -23,7 +23,7 @@
 #include <vector>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		enum json_parse_handler_result { Continue, SkipClassArray, Complete };
 		namespace json_details {
 			struct handler_result_holder {

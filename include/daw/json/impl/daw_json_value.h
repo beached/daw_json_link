@@ -26,7 +26,7 @@
 #include <tuple>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		/***
 		 * A container for arbitrary JSON values
 		 * @tparam ParseState see IteratorRange
@@ -45,8 +45,8 @@ namespace daw::json {
 		};
 
 		template<std::size_t Idx, typename ParseState>
-		constexpr decltype( auto )
-		get( basic_json_pair<ParseState> const &parse_state ) {
+		constexpr decltype( auto ) get(
+		  basic_json_pair<ParseState> const &parse_state ) {
 			static_assert( Idx < 2 );
 			if constexpr( Idx == 0 ) {
 				return parse_state.name;
@@ -56,7 +56,8 @@ namespace daw::json {
 		}
 
 		template<std::size_t Idx, typename ParseState>
-		constexpr decltype( auto ) get( basic_json_pair<ParseState> &parse_state ) {
+		constexpr decltype( auto ) get( basic_json_pair<ParseState> &
+		                                parse_state ) {
 			static_assert( Idx < 2 );
 			if constexpr( Idx == 0 ) {
 				return parse_state.name;
@@ -66,8 +67,8 @@ namespace daw::json {
 		}
 
 		template<std::size_t Idx, typename ParseState>
-		constexpr decltype( auto )
-		get( basic_json_pair<ParseState> &&parse_state ) {
+		constexpr decltype( auto ) get( basic_json_pair<ParseState> &&
+		                                parse_state ) {
 			static_assert( Idx < 2 );
 			if constexpr( Idx == 0 ) {
 				return DAW_MOVE( parse_state.name );
@@ -97,7 +98,7 @@ namespace std {
 } // namespace std
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		/***
 		 * Iterator for iterating over arbitrary JSON members and array elements
 		 * @tparam ParseState see IteratorRange
@@ -191,6 +192,10 @@ namespace daw::json {
 						m_state.move_next_member_or_end( );
 					} else {
 						(void)json_details::skip_value( m_state );
+						m_state.trim_left( );
+						daw_json_assert_weak( not m_state.has_more( ) or
+						                        m_state.is_at_next_array_element( ),
+						                      ErrorReason::UnexpectedEndOfData, m_state );
 						m_state.move_next_member_or_end( );
 					}
 				}

@@ -29,7 +29,7 @@
 #include <iterator>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			/***
 			 * Skip a string, after the initial quote has been skipped already
@@ -253,37 +253,33 @@ namespace daw::json {
 					}
 				}
 				CharT *exp = nullptr;
-				if constexpr( not( ParseState::is_zero_terminated_string or
-				                   ParseState::is_unchecked_input ) ) {
-					daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData,
-					                 parse_state );
-				}
-				unsigned dig = parse_digit( *first );
-				if( ( dig == parsed_constants::e_char ) |
-				    ( dig == parsed_constants::E_char ) ) {
-					exp = first;
-					++first;
-					daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,
-					                      [&] {
-						                      auto r = parse_state;
-						                      r.first = first;
-						                      return r;
-					                      }( ) );
-					dig = parse_digit( *first );
-					if( ( dig == parsed_constants::plus_char ) |
-					    ( dig == parsed_constants::minus_char ) ) {
+				if( first < last ) {
+					unsigned dig = parse_digit( *first );
+					if( ( dig == parsed_constants::e_char ) |
+					    ( dig == parsed_constants::E_char ) ) {
+						exp = first;
 						++first;
-					}
-					daw_json_assert_weak( first < last and parse_digit( *first ) < 10U,
-					                      ErrorReason::InvalidNumber );
+						daw_json_assert_weak( first < last,
+						                      ErrorReason::UnexpectedEndOfData, [&] {
+							                      auto r = parse_state;
+							                      r.first = first;
+							                      return r;
+						                      }( ) );
+						dig = parse_digit( *first );
+						if( ( dig == parsed_constants::plus_char ) |
+						    ( dig == parsed_constants::minus_char ) ) {
+							++first;
+						}
+						daw_json_assert_weak( first < last and parse_digit( *first ) < 10U,
+						                      ErrorReason::InvalidNumber );
 
-					if( DAW_LIKELY( first < last ) ) {
-						first =
-						  skip_digits<( ParseState::is_zero_terminated_string or
-						                ParseState::is_unchecked_input )>( first, last );
+						if( DAW_LIKELY( first < last ) ) {
+							first =
+							  skip_digits<( ParseState::is_zero_terminated_string or
+							                ParseState::is_unchecked_input )>( first, last );
+						}
 					}
 				}
-
 				parse_state.first = first;
 				result.last = first;
 				result.class_first = decimal;

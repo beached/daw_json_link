@@ -23,14 +23,14 @@
 #include <utility>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		/***
 		 * Allow for different optimizations.  Currently only the compile_time path
 		 * is fully supported. The others may offer faster parsing. The default is
 		 * compile_time, it provides constexpr parsing and generally is faster
 		 * currently.
 		 */
-		enum class ExecModeTypes : unsigned {
+		enum class ExecModeTypes : json_details::json_options_t {
 			compile_time,
 			runtime, /* testing */
 			simd     /* testing */
@@ -38,11 +38,21 @@ namespace daw::json {
 
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<ExecModeTypes> = 2;
+			inline constexpr json_options_t json_option_bits_width<ExecModeTypes> = 2;
 
 			template<>
 			inline constexpr auto default_json_option_value<ExecModeTypes> =
 			  ExecModeTypes::compile_time;
+		} // namespace json_details
+
+		enum class ValidateUTF8 : json_details::json_options_t { no, yes };
+		namespace json_details {
+			template<>
+			inline constexpr json_options_t json_option_bits_width<ValidateUTF8> = 1;
+
+			template<>
+			inline constexpr auto default_json_option_value<ValidateUTF8> =
+			  ValidateUTF8::no;
 		} // namespace json_details
 
 		/***
@@ -51,11 +61,14 @@ namespace daw::json {
 		 * Default is no, to try and detect, but use the safer assumption that the
 		 * buffer does not end in zero.
 		 */
-		enum class ZeroTerminatedString : unsigned { no, yes }; // 1bit
+		enum class ZeroTerminatedString : json_details::json_options_t {
+			no,
+			yes
+		}; // 1bit
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<ZeroTerminatedString> =
-			  1;
+			inline constexpr json_options_t
+			  json_option_bits_width<ZeroTerminatedString> = 1;
 
 			template<>
 			inline constexpr auto default_json_option_value<ZeroTerminatedString> =
@@ -67,23 +80,52 @@ namespace daw::json {
 		 * comments, and # hash style comments.  Default is none, no comments
 		 * allowed
 		 */
-		enum class PolicyCommentTypes : unsigned { none, cpp, hash }; // 2bits
+		enum class PolicyCommentTypes : json_details::json_options_t {
+			none,
+			cpp,
+			hash
+		}; // 2bits
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<PolicyCommentTypes> = 2;
+			inline constexpr json_options_t
+			  json_option_bits_width<PolicyCommentTypes> = 2;
 
 			template<>
 			inline constexpr auto default_json_option_value<PolicyCommentTypes> =
 			  PolicyCommentTypes::none;
 		} // namespace json_details
+
+		/***
+		 * If set to AllowFull, will use the per string settings.  If Disallow high
+		 * then high eight bits are filtered for all strings
+		 */
+		enum class GlobalEightBitModes : json_details::json_options_t {
+			DisallowHigh,
+			AllowFull
+		};
+
+		namespace json_details {
+			template<>
+			inline constexpr json_options_t
+			  json_option_bits_width<GlobalEightBitModes> = 1;
+
+			template<>
+			inline constexpr auto default_json_option_value<GlobalEightBitModes> =
+			  GlobalEightBitModes::AllowFull;
+		} // namespace json_details
+
 		/***
 		 * Enable all structure, buffer, and type checking.  The default is yes, but
 		 * no still does some checking and can be faster.
 		 */
-		enum class CheckedParseMode : unsigned { yes, no }; // 1bit
+		enum class CheckedParseMode : json_details::json_options_t {
+			yes,
+			no
+		}; // 1bit
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<CheckedParseMode> = 1;
+			inline constexpr json_options_t json_option_bits_width<CheckedParseMode> =
+			  1;
 
 			template<>
 			inline constexpr auto default_json_option_value<CheckedParseMode> =
@@ -94,10 +136,14 @@ namespace daw::json {
 		 * When document is minified, it is assumed that there is no whitespace in
 		 * the document. Not all policies support this.
 		 */
-		enum class MinifiedDocument : unsigned { no, yes }; // 1 bit
+		enum class MinifiedDocument : json_details::json_options_t {
+			no,
+			yes
+		}; // 1 bit
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<MinifiedDocument> = 1;
+			inline constexpr json_options_t json_option_bits_width<MinifiedDocument> =
+			  1;
 
 			template<>
 			inline constexpr auto default_json_option_value<MinifiedDocument> =
@@ -109,10 +155,14 @@ namespace daw::json {
 		 * is generally not needed.  The default is no, and the end of string
 		 * matching only needs to look for a `"`, not skip `\"` in names.
 		 */
-		enum class AllowEscapedNames : unsigned { no, yes }; // 1bit
+		enum class AllowEscapedNames : json_details::json_options_t {
+			no,
+			yes
+		}; // 1bit
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<AllowEscapedNames> = 1;
+			inline constexpr json_options_t
+			  json_option_bits_width<AllowEscapedNames> = 1;
 
 			template<>
 			inline constexpr auto default_json_option_value<AllowEscapedNames> =
@@ -124,10 +174,14 @@ namespace daw::json {
 		 * Use precise IEEE754 parsing of real numbers.  The default is no, and
 		 * results is much faster parsing with very small errors of 0-2ulp.
 		 */
-		enum class IEEE754Precise : unsigned { no, yes }; // 1bit
+		enum class IEEE754Precise : json_details::json_options_t {
+			no,
+			yes
+		}; // 1bit
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<IEEE754Precise> = 1;
+			inline constexpr json_options_t json_option_bits_width<IEEE754Precise> =
+			  1;
 
 			template<>
 			inline constexpr auto default_json_option_value<IEEE754Precise> =
@@ -139,10 +193,14 @@ namespace daw::json {
 		 * as they are found in the document stops at hash checking by default.  You
 		 * can force a full string check by setting to yes.
 		 */
-		enum class ForceFullNameCheck : unsigned { no, yes }; // 1bit
+		enum class ForceFullNameCheck : json_details::json_options_t {
+			no,
+			yes
+		}; // 1bit
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<ForceFullNameCheck> = 1;
+			inline constexpr json_options_t
+			  json_option_bits_width<ForceFullNameCheck> = 1;
 
 			template<>
 			inline constexpr auto default_json_option_value<ForceFullNameCheck> =
@@ -153,10 +211,13 @@ namespace daw::json {
 		 * object be mapped. See also, the ignore_unknown_members and
 		 * exact_class_mapping traits to set overrides
 		 */
-		enum class UseExactMappingsByDefault : unsigned { no, yes }; // 1bit
+		enum class UseExactMappingsByDefault : json_details::json_options_t {
+			no,
+			yes
+		}; // 1bit
 		namespace json_details {
 			template<>
-			inline constexpr unsigned
+			inline constexpr json_options_t
 			  json_option_bits_width<UseExactMappingsByDefault> = 1;
 
 			template<>
@@ -169,10 +230,13 @@ namespace daw::json {
 		 * Continue checking that the data is whitespace or empty after the end of
 		 * top level object is parsed from from_json
 		 */
-		enum class MustVerifyEndOfDataIsValid : unsigned { no, yes };
+		enum class MustVerifyEndOfDataIsValid : json_details::json_options_t {
+			no,
+			yes
+		};
 		namespace json_details {
 			template<>
-			inline constexpr unsigned
+			inline constexpr json_options_t
 			  json_option_bits_width<MustVerifyEndOfDataIsValid> = 1;
 
 			template<>
@@ -181,10 +245,11 @@ namespace daw::json {
 			    MustVerifyEndOfDataIsValid::no;
 		} // namespace json_details
 
-		enum class ExpectLongStrings : unsigned { no, yes };
+		enum class ExpectLongStrings : json_details::json_options_t { no, yes };
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<ExpectLongStrings> = 1;
+			inline constexpr json_options_t
+			  json_option_bits_width<ExpectLongStrings> = 1;
 
 			template<>
 			inline constexpr auto default_json_option_value<ExpectLongStrings> =
@@ -196,10 +261,13 @@ namespace daw::json {
 		 * token. This allows for safe searching without bounds checking.  If the
 		 * buffer is not mutable, it will not be enabled.
 		 */
-		enum class TemporarilyMutateBuffer : unsigned { no, yes }; // 1bit
+		enum class TemporarilyMutateBuffer : json_details::json_options_t {
+			no,
+			yes
+		}; // 1bit
 		namespace json_details {
 			template<>
-			inline constexpr unsigned
+			inline constexpr json_options_t
 			  json_option_bits_width<TemporarilyMutateBuffer> = 1;
 
 			template<>
@@ -210,11 +278,14 @@ namespace daw::json {
 		/***
 		 * Exclude characters under 0x20 that are not explicitly allowed.
 		 */
-		enum class ExcludeSpecialEscapes : unsigned { no, yes }; // 1bit
+		enum class ExcludeSpecialEscapes : json_details::json_options_t {
+			no,
+			yes
+		}; // 1bit
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<ExcludeSpecialEscapes> =
-			  1;
+			inline constexpr json_options_t
+			  json_option_bits_width<ExcludeSpecialEscapes> = 1;
 
 			template<>
 			inline constexpr auto default_json_option_value<ExcludeSpecialEscapes> =
@@ -224,30 +295,26 @@ namespace daw::json {
 		 * Implementation details
 		 */
 		namespace json_details {
-			using policy_list = typename option_list_impl<
+			using parse_policy_list = typename option_list_impl<
 			  ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
 			  CheckedParseMode, AllowEscapedNames, IEEE754Precise, ForceFullNameCheck,
 			  MinifiedDocument, UseExactMappingsByDefault, TemporarilyMutateBuffer,
-			  MustVerifyEndOfDataIsValid, ExcludeSpecialEscapes,
-			  ExpectLongStrings>::type;
-
-			template<typename Policy, typename Policies>
-			inline constexpr unsigned basic_policy_bits_start =
-			  option_bits_start_impl<Policy, Policies>::template calc(
-			    std::make_index_sequence<pack_size_v<Policies>>{ } );
+			  MustVerifyEndOfDataIsValid, ExcludeSpecialEscapes, ExpectLongStrings,
+			  GlobalEightBitModes, ValidateUTF8>::type;
 
 			template<typename Policy>
-			inline constexpr unsigned policy_bits_start =
-			  basic_policy_bits_start<Policy, policy_list>;
+			inline constexpr json_options_t parse_policy_bits_start =
+			  basic_policy_bits_start<Policy, parse_policy_list>;
 
 			template<typename Policy>
 			constexpr void set_bits_in( json_options_t &value, Policy e ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
-				auto new_bits = static_cast<unsigned>( e );
-				constexpr unsigned mask = (1U << json_option_bits_width<Policy>)-1U;
+				auto new_bits = static_cast<json_options_t>( e );
+				constexpr json_options_t mask =
+				  (1U << json_option_bits_width<Policy>)-1U;
 				new_bits &= mask;
-				new_bits <<= policy_bits_start<Policy>;
+				new_bits <<= parse_policy_bits_start<Policy>;
 				value &= ~mask;
 				value |= new_bits;
 			}
@@ -258,11 +325,12 @@ namespace daw::json {
 				static_assert( ( is_option_flag<Policies> and ... ),
 				               "Only registered policy types are allowed" );
 
-				auto new_bits = static_cast<unsigned>( pol );
-				constexpr unsigned mask = ( (1U << json_option_bits_width<Policy>)-1U );
+				auto new_bits = static_cast<json_options_t>( pol );
+				constexpr json_options_t mask =
+				  ( (1U << json_option_bits_width<Policy>)-1U );
 				new_bits &= mask;
-				new_bits <<= policy_bits_start<Policy>;
-				value &= ~( mask << policy_bits_start<Policy> );
+				new_bits <<= parse_policy_bits_start<Policy>;
+				value &= ~( mask << parse_policy_bits_start<Policy> );
 				value |= new_bits;
 				if constexpr( sizeof...( Policies ) > 0 ) {
 					if constexpr( sizeof...( pols ) > 0 ) {
@@ -280,7 +348,7 @@ namespace daw::json {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				auto new_bits = static_cast<json_options_t>( e );
-				new_bits <<= policy_bits_start<Policy>;
+				new_bits <<= parse_policy_bits_start<Policy>;
 				return new_bits;
 			}
 
@@ -298,17 +366,18 @@ namespace daw::json {
 			 * The defaults for all known policies encoded as a json_options_t
 			 */
 			inline static constexpr json_options_t default_policy_flag =
-			  default_policy_flag_t<policy_list>::value;
+			  default_policy_flag_t<parse_policy_list>::value;
 
 			template<typename Policy, typename Result = Policy>
 			constexpr Result get_bits_for( json_options_t value ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
-				constexpr unsigned mask = ( 1U << (policy_bits_start<Policy> +
-				                                   json_option_bits_width<Policy>)) -
-				                          1U;
+				constexpr json_options_t mask =
+				  ( 1U << (parse_policy_bits_start<Policy> +
+				           json_option_bits_width<Policy>)) -
+				  1U;
 				value &= mask;
-				value >>= policy_bits_start<Policy>;
+				value >>= parse_policy_bits_start<Policy>;
 				return static_cast<Result>( Policy{ value } );
 			}
 		} // namespace json_details
@@ -321,13 +390,19 @@ namespace daw::json {
 		 * @return A json_options_t that encodes the options for the parser
 		 */
 		template<typename... Policies>
-		constexpr json_details::json_options_t
-		parse_options( Policies... policies ) {
+		constexpr json_details::json_options_t parse_options(
+		  Policies... policies ) {
 			static_assert( ( json_details::is_option_flag<Policies> and ... ),
 			               "Only registered policy types are allowed" );
 			auto result = json_details::default_policy_flag;
 			if constexpr( sizeof...( Policies ) > 0 ) {
-				result |= ( json_details::set_bits_for( policies ) | ... );
+				// result |= ( json_details::set_bits_for( policies ) | ... );
+				( json_details::set_nth_bits<
+				    json_details::basic_option_bits_start<
+				      Policies, json_details::parse_policy_list>,
+				    json_details::json_option_bits_width<Policies>>(
+				    result, static_cast<json_details::json_options_t>( policies ) ),
+				  ... );
 			}
 			return result;
 		}

@@ -20,7 +20,7 @@
 #include <string_view>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		/**
 		 * Construct the JSONMember from the JSON document argument.
 		 * @tparam JsonMember any bool, arithmetic, string, string_view,

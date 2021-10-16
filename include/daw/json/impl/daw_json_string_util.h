@@ -26,7 +26,7 @@
 #endif
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			/// Search for a character in a string.
 			/// \tparam c character to find in string

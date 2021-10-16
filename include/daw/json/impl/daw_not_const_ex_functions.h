@@ -36,7 +36,7 @@
 #include <cstring>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			DAW_ATTRIB_INLINE constexpr bool
 			is_escaped( char const *ptr, char const *min_ptr ) {

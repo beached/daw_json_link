@@ -20,7 +20,7 @@
 #include <iterator>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		/***
 		 * Create the parser options flag for BasicParsePolicy
 		 * @tparam Policies Policy types that satisfy the `is_policy_flag` trait.

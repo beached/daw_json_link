@@ -16,7 +16,7 @@
 #include <cstdint>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			inline constexpr auto is_digit = []( char c ) -> daw::UInt8 {
 				return static_cast<unsigned>( static_cast<unsigned char>( c ) ) -

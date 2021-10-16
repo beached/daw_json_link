@@ -20,7 +20,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename ParseState, bool>
 			struct json_parse_array_iterator_base {

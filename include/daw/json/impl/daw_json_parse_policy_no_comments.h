@@ -26,7 +26,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		struct NoCommentSkippingPolicy final {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void

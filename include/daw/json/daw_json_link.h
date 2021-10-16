@@ -27,7 +27,7 @@ namespace daw::json::literals {
 } // namespace daw::json::literals
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		constexpr std::string_view json_link_version( ) {
 #define DAW_XSTR( x ) DAW_STR( x )
 #define DAW_STR( x ) std::string_view( #x )

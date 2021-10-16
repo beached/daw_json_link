@@ -32,7 +32,7 @@
 #endif
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename Signed, typename Unsigned>
 			constexpr Signed to_signed( Unsigned &&u, Signed sign ) {

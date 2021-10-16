@@ -41,7 +41,7 @@
 #endif
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			/***
 			 * Depending on the type of literal, it may always be quoted, sometimes,
@@ -498,9 +498,9 @@ namespace daw::json {
 
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( can_parse_to_stdstring_fast<JsonMember>::value ) {
-					using AllowHighEightbits =
-					  std::bool_constant<JsonMember::eight_bit_mode !=
-					                     EightBitModes::DisallowHigh>;
+					using AllowHighEightbits = std::bool_constant<
+					  ParseState::eight_bit_mode == GlobalEightBitModes::AllowFull and
+					  JsonMember::eight_bit_mode == EightBitModes::AllowFull>;
 					auto parse_state2 =
 					  KnownBounds ? parse_state : skip_string( parse_state );
 					// FIXME this needs std::string, fix
@@ -519,9 +519,9 @@ namespace daw::json {
 				} else {
 					auto parse_state2 =
 					  KnownBounds ? parse_state : skip_string( parse_state );
-					using AllowHighEightbits =
-					  std::bool_constant<JsonMember::eight_bit_mode !=
-					                     EightBitModes::DisallowHigh>;
+					using AllowHighEightbits = std::bool_constant<
+					  ParseState::eight_bit_mode == GlobalEightBitModes::AllowFull and
+					  JsonMember::eight_bit_mode == EightBitModes::AllowFull>;
 					if( not AllowHighEightbits::value or
 					    needs_slow_path( parse_state2 ) ) {
 						// There are escapes in the string

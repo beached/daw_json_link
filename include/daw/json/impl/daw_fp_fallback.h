@@ -18,7 +18,7 @@
 #endif
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 
 			template<typename Real, std::enable_if_t<std::is_floating_point_v<Real>,

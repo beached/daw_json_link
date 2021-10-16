@@ -12,11 +12,11 @@
 #include "version.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		/***
 		 * Choose whether to produce minified or pretty output
 		 */
-		enum class SerializationFormat : unsigned {
+		enum class SerializationFormat : json_details::json_options_t {
 			/* Output JSON without whitespace surrounding members and values */
 			Minified,
 			/* Output JSON with indentation and newlines */
@@ -36,7 +36,7 @@ namespace daw::json {
 		 * When Pretty mode is enabled, choose the indentation type.  Defaults to 2
 		 * spaces.
 		 */
-		enum class IndentationType : unsigned {
+		enum class IndentationType : json_details::json_options_t {
 			/* Use tabs for indentation */
 			Tab,
 			/* Use 0 spaces for indentation */
@@ -67,7 +67,7 @@ namespace daw::json {
 		/***
 		 * Allow for restricting the output of strings to 7bits
 		 */
-		enum class RestrictedStringOutput : unsigned {
+		enum class RestrictedStringOutput : json_details::json_options_t {
 			/* Do not impose any extra restrictions on string output during
 			   serialization */
 			None,
@@ -87,7 +87,7 @@ namespace daw::json {
 			  RestrictedStringOutput::None;
 		} // namespace json_details
 
-		enum class NewLineDelimiter : unsigned { n, rn };
+		enum class NewLineDelimiter : json_details::json_options_t { n, rn };
 
 		namespace json_details {
 			template<>
@@ -98,7 +98,7 @@ namespace daw::json {
 			  NewLineDelimiter::n;
 		} // namespace json_details
 
-		enum class OutputTrailingComma : unsigned { No, Yes };
+		enum class OutputTrailingComma : json_details::json_options_t { No, Yes };
 		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<OutputTrailingComma> = 1;

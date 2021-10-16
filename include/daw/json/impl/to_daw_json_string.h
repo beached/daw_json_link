@@ -38,7 +38,7 @@
 #include <variant>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			template<FPOutputFormat fp_output_format, typename OutputIterator,
 			         typename Real>

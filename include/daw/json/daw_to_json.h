@@ -21,7 +21,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		template<typename Value, typename JsonClass, typename OutputIterator>
 		[[maybe_unused]] constexpr OutputIterator to_json( Value const &value,
 		                                                   OutputIterator out_it ) {

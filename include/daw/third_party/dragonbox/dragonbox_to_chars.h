@@ -23,7 +23,7 @@
 #include <daw/daw_algorithm.h>
 
 namespace daw::jkj::dragonbox {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace to_chars_detail {
 			inline char *to_chars( unsigned_fp_t<float> v, char *buffer );
 			inline char *to_chars( unsigned_fp_t<double> v, char *buffer );

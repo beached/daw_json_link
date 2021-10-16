@@ -15,6 +15,11 @@
 #else
 #define DAW_JSON_VER DAW_JSON_VER_OVERRIDE
 #endif
+#if not defined( DAW_JSON_VER_INLINE_OVERRIDE )
+#define DAW_JSON_INLINE_NS inline
+#else
+#define DAW_JSON_INLINE_NS
+#endif
 
 #if defined( __GNUC__ ) and not defined( __clang__ ) and \
   not defined( DAW_JSON_FLATTEN ) and not defined( DAW_NO_FLATTEN )

@@ -13,7 +13,7 @@
 #include <daw/daw_attributes.h>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace parse_policy_details {
 			template<char... keys>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool in( char c ) {
@@ -76,6 +76,10 @@ namespace daw::json {
 				switch( parse_state.front( ) ) {
 				case '-':
 					parse_state.remove_prefix( );
+					daw_json_assert_weak(
+					  DAW_LIKELY( parse_state.has_more( ) ) and
+					    DAW_LIKELY( is_number( parse_state.front( ) ) ),
+					  ErrorReason::InvalidNumber, parse_state );
 					return -1;
 				case '0':
 					if( parse_state.size( ) > 1 ) {

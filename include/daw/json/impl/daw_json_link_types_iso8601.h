@@ -20,7 +20,7 @@
 #include <optional>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		template<JsonNullable>
 		struct construct_from_iso8601_timestamp {
 			using result_type =

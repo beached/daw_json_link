@@ -21,7 +21,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			[[nodiscard]] inline constexpr UInt8 to_nibble( unsigned char chr ) {
 				int const b = static_cast<int>( chr );
@@ -38,7 +38,7 @@ namespace daw::json {
 			byte_from_nibbles( char const *&first ) {
 				auto const n0 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				auto const n1 = to_nibble( static_cast<unsigned char>( *first++ ) );
-				if constexpr( is_unchecked_input ) {
+				if constexpr( not is_unchecked_input ) {
 					daw_json_assert( n0 < 16 and n1 < 16, ErrorReason::InvalidUTFEscape );
 				}
 				return to_uint16( ( n0 << 4U ) | n1 );
@@ -225,12 +225,19 @@ namespace daw::json {
 						char const *first = parse_state.first;
 						char const *const last = parse_state.last;
 						if constexpr( std::is_same<typename ParseState::exec_tag_t,
-						                           constexpr_exec_tag>::value ) {
+						                           constexpr_exec_tag>::value or
+						              not AllowHighEight ) {
 
 							daw_json_assert_weak( KnownBounds or first < last,
 							                      ErrorReason::UnexpectedEndOfData,
 							                      parse_state );
 							while( *first != '"' and *first != '\\' ) {
+								if constexpr( not AllowHighEight ) {
+									daw_json_assert( static_cast<unsigned>(
+									                   static_cast<unsigned char>( *first ) ) <=
+									                   0x7FU,
+									                 ErrorReason::InvalidString, parse_state );
+								}
 								++first;
 								daw_json_assert_weak( KnownBounds or first < last,
 								                      ErrorReason::UnexpectedEndOfData,

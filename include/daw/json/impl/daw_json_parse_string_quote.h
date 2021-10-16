@@ -20,7 +20,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details::string_quote {
 			template<std::size_t N, char c>
 			inline constexpr UInt8 test_at_byte( UInt64 b ) {
@@ -143,120 +143,142 @@ namespace daw::json {
 					std::ptrdiff_t need_slow_path = -1;
 					CharT *first = parse_state.first;
 					CharT *const last = parse_state.class_last;
-					if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
-					                                 constexpr_exec_tag> ) {
-						first = mem_skip_until_end_of_string<false>(
-						  ParseState::exec_tag, first, last, need_slow_path );
-					} else {
-						if constexpr( not ParseState::exclude_special_escapes ) {
-							if( CharT *const l = parse_state.last; l - first >= 8 ) {
-								skip_to_first8( first, l );
-							} else if( last - first >= 4 ) {
-								skip_to_first4( first, l );
-							}
+
+					if constexpr( not ParseState::exclude_special_escapes and
+					              ParseState::eight_bit_mode ==
+					                GlobalEightBitModes::AllowFull ) {
+						if( CharT *const l = parse_state.last; l - first >= 8 ) {
+							skip_to_first8( first, l );
+						} else if( last - first >= 4 ) {
+							skip_to_first4( first, l );
 						}
-						if constexpr( ParseState::is_zero_terminated_string ) {
-							if constexpr( ParseState::exclude_special_escapes ) {
-								while( *first != '\0' ) {
-									char c = *first;
-									daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
+					}
+					if constexpr( ParseState::is_zero_terminated_string ) {
+						if constexpr( ParseState::exclude_special_escapes ) {
+							while( *first != '\0' ) {
+								char c = *first;
+								if constexpr( ParseState::eight_bit_mode !=
+								              GlobalEightBitModes::AllowFull ) {
+									daw_json_assert( static_cast<unsigned>(
+									                   static_cast<unsigned char>( c ) ) <= 0x7FU,
 									                 ErrorReason::InvalidString, parse_state );
-									if( c == '\\' ) {
-										daw_json_assert( last - first > 1,
-										                 ErrorReason::InvalidString, parse_state );
-										if( need_slow_path < 0 ) {
-											need_slow_path = first - parse_state.first;
-										}
-										++first;
-										c = *first;
-										switch( c ) {
-										case '"':
-										case '\\':
-										case '/':
-										case 'b':
-										case 'f':
-										case 'n':
-										case 'r':
-										case 't':
-										case 'u':
-											break;
-										default:
-											daw_json_error( ErrorReason::InvalidString, parse_state );
-										}
-									} else if( c == '"' ) {
-										break;
+								}
+								daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
+								                 ErrorReason::InvalidString, parse_state );
+								if( c == '\\' ) {
+									daw_json_assert( last - first > 1, ErrorReason::InvalidString,
+									                 parse_state );
+									if( need_slow_path < 0 ) {
+										need_slow_path = first - parse_state.first;
 									}
 									++first;
-								}
-							} else {
-								while( ( *first != 0 ) & ( *first != '"' ) ) {
-									while( ( *first != 0 ) & ( *first != '"' ) &
-									       ( *first != '\\' ) ) {
-										++first;
-									}
-
-									if( ( ( *first != 0 ) & ( *first == '\\' ) ) ) {
-										if( need_slow_path < 0 ) {
-											need_slow_path = first - parse_state.first;
-										}
-										first += 2;
-									} else {
+									c = *first;
+									switch( c ) {
+									case '"':
+									case '\\':
+									case '/':
+									case 'b':
+									case 'f':
+									case 'n':
+									case 'r':
+									case 't':
+									case 'u':
 										break;
+									default:
+										daw_json_error( ErrorReason::InvalidString, parse_state );
 									}
+								} else if( c == '"' ) {
+									break;
 								}
+								++first;
 							}
 						} else {
-							if constexpr( ParseState::exclude_special_escapes ) {
-								while( first < last ) {
-									char c = *first;
-									daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
-									                 ErrorReason::InvalidString, parse_state );
-									if( c == '\\' ) {
-										daw_json_assert( last - first > 1,
+							while( ( *first != 0 ) & ( *first != '"' ) ) {
+								while( ( *first != 0 ) & ( *first != '"' ) &
+								       ( *first != '\\' ) ) {
+									if constexpr( ParseState::eight_bit_mode !=
+									              GlobalEightBitModes::AllowFull ) {
+										daw_json_assert( static_cast<unsigned>(
+										                   static_cast<unsigned char>( *first ) ) <=
+										                   0x7FU,
 										                 ErrorReason::InvalidString, parse_state );
-										if( need_slow_path < 0 ) {
-											need_slow_path = first - parse_state.first;
-										}
-										++first;
-										c = *first;
-										switch( c ) {
-										case '"':
-										case '\\':
-										case '/':
-										case 'b':
-										case 'f':
-										case 'n':
-										case 'r':
-										case 't':
-										case 'u':
-											break;
-										default:
-											daw_json_error( ErrorReason::InvalidString, parse_state );
-										}
-									} else if( c == '"' ) {
-										break;
 									}
 									++first;
 								}
-							} else {
-								while( first < last and *first != '"' ) {
-									while( first < last and
-									       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
-										++first;
-									}
 
-									if( first < last and *first == '\\' ) {
-										if( need_slow_path < 0 ) {
-											need_slow_path = first - parse_state.first;
-										}
-										first += 2;
-									} else {
-										break;
+								if( ( ( *first != 0 ) & ( *first == '\\' ) ) ) {
+									if( need_slow_path < 0 ) {
+										need_slow_path = first - parse_state.first;
 									}
+									first += 2;
+								} else {
+									break;
+								}
+							}
+						}
+					} else {
+						if constexpr( ParseState::exclude_special_escapes ) {
+							/*
+							bool last_high = false;
+							std::size_t cp_count = 0;
+							 */
+							while( first < last ) {
+								char c = *first;
+								daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
+								                 ErrorReason::InvalidString, parse_state );
+								if constexpr( ParseState::eight_bit_mode !=
+								              GlobalEightBitModes::AllowFull ) {
+									daw_json_assert( static_cast<unsigned>(
+									                   static_cast<unsigned char>( *first ) ) <=
+									                   0x7FU,
+									                 ErrorReason::InvalidString, parse_state );
+								}
+								if( c == '\\' ) {
+									daw_json_assert( last - first > 1, ErrorReason::InvalidString,
+									                 parse_state );
+									if( need_slow_path < 0 ) {
+										need_slow_path = first - parse_state.first;
+									}
+									++first;
+									c = *first;
+									switch( c ) {
+									case '"':
+									case '\\':
+									case '/':
+									case 'b':
+									case 'f':
+									case 'n':
+									case 'r':
+									case 't':
+									case 'u':
+										break;
+									default:
+										daw_json_error( ErrorReason::InvalidString, parse_state );
+									}
+								} else if( c == '"' ) {
+									break;
+								}
+								++first;
+							}
+						} else {
+							while( first < last and *first != '"' ) {
+								while( first < last and
+								       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
+									++first;
+								}
+
+								if( first < last and *first == '\\' ) {
+									if( need_slow_path < 0 ) {
+										need_slow_path = first - parse_state.first;
+									}
+									first += 2;
+								} else {
+									break;
 								}
 							}
 						}
 					}
+
 					if constexpr( ParseState::is_zero_terminated_string ) {
 						daw_json_assert_weak( *first == '"', ErrorReason::InvalidString,
 						                      parse_state );

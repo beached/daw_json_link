@@ -13,7 +13,7 @@
 #include "impl/version.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		/**
 		 *
 		 * @tparam OutputIterator Iterator to character data to

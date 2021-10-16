@@ -6,13 +6,15 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#include "daw/json/daw_json_event_parser.h"
+#include <daw/daw_do_not_optimize.h>
 #include <daw/daw_memory_mapped_file.h>
+#include <daw/json/daw_json_event_parser.h>
 #include <daw/json/daw_json_link.h>
 
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 using namespace std::string_literals;
@@ -32,12 +34,12 @@ std::string to_string( expected_result r ) {
 	}
 }
 
-constexpr std::string_view check_expected( expected_result expected,
-                                           expected_result actual ) {
+constexpr std::pair<std::string_view, bool>
+check_expected( expected_result expected, expected_result actual ) {
 	if( expected == actual or expected == expected_result::either ) {
-		return R"("not_error")";
+		return { R"("not_error")", true };
 	}
-	return R"("error")";
+	return { R"("error")", false };
 }
 
 class JSONValidateHandler {
@@ -187,12 +189,22 @@ int main( int argc, char **argv ) {
 		exit( EXIT_FAILURE );
 	}
 	std::cout << "\"filename\",\"status\",\"is error\",\"error message\"\n";
+	std::string error_lines{ };
+
+	// These files are expected to fail.  These are things like trailing comma
+	// extensions
+	std::string_view allow_list[] = { "n_object_trailing_comma.json",
+	                                  "n_array_number_and_comma.json",
+	                                  "n_array_extra_comma.json" };
 	for( auto const &entry :
 	     std::filesystem::recursive_directory_iterator( p ) ) {
 		if( not entry.is_regular_file( ) ) {
 			continue;
 		}
 		auto const fname = entry.path( ).filename( ).string( );
+		/*if( fname != "y_string_pi.json" ) {
+			continue;
+		}*/
 		if( fname.size( ) <= 3 or fname[1] != '_' or
 		    not( fname[0] == 'i' or fname[0] == 'y' or fname[0] == 'n' ) ) {
 			continue;
@@ -206,11 +218,30 @@ int main( int argc, char **argv ) {
 				  entry.path( ).wstring( ) );
 			}
 		}( );
+		bool const is_on_allow_list =
+		  std::find( std::data( allow_list ), daw::data_end( allow_list ),
+		             std::string_view( fname ) ) != daw::data_end( allow_list );
 
 		auto [result, message] = test_pass_fail( json_data );
-		std::cout << check_expected( static_cast<expected_result>( fname[0] ),
-		                             result )
-		          << ',' << std::quoted( fname ) << ',' << to_string( result )
-		          << ',' << std::quoted( message ) << '\n';
+		auto [check_msg, check_stat] =
+		  check_expected( static_cast<expected_result>( fname[0] ), result );
+		std::stringstream ss;
+		ss << check_msg << ',' << std::quoted( fname ) << ',' << to_string( result )
+		   << ',' << std::quoted( message );
+		if( is_on_allow_list ) {
+			ss << ", \"allowed\"\n";
+		} else {
+			ss << '\n';
+		}
+		if( check_stat or is_on_allow_list ) {
+			std::cout << ss.str( );
+		} else {
+			error_lines.append( ss.str( ) );
+		}
+	}
+	std::cout << error_lines;
+	std::cout << error_lines;
+	if( not error_lines.empty( ) ) {
+		return 1;
 	}
 }

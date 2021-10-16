@@ -26,7 +26,7 @@
 #include <vector>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		class json_path_node;
 
 		[[nodiscard]] inline std::vector<json_path_node>

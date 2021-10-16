@@ -31,7 +31,7 @@
  *
  */
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		template<JSONNAMETYPE Name, typename JsonMember>
 		struct json_named_member {
 			static constexpr std::string_view name = Name;

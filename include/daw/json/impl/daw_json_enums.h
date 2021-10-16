@@ -13,11 +13,16 @@
 #include <daw/daw_utility.h>
 
 #include <cstdint>
+#include <daw/daw_uint_buffer.h>
 #include <string_view>
 #include <utility>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
+		namespace json_details {
+			using json_options_t = std::uint32_t;
+		}
+
 		/// The tags used by the parser to determine what parser to call.
 		enum class JsonParseTypes : std::uint_fast8_t {
 			Real,          /// Number - Floating Point
@@ -87,7 +92,11 @@ namespace daw::json {
 		 * Nullable - members can have a value of null or be missing
 		 * NullVisible - members must exist but can have a value of null
 		 */
-		enum class JsonNullable : unsigned { MustExist, Nullable, NullVisible };
+		enum class JsonNullable : json_details::json_options_t {
+			MustExist,
+			Nullable,
+			NullVisible
+		};
 
 		/***
 		 * When not MustExist, the default Null type for unspecified _null json
@@ -118,5 +127,9 @@ namespace daw::json {
 		template<JsonParseTypes v>
 		using ParseTag = daw::constant<v>;
 
-	} // namespace DAW_JSON_VER
+		enum class EightBitModes : json_details::json_options_t {
+			DisallowHigh = 0,
+			AllowFull = 1,
+		}; // 1bit
+	}    // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -26,7 +26,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			template<bool skip_end_check, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE inline constexpr void
@@ -282,10 +282,15 @@ namespace daw::json {
 				                static_cast<std::ptrdiff_t>( max_exponent::value ) );
 
 				unsigned_t significant_digits = 0;
+				daw_json_assert_weak(
+				  not( whole_last - first > 1 and *first == '0' and
+				       daw::json::parse_policy_details::is_number( *( first + 1 ) ) ),
+				  ErrorReason::InvalidNumber, parse_state );
 				CharT *last_char =
 				  parse_digits_while_number<( ParseState::is_zero_terminated_string or
 				                              ParseState::is_unchecked_input )>(
 				    first, whole_last, significant_digits );
+
 				std::ptrdiff_t sig_digit_count = last_char - parse_state.first;
 				bool use_strtod =
 				  std::is_floating_point_v<Result> and ParseState::precise_ieee754 and
@@ -320,9 +325,18 @@ namespace daw::json {
 					++first;
 					if( exponent_p1 != 0 ) {
 						if( first < parse_state.last ) {
-							first = skip_digits<( ParseState::is_zero_terminated_string or
-							                      ParseState::is_unchecked_input )>(
-							  first, parse_state.last );
+							if constexpr( ParseState::is_unchecked_input ) {
+								first = skip_digits<( ParseState::is_zero_terminated_string or
+								                      ParseState::is_unchecked_input )>(
+								  first, parse_state.last );
+							} else {
+								auto old_first = first;
+								first = skip_digits<( ParseState::is_zero_terminated_string or
+								                      ParseState::is_unchecked_input )>(
+								  first, parse_state.last );
+								daw_json_assert( DAW_LIKELY( old_first < first ),
+								                 ErrorReason::InvalidNumber, parse_state );
+							}
 						}
 					} else {
 						CharT *fract_last =
@@ -335,6 +349,9 @@ namespace daw::json {
 						  ParseState::is_zero_terminated_string or
 						  ParseState::is_unchecked_input )>( first, fract_last,
 						                                     significant_digits );
+
+						daw_json_assert_weak( DAW_LIKELY( first < last_char ),
+						                      ErrorReason::InvalidNumber, parse_state );
 						sig_digit_count += last_char - first;
 						exponent_p1 -= static_cast<signed_t>( last_char - first );
 						first = last_char;
