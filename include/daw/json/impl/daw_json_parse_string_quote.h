@@ -23,7 +23,7 @@ namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			constexpr std::pair<std::size_t, bool>
-			validate_utf8( std::string_view sv ) {
+			validate_utf8( constexpr_exec_tag, std::string_view sv ) {
 				std::size_t err_pos = 1;
 				auto len = static_cast<std::ptrdiff_t>( std::size( sv ) );
 				char const *data = std::data( sv );
@@ -354,7 +354,8 @@ namespace daw::json {
 					}
 					if constexpr( ParseState::validate_utf8 ) {
 						daw_json_assert(
-						  validate_utf8( std::string_view( parse_state.first,
+						  validate_utf8( ParseState::exec_tag,
+						                 std::string_view( parse_state.first,
 						                                   static_cast<std::size_t>(
 						                                     first - parse_state.first ) ) )
 						    .second,

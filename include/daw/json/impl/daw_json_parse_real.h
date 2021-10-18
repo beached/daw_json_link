@@ -339,19 +339,24 @@ namespace daw::json {
 							}
 						}
 					} else {
-						CharT *fract_last =
-						  first + ( std::min )( parse_state.last - first,
-						                        static_cast<std::ptrdiff_t>(
-						                          max_exponent::value -
-						                          ( first - parse_state.first ) ) );
+						auto const max_digits_left = parse_state.last - first;
+						auto const cur_digit_count =
+						  static_cast<std::ptrdiff_t>( first - parse_state.first );
+						auto const sig_digits_avail = static_cast<std::ptrdiff_t>(
+						  max_exponent::value - cur_digit_count );
+						auto const fract_last_diff =
+						  ( std::min )( max_digits_left, sig_digits_avail );
+						CharT *fract_last = first + fract_last_diff;
 
 						last_char = parse_digits_while_number<(
 						  ParseState::is_zero_terminated_string or
 						  ParseState::is_unchecked_input )>( first, fract_last,
 						                                     significant_digits );
 
-						daw_json_assert_weak( DAW_LIKELY( first < last_char ),
-						                      ErrorReason::InvalidNumber, parse_state );
+						daw_json_assert_weak(
+						  DAW_LIKELY( first < last_char ) or
+						    ( sig_digits_avail <= 0 and max_digits_left > 0 ),
+						  ErrorReason::InvalidNumber, parse_state );
 						sig_digit_count += last_char - first;
 						exponent_p1 -= static_cast<signed_t>( last_char - first );
 						first = last_char;
