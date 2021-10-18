@@ -46,7 +46,7 @@ endif ()
 
 include(cmake/test_compiler_options.cmake)
 
-add_library(json_test src/defines.cpp )
+add_library(json_test src/defines.cpp)
 
 if (DAW_USE_PACKAGE_MANAGEMENT)
     target_link_libraries(json_test PUBLIC ${COMPILER_SPECIFIC_LIBS})
@@ -269,7 +269,7 @@ target_link_libraries(canada_test_alloc PRIVATE json_test)
 add_dependencies(full canada_test_alloc)
 
 add_executable(canada_test_basic src/canada_test_basic.cpp)
-target_link_libraries(canada_test_basic PRIVATE json_test geojson_parser_cx_ch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch )
+target_link_libraries(canada_test_basic PRIVATE json_test geojson_parser_cx_ch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch)
 add_test(NAME canada_test_basic COMMAND canada_test_basic ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full canada_test_basic)
 
@@ -278,10 +278,13 @@ target_link_libraries(kv_map_test PRIVATE json_test)
 add_test(NAME kv_map_test COMMAND kv_map_test)
 add_dependencies(full kv_map_test)
 
-add_executable(json_test_suite src/json_test_suite.cpp)
-target_link_libraries(json_test_suite PRIVATE json_test)
-add_test(NAME json_test_suite_test COMMAND json_test_suite . WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/json_test_suite/")
-add_dependencies(full json_test_suite)
+if (DAW_USE_EXCEPTIONS)
+    # Must have exceptions enabled in order to verify failing
+    add_executable(json_test_suite src/json_test_suite.cpp)
+    target_link_libraries(json_test_suite PRIVATE json_test)
+    add_test(NAME json_test_suite_test COMMAND json_test_suite . WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/json_test_suite/")
+    add_dependencies(full json_test_suite)
+endif ()
 
 add_executable(cookbook_kv1_test src/cookbook_kv1_test.cpp)
 target_link_libraries(cookbook_kv1_test PRIVATE json_test)

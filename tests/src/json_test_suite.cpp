@@ -29,9 +29,8 @@ std::string to_string( expected_result r ) {
 		return R"("reject")";
 	case expected_result::either:
 		return R"("either")";
-	default:
-		throw std::exception( );
 	}
+	DAW_UNREACHABLE( );
 }
 
 constexpr std::pair<std::string_view, bool>
