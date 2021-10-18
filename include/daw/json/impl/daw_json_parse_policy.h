@@ -117,6 +117,10 @@ namespace daw::json {
 			  json_details::get_bits_for<ExcludeSpecialEscapes>( PolicyFlags ) ==
 			  ExcludeSpecialEscapes::yes;
 
+			static constexpr bool validate_utf8 =
+			  json_details::get_bits_for<ValidateUTF8>( PolicyFlags ) ==
+			  ValidateUTF8::yes;
+
 			static constexpr bool allow_leading_zero_plus = true;
 
 			using as_unchecked =

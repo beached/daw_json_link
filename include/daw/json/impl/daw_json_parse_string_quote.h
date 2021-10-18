@@ -21,6 +21,71 @@
 
 namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
+		namespace json_details {
+			constexpr std::pair<std::size_t, bool>
+			validate_utf8( std::string_view sv ) {
+				std::size_t err_pos = 1;
+				auto len = static_cast<std::ptrdiff_t>( std::size( sv ) );
+				char const *data = std::data( sv );
+				while( len ) {
+					std::size_t bytes = 0;
+					auto const byte1 = static_cast<unsigned char>( data[0] );
+
+					/* 00..7F */
+					if( byte1 <= 0x7FU ) {
+						bytes = 1;
+						/* C2..DF, 80..BF */
+					} else if( len >= 2 & byte1 >= 0xC2 & byte1 <= 0xDF &
+					           ( static_cast<signed char>( data[1] ) <=
+					             static_cast<signed char>( 0xBF ) ) ) {
+						bytes = 2;
+					} else if( len >= 3 ) {
+						auto const byte2 = static_cast<unsigned char>( data[1] );
+
+						/* Is byte2, byte3 between 0x80 ~ 0xBF */
+						bool const byte2_ok = static_cast<signed char>( byte2 ) <=
+						                      static_cast<signed char>( 0xBF );
+						bool const byte3_ok = data[2] <= static_cast<signed char>( 0xBF );
+
+						if( byte2_ok & byte3_ok &
+						    /* E0, A0..BF, 80..BF */
+						    ( ( byte1 == 0xE0 & byte2 >= 0xA0 ) |
+						      /* E1..EC, 80..BF, 80..BF */
+						      ( byte1 >= 0xE1 & byte1 <= 0xEC ) |
+						      /* ED, 80..9F, 80..BF */
+						      ( byte1 == 0xED & byte2 <= 0x9F ) |
+						      /* EE..EF, 80..BF, 80..BF */
+						      ( byte1 >= 0xEE & byte1 <= 0xEF ) ) ) {
+							bytes = 3;
+						} else if( len >= 4 ) {
+							/* Is byte4 between 0x80 ~ 0xBF */
+							bool const byte4_ok = static_cast<signed char>( data[3] ) <=
+							                      static_cast<signed char>( 0xBF );
+
+							if( byte2_ok & byte3_ok & byte4_ok &
+							    /* F0, 90..BF, 80..BF, 80..BF */
+							    ( ( ( byte1 == 0xF0 ) & ( byte2 >= 0x90 ) ) |
+							      /* F1..F3, 80..BF, 80..BF, 80..BF */
+							      ( ( byte1 >= 0xF1 ) & ( byte1 <= 0xF3 ) ) |
+							      /* F4, 80..8F, 80..BF, 80..BF */
+							      ( ( byte1 == 0xF4 ) & ( byte2 <= 0x8F ) ) ) ) {
+								bytes = 4;
+							} else {
+								return { err_pos, false };
+							}
+						} else {
+							return { err_pos, false };
+						}
+					} else {
+						return { err_pos, false };
+					}
+					len -= bytes;
+					err_pos += bytes;
+					data += bytes;
+				}
+				return { sv.size( ), true };
+			}
+		} // namespace json_details
 		namespace json_details::string_quote {
 			template<std::size_t N, char c>
 			inline constexpr UInt8 test_at_byte( UInt64 b ) {
@@ -131,6 +196,7 @@ namespace daw::json {
 							}
 						}
 					}
+
 					parse_state.first = first;
 					return static_cast<std::size_t>( need_slow_path );
 				}
@@ -285,6 +351,14 @@ namespace daw::json {
 					} else {
 						daw_json_assert_weak( first < last and *first == '"',
 						                      ErrorReason::InvalidString, parse_state );
+					}
+					if constexpr( ParseState::validate_utf8 ) {
+						daw_json_assert(
+						  validate_utf8( std::string_view( parse_state.first,
+						                                   static_cast<std::size_t>(
+						                                     first - parse_state.first ) ) )
+						    .second,
+						  ErrorReason::InvalidUTFCodepoint, parse_state );
 					}
 					parse_state.first = first;
 					return static_cast<std::size_t>( need_slow_path );
