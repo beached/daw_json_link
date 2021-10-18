@@ -133,15 +133,17 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr CharT *
 			skip_digits( CharT *first, CharT *const last ) {
 				(void)last; // only used inside if constexpr and gcc9 warns
-				unsigned dig = parse_digit( *first );
-				while( dig < 10 ) {
-					++first;
-					if constexpr( not skip_end_check ) {
-						if( DAW_UNLIKELY( first >= last ) ) {
-							break;
+				if( DAW_LIKELY( first < last ) ) {
+					unsigned dig = parse_digit( *first );
+					while( dig < 10 ) {
+						++first;
+						if constexpr( not skip_end_check ) {
+							if( DAW_UNLIKELY( first >= last ) ) {
+								break;
+							}
 						}
+						dig = parse_digit( *first );
 					}
-					dig = parse_digit( *first );
 				}
 				return first;
 			}
