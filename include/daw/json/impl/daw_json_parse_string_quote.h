@@ -35,7 +35,7 @@ namespace daw::json {
 					if( byte1 <= 0x7FU ) {
 						bytes = 1;
 						/* C2..DF, 80..BF */
-					} else if( len >= 2 & byte1 >= 0xC2 & byte1 <= 0xDF &
+					} else if( (len >= 2) & (byte1 >= 0xC2) & (byte1 <= 0xDF) &
 					           ( static_cast<signed char>( data[1] ) <=
 					             static_cast<signed char>( 0xBF ) ) ) {
 						bytes = 2;
@@ -49,13 +49,13 @@ namespace daw::json {
 
 						if( byte2_ok & byte3_ok &
 						    /* E0, A0..BF, 80..BF */
-						    ( ( byte1 == 0xE0 & byte2 >= 0xA0 ) |
+						    ( ( ( byte1 == 0xE0 ) & ( byte2 >= 0xA0 ) ) |
 						      /* E1..EC, 80..BF, 80..BF */
-						      ( byte1 >= 0xE1 & byte1 <= 0xEC ) |
+						      ( ( byte1 >= 0xE1 ) & ( byte1 <= 0xEC ) ) |
 						      /* ED, 80..9F, 80..BF */
-						      ( byte1 == 0xED & byte2 <= 0x9F ) |
+						      ( ( byte1 == 0xED ) & ( byte2 <= 0x9F ) ) |
 						      /* EE..EF, 80..BF, 80..BF */
-						      ( byte1 >= 0xEE & byte1 <= 0xEF ) ) ) {
+						      ( ( byte1 >= 0xEE ) & ( byte1 <= 0xEF ) ) ) ) {
 							bytes = 3;
 						} else if( len >= 4 ) {
 							/* Is byte4 between 0x80 ~ 0xBF */
