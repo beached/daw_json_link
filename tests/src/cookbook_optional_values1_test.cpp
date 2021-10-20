@@ -80,15 +80,18 @@ namespace daw::json {
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 		using type = json_member_list<
-		  json_number_null<member0, std::optional<int>>, json_string<member1>,
-		  json_bool<member2, std::unique_ptr<bool>,
+		  json_number_null<member0, std::optional<int>>,
+		  json_string<member1>,
+		  json_bool<member2,
+		            std::unique_ptr<bool>,
 		            bool_opt( LiteralAsStringOpt::Never,
 		                      JsonNullable::NullVisible ),
 		            daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
 
 		static inline auto to_json_data(
 		  daw::cookbook_optional_values1::MyOptionalStuff1 const &value ) {
-			return std::forward_as_tuple( value.member0, value.member1,
+			return std::forward_as_tuple( value.member0,
+			                              value.member1,
 			                              value.member2 );
 		}
 	};

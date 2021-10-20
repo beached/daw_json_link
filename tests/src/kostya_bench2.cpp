@@ -36,7 +36,8 @@ int main( int, char ** ) {
 
 	using namespace daw::json;
 	auto rng = from_json<json_raw_no_name<>, NoCommentSkippingPolicyUnchecked>(
-	  json_text, "coordinates" );
+	  json_text,
+	  "coordinates" );
 
 	auto val = json_value_state( );
 	for( json_pair item : rng ) {

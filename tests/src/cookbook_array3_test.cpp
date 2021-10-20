@@ -38,20 +38,21 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_array3::MyArrayClass1> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"member0", int>, json_array<"member1", int>,
-		                   json_array<"member2", std::string>>;
+		using type = json_member_list<json_number<"member0", int>,
+		                              json_array<"member1", int>,
+		                              json_array<"member2", std::string>>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
-		using type =
-		  json_member_list<json_number<member0, int>, json_array<member1, int>,
-		                   json_array<member2, std::string>>;
+		using type = json_member_list<json_number<member0, int>,
+		                              json_array<member1, int>,
+		                              json_array<member2, std::string>>;
 #endif
 		static inline auto
 		to_json_data( daw::cookbook_array3::MyArrayClass1 const &value ) {
-			return std::forward_as_tuple( value.member0, value.member1,
+			return std::forward_as_tuple( value.member0,
+			                              value.member1,
 			                              value.member2 );
 		}
 	};

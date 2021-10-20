@@ -63,14 +63,16 @@ namespace daw::json {
 		static constexpr char const mem_value[] = "value";
 		static constexpr char const mem_name[] = "name";
 		static constexpr char const mem_next_question[] = "next question";
-		using type =
-		  json_member_list<json_number<mem_version, int>, json_string<mem_name>,
-		                   json_number<mem_value, int>,
-		                   json_string<mem_next_question>>;
+		using type = json_member_list<json_number<mem_version, int>,
+		                              json_string<mem_name>,
+		                              json_number<mem_value, int>,
+		                              json_string<mem_next_question>>;
 
 		static constexpr auto
 		to_json_data( daw::cookbook_variant4::v1::Config const &v ) {
-			return std::forward_as_tuple( v.version, v.name, v.value,
+			return std::forward_as_tuple( v.version,
+			                              v.name,
+			                              v.value,
 			                              v.next_question );
 		}
 	};
@@ -82,11 +84,13 @@ namespace daw::json {
 		static constexpr char const mem_value[] = "value";
 		static constexpr char const mem_name[] = "name";
 		static constexpr char const mem_option2[] = "option2";
-		using type = json_member_list<
-		  json_number<mem_version, int>,
-		  json_key_value_array<mem_config_options, std::map<std::string, int>,
-		                       json_number<mem_value, int>, json_string<mem_name>>,
-		  json_number<mem_option2, int>>;
+		using type =
+		  json_member_list<json_number<mem_version, int>,
+		                   json_key_value_array<mem_config_options,
+		                                        std::map<std::string, int>,
+		                                        json_number<mem_value, int>,
+		                                        json_string<mem_name>>,
+		                   json_number<mem_option2, int>>;
 
 		static constexpr auto
 		to_json_data( daw::cookbook_variant4::v2::Config const &v ) {
@@ -97,9 +101,11 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_variant4::configs_t> {
 		static constexpr char const mem_version[] = "version";
-		using type = json_submember_tagged_variant<
-		  json_number<mem_version, int>, daw::cookbook_variant4::Switcher,
-		  daw::cookbook_variant4::v1::Config, daw::cookbook_variant4::v2::Config>;
+		using type =
+		  json_submember_tagged_variant<json_number<mem_version, int>,
+		                                daw::cookbook_variant4::Switcher,
+		                                daw::cookbook_variant4::v1::Config,
+		                                daw::cookbook_variant4::v2::Config>;
 	};
 } // namespace daw::json
 

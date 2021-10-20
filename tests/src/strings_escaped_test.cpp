@@ -43,7 +43,8 @@ auto test( std::string_view json_data ) {
 	          << " exec model\n*********************************************\n";
 	using namespace daw::json;
 	std::vector<std::string> values =
-	  from_json_array<std::string, std::vector<std::string>,
+	  from_json_array<std::string,
+	                  std::vector<std::string>,
 	                  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	    json_data );
 	daw::do_not_optimize( values );
@@ -51,49 +52,60 @@ auto test( std::string_view json_data ) {
 	clear( values );
 	daw::do_not_optimize( values );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "strings.json checked", json_data.size( ),
+	  "strings.json checked",
+	  json_data.size( ),
 	  []( auto sv, auto ptr ) {
 		  auto range = json_array_range<
-		    std::string, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    sv );
+		    std::string,
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( sv );
 		  for( auto v : range ) {
 			  daw::do_not_optimize( v );
 			  *ptr++ = v;
 		  }
 	  },
-	  json_data, values.data( ) );
+	  json_data,
+	  values.data( ) );
 	daw::do_not_optimize( values );
 	test_assert( v2 == values, "Expected them to parse the same" );
-	auto const h0 = std::accumulate(
-	  values.begin( ), values.end( ), 0ULL, []( auto old, auto current ) {
-		  return old +=
-		         std::hash<std::string>{ }( static_cast<std::string>( current ) );
-	  } );
+	auto const h0 =
+	  std::accumulate( values.begin( ),
+	                   values.end( ),
+	                   0ULL,
+	                   []( auto old, auto current ) {
+		                   return old += std::hash<std::string>{ }(
+		                            static_cast<std::string>( current ) );
+	                   } );
 	daw::do_not_optimize( json_data );
 	std::vector<std::string> values2 =
-	  from_json_array<std::string, std::vector<std::string>,
+	  from_json_array<std::string,
+	                  std::vector<std::string>,
 	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
 	    json_data );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "strings.json unchecked", json_data.size( ),
+	  "strings.json unchecked",
+	  json_data.size( ),
 	  []( auto sv, auto ptr ) mutable {
 		  auto range = json_array_range<
-		    std::string, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    sv );
+		    std::string,
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( sv );
 		  for( auto v : range ) {
 			  daw::do_not_optimize( v );
 			  *ptr++ = v;
 		  }
 	  },
-	  json_data, values2.data( ) );
+	  json_data,
+	  values2.data( ) );
 	daw::do_not_optimize( json_data );
 	daw::do_not_optimize( values2 );
-	auto const h1 = std::accumulate(
-	  values2.begin( ), values2.end( ), 0ULL, []( auto old, auto current ) {
-		  return old +=
-		         std::hash<std::string>{ }( static_cast<std::string>( current ) );
-	  } );
+	auto const h1 =
+	  std::accumulate( values2.begin( ),
+	                   values2.end( ),
+	                   0ULL,
+	                   []( auto old, auto current ) {
+		                   return old += std::hash<std::string>{ }(
+		                            static_cast<std::string>( current ) );
+	                   } );
 	test_assert( values == values2, "Parses don't match" );
 	test_assert( h0 == h1, "Hashes don't match" );
 	return h1;

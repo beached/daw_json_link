@@ -47,7 +47,8 @@ int main( int argc, char **argv )
 	std::optional<daw::gsoc::gsoc_object_t> gsoc_result;
 	using nc_checked_policy_t = NoCommentSkippingPolicyChecked;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "gsoc bench(checked)", sz,
+	  "gsoc bench(checked)",
+	  sz,
 	  [&]( std::string const &jd ) {
 		  gsoc_result =
 		    from_json<daw::gsoc::gsoc_object_t, nc_checked_policy_t>( jd );
@@ -58,7 +59,8 @@ int main( int argc, char **argv )
 	daw::do_not_optimize( json_data1 );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "gsoc bench(unchecked)", sz,
+	  "gsoc bench(unchecked)",
+	  sz,
 	  [&gsoc_result]( std::string const &jd ) {
 		  gsoc_result =
 		    from_json<daw::gsoc::gsoc_object_t, NoCommentSkippingPolicyUnchecked>(
@@ -76,7 +78,8 @@ int main( int argc, char **argv )
 		auto out_it = std::back_inserter( str );
 		str.reserve( json_data1.size( ) );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "gsoc bench(to_json_string)", sz,
+		  "gsoc bench(to_json_string)",
+		  sz,
 		  [&]( auto const &value ) {
 			  str.clear( );
 			  to_json( value, out_it );
@@ -93,7 +96,8 @@ int main( int argc, char **argv )
 		str.resize( str_sz * 2 );
 		char const *out_ptr = nullptr;
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "gsoc bench(to_json_string2)", sz,
+		  "gsoc bench(to_json_string2)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  auto *out_it = str.data( );
 			  out_ptr = to_json( tr, out_it );

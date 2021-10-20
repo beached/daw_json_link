@@ -57,7 +57,8 @@ int main( int argc, char **argv )
 	std::cout << "non-debug run\n";
 	auto const sz = sv_twitter.size( ) + sv_citm.size( ) + sv_canada.size( );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson bench", sz,
+	  "nativejson bench",
+	  sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  j1 =
 		    daw::json::from_json<daw::twitter2::twitter_object_t,
@@ -67,7 +68,8 @@ int main( int argc, char **argv )
 		                         daw::json::NoCommentSkippingPolicyUnchecked>( f2 );
 		  j3 = daw::json::from_json<daw::geojson::Polygon,
 		                            daw::json::NoCommentSkippingPolicyUnchecked>(
-		    f3, "features[0].geometry" );
+		    f3,
+		    "features[0].geometry" );
 		  daw::do_not_optimize( sv_twitter );
 		  daw::do_not_optimize( sv_citm );
 		  daw::do_not_optimize( sv_canada );
@@ -75,7 +77,9 @@ int main( int argc, char **argv )
 		  daw::do_not_optimize( j2 );
 		  daw::do_not_optimize( j3 );
 	  },
-	  sv_twitter, sv_citm, sv_canada );
+	  sv_twitter,
+	  sv_citm,
+	  sv_canada );
 #else
 	for( size_t n = 0; n < DAW_NUM_RUNS; ++n ) {
 		j1 = daw::json::from_json<daw::twitter2::twitter_object_t,
@@ -86,7 +90,8 @@ int main( int argc, char **argv )
 		  sv_citm );
 		j3 = daw::json::from_json<daw::geojson::Polygon,
 		                          daw::json::NoCommentSkippingPolicyUnchecked>(
-		  sv_canada, "features[0].geometry" );
+		  sv_canada,
+		  "features[0].geometry" );
 		daw::do_not_optimize( sv_twitter );
 		daw::do_not_optimize( sv_citm );
 		daw::do_not_optimize( sv_canada );

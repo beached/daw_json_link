@@ -25,8 +25,8 @@ struct Fixed8JsonConverter {
 	}
 };
 
-using json_fixed8 = daw::json::json_custom_no_name<double, Fixed8JsonConverter,
-                                                   Fixed8JsonConverter>;
+using json_fixed8 = daw::json::
+  json_custom_no_name<double, Fixed8JsonConverter, Fixed8JsonConverter>;
 
 struct Change {
 	double rate;
@@ -59,10 +59,12 @@ namespace daw::json {
 		static constexpr char const U[] = "U";
 		static constexpr char const b[] = "b";
 		static constexpr char const a[] = "a";
-		using type = json_member_list<json_number<E, std::int64_t>, json_string<s>,
+		using type = json_member_list<json_number<E, std::int64_t>,
+		                              json_string<s>,
 		                              json_number<u, std::int64_t>,
 		                              json_number<U, std::int64_t>,
-		                              json_array<b, Change>, json_array<a, Change>>;
+		                              json_array<b, Change>,
+		                              json_array<a, Change>>;
 	};
 } // namespace daw::json
 

@@ -41,7 +41,8 @@ int main( int argc, char **argv )
 
 	std::string_view opt_value =
 	  from_json<json_string_raw_null_no_name<std::string_view>>(
-	    json_data, "member1[1000]" );
+	    json_data,
+	    "member1[1000]" );
 
 	test_assert( opt_value.empty( ), "Unexpected result" );
 }

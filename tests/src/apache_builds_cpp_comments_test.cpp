@@ -64,7 +64,8 @@ void test( std::string_view json_sv1 ) {
 	             "Bad value for numExecutors" );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "apache_builds bench", sz,
+	  "apache_builds bench",
+	  sz,
 	  []( auto f1 ) {
 		  auto r =
 		    daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( f1 );
@@ -75,7 +76,8 @@ void test( std::string_view json_sv1 ) {
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "apache_builds bench(to_json_string)", sz,
+	  "apache_builds bench(to_json_string)",
+	  sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
 		  daw::json::to_json( tr, out_it );

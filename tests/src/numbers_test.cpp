@@ -31,14 +31,16 @@ void test( std::string_view data ) {
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
 	using range_t = daw::json::json_array_range<
-	  double, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+	  double,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
 
 	std::vector<double> results = [&] {
 		auto rng = range_t( data );
 		return std::vector<double>( rng.begin( ), rng.end( ) );
 	}( );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "numbers bench (checked)", data.size( ),
+	  "numbers bench (checked)",
+	  data.size( ),
 	  [&]( auto rng ) {
 		  double *ptr = results.data( );
 		  for( double d : rng ) {
@@ -48,9 +50,11 @@ void test( std::string_view data ) {
 	  range_t( data ) );
 	daw::do_not_optimize( results );
 	using range2_t = daw::json::json_array_range<
-	  double, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
+	  double,
+	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "numbers bench (unchecked)", data.size( ),
+	  "numbers bench (unchecked)",
+	  data.size( ),
 	  [&]( auto rng ) {
 		  double *ptr = results.data( );
 		  for( double d : rng ) {

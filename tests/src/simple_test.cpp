@@ -79,8 +79,9 @@ int main( int argc, char **argv )
 	using iterator_t = daw::json::json_array_iterator<City>;
 
 	auto const pos =
-	  std::find_if( iterator_t( json_sv ), iterator_t( ),
-	                []( City &&city ) { return city.name == "Chitungwiza"; } );
+	  std::find_if( iterator_t( json_sv ), iterator_t( ), []( City &&city ) {
+		  return city.name == "Chitungwiza";
+	  } );
 	if( pos == iterator_t( ) ) {
 		std::cout << "Not found\n";
 		return 0;

@@ -93,8 +93,8 @@ namespace std {
 	};
 
 	template<typename ParseState>
-	class tuple_size<daw::json::basic_json_pair<ParseState>>
-	  : public std::integral_constant<std::size_t, 2> {};
+	class tuple_size<daw::json::basic_json_pair<ParseState>> :
+	  public std::integral_constant<std::size_t, 2> {};
 } // namespace std
 
 namespace daw::json {
@@ -195,7 +195,8 @@ namespace daw::json {
 						m_state.trim_left( );
 						daw_json_assert_weak( not m_state.has_more( ) or
 						                        m_state.is_at_next_array_element( ),
-						                      ErrorReason::UnexpectedEndOfData, m_state );
+						                      ErrorReason::UnexpectedEndOfData,
+						                      m_state );
 						m_state.move_next_member_or_end( );
 					}
 				}
@@ -447,7 +448,8 @@ namespace daw::json {
 					}
 				case 'n':
 					daw_json_assert_weak( m_parse_state.starts_with( "null" ),
-					                      ErrorReason::InvalidNull, m_parse_state );
+					                      ErrorReason::InvalidNull,
+					                      m_parse_state );
 					return JsonBaseParseTypes::Null;
 				}
 				return JsonBaseParseTypes::None;

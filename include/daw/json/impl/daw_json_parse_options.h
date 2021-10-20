@@ -295,12 +295,22 @@ namespace daw::json {
 		 * Implementation details
 		 */
 		namespace json_details {
-			using parse_policy_list = typename option_list_impl<
-			  ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
-			  CheckedParseMode, AllowEscapedNames, IEEE754Precise, ForceFullNameCheck,
-			  MinifiedDocument, UseExactMappingsByDefault, TemporarilyMutateBuffer,
-			  MustVerifyEndOfDataIsValid, ExcludeSpecialEscapes, ExpectLongStrings,
-			  GlobalEightBitModes, ValidateUTF8>::type;
+			using parse_policy_list =
+			  typename option_list_impl<ExecModeTypes,
+			                            ZeroTerminatedString,
+			                            PolicyCommentTypes,
+			                            CheckedParseMode,
+			                            AllowEscapedNames,
+			                            IEEE754Precise,
+			                            ForceFullNameCheck,
+			                            MinifiedDocument,
+			                            UseExactMappingsByDefault,
+			                            TemporarilyMutateBuffer,
+			                            MustVerifyEndOfDataIsValid,
+			                            ExcludeSpecialEscapes,
+			                            ExpectLongStrings,
+			                            GlobalEightBitModes,
+			                            ValidateUTF8>::type;
 
 			template<typename Policy>
 			inline constexpr json_options_t parse_policy_bits_start =
@@ -320,8 +330,8 @@ namespace daw::json {
 			}
 
 			template<typename Policy, typename... Policies>
-			constexpr json_options_t set_bits( json_options_t value, Policy pol,
-			                                   Policies... pols ) {
+			constexpr json_options_t
+			set_bits( json_options_t value, Policy pol, Policies... pols ) {
 				static_assert( ( is_option_flag<Policies> and ... ),
 				               "Only registered policy types are allowed" );
 
@@ -399,9 +409,11 @@ namespace daw::json {
 				// result |= ( json_details::set_bits_for( policies ) | ... );
 				( json_details::set_nth_bits<
 				    json_details::basic_option_bits_start<
-				      Policies, json_details::parse_policy_list>,
+				      Policies,
+				      json_details::parse_policy_list>,
 				    json_details::json_option_bits_width<Policies>>(
-				    result, static_cast<json_details::json_options_t>( policies ) ),
+				    result,
+				    static_cast<json_details::json_options_t>( policies ) ),
 				  ... );
 			}
 			return result;

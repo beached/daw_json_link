@@ -59,9 +59,8 @@ namespace daw::json {
 			};
 
 			template<typename JsonMember, typename ParseState, bool KnownBounds>
-			struct json_parse_array_iterator
-			  : json_parse_array_iterator_base<ParseState,
-			                                   can_random_v<KnownBounds>> {
+			struct json_parse_array_iterator :
+			  json_parse_array_iterator_base<ParseState, can_random_v<KnownBounds>> {
 
 				using base =
 				  json_parse_array_iterator_base<ParseState, can_random_v<KnownBounds>>;
@@ -92,12 +91,14 @@ namespace daw::json {
 
 				DAW_ATTRIB_INLINE
 				constexpr value_type operator*( ) {
-					daw_json_assert_weak(
-					  base::parse_state and base::parse_state->has_more( ),
-					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
+					daw_json_assert_weak( base::parse_state and
+					                        base::parse_state->has_more( ),
+					                      ErrorReason::UnexpectedEndOfData,
+					                      *base::parse_state );
 
 					return parse_value<element_t>(
-					  *base::parse_state, ParseTag<element_t::expected_type>{ } );
+					  *base::parse_state,
+					  ParseTag<element_t::expected_type>{ } );
 				}
 
 				DAW_ATTRIB_INLINE constexpr json_parse_array_iterator &operator++( ) {
@@ -109,7 +110,8 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  base::parse_state->has_more( ) and
 					    base::parse_state->is_at_next_array_element( ),
-					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
+					  ErrorReason::UnexpectedEndOfData,
+					  *base::parse_state );
 
 					base::parse_state->move_next_member_or_end( );
 					daw_json_assert_weak( base::parse_state->has_more( ),

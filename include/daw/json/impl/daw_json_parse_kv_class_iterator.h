@@ -55,14 +55,13 @@ namespace daw::json {
 				            typename JsonMember::json_element_t>;
 
 				template<typename JsonMember, typename T>
-				using container_value_type_or =
-				  daw::detected_or_t<default_value_type<JsonMember>, container_value_t,
-				                     T>;
+				using container_value_type_or = daw::
+				  detected_or_t<default_value_type<JsonMember>, container_value_t, T>;
 			} // namespace kv_class_iter_impl
 
 			template<typename JsonMember, typename ParseState, bool IsKnown>
-			struct json_parse_kv_class_iterator
-			  : json_parse_kv_class_iterator_base<ParseState, can_random_v<IsKnown>> {
+			struct json_parse_kv_class_iterator :
+			  json_parse_kv_class_iterator_base<ParseState, can_random_v<IsKnown>> {
 
 				using base =
 				  json_parse_kv_class_iterator_base<ParseState, can_random_v<IsKnown>>;
@@ -97,9 +96,10 @@ namespace daw::json {
 				}
 
 				inline constexpr value_type operator*( ) {
-					daw_json_assert_weak(
-					  base::parse_state and base::parse_state->has_more( ),
-					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
+					daw_json_assert_weak( base::parse_state and
+					                        base::parse_state->has_more( ),
+					                      ErrorReason::UnexpectedEndOfData,
+					                      *base::parse_state );
 					auto key = parse_value<key_t>( *base::parse_state,
 					                               ParseTag<key_t::expected_type>{ } );
 					name::name_parser::trim_end_of_name( *base::parse_state );

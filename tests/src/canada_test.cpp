@@ -57,12 +57,14 @@ void test( std::string_view json_sv1 ) {
 	//**************************
 	std::optional<daw::geojson::Polygon> canada_result;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(checked)", sz,
+	  "canada bench(checked)",
+	  sz,
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f1, "features[0].geometry" );
+		    f1,
+		    "features[0].geometry" );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -72,12 +74,14 @@ void test( std::string_view json_sv1 ) {
 	//**************************
 	canada_result = std::nullopt;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(unchecked)", sz,
+	  "canada bench(unchecked)",
+	  sz,
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1, "features[0].geometry" );
+		    f1,
+		    "features[0].geometry" );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -114,14 +118,16 @@ int main( int argc, char **argv )
 
 	std::cout
 	  << "to_json testing\n*********************************************\n";
-	auto const canada_result = daw::json::from_json<daw::geojson::Polygon>(
-	  json_sv1, "features[0].geometry" );
+	auto const canada_result =
+	  daw::json::from_json<daw::geojson::Polygon>( json_sv1,
+	                                               "features[0].geometry" );
 	std::string str{ };
 	{
 		auto out_it = std::back_inserter( str );
 		str.reserve( json_sv1.size( ) );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "canada bench(to_json_string)", sz,
+		  "canada bench(to_json_string)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
 			  daw::json::to_json( tr, out_it );
@@ -139,7 +145,8 @@ int main( int argc, char **argv )
 		str.clear( );
 		str.resize( str_sz * 2 );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "canada bench(to_json_string2)", sz,
+		  "canada bench(to_json_string2)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  auto *out_it = str.data( );
 			  daw::json::to_json( tr, out_it );

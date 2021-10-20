@@ -62,15 +62,17 @@ void test( std::string_view json_data,
 	// ******************************
 	// NoCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(checked)", sz,
+	  "twitter bench(checked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		    f1,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -83,15 +85,17 @@ void test( std::string_view json_data,
 
 	// NoCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(unchecked)", sz,
+	  "twitter bench(unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		    f1,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -104,15 +108,17 @@ void test( std::string_view json_data,
 
 	// CppCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(cpp comments)", sz,
+	  "twitter bench(cpp comments)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDCppCommentSkippingPolicyChecked<ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		    f1,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -125,15 +131,17 @@ void test( std::string_view json_data,
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// CppCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(cpp comments, unchecked)", sz,
+	  "twitter bench(cpp comments, unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDCppCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		    f1,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -146,15 +154,17 @@ void test( std::string_view json_data,
 #endif
 	// HashCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(hash comments)", sz,
+	  "twitter bench(hash comments)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDHashCommentSkippingPolicyChecked<ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		    f1,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -167,15 +177,17 @@ void test( std::string_view json_data,
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// HashCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(hash comments, unchecked)", sz,
+	  "twitter bench(hash comments, unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDHashCommentSkippingPolicyUnchecked<ExecTag, AllocType>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		    f1,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -189,15 +201,17 @@ void test( std::string_view json_data,
 	// ******************************
 	// NoCommentSkippingPolicyChecked Escaped Names
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(checked, escaped names)", sz,
+	  "twitter bench(checked, escaped names)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		    f1,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -210,15 +224,17 @@ void test( std::string_view json_data,
 
 	// NoCommentSkippingPolicyUnchecked Escaped Names
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(unchecked, escaped names)", sz,
+	  "twitter bench(unchecked, escaped names)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		    f1,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -252,7 +268,8 @@ int main( int argc, char **argv )
 	static auto alloc_buff = std::unique_ptr<char[]>( new char[alloc_buff_size] );
 	static auto alloc_impl =
 	  std::make_unique<boost::container::pmr::monotonic_buffer_resource>(
-	    alloc_buff.get( ), alloc_buff_size );
+	    alloc_buff.get( ),
+	    alloc_buff_size );
 	static auto *alloc = alloc_impl.get( );
 	using namespace daw::json;
 	if( argc < 2 ) {
@@ -282,11 +299,13 @@ int main( int argc, char **argv )
 	{
 		auto twitter_result =
 		  daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-		    json_data, boost::container::pmr::polymorphic_allocator<
-		                 daw::twitter::twitter_object_t>( alloc ) );
+		    json_data,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ) );
 		auto out_it = std::back_inserter( str );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(to_json_string)", sz,
+		  "twitter bench(to_json_string)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
 			  daw::json::to_json( tr, out_it );
@@ -299,8 +318,9 @@ int main( int argc, char **argv )
 	alloc->release( );
 	auto const twitter_result2 =
 	  daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-	    str, boost::container::pmr::polymorphic_allocator<
-	           daw::twitter::twitter_object_t>( alloc ) );
+	    str,
+	    boost::container::pmr::polymorphic_allocator<
+	      daw::twitter::twitter_object_t>( alloc ) );
 	daw::do_not_optimize( twitter_result2 );
 }
 #ifdef DAW_USE_EXCEPTIONS

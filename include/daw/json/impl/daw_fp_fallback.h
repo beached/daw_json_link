@@ -21,8 +21,9 @@ namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 
-			template<typename Real, std::enable_if_t<std::is_floating_point_v<Real>,
-			                                         std::nullptr_t> = nullptr>
+			template<typename Real,
+			         std::enable_if_t<std::is_floating_point_v<Real>,
+			                          std::nullptr_t> = nullptr>
 			DAW_ATTRIB_NOINLINE Real parse_with_strtod( char const *first,
 			                                            char const *last ) {
 #if not defined( DAW_JSON_USE_STRTOD ) and defined( __cpp_lib_to_chars )

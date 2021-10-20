@@ -132,7 +132,8 @@ template<typename OutputIterator>
 JSONMinifyHandler( OutputIterator ) -> JSONMinifyHandler<OutputIterator>;
 
 template<typename Iterator>
-void minify( daw::Arguments const &args, std::string_view data,
+void minify( daw::Arguments const &args,
+             std::string_view data,
              Iterator out_it ) {
 
 	bool const has_out_file = args.size( ) > 1 and args[1].name.empty( );
@@ -149,7 +150,8 @@ void minify( daw::Arguments const &args, std::string_view data,
 		          << daw::utility::to_bytes_per_second( data.size( ), 2 ) << " in "
 		          << daw::utility::format_seconds( time, 2 ) << " at "
 		          << daw::utility::to_bytes_per_second(
-		               static_cast<double>( data.size( ) ) / time, 2 )
+		               static_cast<double>( data.size( ) ) / time,
+		               2 )
 		          << "/s\n";
 	} else {
 		daw::json::json_event_parser<daw::json::ConformancePolicy>( data, handler );

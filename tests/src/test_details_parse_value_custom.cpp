@@ -31,7 +31,8 @@ bool empty_array_empty_json_array( ) {
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	rng.remove_prefix( 7 );
 	auto v = parse_value<json_custom_no_name<std::string_view, NoOp>>(
-	  rng, ParseTag<JsonParseTypes::Custom>{ } );
+	  rng,
+	  ParseTag<JsonParseTypes::Custom>{ } );
 	return v.size( ) == 8;
 }
 

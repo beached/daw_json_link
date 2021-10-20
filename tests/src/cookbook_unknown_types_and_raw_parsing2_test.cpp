@@ -33,13 +33,16 @@ namespace daw::json {
 		static constexpr char const member1[] = "member1";
 		static constexpr char const opt_member[] = "opt_member";
 		using type =
-		  json_member_list<json_number<member0, int>, json_raw<member_later>,
+		  json_member_list<json_number<member0, int>,
+		                   json_raw<member_later>,
 		                   json_string<member1>,
 		                   json_link<opt_member, std::optional<json_value>>>;
 
 		static inline auto to_json_data( MyClass2 const &value ) {
-			return std::forward_as_tuple( value.member0, value.member_later,
-			                              value.member1, value.opt_member );
+			return std::forward_as_tuple( value.member0,
+			                              value.member_later,
+			                              value.member1,
+			                              value.opt_member );
 		}
 	};
 } // namespace daw::json

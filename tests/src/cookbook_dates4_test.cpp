@@ -48,8 +48,10 @@ namespace daw::cookbook_dates4 {
 			test_assert( sv_suffix == suffix, "Unexpected date format" );
 			sv.remove_suffix( suffix.size( ) );
 
-			auto const val = daw::json::from_json<
-			  std::int64_t, daw::json::NoCommentSkippingPolicyChecked, true>( sv );
+			auto const val =
+			  daw::json::from_json<std::int64_t,
+			                       daw::json::NoCommentSkippingPolicyChecked,
+			                       true>( sv );
 			DAW_CONSTEXPR const auto epoch =
 			  daw::json::datetime::civil_to_time_point( 1970, 1, 1, 0, 0, 0, 0 );
 
@@ -73,9 +75,8 @@ namespace daw::cookbook_dates4 {
 	};
 
 	template<JSONNAMETYPE name>
-	using json_timestamp =
-	  daw::json::json_custom<name, timepoint_t, TimestampConverter,
-	                         TimestampConverter>;
+	using json_timestamp = daw::json::
+	  json_custom<name, timepoint_t, TimestampConverter, TimestampConverter>;
 } // namespace daw::cookbook_dates4
 
 namespace daw::json {

@@ -152,7 +152,8 @@ test_pass_fail( std::string_view json_data ) {
 		case daw::json::JsonBaseParseTypes::Class:
 		case daw::json::JsonBaseParseTypes::Array:
 			daw::json::json_event_parser<daw::json::ConformancePolicy>(
-			  jv, JSONValidateHandler{ } );
+			  jv,
+			  JSONValidateHandler{ } );
 			break;
 		case daw::json::JsonBaseParseTypes::None:
 			return { expected_result::reject, "empty file"s };
@@ -220,7 +221,8 @@ int main( int argc, char **argv ) {
 			}
 		}( );
 		bool const is_on_allow_list =
-		  std::find( std::data( allow_list ), daw::data_end( allow_list ),
+		  std::find( std::data( allow_list ),
+		             daw::data_end( allow_list ),
 		             std::string_view( fname ) ) != daw::data_end( allow_list );
 
 		auto [result, message] = test_pass_fail( json_data );

@@ -37,8 +37,9 @@ int main( int argc, char **argv )
 	try {
 #endif
 		for( int n = 0; n < 100; ++n ) {
-			auto const canada_result = daw::json::from_json<daw::geojson::Polygon>(
-			  json_data, "features[0].geometry" );
+			auto const canada_result =
+			  daw::json::from_json<daw::geojson::Polygon>( json_data,
+			                                               "features[0].geometry" );
 			daw::do_not_optimize( canada_result );
 
 			auto new_json_result = std::string( );

@@ -160,10 +160,11 @@ namespace daw::json {
 		} // namespace json_details
 
 		namespace json_details::serialization {
-			using policy_list =
-			  typename option_list_impl<SerializationFormat, IndentationType,
-			                            RestrictedStringOutput, NewLineDelimiter,
-			                            OutputTrailingComma>::type;
+			using policy_list = typename option_list_impl<SerializationFormat,
+			                                              IndentationType,
+			                                              RestrictedStringOutput,
+			                                              NewLineDelimiter,
+			                                              OutputTrailingComma>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =
@@ -187,8 +188,8 @@ namespace daw::json {
 			}
 
 			template<typename Policy, typename... Policies>
-			constexpr json_options_t set_bits( json_options_t value, Policy pol,
-			                                   Policies... pols ) {
+			constexpr json_options_t
+			set_bits( json_options_t value, Policy pol, Policies... pols ) {
 				static_assert( ( is_option_flag<Policies> and ... ),
 				               "Only registered policy types are allowed" );
 

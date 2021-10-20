@@ -146,7 +146,8 @@ namespace daw::json {
 					if constexpr( sizeof...( Options ) > 0 ) {
 						( set_nth_bits<option_bits_start<Options>,
 						               json_option_bits_width<Options>>(
-						    result, static_cast<json_options_t>( options ) ),
+						    result,
+						    static_cast<json_options_t>( options ) ),
 						  ... );
 						// result |= ( set_bits_for( options ) | ... );
 					}
@@ -156,7 +157,8 @@ namespace daw::json {
 
 			template<typename... OptionList, typename Option>
 			constexpr void set_bits_in( JsonOptionList<OptionList...>,
-			                            json_options_t &value, Option e ) {
+			                            json_options_t &value,
+			                            Option e ) {
 				static_assert( is_option_flag<Option>,
 				               "Only registered policy types are allowed" );
 				auto new_bits = static_cast<json_options_t>( e );
@@ -171,7 +173,8 @@ namespace daw::json {
 
 			template<typename... OptionList, typename Option, typename... Options>
 			constexpr json_options_t set_bits( JsonOptionList<OptionList...>,
-			                                   json_options_t value, Option pol,
+			                                   json_options_t value,
+			                                   Option pol,
 			                                   Options... pols ) {
 				static_assert( ( is_option_flag<Options> and ... ),
 				               "Only registered policy types are allowed" );
@@ -198,7 +201,8 @@ namespace daw::json {
 				return JsonOptionList<OptionList...>::template set_bits_for( e );
 			}
 
-			template<typename Option, typename Result = Option,
+			template<typename Option,
+			         typename Result = Option,
 			         typename... OptionList>
 			constexpr Result get_bits_for( JsonOptionList<OptionList...>,
 			                               json_options_t value ) {

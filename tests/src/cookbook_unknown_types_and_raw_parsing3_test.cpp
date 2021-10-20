@@ -27,15 +27,16 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<Thing> {
 #if defined( __cpp_nontype_template_parameter_class )
-		using type = json_member_list<json_string<"name">, json_number<"type", int>,
+		using type = json_member_list<json_string<"name">,
+		                              json_number<"type", int>,
 		                              json_raw<"raw_json", std::string>>;
 #else
 		static constexpr char const name[] = "name";
 		static constexpr char const type_member[] = "type";
 		static constexpr char const raw_json[] = "raw_json";
-		using type =
-		  json_member_list<json_string<name>, json_number<type_member, int>,
-		                   json_raw<raw_json, std::string>>;
+		using type = json_member_list<json_string<name>,
+		                              json_number<type_member, int>,
+		                              json_raw<raw_json, std::string>>;
 #endif
 		static auto to_json_data( Thing const &value ) {
 			return std::forward_as_tuple( value.name, value.type, value.raw_json );

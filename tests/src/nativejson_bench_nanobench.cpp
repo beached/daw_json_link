@@ -65,8 +65,10 @@ static inline void do_test( JsonDocs const &...jds ) try {
 }
 
 template<typename ParsePolicy>
-void bench( ankerl::nanobench::Bench &b, std::string_view title,
-            std::string const &twitter_doc, std::string const &citm_doc,
+void bench( ankerl::nanobench::Bench &b,
+            std::string_view title,
+            std::string const &twitter_doc,
+            std::string const &citm_doc,
             std::string const &canada_doc ) {
 
 	// Constexpr Checked
@@ -117,18 +119,36 @@ int main( int argc, char **argv ) {
 	std::string const citm_doc = *daw::read_file( argv[2] );
 	std::string const canada_doc = *daw::read_file( argv[3] );
 
-	bench<constexpr_checked_pol>( b1, "constexpr checked", twitter_doc, citm_doc,
+	bench<constexpr_checked_pol>( b1,
+	                              "constexpr checked",
+	                              twitter_doc,
+	                              citm_doc,
 	                              canada_doc );
-	bench<constexpr_unchecked_pol>( b1, "constexpr unchecked", twitter_doc,
-	                                citm_doc, canada_doc );
-	bench<runtime_checked_pol>( b1, "runtime checked", twitter_doc, citm_doc,
+	bench<constexpr_unchecked_pol>( b1,
+	                                "constexpr unchecked",
+	                                twitter_doc,
+	                                citm_doc,
+	                                canada_doc );
+	bench<runtime_checked_pol>( b1,
+	                            "runtime checked",
+	                            twitter_doc,
+	                            citm_doc,
 	                            canada_doc );
-	bench<runtime_unchecked_pol>( b1, "runtime unchecked", twitter_doc, citm_doc,
+	bench<runtime_unchecked_pol>( b1,
+	                              "runtime unchecked",
+	                              twitter_doc,
+	                              citm_doc,
 	                              canada_doc );
 
-	bench<simd_checked_pol>( b1, "simd checked", twitter_doc, citm_doc,
+	bench<simd_checked_pol>( b1,
+	                         "simd checked",
+	                         twitter_doc,
+	                         citm_doc,
 	                         canada_doc );
-	bench<simd_unchecked_pol>( b1, "simd unchecked", twitter_doc, citm_doc,
+	bench<simd_unchecked_pol>( b1,
+	                           "simd unchecked",
+	                           twitter_doc,
+	                           citm_doc,
 	                           canada_doc );
 
 	if( argc > 4 ) {

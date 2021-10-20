@@ -28,8 +28,8 @@ namespace daw::json {
 		 * @return A json_options_t that encodes the options for the parser
 		 */
 		template<typename... Policies>
-		constexpr json_details::json_options_t
-		serialize_options( Policies... policies ) {
+		constexpr json_details::json_options_t serialize_options(
+		  Policies... policies ) {
 			static_assert( ( json_details::is_option_flag<Policies> and ... ),
 			               "Only registered policy types are allowed" );
 			auto result = json_details::serialization::default_policy_flag;
@@ -43,8 +43,8 @@ namespace daw::json {
 		template<typename OutputIterator,
 		         json_details::json_options_t PolicyFlags =
 		           json_details::serialization::default_policy_flag>
-		struct serialization_policy
-		  : json_details::iterator_wrapper<OutputIterator> {
+		struct serialization_policy :
+		  json_details::iterator_wrapper<OutputIterator> {
 			using i_am_a_serialization_policy = void;
 
 			std::size_t indentation_level = 0;
@@ -85,7 +85,8 @@ namespace daw::json {
 				  json_details::serialization::generate_indent<serialization_format,
 				                                               indentation_type>;
 				for( std::size_t n = 0; n < indentation_level; ++n ) {
-					daw::algorithm::copy( std::data( ident ), daw::data_end( ident ),
+					daw::algorithm::copy( std::data( ident ),
+					                      daw::data_end( ident ),
 					                      this->raw_it( ) );
 				}
 			}

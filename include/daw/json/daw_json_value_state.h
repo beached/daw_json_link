@@ -34,7 +34,8 @@ namespace daw::json {
 				basic_json_value_iterator<ParseState> location;
 
 				explicit constexpr basic_stateful_json_value_state(
-				  daw::string_view Name, basic_json_value_iterator<ParseState> val )
+				  daw::string_view Name,
+				  basic_json_value_iterator<ParseState> val )
 				  : name( Name )
 				  , hash_value(
 				      daw::name_hash<ParseState::expect_long_strings>( Name ) )
@@ -101,7 +102,8 @@ namespace daw::json {
 					auto name = it.name( );
 					daw_json_assert_weak( name, ErrorReason::MissingMemberName );
 					auto const &new_loc = m_locs.emplace_back(
-					  daw::string_view( std::data( *name ), std::size( *name ) ), it );
+					  daw::string_view( std::data( *name ), std::size( *name ) ),
+					  it );
 					if( new_loc.is_match( member.name ) ) {
 						return pos;
 					}
@@ -134,7 +136,8 @@ namespace daw::json {
 					auto name = it.name( );
 					if( name ) {
 						m_locs.emplace_back(
-						  daw::string_view( std::data( *name ), std::size( *name ) ), it );
+						  daw::string_view( std::data( *name ), std::size( *name ) ),
+						  it );
 					} else {
 						m_locs.emplace_back( daw::string_view( ), it );
 					}

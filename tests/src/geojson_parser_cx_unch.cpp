@@ -15,12 +15,14 @@
 namespace daw::json {
 	template daw::geojson::Polygon
 	from_json<daw::geojson::Polygon,
-	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>, false,
+	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>,
+	          false,
 	          daw::geojson::Polygon>( std::string_view const &json_data,
 	                                  std::string_view path );
 
 	template daw::geojson::Polygon
 	from_json<daw::geojson::Polygon,
-	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>, false,
+	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>,
+	          false,
 	          daw::geojson::Polygon>( std::string_view const &json_data );
 } // namespace daw::json

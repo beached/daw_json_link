@@ -39,15 +39,19 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_array2::MyClass4> {
 #if defined( __cpp_nontype_template_parameter_class )
-		using type = json_member_list<json_string<"a">, json_number<"b", unsigned>,
-		                              json_number<"c", float>, json_bool<"d">>;
+		using type = json_member_list<json_string<"a">,
+		                              json_number<"b", unsigned>,
+		                              json_number<"c", float>,
+		                              json_bool<"d">>;
 #else
 		static constexpr char const a[] = "a";
 		static constexpr char const b[] = "b";
 		static constexpr char const c[] = "c";
 		static constexpr char const d[] = "d";
-		using type = json_member_list<json_string<a>, json_number<b, unsigned>,
-		                              json_number<c, float>, json_bool<d>>;
+		using type = json_member_list<json_string<a>,
+		                              json_number<b, unsigned>,
+		                              json_number<c, float>,
+		                              json_bool<d>>;
 #endif
 		static inline auto
 		to_json_data( daw::cookbook_array2::MyClass4 const &value ) {

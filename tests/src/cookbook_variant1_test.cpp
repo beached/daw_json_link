@@ -37,17 +37,21 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_variant1::MyVariantStuff1> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
-		  json_member_list<json_variant<"member0", std::variant<int, std::string>,
+		  json_member_list<json_variant<"member0",
+		                                std::variant<int, std::string>,
 		                                json_variant_type_list<int, std::string>>,
-		                   json_variant<"member1", std::variant<std::string, bool>,
+		                   json_variant<"member1",
+		                                std::variant<std::string, bool>,
 		                                json_variant_type_list<std::string, bool>>>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		using type =
-		  json_member_list<json_variant<member0, std::variant<int, std::string>,
+		  json_member_list<json_variant<member0,
+		                                std::variant<int, std::string>,
 		                                json_variant_type_list<int, std::string>>,
-		                   json_variant<member1, std::variant<std::string, bool>,
+		                   json_variant<member1,
+		                                std::variant<std::string, bool>,
 		                                json_variant_type_list<std::string, bool>>>;
 #endif
 		static inline auto

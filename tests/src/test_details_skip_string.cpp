@@ -95,7 +95,8 @@ bool test_escaped_quote_001( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
-	  std::data( sv2 ), daw::data_end( sv2 ) );
+	  std::data( sv2 ),
+	  daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	auto const sz = v.size( );
 	return sz == 28;
@@ -109,7 +110,8 @@ bool test_escaped_quote_002( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
-	  std::data( sv2 ), daw::data_end( sv2 ) );
+	  std::data( sv2 ),
+	  daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 29;
 }
@@ -122,7 +124,8 @@ bool test_escaped_quote_003( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
-	  std::data( sv2 ), daw::data_end( sv2 ) );
+	  std::data( sv2 ),
+	  daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 29;
 }
@@ -135,7 +138,8 @@ bool test_escaped_quote_004( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
-	  std::data( sv2 ), daw::data_end( sv2 ) );
+	  std::data( sv2 ),
+	  daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 66;
 }

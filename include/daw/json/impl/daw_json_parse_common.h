@@ -54,25 +54,30 @@ namespace daw::json {
 			inline constexpr auto json_class_constructor =
 			  json_class_constructor_t<T, Default>{ };
 
-			template<typename Value, typename Constructor, typename ParseState,
+			template<typename Value,
+			         typename Constructor,
+			         typename ParseState,
 			         typename... Args>
 			[[maybe_unused]] DAW_ATTRIB_FLATINLINE static inline constexpr auto
 			construct_value( template_params<Value, Constructor>,
-			                 ParseState &parse_state, Args &&...args ) {
+			                 ParseState &parse_state,
+			                 Args &&...args ) {
 				// Silence MSVC warning, used in other if constexpr case
 				(void)parse_state;
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
 					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
-					if constexpr( std::is_invocable<Constructor, Args...,
-					                                alloc_t>::value ) {
+					if constexpr( std::is_invocable<Constructor, Args..., alloc_t>::
+					                value ) {
 						return Constructor{ }( DAW_FWD2( Args, args )...,
 						                       DAW_MOVE( alloc ) );
 					} else if constexpr( daw::traits::is_callable_v<Constructor,
 					                                                std::allocator_arg_t,
-					                                                alloc_t, Args...> ) {
-						return Constructor{ }( std::allocator_arg, DAW_MOVE( alloc ),
+					                                                alloc_t,
+					                                                Args...> ) {
+						return Constructor{ }( std::allocator_arg,
+						                       DAW_MOVE( alloc ),
 						                       DAW_FWD2( Args, args )... );
 					} else {
 						static_assert(
@@ -99,7 +104,8 @@ namespace daw::json {
 
 				template<typename... TArgs, typename Allocator, std::size_t... Is>
 				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
-				operator( )( fwd_pack<TArgs...> &&tp, Allocator &alloc,
+				operator( )( fwd_pack<TArgs...> &&tp,
+				             Allocator &alloc,
 				             std::index_sequence<Is...> ) const {
 					return Constructor{ }( get<Is>( DAW_MOVE( tp ) )...,
 					                       DAW_FWD2( Allocator, alloc ) );
@@ -107,11 +113,13 @@ namespace daw::json {
 
 				template<typename Alloc, typename... TArgs, std::size_t... Is>
 				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
-				operator( )( std::allocator_arg_t, Alloc &&alloc,
+				operator( )( std::allocator_arg_t,
+				             Alloc &&alloc,
 				             fwd_pack<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
 
-					return Constructor{ }( std::allocator_arg, DAW_FWD2( Alloc, alloc ),
+					return Constructor{ }( std::allocator_arg,
+					                       DAW_FWD2( Alloc, alloc ),
 					                       get<Is>( DAW_MOVE( tp ) )... );
 				}
 			};
@@ -120,7 +128,9 @@ namespace daw::json {
 			inline constexpr auto construct_value_tp_invoke =
 			  construct_value_tp_invoke_t<Constructor>{ };
 
-			template<typename Value, typename Constructor, typename ParseState,
+			template<typename Value,
+			         typename Constructor,
+			         typename ParseState,
 			         typename... Args>
 			[[maybe_unused]] DAW_ATTRIB_FLATINLINE static inline constexpr auto
 			construct_value_tp( ParseState &parse_state,
@@ -129,23 +139,28 @@ namespace daw::json {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
 					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
-					if constexpr( std::is_invocable<Constructor, Args...,
-					                                alloc_t>::value ) {
+					if constexpr( std::is_invocable<Constructor, Args..., alloc_t>::
+					                value ) {
 						return construct_value_tp_invoke<Constructor>(
-						  DAW_MOVE( tp_args ), DAW_MOVE( alloc ),
+						  DAW_MOVE( tp_args ),
+						  DAW_MOVE( alloc ),
 						  std::index_sequence_for<Args...>{ } );
 					} else if constexpr( daw::traits::is_callable_v<Constructor,
 					                                                std::allocator_arg_t,
-					                                                alloc_t, Args...> ) {
+					                                                alloc_t,
+					                                                Args...> ) {
 						return construct_value_tp_invoke<Constructor>(
-						  std::allocator_arg, DAW_MOVE( alloc ), DAW_MOVE( tp_args ),
+						  std::allocator_arg,
+						  DAW_MOVE( alloc ),
+						  DAW_MOVE( tp_args ),
 						  std::index_sequence_for<Args...>{ } );
 					} else {
 						static_assert(
 						  std::is_invocable<Constructor, Args...>::value,
 						  "Unable to construct value with the supplied arguments" );
 						return construct_value_tp_invoke<Constructor>(
-						  DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
+						  DAW_MOVE( tp_args ),
+						  std::index_sequence_for<Args...>{ } );
 					}
 				} else {
 					// Silence MSVC warning, used in other if constexpr case
@@ -154,7 +169,8 @@ namespace daw::json {
 					  std::is_invocable<Constructor, Args...>::value,
 					  "Unable to construct value with the supplied arguments" );
 					return construct_value_tp_invoke<Constructor>(
-					  DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
+					  DAW_MOVE( tp_args ),
+					  std::index_sequence_for<Args...>{ } );
 				}
 			}
 
@@ -165,7 +181,8 @@ namespace daw::json {
 			template<typename Allocator>
 			using has_deallocate_test =
 			  decltype( std::declval<Allocator &>( ).deallocate(
-			    static_cast<void *>( nullptr ), size_t{ 1 } ) );
+			    static_cast<void *>( nullptr ),
+			    size_t{ 1 } ) );
 
 			template<typename Allocator>
 			inline constexpr bool is_allocator_v = std::conjunction<
@@ -186,7 +203,8 @@ namespace daw::json {
 
 			template<typename Container, typename Value>
 			using detect_insert_end = decltype( std::declval<Container &>( ).insert(
-			  std::end( std::declval<Container &>( ) ), std::declval<Value>( ) ) );
+			  std::end( std::declval<Container &>( ) ),
+			  std::declval<Value>( ) ) );
 
 			template<typename Container, typename Value>
 			inline constexpr bool has_push_back_v =
@@ -198,7 +216,8 @@ namespace daw::json {
 
 			template<typename JsonMember>
 			using json_result = typename std::conditional_t<
-			  is_no_name_v<JsonMember>, traits::identity<JsonMember>,
+			  is_no_name_v<JsonMember>,
+			  traits::identity<JsonMember>,
 			  without_name_t<JsonMember>>::type::parse_to_t;
 
 			template<typename JsonMember>
@@ -322,22 +341,27 @@ namespace daw::json {
 		} // namespace json_details
 
 		namespace json_base {
-			template<typename T, typename Constructor = default_constructor<T>,
+			template<typename T,
+			         typename Constructor = default_constructor<T>,
 			         json_details::json_options_t Options = class_opts_def>
 			struct json_class;
 
-			template<typename T, typename Constructor = nullable_constructor<T>,
+			template<typename T,
+			         typename Constructor = nullable_constructor<T>,
 			         json_details::json_options_t Options = class_opts_def>
 			using json_class_null =
-			  json_class<T, Constructor,
+			  json_class<T,
+			             Constructor,
 			             json_details::class_opts_set<Options, JsonNullDefault>>;
 
-			template<typename JsonElement, typename Container,
+			template<typename JsonElement,
+			         typename Container,
 			         typename Constructor = default_constructor<Container>,
 			         JsonNullable Nullable = JsonNullable::MustExist>
 			struct json_array;
 
-			template<typename JsonElement, typename Container,
+			template<typename JsonElement,
+			         typename Container,
 			         typename Constructor = nullable_constructor<Container>>
 			using json_array_null =
 			  json_array<JsonElement, Container, Constructor, JsonNullDefault>;
@@ -351,7 +375,8 @@ namespace daw::json {
 			         json_details::json_options_t Options = string_raw_opts_def,
 			         typename Constructor = nullable_constructor<T>>
 			using json_string_raw_null = json_string_raw<
-			  T, json_details::string_raw_opts_set<Options, JsonNullDefault>,
+			  T,
+			  json_details::string_raw_opts_set<Options, JsonNullDefault>,
 			  Constructor>;
 
 			template<typename T,
@@ -363,17 +388,21 @@ namespace daw::json {
 			         json_details::json_options_t Options = string_opts_def,
 			         typename Constructor = nullable_constructor<T>>
 			using json_string_null =
-			  json_string<T, json_details::string_opts_set<Options, JsonNullDefault>,
+			  json_string<T,
+			              json_details::string_opts_set<Options, JsonNullDefault>,
 			              Constructor>;
 
-			template<typename T, json_details::json_options_t Options = bool_opts_def,
+			template<typename T,
+			         json_details::json_options_t Options = bool_opts_def,
 			         typename Constructor = default_constructor<T>>
 			struct json_bool;
 
-			template<typename T, json_details::json_options_t Options = bool_opts_def,
+			template<typename T,
+			         json_details::json_options_t Options = bool_opts_def,
 			         typename Constructor = nullable_constructor<T>>
 			using json_bool_null =
-			  json_bool<T, json_details::bool_opts_set<Options, JsonNullDefault>,
+			  json_bool<T,
+			            json_details::bool_opts_set<Options, JsonNullDefault>,
 			            Constructor>;
 
 			template<typename T,
@@ -385,19 +414,26 @@ namespace daw::json {
 			         json_details::json_options_t Options = number_opts_def,
 			         typename Constructor = nullable_constructor<T>>
 			using json_number_null =
-			  json_number<T, json_details::number_opts_set<Options, JsonNullDefault>,
+			  json_number<T,
+			              json_details::number_opts_set<Options, JsonNullDefault>,
 			              Constructor>;
 
-			template<typename Container, typename JsonValueType, typename JsonKeyType,
+			template<typename Container,
+			         typename JsonValueType,
+			         typename JsonKeyType,
 			         typename Constructor = default_constructor<Container>,
 			         JsonNullable Nullable = JsonNullable::MustExist>
 			struct json_key_value;
 
-			template<typename Container, typename JsonValueType, typename JsonKeyType,
+			template<typename Container,
+			         typename JsonValueType,
+			         typename JsonKeyType,
 			         typename Constructor = nullable_constructor<Container>>
-			using json_key_value_null =
-			  json_key_value<Container, JsonValueType, JsonKeyType, Constructor,
-			                 JsonNullDefault>;
+			using json_key_value_null = json_key_value<Container,
+			                                           JsonValueType,
+			                                           JsonKeyType,
+			                                           Constructor,
+			                                           JsonNullDefault>;
 
 			template<typename Tuple,
 			         typename Constructor = default_constructor<Tuple>,
@@ -410,7 +446,8 @@ namespace daw::json {
 			         json_details::json_options_t Options = class_opts_def,
 			         typename JsonTupleTypesList = json_deduce_type>
 			using json_tuple_null =
-			  json_tuple<Tuple, Constructor,
+			  json_tuple<Tuple,
+			             Constructor,
 			             json_details::tuple_opts_set<Options, JsonNullDefault>,
 			             JsonTupleTypesList>;
 
@@ -424,7 +461,8 @@ namespace daw::json {
 			 * @tparam Nullable Does the value have to exist in the document or can it
 			 * have a null value
 			 */
-			template<typename T, typename Constructor = default_constructor<T>,
+			template<typename T,
+			         typename Constructor = default_constructor<T>,
 			         JsonNullable Nullable = JsonNullable::MustExist>
 			struct json_raw;
 
@@ -481,7 +519,8 @@ namespace daw::json {
 
 			template<typename JsonType>
 			struct json_deduced_type_map<
-			  JsonType, std::enable_if_t<json_details::is_a_json_type_v<JsonType>>> {
+			  JsonType,
+			  std::enable_if_t<json_details::is_a_json_type_v<JsonType>>> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
 
@@ -491,7 +530,8 @@ namespace daw::json {
 
 			template<typename T>
 			struct json_deduced_type_map<
-			  T, std::enable_if_t<json_details::has_json_data_contract_trait_v<T>>> {
+			  T,
+			  std::enable_if_t<json_details::has_json_data_contract_trait_v<T>>> {
 				static constexpr bool is_null = false;
 				using type = typename json_data_contract<T>::type;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
@@ -562,9 +602,10 @@ namespace daw::json {
 
 			template<typename Enum>
 			struct json_deduced_type_map<
-			  Enum, std::enable_if_t<std::conjunction_v<
-			          not_trait<json_details::has_json_data_contract_trait<Enum>>,
-			          std::is_enum<Enum>>>> {
+			  Enum,
+			  std::enable_if_t<std::conjunction_v<
+			    not_trait<json_details::has_json_data_contract_trait<Enum>>,
+			    std::is_enum<Enum>>>> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type =
 				  daw::is_signed_v<std::underlying_type<Enum>>
@@ -588,9 +629,10 @@ namespace daw::json {
 
 			template<typename Tuple>
 			struct json_deduced_type_map<
-			  Tuple, std::enable_if_t<std::conjunction_v<
-			           not_trait<json_details::has_json_data_contract_trait<Tuple>>,
-			           is_tuple<Tuple>>>> {
+			  Tuple,
+			  std::enable_if_t<std::conjunction_v<
+			    not_trait<json_details::has_json_data_contract_trait<Tuple>>,
+			    is_tuple<Tuple>>>> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Tuple;
 
@@ -672,11 +714,12 @@ namespace daw::json {
 
 			template<typename Container>
 			struct json_deduced_type_map<
-			  Container, std::enable_if_t<std::conjunction_v<
-			               not_trait<has_json_data_contract_trait<Container>>,
-			               not_trait<is_associative_container<Container>>,
-			               json_details::is_container<Container>,
-			               not_trait<is_string<Container>>>>> {
+			  Container,
+			  std::enable_if_t<
+			    std::conjunction_v<not_trait<has_json_data_contract_trait<Container>>,
+			                       not_trait<is_associative_container<Container>>,
+			                       json_details::is_container<Container>,
+			                       not_trait<is_string<Container>>>>> {
 
 				static constexpr bool is_null = false;
 				using value = typename Container::value_type;
@@ -862,15 +905,26 @@ namespace daw::json {
 			  std::conjunction_v<has_json_data_contract_trait<T>,
 			                     is_json_class_map<json_data_contract_trait_t<T>>>;
 
-			template<typename T, bool Ordered, bool Contract, bool JsonType,
-			         bool QuickMap, bool Container>
+			template<typename T,
+			         bool Ordered,
+			         bool Contract,
+			         bool JsonType,
+			         bool QuickMap,
+			         bool Container>
 			struct json_type_deducer {
 				using type = missing_json_data_contract_for<T>;
 			};
 
-			template<typename T, /* typename Ordered, */ bool Contract, bool JsonType,
-			         bool QuickMap, bool Container>
-			struct json_type_deducer<T, true, Contract, JsonType, QuickMap,
+			template<typename T,
+			         /* typename Ordered, */ bool Contract,
+			         bool JsonType,
+			         bool QuickMap,
+			         bool Container>
+			struct json_type_deducer<T,
+			                         true,
+			                         Contract,
+			                         JsonType,
+			                         QuickMap,
 			                         Container> {
 
 				using type = T;
@@ -878,11 +932,13 @@ namespace daw::json {
 
 			template<typename T>
 			struct as_json_class {
-				using type = json_base::json_class<
-				  T, json_class_constructor_t<T, default_constructor<T>>>;
+				using type = json_base::
+				  json_class<T, json_class_constructor_t<T, default_constructor<T>>>;
 			};
 
-			template<typename T, /*typename Contract,*/ bool JsonType, bool QuickMap,
+			template<typename T,
+			         /*typename Contract,*/ bool JsonType,
+			         bool QuickMap,
 			         bool Container>
 			struct json_type_deducer<T, false, true, JsonType, QuickMap, Container> {
 
@@ -892,8 +948,8 @@ namespace daw::json {
 				                                         json_class_map_type<T>,
 				                                         as_json_class<T>>::type;
 				                                         */
-				using type = json_base::json_class<
-				  T, json_class_constructor_t<T, default_constructor<T>>>;
+				using type = json_base::
+				  json_class<T, json_class_constructor_t<T, default_constructor<T>>>;
 
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
@@ -903,7 +959,8 @@ namespace daw::json {
 			};
 
 			template<typename T,
-			         /*bool Contract, bool JsonType,*/ bool QuickMap, bool Container>
+			         /*bool Contract, bool JsonType,*/ bool QuickMap,
+			         bool Container>
 			struct json_type_deducer<T, false, false, true, QuickMap, Container> {
 				static_assert( not std::is_same_v<T, void> );
 
@@ -948,10 +1005,13 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			using json_deduced_type = typename json_type_deducer<
-			  T, is_an_ordered_member_v<T>, has_json_data_contract_trait_v<T>,
-			  json_details::is_a_json_type_v<T>, has_json_link_quick_map_v<T>,
-			  is_container_v<T>>::type;
+			using json_deduced_type =
+			  typename json_type_deducer<T,
+			                             is_an_ordered_member_v<T>,
+			                             has_json_data_contract_trait_v<T>,
+			                             json_details::is_a_json_type_v<T>,
+			                             has_json_link_quick_map_v<T>,
+			                             is_container_v<T>>::type;
 
 			/***
 			 * Some types cannot use construct_value or dont needed it.
@@ -986,7 +1046,9 @@ namespace daw::json {
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_impl = daw::detected_or_t<
 			  unable_determine_class_parse_result<Constructor, Members...>,
-			  json_class_parse_result_impl2, Constructor, Members...>;
+			  json_class_parse_result_impl2,
+			  Constructor,
+			  Members...>;
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_t = daw::remove_cvref_t<

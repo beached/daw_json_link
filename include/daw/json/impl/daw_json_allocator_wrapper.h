@@ -49,8 +49,8 @@ namespace daw::json {
 			};
 
 			template<typename Alloc>
-			struct AllocatorWrapper
-			  : AllocatorWrapperBase<Alloc, std::is_empty<Alloc>::value> {
+			struct AllocatorWrapper :
+			  AllocatorWrapperBase<Alloc, std::is_empty<Alloc>::value> {
 				using allocator_type = std::remove_reference_t<Alloc>;
 
 				explicit AllocatorWrapper( allocator_type &alloc ) noexcept

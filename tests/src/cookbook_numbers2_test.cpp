@@ -49,8 +49,9 @@ namespace daw::json {
 #endif
 		static inline auto
 		to_json_data( daw::cookbook_numbers2::MyClass2 const &value ) {
-			return std::forward_as_tuple(
-			  value.member_unsigned0, value.member_unsigned1, value.member_signed );
+			return std::forward_as_tuple( value.member_unsigned0,
+			                              value.member_unsigned1,
+			                              value.member_signed );
 		}
 	};
 } // namespace daw::json

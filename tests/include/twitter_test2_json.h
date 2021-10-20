@@ -54,8 +54,10 @@ namespace daw::json {
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::urls_element_t const &value ) {
-			return std::forward_as_tuple( value.url, value.expanded_url,
-			                              value.display_url, value.indices );
+			return std::forward_as_tuple( value.url,
+			                              value.expanded_url,
+			                              value.display_url,
+			                              value.indices );
 		}
 	};
 
@@ -95,7 +97,8 @@ namespace daw::json {
 	struct json_data_contract<daw::twitter2::entities_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
-		  json_class_null<"url", std::optional<daw::twitter2::url_t>,
+		  json_class_null<"url",
+		                  std::optional<daw::twitter2::url_t>,
 		                  opt_construct_a<daw::twitter2::url_t>>,
 		  json_class_null<"description",
 		                  std::optional<daw::twitter2::description_t>,
@@ -104,9 +107,11 @@ namespace daw::json {
 		static inline constexpr char const url[] = "url";
 		static inline constexpr char const description[] = "description";
 		using type = json_member_list<
-		  json_class_null<url, std::optional<daw::twitter2::url_t>,
+		  json_class_null<url,
+		                  std::optional<daw::twitter2::url_t>,
 		                  opt_construct_a<daw::twitter2::url_t>>,
-		  json_class_null<description, std::optional<daw::twitter2::description_t>,
+		  json_class_null<description,
+		                  std::optional<daw::twitter2::description_t>,
 		                  opt_construct_a<daw::twitter2::description_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
@@ -180,7 +185,8 @@ namespace daw::json {
 		  json_string_raw<screen_name, std::string_view>,
 		  json_string_raw<location, std::string_view>,
 		  json_string_raw<description, std::string_view>,
-		  json_string_raw_null<url, std::optional<std::string_view>,
+		  json_string_raw_null<url,
+		                       std::optional<std::string_view>,
 		                       string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
 		  json_class<entities, daw::twitter2::entities_t>,
@@ -190,50 +196,83 @@ namespace daw::json {
 		  json_custom_lit<listed_count, std::string_view>,
 		  json_custom<created_at, std::string_view>,
 		  json_custom_lit<favourites_count, std::string_view>,
-		  json_custom_lit_null<utc_offset, std::optional<std::string_view>,
-		                    opt_construct_a<std::string_view>>,
-		  json_string_raw_null<time_zone, std::optional<std::string_view>,
+		  json_custom_lit_null<utc_offset,
+		                       std::optional<std::string_view>,
+		                       opt_construct_a<std::string_view>>,
+		  json_string_raw_null<time_zone,
+		                       std::optional<std::string_view>,
 		                       string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
-		  json_bool<geo_enabled>, json_bool<verified>,
+		  json_bool<geo_enabled>,
+		  json_bool<verified>,
 		  json_custom_lit<statuses_count, std::string_view>,
-		  json_string_raw<lang, std::string_view>, json_bool<contributors_enabled>,
-		  json_bool<is_translator>, json_bool<is_translation_enabled>,
+		  json_string_raw<lang, std::string_view>,
+		  json_bool<contributors_enabled>,
+		  json_bool<is_translator>,
+		  json_bool<is_translation_enabled>,
 		  json_string_raw<profile_background_color, std::string_view>,
 		  json_string_raw<profile_background_image_url, std::string_view>,
 		  json_string_raw<profile_background_image_url_https, std::string_view>,
 		  json_bool<profile_background_tile>,
 		  json_string_raw<profile_image_url, std::string_view>,
 		  json_string_raw<profile_image_url_https, std::string_view>,
-		  json_string_raw_null<profile_banner_url, std::optional<std::string_view>,
+		  json_string_raw_null<profile_banner_url,
+		                       std::optional<std::string_view>,
 		                       string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
 		  json_string_raw<profile_link_color, std::string_view>,
 		  json_string_raw<profile_sidebar_border_color, std::string_view>,
 		  json_string_raw<profile_sidebar_fill_color, std::string_view>,
 		  json_string_raw<profile_text_color, std::string_view>,
-		  json_bool<profile_use_background_image>, json_bool<default_profile>,
-		  json_bool<default_profile_image>, json_bool<following>,
-		  json_bool<follow_request_sent>, json_bool<notifications>>;
+		  json_bool<profile_use_background_image>,
+		  json_bool<default_profile>,
+		  json_bool<default_profile_image>,
+		  json_bool<following>,
+		  json_bool<follow_request_sent>,
+		  json_bool<notifications>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::user_t const &value ) {
-			return std::forward_as_tuple(
-			  value.id, value.id_str, value.name, value.screen_name, value.location,
-			  value.description, value.url, value.entities, value._jsonprotected,
-			  value.followers_count, value.friends_count, value.listed_count,
-			  value.created_at, value.favourites_count, value.utc_offset,
-			  value.time_zone, value.geo_enabled, value.verified,
-			  value.statuses_count, value.lang, value.contributors_enabled,
-			  value.is_translator, value.is_translation_enabled,
-			  value.profile_background_color, value.profile_background_image_url,
-			  value.profile_background_image_url_https, value.profile_background_tile,
-			  value.profile_image_url, value.profile_image_url_https,
-			  value.profile_banner_url, value.profile_link_color,
-			  value.profile_sidebar_border_color, value.profile_sidebar_fill_color,
-			  value.profile_text_color, value.profile_use_background_image,
-			  value.default_profile, value.default_profile_image, value.following,
-			  value.follow_request_sent, value.notifications );
+			return std::forward_as_tuple( value.id,
+			                              value.id_str,
+			                              value.name,
+			                              value.screen_name,
+			                              value.location,
+			                              value.description,
+			                              value.url,
+			                              value.entities,
+			                              value._jsonprotected,
+			                              value.followers_count,
+			                              value.friends_count,
+			                              value.listed_count,
+			                              value.created_at,
+			                              value.favourites_count,
+			                              value.utc_offset,
+			                              value.time_zone,
+			                              value.geo_enabled,
+			                              value.verified,
+			                              value.statuses_count,
+			                              value.lang,
+			                              value.contributors_enabled,
+			                              value.is_translator,
+			                              value.is_translation_enabled,
+			                              value.profile_background_color,
+			                              value.profile_background_image_url,
+			                              value.profile_background_image_url_https,
+			                              value.profile_background_tile,
+			                              value.profile_image_url,
+			                              value.profile_image_url_https,
+			                              value.profile_banner_url,
+			                              value.profile_link_color,
+			                              value.profile_sidebar_border_color,
+			                              value.profile_sidebar_fill_color,
+			                              value.profile_text_color,
+			                              value.profile_use_background_image,
+			                              value.default_profile,
+			                              value.default_profile_image,
+			                              value.following,
+			                              value.follow_request_sent,
+			                              value.notifications );
 		}
 	};
 
@@ -285,40 +324,60 @@ namespace daw::json {
 		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
 		  json_string_raw<text, std::string_view>,
-		  json_string_raw<source, std::string_view>, json_bool<truncated>,
-		  json_custom_lit_null<in_reply_to_status_id, std::optional<std::string_view>,
-		                    opt_construct_a<std::string_view>>,
+		  json_string_raw<source, std::string_view>,
+		  json_bool<truncated>,
+		  json_custom_lit_null<in_reply_to_status_id,
+		                       std::optional<std::string_view>,
+		                       opt_construct_a<std::string_view>>,
 		  json_string_raw_null<in_reply_to_status_id_str,
-		                       std::optional<std::string_view>, string_raw_opts_def,
+		                       std::optional<std::string_view>,
+		                       string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
 		  json_custom_lit_null<
-		    in_reply_to_user_id, std::optional<std::string_view>,
+		    in_reply_to_user_id,
+		    std::optional<std::string_view>,
 		    opt_construct_a<std::string_view>,
 		    default_to_json_converter_t<std::optional<std::string_view>>,
 		    json_custom_opt( JsonCustomTypes::Literal )>,
 		  json_string_raw_null<in_reply_to_user_id_str,
-		                       std::optional<std::string_view>, string_raw_opts_def,
+		                       std::optional<std::string_view>,
+		                       string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
 		  json_string_raw_null<in_reply_to_screen_name,
-		                       std::optional<std::string_view>, string_raw_opts_def,
+		                       std::optional<std::string_view>,
+		                       string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
 		  json_class<user, daw::twitter2::user_t>,
 		  json_custom_lit<retweet_count, std::string_view>,
 		  json_custom_lit<favorite_count, std::string_view>,
-		  json_class<entities, daw::twitter2::entities_t>, json_bool<favorited>,
-		  json_bool<retweeted>, json_bool_null<possibly_sensitive>,
+		  json_class<entities, daw::twitter2::entities_t>,
+		  json_bool<favorited>,
+		  json_bool<retweeted>,
+		  json_bool_null<possibly_sensitive>,
 		  json_string_raw<lang, std::string_view>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::tweet_object_t const &value ) {
-			return std::forward_as_tuple(
-			  value.metadata, value.created_at, value.id, value.id_str, value.text,
-			  value.source, value.truncated, value.in_reply_to_status_id,
-			  value.in_reply_to_status_id_str, value.in_reply_to_user_id,
-			  value.in_reply_to_user_id_str, value.in_reply_to_screen_name,
-			  value.user, value.retweet_count, value.favorite_count, value.entities,
-			  value.favorited, value.retweeted, value.possibly_sensitive,
-			  value.lang );
+			return std::forward_as_tuple( value.metadata,
+			                              value.created_at,
+			                              value.id,
+			                              value.id_str,
+			                              value.text,
+			                              value.source,
+			                              value.truncated,
+			                              value.in_reply_to_status_id,
+			                              value.in_reply_to_status_id_str,
+			                              value.in_reply_to_user_id,
+			                              value.in_reply_to_user_id_str,
+			                              value.in_reply_to_screen_name,
+			                              value.user,
+			                              value.retweet_count,
+			                              value.favorite_count,
+			                              value.entities,
+			                              value.favorited,
+			                              value.retweeted,
+			                              value.possibly_sensitive,
+			                              value.lang );
 		}
 	};
 
@@ -338,8 +397,11 @@ namespace daw::json {
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::user_mentions_element_t const &value ) {
-			return std::forward_as_tuple( value.screen_name, value.name, value.id,
-			                              value.id_str, value.indices );
+			return std::forward_as_tuple( value.screen_name,
+			                              value.name,
+			                              value.id,
+			                              value.id_str,
+			                              value.indices );
 		}
 	};
 
@@ -432,7 +494,9 @@ namespace daw::json {
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::sizes_t const &value ) {
-			return std::forward_as_tuple( value.medium, value.small_, value.thumb,
+			return std::forward_as_tuple( value.medium,
+			                              value.small_,
+			                              value.thumb,
 			                              value.large );
 		}
 	};
@@ -463,10 +527,16 @@ namespace daw::json {
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::media_element_t const &value ) {
-			return std::forward_as_tuple(
-			  value.id, value.id_str, value.indices, value.media_url,
-			  value.media_url_https, value.url, value.display_url, value.expanded_url,
-			  value.type, value.sizes );
+			return std::forward_as_tuple( value.id,
+			                              value.id_str,
+			                              value.indices,
+			                              value.media_url,
+			                              value.media_url_https,
+			                              value.url,
+			                              value.display_url,
+			                              value.expanded_url,
+			                              value.type,
+			                              value.sizes );
 		}
 	};
 
@@ -498,43 +568,63 @@ namespace daw::json {
 		static inline constexpr char const possibly_sensitive[] =
 		  "possibly_sensitive";
 		static inline constexpr char const lang[] = "lang";
-		using type = json_member_list<
-		  json_class<metadata, daw::twitter2::metadata_t>,
-		  json_custom<created_at, std::string_view>,
-		  json_custom_lit<id, std::string_view>,
-		  json_string_raw<id_str, std::string_view>,
-		  json_string_raw<text, std::string_view>,
-		  json_string_raw<source, std::string_view>, json_bool<truncated>,
-		  json_custom_lit_null<in_reply_to_status_id, std::optional<std::string_view>,
-		                    opt_construct_a<std::string_view>>,
-		  json_string_raw_null<in_reply_to_status_id_str,
-		                       std::optional<std::string_view>, string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
-		  json_custom_lit_null<in_reply_to_user_id, std::optional<std::string_view>,
-		                    opt_construct_a<std::string_view>>,
-		  json_string_raw_null<in_reply_to_user_id_str,
-		                       std::optional<std::string_view>, string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
-		  json_string_raw_null<in_reply_to_screen_name,
-		                       std::optional<std::string_view>, string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
-		  json_class<user, daw::twitter2::user_t>,
-		  json_custom_lit<retweet_count, std::string_view>,
-		  json_custom_lit<favorite_count, std::string_view>,
-		  json_class<entities, daw::twitter2::entities_t>, json_bool<favorited>,
-		  json_bool<retweeted>, json_bool_null<possibly_sensitive>,
-		  json_string_raw<lang, std::string_view>>;
+		using type =
+		  json_member_list<json_class<metadata, daw::twitter2::metadata_t>,
+		                   json_custom<created_at, std::string_view>,
+		                   json_custom_lit<id, std::string_view>,
+		                   json_string_raw<id_str, std::string_view>,
+		                   json_string_raw<text, std::string_view>,
+		                   json_string_raw<source, std::string_view>,
+		                   json_bool<truncated>,
+		                   json_custom_lit_null<in_reply_to_status_id,
+		                                        std::optional<std::string_view>,
+		                                        opt_construct_a<std::string_view>>,
+		                   json_string_raw_null<in_reply_to_status_id_str,
+		                                        std::optional<std::string_view>,
+		                                        string_raw_opts_def,
+		                                        opt_construct_a<std::string_view>>,
+		                   json_custom_lit_null<in_reply_to_user_id,
+		                                        std::optional<std::string_view>,
+		                                        opt_construct_a<std::string_view>>,
+		                   json_string_raw_null<in_reply_to_user_id_str,
+		                                        std::optional<std::string_view>,
+		                                        string_raw_opts_def,
+		                                        opt_construct_a<std::string_view>>,
+		                   json_string_raw_null<in_reply_to_screen_name,
+		                                        std::optional<std::string_view>,
+		                                        string_raw_opts_def,
+		                                        opt_construct_a<std::string_view>>,
+		                   json_class<user, daw::twitter2::user_t>,
+		                   json_custom_lit<retweet_count, std::string_view>,
+		                   json_custom_lit<favorite_count, std::string_view>,
+		                   json_class<entities, daw::twitter2::entities_t>,
+		                   json_bool<favorited>,
+		                   json_bool<retweeted>,
+		                   json_bool_null<possibly_sensitive>,
+		                   json_string_raw<lang, std::string_view>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::retweeted_status_t const &value ) {
-			return std::forward_as_tuple(
-			  value.metadata, value.created_at, value.id, value.id_str, value.text,
-			  value.source, value.truncated, value.in_reply_to_status_id,
-			  value.in_reply_to_status_id_str, value.in_reply_to_user_id,
-			  value.in_reply_to_user_id_str, value.in_reply_to_screen_name,
-			  value.user, value.retweet_count, value.favorite_count, value.entities,
-			  value.favorited, value.retweeted, value.possibly_sensitive,
-			  value.lang );
+			return std::forward_as_tuple( value.metadata,
+			                              value.created_at,
+			                              value.id,
+			                              value.id_str,
+			                              value.text,
+			                              value.source,
+			                              value.truncated,
+			                              value.in_reply_to_status_id,
+			                              value.in_reply_to_status_id_str,
+			                              value.in_reply_to_user_id,
+			                              value.in_reply_to_user_id_str,
+			                              value.in_reply_to_screen_name,
+			                              value.user,
+			                              value.retweet_count,
+			                              value.favorite_count,
+			                              value.entities,
+			                              value.favorited,
+			                              value.retweeted,
+			                              value.possibly_sensitive,
+			                              value.lang );
 		}
 	};
 
@@ -562,10 +652,15 @@ namespace daw::json {
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::search_metadata_t const &value ) {
-			return std::forward_as_tuple( value.completed_in, value.max_id,
-			                              value.max_id_str, value.next_results,
-			                              value.query, value.refresh_url, value.count,
-			                              value.since_id, value.since_id_str );
+			return std::forward_as_tuple( value.completed_in,
+			                              value.max_id,
+			                              value.max_id_str,
+			                              value.next_results,
+			                              value.query,
+			                              value.refresh_url,
+			                              value.count,
+			                              value.since_id,
+			                              value.since_id_str );
 		}
 	};
 

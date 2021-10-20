@@ -87,7 +87,8 @@ namespace daw::json {
 			template<typename T>
 			using detected_underlying_nullable_type = std::remove_reference_t<
 			  daw::detected_or_t<unable_to_determine_underlying_nullable_type<T>,
-			                     underlying_nullable_type, T>>;
+			                     underlying_nullable_type,
+			                     T>>;
 
 			template<typename T>
 			using is_nullable_type = daw::is_detected<underlying_nullable_type, T>;

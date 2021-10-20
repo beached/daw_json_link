@@ -38,7 +38,8 @@ void test( std::string_view json_sv1 ) {
 	auto const sz = json_sv1.size( );
 	{
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "citm_catalog bench(checked)", sz,
+		  "citm_catalog bench(checked)",
+		  sz,
 		  []( auto f1 ) {
 			  return daw::json::from_json<
 			    daw::citm::citm_object_t,
@@ -55,7 +56,8 @@ void test( std::string_view json_sv1 ) {
 	}
 	{
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "citm_catalog bench(unchecked)", sz,
+		  "citm_catalog bench(unchecked)",
+		  sz,
 		  []( auto f1 ) {
 			  return daw::json::from_json<
 			    daw::citm::citm_object_t,
@@ -106,7 +108,8 @@ int main( int argc, char **argv )
 	auto out_it = std::back_inserter( str );
 	str.reserve( json_sv1.size( ) );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "citm bench(to_json_string)", sz,
+	  "citm bench(to_json_string)",
+	  sz,
 
 	  [&]( daw::citm::citm_object_t const &tr ) {
 		  str.clear( );

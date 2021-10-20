@@ -110,10 +110,11 @@ namespace daw::json {
 		} // namespace json_details
 
 		// json_number
-		using number_opts_t =
-		  json_details::JsonOptionList<JsonNullable, LiteralAsStringOpt,
-		                               JsonRangeCheck, JsonNumberErrors,
-		                               FPOutputFormat>;
+		using number_opts_t = json_details::JsonOptionList<JsonNullable,
+		                                                   LiteralAsStringOpt,
+		                                                   JsonRangeCheck,
+		                                                   JsonNumberErrors,
+		                                                   FPOutputFormat>;
 
 		inline constexpr auto number_opts = number_opts_t{ };
 		inline constexpr json_details::json_options_t number_opts_def =
@@ -165,9 +166,8 @@ namespace daw::json {
 		} // namespace json_details
 
 		// json_string
-		using string_opts_t =
-		  json_details::JsonOptionList<JsonNullable, EightBitModes,
-		                               EmptyStringNull>;
+		using string_opts_t = json_details::
+		  JsonOptionList<JsonNullable, EightBitModes, EmptyStringNull>;
 
 		inline constexpr auto string_opts = string_opts_t{ };
 		inline constexpr json_details::json_options_t string_opts_def =
@@ -199,7 +199,9 @@ namespace daw::json {
 
 		// json_string_raw
 		using string_raw_opts_t =
-		  json_details::JsonOptionList<JsonNullable, EightBitModes, EmptyStringNull,
+		  json_details::JsonOptionList<JsonNullable,
+		                               EightBitModes,
+		                               EmptyStringNull,
 		                               AllowEscapeCharacter>;
 
 		inline constexpr auto string_raw_opts = string_raw_opts_t{ };

@@ -49,7 +49,8 @@ void test( std::string_view json_sv1 ) {
 		  daw::twitter::tweet,
 		  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter timeline bench(checked)", sz,
+		  "twitter timeline bench(checked)",
+		  sz,
 		  [&]( auto rng ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
 		  },
@@ -62,7 +63,8 @@ void test( std::string_view json_sv1 ) {
 		  daw::twitter::tweet,
 		  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter timeline bench(checked, nostore)", sz,
+		  "twitter timeline bench(checked, nostore)",
+		  sz,
 		  [&]( auto rng ) {
 			  for( auto v : rng ) {
 				  daw::do_not_optimize( v );
@@ -75,7 +77,8 @@ void test( std::string_view json_sv1 ) {
 		  daw::twitter::tweet,
 		  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter timeline bench(unchecked)", sz,
+		  "twitter timeline bench(unchecked)",
+		  sz,
 		  [&]( auto rng ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
 		  },
@@ -88,7 +91,8 @@ void test( std::string_view json_sv1 ) {
 		  daw::twitter::tweet,
 		  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter timeline bench(unchecked, nostore)", sz,
+		  "twitter timeline bench(unchecked, nostore)",
+		  sz,
 		  [&]( auto rng ) {
 			  for( auto v : rng ) {
 				  daw::do_not_optimize( v );

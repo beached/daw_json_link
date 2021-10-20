@@ -45,13 +45,17 @@ namespace daw::json {
 	struct json_data_contract<kv2_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_key_value<
-		  "kv", daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
-		  int, daw::string_view>>;
+		  "kv",
+		  daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
+		  int,
+		  daw::string_view>>;
 #else
 		constexpr inline static char const kv[] = "kv";
 		using type = json_member_list<json_key_value<
-		  kv, daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
-		  int, daw::string_view>>;
+		  kv,
+		  daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
+		  int,
+		  daw::string_view>>;
 #endif
 	};
 } // namespace daw::json

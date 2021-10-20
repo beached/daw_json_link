@@ -45,13 +45,15 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_graphs1::Metadata> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"member0", int>,
-		                              json_string<"member1">, json_bool<"member2">>;
+		                              json_string<"member1">,
+		                              json_bool<"member2">>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 		using type = json_member_list<json_number<member0, int>,
-		                              json_string<member1>, json_bool<member2>>;
+		                              json_string<member1>,
+		                              json_bool<member2>>;
 #endif
 	};
 
@@ -110,7 +112,9 @@ int main( int argc, char **argv )
 	using node_range_t =
 	  daw::json::json_array_range<daw::cookbook_graphs1::GraphNode>;
 	for( auto node : node_range_t( json_sv, "nodes" ) ) {
-		g.add_node( node.id, node.metadata.member0, node.metadata.member1,
+		g.add_node( node.id,
+		            node.metadata.member0,
+		            node.metadata.member1,
 		            node.metadata.member2 );
 	}
 

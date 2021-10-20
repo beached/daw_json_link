@@ -56,18 +56,21 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
 	std::vector<unicode_data> const unicode_test = daw::json::from_json_array<
-	  unicode_data, std::vector<unicode_data>,
+	  unicode_data,
+	  std::vector<unicode_data>,
 	  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	  std::string_view( json_str.data( ), json_str.size( ) ) );
 	std::vector<unicode_data> const unicode_test_from_escaped =
 	  daw::json::from_json_array<
-	    unicode_data, std::vector<unicode_data>,
+	    unicode_data,
+	    std::vector<unicode_data>,
 	    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	    std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
 
 	test_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
 	             "Expected same size" );
-	auto mismatch_pos = std::mismatch( unicode_test.begin( ), unicode_test.end( ),
+	auto mismatch_pos = std::mismatch( unicode_test.begin( ),
+	                                   unicode_test.end( ),
 	                                   unicode_test_from_escaped.begin( ) );
 	test_assert( mismatch_pos.first == unicode_test.end( ),
 	             "Should be the same after parsing" );
@@ -77,15 +80,18 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	  daw::json::from_json_array<unicode_data>(
 	    std::string_view( json_str2.data( ), json_str2.size( ) ) );
 
-	auto mismatch_pos2 = std::mismatch(
-	  unicode_test.begin( ), unicode_test.end( ), unicode_test2.begin( ) );
+	auto mismatch_pos2 = std::mismatch( unicode_test.begin( ),
+	                                    unicode_test.end( ),
+	                                    unicode_test2.begin( ) );
 	test_assert( mismatch_pos2.first == unicode_test.end( ),
 	             "Should be the same after parsing" );
 	{
 		using range_t = daw::json::json_array_range<
-		  unicode_data, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+		  unicode_data,
+		  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "full unicode bench(checked)", json_str.size( ),
+		  "full unicode bench(checked)",
+		  json_str.size( ),
 		  []( auto rng ) {
 			  auto first = rng.begin( );
 			  auto const last = rng.end( );
@@ -95,7 +101,8 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 		  range_t( std::string_view( json_str ) ) )
 		  .get( );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "full unicode all escaped bench(checked)", json_str.size( ),
+		  "full unicode all escaped bench(checked)",
+		  json_str.size( ),
 		  []( auto rng ) {
 			  auto first = rng.begin( );
 			  auto const last = rng.end( );
@@ -107,9 +114,11 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	}
 	{
 		using range_t = daw::json::json_array_range<
-		  unicode_data, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
+		  unicode_data,
+		  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "full unicode bench(unchecked)", json_str.size( ),
+		  "full unicode bench(unchecked)",
+		  json_str.size( ),
 		  []( auto rng ) {
 			  auto first = rng.begin( );
 			  auto const last = rng.end( );
@@ -119,7 +128,8 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 		  range_t( std::string_view( json_str ) ) )
 		  .get( );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "full unicode all escaped bench(unchecked)", json_str.size( ),
+		  "full unicode all escaped bench(unchecked)",
+		  json_str.size( ),
 		  []( auto rng ) {
 			  auto first = rng.begin( );
 			  auto const last = rng.end( );

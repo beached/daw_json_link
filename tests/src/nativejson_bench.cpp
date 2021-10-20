@@ -36,15 +36,17 @@ using namespace daw::json;
 template<typename ExecTag, bool expect_long_strings>
 using unchecked_policy_t = BasicParsePolicy<parse_options(
   ( expect_long_strings ? ExpectLongStrings::yes : ExpectLongStrings::no ),
-  CheckedParseMode::no, json_details::exec_mode_from_tag<ExecTag> )>;
+  CheckedParseMode::no,
+  json_details::exec_mode_from_tag<ExecTag> )>;
 template<typename ExecTag, bool expect_long_strings>
 using checked_policy_t = BasicParsePolicy<parse_options(
   ( expect_long_strings ? ExpectLongStrings::yes : ExpectLongStrings::no ),
   json_details::exec_mode_from_tag<ExecTag> )>;
 #else
 template<typename ExecTag, bool expect_long_strings>
-using unchecked_policy_t = BasicParsePolicy<parse_options(
-  CheckedParseMode::no, json_details::exec_mode_from_tag<ExecTag> )>;
+using unchecked_policy_t =
+  BasicParsePolicy<parse_options( CheckedParseMode::no,
+                                  json_details::exec_mode_from_tag<ExecTag> )>;
 template<typename ExecTag, bool expect_long_strings>
 using checked_policy_t =
   BasicParsePolicy<parse_options( json_details::exec_mode_from_tag<ExecTag> )>;
@@ -74,7 +76,8 @@ void test( char **argv ) {
 #endif
 	{
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "nativejson_twitter bench", std::size( json_sv1 ),
+		  "nativejson_twitter bench",
+		  std::size( json_sv1 ),
 		  [&twitter_result]( auto const &f1 ) {
 			  twitter_result = from_json<daw::twitter::twitter_object_t,
 			                             checked_policy_t<ExecTag, true>>( f1 );
@@ -100,7 +103,8 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_twitter bench trusted", std::size( json_sv1 ),
+	  "nativejson_twitter bench trusted",
+	  std::size( json_sv1 ),
 	  [&twitter_result]( auto const &f1 ) {
 		  {
 			  twitter_result = from_json<daw::twitter::twitter_object_t,
@@ -119,7 +123,8 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_citm bench", std::size( json_sv2 ),
+	  "nativejson_citm bench",
+	  std::size( json_sv2 ),
 	  [&citm_result]( auto const &f2 ) {
 		  citm_result =
 		    from_json<daw::citm::citm_object_t, checked_policy_t<ExecTag, true>>(
@@ -138,7 +143,8 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_citm bench trusted", std::size( json_sv2 ),
+	  "nativejson_citm bench trusted",
+	  std::size( json_sv2 ),
 	  [&citm_result]( auto const &f2 ) {
 		  citm_result =
 		    from_json<daw::citm::citm_object_t, checked_policy_t<ExecTag, true>>(
@@ -156,11 +162,13 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_canada bench", std::size( json_sv3 ),
+	  "nativejson_canada bench",
+	  std::size( json_sv3 ),
 	  [&canada_result]( auto const &f3 ) {
 		  canada_result =
 		    from_json<daw::geojson::Polygon, checked_policy_t<ExecTag, false>>(
-		      f3, "features[0].geometry" );
+		      f3,
+		      "features[0].geometry" );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -170,11 +178,13 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_canada bench trusted", std::size( json_sv3 ),
+	  "nativejson_canada bench trusted",
+	  std::size( json_sv3 ),
 	  [&canada_result]( auto const &f3 ) {
 		  canada_result =
 		    from_json<daw::geojson::Polygon, checked_policy_t<ExecTag, false>>(
-		      f3, "features[0].geometry" );
+		      f3,
+		      "features[0].geometry" );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -184,7 +194,8 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson bench", sz,
+	  "nativejson bench",
+	  sz,
 	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
 		  twitter_result = from_json<daw::twitter::twitter_object_t,
 		                             checked_policy_t<ExecTag, true>>( f1 );
@@ -193,9 +204,12 @@ void test( char **argv ) {
 		      f2 );
 		  canada_result =
 		    from_json<daw::geojson::Polygon, checked_policy_t<ExecTag, false>>(
-		      f3, "features[0].geometry" );
+		      f3,
+		      "features[0].geometry" );
 	  },
-	  json_sv1, json_sv2, json_sv3 );
+	  json_sv1,
+	  json_sv2,
+	  json_sv3 );
 
 	std::cout << std::flush;
 
@@ -219,7 +233,8 @@ void test( char **argv ) {
 	canada_result.reset( );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson bench trusted", sz,
+	  "nativejson bench trusted",
+	  sz,
 	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
 		  twitter_result = from_json<daw::twitter::twitter_object_t,
 		                             unchecked_policy_t<ExecTag, true>>( f1 );
@@ -228,9 +243,12 @@ void test( char **argv ) {
 		      f2 );
 		  canada_result =
 		    from_json<daw::geojson::Polygon, unchecked_policy_t<ExecTag, false>>(
-		      f3, "features[0].geometry" );
+		      f3,
+		      "features[0].geometry" );
 	  },
-	  json_sv1, json_sv2, json_sv3 );
+	  json_sv1,
+	  json_sv2,
+	  json_sv3 );
 
 	std::cout << std::flush;
 

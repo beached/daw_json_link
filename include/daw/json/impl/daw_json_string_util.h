@@ -43,7 +43,9 @@ namespace daw::json {
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
 				if constexpr( expect_long ) {
 					return __builtin_char_memchr(
-					  first, '"', static_cast<std::size_t>( last - first ) );
+					  first,
+					  '"',
+					  static_cast<std::size_t>( last - first ) );
 				} else
 #else
 #if defined( DAW_IS_CONSTANT_EVALUATED )
@@ -56,7 +58,8 @@ namespace daw::json {
 					if( ( not is_cxeval ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 						return static_cast<CharT *>(
-						  std::memchr( static_cast<void const *>( first ), '"',
+						  std::memchr( static_cast<void const *>( first ),
+						               '"',
 						               static_cast<std::size_t>( last - first ) ) );
 					}
 					(void)last;
@@ -90,7 +93,9 @@ namespace daw::json {
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
 				if constexpr( expect_long ) {
 					return __builtin_char_memchr(
-					  first, '"', static_cast<std::size_t>( last - first ) );
+					  first,
+					  '"',
+					  static_cast<std::size_t>( last - first ) );
 				} else
 #else
 #if defined( DAW_IS_CONSTANT_EVALUATED )
@@ -103,7 +108,8 @@ namespace daw::json {
 					if( ( not is_cxeval ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 						return static_cast<CharT *>(
-						  std::memchr( static_cast<void const *>( first ), '"',
+						  std::memchr( static_cast<void const *>( first ),
+						               '"',
 						               static_cast<std::size_t>( last - first ) ) );
 					}
 					while( DAW_LIKELY( first < last ) and *first != c ) {
@@ -120,7 +126,9 @@ namespace daw::json {
 				}
 			}
 
-			template<typename ExecTag, bool expect_long, char... chars,
+			template<typename ExecTag,
+			         bool expect_long,
+			         char... chars,
 			         typename CharT>
 			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
 			mempbrk_unchecked( CharT *first, CharT * /*last*/ ) {
@@ -164,7 +172,9 @@ namespace daw::json {
 				}
 			}
 
-			template<typename ExecTag, bool expect_long, char... chars,
+			template<typename ExecTag,
+			         bool expect_long,
+			         char... chars,
 			         typename CharT>
 			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
 			mempbrk_checked( CharT *first, CharT *last ) {
@@ -194,8 +204,11 @@ namespace daw::json {
 				}
 			}
 
-			template<bool is_unchecked_input, typename ExecTag, bool expect_long,
-			         char... chars, typename CharT>
+			template<bool is_unchecked_input,
+			         typename ExecTag,
+			         bool expect_long,
+			         char... chars,
+			         typename CharT>
 			DAW_ATTRIB_FLATINLINE inline constexpr CharT *mempbrk( CharT *first,
 			                                                       CharT *last ) {
 

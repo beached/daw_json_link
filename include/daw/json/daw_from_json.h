@@ -31,10 +31,13 @@ namespace daw::json {
 		 * @return A reified T constructed from JSON data
 		 * @throws daw::json::json_exception
 		 */
-		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-		         typename Result, typename String>
-		[[maybe_unused, nodiscard]] constexpr auto from_json( String &&json_data )
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+		template<typename JsonMember,
+		         typename ParsePolicy,
+		         bool KnownBounds,
+		         typename Result,
+		         typename String>
+		[[maybe_unused, nodiscard]] constexpr auto from_json( String && json_data )
+		  ->std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
 			daw_json_assert( std::data( json_data ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
@@ -52,7 +55,8 @@ namespace daw::json {
 			 * that
 			 */
 			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
+			  json_details::apply_zstring_policy_option_t<ParsePolicy,
+			                                              String,
 			                                              ZeroTerminatedString::yes>;
 
 			/***
@@ -60,7 +64,8 @@ namespace daw::json {
 			 * temporarily mutating it to reduce search costs
 			 */
 			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
+			  json_details::apply_mutable_policy<policy_zstring_t,
+			                                     String,
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 			auto parse_state =
@@ -68,14 +73,17 @@ namespace daw::json {
 
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				  parse_state,
+				  ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_assert( parse_state.empty( ),
+				                 ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
 				return json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				  parse_state,
+				  ParseTag<json_member::expected_type>{ } );
 			}
 		}
 
@@ -89,11 +97,16 @@ namespace daw::json {
 		 * @return A reified T constructed from JSON data
 		 * @throws daw::json::json_exception
 		 */
-		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-		         typename Result, typename String, typename Allocator>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_alloc( String &&json_data, Allocator const &alloc )
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+		template<typename JsonMember,
+		         typename ParsePolicy,
+		         bool KnownBounds,
+		         typename Result,
+		         typename String,
+		         typename Allocator>
+		[[maybe_unused, nodiscard]] constexpr auto from_json_alloc(
+		  String && json_data,
+		  Allocator const &alloc )
+		  ->std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
 			daw_json_assert( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
@@ -116,7 +129,8 @@ namespace daw::json {
 			 * that
 			 */
 			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
+			  json_details::apply_zstring_policy_option_t<ParsePolicy,
+			                                              String,
 			                                              ZeroTerminatedString::yes>;
 
 			/***
@@ -124,21 +138,25 @@ namespace daw::json {
 			 * temporarily mutating it to reduce search costs
 			 */
 			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
+			  json_details::apply_mutable_policy<policy_zstring_t,
+			                                     String,
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 
 			auto parse_state = ParseState::with_allocator( f, l, a );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				  parse_state,
+				  ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_assert( parse_state.empty( ),
+				                 ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
 				return json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				  parse_state,
+				  ParseTag<json_member::expected_type>{ } );
 			}
 		}
 
@@ -154,11 +172,15 @@ namespace daw::json {
 		 * @return A value reified from the JSON data member
 		 * @throws daw::json::json_exception
 		 */
-		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-		         typename Result, typename String>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json( String &&json_data, std::string_view member_path )
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+		template<typename JsonMember,
+		         typename ParsePolicy,
+		         bool KnownBounds,
+		         typename Result,
+		         typename String>
+		[[maybe_unused, nodiscard]] constexpr auto from_json(
+		  String && json_data,
+		  std::string_view member_path )
+		  ->std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
 			daw_json_assert( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
@@ -178,7 +200,8 @@ namespace daw::json {
 			 * that
 			 */
 			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
+			  json_details::apply_zstring_policy_option_t<ParsePolicy,
+			                                              String,
 			                                              ZeroTerminatedString::yes>;
 
 			/***
@@ -186,12 +209,14 @@ namespace daw::json {
 			 * temporarily mutating it to reduce search costs
 			 */
 			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
+			  json_details::apply_mutable_policy<policy_zstring_t,
+			                                     String,
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 
 			auto [is_found, parse_state] = json_details::find_range<ParseState>(
-			  json_data, { std::data( member_path ), std::size( member_path ) } );
+			  json_data,
+			  { std::data( member_path ), std::size( member_path ) } );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
 					return typename json_member::constructor_t{ }( );
@@ -202,14 +227,17 @@ namespace daw::json {
 
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				  parse_state,
+				  ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_assert( parse_state.empty( ),
+				                 ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
 				return json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				  parse_state,
+				  ParseTag<json_member::expected_type>{ } );
 			}
 		}
 
@@ -225,12 +253,17 @@ namespace daw::json {
 		 * @return A value reified from the JSON data member
 		 * @throws daw::json::json_exception
 		 */
-		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-		         typename Result, typename String, typename Allocator>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_alloc( String &&json_data, std::string_view member_path,
-		                 Allocator const &alloc )
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+		template<typename JsonMember,
+		         typename ParsePolicy,
+		         bool KnownBounds,
+		         typename Result,
+		         typename String,
+		         typename Allocator>
+		[[maybe_unused, nodiscard]] constexpr auto from_json_alloc(
+		  String && json_data,
+		  std::string_view member_path,
+		  Allocator const &alloc )
+		  ->std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
 			daw_json_assert( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
@@ -251,7 +284,8 @@ namespace daw::json {
 			 * that
 			 */
 			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
+			  json_details::apply_zstring_policy_option_t<ParsePolicy,
+			                                              String,
 			                                              ZeroTerminatedString::yes>;
 
 			/***
@@ -259,12 +293,15 @@ namespace daw::json {
 			 * temporarily mutating it to reduce search costs
 			 */
 			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
+			  json_details::apply_mutable_policy<policy_zstring_t,
+			                                     String,
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 
 			auto [is_found, parse_state] = json_details::find_range<ParseState>(
-			  json_data, { std::data( member_path ), std::size( member_path ) }, a );
+			  json_data,
+			  { std::data( member_path ), std::size( member_path ) },
+			  a );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
 					return typename json_member::constructor_t{ }( );
@@ -275,14 +312,17 @@ namespace daw::json {
 
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				  parse_state,
+				  ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_assert( parse_state.empty( ),
+				                 ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
 				return json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				  parse_state,
+				  ParseTag<json_member::expected_type>{ } );
 			}
 		}
 
@@ -295,10 +335,13 @@ namespace daw::json {
 		 * @return A value reified from the JSON data member
 		 * @throws daw::json::json_exception
 		 */
-		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-		         typename Result, typename ParseState>
-		[[maybe_unused, nodiscard]] inline constexpr Result
-		from_json( basic_json_value<ParseState> value ) {
+		template<typename JsonMember,
+		         typename ParsePolicy,
+		         bool KnownBounds,
+		         typename Result,
+		         typename ParseState>
+		[[maybe_unused, nodiscard]] inline constexpr Result from_json(
+		  basic_json_value<ParseState> value ) {
 			using json_member = json_details::json_deduced_type<JsonMember>;
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
@@ -308,7 +351,8 @@ namespace daw::json {
 			auto parse_state =
 			  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) );
 			return json_details::parse_value<json_member, KnownBounds>(
-			  parse_state, ParseTag<json_member::expected_type>{ } );
+			  parse_state,
+			  ParseTag<json_member::expected_type>{ } );
 		}
 
 		/***
@@ -323,11 +367,14 @@ namespace daw::json {
 		 * @return A value reified from the JSON data member
 		 * @throws daw::json::json_exception
 		 */
-		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-		         typename Result, typename ParseState>
-		[[maybe_unused, nodiscard]] constexpr Result
-		from_json( basic_json_value<ParseState> value,
-		           std::string_view member_path ) {
+		template<typename JsonMember,
+		         typename ParsePolicy,
+		         bool KnownBounds,
+		         typename Result,
+		         typename ParseState>
+		[[maybe_unused, nodiscard]] constexpr Result from_json(
+		  basic_json_value<ParseState> value,
+		  std::string_view member_path ) {
 			using json_member = json_details::json_deduced_type<JsonMember>;
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
@@ -335,7 +382,8 @@ namespace daw::json {
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			auto json_data = value.get_state( );
 			auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
-			  json_data, { std::data( member_path ), std::size( member_path ) } );
+			  json_data,
+			  { std::data( member_path ), std::size( member_path ) } );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
 					return typename json_member::constructor_t{ }( );
@@ -344,7 +392,8 @@ namespace daw::json {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 			}
 			return json_details::parse_value<json_member, KnownBounds>(
-			  parse_state, ParseTag<json_member::expected_type>{ } );
+			  parse_state,
+			  ParseTag<json_member::expected_type>{ } );
 		}
 
 		/**
@@ -362,12 +411,17 @@ namespace daw::json {
 		 * @return A Container containing parsed data from JSON string
 		 * @throws daw::json::json_exception
 		 */
-		template<typename JsonElement, typename Container, typename ParsePolicy,
-		         typename Constructor, bool KnownBounds, typename String>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_array( String &&json_data, std::string_view member_path )
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
-		                      Container> {
+		template<typename JsonElement,
+		         typename Container,
+		         typename ParsePolicy,
+		         typename Constructor,
+		         bool KnownBounds,
+		         typename String>
+		[[maybe_unused, nodiscard]] constexpr auto from_json_array(
+		  String && json_data,
+		  std::string_view member_path )
+		  ->std::enable_if_t<json_details::is_string_view_like_v<String>,
+		                     Container> {
 
 			daw_json_assert( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
@@ -391,7 +445,8 @@ namespace daw::json {
 			 * that
 			 */
 			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
+			  json_details::apply_zstring_policy_option_t<ParsePolicy,
+			                                              String,
 			                                              ZeroTerminatedString::yes>;
 
 			/***
@@ -399,12 +454,14 @@ namespace daw::json {
 			 * temporarily mutating it to reduce search costs
 			 */
 			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
+			  json_details::apply_mutable_policy<policy_zstring_t,
+			                                     String,
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 
 			auto [is_found, parse_state] = json_details::find_range<ParseState>(
-			  json_data, { std::data( member_path ), std::size( member_path ) } );
+			  json_data,
+			  { std::data( member_path ), std::size( member_path ) } );
 
 			if constexpr( parser_t::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
@@ -417,21 +474,26 @@ namespace daw::json {
 #if defined( _MSC_VER ) and not defined( __clang__ )
 			// Work around MSVC ICE
 			daw_json_assert( parse_state.is_opening_bracket_checked( ),
-			                 ErrorReason::InvalidArrayStart, parse_state );
+			                 ErrorReason::InvalidArrayStart,
+			                 parse_state );
 #else
 			daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
-			                      ErrorReason::InvalidArrayStart, parse_state );
+			                      ErrorReason::InvalidArrayStart,
+			                      parse_state );
 #endif
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<parser_t, KnownBounds>(
-				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
+				  parse_state,
+				  ParseTag<JsonParseTypes::Array>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_assert( parse_state.empty( ),
+				                 ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
 				return json_details::parse_value<parser_t, KnownBounds>(
-				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
+				  parse_state,
+				  ParseTag<JsonParseTypes::Array>{ } );
 			}
 		}
 	} // namespace DAW_JSON_VER

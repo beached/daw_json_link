@@ -111,7 +111,7 @@ namespace daw::json {
 		json_name( Chars... ) -> json_name<sizeof...( Chars )>;
 
 		template<std::size_t N>
-		json_name( char const ( & )[N] ) -> json_name<N>;
+		json_name( char const( & )[N] ) -> json_name<N>;
 
 #define JSONNAMETYPE ::daw::json::json_name
 		namespace json_details {

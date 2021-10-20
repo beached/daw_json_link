@@ -74,7 +74,8 @@ namespace daw::json {
 				  DAW_FWD2( String, data ),
 				  { std::data( member_path ), std::size( member_path ) } );
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
-				daw_json_assert( result.front( ) == '[', ErrorReason::InvalidArrayStart,
+				daw_json_assert( result.front( ) == '[',
+				                 ErrorReason::InvalidArrayStart,
 				                 result );
 				return result;
 			}
@@ -121,7 +122,8 @@ namespace daw::json {
 				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, m_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      m_state );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
@@ -133,7 +135,8 @@ namespace daw::json {
 			                                    daw::remove_cvref_t<String>>::value,
 			                   std::nullptr_t> = nullptr>
 			inline constexpr explicit json_array_iterator(
-			  String &&jd, std::string_view start_path )
+			  String &&jd,
+			  std::string_view start_path )
 			  : m_state( get_range( DAW_FWD2( String, jd ), start_path ) ) {
 
 				static_assert(
@@ -148,7 +151,8 @@ namespace daw::json {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, m_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      m_state );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
@@ -161,7 +165,8 @@ namespace daw::json {
 			 */
 			[[nodiscard]] inline constexpr value_type operator*( ) const {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
 
 				auto tmp = m_state;
 
@@ -171,10 +176,12 @@ namespace daw::json {
 					  op_star_cleanup<CharT, ParseState>{ m_can_skip, tmp };
 					(void)run_after_parse;
 					return json_details::parse_value<element_type>(
-					  tmp, ParseTag<element_type::expected_type>{ } );
+					  tmp,
+					  ParseTag<element_type::expected_type>{ } );
 				} else {
 					auto result = json_details::parse_value<element_type>(
-					  tmp, ParseTag<element_type::expected_type>{ } );
+					  tmp,
+					  ParseTag<element_type::expected_type>{ } );
 
 					m_can_skip = tmp.first;
 					return result;
@@ -198,7 +205,8 @@ namespace daw::json {
 			 */
 			inline constexpr json_array_iterator &operator++( ) {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
 				if( m_can_skip ) {
 					m_state.first = m_can_skip;
 					m_can_skip = nullptr;

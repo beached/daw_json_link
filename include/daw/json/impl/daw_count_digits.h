@@ -30,9 +30,10 @@ namespace daw::json {
 			template<typename Predicate>
 			DAW_ATTRIB_FLATINLINE inline constexpr std::int32_t
 			count_4digits( char const *first, Predicate pred ) {
-				std::array<daw::UInt8, 4> const buff{
-				  pred( first[3] ), pred( first[2] ), pred( first[2] ),
-				  pred( first[1] ) };
+				std::array<daw::UInt8, 4> const buff{ pred( first[3] ),
+				                                      pred( first[2] ),
+				                                      pred( first[2] ),
+				                                      pred( first[1] ) };
 				auto const v = DAW_BIT_CAST( std::uint32_t, buff );
 				if( v != 0 ) {
 					auto result = daw::cxmath::count_leading_zeroes( v );
@@ -45,10 +46,14 @@ namespace daw::json {
 			template<typename Predicate>
 			DAW_ATTRIB_FLATINLINE inline constexpr std::int32_t
 			count_8digits( char const *first, Predicate pred ) {
-				std::array<daw::UInt8, 8> const buff{
-				  pred( first[7] ), pred( first[6] ), pred( first[5] ),
-				  pred( first[4] ), pred( first[3] ), pred( first[2] ),
-				  pred( first[1] ), pred( first[0] ) };
+				std::array<daw::UInt8, 8> const buff{ pred( first[7] ),
+				                                      pred( first[6] ),
+				                                      pred( first[5] ),
+				                                      pred( first[4] ),
+				                                      pred( first[3] ),
+				                                      pred( first[2] ),
+				                                      pred( first[1] ),
+				                                      pred( first[0] ) };
 
 				auto const v = DAW_BIT_CAST( std::uint64_t, buff );
 				if( v != 0 ) {

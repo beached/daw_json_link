@@ -90,10 +90,12 @@ namespace daw::json {
 				skip_comments( parse_state );
 
 				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
 				while( not parse_policy_details::in<keys...>( parse_state.front( ) ) ) {
 					daw_json_assert_weak( parse_state.has_more( ),
-					                      ErrorReason::UnexpectedEndOfData, parse_state );
+					                      ErrorReason::UnexpectedEndOfData,
+					                      parse_state );
 					parse_state.remove_prefix( );
 					skip_comments( parse_state );
 				}
@@ -103,7 +105,10 @@ namespace daw::json {
 				return c == '\0' or c == ',' or c == ']' or c == '}' or c == '#';
 			}
 
-			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
+			template<char PrimLeft,
+			         char PrimRight,
+			         char SecLeft,
+			         char SecRight,
 			         typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
@@ -133,7 +138,8 @@ namespace daw::json {
 						                                 constexpr_exec_tag> ) {
 							ptr_first = json_details::mem_skip_until_end_of_string<
 							  ParseState::is_unchecked_input>( ParseState::exec_tag,
-							                                   ptr_first, parse_state.last );
+							                                   ptr_first,
+							                                   parse_state.last );
 						} else {
 							while( DAW_LIKELY( ptr_first < ptr_last ) and
 							       *ptr_first != '"' ) {
@@ -147,7 +153,8 @@ namespace daw::json {
 							}
 						}
 						daw_json_assert( ptr_first < ptr_last,
-						                 ErrorReason::UnexpectedEndOfData, parse_state );
+						                 ErrorReason::UnexpectedEndOfData,
+						                 parse_state );
 						break;
 					case ',':
 						if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
@@ -161,7 +168,8 @@ namespace daw::json {
 						--prime_bracket_count;
 						if( prime_bracket_count == 0 ) {
 							daw_json_assert( second_bracket_count == 0,
-							                 ErrorReason::InvalidBracketing, parse_state );
+							                 ErrorReason::InvalidBracketing,
+							                 parse_state );
 							++ptr_first;
 							// We include the close primary bracket in the range so that
 							// subsequent parsers have a terminator inside their range
@@ -191,7 +199,8 @@ namespace daw::json {
 				}
 				daw_json_assert( ( prime_bracket_count == 0 ) &
 				                   ( second_bracket_count == 0 ),
-				                 ErrorReason::InvalidBracketing, parse_state );
+				                 ErrorReason::InvalidBracketing,
+				                 parse_state );
 				// We include the close primary bracket in the range so that subsequent
 				// parsers have a terminator inside their range
 				result.last = ptr_first;
@@ -200,7 +209,10 @@ namespace daw::json {
 				return result;
 			}
 
-			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
+			template<char PrimLeft,
+			         char PrimRight,
+			         char SecLeft,
+			         char SecRight,
 			         typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
@@ -225,7 +237,8 @@ namespace daw::json {
 						                                 constexpr_exec_tag> ) {
 							ptr_first = json_details::mem_skip_until_end_of_string<
 							  ParseState::is_unchecked_input>( ParseState::exec_tag,
-							                                   ptr_first, parse_state.last );
+							                                   ptr_first,
+							                                   parse_state.last );
 						} else {
 							while( *ptr_first != '"' ) {
 								if( *ptr_first == '\\' ) {

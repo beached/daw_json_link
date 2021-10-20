@@ -86,12 +86,17 @@ namespace daw::json {
 			template<typename Clock = std::chrono::system_clock,
 			         typename Duration = std::chrono::milliseconds>
 			constexpr std::chrono::time_point<Clock, Duration>
-			civil_to_time_point( std::int_least32_t yr, std::uint_least32_t mo,
-			                     std::uint_least32_t dy, std::uint_least32_t hr,
-			                     std::uint_least32_t mn, std::uint_least32_t se,
+			civil_to_time_point( std::int_least32_t yr,
+			                     std::uint_least32_t mo,
+			                     std::uint_least32_t dy,
+			                     std::uint_least32_t hr,
+			                     std::uint_least32_t mn,
+			                     std::uint_least32_t se,
 			                     std::uint_least32_t ms ) {
-				constexpr auto calc = []( std::int_least32_t y, std::uint_least32_t m,
-				                          std::uint_least32_t d, std::uint_least32_t h,
+				constexpr auto calc = []( std::int_least32_t y,
+				                          std::uint_least32_t m,
+				                          std::uint_least32_t d,
+				                          std::uint_least32_t h,
 				                          std::uint_least32_t min,
 				                          std::uint_least32_t s,
 				                          std::uint_least32_t mil ) {
@@ -266,8 +271,13 @@ namespace daw::json {
 						hms.minute += mn_offset;
 					}
 				}
-				return civil_to_time_point( ymd.year, ymd.month, ymd.day, hms.hour,
-				                            hms.minute, hms.second, hms.millisecond );
+				return civil_to_time_point( ymd.year,
+				                            ymd.month,
+				                            ymd.day,
+				                            hms.hour,
+				                            hms.minute,
+				                            hms.second,
+				                            hms.millisecond );
 			}
 			struct ymdhms {
 				std::int_least32_t year;

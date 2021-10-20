@@ -20,8 +20,9 @@
 #include <string_view>
 
 namespace daw::json {
-	template<typename Backend, boost::multiprecision::expression_template_option
-	                             ExpressionTemplates>
+	template<
+	  typename Backend,
+	  boost::multiprecision::expression_template_option ExpressionTemplates>
 	struct json_data_contract<
 	  boost::multiprecision::number<Backend, ExpressionTemplates>> {
 

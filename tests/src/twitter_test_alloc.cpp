@@ -59,7 +59,8 @@ void test( std::string_view json_data, AllocType &alloc )
 	// ******************************
 	// NoCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(checked)", sz,
+	  "twitter bench(checked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -78,7 +79,8 @@ void test( std::string_view json_data, AllocType &alloc )
 
 	// NoCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(unchecked)", sz,
+	  "twitter bench(unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -97,7 +99,8 @@ void test( std::string_view json_data, AllocType &alloc )
 
 	// CppCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(cpp comments)", sz,
+	  "twitter bench(cpp comments)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -116,7 +119,8 @@ void test( std::string_view json_data, AllocType &alloc )
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// CppCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(cpp comments, unchecked)", sz,
+	  "twitter bench(cpp comments, unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -135,7 +139,8 @@ void test( std::string_view json_data, AllocType &alloc )
 #endif
 	// HashCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(hash comments)", sz,
+	  "twitter bench(hash comments)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -154,14 +159,16 @@ void test( std::string_view json_data, AllocType &alloc )
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// HashCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(hash comments, unchecked)", sz,
+	  "twitter bench(hash comments, unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDHashCommentSkippingPolicyUnchecked<ExecTag, AllocType>>(
-		    f1, alloc );
+		    f1,
+		    alloc );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -175,7 +182,8 @@ void test( std::string_view json_data, AllocType &alloc )
 	// ******************************
 	// NoCommentSkippingPolicyChecked Escaped Names
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(checked, escaped names)", sz,
+	  "twitter bench(checked, escaped names)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -194,7 +202,8 @@ void test( std::string_view json_data, AllocType &alloc )
 
 	// NoCommentSkippingPolicyUnchecked Escaped Names
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(unchecked, escaped names)", sz,
+	  "twitter bench(unchecked, escaped names)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -263,7 +272,8 @@ int main( int argc, char **argv )
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 		auto out_it = std::back_inserter( str );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(to_json_string)", sz,
+		  "twitter bench(to_json_string)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
 			  daw::json::to_json( tr, out_it );

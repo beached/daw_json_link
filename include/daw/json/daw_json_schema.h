@@ -29,7 +29,8 @@ namespace daw::json {
 			}
 		} // namespace utils
 		namespace json_details {
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Bool>,
 			                                         OutputIterator out_it ) {
@@ -50,7 +51,8 @@ namespace daw::json {
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Custom>,
 			                                         OutputIterator out_it ) {
@@ -74,7 +76,8 @@ namespace daw::json {
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Date>,
 			                                         OutputIterator out_it ) {
@@ -98,7 +101,8 @@ namespace daw::json {
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Real>,
 			                                         OutputIterator out_it ) {
@@ -119,7 +123,8 @@ namespace daw::json {
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Signed>,
 			                                         OutputIterator out_it ) {
@@ -140,7 +145,8 @@ namespace daw::json {
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::StringEscaped>,
@@ -162,7 +168,8 @@ namespace daw::json {
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::StringRaw>,
@@ -184,7 +191,8 @@ namespace daw::json {
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::Unsigned>,
@@ -217,7 +225,8 @@ namespace daw::json {
 			 * @param out_it Current OutputIterator
 			 * @return the last value of out_it
 			 */
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Class>,
 			                                         OutputIterator out_it );
@@ -231,47 +240,55 @@ namespace daw::json {
 			 * @param out_it Current OutputIterator
 			 * @return the last value of out_it
 			 */
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Array>,
 			                                         OutputIterator out_it );
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Tuple>,
 			                                         OutputIterator out_it );
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::SizedArray>,
 			                OutputIterator out_it );
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::KeyValue>,
 			                OutputIterator out_it );
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::KeyValueArray>,
 			                OutputIterator out_it );
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::Variant>,
 			                OutputIterator out_it );
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::VariantTagged>,
 			                OutputIterator out_it );
 
-			template<typename JsonMember, bool is_root = false,
+			template<typename JsonMember,
+			         bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::VariantIntrusive>,
@@ -302,8 +319,9 @@ namespace daw::json {
 					if constexpr( sizeof...( JsonMembers ) > 0 ) {
 						out_it.add_indent( );
 						out_it.next_member( );
-						out_it = output_member_types(
-						  out_it, std::index_sequence_for<JsonMembers...>{ } );
+						out_it =
+						  output_member_types( out_it,
+						                       std::index_sequence_for<JsonMembers...>{ } );
 						out_it.del_indent( );
 						out_it.next_member( );
 					}
@@ -324,11 +342,11 @@ namespace daw::json {
 						out_it = utils::output_kv( out_it, R"("dependencies")", "{" );
 						out_it.add_indent( );
 						bool is_first = true;
-						out_it = static_cast<OutputIterator>(
-						  ( output_dependency<
-						      json_link_no_name<json_link_no_name<JsonMembers>>>(
-						      out_it, is_first ),
-						    ... ) );
+						out_it = static_cast<OutputIterator>( (
+						  output_dependency<
+						    json_link_no_name<json_link_no_name<JsonMembers>>>( out_it,
+						                                                        is_first ),
+						  ... ) );
 						out_it.del_indent( );
 						if( not is_first ) {
 							// If we have at least 1 dependent member, is_first will be false
@@ -363,7 +381,8 @@ namespace daw::json {
 					out_it = utils::copy_to_iterator( out_it, R"(":)" );
 					out_it.output_space( );
 					out_it = to_json_schema<without_name<JsonMember>>(
-					  ParseTag<without_name<JsonMember>::base_expected_type>{ }, out_it );
+					  ParseTag<without_name<JsonMember>::base_expected_type>{ },
+					  out_it );
 					if constexpr( Idx + 1 < sizeof...( JsonMembers ) ) {
 						*out_it++ = ',';
 						out_it.next_member( );
@@ -416,8 +435,9 @@ namespace daw::json {
 						out_it.add_indent( );
 						out_it.next_member( );
 						*out_it++ = '"';
-						out_it = utils::copy_to_iterator(
-						  out_it, dependent_member_t<JsonMember>::name );
+						out_it =
+						  utils::copy_to_iterator( out_it,
+						                           dependent_member_t<JsonMember>::name );
 						*out_it++ = '"';
 						out_it.del_indent( );
 						out_it.next_member( );
@@ -429,9 +449,10 @@ namespace daw::json {
 				static constexpr OutputIterator
 				output_required_members( OutputIterator &out_it ) {
 					bool is_first = true;
-					return ( output_required_member<json_link_no_name<JsonMembers>>(
-					           out_it, is_first ),
-					         ... );
+					return (
+					  output_required_member<json_link_no_name<JsonMembers>>( out_it,
+					                                                          is_first ),
+					  ... );
 				}
 			};
 
@@ -481,7 +502,8 @@ namespace daw::json {
 					}
 					out_it.next_member( );
 					out_it = to_json_schema<without_name<JsonMember>>(
-					  ParseTag<JsonMember::base_expected_type>{ }, out_it );
+					  ParseTag<JsonMember::base_expected_type>{ },
+					  out_it );
 					return out_it;
 				}
 			};
@@ -512,7 +534,9 @@ namespace daw::json {
 			}
 
 			namespace json_details {
-				template<typename Tuple, bool is_root, typename OutputIterator,
+				template<typename Tuple,
+				         bool is_root,
+				         typename OutputIterator,
 				         std::size_t... Is>
 				constexpr OutputIterator
 				to_json_tuple_schema( OutputIterator out_it,
@@ -586,8 +610,9 @@ namespace daw::json {
 				out_it = utils::copy_to_iterator( out_it, R"("items":)" );
 				out_it.output_space( );
 				using element_t = typename JsonMember::json_element_t;
-				out_it = to_json_schema<element_t>(
-				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				out_it =
+				  to_json_schema<element_t>( ParseTag<element_t::base_expected_type>{ },
+				                             out_it );
 				if constexpr( not is_root ) {
 					out_it.del_indent( );
 				}
@@ -603,7 +628,8 @@ namespace daw::json {
 			to_json_schema( ParseTag<JsonParseTypes::SizedArray>,
 			                OutputIterator out_it ) {
 				return to_json_schema<JsonMember, is_root>(
-				  ParseTag<JsonParseTypes::Array>{ }, out_it );
+				  ParseTag<JsonParseTypes::Array>{ },
+				  out_it );
 			}
 
 			template<typename JsonMember, bool is_root, typename OutputIterator>
@@ -621,7 +647,8 @@ namespace daw::json {
 				out_it = utils::output_kv( out_it, R"("additionalProperties")", "" );
 				using element_t = typename JsonMember::json_element_t;
 				out_it = to_json_schema<without_name<element_t>>(
-				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				  ParseTag<element_t::base_expected_type>{ },
+				  out_it );
 				if constexpr( not is_root ) {
 					out_it.del_indent( );
 				}
@@ -646,8 +673,9 @@ namespace daw::json {
 				out_it = utils::copy_to_iterator( out_it, R"("items":)" );
 				out_it.output_space( );
 				using element_t = typename JsonMember::json_class_t;
-				out_it = to_json_schema<element_t>(
-				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				out_it =
+				  to_json_schema<element_t>( ParseTag<element_t::base_expected_type>{ },
+				                             out_it );
 				if constexpr( not is_root ) {
 					out_it.del_indent( );
 				}
@@ -674,7 +702,8 @@ namespace daw::json {
 					}
 					out_it.next_member( );
 					return to_json_schema<JsonElement>(
-					  ParseTag<JsonElement::base_expected_type>{ }, out_it );
+					  ParseTag<JsonElement::base_expected_type>{ },
+					  out_it );
 				}
 
 				template<typename OutputIterator>
@@ -782,7 +811,8 @@ namespace daw::json {
 			out_it.add_indent( );
 			out_it.next_member( );
 			out_it = utils::output_kv(
-			  out_it, R"("$schema")",
+			  out_it,
+			  R"("$schema")",
 			  R"("https://json-schema.org/draft/2020-12/schema",)" );
 			out_it.next_member( );
 			out_it = utils::output_kv( out_it, R"("$id")", "\"" );
@@ -794,7 +824,8 @@ namespace daw::json {
 			out_it = utils::copy_to_iterator( out_it, R"(",)" );
 			using json_type = json_link_no_name<T>;
 			out_it = json_details::to_json_schema<json_type, true>(
-			  ParseTag<json_type::base_expected_type>{ }, out_it );
+			  ParseTag<json_type::base_expected_type>{ },
+			  out_it );
 			out_it.del_indent( );
 			out_it.next_member( );
 			*out_it++ = '}';
@@ -809,7 +840,8 @@ namespace daw::json {
 			using iter_t = std::back_insert_iterator<Result>;
 			using policy = std::conditional_t<
 			  std::is_same_v<SerializationPolicy, use_default_serialization_policy>,
-			  serialization_policy<iter_t>, SerializationPolicy>;
+			  serialization_policy<iter_t>,
+			  SerializationPolicy>;
 
 			(void)to_json_schema<T>( policy( iter_t( result ) ), id, title );
 			return result;

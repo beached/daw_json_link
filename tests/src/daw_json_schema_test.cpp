@@ -44,7 +44,9 @@ struct Foo {
 	int k;
 	std::tuple<int, double> m{ 99, 98.8 };
 	std::variant<Bar, Umm> n{ Umm{} };
-	std::tuple<double, std::string, int, std::variant<Bar, Umm>> o{ 1.1, "2", 1,
+	std::tuple<double, std::string, int, std::variant<Bar, Umm>> o{ 1.1,
+	                                                                "2",
+	                                                                1,
 	                                                                Umm{} };
 };
 
@@ -59,8 +61,10 @@ struct FooBoo {
 	int k{ };
 	std::tuple<int, double> m{ 99, 98.8 };
 	std::variant<Bar, Umm> n{ Umm{} };
-	std::tuple<double, std::string_view, int, std::variant<Bar, Umm>> o{
-	  1.1, "2", 1, Umm{} };
+	std::tuple<double, std::string_view, int, std::variant<Bar, Umm>> o{ 1.1,
+	                                                                     "2",
+	                                                                     1,
+	                                                                     Umm{} };
 };
 
 template<typename... Ts>
@@ -86,8 +90,8 @@ struct UniquePtrArrayCtor {
 	}
 
 	template<typename Iterator>
-	inline std::unique_ptr<T[]> operator( )( Iterator first, Iterator last,
-	                                         std::size_t sz ) const {
+	inline std::unique_ptr<T[]>
+	operator( )( Iterator first, Iterator last, std::size_t sz ) const {
 		auto result = std::unique_ptr<T[]>( new T[static_cast<std::size_t>( sz )] );
 		auto out_last = std::copy( first, last, result.get( ) );
 		(void)out_last;
@@ -143,35 +147,61 @@ namespace daw::json {
 		using force_aggregate_construction = void;
 
 		using type = json_member_list<
-		  json_link<mem_a, int>, json_link<mem_b, double>,
-		  json_link<mem_c, std::string>, json_link<mem_d, std::vector<int>>,
-		  json_link<mem_e, Bar>, json_link<mem_f, std::map<std::string, Bar>>,
-		  json_key_value_array<mem_g, std::map<int, float>,
-		                       json_link<gvalue, float>, json_link<gkey, int>>,
+		  json_link<mem_a, int>,
+		  json_link<mem_b, double>,
+		  json_link<mem_c, std::string>,
+		  json_link<mem_d, std::vector<int>>,
+		  json_link<mem_e, Bar>,
+		  json_link<mem_f, std::map<std::string, Bar>>,
+		  json_key_value_array<mem_g,
+		                       std::map<int, float>,
+		                       json_link<gvalue, float>,
+		                       json_link<gkey, int>>,
 		  json_variant<mem_h, std::variant<int, std::string, bool>>,
-		  json_tagged_variant<mem_i, std::variant<int, std::string, bool, Bar, Umm>,
+		  json_tagged_variant<mem_i,
+		                      std::variant<int, std::string, bool, Bar, Umm>,
 		                      json_link<mem_type, std::size_t>,
 		                      IdentitySwitcher<int, std::string, bool, Bar, Umm>>,
 		  json_link<mem_j, std::optional<int>>,
-		  json_sized_array<mem_l, int, json_link<mem_k, int>,
-		                   std::unique_ptr<int[]>, UniquePtrArrayCtor<int>>,
-		  json_link<mem_k, int>, json_tuple<mem_m, std::tuple<int, double>>,
-		  json_intrusive_variant<mem_n, std::variant<Bar, Umm>,
+		  json_sized_array<mem_l,
+		                   int,
+		                   json_link<mem_k, int>,
+		                   std::unique_ptr<int[]>,
+		                   UniquePtrArrayCtor<int>>,
+		  json_link<mem_k, int>,
+		  json_tuple<mem_m, std::tuple<int, double>>,
+		  json_intrusive_variant<mem_n,
+		                         std::variant<Bar, Umm>,
 		                         json_tuple_member<1, std::size_t>,
 		                         IdentitySwitcher<Bar, Umm>>,
 		  json_tuple<mem_o,
 		             std::tuple<double, std::string, int, std::variant<Bar, Umm>>,
-		             json_deduce_type, tuple_opts_def,
-		             json_tuple_types_list<
-		               double, std::string, int,
-		               json_tagged_variant_no_name<
-		                 std::variant<Bar, Umm>, json_tuple_member<2, std::size_t>,
-		                 IdentitySwitcher<Bar, Umm>>>>>;
+		             json_deduce_type,
+		             tuple_opts_def,
+		             json_tuple_types_list<double,
+		                                   std::string,
+		                                   int,
+		                                   json_tagged_variant_no_name<
+		                                     std::variant<Bar, Umm>,
+		                                     json_tuple_member<2, std::size_t>,
+		                                     IdentitySwitcher<Bar, Umm>>>>>;
 
 		static inline auto to_json_data( Foo const &v ) {
 			return daw::forward_nonrvalue_as_tuple(
-			  v.a, v.b, v.c, v.d, v.e, v.f, v.g, v.h, v.i, v.j,
-			  daw::span( v.l.get( ), static_cast<std::size_t>( v.k ) ), v.k, v.m, v.n,
+			  v.a,
+			  v.b,
+			  v.c,
+			  v.d,
+			  v.e,
+			  v.f,
+			  v.g,
+			  v.h,
+			  v.i,
+			  v.j,
+			  daw::span( v.l.get( ), static_cast<std::size_t>( v.k ) ),
+			  v.k,
+			  v.m,
+			  v.n,
 			  v.o );
 		}
 	};
@@ -181,32 +211,49 @@ namespace daw::json {
 		using force_aggregate_construction = void;
 
 		using type = json_member_list<
-		  json_link<mem_a, int>, json_link<mem_b, double>,
-		  json_link<mem_c, std::string_view>, json_link<mem_e, Bar>,
+		  json_link<mem_a, int>,
+		  json_link<mem_b, double>,
+		  json_link<mem_c, std::string_view>,
+		  json_link<mem_e, Bar>,
 		  json_variant<mem_h, std::variant<int, std::string_view, bool>>,
 		  json_tagged_variant<
-		    mem_i, std::variant<int, std::string_view, bool, Bar, Umm>,
+		    mem_i,
+		    std::variant<int, std::string_view, bool, Bar, Umm>,
 		    json_link<mem_type, std::size_t>,
 		    IdentitySwitcher<int, std::string_view, bool, Bar, Umm>>,
 		  json_link<mem_j, std::optional<int>>,
 
-		  json_link<mem_k, int>, json_tuple<mem_m, std::tuple<int, double>>,
-		  json_intrusive_variant<mem_n, std::variant<Bar, Umm>,
+		  json_link<mem_k, int>,
+		  json_tuple<mem_m, std::tuple<int, double>>,
+		  json_intrusive_variant<mem_n,
+		                         std::variant<Bar, Umm>,
 		                         json_tuple_member<1, std::size_t>,
 		                         IdentitySwitcher<Bar, Umm>>,
 		  json_tuple<
 		    mem_o,
 		    std::tuple<double, std::string_view, int, std::variant<Bar, Umm>>,
-		    json_deduce_type, tuple_opts_def,
+		    json_deduce_type,
+		    tuple_opts_def,
 		    json_tuple_types_list<
-		      double, std::string_view, int,
+		      double,
+		      std::string_view,
+		      int,
 		      json_tagged_variant_no_name<std::variant<Bar, Umm>,
 		                                  json_tuple_member<2, std::size_t>,
 		                                  IdentitySwitcher<Bar, Umm>>>>>;
 
 		static inline auto to_json_data( FooBoo const &v ) {
-			return daw::forward_nonrvalue_as_tuple( v.a, v.b, v.c, v.e, v.h, v.i, v.j,
-			                                        v.k, v.m, v.n, v.o );
+			return daw::forward_nonrvalue_as_tuple( v.a,
+			                                        v.b,
+			                                        v.c,
+			                                        v.e,
+			                                        v.h,
+			                                        v.i,
+			                                        v.j,
+			                                        v.k,
+			                                        v.m,
+			                                        v.n,
+			                                        v.o );
 		}
 	};
 } // namespace daw::json

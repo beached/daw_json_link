@@ -86,13 +86,15 @@ namespace daw::json {
 				             4U ) ) == 0x3333'3333'3333'3333_u64 );
 			}
 
-			template<JsonRangeCheck RangeCheck, typename Unsigned,
+			template<JsonRangeCheck RangeCheck,
+			         typename Unsigned,
 			         typename MaxArithUnsigned>
 			using max_unsigned_t = std::conditional_t<
 			  std::disjunction<daw::is_integral<Unsigned>,
 			                   std::is_enum<Unsigned>>::value,
 			  std::conditional_t<( sizeof( Unsigned ) > sizeof( MaxArithUnsigned ) ),
-			                     Unsigned, MaxArithUnsigned>,
+			                     Unsigned,
+			                     MaxArithUnsigned>,
 			  Unsigned>;
 
 			// Constexpr'ified version from
@@ -154,7 +156,9 @@ namespace daw::json {
 			                 1234567890123456_u64,
 			               "16 digit parser does not work on this platform" );
 
-			template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
+			template<typename Unsigned,
+			         JsonRangeCheck RangeChecked,
+			         bool KnownBounds,
 			         typename ParseState,
 			         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr Unsigned
@@ -205,7 +209,8 @@ namespace daw::json {
 					  ( ( result <= static_cast<uresult_t>(
 					                  ( daw::numeric_limits<result_t>::max )( ) ) ) &
 					    ( count >= 0 ) ),
-					  ErrorReason::NumberOutOfRange, parse_state );
+					  ErrorReason::NumberOutOfRange,
+					  parse_state );
 				}
 				parse_state.first = first;
 				if constexpr( RangeChecked == JsonRangeCheck::Never ) {
@@ -217,7 +222,9 @@ namespace daw::json {
 			}
 
 			//**************************
-			template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
+			template<typename Unsigned,
+			         JsonRangeCheck RangeChecked,
+			         bool KnownBounds,
 			         typename ParseState,
 			         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr Unsigned
@@ -232,7 +239,8 @@ namespace daw::json {
 				    std::is_same<uresult_t, UInt64>::value,
 				  "Range checking is only supported for std integral types" );
 				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
 				CharT *first = parse_state.first;
 				CharT *const orig_first = first;
 				(void)orig_first; // only used inside if constexpr and gcc9 warns
@@ -281,7 +289,8 @@ namespace daw::json {
 					auto const count = static_cast<std::ptrdiff_t>(
 					                     daw::numeric_limits<result_t>::digits10 + 1 ) -
 					                   ( first - orig_first );
-					daw_json_assert( count >= 0, ErrorReason::NumberOutOfRange,
+					daw_json_assert( count >= 0,
+					                 ErrorReason::NumberOutOfRange,
 					                 parse_state );
 				}
 

@@ -57,7 +57,8 @@ namespace daw::jkj::dragonbox {
 				}
 				if( br.is_nonzero( ) ) {
 					return to_chars_detail::to_chars(
-					  to_decimal( x, policy::sign::ignore,
+					  to_decimal( x,
+					              policy::sign::ignore,
 					              typename policy_holder::trailing_zero_policy{ },
 					              typename policy_holder::rounding_mode_policy{ },
 					              typename policy_holder::correct_rounding_policy{ },

@@ -37,8 +37,11 @@ namespace daw::json {
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::citm::events_value_t const &value ) {
-			return std::forward_as_tuple( value.id, value.logo, value.name,
-			                              value.subTopicIds, value.topicIds );
+			return std::forward_as_tuple( value.id,
+			                              value.logo,
+			                              value.name,
+			                              value.subTopicIds,
+			                              value.topicIds );
 		}
 	};
 
@@ -55,7 +58,8 @@ namespace daw::json {
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::citm::prices_element_t const &value ) {
-			return std::forward_as_tuple( value.amount, value.audienceSubCategoryId,
+			return std::forward_as_tuple( value.amount,
+			                              value.audienceSubCategoryId,
 			                              value.seatCategoryId );
 		}
 	};
@@ -98,18 +102,24 @@ namespace daw::json {
 		static inline constexpr char const start[] = "start";
 		static inline constexpr char const venueCode[] = "venueCode";
 		using type = json_member_list<
-		  json_link<eventId, std::int64_t>, json_link<id, std::int64_t>,
+		  json_link<eventId, std::int64_t>,
+		  json_link<id, std::int64_t>,
 		  json_string_raw_null<logo, std::string_view>,
 		  json_link<prices, std::vector<daw::citm::prices_element_t>>,
 		  json_link<seatCategories,
 		            std::vector<daw::citm::seatCategories_element_t>>,
-		  json_link<start, std::int64_t>, json_link<venueCode, std::string_view>>;
+		  json_link<start, std::int64_t>,
+		  json_link<venueCode, std::string_view>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::citm::performances_element_t const &value ) {
-			return std::forward_as_tuple( value.eventId, value.id, value.logo,
-			                              value.prices, value.seatCategories,
-			                              value.start, value.venueCode );
+			return std::forward_as_tuple( value.eventId,
+			                              value.id,
+			                              value.logo,
+			                              value.prices,
+			                              value.seatCategories,
+			                              value.start,
+			                              value.venueCode );
 		}
 	};
 
@@ -134,35 +144,42 @@ namespace daw::json {
 		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
-		  json_key_value<"areaNames",
-		                 std::unordered_map<std::int64_t, std::string_view>,
-		                 json_link_no_name<std::string_view>,
-		                 json_number_no_name<
-		                   std::int64_t, number_opt( LiteralAsStringOpt::Always )>>,
-		  json_key_value<"audienceSubCategoryNames",
-		                 std::unordered_map<std::int64_t, std::string_view>,
-		                 json_string_raw_no_name<std::string_view>,
-		                 json_number_no_name<
-		                   std::int64_t, number_opt( LiteralAsStringOpt::Always )>>,
 		  json_key_value<
-		    "events", std::unordered_map<std::int64_t, daw::citm::events_value_t>,
+		    "areaNames",
+		    std::unordered_map<std::int64_t, std::string_view>,
+		    json_link_no_name<std::string_view>,
+		    json_number_no_name<std::int64_t,
+		                        number_opt( LiteralAsStringOpt::Always )>>,
+		  json_key_value<
+		    "audienceSubCategoryNames",
+		    std::unordered_map<std::int64_t, std::string_view>,
+		    json_string_raw_no_name<std::string_view>,
+		    json_number_no_name<std::int64_t,
+		                        number_opt( LiteralAsStringOpt::Always )>>,
+		  json_key_value<
+		    "events",
+		    std::unordered_map<std::int64_t, daw::citm::events_value_t>,
 		    json_class_no_name<daw::citm::events_value_t>,
 		    json_number_no_name<std::int64_t,
 		                        number_opt( LiteralAsStringOpt::Always )>>,
 		  json_array<"performances", daw::citm::performances_element_t>,
 		  json_key_value<"seatCategoryNames",
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 std::string_view, std::string_view>,
+		                 std::string_view,
+		                 std::string_view>,
 		  json_key_value<"subTopicNames",
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 std::string_view, std::string_view>,
+		                 std::string_view,
+		                 std::string_view>,
 		  json_key_value<"topicNames",
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 std::string_view, std::string_view>,
+		                 std::string_view,
+		                 std::string_view>,
 		  json_key_value<
 		    "topicSubTopics",
 		    std::unordered_map<std::string_view, std::vector<std::int64_t>>,
-		    std::vector<std::int64_t>, std::string_view>,
+		    std::vector<std::int64_t>,
+		    std::string_view>,
 		  json_class_null<"venueNames", std::optional<daw::citm::venueNames_t>>>;
 #else
 		static inline constexpr char const areaNames[] = "areaNames";
@@ -178,43 +195,55 @@ namespace daw::json {
 		static inline constexpr char const venueNames[] = "venueNames";
 
 		using type = json_member_list<
-		  json_key_value<areaNames,
-		                 std::unordered_map<std::int64_t, std::string_view>,
-		                 std::string_view,
-		                 json_number_no_name<
-		                   std::int64_t, number_opt( LiteralAsStringOpt::Always )>>,
-		  json_key_value<audienceSubCategoryNames,
-		                 std::unordered_map<std::int64_t, std::string_view>,
-		                 std::string_view,
-		                 json_number_no_name<
-		                   std::int64_t, number_opt( LiteralAsStringOpt::Always )>>,
 		  json_key_value<
-		    events, std::unordered_map<std::int64_t, daw::citm::events_value_t>,
+		    areaNames,
+		    std::unordered_map<std::int64_t, std::string_view>,
+		    std::string_view,
+		    json_number_no_name<std::int64_t,
+		                        number_opt( LiteralAsStringOpt::Always )>>,
+		  json_key_value<
+		    audienceSubCategoryNames,
+		    std::unordered_map<std::int64_t, std::string_view>,
+		    std::string_view,
+		    json_number_no_name<std::int64_t,
+		                        number_opt( LiteralAsStringOpt::Always )>>,
+		  json_key_value<
+		    events,
+		    std::unordered_map<std::int64_t, daw::citm::events_value_t>,
 		    daw::citm::events_value_t,
 		    json_number_no_name<std::int64_t,
 		                        number_opt( LiteralAsStringOpt::Always )>>,
 		  json_array<performances, daw::citm::performances_element_t>,
 		  json_key_value<seatCategoryNames,
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 std::string_view, std::string_view>,
+		                 std::string_view,
+		                 std::string_view>,
 		  json_key_value<subTopicNames,
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 std::string_view, std::string_view>,
+		                 std::string_view,
+		                 std::string_view>,
 		  json_key_value<topicNames,
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 std::string_view, std::string_view>,
+		                 std::string_view,
+		                 std::string_view>,
 		  json_key_value<
 		    topicSubTopics,
 		    std::unordered_map<std::string_view, std::vector<std::int64_t>>,
-		    std::vector<std::int64_t>, std::string_view>,
+		    std::vector<std::int64_t>,
+		    std::string_view>,
 		  json_class_null<venueNames, std::optional<daw::citm::venueNames_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::citm::citm_object_t const &value ) {
-			return std::forward_as_tuple(
-			  value.areaNames, value.audienceSubCategoryNames, value.events,
-			  value.performances, value.seatCategoryNames, value.subTopicNames,
-			  value.topicNames, value.topicSubTopics, value.venueNames );
+			return std::forward_as_tuple( value.areaNames,
+			                              value.audienceSubCategoryNames,
+			                              value.events,
+			                              value.performances,
+			                              value.seatCategoryNames,
+			                              value.subTopicNames,
+			                              value.topicNames,
+			                              value.topicSubTopics,
+			                              value.venueNames );
 		}
 	};
 } // namespace daw::json

@@ -46,11 +46,17 @@ namespace daw::island {
 		                        IteratorPairpoint_t<First, Last> points )
 		  : name( n )
 		  , vertices {
-			{ *( points.first++ ), *( points.first++ ), *( points.first++ ),
+			{ *( points.first++ ),
+			  *( points.first++ ),
+			  *( points.first++ ),
 			  *( points.first++ ) },
-			  { *( points.first++ ), *( points.first++ ), *( points.first++ ),
+			  { *( points.first++ ),
+			    *( points.first++ ),
+			    *( points.first++ ),
 			    *( points.first++ ) },
-			  { *( points.first++ ), *( points.first++ ), *( points.first++ ),
+			  { *( points.first++ ),
+			    *( points.first++ ),
+			    *( points.first++ ),
 			    *( points.first++ ) },
 			{
 				*( points.first++ ), *( points.first++ ), *( points.first++ ),

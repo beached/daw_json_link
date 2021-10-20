@@ -64,7 +64,8 @@ static_assert( DAW_NUM_RUNS > 0 );
 
 inline namespace {
 	daw::bench::bench_result
-	make_bench_result( std::string const &name, std::size_t data_size,
+	make_bench_result( std::string const &name,
+	                   std::size_t data_size,
 	                   std::vector<std::chrono::nanoseconds> run_times ) {
 		return { name,
 		         std::chrono::time_point_cast<std::chrono::milliseconds>(
@@ -131,7 +132,9 @@ inline namespace {
 		          << '\n';
 		std::cout << "speed:                    "
 		          << daw::utility::to_bytes_per_second(
-		               static_cast<double>( result.data_size ) / min_ts, 1.0, 2 )
+		               static_cast<double>( result.data_size ) / min_ts,
+		               1.0,
+		               2 )
 		          << "/s\n";
 		std::cout << "runs/second:              " << std::fixed
 		          << ( 1.0 / to_fract( result.duration_min ) ) << '\n';
@@ -164,7 +167,8 @@ inline namespace {
 	do_apache_builds_from_json_test( std::string const &json_data ) {
 		auto const tst = [json_data]( auto e ) {
 			return make_bench_result(
-			  "apache builds from_json(checked)", json_data.size( ),
+			  "apache builds from_json(checked)",
+			  json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string const &jd ) {
 				    return daw::json::from_json<
@@ -191,7 +195,8 @@ inline namespace {
 	do_apache_builds_from_json_test_unchecked( std::string const &json_data ) {
 		auto const tst = [json_data]( auto e ) {
 			return make_bench_result(
-			  "apache builds from_json(unchecked)", json_data.size( ),
+			  "apache builds from_json(unchecked)",
+			  json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string const &jd ) {
 				    return daw::json::from_json<
@@ -218,7 +223,8 @@ inline namespace {
 	do_twitter_from_json_test( std::string const &json_data ) {
 		auto const tst = [json_data]( auto e ) {
 			return make_bench_result(
-			  "twitter from_json(checked)", json_data.size( ),
+			  "twitter from_json(checked)",
+			  json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string const &jd ) {
 				    return daw::json::from_json<
@@ -246,7 +252,8 @@ inline namespace {
 	do_twitter_from_json_test_unchecked( std::string const &json_data ) {
 		auto const tst = [json_data]( auto e ) {
 			return make_bench_result(
-			  "twitter from_json(unchecked)", json_data.size( ),
+			  "twitter from_json(unchecked)",
+			  json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string const &jd ) {
 				    return daw::json::from_json<
@@ -274,7 +281,8 @@ inline namespace {
 	do_citm_from_json_test( std::string const &json_data ) {
 		auto const tst = [json_data]( auto e ) {
 			return make_bench_result(
-			  "citm catalog from_json(checked)", json_data.size( ),
+			  "citm catalog from_json(checked)",
+			  json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string const &jd ) {
 				    return daw::json::from_json<
@@ -302,7 +310,8 @@ inline namespace {
 	do_citm_from_json_test_unchecked( std::string const &json_data ) {
 		auto const tst = [json_data]( auto e ) {
 			return make_bench_result(
-			  "citm catalog from_json(unchecked)", json_data.size( ),
+			  "citm catalog from_json(unchecked)",
+			  json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string const &jd ) {
 				    return daw::json::from_json<
@@ -330,13 +339,15 @@ inline namespace {
 	do_canada_from_json_test( std::string const &json_data ) {
 		auto const tst = [json_data]( auto e ) {
 			return make_bench_result(
-			  "canada from_json(checked)", json_data.size( ),
+			  "canada from_json(checked)",
+			  json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string const &jd ) {
 				    return daw::json::from_json<
 				      daw::geojson::Polygon,
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      jd, "features[0].geometry" );
+				      jd,
+				      "features[0].geometry" );
 			    },
 			    json_data ) );
 		};
@@ -358,13 +369,15 @@ inline namespace {
 	do_canada_from_json_test_unchecked( std::string const &json_data ) {
 		auto const tst = [json_data]( auto e ) {
 			return make_bench_result(
-			  "canada from_json(unchecked)", json_data.size( ),
+			  "canada from_json(unchecked)",
+			  json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string const &jd ) {
 				    return daw::json::from_json<
 				      daw::geojson::Polygon,
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      jd, "features[0].geometry" );
+				      jd,
+				      "features[0].geometry" );
 			    },
 			    json_data ) );
 		};
@@ -386,33 +399,37 @@ inline namespace {
 	do_nativejson_from_json_test( std::string const &json_data_twitter,
 	                              std::string const &json_data_citm,
 	                              std::string const &json_data_canada ) {
-		auto const tst = [json_data_twitter, json_data_citm,
-		                  json_data_canada]( auto e ) {
-			return make_bench_result(
-			  "nativejson benchmark from_json(checked)",
-			  json_data_twitter.size( ) + json_data_citm.size( ) +
-			    json_data_canada.size( ),
-			  daw::bench_n_test_json<DAW_NUM_RUNS>(
-			    [&]( std::string const &tw, std::string const &ci,
-			         std::string const &ca ) {
-				    auto const j1 = daw::json::from_json<
-				      daw::twitter::twitter_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      tw );
-				    auto const j2 = daw::json::from_json<
-				      daw::citm::citm_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      ci );
-				    auto const j3 = daw::json::from_json<
-				      daw::geojson::Polygon,
-				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      ca, "features[0].geometry" );
-				    daw::do_not_optimize( j1 );
-				    daw::do_not_optimize( j2 );
-				    daw::do_not_optimize( j3 );
-			    },
-			    json_data_twitter, json_data_citm, json_data_canada ) );
-		};
+		auto const tst =
+		  [json_data_twitter, json_data_citm, json_data_canada]( auto e ) {
+			  return make_bench_result(
+			    "nativejson benchmark from_json(checked)",
+			    json_data_twitter.size( ) + json_data_citm.size( ) +
+			      json_data_canada.size( ),
+			    daw::bench_n_test_json<DAW_NUM_RUNS>(
+			      [&]( std::string const &tw,
+			           std::string const &ci,
+			           std::string const &ca ) {
+				      auto const j1 = daw::json::from_json<
+				        daw::twitter::twitter_object_t,
+				        daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
+				        tw );
+				      auto const j2 = daw::json::from_json<
+				        daw::citm::citm_object_t,
+				        daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
+				        ci );
+				      auto const j3 = daw::json::from_json<
+				        daw::geojson::Polygon,
+				        daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
+				        ca,
+				        "features[0].geometry" );
+				      daw::do_not_optimize( j1 );
+				      daw::do_not_optimize( j2 );
+				      daw::do_not_optimize( j3 );
+			      },
+			      json_data_twitter,
+			      json_data_citm,
+			      json_data_canada ) );
+		  };
 
 		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
 		                                    tst( daw::json::runtime_exec_tag{ } ),
@@ -428,35 +445,40 @@ inline namespace {
 	}
 
 	daw::bench::bench_result do_nativejson_from_json_test_unchecked(
-	  std::string const &json_data_twitter, std::string const &json_data_citm,
+	  std::string const &json_data_twitter,
+	  std::string const &json_data_citm,
 	  std::string const &json_data_canada ) {
-		auto const tst = [json_data_twitter, json_data_citm,
-		                  json_data_canada]( auto e ) {
-			return make_bench_result(
-			  "nativejson benchmark from_json(unchecked)",
-			  json_data_twitter.size( ) + json_data_citm.size( ) +
-			    json_data_canada.size( ),
-			  daw::bench_n_test_json<DAW_NUM_RUNS>(
-			    [&]( std::string const &tw, std::string const &ci,
-			         std::string const &ca ) {
-				    auto const j1 = daw::json::from_json<
-				      daw::twitter::twitter_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      tw );
-				    auto const j2 = daw::json::from_json<
-				      daw::citm::citm_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      ci );
-				    auto const j3 = daw::json::from_json<
-				      daw::geojson::Polygon,
-				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      ca, "features[0].geometry" );
-				    daw::do_not_optimize( j1 );
-				    daw::do_not_optimize( j2 );
-				    daw::do_not_optimize( j3 );
-			    },
-			    json_data_twitter, json_data_citm, json_data_canada ) );
-		};
+		auto const tst =
+		  [json_data_twitter, json_data_citm, json_data_canada]( auto e ) {
+			  return make_bench_result(
+			    "nativejson benchmark from_json(unchecked)",
+			    json_data_twitter.size( ) + json_data_citm.size( ) +
+			      json_data_canada.size( ),
+			    daw::bench_n_test_json<DAW_NUM_RUNS>(
+			      [&]( std::string const &tw,
+			           std::string const &ci,
+			           std::string const &ca ) {
+				      auto const j1 = daw::json::from_json<
+				        daw::twitter::twitter_object_t,
+				        daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
+				        tw );
+				      auto const j2 = daw::json::from_json<
+				        daw::citm::citm_object_t,
+				        daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
+				        ci );
+				      auto const j3 = daw::json::from_json<
+				        daw::geojson::Polygon,
+				        daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
+				        ca,
+				        "features[0].geometry" );
+				      daw::do_not_optimize( j1 );
+				      daw::do_not_optimize( j2 );
+				      daw::do_not_optimize( j3 );
+			      },
+			      json_data_twitter,
+			      json_data_citm,
+			      json_data_canada ) );
+		  };
 
 		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
 		                                    tst( daw::json::runtime_exec_tag{ } ),
@@ -506,9 +528,11 @@ int main( int argc, char **argv )
 	  do_citm_from_json_test_unchecked( json_data_citm ),
 	  do_canada_from_json_test( json_data_canada ),
 	  do_canada_from_json_test_unchecked( json_data_canada ),
-	  do_nativejson_from_json_test( json_data_twitter, json_data_citm,
+	  do_nativejson_from_json_test( json_data_twitter,
+	                                json_data_citm,
 	                                json_data_canada ),
-	  do_nativejson_from_json_test_unchecked( json_data_twitter, json_data_citm,
+	  do_nativejson_from_json_test_unchecked( json_data_twitter,
+	                                          json_data_citm,
 	                                          json_data_canada ) };
 
 	for( auto const &r : results ) {

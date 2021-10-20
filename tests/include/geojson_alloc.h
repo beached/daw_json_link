@@ -86,7 +86,8 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_string_raw<"type", std::string_view>,
 		  json_array<
-		    "coordinates", daw::geojson::Vector<daw::geojson::Point>,
+		    "coordinates",
+		    daw::geojson::Vector<daw::geojson::Point>,
 		    daw::geojson::Vector<daw::geojson::Vector<daw::geojson::Point>>>>;
 #else
 		static constexpr char const type_sym[] = "type";
@@ -94,7 +95,8 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_string_raw<type_sym, std::string_view>,
 		  json_array<
-		    coordinates, daw::geojson::Vector<daw::geojson::Point>,
+		    coordinates,
+		    daw::geojson::Vector<daw::geojson::Point>,
 		    daw::geojson::Vector<daw::geojson::Vector<daw::geojson::Point>>>>;
 #endif
 
@@ -122,7 +124,8 @@ namespace daw::json {
 #endif
 		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Feature const &value ) {
-			return std::forward_as_tuple( value.type, value.properties,
+			return std::forward_as_tuple( value.type,
+			                              value.properties,
 			                              value.geometry );
 		}
 	};
@@ -132,14 +135,16 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string_raw<"type", std::string_view>,
-		                   json_array<"features", daw::geojson::Feature,
+		                   json_array<"features",
+		                              daw::geojson::Feature,
 		                              daw::geojson::Vector<daw::geojson::Feature>>>;
 #else
 		static constexpr char const type_sym[] = "type";
 		static constexpr char const features[] = "features";
 		using type =
 		  json_member_list<json_string_raw<type_sym, std::string_view>,
-		                   json_array<features, daw::geojson::Feature,
+		                   json_array<features,
+		                              daw::geojson::Feature,
 		                              daw::geojson::Vector<daw::geojson::Feature>>>;
 #endif
 		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto

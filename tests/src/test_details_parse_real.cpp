@@ -66,80 +66,92 @@ void test_lots_of_doubles( ) {
 		numbers[i] = rng;
 	}
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "float parsing(unknown bounds)", bytes,
+	  "float parsing(unknown bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
 			  using json_member = daw::json::json_details::json_deduced_type<float>;
 			  auto const r = daw::json::json_details::parse_value<json_member, false>(
-			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
+			    rng,
+			    daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
 	  numbers );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "double parsing(unknown bounds)", bytes,
+	  "double parsing(unknown bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
 			  using json_member = daw::json::json_details::json_deduced_type<double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, false>(
-			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
+			    rng,
+			    daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
 	  numbers );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "long double parsing(unknown bounds)", bytes,
+	  "long double parsing(unknown bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
 			  using json_member =
 			    daw::json::json_details::json_deduced_type<long double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, false>(
-			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
+			    rng,
+			    daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
 	  numbers );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "float parsing(known bounds)", bytes,
+	  "float parsing(known bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
 			  using json_member = daw::json::json_details::json_deduced_type<float>;
 			  auto const r = daw::json::json_details::parse_value<json_member, true>(
-			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
+			    rng,
+			    daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
 	  numbers );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "double parsing(known bounds)", bytes,
+	  "double parsing(known bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
 			  using json_member = daw::json::json_details::json_deduced_type<double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, true>(
-			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
+			    rng,
+			    daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
 	  numbers );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "long double parsing(known bounds)", bytes,
+	  "long double parsing(known bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
 			  using json_member =
 			    daw::json::json_details::json_deduced_type<long double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, true>(
-			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
+			    rng,
+			    daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -147,7 +159,8 @@ void test_lots_of_doubles( ) {
 
 	// Too slow to need lots of tests
 	daw::bench_n_test_mbs<DAW_NUM_RUNS2>(
-	  "double parsing(strtod)", bytes,
+	  "double parsing(strtod)",
+	  bytes,
 	  []( std::vector<std::string> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  char **nend = nullptr;

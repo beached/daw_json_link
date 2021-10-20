@@ -30,9 +30,8 @@ namespace daw {
 		}
 	};
 	template<typename T>
-	using DefaultDeleter =
-	  std::conditional_t<std::is_array_v<T>, DefaultArrayDeleter,
-	                     DefaultValueDeleter>;
+	using DefaultDeleter = std::
+	  conditional_t<std::is_array_v<T>, DefaultArrayDeleter, DefaultValueDeleter>;
 
 	template<typename T, typename Deleter = DefaultDeleter<T>>
 	struct ref_counted_ptr {

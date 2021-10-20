@@ -57,7 +57,8 @@ void test( char **argv, AllocType &alloc ) {
 	try {
 #endif
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "nativejson_twitter bench", json_sv1.size( ),
+		  "nativejson_twitter bench",
+		  json_sv1.size( ),
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
 			  alloc.release( );
@@ -84,7 +85,8 @@ void test( char **argv, AllocType &alloc ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_twitter bench trusted", json_sv1.size( ),
+	  "nativejson_twitter bench trusted",
+	  json_sv1.size( ),
 	  [&]( auto f1 ) {
 		  {
 			  twitter_result.reset( );
@@ -108,7 +110,8 @@ void test( char **argv, AllocType &alloc ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_citm bench", json_sv2.size( ),
+	  "nativejson_citm bench",
+	  json_sv2.size( ),
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
 		  alloc.release( );
@@ -129,7 +132,8 @@ void test( char **argv, AllocType &alloc ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_citm bench trusted", json_sv2.size( ),
+	  "nativejson_citm bench trusted",
+	  json_sv2.size( ),
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
 		  alloc.release( );
@@ -150,14 +154,17 @@ void test( char **argv, AllocType &alloc ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_canada bench", json_sv3.size( ),
+	  "nativejson_canada bench",
+	  json_sv3.size( ),
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
 		  alloc.release( );
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3, "features[0].geometry", alloc );
+		    f3,
+		    "features[0].geometry",
+		    alloc );
 	  },
 	  json_sv3 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -167,14 +174,17 @@ void test( char **argv, AllocType &alloc ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_canada bench trusted", json_sv3.size( ),
+	  "nativejson_canada bench trusted",
+	  json_sv3.size( ),
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
 		  alloc.release( );
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3, "features[0].geometry", alloc );
+		    f3,
+		    "features[0].geometry",
+		    alloc );
 	  },
 	  json_sv3 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -185,7 +195,8 @@ void test( char **argv, AllocType &alloc ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson bench", sz,
+	  "nativejson bench",
+	  sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  twitter_result.reset( );
 		  citm_result.reset( );
@@ -200,9 +211,13 @@ void test( char **argv, AllocType &alloc ) {
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3, "features[0].geometry", alloc );
+		    f3,
+		    "features[0].geometry",
+		    alloc );
 	  },
-	  json_sv1, json_sv2, json_sv3 );
+	  json_sv1,
+	  json_sv2,
+	  json_sv3 );
 
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	std::cout << std::flush;
@@ -223,7 +238,8 @@ void test( char **argv, AllocType &alloc ) {
 	test_assert( canada_result, "Missing value" );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson bench trusted", sz,
+	  "nativejson bench trusted",
+	  sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  twitter_result.reset( );
 		  citm_result.reset( );
@@ -238,9 +254,13 @@ void test( char **argv, AllocType &alloc ) {
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3, "features[0].geometry", alloc );
+		    f3,
+		    "features[0].geometry",
+		    alloc );
 	  },
-	  json_sv1, json_sv2, json_sv3 );
+	  json_sv1,
+	  json_sv2,
+	  json_sv3 );
 
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	std::cout << std::flush;

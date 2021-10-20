@@ -20,7 +20,10 @@ namespace daw::citm {
 	template<typename T>
 	using Vector = std::vector<T, fixed_allocator<T>>;
 	template<typename K, typename V>
-	using Map = std::unordered_map<K, V, std::hash<K>, std::equal_to<K>,
+	using Map = std::unordered_map<K,
+	                               V,
+	                               std::hash<K>,
+	                               std::equal_to<K>,
 	                               fixed_allocator<std::pair<K const, V>>>;
 
 	struct events_value_t {

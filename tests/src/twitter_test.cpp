@@ -43,7 +43,8 @@ inline namespace {
 		// ******************************
 		// NoCommentSkippingPolicyChecked
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(checked)", sz,
+		  "twitter bench(checked)",
+		  sz,
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<
 			    daw::twitter::twitter_object_t,
@@ -59,7 +60,8 @@ inline namespace {
 
 		// NoCommentSkippingPolicyUnchecked
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(unchecked)", sz,
+		  "twitter bench(unchecked)",
+		  sz,
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<
 			    daw::twitter::twitter_object_t,
@@ -75,7 +77,8 @@ inline namespace {
 
 		// CppCommentSkippingPolicyChecked
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(cpp comments)", sz,
+		  "twitter bench(cpp comments)",
+		  sz,
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<
 			    daw::twitter::twitter_object_t,
@@ -91,7 +94,8 @@ inline namespace {
 #if not defined( _MSC_VER ) or defined( __clang__ )
 		// CppCommentSkippingPolicyUnchecked
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(cpp comments, unchecked)", sz,
+		  "twitter bench(cpp comments, unchecked)",
+		  sz,
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<
 			    daw::twitter::twitter_object_t,
@@ -107,7 +111,8 @@ inline namespace {
 #endif
 		// HashCommentSkippingPolicyChecked
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(hash comments)", sz,
+		  "twitter bench(hash comments)",
+		  sz,
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<
 			    daw::twitter::twitter_object_t,
@@ -123,7 +128,8 @@ inline namespace {
 #if not defined( _MSC_VER ) or defined( __clang__ )
 		// HashCommentSkippingPolicyUnchecked
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(hash comments, unchecked)", sz,
+		  "twitter bench(hash comments, unchecked)",
+		  sz,
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<
 			    daw::twitter::twitter_object_t,
@@ -140,7 +146,8 @@ inline namespace {
 		// ******************************
 		// NoCommentSkippingPolicyChecked Escaped Names
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(checked, escaped names)", sz,
+		  "twitter bench(checked, escaped names)",
+		  sz,
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<
 			    daw::twitter::twitter_object_t,
@@ -156,7 +163,8 @@ inline namespace {
 
 		// NoCommentSkippingPolicyUnchecked Escaped Names
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(unchecked, escaped names)", sz,
+		  "twitter bench(unchecked, escaped names)",
+		  sz,
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<
 			    daw::twitter::twitter_object_t,
@@ -218,7 +226,8 @@ int main( int argc, char **argv )
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(to_json_string)", sz,
+	  "twitter bench(to_json_string)",
+	  sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
 		  daw::json::to_json( *tr, out_it );

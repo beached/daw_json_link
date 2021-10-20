@@ -62,23 +62,34 @@ namespace daw::json {
 		static inline constexpr char const useSecurity[] = "useSecurity";
 		static inline constexpr char const views[] = "views";
 
-		using type = json_member_list<
-		  json_link<mode, std::string_view>,
-		  json_link<nodeDescription, std::string_view>,
-		  json_link<nodeName, std::string_view>, json_number<numExecutors, int64_t>,
-		  json_link<description, std::string_view>,
-		  json_link<jobs, std::vector<apache_builds::jobs_t>>,
-		  json_link<primaryView, apache_builds::views_t>,
-		  json_link<quietingDown, bool>, json_link<slaveAgentPort, int64_t>,
-		  json_link<useCrumbs, bool>, json_link<useSecurity, bool>,
-		  json_link<views, std::vector<apache_builds::views_t>>>;
+		using type =
+		  json_member_list<json_link<mode, std::string_view>,
+		                   json_link<nodeDescription, std::string_view>,
+		                   json_link<nodeName, std::string_view>,
+		                   json_number<numExecutors, int64_t>,
+		                   json_link<description, std::string_view>,
+		                   json_link<jobs, std::vector<apache_builds::jobs_t>>,
+		                   json_link<primaryView, apache_builds::views_t>,
+		                   json_link<quietingDown, bool>,
+		                   json_link<slaveAgentPort, int64_t>,
+		                   json_link<useCrumbs, bool>,
+		                   json_link<useSecurity, bool>,
+		                   json_link<views, std::vector<apache_builds::views_t>>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( apache_builds::apache_builds const &value ) {
-			return std::forward_as_tuple(
-			  value.mode, value.nodeDescription, value.nodeName, value.numExecutors,
-			  value.description, value.jobs, value.primaryView, value.quietingDown,
-			  value.slaveAgentPort, value.useCrumbs, value.useSecurity, value.views );
+			return std::forward_as_tuple( value.mode,
+			                              value.nodeDescription,
+			                              value.nodeName,
+			                              value.numExecutors,
+			                              value.description,
+			                              value.jobs,
+			                              value.primaryView,
+			                              value.quietingDown,
+			                              value.slaveAgentPort,
+			                              value.useCrumbs,
+			                              value.useSecurity,
+			                              value.views );
 		}
 	};
 

@@ -114,7 +114,8 @@ namespace daw::json {
 			power10( runtime_exec_tag, Result result, Unsigned p ) {
 				if constexpr( std::disjunction<std::is_same<Result, double>,
 				                               std::is_same<Result, float>>::value ) {
-					return power10( constexpr_exec_tag{ }, result,
+					return power10( constexpr_exec_tag{ },
+					                result,
 					                static_cast<std::int32_t>( p ) );
 				} else {
 					// For long double and others fallback to the slower std::pow

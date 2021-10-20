@@ -50,9 +50,8 @@ namespace daw::json {
 				    std::declval<basic_json_pair<ParseState>>( ) ) );
 
 				template<typename Handler, typename ParseState>
-				inline constexpr bool has_on_value_handler_v =
-				  daw::is_detected<has_on_value_handler_detect, Handler,
-				                   ParseState>::value;
+				inline constexpr bool has_on_value_handler_v = daw::
+				  is_detected<has_on_value_handler_detect, Handler, ParseState>::value;
 
 				// On Array Start
 				template<typename Handler, typename ParseState>
@@ -62,7 +61,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_array_start_handler_v =
-				  daw::is_detected<has_on_array_start_handler_detect, Handler,
+				  daw::is_detected<has_on_array_start_handler_detect,
+				                   Handler,
 				                   ParseState>::value;
 
 				// On Array End
@@ -82,7 +82,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_class_start_handler_v =
-				  daw::is_detected<has_on_class_start_handler_detect, Handler,
+				  daw::is_detected<has_on_class_start_handler_detect,
+				                   Handler,
 				                   ParseState>::value;
 
 				// On Class End
@@ -102,7 +103,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_number_handler_jv_v =
-				  daw::is_detected<has_on_number_handler_detect_jv, Handler,
+				  daw::is_detected<has_on_number_handler_detect_jv,
+				                   Handler,
 				                   ParseState>::value;
 
 				template<typename Handler>
@@ -121,8 +123,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_bool_handler_jv_v =
-				  daw::is_detected<has_on_bool_handler_detect_jv, Handler,
-				                   ParseState>::value;
+				  daw::is_detected<has_on_bool_handler_detect_jv, Handler, ParseState>::
+				    value;
 
 				template<typename Handler>
 				using has_on_bool_handler_detect_bl =
@@ -140,7 +142,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_string_handler_jv_v =
-				  daw::is_detected<has_on_string_handler_detect_jv, Handler,
+				  daw::is_detected<has_on_string_handler_detect_jv,
+				                   Handler,
 				                   ParseState>::value;
 
 				template<typename Handler>
@@ -160,8 +163,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_null_handler_jv_v =
-				  daw::is_detected<has_on_null_handler_detect_jv, Handler,
-				                   ParseState>::value;
+				  daw::is_detected<has_on_null_handler_detect_jv, Handler, ParseState>::
+				    value;
 
 				template<typename Handler>
 				using has_on_null_handler_detect =
@@ -178,9 +181,8 @@ namespace daw::json {
 				    std::declval<basic_json_value<ParseState>>( ) ) );
 
 				template<typename Handler, typename ParseState>
-				inline constexpr bool has_on_error_handler_v =
-				  daw::is_detected<has_on_error_handler_detect, Handler,
-				                   ParseState>::value;
+				inline constexpr bool has_on_error_handler_v = daw::
+				  is_detected<has_on_error_handler_detect, Handler, ParseState>::value;
 			} // namespace hnd_checks
 
 			template<typename T>
@@ -362,9 +364,9 @@ namespace daw::json {
 		         typename StackContainerPolicy = DefaultJsonEventParserStackPolicy<
 		           JsonEventParserStackValue<ParseState>>,
 		         typename Handler>
-		inline constexpr void
-		json_event_parser( basic_json_value<ParseState> jvalue,
-		                   Handler &&handler ) {
+		inline constexpr void json_event_parser(
+		  basic_json_value<ParseState> jvalue,
+		  Handler && handler ) {
 			using iterator = basic_json_value_iterator<ParseState>;
 			using json_value_t = basic_json_pair<ParseState>;
 			using stack_value_t = JsonEventParserStackValue<ParseState>;
@@ -557,7 +559,7 @@ namespace daw::json {
 		template<typename ParsePolicy = NoCommentSkippingPolicyChecked,
 		         typename Handler>
 		inline void json_event_parser( std::string_view json_document,
-		                               Handler &&handler ) {
+		                               Handler && handler ) {
 			return json_event_parser( basic_json_value<ParsePolicy>( json_document ),
 			                          DAW_FWD2( Handler, handler ) );
 		}

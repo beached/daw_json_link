@@ -36,7 +36,9 @@ namespace daw::cookbook_dates3 {
 		my_timepoint date_added;
 		my_timepoint last_modified;
 
-		MyClass3( std::string Title, unsigned Id, int64_t DateAdded,
+		MyClass3( std::string Title,
+		          unsigned Id,
+		          int64_t DateAdded,
 		          int64_t LastModified )
 		  : title( std::move( Title ) )
 		  , id( Id )
@@ -55,8 +57,10 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_dates3::MyClass3> {
 #if defined( __cpp_nontype_template_parameter_class )
 		using type =
-		  json_member_list<json_string<"title">, json_number<"id", unsigned>,
-		                   json_number<"dateAdded", int64_t,
+		  json_member_list<json_string<"title">,
+		                   json_number<"id", unsigned>,
+		                   json_number<"dateAdded",
+		                               int64_t,
 		                               number_opt( LiteralAsStringOpt::Always )>,
 		                   json_number<"lastModified", int64_t>>;
 #else
@@ -65,7 +69,8 @@ namespace daw::json {
 		static constexpr char const dateAdded[] = "dateAdded";
 		static constexpr char const lastModified[] = "lastModified";
 		using type = json_member_list<
-		  json_string<title>, json_number<id, unsigned>,
+		  json_string<title>,
+		  json_number<id, unsigned>,
 		  json_number<dateAdded, int64_t, number_opt( LiteralAsStringOpt::Always )>,
 		  json_number<lastModified, int64_t>>;
 #endif
@@ -78,7 +83,9 @@ namespace daw::json {
 			  std::chrono::floor<std::chrono::seconds>( v.last_modified )
 			    .time_since_epoch( )
 			    .count( );
-			return std::tuple( std::as_const( v.title ), v.id, date_added,
+			return std::tuple( std::as_const( v.title ),
+			                   v.id,
+			                   date_added,
 			                   last_modified );
 		}
 	};

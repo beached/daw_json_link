@@ -61,9 +61,13 @@ namespace daw::json {
 		static constexpr char const member_data[] = "data";
 
 		using type = json_member_list<
-		  json_number<member_n, std::size_t, number_opts_def,
+		  json_number<member_n,
+		              std::size_t,
+		              number_opts_def,
 		              ArrayPointerConstructor<member_data, int>::SizeCtor>,
-		  json_array<member_data, int, int *,
+		  json_array<member_data,
+		             int,
+		             int *,
 		             ArrayPointerConstructor<member_data, int>::ArrayCtor>>;
 
 		static constexpr auto to_json_data( Foo const &f ) {

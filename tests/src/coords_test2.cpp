@@ -85,7 +85,8 @@ int main( int argc, char **argv )
 	auto last = iterator_t( );
 
 	auto const [x, y, z, sz] = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "coords bench", json_sv.size( ),
+	  "coords bench",
+	  json_sv.size( ),
 	  [&]( iterator_t f, iterator_t l ) noexcept {
 		  double x1 = 0.0;
 		  double y1 = 0.0;
@@ -101,7 +102,8 @@ int main( int argc, char **argv )
 		  }
 		  return std::make_tuple( x1, y1, z1, sz1 );
 	  },
-	  first, last );
+	  first,
+	  last );
 
 	//	auto const sz = cls.coordinates.size( );
 	auto const dsz = static_cast<double>( sz );

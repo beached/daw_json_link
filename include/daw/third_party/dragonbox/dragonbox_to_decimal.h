@@ -100,7 +100,8 @@ namespace daw::jkj::dragonbox {
 			                                           : ieee754_format::binary64;
 
 			using carrier_uint = std::conditional_t<detail::physical_bits<T> == 32,
-			                                        std::uint32_t, std::uint64_t>;
+			                                        std::uint32_t,
+			                                        std::uint64_t>;
 			static_assert( sizeof( carrier_uint ) == sizeof( T ) );
 
 			static constexpr int carrier_bits =
@@ -575,8 +576,10 @@ namespace daw::jkj::dragonbox {
 
 				// Compute floor(e * c - s)
 				template<std::uint32_t c_integer_part,
-				         std::uint64_t c_fractional_digits, std::size_t shift_amount,
-				         std::int32_t max_exponent, std::uint32_t s_integer_part = 0,
+				         std::uint64_t c_fractional_digits,
+				         std::size_t shift_amount,
+				         std::int32_t max_exponent,
+				         std::uint32_t s_integer_part = 0,
 				         std::uint64_t s_fractional_digits = 0>
 				[[nodiscard]] inline constexpr int compute( int e ) noexcept {
 					assert( e <= max_exponent and e >= -max_exponent );
@@ -618,35 +621,47 @@ namespace daw::jkj::dragonbox {
 
 				[[nodiscard]] inline constexpr int floor_log10_pow2( int e ) noexcept {
 					using namespace log;
-					return compute<0, log10_2_fractional_digits,
-					               floor_log10_pow2_shift_amount, 1700>( e );
+					return compute<0,
+					               log10_2_fractional_digits,
+					               floor_log10_pow2_shift_amount,
+					               1700>( e );
 				}
 
 				[[nodiscard]] inline constexpr int floor_log2_pow10( int e ) noexcept {
 					using namespace log;
-					return compute<3, log2_10_fractional_digits,
-					               floor_log2_pow10_shift_amount, 1233>( e );
+					return compute<3,
+					               log2_10_fractional_digits,
+					               floor_log2_pow10_shift_amount,
+					               1233>( e );
 				}
 
 				[[nodiscard]] inline constexpr int floor_log5_pow2( int e ) noexcept {
 					using namespace log;
-					return compute<0, log5_2_fractional_digits,
-					               floor_log5_pow2_shift_amount, 1492>( e );
+					return compute<0,
+					               log5_2_fractional_digits,
+					               floor_log5_pow2_shift_amount,
+					               1492>( e );
 				}
 
 				[[nodiscard]] inline constexpr int
 				floor_log5_pow2_minus_log5_3( int e ) noexcept {
 					using namespace log;
-					return compute<0, log5_2_fractional_digits,
-					               floor_log5_pow2_shift_amount, 2427, 0,
+					return compute<0,
+					               log5_2_fractional_digits,
+					               floor_log5_pow2_shift_amount,
+					               2427,
+					               0,
 					               log5_3_fractional_digits>( e );
 				}
 
 				[[nodiscard]] inline constexpr int
 				floor_log10_pow2_minus_log10_4_over_3( int e ) noexcept {
 					using namespace log;
-					return compute<0, log10_2_fractional_digits,
-					               floor_log10_pow2_shift_amount, 1700, 0,
+					return compute<0,
+					               log10_2_fractional_digits,
+					               floor_log10_pow2_shift_amount,
+					               1700,
+					               0,
 					               log10_4_over_3_fractional_digits>( e );
 				}
 			} // namespace log
@@ -2164,8 +2179,9 @@ namespace daw::jkj::dragonbox {
 									auto pow5 = compressed_cache_detail::pow5.table[offset];
 									auto recovered_cache =
 									  wuint::umul128( base_cache.high( ), pow5 );
-									auto middle_low = wuint::umul128(
-									  base_cache.low( ) - ( kb < 0 ? 1 : 0 ), pow5 );
+									auto middle_low =
+									  wuint::umul128( base_cache.low( ) - ( kb < 0 ? 1 : 0 ),
+									                  pow5 );
 
 									recovered_cache += middle_low.high( );
 
@@ -2312,8 +2328,9 @@ namespace daw::jkj::dragonbox {
 			// Get sign/decimal significand/decimal exponent from
 			// the bit representation of a floating-point number
 			template<class Float>
-			struct impl : private ieee754_traits<Float>,
-			              private ieee754_format_info<ieee754_traits<Float>::format> {
+			struct impl :
+			  private ieee754_traits<Float>,
+			  private ieee754_format_info<ieee754_traits<Float>::format> {
 				using carrier_uint = typename ieee754_traits<Float>::carrier_uint;
 
 				using ieee754_traits<Float>::format;
@@ -2401,8 +2418,11 @@ namespace daw::jkj::dragonbox {
 				//// The main algorithm assumes the input is a normal/subnormal finite
 				/// number
 
-				template<class ReturnType, class IntervalTypeProvider, class SignPolicy,
-				         class TrailingZeroPolicy, class CorrectRoundingPolicy,
+				template<class ReturnType,
+				         class IntervalTypeProvider,
+				         class SignPolicy,
+				         class TrailingZeroPolicy,
+				         class CorrectRoundingPolicy,
 				         class CachePolicy>
 				[[nodiscard]] JKJ_SAFEBUFFERS static constexpr inline ReturnType
 				compute_nearest( ieee754_bits<Float> const br ) noexcept {
@@ -2423,9 +2443,11 @@ namespace daw::jkj::dragonbox {
 
 						// Shorter interval case; proceed like Schubfach
 						if( significand == 0 ) {
-							shorter_interval_case<TrailingZeroPolicy, CorrectRoundingPolicy,
+							shorter_interval_case<TrailingZeroPolicy,
+							                      CorrectRoundingPolicy,
 							                      CachePolicy>(
-							  ret_value, exponent,
+							  ret_value,
+							  exponent,
 							  IntervalTypeProvider::interval_type_shorter( br ) );
 							return ret_value;
 						}
@@ -2466,7 +2488,8 @@ namespace daw::jkj::dragonbox {
 					// division better than the compiler; we are computing zi /
 					// big_divisor here
 					ret_value.significand =
-					  div::divide_by_pow10<kappa + 1, significand_bits + kappa + 2,
+					  div::divide_by_pow10<kappa + 1,
+					                       significand_bits + kappa + 2,
 					                       kappa + 1>( zi );
 					auto r = std::uint32_t( zi - big_divisor * ret_value.significand );
 
@@ -2495,7 +2518,9 @@ namespace daw::jkj::dragonbox {
 									// Is r divisible by 5^kappa?
 									if( div::check_divisibility_and_divide_by_pow5<kappa>( r ) and
 									    is_product_integer<integer_check_case_id::fc_pm_half>(
-									      two_fr, exponent, minus_k ) ) {
+									      two_fr,
+									      exponent,
+									      minus_k ) ) {
 										// This should be in the interval
 										ret_value.significand += r - 1;
 									} else {
@@ -2542,7 +2567,9 @@ namespace daw::jkj::dragonbox {
 										              policy_impl::correct_rounding::tag_t::
 										                away_from_zero ) {
 											if( is_product_integer<integer_check_case_id::fc>(
-											      two_fc, exponent, minus_k ) ) {
+											      two_fc,
+											      exponent,
+											      minus_k ) ) {
 												CorrectRoundingPolicy::break_rounding_tie( ret_value );
 											}
 										}
@@ -2571,7 +2598,9 @@ namespace daw::jkj::dragonbox {
 						// Exclude the right endpoint if necessary
 						if( r == 0 and not interval_type.include_right_endpoint( ) and
 						    is_product_integer<integer_check_case_id::fc_pm_half>(
-						      two_fr, exponent, minus_k ) ) {
+						      two_fr,
+						      exponent,
+						      minus_k ) ) {
 							if constexpr( CorrectRoundingPolicy::tag ==
 							              policy_impl::correct_rounding::tag_t::
 							                do_not_care ) {
@@ -2592,7 +2621,9 @@ namespace daw::jkj::dragonbox {
 						auto const two_fl = two_fc - 1;
 						if( ( not interval_type.include_left_endpoint( ) or
 						      not is_product_integer<integer_check_case_id::fc_pm_half>(
-						        two_fl, exponent, minus_k ) ) and
+						        two_fl,
+						        exponent,
+						        minus_k ) ) and
 						    not compute_mul_parity( two_fl, cache, beta_minus_1 ) ) {
 							return small_divisor_case_label( );
 						}
@@ -2604,10 +2635,14 @@ namespace daw::jkj::dragonbox {
 					return ret_value;
 				}
 
-				template<class TrailingZeroPolicy, class CorrectRoundingPolicy,
-				         class CachePolicy, class ReturnType, class IntervalType>
+				template<class TrailingZeroPolicy,
+				         class CorrectRoundingPolicy,
+				         class CachePolicy,
+				         class ReturnType,
+				         class IntervalType>
 				DAW_ATTRIB_INLINE JKJ_SAFEBUFFERS static constexpr void
-				shorter_interval_case( ReturnType &ret_value, int const exponent,
+				shorter_interval_case( ReturnType &ret_value,
+				                       int const exponent,
 				                       IntervalType const interval_type ) noexcept {
 					// Compute k and beta
 					int const minus_k =
@@ -2618,10 +2653,12 @@ namespace daw::jkj::dragonbox {
 					auto const cache =
 					  CachePolicy::template get_cache<format>( -minus_k );
 
-					auto xi = compute_left_endpoint_for_shorter_interval_case(
-					  cache, beta_minus_1 );
-					auto zi = compute_right_endpoint_for_shorter_interval_case(
-					  cache, beta_minus_1 );
+					auto xi =
+					  compute_left_endpoint_for_shorter_interval_case( cache,
+					                                                   beta_minus_1 );
+					auto zi =
+					  compute_right_endpoint_for_shorter_interval_case( cache,
+					                                                    beta_minus_1 );
 
 					// If we don't accept the right endpoint and
 					// if the right endpoint is an integer, decrease it
@@ -2671,7 +2708,9 @@ namespace daw::jkj::dragonbox {
 					}
 				}
 
-				template<class ReturnType, class SignPolicy, class TrailingZeroPolicy,
+				template<class ReturnType,
+				         class SignPolicy,
+				         class TrailingZeroPolicy,
 				         class CachePolicy>
 				[[nodiscard]] JKJ_SAFEBUFFERS static inline constexpr ReturnType
 				compute_left_closed_directed( ieee754_bits<Float> const br ) noexcept {
@@ -2707,8 +2746,9 @@ namespace daw::jkj::dragonbox {
 					auto const deltai = compute_delta( cache, beta - 1 );
 					carrier_uint xi = compute_mul( significand << beta, cache );
 
-					if( not is_product_integer<integer_check_case_id::fc>(
-					      significand, exponent + 1, minus_k ) ) {
+					if( not is_product_integer<integer_check_case_id::fc>( significand,
+					                                                       exponent + 1,
+					                                                       minus_k ) ) {
 						++xi;
 					}
 
@@ -2727,7 +2767,8 @@ namespace daw::jkj::dragonbox {
 					// division better than the compiler; we are computing xi /
 					// big_divisor here
 					ret_value.significand =
-					  div::divide_by_pow10<kappa + 1, significand_bits + kappa + 2,
+					  div::divide_by_pow10<kappa + 1,
+					                       significand_bits + kappa + 2,
 					                       kappa + 1>( xi );
 					auto r = std::uint32_t( xi - big_divisor * ret_value.significand );
 
@@ -2752,8 +2793,9 @@ namespace daw::jkj::dragonbox {
 					} else if( r == deltai ) {
 						// Compare the fractional parts
 						if( compute_mul_parity( significand + 1, cache, beta ) or
-						    is_product_integer<integer_check_case_id::fc>(
-						      significand + 1, exponent + 1, minus_k ) ) {
+						    is_product_integer<integer_check_case_id::fc>( significand + 1,
+						                                                   exponent + 1,
+						                                                   minus_k ) ) {
 							return small_divisor_case_label( );
 						}
 					}
@@ -2764,7 +2806,9 @@ namespace daw::jkj::dragonbox {
 					return ret_value;
 				}
 
-				template<class ReturnType, class SignPolicy, class TrailingZeroPolicy,
+				template<class ReturnType,
+				         class SignPolicy,
+				         class TrailingZeroPolicy,
 				         class CachePolicy>
 				[[nodiscard]] JKJ_SAFEBUFFERS static inline ReturnType
 				compute_right_closed_directed( ieee754_bits<Float> const br ) noexcept {
@@ -2821,7 +2865,8 @@ namespace daw::jkj::dragonbox {
 					// division better than the compiler; we are computing zi /
 					// big_divisor here
 					ret_value.significand =
-					  div::divide_by_pow10<kappa + 1, significand_bits + kappa + 2,
+					  div::divide_by_pow10<kappa + 1,
+					                       significand_bits + kappa + 2,
 					                       kappa + 1>( zi );
 					auto const r =
 					  std::uint32_t( zi - big_divisor * ret_value.significand );
@@ -2842,7 +2887,8 @@ namespace daw::jkj::dragonbox {
 					} else if( r == deltai ) {
 						// Compare the fractional parts
 						if( closer_boundary ) {
-							if( not compute_mul_parity( ( significand * 2 ) - 1, cache,
+							if( not compute_mul_parity( ( significand * 2 ) - 1,
+							                            cache,
 							                            beta - 1 ) ) {
 								return small_divisor_case_label( );
 							}
@@ -3003,7 +3049,8 @@ namespace daw::jkj::dragonbox {
 				}
 
 				[[nodiscard]] static inline std::uint32_t constexpr compute_delta(
-				  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
+				  cache_entry_type const &cache,
+				  int beta_minus_1 ) noexcept {
 					if constexpr( format == ieee754_format::binary32 ) {
 						return std::uint32_t( cache >> ( cache_bits - 1 - beta_minus_1 ) );
 					} else {
@@ -3013,7 +3060,8 @@ namespace daw::jkj::dragonbox {
 				}
 
 				[[nodiscard]] static inline constexpr bool
-				compute_mul_parity( carrier_uint two_f, cache_entry_type const &cache,
+				compute_mul_parity( carrier_uint two_f,
+				                    cache_entry_type const &cache,
 				                    int beta_minus_1 ) noexcept {
 					assert( beta_minus_1 >= 1 );
 					assert( beta_minus_1 < 64 );
@@ -3031,7 +3079,8 @@ namespace daw::jkj::dragonbox {
 
 				[[nodiscard]] static inline constexpr carrier_uint
 				compute_left_endpoint_for_shorter_interval_case(
-				  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
+				  cache_entry_type const &cache,
+				  int beta_minus_1 ) noexcept {
 					if constexpr( format == ieee754_format::binary32 ) {
 						return carrier_uint(
 						  ( cache - ( cache >> ( significand_bits + 2 ) ) ) >>
@@ -3045,7 +3094,8 @@ namespace daw::jkj::dragonbox {
 
 				[[nodiscard]] static inline constexpr carrier_uint
 				compute_right_endpoint_for_shorter_interval_case(
-				  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
+				  cache_entry_type const &cache,
+				  int beta_minus_1 ) noexcept {
 					if constexpr( format == ieee754_format::binary32 ) {
 						return carrier_uint(
 						  ( cache + ( cache >> ( significand_bits + 1 ) ) ) >>
@@ -3059,7 +3109,8 @@ namespace daw::jkj::dragonbox {
 
 				[[nodiscard]] static inline constexpr carrier_uint
 				compute_round_up_for_shorter_interval_case(
-				  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
+				  cache_entry_type const &cache,
+				  int beta_minus_1 ) noexcept {
 					if constexpr( format == ieee754_format::binary32 ) {
 						return ( carrier_uint( cache >> ( cache_bits - significand_bits -
 						                                  2 - beta_minus_1 ) ) +
@@ -3092,7 +3143,8 @@ namespace daw::jkj::dragonbox {
 				enum class integer_check_case_id { fc_pm_half, fc };
 				template<integer_check_case_id case_id>
 				[[nodiscard]] static inline constexpr bool
-				is_product_integer( carrier_uint two_f, int exponent,
+				is_product_integer( carrier_uint two_f,
+				                    int exponent,
 				                    int minus_k ) noexcept {
 					// Case I: f = fc +- 1/2
 					if constexpr( case_id == integer_check_case_id::fc_pm_half ) {
@@ -3108,7 +3160,8 @@ namespace daw::jkj::dragonbox {
 							return false;
 						} else {
 							return div::divisible_by_power_of_5<max_power_of_factor_of_5 + 1>(
-							  two_f, static_cast<unsigned>( minus_k ) );
+							  two_f,
+							  static_cast<unsigned>( minus_k ) );
 						}
 					}
 					// Case II: f = fc + 1
@@ -3119,7 +3172,8 @@ namespace daw::jkj::dragonbox {
 							return false;
 						} else if( exponent > case_fc_upper_threshold ) {
 							return div::divisible_by_power_of_5<max_power_of_factor_of_5 + 1>(
-							  two_f, static_cast<unsigned>( minus_k ) );
+							  two_f,
+							  static_cast<unsigned>( minus_k ) );
 						}
 						// Both exponents are nonnegative
 						else if( exponent >= case_fc_lower_threshold ) {
@@ -3128,7 +3182,8 @@ namespace daw::jkj::dragonbox {
 						// Exponent for 2 is negative
 						else {
 							return div::divisible_by_power_of_2(
-							  two_f, static_cast<unsigned>( minus_k - exponent + 1 ) );
+							  two_f,
+							  static_cast<unsigned>( minus_k - exponent + 1 ) );
 						}
 					}
 				}
@@ -3174,10 +3229,12 @@ namespace daw::jkj::dragonbox {
 					get_policy_impl( FoundPolicyInfo ) {
 						return { };
 					}
-					template<class FoundPolicyInfo, class FirstPolicy,
+					template<class FoundPolicyInfo,
+					         class FirstPolicy,
 					         class... RemainingPolicies>
 					[[nodiscard]] static constexpr auto
-					get_policy_impl( FoundPolicyInfo, FirstPolicy,
+					get_policy_impl( FoundPolicyInfo,
+					                 FirstPolicy,
 					                 RemainingPolicies... remainings ) {
 						if constexpr( std::is_base_of_v<Base, FirstPolicy> ) {
 							if constexpr( FoundPolicyInfo::found_info ==
@@ -3214,11 +3271,13 @@ namespace daw::jkj::dragonbox {
 				check_policy_validity( Policy, base_default_pair_list<> ) {
 					return false;
 				}
-				template<class Policy, class FirstBaseDefaultPair,
+				template<class Policy,
+				         class FirstBaseDefaultPair,
 				         class... RemainingBaseDefaultPairs>
 				[[nodiscard]] constexpr bool check_policy_validity(
-				  Policy, base_default_pair_list<FirstBaseDefaultPair,
-				                                 RemainingBaseDefaultPairs...> ) {
+				  Policy,
+				  base_default_pair_list<FirstBaseDefaultPair,
+				                         RemainingBaseDefaultPairs...> ) {
 					return std::is_base_of_v<typename FirstBaseDefaultPair::base,
 					                         Policy> or
 					       check_policy_validity(
@@ -3232,10 +3291,12 @@ namespace daw::jkj::dragonbox {
 					return true;
 				}
 
-				template<class BaseDefaultPairList, class FirstPolicy,
+				template<class BaseDefaultPairList,
+				         class FirstPolicy,
 				         class... RemainingPolicies>
 				[[nodiscard]] constexpr bool
-				check_policy_list_validity( BaseDefaultPairList, FirstPolicy,
+				check_policy_list_validity( BaseDefaultPairList,
+				                            FirstPolicy,
 				                            RemainingPolicies... remaining_policies ) {
 					return check_policy_validity( FirstPolicy{ },
 					                              BaseDefaultPairList{ } ) and
@@ -3255,12 +3316,16 @@ namespace daw::jkj::dragonbox {
 				template<bool repeated, class... FoundPolicyPairs, class... Policies>
 				[[nodiscard]] constexpr auto make_policy_holder_impl(
 				  base_default_pair_list<>,
-				  found_policy_pair_list<repeated, FoundPolicyPairs...>, Policies... ) {
+				  found_policy_pair_list<repeated, FoundPolicyPairs...>,
+				  Policies... ) {
 					return found_policy_pair_list<repeated, FoundPolicyPairs...>{ };
 				}
 
-				template<class FirstBaseDefaultPair, class... RemainingBaseDefaultPairs,
-				         bool repeated, class... FoundPolicyPairs, class... Policies>
+				template<class FirstBaseDefaultPair,
+				         class... RemainingBaseDefaultPairs,
+				         bool repeated,
+				         class... FoundPolicyPairs,
+				         class... Policies>
 				[[nodiscard]] constexpr auto make_policy_holder_impl(
 				  base_default_pair_list<FirstBaseDefaultPair,
 				                         RemainingBaseDefaultPairs...>,
@@ -3273,7 +3338,9 @@ namespace daw::jkj::dragonbox {
 					  base_default_pair_list<RemainingBaseDefaultPairs...>{ },
 					  found_policy_pair_list < repeated or
 					    new_found_policy_pair::found_info == policy_found_info::repeated,
-					  new_found_policy_pair, FoundPolicyPairs... > { }, policies... );
+					  new_found_policy_pair,
+					  FoundPolicyPairs... > { },
+					  policies... );
 				}
 
 				template<bool repeated, class... RawPolicies>
@@ -3283,15 +3350,19 @@ namespace daw::jkj::dragonbox {
 					return policy_holder<RawPolicies...>{ };
 				}
 
-				template<bool repeated, class FirstFoundPolicyPair,
-				         class... RemainingFoundPolicyPairs, class... RawPolicies>
+				template<bool repeated,
+				         class FirstFoundPolicyPair,
+				         class... RemainingFoundPolicyPairs,
+				         class... RawPolicies>
 				[[nodiscard]] constexpr auto convert_to_policy_holder(
-				  found_policy_pair_list<repeated, FirstFoundPolicyPair,
+				  found_policy_pair_list<repeated,
+				                         FirstFoundPolicyPair,
 				                         RemainingFoundPolicyPairs...>,
 				  RawPolicies... policies ) {
 					return convert_to_policy_holder(
 					  found_policy_pair_list<repeated, RemainingFoundPolicyPairs...>{ },
-					  typename FirstFoundPolicyPair::policy{ }, policies... );
+					  typename FirstFoundPolicyPair::policy{ },
+					  policies... );
 				}
 
 				template<class BaseDefaultPairList, class... Policies>
@@ -3301,9 +3372,10 @@ namespace daw::jkj::dragonbox {
 					                                           Policies{ }... ),
 					               "jkj::dragonbox: an invalid policy is specified" );
 
-					using policy_pair_list = decltype( make_policy_holder_impl(
-					  BaseDefaultPairList{ }, found_policy_pair_list<false>{ },
-					  policies... ) );
+					using policy_pair_list =
+					  decltype( make_policy_holder_impl( BaseDefaultPairList{ },
+					                                     found_policy_pair_list<false>{ },
+					                                     policies... ) );
 
 					static_assert(
 					  not policy_pair_list::repeated,
@@ -3319,8 +3391,9 @@ namespace daw::jkj::dragonbox {
 		////////////////////////////////////////////////////////////////////////////////////////
 
 		template<class Float, class... Policies>
-		[[nodiscard]] JKJ_SAFEBUFFERS DAW_ATTRIB_INLINE constexpr auto
-		to_decimal( Float x, Policies... policies ) {
+		[[nodiscard]] JKJ_SAFEBUFFERS DAW_ATTRIB_INLINE constexpr auto to_decimal(
+		  Float x,
+		  Policies... policies ) {
 			// Build policy holder type
 			using namespace detail::policy_impl;
 			using policy_holder = decltype( make_policy_holder(
@@ -3335,7 +3408,8 @@ namespace daw::jkj::dragonbox {
 			                      input_validation::assert_finite>>{ },
 			  policies... ) );
 
-			using return_type = fp_t<Float, policy_holder::return_has_sign,
+			using return_type = fp_t<Float,
+			                         policy_holder::return_has_sign,
 			                         policy_holder::report_trailing_zeros>;
 
 			auto br = ieee754_bits( x );
@@ -3346,7 +3420,8 @@ namespace daw::jkj::dragonbox {
 
 				if constexpr( tag_tmp == rounding_mode::tag_t::to_nearest ) {
 					return detail::impl<Float>::template compute_nearest<
-					  return_type, decltype( interval_type_provider ),
+					  return_type,
+					  decltype( interval_type_provider ),
 					  typename policy_holder::sign_policy,
 					  typename policy_holder::trailing_zero_policy,
 					  typename policy_holder::correct_rounding_policy,
@@ -3354,12 +3429,14 @@ namespace daw::jkj::dragonbox {
 				} else if constexpr( tag_tmp ==
 				                     rounding_mode::tag_t::left_closed_directed ) {
 					return detail::impl<Float>::template compute_left_closed_directed<
-					  return_type, typename policy_holder::sign_policy,
+					  return_type,
+					  typename policy_holder::sign_policy,
 					  typename policy_holder::trailing_zero_policy,
 					  typename policy_holder::cache_policy>( br );
 				} else {
 					return detail::impl<Float>::template compute_right_closed_directed<
-					  return_type, typename policy_holder::sign_policy,
+					  return_type,
+					  typename policy_holder::sign_policy,
 					  typename policy_holder::trailing_zero_policy,
 					  typename policy_holder::cache_policy>( br );
 				}

@@ -58,8 +58,8 @@ auto operator<<( std::ostream &os, std::vector<T, A> const &rhs )
 }
 
 template<typename T, typename U>
-inline constexpr void test_equal( T const &lhs, U const &rhs,
-                                  std::string_view msg ) {
+inline constexpr void
+test_equal( T const &lhs, U const &rhs, std::string_view msg ) {
 	if( lhs != rhs ) {
 		std::cerr << msg << '\n';
 		if constexpr( can_ostream_v<T> ) {
@@ -79,19 +79,23 @@ std::size_t test( std::string_view json_data ) {
 	using JString =
 	  json_string_raw_no_name<std::string_view,
 	                          string_raw_opt(
-	                            JsonNullable::MustExist, EightBitModes::AllowFull,
+	                            JsonNullable::MustExist,
+	                            EightBitModes::AllowFull,
 	                            AllowEscapeCharacter::NotBeforeDblQuote ),
 	                          daw::construct_a_t<std::string_view>>;
 
 	std::vector<std::string_view> values =
-	  from_json_array<JString, std::vector<std::string_view>,
+	  from_json_array<JString,
+	                  std::vector<std::string_view>,
 	                  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	    json_data );
 	auto const v2 = values;
 	clear( values );
 	auto checked_tst = []( auto sv, auto ptr ) {
-		auto range = json_array_range<
-		  JString, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( sv );
+		auto range =
+		  json_array_range<JString,
+		                   daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+		    sv );
 		for( auto v : range ) {
 			*ptr++ = v;
 		}
@@ -99,26 +103,32 @@ std::size_t test( std::string_view json_data ) {
 	checked_tst( json_data, values.data( ) );
 	test_equal( v2, values, "Expected them to parse the same" );
 	auto const h0 =
-	  std::accumulate( values.begin( ), values.end( ), std::size_t{ 0 },
+	  std::accumulate( values.begin( ),
+	                   values.end( ),
+	                   std::size_t{ 0 },
 	                   []( auto old, auto current ) {
 		                   return old += std::hash<std::string>{ }(
 		                            static_cast<std::string>( current ) );
 	                   } );
 	std::vector<std::string_view> values2 =
-	  from_json_array<JString, std::vector<std::string_view>,
+	  from_json_array<JString,
+	                  std::vector<std::string_view>,
 	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
 	    json_data );
 
 	auto unchecked_tst = []( auto sv, auto ptr ) {
 		auto range = json_array_range<
-		  JString, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( sv );
+		  JString,
+		  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( sv );
 		for( auto v : range ) {
 			*ptr++ = v;
 		}
 	};
 	unchecked_tst( json_data, values2.data( ) );
 	auto const h1 =
-	  std::accumulate( values2.begin( ), values2.end( ), std::size_t{ 0 },
+	  std::accumulate( values2.begin( ),
+	                   values2.end( ),
+	                   std::size_t{ 0 },
 	                   []( auto old, auto current ) {
 		                   return old += std::hash<std::string>{ }(
 		                            static_cast<std::string>( current ) );

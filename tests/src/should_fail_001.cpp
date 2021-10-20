@@ -37,7 +37,8 @@ namespace tests {
 template<>
 struct daw::json::json_data_contract<tests::Coordinate> {
 #ifdef __cpp_nontype_template_parameter_class
-	using type = json_member_list<json_number<"lat">, json_number<"lng">,
+	using type = json_member_list<json_number<"lat">,
+	                              json_number<"lng">,
 	                              json_string<"name">>;
 #else
 	static constexpr char const lat[] = "lat";

@@ -39,9 +39,11 @@ namespace daw::json {
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		using type = json_member_list<
-		  json_variant<member0, std::variant<int, std::string>,
+		  json_variant<member0,
+		               std::variant<int, std::string>,
 		               json_variant_type_list<int, std::string>>,
-		  json_variant_null<member1, std::optional<std::variant<std::string, bool>>,
+		  json_variant_null<member1,
+		                    std::optional<std::variant<std::string, bool>>,
 		                    json_variant_type_list<std::string, bool>>>;
 
 		static inline auto

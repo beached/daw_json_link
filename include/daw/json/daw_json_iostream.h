@@ -41,7 +41,8 @@ namespace daw::json {
 
 template<typename T>
 auto operator<<( std::ostream &os, T const &value ) -> std::enable_if_t<
-  daw::json::json_details::is_opted_into_json_iostreams_v<T>, std::ostream &> {
+  daw::json::json_details::is_opted_into_json_iostreams_v<T>,
+  std::ostream &> {
 
 	auto out_it = std::ostreambuf_iterator<char>( os );
 	daw::json::to_json( value, out_it );

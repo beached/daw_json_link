@@ -16,10 +16,8 @@ AlwaysBreakTemplateDeclarations: Yes
 SpaceAfterTemplateKeyword: false
 BinPackArguments: true
 BinPackParameters: true
-BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: true
-BreakConstructorInitializersBeforeComma: true
 ColumnLimit: 80
 CommentPragmas: '^ IWYU pragma:'
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -59,4 +57,10 @@ SpacesInSquareBrackets: false
 Standard: c++17
 TabWidth: 2
 UseTab: ForIndentation
-
+BreakConstructorInitializersBeforeComma: true
+AllowAllConstructorInitializersOnNextLine: true
+BreakInheritanceList: AfterColon
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackParameters: false
+BinPackArguments: false
+AllowAllArgumentsOnNextLine: false

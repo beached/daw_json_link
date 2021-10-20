@@ -30,11 +30,13 @@ namespace daw::json {
 			}
 			if constexpr( is_serialization_policy<OutputIterator>::value ) {
 				auto state = json_details::member_to_string( template_arg<JsonClass>,
-				                                             out_it, value );
+				                                             out_it,
+				                                             value );
 			} else {
 				out_it = json_details::member_to_string(
 				           template_arg<JsonClass>,
-				           serialization_policy<OutputIterator>( out_it ), value )
+				           serialization_policy<OutputIterator>( out_it ),
+				           value )
 				           .get( );
 			}
 			return out_it;
@@ -50,7 +52,9 @@ namespace daw::json {
 		 * @param value  value to serialize
 		 * @return  JSON string data
 		 */
-		template<typename Result, typename Value, typename JsonClass,
+		template<typename Result,
+		         typename Value,
+		         typename JsonClass,
 		         typename SerializationPolicy>
 		[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value ) {
 			Result result{ };
@@ -62,10 +66,12 @@ namespace daw::json {
 			using iter_t = std::back_insert_iterator<Result>;
 			using policy = std::conditional_t<
 			  std::is_same_v<SerializationPolicy, use_default_serialization_policy>,
-			  serialization_policy<iter_t>, SerializationPolicy>;
+			  serialization_policy<iter_t>,
+			  SerializationPolicy>;
 
 			(void)json_details::member_to_string( template_arg<JsonClass>,
-			                                      policy( iter_t( result ) ), value );
+			                                      policy( iter_t( result ) ),
+			                                      value );
 			if constexpr( std::is_same_v<Result, std::string> ) {
 				result.shrink_to_fit( );
 			}
@@ -73,8 +79,9 @@ namespace daw::json {
 		}
 
 		template<typename JsonElement, typename Container, typename OutputIterator>
-		[[maybe_unused]] constexpr OutputIterator
-		to_json_array( Container const &c, OutputIterator it ) {
+		[[maybe_unused]] constexpr OutputIterator to_json_array(
+		  Container const &c,
+		  OutputIterator it ) {
 			static_assert(
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			  "Supplied container must support begin( )/end( )" );
@@ -127,17 +134,20 @@ namespace daw::json {
 			return out_it.get( );
 		}
 
-		template<typename Result, typename JsonElement,
-		         typename SerializationPolicy, typename Container>
-		[[maybe_unused, nodiscard]] constexpr Result
-		to_json_array( Container &&c ) {
+		template<typename Result,
+		         typename JsonElement,
+		         typename SerializationPolicy,
+		         typename Container>
+		[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&
+		                                                            c ) {
 			static_assert(
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			  "Supplied container must support begin( )/end( )" );
 			using iter_t = json_details::basic_appender<Result>;
 			using policy = std::conditional_t<
 			  std::is_same_v<SerializationPolicy, use_default_serialization_policy>,
-			  serialization_policy<iter_t>, SerializationPolicy>;
+			  serialization_policy<iter_t>,
+			  SerializationPolicy>;
 			Result result{ };
 			auto out_it = policy( iter_t( result ) );
 

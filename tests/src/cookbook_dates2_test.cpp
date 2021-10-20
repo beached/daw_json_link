@@ -79,26 +79,33 @@ namespace daw::cookbook_dates2 {
 			  yr_sign *
 			  daw::json::parse_utils::parse_unsigned2<int_least32_t>( sv.data( ) );
 
-			return daw::json::datetime::civil_to_time_point( yr, mo, dy, hr, mn, se,
+			return daw::json::datetime::civil_to_time_point( yr,
+			                                                 mo,
+			                                                 dy,
+			                                                 hr,
+			                                                 mn,
+			                                                 se,
 			                                                 0 ) +
 			       std::chrono::hours( off_hr ) + std::chrono::minutes( off_mn );
 		}
 
 		template<typename OutputIterator>
-		DAW_CONSTEXPR OutputIterator operator( )(
-		  OutputIterator it, std::chrono::time_point<std::chrono::system_clock,
-		                                             std::chrono::milliseconds>
-		                       tp ) const {
+		DAW_CONSTEXPR OutputIterator
+		operator( )( OutputIterator it,
+		             std::chrono::time_point<std::chrono::system_clock,
+		                                     std::chrono::milliseconds> tp ) const {
 
 			auto const &[yr, mo, dy, hr, mn, se, ms] =
 			  daw::json::datetime::time_point_to_civil( tp );
 			// Day of Week
 			it = daw::json::utils::copy_to_iterator(
-			  it, daw::json::datetime::short_day_of_week( tp ) );
+			  it,
+			  daw::json::datetime::short_day_of_week( tp ) );
 			*it++ = ' ';
 			// Month
 			it = daw::json::utils::copy_to_iterator(
-			  it, daw::json::datetime::month_short_name( mo ) );
+			  it,
+			  daw::json::datetime::month_short_name( mo ) );
 			*it++ = ' ';
 			it = daw::json::utils::integer_to_string( it, dy );
 			*it++ = ' ';
@@ -127,7 +134,8 @@ namespace daw::cookbook_dates2 {
 	  daw::json::json_custom<name,
 	                         std::chrono::time_point<std::chrono::system_clock,
 	                                                 std::chrono::milliseconds>,
-	                         TimestampConverter, TimestampConverter>;
+	                         TimestampConverter,
+	                         TimestampConverter>;
 } // namespace daw::cookbook_dates2
 
 namespace daw::json {

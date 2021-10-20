@@ -55,15 +55,20 @@ namespace daw::json {
 		static constexpr char const mem_description[] = "description";
 		static constexpr char const mem_url[] = "url";
 		static constexpr char const mem_logo[] = "logo";
-		using type = json_member_list<json_sv<mem_type>, json_sv<mem_name>,
+		using type = json_member_list<json_sv<mem_type>,
+		                              json_sv<mem_name>,
 		                              json_sv<mem_disambiguatingDescription>,
-		                              json_sv<mem_description>, json_sv<mem_url>,
+		                              json_sv<mem_description>,
+		                              json_sv<mem_url>,
 		                              json_sv<mem_logo>>;
 
 		static inline auto to_json_data( daw::gsoc::sponsor_t const &value ) {
-			return std::forward_as_tuple( value.type, value.name,
+			return std::forward_as_tuple( value.type,
+			                              value.name,
 			                              value.disambiguatingDescription,
-			                              value.description, value.url, value.logo );
+			                              value.description,
+			                              value.url,
+			                              value.logo );
 		}
 	};
 
@@ -86,24 +91,30 @@ namespace daw::json {
 		static constexpr char const mem_description[] = "description";
 		static constexpr char const mem_sponsor[] = "sponsor";
 		static constexpr char const mem_author[] = "author";
-		using type = json_member_list<json_sv<mem_context>, json_sv<mem_type>,
-		                              json_sv<mem_name>, json_sv<mem_description>,
+		using type = json_member_list<json_sv<mem_context>,
+		                              json_sv<mem_type>,
+		                              json_sv<mem_name>,
+		                              json_sv<mem_description>,
 		                              json_class<mem_sponsor, daw::gsoc::sponsor_t>,
 		                              json_class<mem_author, daw::gsoc::author_t>>;
 
 		static inline auto to_json_data( daw::gsoc::gsoc_element_t const &value ) {
-			return std::forward_as_tuple( value.context, value.type, value.name,
-			                              value.description, value.sponsor,
+			return std::forward_as_tuple( value.context,
+			                              value.type,
+			                              value.name,
+			                              value.description,
+			                              value.sponsor,
 			                              value.author );
 		}
 	};
 
 	template<>
 	struct json_data_contract<daw::gsoc::gsoc_object_t> {
-		using type = json_class_map<
-		  json_key_value_no_name<daw::gsoc::gsoc_object_t, gsoc::gsoc_element_t,
-		                 json_number_no_name<std::uint64_t,
-		                             number_opt( LiteralAsStringOpt::Always )>>>;
+		using type = json_class_map<json_key_value_no_name<
+		  daw::gsoc::gsoc_object_t,
+		  gsoc::gsoc_element_t,
+		  json_number_no_name<std::uint64_t,
+		                      number_opt( LiteralAsStringOpt::Always )>>>;
 
 		static inline auto const &
 		to_json_data( daw::gsoc::gsoc_object_t const &v ) {

@@ -35,8 +35,8 @@ inline constexpr bool use_daw_json_exceptions_v = false;
 namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE void
-		daw_json_error( ErrorReason reason ) {
+		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE void daw_json_error(
+		  ErrorReason reason ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				throw json_exception( reason );
@@ -51,8 +51,9 @@ namespace daw::json {
 		}
 
 		template<bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void
-		daw_json_error( ErrorReason reason, ParseState const &location ) {
+		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void daw_json_error(
+		  ErrorReason reason,
+		  ParseState const &location ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				if( location.first ) {
@@ -74,8 +75,8 @@ namespace daw::json {
 		}
 
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void
-		daw_json_error( json_details::missing_member reason ) {
+		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void daw_json_error(
+		  json_details::missing_member reason ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				throw json_exception( reason );
@@ -90,8 +91,8 @@ namespace daw::json {
 		}
 
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void
-		daw_json_error( json_details::missing_token reason ) {
+		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void daw_json_error(
+		  json_details::missing_token reason ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				throw json_exception( reason );
@@ -106,9 +107,9 @@ namespace daw::json {
 		}
 
 		template<bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void
-		daw_json_error( json_details::missing_member reason,
-		                ParseState const &location ) {
+		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void daw_json_error(
+		  json_details::missing_member reason,
+		  ParseState const &location ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				using namespace std::string_literals;
@@ -125,9 +126,10 @@ namespace daw::json {
 							    std::distance( location.class_first, location.class_last ) ),
 							  max_len );
 						}
-						return ( std::min )( static_cast<std::size_t>( std::distance(
-						                       location.class_first, location.first + 1 ) ),
-						                     max_len );
+						return ( std::min )(
+						  static_cast<std::size_t>(
+						    std::distance( location.class_first, location.first + 1 ) ),
+						  max_len );
 					}( );
 					throw json_exception( reason,
 					                      std::string_view( location.class_first, len ) );
@@ -146,9 +148,9 @@ namespace daw::json {
 		}
 
 		template<bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void
-		daw_json_error( json_details::missing_token reason,
-		                ParseState const &location ) {
+		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void daw_json_error(
+		  json_details::missing_token reason,
+		  ParseState const &location ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				using namespace std::string_literals;

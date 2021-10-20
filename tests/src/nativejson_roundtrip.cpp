@@ -52,7 +52,8 @@ int main( int argc, char *argv[] )
 	  daw::json::IEEE754Precise::yes>;
 	std::cout << "C++ DAW JSON Link\n";
 	auto const canada_obj = daw::json::from_json<daw::geojson::Polygon, policy_t>(
-	  canada_data, "features[0].geometry" );
+	  canada_data,
+	  "features[0].geometry" );
 	auto const twitter_obj =
 	  daw::json::from_json<daw::twitter::twitter_object_t, policy_t>(
 	    twitter_data );
