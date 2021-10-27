@@ -13,10 +13,12 @@
 #include "daw_json_parse_policy.h"
 #include "daw_json_parse_real_power10.h"
 #include "daw_json_parse_unsigned_int.h"
+//#include "fp_utils/daw_chars_to_fp.h"
 #include "version.h"
 
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_logic.h>
 #include <daw/daw_utility.h>
 
 #include <ciso646>
@@ -28,6 +30,29 @@
 namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
+			template<bool is_unchecked_input>
+			constexpr unsigned round_to_msd( char const *first, char const *last ) {
+				if constexpr( not is_unchecked_input ) {
+					daw_json_assert( first < last, ErrorReason::InvalidNumber );
+				}
+				unsigned carry = 0;
+				do {
+					--last;
+					auto dig =
+					  static_cast<unsigned>( static_cast<unsigned char>( *last ) - '0' );
+					if( dig >= 10U ) {
+						// Account for '.'
+						continue;
+					}
+					dig += carry;
+					carry = dig >= 5 ? 1U : 0U;
+				} while( last > first );
+				auto const result =
+				  ( ( carry + ( static_cast<unsigned char>( *first ) - '0' ) ) + 5 ) /
+				  10;
+				return result;
+			}
+
 			template<bool skip_end_check, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE inline constexpr void
 			parse_digits_until_last( char const *first,
@@ -385,7 +410,8 @@ namespace daw::json {
 						sig_digit_count += last_char - first;
 						exponent_p1 -= static_cast<signed_t>( last_char - first );
 						first = last_char;
-						if( ( first >= fract_last ) & ( first < parse_state.last ) ) {
+						if( daw::nsc_and( ( first >= fract_last ),
+						                  ( first < parse_state.last ) ) ) {
 							auto new_first =
 							  skip_digits<( ParseState::is_zero_terminated_string or
 							                ParseState::is_unchecked_input )>(
@@ -399,7 +425,6 @@ namespace daw::json {
 						}
 					}
 				}
-
 				signed_t const exponent_p2 = [&] {
 					if( ( ParseState::is_unchecked_input or first < parse_state.last ) and
 					    ( ( *first | 0x20 ) == 'e' ) ) {

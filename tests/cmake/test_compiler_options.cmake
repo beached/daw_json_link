@@ -42,6 +42,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-newline-eof
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
                 -Wno-mismatched-tags
+                -Wno-global-constructors
         )
         #if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
         #    if (CLANG_VERSION_MAJOR EQUAL 13)

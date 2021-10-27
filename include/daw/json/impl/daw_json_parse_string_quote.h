@@ -12,6 +12,7 @@
 #include "daw_not_const_ex_functions.h"
 #include "version.h"
 
+#include <daw/daw_logic.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
 
@@ -28,16 +29,18 @@ namespace daw::json {
 				auto len = static_cast<std::ptrdiff_t>( std::size( sv ) );
 				char const *data = std::data( sv );
 				while( len ) {
-					std::size_t bytes = 0;
 					auto const byte1 = static_cast<unsigned char>( data[0] );
 
+					std::size_t bytes = 0;
 					/* 00..7F */
 					if( byte1 <= 0x7FU ) {
 						bytes = 1;
 						/* C2..DF, 80..BF */
-					} else if( ( len >= 2 ) & ( byte1 >= 0xC2 ) & ( byte1 <= 0xDF ) &
-					           ( static_cast<signed char>( data[1] ) <=
-					             static_cast<signed char>( 0xBF ) ) ) {
+					} else if( daw::nsc_and( len >= 2,
+					                         byte1 >= 0xC2,
+					                         byte1 <= 0xDF,
+					                         static_cast<signed char>( data[1] ) <=
+					                           static_cast<signed char>( 0xBF ) ) ) {
 						bytes = 2;
 					} else if( len >= 3 ) {
 						auto const byte2 = static_cast<unsigned char>( data[1] );
@@ -79,7 +82,7 @@ namespace daw::json {
 					} else {
 						return { err_pos, false };
 					}
-					len -= bytes;
+					len -= static_cast<std::ptrdiff_t>( bytes );
 					err_pos += bytes;
 					data += bytes;
 				}
@@ -125,9 +128,23 @@ namespace daw::json {
 					auto const s1 = test_at_byte<1U, '\\'>( buff );
 					auto const s0 = test_at_byte<0U, '\\'>( buff );
 
-					keep_going = not( q0 | q1 | q2 | q3 | q4 | q5 | q6 | q7 | s0 | s1 |
-					                  s2 | s3 | s4 | s5 | s6 | s7 );
-					keep_going = keep_going & static_cast<bool>( last - first >= 16 );
+					keep_going = not daw::nsc_or( q0,
+					                              q1,
+					                              q2,
+					                              q3,
+					                              q4,
+					                              q5,
+					                              q6,
+					                              q7,
+					                              s0,
+					                              s1,
+					                              s2,
+					                              s3,
+					                              s4,
+					                              s5,
+					                              s6,
+					                              s7 );
+					keep_going = daw::nsc_and( keep_going, last - first >= 16 );
 					first += static_cast<int>( keep_going ) * 8;
 				}
 				first -= *( first - 1 ) == '\\' ? 1 : 0;
@@ -147,8 +164,8 @@ namespace daw::json {
 					auto const s2 = test_at_byte<2U, '\\'>( buff );
 					auto const s1 = test_at_byte<1U, '\\'>( buff );
 					auto const s0 = test_at_byte<0U, '\\'>( buff );
-					keep_going = not( q0 | q1 | q2 | q3 | s0 | s1 | s2 | s3 );
-					keep_going = keep_going & static_cast<bool>( last - first >= 8 );
+					keep_going = not daw::nsc_or( q0, q1, q2, q3, s0, s1, s2, s3 );
+					keep_going = daw::nsc_and( keep_going, last - first >= 8 );
 					first += static_cast<int>( keep_going ) * 4;
 				}
 				first -= *( first - 1 ) == '\\' ? 1 : 0;
@@ -184,7 +201,7 @@ namespace daw::json {
 						}
 						while( *first != '"' ) {
 							while( []( char c ) {
-								return ( c != '"' ) & ( c != '\\' );
+								return daw::nsc_and( ( c != '"' ), ( c != '\\' ) );
 							}( *first ) ) {
 								++first;
 							}
@@ -264,9 +281,9 @@ namespace daw::json {
 								++first;
 							}
 						} else {
-							while( ( *first != 0 ) & ( *first != '"' ) ) {
-								while( ( *first != 0 ) & ( *first != '"' ) &
-								       ( *first != '\\' ) ) {
+							while( daw::nsc_and( *first != 0, *first != '"' ) ) {
+								while(
+								  daw::nsc_and( *first != 0, *first != '"', *first != '\\' ) ) {
 									if constexpr( ParseState::eight_bit_mode !=
 									              GlobalEightBitModes::AllowFull ) {
 										daw_json_assert( static_cast<unsigned>(
@@ -278,7 +295,7 @@ namespace daw::json {
 									++first;
 								}
 
-								if( ( ( *first != 0 ) & ( *first == '\\' ) ) ) {
+								if( daw::nsc_and( *first != 0, *first == '\\' ) ) {
 									if( need_slow_path < 0 ) {
 										need_slow_path = first - parse_state.first;
 									}
@@ -338,7 +355,7 @@ namespace daw::json {
 						} else {
 							while( first < last and *first != '"' ) {
 								while( first < last and
-								       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
+								       daw::nsc_and( *first != '"', *first != '\\' ) ) {
 									++first;
 								}
 

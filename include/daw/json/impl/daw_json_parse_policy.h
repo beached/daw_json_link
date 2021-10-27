@@ -22,6 +22,7 @@
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_logic.h>
 #include <daw/daw_traits.h>
 
 #include <cassert>
@@ -347,7 +348,7 @@ namespace daw::json {
 				}
 				bool result = true;
 				for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
-					result = result & ( first[n] == rhs[n] );
+					result = daw::nsc_and( result, ( first[n] == rhs[n] ) );
 				}
 				return result;
 			}
@@ -435,13 +436,14 @@ namespace daw::json {
 				CharT *f = first;
 				CharT *const l = last;
 				if constexpr( is_unchecked_input ) {
-					while( ( static_cast<unsigned char>( *f ) > 0x20U ) &
-					       not CommentPolicy::is_literal_end( *f ) ) {
+					while( daw::nsc_and( static_cast<unsigned char>( *f ) > 0x20U,
+					                     not CommentPolicy::is_literal_end( *f ) ) ) {
 						++f;
 					}
 				} else {
-					while( ( f < l ) and ( ( static_cast<unsigned char>( *f ) > 0x20 ) &
-					                       not CommentPolicy::is_literal_end( *f ) ) ) {
+					while( ( f < l ) and
+					       daw::nsc_and( static_cast<unsigned char>( *f ) > 0x20U,
+					                     not CommentPolicy::is_literal_end( *f ) ) ) {
 						++f;
 					}
 				}
@@ -580,6 +582,23 @@ namespace daw::json {
 					return skip_bracketed_item_unchecked<'[', ']', '{', '}'>( );
 				} else {
 					return skip_bracketed_item_checked<'[', ']', '{', '}'>( );
+				}
+			}
+
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr CharT always_get( ) const {
+				return always_get( first, last );
+			}
+
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr CharT
+			safe_get( CharT *f, CharT *l ) {
+				if constexpr( ParseState::is_unchecked_input ) {
+					(void)l;
+					return *f;
+				} else if constexpr( ParseState::is_zero_terminated_string ) {
+					(void)l;
+					return DAW_LIKELY( f != nullptr ) ? *f : 0;
+				} else {
+					return DAW_LIKELY( f != nullptr ) and DAW_LIKELY( f < l ) ? *f : 0;
 				}
 			}
 		};

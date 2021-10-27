@@ -18,6 +18,7 @@
 #include <daw/daw_attributes.h>
 #include <daw/daw_function_table.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_logic.h>
 #include <daw/daw_traits.h>
 
 #include <ciso646>
@@ -200,7 +201,7 @@ namespace daw::json {
 								                                   parse_state.last );
 							} else {
 								char c = *ptr_first;
-								while( ( c != '\0' ) & ( c != '"' ) ) {
+								while( daw::nsc_and( c != '\0', c != '"' ) ) {
 									if( c == '\\' ) {
 										if( ptr_first + 1 < ptr_last ) {
 											ptr_first += 2;
@@ -215,13 +216,14 @@ namespace daw::json {
 									c = *ptr_first;
 								}
 							}
-							daw_json_assert( ( *ptr_first != '\0' ) & ( *ptr_first == '"' ),
-							                 ErrorReason::UnexpectedEndOfData,
-							                 parse_state );
+							daw_json_assert(
+							  daw::nsc_and( *ptr_first != '\0', *ptr_first == '"' ),
+							  ErrorReason::UnexpectedEndOfData,
+							  parse_state );
 							break;
 						case ',':
-							if( DAW_UNLIKELY( ( prime_bracket_count == 1 ) &
-							                  ( second_bracket_count == 0 ) ) ) {
+							if( DAW_UNLIKELY( daw::nsc_and( prime_bracket_count == 1,
+							                                second_bracket_count == 0 ) ) ) {
 								++cnt;
 							}
 							break;

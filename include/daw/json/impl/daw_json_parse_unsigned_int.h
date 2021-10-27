@@ -14,6 +14,7 @@
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cxmath.h>
+#include <daw/daw_logic.h>
 #include <daw/daw_uint_buffer.h>
 
 #include <ciso646>
@@ -247,19 +248,17 @@ namespace daw::json {
 				CharT *const last = parse_state.last;
 				uresult_t result = uresult_t( );
 				bool has_eight =
-				  last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
-				if( has_eight & ( last - first >= 16 ) ) {
+				  last - first >= 8 and is_made_of_eight_digits_cx( first );
+				if( daw::nsc_and( has_eight, last - first >= 16 ) ) {
 					bool has_sixteen = is_made_of_eight_digits_cx( first + 8 );
 					while( has_sixteen ) {
 						result *= static_cast<uresult_t>( 10'000'000'000'000'000ULL );
 						result += static_cast<uresult_t>( parse_16_digits( first ) );
 						first += 16;
 						has_eight =
-						  last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
+						  last - first >= 8 and is_made_of_eight_digits_cx( first );
 						has_sixteen =
-						  has_eight and
-						  ( last - first >= 16 ? is_made_of_eight_digits_cx( first + 8 )
-						                       : false );
+						  last - first >= 16 and is_made_of_eight_digits_cx( first + 8 );
 					}
 				}
 				if( has_eight ) {
