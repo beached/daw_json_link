@@ -957,6 +957,9 @@ namespace daw::json {
 				using constructor_t =
 				  json_details::json_class_constructor_t<base_type, Constructor>;
 
+				using never_constexpr =
+				  json_details::json_class_never_constexpr<base_type>;
+
 				using json_member_list = json_data_contract_trait_t<base_type>;
 				static_assert( traits::not_same<void, base_type>::value,
 				               "Failed to detect base type" );

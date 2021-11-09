@@ -703,6 +703,24 @@ bool test_vector_of_bool( ) {
 	return rv0 == rv1;
 }
 
+bool test_json_array_intmax( ) {
+	// Check really long numbers
+	constexpr std::string_view nums =
+	  "[8087104047488834028,-3708010231863850747,113316491833090292,-"
+	  "4997779771488854154,8506693551987428797]";
+	auto parsed = daw::json::from_json_array<
+	  daw::json::json_checked_number_no_name<std::int64_t>>( nums );
+	constexpr std::array expected = { 8087104047488834028LL,
+	                                  -3708010231863850747LL,
+	                                  113316491833090292LL,
+	                                  -4997779771488854154LL,
+	                                  8506693551987428797LL };
+	return std::equal( parsed.begin( ),
+	                   parsed.end( ),
+	                   expected.begin( ),
+	                   expected.end( ) );
+}
+
 struct empty_ordered {};
 namespace daw::json {
 	template<>
@@ -1072,6 +1090,7 @@ int main( int, char ** )
 	test_optional_array( );
 	test_key_value( );
 	test_vector_of_bool( );
+	test_json_array_intmax( );
 	static_assert( from_json<bool>( "true" ) );
 	static_assert( not from_json<bool>( "false" ) );
 	static_assert( not *from_json<std::optional<bool>>( "false" ) );

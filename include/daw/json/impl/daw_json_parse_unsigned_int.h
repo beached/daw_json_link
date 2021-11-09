@@ -248,18 +248,16 @@ namespace daw::json {
 				CharT *const last = parse_state.last;
 				uresult_t result = uresult_t( );
 				bool has_eight =
-				  last - first >= 8 and is_made_of_eight_digits_cx( first );
-				if( daw::nsc_and( has_eight, last - first >= 16 ) ) {
-					bool has_sixteen = is_made_of_eight_digits_cx( first + 8 );
-					while( has_sixteen ) {
-						result *= static_cast<uresult_t>( 10'000'000'000'000'000ULL );
-						result += static_cast<uresult_t>( parse_16_digits( first ) );
-						first += 16;
-						has_eight =
-						  last - first >= 8 and is_made_of_eight_digits_cx( first );
-						has_sixteen =
-						  last - first >= 16 and is_made_of_eight_digits_cx( first + 8 );
-					}
+				  last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
+				bool has_sixteen =
+				  last - first >= 16 and is_made_of_eight_digits_cx( first + 8 );
+				while( daw::nsc_and( has_eight, has_sixteen ) ) {
+					result *= static_cast<uresult_t>( 10'000'000'000'000'000ULL );
+					result += static_cast<uresult_t>( parse_16_digits( first ) );
+					first += 16;
+					has_eight = last - first >= 8 and is_made_of_eight_digits_cx( first );
+					has_sixteen =
+					  last - first >= 16 and is_made_of_eight_digits_cx( first + 8 );
 				}
 				if( has_eight ) {
 					result *= static_cast<uresult_t>( 100'000'000ULL );
@@ -288,6 +286,8 @@ namespace daw::json {
 					auto const count = static_cast<std::ptrdiff_t>(
 					                     daw::numeric_limits<result_t>::digits10 + 1 ) -
 					                   ( first - orig_first );
+					auto const r = static_cast<Unsigned>( result );
+					(void)r;
 					daw_json_assert( count >= 0,
 					                 ErrorReason::NumberOutOfRange,
 					                 parse_state );

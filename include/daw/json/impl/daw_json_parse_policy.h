@@ -149,6 +149,10 @@ namespace daw::json {
 			  json_details::get_bits_for<ExpectLongStrings>( PolicyFlags ) ==
 			  ExpectLongStrings::yes;
 
+			static constexpr bool always_runtime =
+			  json_details::get_bits_for<AlwaysRuntime>( PolicyFlags ) ==
+			  AlwaysRuntime::yes;
+
 			static constexpr GlobalEightBitModes eight_bit_mode =
 			  json_details::get_bits_for<GlobalEightBitModes>( PolicyFlags );
 

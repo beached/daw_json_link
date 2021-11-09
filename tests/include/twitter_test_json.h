@@ -118,6 +118,7 @@ namespace daw::twitter {
 namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::metadata_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_string<"result_type">,
 		                              json_string<"iso_language_code">>;
@@ -137,6 +138,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::urls_element_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_string<"url">,
 		                              json_string<"expanded_url">,
@@ -163,6 +165,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::url_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_array<"urls", daw::twitter::urls_element_t>>;
@@ -179,6 +182,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::entities_t> {
+		using never_constexpr = void;
 		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
@@ -199,6 +203,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::user_t> {
+		using never_constexpr = void;
 		using ignore_unknown_members = void;
 
 		static inline constexpr char const id[] = "id";
@@ -344,6 +349,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN
 	  json_data_contract<daw::twitter::hashtags_element_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string<"text">, json_array<"indices", int32_t>>;
@@ -361,6 +367,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::tweet_object_t> {
+		using never_constexpr = void;
 		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
@@ -467,6 +474,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN
 	  json_data_contract<daw::twitter::user_mentions_element_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_string<"screen_name">,
 		                              json_string<"name">,
@@ -497,6 +505,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::size_item_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"w", int64_t>,
 		                              json_number<"h", int64_t>,
@@ -517,6 +526,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::sizes_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_class<"medium", daw::twitter::size_item_t>,
@@ -544,6 +554,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::media_element_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"id", int64_t>,
 		                              json_string<"id_str">,
@@ -595,6 +606,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN
 	  json_data_contract<daw::twitter::retweeted_status_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
@@ -699,6 +711,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::search_metadata_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"completed_in">,
 		                              json_number<"max_id", int64_t>,
@@ -745,6 +758,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::twitter_object_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_array<"statuses", daw::twitter::tweet_object_t>,

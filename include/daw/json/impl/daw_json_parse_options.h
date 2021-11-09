@@ -96,6 +96,20 @@ namespace daw::json {
 		} // namespace json_details
 
 		/***
+		 * Allow methods to assume that this code will be used at runtime.  This
+		 * allows for a few optimizations around construction of aggregates prior to
+		 * C++20 but still uses the constexpr code paths
+		 */
+		enum class AlwaysRuntime : json_details::json_options_t { no, yes };
+		namespace json_details {
+			template<>
+			inline constexpr json_options_t json_option_bits_width<AlwaysRuntime> = 1;
+
+			template<>
+			inline constexpr auto default_json_option_value<AlwaysRuntime> =
+			  AlwaysRuntime::no;
+		} // namespace json_details
+		/***
 		 * If set to AllowFull, will use the per string settings.  If Disallow high
 		 * then high eight bits are filtered for all strings
 		 */
@@ -310,7 +324,8 @@ namespace daw::json {
 			                            ExcludeSpecialEscapes,
 			                            ExpectLongStrings,
 			                            GlobalEightBitModes,
-			                            ValidateUTF8>::type;
+			                            ValidateUTF8,
+			                            AlwaysRuntime>::type;
 
 			template<typename Policy>
 			inline constexpr json_options_t parse_policy_bits_start =

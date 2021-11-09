@@ -561,6 +561,14 @@ namespace daw::json {
 			using json_class_constructor_t =
 			  daw::detected_or_t<Default, json_class_constructor_t_impl, T>;
 
+			template<typename T>
+			using json_class_never_constexpr_impl =
+			  typename json_data_contract<T>::never_constexpr;
+
+			template<typename T>
+			using json_class_never_constexpr =
+			  daw::is_detected<json_class_never_constexpr_impl, T>;
+
 			namespace is_string_like_impl {
 				template<typename T>
 				using has_data_test = decltype( std::data( std::declval<T>( ) ) );

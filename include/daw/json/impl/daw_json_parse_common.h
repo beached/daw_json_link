@@ -1013,17 +1013,25 @@ namespace daw::json {
 			                             has_json_link_quick_map_v<T>,
 			                             is_container_v<T>>::type;
 
+			template<typename JsonMember>
+			using is_never_constexpr_test = typename JsonMember::never_constexpr;
+
+			template<typename JsonMember>
+			using is_never_constexpr = daw::
+			  detected_or_t<std::false_type, is_never_constexpr_test, JsonMember>;
+
 			/***
 			 * Some types cannot use construct_value or dont needed it.
 			 */
 			template<typename ParsePolicy, typename JsonMember>
 			inline constexpr bool use_direct_construction_v =
-			  ParsePolicy::exec_tag_t::always_rvo;
-			// TODO DAW implement this so that it work
-			/* or
-			  ( not ParsePolicy::has_allocator and
-			    is_default_constructor_v<
-			      typename json_deduced_type<JsonMember>::constructor_t> );*/
+			  ParsePolicy::exec_tag_t::always_rvo or
+			  ( ( not ParsePolicy::exec_tag_t::can_constexpr or
+			      ParsePolicy::always_runtime or
+			      is_never_constexpr<JsonMember>::value ) and
+			    ( not ParsePolicy::has_allocator and
+			      std::is_aggregate_v<json_result<JsonMember>> and
+			      is_default_constructor_v<typename JsonMember::constructor_t> ) );
 
 			template<typename T>
 			using has_json_deduced_type = daw::not_trait<

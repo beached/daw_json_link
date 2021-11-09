@@ -22,6 +22,7 @@
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::citm::events_value_t> {
+		using never_constexpr = void;
 		using ignore_unknown_members = void;
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const logo[] = "logo";
@@ -47,6 +48,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::prices_element_t> {
+		using never_constexpr = void;
 		static inline constexpr char const amount[] = "amount";
 		static inline constexpr char const audienceSubCategoryId[] =
 		  "audienceSubCategoryId";
@@ -66,6 +68,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::areas_element_t> {
+		using never_constexpr = void;
 		using ignore_unknown_members = void;
 
 		static inline constexpr char const areaId[] = "areaId";
@@ -79,6 +82,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::seatCategories_element_t> {
+		using never_constexpr = void;
 		static inline constexpr char const areas[] = "areas";
 		static inline constexpr char const seatCategoryId[] = "seatCategoryId";
 		using type = json_member_list<
@@ -93,6 +97,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::performances_element_t> {
+		using never_constexpr = void;
 		using ignore_unknown_members = void;
 		static inline constexpr char const eventId[] = "eventId";
 		static inline constexpr char const id[] = "id";
@@ -125,6 +130,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::venueNames_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string_raw<"PLEYEL_PLEYEL", std::string_view>>;
@@ -141,6 +147,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::citm_object_t> {
+		using never_constexpr = void;
 		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<

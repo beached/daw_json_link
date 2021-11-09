@@ -286,7 +286,7 @@ void test_func( ) {
 		  json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<json_checked_number_no_name<intmax_t>>( sv );
+			    from_json_array<json_checked_number_no_name<std::intmax_t>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },

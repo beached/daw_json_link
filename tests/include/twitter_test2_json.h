@@ -21,6 +21,7 @@
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::twitter2::metadata_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string_raw<"result_type", std::string_view>,
@@ -42,6 +43,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::urls_element_t> {
+		using never_constexpr = void;
 		static inline constexpr char const url[] = "url";
 		static inline constexpr char const expanded_url[] = "expanded_url";
 		static inline constexpr char const display_url[] = "display_url";
@@ -63,6 +65,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::url_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_array<"urls", daw::twitter2::urls_element_t>>;
@@ -79,6 +82,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::description_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_array<"urls", daw::twitter2::urls_element_t>>;
@@ -95,6 +99,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::entities_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class_null<"url",
@@ -122,6 +127,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::user_t> {
+		using never_constexpr = void;
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const id_str[] = "id_str";
 		static inline constexpr char const name[] = "name";
@@ -278,6 +284,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::hashtags_element_t> {
+		using never_constexpr = void;
 		static inline constexpr char const text[] = "text";
 		static inline constexpr char const indices[] = "indices";
 		using type = json_member_list<
@@ -292,6 +299,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::tweet_object_t> {
+		using never_constexpr = void;
 		static inline constexpr char const metadata[] = "metadata";
 		static inline constexpr char const created_at[] = "created_at";
 		static inline constexpr char const id[] = "id";
@@ -383,6 +391,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::user_mentions_element_t> {
+		using never_constexpr = void;
 		static inline constexpr char const screen_name[] = "screen_name";
 		static inline constexpr char const name[] = "name";
 		static inline constexpr char const id[] = "id";
@@ -407,6 +416,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::medium_t> {
+		using never_constexpr = void;
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
@@ -422,6 +432,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::small_t> {
+		using never_constexpr = void;
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
@@ -437,6 +448,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::thumb_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_custom<"w", std::string_view>,
 		                              json_custom<"h", std::string_view>,
@@ -457,6 +469,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::large_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_custom<"w", std::string_view>,
 		                              json_custom<"h", std::string_view>,
@@ -477,6 +490,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::sizes_t> {
+		using never_constexpr = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_class<"medium", daw::twitter2::medium_t>,
 		                              json_class<"small", daw::twitter2::small_t>,
@@ -503,6 +517,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::media_element_t> {
+		using never_constexpr = void;
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const id_str[] = "id_str";
 		static inline constexpr char const indices[] = "indices";
@@ -542,6 +557,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::retweeted_status_t> {
+		using never_constexpr = void;
 		static inline constexpr char const metadata[] = "metadata";
 		static inline constexpr char const created_at[] = "created_at";
 		static inline constexpr char const id[] = "id";
@@ -630,6 +646,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::search_metadata_t> {
+		using never_constexpr = void;
 		static inline constexpr char const completed_in[] = "completed_in";
 		static inline constexpr char const max_id[] = "max_id";
 		static inline constexpr char const max_id_str[] = "max_id_str";
@@ -666,6 +683,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::twitter_object_t> {
+		using never_constexpr = void;
 		static inline constexpr char const statuses[] = "statuses";
 		static inline constexpr char const search_metadata[] = "search_metadata";
 		using type = json_member_list<
