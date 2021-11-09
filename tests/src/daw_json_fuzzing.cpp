@@ -10,9 +10,17 @@
 
 #include <daw/daw_parse_args.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <cstdlib>
+#include <exception>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <vector>
 
 template<typename OutputIterator>
 class JSONMinifyHandler {
