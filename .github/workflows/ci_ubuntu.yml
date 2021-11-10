@@ -27,45 +27,49 @@ jobs:
       matrix:
         config:
           # debug, c++-17
-          - { toolset: g++-9,      build_type: debug,    cpp_version: 17, os: ubuntu-20.04 }
-          - { toolset: g++-11,     build_type: debug,    cpp_version: 17, os: ubuntu-20.04 }
-          - { toolset: g++-10,     build_type: debug,    cpp_version: 17, os: ubuntu-20.04 }
-          - { toolset: clang++-9,  build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-10, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-11, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-12, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exceptions }
+          - { toolset: g++-9,      build_type: debug,    cpp_version: 17, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: g++-11,     build_type: debug,    cpp_version: 17, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: g++-10,     build_type: debug,    cpp_version: 17, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: clang++-9,  build_type: debug,    cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-10, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-11, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-12, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-13, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-13, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ -fno-exceptions }
+          - { toolset: clang++-13, build_type: debug,    cpp_version: 17, os: ubuntu-20.04, do_fuzz: true }
           # debug, c++-20
-          - { toolset: g++-9,      build_type: debug,    cpp_version: 20, os: ubuntu-20.04 }
-          - { toolset: g++-11,     build_type: debug,    cpp_version: 20, os: ubuntu-20.04 }
-          - { toolset: g++-10,     build_type: debug,    cpp_version: 20, os: ubuntu-20.04 }
-          - { toolset: clang++-9,  build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-10, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-11, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-12, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exceptions }
+          - { toolset: g++-9,      build_type: debug,    cpp_version: 20, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: g++-11,     build_type: debug,    cpp_version: 20, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: g++-10,     build_type: debug,    cpp_version: 20, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: clang++-9,  build_type: debug,    cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-10, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-11, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-12, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-13, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-13, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ -fno-exceptions }
+          - { toolset: clang++-13, build_type: debug,    cpp_version: 20, os: ubuntu-20.04, do_fuzz: true }
           # release, c++-17
-          - { toolset: g++-9,      build_type: release,  cpp_version: 17, os: ubuntu-20.04 }
-          - { toolset: g++-11,     build_type: release,  cpp_version: 17, os: ubuntu-20.04 }
-          - { toolset: g++-10,     build_type: release,  cpp_version: 17, os: ubuntu-20.04 }
-          - { toolset: clang++-9,  build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-10, build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-11, build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-12, build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: release,  cpp_version: 17, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exceptions }
+          - { toolset: g++-9,      build_type: release,  cpp_version: 17, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: g++-11,     build_type: release,  cpp_version: 17, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: g++-10,     build_type: release,  cpp_version: 17, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: clang++-9,  build_type: release,  cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-10, build_type: release,  cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-11, build_type: release,  cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-12, build_type: release,  cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-13, build_type: release,  cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-13, build_type: release,  cpp_version: 17, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ -fno-exceptions }
+          - { toolset: clang++-13, build_type: release,  cpp_version: 17, os: ubuntu-20.04, do_fuzz: false }
           # release, c++-20
-          - { toolset: g++-9,      build_type: release,  cpp_version: 20, os: ubuntu-20.04 }
-          - { toolset: g++-11,     build_type: release,  cpp_version: 20, os: ubuntu-20.04 }
-          - { toolset: g++-10,     build_type: release,  cpp_version: 20, os: ubuntu-20.04 }
-          - { toolset: clang++-9,  build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-10, build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-11, build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-12, build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ }
-          - { toolset: clang++-13, build_type: release,  cpp_version: 20, os: ubuntu-20.04, cxx_flags: -stdlib=libc++ -fno-exceptions }
+          - { toolset: g++-9,      build_type: release,  cpp_version: 20, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: g++-11,     build_type: release,  cpp_version: 20, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: g++-10,     build_type: release,  cpp_version: 20, os: ubuntu-20.04, do_fuzz: false }
+          - { toolset: clang++-9,  build_type: release,  cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-10, build_type: release,  cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-11, build_type: release,  cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-12, build_type: release,  cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-13, build_type: release,  cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ }
+          - { toolset: clang++-13, build_type: release,  cpp_version: 20, os: ubuntu-20.04, do_fuzz: false, cxx_flags: -stdlib=libc++ -fno-exceptions }
+          - { toolset: clang++-13, build_type: release,  cpp_version: 20, os: ubuntu-20.04, do_fuzz: true }
     runs-on: ${{ matrix.config.os }}
     name: "${{ matrix.config.os }} ${{ matrix.config.toolset }} ${{ matrix.config.cpp_version }} ${{ matrix.config.build_type }} ${{ matrix.config.cxx_flags }}"
     steps:
@@ -113,8 +117,10 @@ jobs:
           CXXFLAGS: ${{ matrix.config.cxx_flags }}
         run: cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DDAW_JSON_USE_SANITIZERS=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.config.cpp_version }} -Bbuild/ .
       - name: Build
+        if: matrix.config.do_fuzz == false
         run: cmake --build build/ --target daw-json-link_full -- -k 0
       - name: Test
+        if: matrix.config.do_fuzz == false
         run: |
           sudo service apport stop
           ulimit -c unlimited
@@ -122,7 +128,7 @@ jobs:
           sudo sysctl -w kernel.core_pattern=core.%e.%p
           ctest -C ${{ matrix.config.build_type }} -j2 -VV --timeout 1200 --output-on-failure --test-dir build/
       - name: Fuzzing
-        if: matrix.config.toolset == 'clang++-13' && matrix.config.cxx_flags != '-stdlib=libc++'
+        if: matrix.config.do_fuzz == true
         run: |
           ulimit -c unlimited
           cmake --build build/ --target=daw_json_fuzzing
