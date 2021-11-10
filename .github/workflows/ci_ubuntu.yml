@@ -122,7 +122,7 @@ jobs:
           sudo sysctl -w kernel.core_pattern=core.%e.%p
           ctest -C ${{ matrix.config.build_type }} -j2 -VV --timeout 1200 --output-on-failure --test-dir build/
       - name: Fuzzing
-        if: matrix.config.toolset == 'clang++-13'
+        if: matrix.config.toolset == 'clang++-13' && matrix.config.cxx_flags != '-stdlib=libc++'
         run: |
           ulimit -c unlimited
           cmake --build build/ --target=daw_json_fuzzing
