@@ -10,6 +10,7 @@
 
 #include <daw/daw_do_n.h>
 #include <daw/daw_endian.h>
+#include <daw/daw_likely.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
 
