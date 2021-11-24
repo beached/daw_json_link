@@ -79,7 +79,7 @@ namespace daw::json {
 					path.remove_prefix( );
 				}
 				result.current =
-				  path.pop_front( [&, in_escape = false]( char c ) mutable {
+				  path.pop_front_until( [&, in_escape = false]( char c ) mutable {
 					  if( in_escape ) {
 						  in_escape = false;
 						  return false;

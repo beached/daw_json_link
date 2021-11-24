@@ -11,6 +11,7 @@
 
 #include "to_daw_json_string.h"
 
+#include <daw/daw_string_view.h>
 #include <daw/daw_utility.h>
 
 #include <array>
@@ -28,7 +29,7 @@ namespace daw::json {
 
 			private:
 				std::size_t position{ };
-				std::string_view array[capacity]{ };
+				daw::string_view array[capacity]{ };
 
 			public:
 				constexpr basic_array_t( ) = default;
@@ -106,7 +107,7 @@ namespace daw::json {
 				      has_dependent_member_v<without_name<JsonMembers>> ) +
 				    ... + 0 ) )>;
 				auto visited_members =
-				  basic_array_t<std::string_view, visit_size::value>{ };
+				  basic_array_t<daw::string_view, visit_size::value>{ };
 
 				// Tag Members, if any.  Putting them ahead means we can parse this
 				// faster in the future

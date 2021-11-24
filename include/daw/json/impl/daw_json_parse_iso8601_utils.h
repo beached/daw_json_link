@@ -57,9 +57,9 @@ namespace daw::json {
 		namespace datetime {
 			namespace datetime_details {
 
-				template<typename Result, typename Bounds, std::ptrdiff_t Ex>
+				template<typename Result, daw::string_view_bounds_type Bounds>
 				constexpr Result
-				parse_number( daw::basic_string_view<char, Bounds, Ex> sv ) {
+				parse_number( daw::basic_string_view<char, Bounds> sv ) {
 					static_assert( daw::numeric_limits<Result>::digits10 >= 4 );
 					daw_json_assert( not sv.empty( ), ErrorReason::InvalidNumber );
 					Result result = 0;
@@ -171,9 +171,9 @@ namespace daw::json {
 				uint_least32_t day;
 			};
 
-			template<typename Bounds, std::ptrdiff_t Ex>
+			template<daw::string_view_bounds_type Bounds>
 			constexpr date_parts parse_iso_8601_date(
-			  daw::basic_string_view<char, Bounds, Ex> timestamp_str ) {
+			  daw::basic_string_view<char, Bounds> timestamp_str ) {
 				auto result = date_parts{ 0, 0, 0 };
 				result.day = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 				  std::data( timestamp_str.pop_back( 2U ) ) );
@@ -197,9 +197,9 @@ namespace daw::json {
 				uint_least32_t millisecond;
 			};
 
-			template<typename Bounds, std::ptrdiff_t Ex>
+			template<daw::string_view_bounds_type Bounds>
 			constexpr time_parts parse_iso_8601_time(
-			  daw::basic_string_view<char, Bounds, Ex> timestamp_str ) {
+			  daw::basic_string_view<char, Bounds> timestamp_str ) {
 				auto result = time_parts{ 0, 0, 0, 0 };
 				result.hour = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 				  std::data( timestamp_str.pop_front( 2 ) ) );
@@ -228,12 +228,12 @@ namespace daw::json {
 				return result;
 			}
 
-			template<typename Bounds, std::ptrdiff_t Ex>
+			template<daw::string_view_bounds_type Bounds>
 			constexpr std::chrono::time_point<std::chrono::system_clock,
 			                                  std::chrono::milliseconds>
-			parse_iso8601_timestamp( daw::basic_string_view<char, Bounds, Ex> ts ) {
+			parse_iso8601_timestamp( daw::basic_string_view<char, Bounds> ts ) {
 				constexpr daw::string_view t_str = "T";
-				auto const date_str = ts.pop_front( t_str );
+				auto const date_str = ts.pop_front_until( t_str );
 				if( ts.empty( ) ) {
 					daw_json_error(
 					  ErrorReason::InvalidTimestamp ); // Invalid timestamp,
@@ -241,7 +241,7 @@ namespace daw::json {
 				}
 
 				date_parts const ymd = parse_iso_8601_date( date_str );
-				auto time_str = ts.pop_front( []( char c ) {
+				auto time_str = ts.pop_front_until( []( char c ) {
 					return not( parse_utils::is_number( c ) | ( c == ':' ) |
 					            ( c == '.' ) );
 				} );

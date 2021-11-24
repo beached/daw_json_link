@@ -94,8 +94,8 @@ public:
 		case daw::json::JsonBaseParseTypes::None:
 		default: {
 			auto rng = p.value.get_raw_state( );
-			auto s =
-			  daw::string_view( rng.first, rng.size( ) ).pop_front( 10 ).to_string( );
+			auto s = static_cast<std::string>(
+			  daw::string_view( rng.first, rng.size( ) ).pop_front( 10 ) );
 #ifdef DAW_USE_EXCEPTIONS
 			throw std::runtime_error( s );
 #else

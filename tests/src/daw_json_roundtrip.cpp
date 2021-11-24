@@ -180,7 +180,7 @@ int main( int argc, char **argv )
 #endif
 		if( args.size( ) > 1 and args[1].name.empty( ) ) {
 			test_assert( data.size( ) > 0, "Could not open JSON document" );
-			auto ofile = std::ofstream( args[1].value.to_string( ).c_str( ),
+			auto ofile = std::ofstream( static_cast<std::string>( args[1].value ).c_str( ),
 			                            std::ios::trunc | std::ios::binary );
 			if( not ofile ) {
 				std::cerr << "Failed to open outputfile '" << args[1].value << "'\n";
