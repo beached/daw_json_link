@@ -33,15 +33,12 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_kv1::MyKeyValue1> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<
-		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
+		using type = json_member_list<json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
 #else
 		static constexpr char const kv[] = "kv";
-		using type = json_member_list<
-		  json_key_value<kv, std::unordered_map<std::string, int>, int>>;
+		using type = json_member_list<json_key_value<kv, std::unordered_map<std::string, int>, int>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_kv1::MyKeyValue1 const &value ) {
+		static inline auto to_json_data( daw::cookbook_kv1::MyKeyValue1 const &value ) {
 			return std::forward_as_tuple( value.kv );
 		}
 	};
@@ -76,8 +73,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

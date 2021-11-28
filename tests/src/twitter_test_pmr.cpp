@@ -34,23 +34,18 @@ template<typename T>
 using is_to_json_data_able = decltype( to_json_data( std::declval<T>( ) ) );
 
 template<typename T>
-inline bool DAW_CONSTEXPR is_to_json_data_able_v =
-  daw::is_detected_v<is_to_json_data_able, T>;
+inline bool DAW_CONSTEXPR is_to_json_data_able_v = daw::is_detected_v<is_to_json_data_able, T>;
 
-template<typename T,
-         std::enable_if_t<is_to_json_data_able_v<T>, std::nullptr_t> = nullptr>
+template<typename T, std::enable_if_t<is_to_json_data_able_v<T>, std::nullptr_t> = nullptr>
 DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
-	test_assert( to_json_data( lhs ) == to_json_data( rhs ),
-	             "Expected that values would be equal" );
+	test_assert( to_json_data( lhs ) == to_json_data( rhs ), "Expected that values would be equal" );
 	return true;
 }
 
-using AllocType =
-  boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>;
+using AllocType = boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>;
 
 template<typename ExecTag>
-void test( std::string_view json_data,
-           boost::container::pmr::monotonic_buffer_resource *alloc )
+void test( std::string_view json_data, boost::container::pmr::monotonic_buffer_resource *alloc )
 #ifdef DAW_USE_EXCEPTIONS
   try
 #endif
@@ -67,12 +62,11 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f1,
-		    boost::container::pmr::polymorphic_allocator<
-		      daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+		                               daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -80,8 +74,7 @@ void test( std::string_view json_data,
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Missing value" );
 
 	// NoCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -90,12 +83,11 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1,
-		    boost::container::pmr::polymorphic_allocator<
-		      daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+		                               daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -103,8 +95,7 @@ void test( std::string_view json_data,
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Missing value" );
 
 	// CppCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -113,12 +104,11 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDCppCommentSkippingPolicyChecked<ExecTag>>(
-		    f1,
-		    boost::container::pmr::polymorphic_allocator<
-		      daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+		                               daw::json::SIMDCppCommentSkippingPolicyChecked<ExecTag>>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -126,8 +116,7 @@ void test( std::string_view json_data,
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// CppCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -136,12 +125,11 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDCppCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1,
-		    boost::container::pmr::polymorphic_allocator<
-		      daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+		                               daw::json::SIMDCppCommentSkippingPolicyUnchecked<ExecTag>>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -149,8 +137,7 @@ void test( std::string_view json_data,
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Missing value" );
 #endif
 	// HashCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -159,12 +146,11 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDHashCommentSkippingPolicyChecked<ExecTag>>(
-		    f1,
-		    boost::container::pmr::polymorphic_allocator<
-		      daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+		                               daw::json::SIMDHashCommentSkippingPolicyChecked<ExecTag>>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -172,8 +158,7 @@ void test( std::string_view json_data,
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// HashCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -186,8 +171,7 @@ void test( std::string_view json_data,
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDHashCommentSkippingPolicyUnchecked<ExecTag, AllocType>>(
 		    f1,
-		    boost::container::pmr::polymorphic_allocator<
-		      daw::twitter::twitter_object_t>( alloc ) );
+		    boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -195,8 +179,7 @@ void test( std::string_view json_data,
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Missing value" );
 #endif
 	// ******************************
 	// NoCommentSkippingPolicyChecked Escaped Names
@@ -206,12 +189,11 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f1,
-		    boost::container::pmr::polymorphic_allocator<
-		      daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+		                               daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -219,8 +201,7 @@ void test( std::string_view json_data,
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Missing value" );
 
 	// NoCommentSkippingPolicyUnchecked Escaped Names
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -229,12 +210,11 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1,
-		    boost::container::pmr::polymorphic_allocator<
-		      daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+		                               daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -242,16 +222,14 @@ void test( std::string_view json_data,
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Missing value" );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";
@@ -267,9 +245,8 @@ int main( int argc, char **argv )
 	constexpr std::size_t alloc_buff_size = 1'000'000ULL;
 	static auto alloc_buff = std::unique_ptr<char[]>( new char[alloc_buff_size] );
 	static auto alloc_impl =
-	  std::make_unique<boost::container::pmr::monotonic_buffer_resource>(
-	    alloc_buff.get( ),
-	    alloc_buff_size );
+	  std::make_unique<boost::container::pmr::monotonic_buffer_resource>( alloc_buff.get( ),
+	                                                                      alloc_buff_size );
 	static auto *alloc = alloc_impl.get( );
 	using namespace daw::json;
 	if( argc < 2 ) {
@@ -284,8 +261,7 @@ int main( int argc, char **argv )
 	}( );
 
 	auto const sz = json_data.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
+	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz ) << '\n';
 	test<constexpr_exec_tag>( json_data, alloc );
 	test<runtime_exec_tag>( json_data, alloc );
 	if constexpr( not std::is_same_v<runtime_exec_tag, simd_exec_tag> ) {
@@ -297,11 +273,9 @@ int main( int argc, char **argv )
 	alloc->release( );
 	std::string str{ };
 	{
-		auto twitter_result =
-		  daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-		    json_data,
-		    boost::container::pmr::polymorphic_allocator<
-		      daw::twitter::twitter_object_t>( alloc ) );
+		auto twitter_result = daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		  json_data,
+		  boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>( alloc ) );
 		auto out_it = std::back_inserter( str );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter bench(to_json_string)",
@@ -316,11 +290,9 @@ int main( int argc, char **argv )
 		daw::do_not_optimize( str );
 	}
 	alloc->release( );
-	auto const twitter_result2 =
-	  daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-	    str,
-	    boost::container::pmr::polymorphic_allocator<
-	      daw::twitter::twitter_object_t>( alloc ) );
+	auto const twitter_result2 = daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+	  str,
+	  boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>( alloc ) );
 	daw::do_not_optimize( twitter_result2 );
 }
 #ifdef DAW_USE_EXCEPTIONS
@@ -328,8 +300,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

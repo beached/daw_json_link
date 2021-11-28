@@ -60,8 +60,7 @@ void test_lots_of_doubles( ) {
 		std::sprintf( buffer, "%llu.%llue%d", x1, x2, x3 );
 		numbers_str[i] = std::string( buffer );
 		bytes += numbers_str[i].size( );
-		auto rng = num_t( numbers_str[i].data( ),
-		                  numbers_str[i].data( ) + numbers_str[i].size( ) );
+		auto rng = num_t( numbers_str[i].data( ), numbers_str[i].data( ) + numbers_str[i].size( ) );
 		rng = daw::json::json_details::skip_number( rng );
 		numbers[i] = rng;
 	}
@@ -101,8 +100,7 @@ void test_lots_of_doubles( ) {
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
-			  using json_member =
-			    daw::json::json_details::json_deduced_type<long double>;
+			  using json_member = daw::json::json_details::json_deduced_type<long double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, false>(
 			    rng,
 			    daw::json::ParseTag<json_member::expected_type>{ } );
@@ -147,8 +145,7 @@ void test_lots_of_doubles( ) {
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
-			  using json_member =
-			    daw::json::json_details::json_deduced_type<long double>;
+			  using json_member = daw::json::json_details::json_deduced_type<long double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, true>(
 			    rng,
 			    daw::json::ParseTag<json_member::expected_type>{ } );
@@ -183,8 +180,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

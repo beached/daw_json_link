@@ -69,8 +69,7 @@ public:
 		case daw::json::JsonBaseParseTypes::String: {
 			member_preamble( );
 			auto const unescaped =
-			  daw::json::from_json<std::string, ParsePolicy, true>(
-			    p.value.get_string_view( ) );
+			  daw::json::from_json<std::string, ParsePolicy, true>( p.value.get_string_view( ) );
 
 			daw::json::to_json( unescaped, out_it );
 			return true;
@@ -87,8 +86,8 @@ public:
 		case daw::json::JsonBaseParseTypes::None:
 		default: {
 			auto rng = p.value.get_raw_state( );
-			auto s = static_cast<std::string>(
-			  daw::string_view( rng.first, rng.size( ) ).pop_front( 10 ) );
+			auto s =
+			  static_cast<std::string>( daw::string_view( rng.first, rng.size( ) ).pop_front( 10 ) );
 #ifdef DAW_USE_EXCEPTIONS
 			throw std::runtime_error( s );
 #else
@@ -137,20 +136,17 @@ void minify( std::string_view data, Iterator out_it ) {
 	daw::json::json_event_parser<daw::json::ConformancePolicy>( data, handler );
 }
 
-extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
-                                       std::size_t size ) {
+extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data, std::size_t size ) {
 	if( data == nullptr or size == 0 ) {
 		return 0;
 	}
 	auto ofile = std::ofstream( "/dev/null", std::ios::trunc | std::ios::binary );
-	auto json_doc =
-	  std::string_view( reinterpret_cast<char const *>( data ), size );
+	auto json_doc = std::string_view( reinterpret_cast<char const *>( data ), size );
 
 #ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
-		auto jv =
-		  daw::json::basic_json_value<daw::json::ConformancePolicy>( json_doc );
+		auto jv = daw::json::basic_json_value<daw::json::ConformancePolicy>( json_doc );
 		switch( jv.type( ) ) {
 		case daw::json::JsonBaseParseTypes::Number:
 			ofile << daw::json::from_json<double>( jv );

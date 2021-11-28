@@ -30,9 +30,8 @@ template<typename ExecTag>
 void test( std::string_view data ) {
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
-	using range_t = daw::json::json_array_range<
-	  double,
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+	using range_t =
+	  daw::json::json_array_range<double, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
 
 	std::vector<double> results = [&] {
 		auto rng = range_t( data );
@@ -49,9 +48,8 @@ void test( std::string_view data ) {
 	  },
 	  range_t( data ) );
 	daw::do_not_optimize( results );
-	using range2_t = daw::json::json_array_range<
-	  double,
-	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
+	using range2_t =
+	  daw::json::json_array_range<double, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "numbers bench (unchecked)",
 	  data.size( ),
@@ -79,8 +77,7 @@ int main( int argc, char **argv )
 	}
 
 	auto const mm_numbers = *daw::read_file( argv[1] );
-	auto const sv_numbers =
-	  std::string_view( mm_numbers.data( ), mm_numbers.size( ) );
+	auto const sv_numbers = std::string_view( mm_numbers.data( ), mm_numbers.size( ) );
 
 #ifndef NDEBUG
 	std::cout << "non-debug run\n";
@@ -96,8 +93,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

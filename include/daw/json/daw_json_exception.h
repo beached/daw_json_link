@@ -34,9 +34,8 @@ namespace daw::json {
 				char const *member_name;
 
 				template<typename StringView,
-				         std::enable_if_t<
-				           ( traits::not_same<StringView, missing_member>::value ),
-				           std::nullptr_t> = nullptr>
+				         std::enable_if_t<( traits::not_same<StringView, missing_member>::value ),
+				                          std::nullptr_t> = nullptr>
 				explicit constexpr missing_member( StringView name )
 				  : member_name( std::data( name ) ) {}
 
@@ -244,41 +243,35 @@ namespace daw::json {
 		public:
 			DAW_JSON_EXCEPTION_CONSTEXPR basic_json_exception( ) = default;
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			basic_json_exception( ErrorReason reason )
+			explicit DAW_JSON_EXCEPTION_CONSTEXPR basic_json_exception( ErrorReason reason )
 			  : m_reason( reason ) {}
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			basic_json_exception( json_details::missing_member mm )
+			explicit DAW_JSON_EXCEPTION_CONSTEXPR basic_json_exception( json_details::missing_member mm )
 			  : m_reason( ErrorReason::MemberNotFound )
 			  , m_data( mm.member_name ) {}
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			basic_json_exception( json_details::missing_token mt )
+			explicit DAW_JSON_EXCEPTION_CONSTEXPR basic_json_exception( json_details::missing_token mt )
 			  : m_reason( ErrorReason::ExpectedTokenNotFound )
 			  , m_data( mt.token ) {}
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			basic_json_exception( json_details::missing_member mm,
-			                      std::string_view location )
+			explicit DAW_JSON_EXCEPTION_CONSTEXPR basic_json_exception( json_details::missing_member mm,
+			                                                            std::string_view location )
 			  : m_reason( ErrorReason::MemberNotFound )
 			  , m_data( mm.member_name )
 			  , m_parse_loc( std::data( location ) ) {}
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			basic_json_exception( json_details::missing_token mt,
-			                      char const *location )
+			explicit DAW_JSON_EXCEPTION_CONSTEXPR basic_json_exception( json_details::missing_token mt,
+			                                                            char const *location )
 			  : m_reason( ErrorReason::ExpectedTokenNotFound )
 			  , m_data( mt.token )
 			  , m_parse_loc( location ) {}
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			basic_json_exception( ErrorReason reason, char const *location )
+			explicit DAW_JSON_EXCEPTION_CONSTEXPR basic_json_exception( ErrorReason reason,
+			                                                            char const *location )
 			  : m_reason( reason )
 			  , m_parse_loc( location ) {}
 
-			[[nodiscard]] DAW_JSON_EXCEPTION_CONSTEXPR ErrorReason
-			reason_type( ) const {
+			[[nodiscard]] DAW_JSON_EXCEPTION_CONSTEXPR ErrorReason reason_type( ) const {
 				return m_reason;
 			}
 
@@ -316,8 +309,7 @@ namespace daw::json {
 			basic_json_exception( basic_json_exception const & ) = default;
 			basic_json_exception( basic_json_exception && ) noexcept = default;
 			basic_json_exception &operator=( basic_json_exception const & ) = default;
-			basic_json_exception &
-			operator=( basic_json_exception && ) noexcept = default;
+			basic_json_exception &operator=( basic_json_exception && ) noexcept = default;
 			inline ~basic_json_exception( ) override = default;
 #endif
 		};
@@ -339,11 +331,9 @@ namespace daw::json {
 			}
 			auto const previous_char_count = ( std::min )(
 			  static_cast<std::size_t>( 50 ),
-			  static_cast<std::size_t>(
-			    std::distance( json_document, je.parse_location( ) + 1 ) ) );
+			  static_cast<std::size_t>( std::distance( json_document, je.parse_location( ) + 1 ) ) );
 			auto const loc_data = std::string_view(
-			  std::prev( je.parse_location( ),
-			             static_cast<std::ptrdiff_t>( previous_char_count ) ),
+			  std::prev( je.parse_location( ), static_cast<std::ptrdiff_t>( previous_char_count ) ),
 			  previous_char_count + 1 );
 #ifndef _WIN32
 			result += "\nlocation:\x1b[1m";

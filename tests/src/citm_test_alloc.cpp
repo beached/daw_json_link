@@ -44,19 +44,18 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 		  "citm_catalog bench(checked)",
 		  sz,
 		  [&]( auto f1 ) {
-			  return daw::json::from_json_alloc<
-			    daw::citm::citm_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
+			  return daw::json::from_json_alloc<daw::citm::citm_object_t,
+			                                    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+			    f1,
+			    alloc );
 		  },
 		  json_sv1 );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 		daw::do_not_optimize( citm_result2 );
 		test_assert( citm_result2, "Missing value" );
 		test_assert( not citm_result2->areaNames.empty( ), "Expected values" );
-		test_assert( citm_result2->areaNames.count( 205706005 ) == 1,
-		             "Expected value" );
-		test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
-		             "Incorrect value" );
+		test_assert( citm_result2->areaNames.count( 205706005 ) == 1, "Expected value" );
+		test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin", "Incorrect value" );
 	}
 	{
 		alloc.release( );
@@ -64,20 +63,18 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 		  "citm_catalog bench(unchecked)",
 		  sz,
 		  [&]( auto f1 ) {
-			  return daw::json::from_json_alloc<
-			    daw::citm::citm_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1,
-			                                                               alloc );
+			  return daw::json::from_json_alloc<daw::citm::citm_object_t,
+			                                    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+			    f1,
+			    alloc );
 		  },
 		  json_sv1 );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 		daw::do_not_optimize( citm_result2 );
 		test_assert( citm_result2, "Missing value" );
 		test_assert( not citm_result2->areaNames.empty( ), "Expected values" );
-		test_assert( citm_result2->areaNames.count( 205706005 ) == 1,
-		             "Expected value" );
-		test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
-		             "Incorrect value" );
+		test_assert( citm_result2->areaNames.count( 205706005 ) == 1, "Expected value" );
+		test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin", "Incorrect value" );
 	}
 }
 
@@ -94,24 +91,19 @@ int main( int argc, char **argv )
 	}
 
 	auto const json_data1 = *daw::read_file( argv[1] );
-	auto const json_sv1 =
-	  std::string_view( json_data1.data( ), json_data1.size( ) );
+	auto const json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
 
 	auto const sz = json_sv1.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
+	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz ) << '\n';
 	test<daw::json::constexpr_exec_tag>( json_sv1, alloc );
 	test<daw::json::runtime_exec_tag>( json_sv1, alloc );
-	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-	                                 daw::json::runtime_exec_tag> ) {
+	if constexpr( not std::is_same_v<daw::json::simd_exec_tag, daw::json::runtime_exec_tag> ) {
 		test<daw::json::simd_exec_tag>( json_sv1, alloc );
 	}
 
 	alloc.release( );
-	std::cout
-	  << "to_json testing\n*********************************************\n";
-	auto const citm_result =
-	  daw::json::from_json_alloc<daw::citm::citm_object_t>( json_sv1, alloc );
+	std::cout << "to_json testing\n*********************************************\n";
+	auto const citm_result = daw::json::from_json_alloc<daw::citm::citm_object_t>( json_sv1, alloc );
 
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	// Should be 522'960 bytes
@@ -136,8 +128,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

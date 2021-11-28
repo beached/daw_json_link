@@ -32,22 +32,17 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_class1::MyClass1> {
 #if defined( __cpp_nontype_template_parameter_class )
-		using type = json_member_list<json_string<"member0">,
-		                              json_number<"member1", int>,
-		                              json_bool<"member2">>;
+		using type =
+		  json_member_list<json_string<"member0">, json_number<"member1", int>, json_bool<"member2">>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
-		using type = json_member_list<json_string<member0>,
-		                              json_number<member1, int>,
-		                              json_bool<member2>>;
+		using type =
+		  json_member_list<json_string<member0>, json_number<member1, int>, json_bool<member2>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_class1::MyClass1 const &value ) {
-			return std::forward_as_tuple( value.member_0,
-			                              value.member_1,
-			                              value.member_2 );
+		static inline auto to_json_data( daw::cookbook_class1::MyClass1 const &value ) {
+			return std::forward_as_tuple( value.member_0, value.member_1, value.member_2 );
 		}
 	};
 } // namespace daw::json
@@ -84,8 +79,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

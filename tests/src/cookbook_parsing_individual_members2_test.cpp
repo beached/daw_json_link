@@ -25,18 +25,15 @@ int main( int argc, char **argv )
 #endif
 {
 	if( argc <= 1 ) {
-		puts(
-		  "Must supply path to cookbook_parsing_individual_members2.json file\n" );
+		puts( "Must supply path to cookbook_parsing_individual_members2.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 
 	auto const file_data = *daw::read_file( argv[1] );
-	auto const json_data =
-	  std::string_view( file_data.data( ), file_data.size( ) );
+	auto const json_data = std::string_view( file_data.data( ), file_data.size( ) );
 
 	using namespace daw::json;
-	std::vector<std::string_view> value =
-	  from_json_array<std::string_view>( json_data, "member1" );
+	std::vector<std::string_view> value = from_json_array<std::string_view>( json_data, "member1" );
 
 	test_assert( value.size( ) == 4, "Unexpected value" );
 	test_assert( value[1] == "is", "Unexpected value" );
@@ -46,8 +43,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

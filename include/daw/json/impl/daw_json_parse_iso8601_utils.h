@@ -58,8 +58,7 @@ namespace daw::json {
 			namespace datetime_details {
 
 				template<typename Result, daw::string_view_bounds_type Bounds>
-				constexpr Result
-				parse_number( daw::basic_string_view<char, Bounds> sv ) {
+				constexpr Result parse_number( daw::basic_string_view<char, Bounds> sv ) {
 					static_assert( daw::numeric_limits<Result>::digits10 >= 4 );
 					daw_json_assert( not sv.empty( ), ErrorReason::InvalidNumber );
 					Result result = 0;
@@ -102,27 +101,23 @@ namespace daw::json {
 				                          std::uint_least32_t mil ) {
 					y -= static_cast<std::int_least32_t>( m ) <= 2;
 					std::int_least32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
-					auto const yoe = static_cast<std::uint_least32_t>(
-					  static_cast<std::int_least32_t>( y ) - era * 400 ); // [0, 399]
+					auto const yoe = static_cast<std::uint_least32_t>( static_cast<std::int_least32_t>( y ) -
+					                                                   era * 400 ); // [0, 399]
 					auto const doy = static_cast<std::uint_least32_t>(
 					  ( 153 * ( static_cast<std::int_least32_t>( m ) +
 					            ( static_cast<std::int_least32_t>( m ) > 2 ? -3 : 9 ) ) +
 					    2 ) /
 					    5 +
-					  static_cast<std::int_least32_t>( d ) - 1 ); // [0, 365]
-					std::uint_least32_t const doe =
-					  yoe * 365 + yoe / 4 - yoe / 100 + doy; // [0, 146096]
+					  static_cast<std::int_least32_t>( d ) - 1 );                          // [0, 365]
+					std::uint_least32_t const doe = yoe * 365 + yoe / 4 - yoe / 100 + doy; // [0, 146096]
 					std::int_least32_t const days_since_epoch =
 					  era * 146097 + static_cast<std::int_least32_t>( doe ) - 719468;
 
-					using Days =
-					  std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
-					return std::chrono::time_point<std::chrono::system_clock,
-					                               std::chrono::milliseconds>{ } +
+					using Days = std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
+					return std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>{ } +
 					       ( Days( days_since_epoch ) + std::chrono::hours( h ) +
 					         std::chrono::minutes( min ) +
-					         std::chrono::seconds(
-					           static_cast<std::uint_least32_t>( s ) ) +
+					         std::chrono::seconds( static_cast<std::uint_least32_t>( s ) ) +
 					         std::chrono::milliseconds( mil ) );
 				};
 				// Not all clocks have the same epoch.  This should account for the
@@ -132,34 +127,28 @@ namespace daw::json {
 				// compiler
 				auto result = calc( yr, mo, dy, hr, mn, se, ms );
 
-				if constexpr( std::conjunction_v<
-				                std::is_same<Duration, std::chrono::milliseconds>,
-				                std::is_same<Clock, std::chrono::system_clock>> ) {
+				if constexpr( std::conjunction_v<std::is_same<Duration, std::chrono::milliseconds>,
+				                                 std::is_same<Clock, std::chrono::system_clock>> ) {
 					return result;
-				} else if constexpr( std::is_same_v<Clock,
-				                                    std::chrono::system_clock> ) {
+				} else if constexpr( std::is_same_v<Clock, std::chrono::system_clock> ) {
 					return std::chrono::duration_cast<Duration>( result );
 				} else {
 #if defined( __cpp_lib_chrono ) and __cpp_lib_chrono >= 201907
 					// We have clock_cast
-					auto const match_duration =
-					  std::chrono::time_point_cast<Duration>( result );
-					auto const match_clock =
-					  std::chrono::clock_cast<Clock>( match_duration );
+					auto const match_duration = std::chrono::time_point_cast<Duration>( result );
+					auto const match_clock = std::chrono::clock_cast<Clock>( match_duration );
 					return match_clock;
 #else
 					// This is a guess and will not be constexpr
 
 					// System epoch is unix epoch on(gcc/clang/msvc)
 					auto const system_epoch = std::chrono::floor<std::chrono::hours>(
-					  std::chrono::system_clock::now( ).time_since_epoch( ) +
-					  std::chrono::minutes( 30 ) );
+					  std::chrono::system_clock::now( ).time_since_epoch( ) + std::chrono::minutes( 30 ) );
 					auto const clock_epoch = std::chrono::floor<std::chrono::hours>(
 					  Clock::now( ).time_since_epoch( ) + std::chrono::minutes( 30 ) );
 
 					constexpr auto offset =
-					  std::chrono::duration_cast<std::chrono::milliseconds>(
-					    clock_epoch - system_epoch );
+					  std::chrono::duration_cast<std::chrono::milliseconds>( clock_epoch - system_epoch );
 					return std::chrono::duration_cast<Duration>( result + offset );
 #endif
 				}
@@ -172,8 +161,8 @@ namespace daw::json {
 			};
 
 			template<daw::string_view_bounds_type Bounds>
-			constexpr date_parts parse_iso_8601_date(
-			  daw::basic_string_view<char, Bounds> timestamp_str ) {
+			constexpr date_parts
+			parse_iso_8601_date( daw::basic_string_view<char, Bounds> timestamp_str ) {
 				auto result = date_parts{ 0, 0, 0 };
 				result.day = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 				  std::data( timestamp_str.pop_back( 2U ) ) );
@@ -185,8 +174,7 @@ namespace daw::json {
 				if( not parse_utils::is_number( timestamp_str.back( ) ) ) {
 					timestamp_str.remove_suffix( );
 				}
-				result.year =
-				  datetime_details::parse_number<std::int_least32_t>( timestamp_str );
+				result.year = datetime_details::parse_number<std::int_least32_t>( timestamp_str );
 				return result;
 			}
 
@@ -198,8 +186,8 @@ namespace daw::json {
 			};
 
 			template<daw::string_view_bounds_type Bounds>
-			constexpr time_parts parse_iso_8601_time(
-			  daw::basic_string_view<char, Bounds> timestamp_str ) {
+			constexpr time_parts
+			parse_iso_8601_time( daw::basic_string_view<char, Bounds> timestamp_str ) {
 				auto result = time_parts{ 0, 0, 0, 0 };
 				result.hour = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 				  std::data( timestamp_str.pop_front( 2 ) ) );
@@ -223,27 +211,23 @@ namespace daw::json {
 					timestamp_str.remove_prefix( );
 				}
 				result.millisecond =
-				  datetime_details::parse_number<std::uint_least32_t>(
-				    timestamp_str.pop_front( 3 ) );
+				  datetime_details::parse_number<std::uint_least32_t>( timestamp_str.pop_front( 3 ) );
 				return result;
 			}
 
 			template<daw::string_view_bounds_type Bounds>
-			constexpr std::chrono::time_point<std::chrono::system_clock,
-			                                  std::chrono::milliseconds>
+			constexpr std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>
 			parse_iso8601_timestamp( daw::basic_string_view<char, Bounds> ts ) {
 				constexpr daw::string_view t_str = "T";
 				auto const date_str = ts.pop_front_until( t_str );
 				if( ts.empty( ) ) {
-					daw_json_error(
-					  ErrorReason::InvalidTimestamp ); // Invalid timestamp,
-					                                   // missing T separator
+					daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid timestamp,
+					                                                 // missing T separator
 				}
 
 				date_parts const ymd = parse_iso_8601_date( date_str );
 				auto time_str = ts.pop_front_until( []( char c ) {
-					return not( parse_utils::is_number( c ) | ( c == ':' ) |
-					            ( c == '.' ) );
+					return not( parse_utils::is_number( c ) | ( c == ':' ) | ( c == '.' ) );
 				} );
 				// TODO: verify or parse timezone
 				time_parts hms = parse_iso_8601_time( time_str );
@@ -253,13 +237,11 @@ namespace daw::json {
 					// The format will be (+|-)hh[:]mm
 					bool const sign = ts.front( ) == '+';
 					ts.remove_prefix( );
-					auto hr_offset = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
-					  std::data( ts ) );
+					auto hr_offset = parse_utils::parse_unsigned<std::uint_least32_t, 2>( std::data( ts ) );
 					if( ts.front( ) == ':' ) {
 						ts.remove_prefix( );
 					}
-					auto mn_offset = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
-					  std::data( ts ) );
+					auto mn_offset = parse_utils::parse_unsigned<std::uint_least32_t, 2>( std::data( ts ) );
 					// Want to subtract offset from current time, we are converting to UTC
 					if( sign ) {
 						// Positive offset
@@ -290,42 +272,32 @@ namespace daw::json {
 			};
 
 			template<typename Clock, typename Duration>
-			constexpr ymdhms time_point_to_civil(
-			  std::chrono::time_point<Clock, Duration> const &tp ) {
+			constexpr ymdhms time_point_to_civil( std::chrono::time_point<Clock, Duration> const &tp ) {
 				auto dur_from_epoch = tp.time_since_epoch( );
-				using Days =
-				  std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
-				auto const days_since_epoch =
-				  std::chrono::duration_cast<Days>( dur_from_epoch );
+				using Days = std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
+				auto const days_since_epoch = std::chrono::duration_cast<Days>( dur_from_epoch );
 				std::int_least32_t z = days_since_epoch.count( );
 				z += 719468;
 				std::int_least32_t const era = ( z >= 0 ? z : z - 146096 ) / 146097;
-				auto const doe =
-				  static_cast<std::uint_least32_t>( z - era * 146097 ); // [0, 146096]
+				auto const doe = static_cast<std::uint_least32_t>( z - era * 146097 ); // [0, 146096]
 				std::uint_least32_t const yoe =
 				  ( doe - doe / 1460 + doe / 36524 - doe / 146096 ) / 365; // [0, 399]
-				std::int_least32_t const y =
-				  static_cast<std::int_least32_t>( yoe ) + era * 400;
-				std::uint_least32_t const doy =
-				  doe - ( 365 * yoe + yoe / 4 - yoe / 100 );          // [0, 365]
-				std::uint_least32_t const mp = ( 5 * doy + 2 ) / 153; // [0, 11]
-				std::uint_least32_t const d = doy - ( 153 * mp + 2 ) / 5 + 1; // [1, 31]
+				std::int_least32_t const y = static_cast<std::int_least32_t>( yoe ) + era * 400;
+				std::uint_least32_t const doy = doe - ( 365 * yoe + yoe / 4 - yoe / 100 ); // [0, 365]
+				std::uint_least32_t const mp = ( 5 * doy + 2 ) / 153;                      // [0, 11]
+				std::uint_least32_t const d = doy - ( 153 * mp + 2 ) / 5 + 1;              // [1, 31]
 				auto const m = static_cast<std::uint_least32_t>(
 				  static_cast<std::int_least32_t>( mp ) +
 				  ( static_cast<std::int_least32_t>( mp ) < 10 ? 3 : -9 ) ); // [1, 12]
 
 				dur_from_epoch -= days_since_epoch;
-				auto const hrs =
-				  std::chrono::duration_cast<std::chrono::hours>( dur_from_epoch );
+				auto const hrs = std::chrono::duration_cast<std::chrono::hours>( dur_from_epoch );
 				dur_from_epoch -= hrs;
-				auto const min =
-				  std::chrono::duration_cast<std::chrono::minutes>( dur_from_epoch );
+				auto const min = std::chrono::duration_cast<std::chrono::minutes>( dur_from_epoch );
 				dur_from_epoch -= min;
-				auto const sec =
-				  std::chrono::duration_cast<std::chrono::seconds>( dur_from_epoch );
+				auto const sec = std::chrono::duration_cast<std::chrono::seconds>( dur_from_epoch );
 				dur_from_epoch -= sec;
-				auto const ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-				  dur_from_epoch );
+				auto const ms = std::chrono::duration_cast<std::chrono::milliseconds>( dur_from_epoch );
 				return ymdhms{ y + ( m <= 2 ),
 				               m,
 				               d,
@@ -369,11 +341,10 @@ namespace daw::json {
 			// Formula from
 			// http://howardhinnant.github.io/date_algorithms.html#weekday_from_days
 			template<typename Duration>
-			constexpr std::string_view short_day_of_week(
-			  std::chrono::time_point<std::chrono::system_clock, Duration> tp ) {
+			constexpr std::string_view
+			short_day_of_week( std::chrono::time_point<std::chrono::system_clock, Duration> tp ) {
 				using days = std::chrono::duration<long, std::ratio<86400>>;
-				auto const z =
-				  std::chrono::duration_cast<days>( tp.time_since_epoch( ) ).count( );
+				auto const z = std::chrono::duration_cast<days>( tp.time_since_epoch( ) ).count( );
 				auto const dow = z >= -4L ? ( z + 4L ) % 7L : ( z + 5L ) % 7L + 6L;
 				switch( dow ) {
 				case 0:
@@ -394,21 +365,16 @@ namespace daw::json {
 					daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid month
 				}
 			}
-			static_assert(
-			  short_day_of_week(
-			    std::chrono::time_point<std::chrono::system_clock,
-			                            std::chrono::milliseconds>( ) ) == "Thu" );
+			static_assert( short_day_of_week( std::chrono::time_point<std::chrono::system_clock,
+			                                                          std::chrono::milliseconds>( ) ) ==
+			               "Thu" );
 
 			namespace datetime_details {
 				constexpr std::uint_least32_t month2num( std::string_view ts ) {
-					daw_json_assert( std::size( ts ) >= 3,
-					                 ErrorReason::InvalidTimestamp );
-					auto const b0 = static_cast<std::uint_least32_t>(
-					  static_cast<unsigned char>( ts[0] ) );
-					auto const b1 = static_cast<std::uint_least32_t>(
-					  static_cast<unsigned char>( ts[1] ) );
-					auto const b2 = static_cast<std::uint_least32_t>(
-					  static_cast<unsigned char>( ts[2] ) );
+					daw_json_assert( std::size( ts ) >= 3, ErrorReason::InvalidTimestamp );
+					auto const b0 = static_cast<std::uint_least32_t>( static_cast<unsigned char>( ts[0] ) );
+					auto const b1 = static_cast<std::uint_least32_t>( static_cast<unsigned char>( ts[1] ) );
+					auto const b2 = static_cast<std::uint_least32_t>( static_cast<unsigned char>( ts[2] ) );
 					return ( b0 << 16U ) | ( b1 << 8U ) | b2;
 				}
 			} // namespace datetime_details

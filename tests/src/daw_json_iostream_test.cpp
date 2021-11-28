@@ -38,24 +38,20 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
+static_assert( daw::json::json_details::is_opted_into_json_iostreams_v<NumberX> );
 static_assert(
-  daw::json::json_details::is_opted_into_json_iostreams_v<NumberX> );
-static_assert(
-  daw::json::json_details::is_container_opted_into_json_iostreams_v<
-    std::vector<NumberX>> );
+  daw::json::json_details::is_container_opted_into_json_iostreams_v<std::vector<NumberX>> );
 
 int main( ) {
 	DAW_CONSTEXPR std::string_view const single_numberx = R"({"x":123})";
 	DAW_CONSTEXPR auto const nx = daw::json::from_json<NumberX>( single_numberx );
 
-	DAW_CONSTEXPR std::string_view const numberx_in_json_array =
-	  R"([{"x":1},{"x":2},{"x":3}])";
-	auto const vec_nx =
-	  daw::json::from_json_array<NumberX>( numberx_in_json_array );
-	auto const deq_nx = daw::json::from_json_array<NumberX, std::deque<NumberX>>(
-	  numberx_in_json_array );
-	auto const lst_nx = daw::json::from_json_array<NumberX, std::list<NumberX>>(
-	  numberx_in_json_array );
+	DAW_CONSTEXPR std::string_view const numberx_in_json_array = R"([{"x":1},{"x":2},{"x":3}])";
+	auto const vec_nx = daw::json::from_json_array<NumberX>( numberx_in_json_array );
+	auto const deq_nx =
+	  daw::json::from_json_array<NumberX, std::deque<NumberX>>( numberx_in_json_array );
+	auto const lst_nx =
+	  daw::json::from_json_array<NumberX, std::list<NumberX>>( numberx_in_json_array );
 
 	std::cout << nx << '\n';
 	std::cout << vec_nx << '\n';

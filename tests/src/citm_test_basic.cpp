@@ -35,24 +35,20 @@ int main( int argc, char **argv )
 	}
 	using namespace daw::json;
 	auto const json_data1 = *daw::read_file( argv[1] );
-	auto const json_sv1 =
-	  std::string_view( json_data1.data( ), json_data1.size( ) );
+	auto const json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
 
 	auto citm_result = daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
 	daw::do_not_optimize( citm_result );
 	test_assert( not citm_result.areaNames.empty( ), "Expected values" );
-	test_assert( citm_result.areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	test_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
+	test_assert( citm_result.areaNames.count( 205706005 ) == 1, "Expected value" );
+	test_assert( citm_result.areaNames[205706005] == "1er balcon jardin", "Incorrect value" );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

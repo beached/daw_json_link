@@ -20,16 +20,15 @@ namespace daw::json {
 		namespace json_details {
 			inline constexpr auto is_digit = []( char c ) -> daw::UInt8 {
 				return static_cast<unsigned>( static_cast<unsigned char>( c ) ) -
-				             static_cast<unsigned>(
-				               static_cast<unsigned char>( '0' ) ) <
+				             static_cast<unsigned>( static_cast<unsigned char>( '0' ) ) <
 				           10U
 				         ? daw::UInt8{ 0 }
 				         : daw::UInt8{ 0xFFU };
 			};
 
 			template<typename Predicate>
-			DAW_ATTRIB_FLATINLINE inline constexpr std::int32_t
-			count_4digits( char const *first, Predicate pred ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr std::int32_t count_4digits( char const *first,
+			                                                                   Predicate pred ) {
 				std::array<daw::UInt8, 4> const buff{ pred( first[3] ),
 				                                      pred( first[2] ),
 				                                      pred( first[2] ),
@@ -44,8 +43,8 @@ namespace daw::json {
 			}
 
 			template<typename Predicate>
-			DAW_ATTRIB_FLATINLINE inline constexpr std::int32_t
-			count_8digits( char const *first, Predicate pred ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr std::int32_t count_8digits( char const *first,
+			                                                                   Predicate pred ) {
 				std::array<daw::UInt8, 8> const buff{ pred( first[7] ),
 				                                      pred( first[6] ),
 				                                      pred( first[5] ),
@@ -65,8 +64,7 @@ namespace daw::json {
 			}
 
 			template<typename CharT>
-			DAW_ATTRIB_FLATTEN inline constexpr CharT *count_digits( CharT *first,
-			                                                         CharT *last ) {
+			DAW_ATTRIB_FLATTEN inline constexpr CharT *count_digits( CharT *first, CharT *last ) {
 				while( DAW_LIKELY( last - first >= 8 ) ) {
 					auto const v = count_8digits( first, is_digit );
 					if( v >= 0 ) {

@@ -25,12 +25,10 @@
 namespace daw::cookbook_optional_values1 {
 	namespace details {
 		template<typename... Args>
-		[[maybe_unused]] constexpr void
-		is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
+		[[maybe_unused]] constexpr void is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
 
 		template<typename T>
-		using is_unique_ptr_test =
-		  decltype( is_unique_ptr_test_impl( std::declval<T>( ) ) );
+		using is_unique_ptr_test = decltype( is_unique_ptr_test_impl( std::declval<T>( ) ) );
 
 		template<typename T>
 		constexpr bool is_unique_ptr_v = daw::is_detected_v<is_unique_ptr_test, T>;
@@ -52,8 +50,7 @@ namespace daw::cookbook_optional_values1 {
 
 		template<typename Arg, typename... Args>
 		inline std::unique_ptr<T> operator( )( Arg &&arg, Args &&...args ) const {
-			return std::make_unique<T>( std::forward<Arg>( arg ),
-			                            std::forward<Args>( args )... );
+			return std::make_unique<T>( std::forward<Arg>( arg ), std::forward<Args>( args )... );
 		}
 	};
 
@@ -66,8 +63,7 @@ namespace daw::cookbook_optional_values1 {
 	bool operator==( MyOptionalStuff1 const &lhs, MyOptionalStuff1 const &rhs ) {
 		bool result = lhs.member0 == rhs.member0;
 		result = result and ( lhs.member1 == rhs.member1 );
-		result = result and ( lhs.member2 and rhs.member2 and
-		                      ( *lhs.member2 == *rhs.member2 ) );
+		result = result and ( lhs.member2 and rhs.member2 and ( *lhs.member2 == *rhs.member2 ) );
 		result = result or ( not rhs.member2 );
 		return result;
 	}
@@ -79,20 +75,17 @@ namespace daw::json {
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
-		using type = json_member_list<
-		  json_number_null<member0, std::optional<int>>,
-		  json_string<member1>,
-		  json_bool<member2,
-		            std::unique_ptr<bool>,
-		            bool_opt( LiteralAsStringOpt::Never,
-		                      JsonNullable::NullVisible ),
-		            daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
+		using type =
+		  json_member_list<json_number_null<member0, std::optional<int>>,
+		                   json_string<member1>,
+		                   json_bool<member2,
+		                             std::unique_ptr<bool>,
+		                             bool_opt( LiteralAsStringOpt::Never, JsonNullable::NullVisible ),
+		                             daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
 
-		static inline auto to_json_data(
-		  daw::cookbook_optional_values1::MyOptionalStuff1 const &value ) {
-			return std::forward_as_tuple( value.member0,
-			                              value.member1,
-			                              value.member2 );
+		static inline auto
+		to_json_data( daw::cookbook_optional_values1::MyOptionalStuff1 const &value ) {
+			return std::forward_as_tuple( value.member0, value.member1, value.member2 );
 		}
 	};
 } // namespace daw::json
@@ -110,8 +103,7 @@ int main( int argc, char **argv )
 	puts( "Original" );
 	puts( std::string( data.data( ), data.size( ) ).c_str( ) );
 
-	auto stuff = daw::json::from_json_array<
-	  daw::cookbook_optional_values1::MyOptionalStuff1>( data );
+	auto stuff = daw::json::from_json_array<daw::cookbook_optional_values1::MyOptionalStuff1>( data );
 
 	test_assert( stuff.size( ) == 2, "Unexpected size" );
 	test_assert( not stuff.front( ).member2, "Unexpected value" );
@@ -123,8 +115,7 @@ int main( int argc, char **argv )
 	puts( str.c_str( ) );
 
 	std::vector<daw::cookbook_optional_values1::MyOptionalStuff1> stuff2 =
-	  daw::json::from_json_array<
-	    daw::cookbook_optional_values1::MyOptionalStuff1>( str );
+	  daw::json::from_json_array<daw::cookbook_optional_values1::MyOptionalStuff1>( str );
 
 	test_assert( stuff == stuff2, "Unexpected round trip error" );
 	return 0;
@@ -134,8 +125,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

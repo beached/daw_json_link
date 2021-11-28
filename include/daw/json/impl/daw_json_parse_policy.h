@@ -43,8 +43,7 @@ namespace daw::json {
 		 * std::allocator_arg_t followed by the allocator.`Thing( args..., alloc )`
 		 * or `Thing( std::allocator_arg, alloc, args... )`
 		 */
-		template<json_details::json_options_t PolicyFlags =
-		           json_details::default_policy_flag,
+		template<json_details::json_options_t PolicyFlags = json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 			/***
@@ -55,23 +54,20 @@ namespace daw::json {
 			  json_details::get_bits_for<TemporarilyMutateBuffer>( PolicyFlags ) ==
 			  TemporarilyMutateBuffer::yes;
 
-			using CharT =
-			  std::conditional_t<allow_temporarily_mutating_buffer, char, char const>;
+			using CharT = std::conditional_t<allow_temporarily_mutating_buffer, char, char const>;
 			using iterator = CharT *;
 
 			/***
 			 * see CheckedParseMode
 			 */
 			static constexpr bool is_unchecked_input =
-			  json_details::get_bits_for<CheckedParseMode>( PolicyFlags ) ==
-			  CheckedParseMode::no;
+			  json_details::get_bits_for<CheckedParseMode>( PolicyFlags ) == CheckedParseMode::no;
 
 			/***
 			 * See ExecModeTypes
 			 */
 			using exec_tag_t =
-			  switch_t<json_details::get_bits_for<ExecModeTypes, std::size_t>(
-			             PolicyFlags ),
+			  switch_t<json_details::get_bits_for<ExecModeTypes, std::size_t>( PolicyFlags ),
 			           constexpr_exec_tag,
 			           runtime_exec_tag,
 			           simd_exec_tag>;
@@ -82,15 +78,13 @@ namespace daw::json {
 			 * see AllowEscapedNames
 			 */
 			static constexpr bool allow_escaped_names =
-			  json_details::get_bits_for<AllowEscapedNames>( PolicyFlags ) ==
-			  AllowEscapedNames::yes;
+			  json_details::get_bits_for<AllowEscapedNames>( PolicyFlags ) == AllowEscapedNames::yes;
 
 			/***
 			 * see ForceFullNameCheck
 			 */
 			static constexpr bool force_name_equal_check =
-			  json_details::get_bits_for<ForceFullNameCheck>( PolicyFlags ) ==
-			  ForceFullNameCheck::yes;
+			  json_details::get_bits_for<ForceFullNameCheck>( PolicyFlags ) == ForceFullNameCheck::yes;
 
 			/***
 			 * see ZeroTerminatedString
@@ -103,15 +97,13 @@ namespace daw::json {
 			 * See IEEE754Precise
 			 */
 			static constexpr bool precise_ieee754 =
-			  json_details::get_bits_for<IEEE754Precise>( PolicyFlags ) ==
-			  IEEE754Precise::yes;
+			  json_details::get_bits_for<IEEE754Precise>( PolicyFlags ) == IEEE754Precise::yes;
 
 			/***
 			 * See MinifiedDocument
 			 */
 			static constexpr bool minified_document =
-			  json_details::get_bits_for<MinifiedDocument>( PolicyFlags ) ==
-			  MinifiedDocument::yes;
+			  json_details::get_bits_for<MinifiedDocument>( PolicyFlags ) == MinifiedDocument::yes;
 
 			/***
 			 * See ExcludeSpecialEscapes
@@ -121,20 +113,17 @@ namespace daw::json {
 			  ExcludeSpecialEscapes::yes;
 
 			static constexpr bool validate_utf8 =
-			  json_details::get_bits_for<ValidateUTF8>( PolicyFlags ) ==
-			  ValidateUTF8::yes;
+			  json_details::get_bits_for<ValidateUTF8>( PolicyFlags ) == ValidateUTF8::yes;
 
 			static constexpr bool allow_leading_zero_plus = true;
 
 			using as_unchecked =
-			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>(
-			                     PolicyFlags,
-			                     CheckedParseMode::no ),
+			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>( PolicyFlags,
+			                                                             CheckedParseMode::no ),
 			                   Allocator>;
 			using as_checked =
-			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>(
-			                     PolicyFlags,
-			                     CheckedParseMode::yes ),
+			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>( PolicyFlags,
+			                                                             CheckedParseMode::yes ),
 			                   Allocator>;
 
 			static constexpr bool use_exact_mappings_by_default =
@@ -146,19 +135,16 @@ namespace daw::json {
 			  MustVerifyEndOfDataIsValid::yes;
 
 			static constexpr bool expect_long_strings =
-			  json_details::get_bits_for<ExpectLongStrings>( PolicyFlags ) ==
-			  ExpectLongStrings::yes;
+			  json_details::get_bits_for<ExpectLongStrings>( PolicyFlags ) == ExpectLongStrings::yes;
 
 			static constexpr bool always_runtime =
-			  json_details::get_bits_for<AlwaysRuntime>( PolicyFlags ) ==
-			  AlwaysRuntime::yes;
+			  json_details::get_bits_for<AlwaysRuntime>( PolicyFlags ) == AlwaysRuntime::yes;
 
 			static constexpr GlobalEightBitModes eight_bit_mode =
 			  json_details::get_bits_for<GlobalEightBitModes>( PolicyFlags );
 
 			using CommentPolicy =
-			  switch_t<json_details::get_bits_for<PolicyCommentTypes, std::size_t>(
-			             PolicyFlags ),
+			  switch_t<json_details::get_bits_for<PolicyCommentTypes, std::size_t>( PolicyFlags ),
 			           NoCommentSkippingPolicy,
 			           CppCommentSkippingPolicy,
 			           HashCommentSkippingPolicy>;
@@ -172,9 +158,7 @@ namespace daw::json {
 
 			template<auto... PolicyOptions>
 			using SetPolicyOptions =
-			  BasicParsePolicy<json_details::set_bits( PolicyFlags,
-			                                           PolicyOptions... ),
-			                   Allocator>;
+			  BasicParsePolicy<json_details::set_bits( PolicyFlags, PolicyOptions... ), Allocator>;
 
 			inline constexpr BasicParsePolicy( ) = default;
 
@@ -184,19 +168,14 @@ namespace daw::json {
 			  , class_first( f )
 			  , class_last( l ) {}
 
-			inline constexpr BasicParsePolicy( iterator f,
-			                                   iterator l,
-			                                   Allocator &alloc )
+			inline constexpr BasicParsePolicy( iterator f, iterator l, Allocator &alloc )
 			  : json_details::AllocatorWrapper<Allocator>( alloc )
 			  , first( f )
 			  , last( l )
 			  , class_first( f )
 			  , class_last( l ) {}
 
-			inline constexpr BasicParsePolicy( iterator f,
-			                                   iterator l,
-			                                   iterator cf,
-			                                   iterator cl )
+			inline constexpr BasicParsePolicy( iterator f, iterator l, iterator cf, iterator cl )
 			  : first( f )
 			  , last( l )
 			  , class_first( cf )
@@ -213,11 +192,10 @@ namespace daw::json {
 			  , class_first( cf )
 			  , class_last( cl ) {}
 
-			[[nodiscard]] inline constexpr BasicParsePolicy
-			copy( iterator f = iterator{ },
-			      iterator l = iterator{ },
-			      iterator cf = iterator{ },
-			      iterator cl = iterator{ } ) const {
+			[[nodiscard]] inline constexpr BasicParsePolicy copy( iterator f = iterator{ },
+			                                                      iterator l = iterator{ },
+			                                                      iterator cf = iterator{ },
+			                                                      iterator cl = iterator{ } ) const {
 				BasicParsePolicy result = *this;
 				if( f ) {
 					result.first = f;
@@ -239,25 +217,16 @@ namespace daw::json {
 
 			template<typename Alloc>
 			[[nodiscard]] static inline constexpr with_allocator_type<Alloc>
-			with_allocator( iterator f,
-			                iterator l,
-			                iterator cf,
-			                iterator cl,
-			                Alloc &alloc ) {
+			with_allocator( iterator f, iterator l, iterator cf, iterator cl, Alloc &alloc ) {
 				return with_allocator_type<Alloc>{ f, l, cf, cl, alloc };
 			}
 
 			template<typename Alloc>
-			[[nodiscard]] constexpr auto
-			with_allocator( BasicParsePolicy<PolicyFlags, Alloc> p ) const {
+			[[nodiscard]] constexpr auto with_allocator( BasicParsePolicy<PolicyFlags, Alloc> p ) const {
 				if constexpr( std::is_same<Alloc, json_details::NoAllocator>::value ) {
 					return *this;
 				} else {
-					auto result = with_allocator( first,
-					                              last,
-					                              class_first,
-					                              class_last,
-					                              p.get_allocator( ) );
+					auto result = with_allocator( first, last, class_first, class_last, p.get_allocator( ) );
 					result.counter = p.counter;
 					return result;
 				}
@@ -266,29 +235,22 @@ namespace daw::json {
 			template<typename Alloc>
 			[[nodiscard]] inline constexpr with_allocator_type<Alloc>
 			with_allocator( Alloc &alloc ) const {
-				auto result =
-				  with_allocator( first, last, class_first, class_last, alloc );
+				auto result = with_allocator( first, last, class_first, class_last, alloc );
 				result.counter = counter;
 				return result;
 			}
 
-			using without_allocator_type =
-			  BasicParsePolicy<PolicyFlags, json_details::NoAllocator>;
+			using without_allocator_type = BasicParsePolicy<PolicyFlags, json_details::NoAllocator>;
 
 			[[nodiscard]] static inline constexpr without_allocator_type
 			without_allocator( BasicParsePolicy p ) {
-				auto result = without_allocator_type( p.first,
-				                                      p.last,
-				                                      p.class_first,
-				                                      p.class_last );
+				auto result = without_allocator_type( p.first, p.last, p.class_first, p.class_last );
 				result.counter = p.counter;
 				return result;
 			}
 
-			[[nodiscard]] inline constexpr without_allocator_type
-			without_allocator( ) const {
-				auto result =
-				  without_allocator_type( first, last, class_first, class_last );
+			[[nodiscard]] inline constexpr without_allocator_type without_allocator( ) const {
+				auto result = without_allocator_type( first, last, class_first, class_last );
 				result.counter = counter;
 				return result;
 			}
@@ -299,8 +261,8 @@ namespace daw::json {
 				return { f, l, f, l, alloc };
 			}
 
-			[[nodiscard]] static inline constexpr without_allocator_type
-			without_allocator( iterator f, iterator l ) {
+			[[nodiscard]] static inline constexpr without_allocator_type without_allocator( iterator f,
+			                                                                                iterator l ) {
 				return { f, l };
 			}
 
@@ -309,23 +271,19 @@ namespace daw::json {
 				return { f, l, cf, cl };
 			}
 
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
-			data( ) const {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator data( ) const {
 				return first;
 			}
 
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
-			data_end( ) const {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator data_end( ) const {
 				return last;
 			}
 
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
-			begin( ) const {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator begin( ) const {
 				return first;
 			}
 
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
-			end( ) const {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator end( ) const {
 				return last;
 			}
 
@@ -340,8 +298,7 @@ namespace daw::json {
 				}
 			}
 
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool
-			has_more( ) const {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool has_more( ) const {
 				return first < last;
 			}
 
@@ -359,18 +316,12 @@ namespace daw::json {
 
 			template<char c>
 			DAW_ATTRIB_FLATINLINE inline constexpr void move_to_next_of_unchecked( ) {
-				first =
-				  json_details::memchr_unchecked<c, exec_tag_t, expect_long_strings>(
-				    first,
-				    last );
+				first = json_details::memchr_unchecked<c, exec_tag_t, expect_long_strings>( first, last );
 			}
 
 			template<char c>
 			DAW_ATTRIB_FLATINLINE inline constexpr void move_to_next_of_checked( ) {
-				first =
-				  json_details::memchr_checked<c, exec_tag_t, expect_long_strings>(
-				    first,
-				    last );
+				first = json_details::memchr_checked<c, exec_tag_t, expect_long_strings>( first, last );
 			}
 
 			template<char c>
@@ -387,9 +338,7 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr char front_checked( ) const {
-				daw_json_assert( first < last,
-				                 ErrorReason::UnexpectedEndOfData,
-				                 *this );
+				daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData, *this );
 				return *first;
 			}
 
@@ -445,9 +394,8 @@ namespace daw::json {
 						++f;
 					}
 				} else {
-					while( ( f < l ) and
-					       daw::nsc_and( static_cast<unsigned char>( *f ) > 0x20U,
-					                     not CommentPolicy::is_literal_end( *f ) ) ) {
+					while( ( f < l ) and daw::nsc_and( static_cast<unsigned char>( *f ) > 0x20U,
+					                                   not CommentPolicy::is_literal_end( *f ) ) ) {
 						++f;
 					}
 				}
@@ -459,17 +407,12 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool is_space_checked( ) const {
-				daw_json_assert_weak( has_more( ),
-				                      ErrorReason::UnexpectedEndOfData,
-				                      *this );
-				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-				         1U ) <= 0x1FU;
+				daw_json_assert_weak( has_more( ), ErrorReason::UnexpectedEndOfData, *this );
+				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) - 1U ) <= 0x1FU;
 			}
 
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
-			is_space_unchecked( ) const {
-				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-				         1U ) <= 0x1FU;
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool is_space_unchecked( ) const {
+				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) - 1U ) <= 0x1FU;
 			}
 
 			[[nodiscard]] inline constexpr bool is_opening_bracket_checked( ) const {
@@ -504,8 +447,7 @@ namespace daw::json {
 				}
 			}
 
-			DAW_ATTRIB_FLATINLINE inline constexpr void
-			move_next_member_or_end_checked( ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr void move_next_member_or_end_checked( ) {
 				trim_left_checked( );
 				if constexpr( is_zero_terminated_string ) {
 					if( *first == ',' ) {
@@ -556,21 +498,15 @@ namespace daw::json {
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
 			skip_bracketed_item_checked( ) {
-				return CommentPolicy::template skip_bracketed_item_checked<PrimLeft,
-				                                                           PrimRight,
-				                                                           SecLeft,
-				                                                           SecRight>(
-				  *this );
+				return CommentPolicy::
+				  template skip_bracketed_item_checked<PrimLeft, PrimRight, SecLeft, SecRight>( *this );
 			}
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
 			skip_bracketed_item_unchecked( ) {
-				return CommentPolicy::template skip_bracketed_item_unchecked<PrimLeft,
-				                                                             PrimRight,
-				                                                             SecLeft,
-				                                                             SecRight>(
-				  *this );
+				return CommentPolicy::
+				  template skip_bracketed_item_unchecked<PrimLeft, PrimRight, SecLeft, SecRight>( *this );
 			}
 
 			[[nodiscard]] inline constexpr ParseState skip_class( ) {
@@ -593,8 +529,7 @@ namespace daw::json {
 				return always_get( first, last );
 			}
 
-			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr CharT
-			safe_get( CharT *f, CharT *l ) {
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr CharT safe_get( CharT *f, CharT *l ) {
 				if constexpr( ParseState::is_unchecked_input ) {
 					(void)l;
 					return *f;
@@ -617,8 +552,7 @@ namespace daw::json {
 		  BasicParsePolicy<parse_options( CheckedParseMode::no )>;
 
 		using NoCommentZeroSkippingPolicyUnchecked =
-		  BasicParsePolicy<parse_options( CheckedParseMode::no,
-		                                  ZeroTerminatedString::yes )>;
+		  BasicParsePolicy<parse_options( CheckedParseMode::no, ZeroTerminatedString::yes )>;
 
 		namespace json_details {
 			template<typename>
@@ -626,8 +560,7 @@ namespace daw::json {
 
 			template<>
 			struct exec_mode_from_tag_t<constexpr_exec_tag> {
-				static inline constexpr ExecModeTypes value =
-				  ExecModeTypes::compile_time;
+				static inline constexpr ExecModeTypes value = ExecModeTypes::compile_time;
 			};
 
 			template<>
@@ -641,54 +574,45 @@ namespace daw::json {
 			};
 
 			template<typename ExecMode>
-			inline constexpr ExecModeTypes exec_mode_from_tag =
-			  exec_mode_from_tag_t<ExecMode>::value;
+			inline constexpr ExecModeTypes exec_mode_from_tag = exec_mode_from_tag_t<ExecMode>::value;
 		} // namespace json_details
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDNoCommentSkippingPolicyChecked =
-		  BasicParsePolicy<parse_options(
-		                     json_details::exec_mode_from_tag<ExecTag> ),
-		                   Allocator>;
+		  BasicParsePolicy<parse_options( json_details::exec_mode_from_tag<ExecTag> ), Allocator>;
 
-		static_assert( SIMDNoCommentSkippingPolicyChecked<
-		               runtime_exec_tag>::exec_tag_t::always_rvo );
+		static_assert( SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>::exec_tag_t::always_rvo );
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDNoCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<parse_options(
-		                     CheckedParseMode::no,
-		                     json_details::exec_mode_from_tag<ExecTag> ),
+		  BasicParsePolicy<parse_options( CheckedParseMode::no,
+		                                  json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
 		using HashCommentSkippingPolicyChecked =
 		  BasicParsePolicy<parse_options( PolicyCommentTypes::hash )>;
 
 		using HashCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<parse_options( CheckedParseMode::no,
-		                                  PolicyCommentTypes::hash )>;
+		  BasicParsePolicy<parse_options( CheckedParseMode::no, PolicyCommentTypes::hash )>;
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDHashCommentSkippingPolicyChecked =
-		  BasicParsePolicy<parse_options(
-		                     PolicyCommentTypes::hash,
-		                     json_details::exec_mode_from_tag<ExecTag> ),
+		  BasicParsePolicy<parse_options( PolicyCommentTypes::hash,
+		                                  json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDHashCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<parse_options(
-		                     CheckedParseMode::no,
-		                     PolicyCommentTypes::hash,
-		                     json_details::exec_mode_from_tag<ExecTag> ),
+		  BasicParsePolicy<parse_options( CheckedParseMode::no,
+		                                  PolicyCommentTypes::hash,
+		                                  json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
 		using CppCommentSkippingPolicyChecked =
 		  BasicParsePolicy<parse_options( PolicyCommentTypes::cpp )>;
 
 		using CppCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<parse_options( CheckedParseMode::no,
-		                                  PolicyCommentTypes::cpp )>;
+		  BasicParsePolicy<parse_options( CheckedParseMode::no, PolicyCommentTypes::cpp )>;
 
 		/***
 		 * Parse using SIMD instructions if available, allow C++ comments and fully
@@ -697,9 +621,8 @@ namespace daw::json {
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDCppCommentSkippingPolicyChecked =
-		  BasicParsePolicy<parse_options(
-		                     PolicyCommentTypes::cpp,
-		                     json_details::exec_mode_from_tag<ExecTag> ),
+		  BasicParsePolicy<parse_options( PolicyCommentTypes::cpp,
+		                                  json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
 		/***
@@ -708,20 +631,18 @@ namespace daw::json {
 		 */
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDCppCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<parse_options(
-		                     CheckedParseMode::no,
-		                     PolicyCommentTypes::cpp,
-		                     json_details::exec_mode_from_tag<ExecTag> ),
+		  BasicParsePolicy<parse_options( CheckedParseMode::no,
+		                                  PolicyCommentTypes::cpp,
+		                                  json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
-		using ConformancePolicy =
-		  BasicParsePolicy<parse_options( PolicyCommentTypes::none,
-		                                  AllowEscapedNames::yes,
-		                                  CheckedParseMode::yes,
-		                                  MustVerifyEndOfDataIsValid::yes,
-		                                  IEEE754Precise::yes,
-		                                  ValidateUTF8::yes,
-		                                  ExcludeSpecialEscapes::yes )>;
+		using ConformancePolicy = BasicParsePolicy<parse_options( PolicyCommentTypes::none,
+		                                                          AllowEscapedNames::yes,
+		                                                          CheckedParseMode::yes,
+		                                                          MustVerifyEndOfDataIsValid::yes,
+		                                                          IEEE754Precise::yes,
+		                                                          ValidateUTF8::yes,
+		                                                          ExcludeSpecialEscapes::yes )>;
 
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -127,27 +127,20 @@ template<typename OutputIterator>
 JSONMinifyHandler( OutputIterator ) -> JSONMinifyHandler<OutputIterator>;
 
 template<typename Iterator>
-void roundtrip( daw::Arguments const &args,
-                std::string_view data,
-                Iterator out_it ) {
+void roundtrip( daw::Arguments const &args, std::string_view data, Iterator out_it ) {
 
 	bool const has_out_file = args.size( ) > 1 and args[1].name.empty( );
 	auto handler = JSONMinifyHandler( out_it );
 
 	if( auto pos = args.find_argument_position( "verbose" ); pos ) {
-		auto const time = daw::benchmark( [&] {
-			daw::json::json_event_parser<daw::json::ConformancePolicy>( data,
-			                                                            handler );
-		} );
+		auto const time = daw::benchmark(
+		  [&] { daw::json::json_event_parser<daw::json::ConformancePolicy>( data, handler ); } );
 		if( not has_out_file ) {
 			std::cout << '\n';
 		}
-		std::cout << "minified "
-		          << daw::utility::to_bytes_per_second( data.size( ), 2 ) << " in "
+		std::cout << "minified " << daw::utility::to_bytes_per_second( data.size( ), 2 ) << " in "
 		          << daw::utility::format_seconds( time, 2 ) << " at "
-		          << daw::utility::to_bytes_per_second(
-		               static_cast<double>( data.size( ) ) / time,
-		               2 )
+		          << daw::utility::to_bytes_per_second( static_cast<double>( data.size( ) ) / time, 2 )
 		          << "/s\n";
 	} else {
 		daw::json::json_event_parser<daw::json::ConformancePolicy>( data, handler );
@@ -169,8 +162,7 @@ int main( int argc, char **argv )
 	if( args.empty( ) ) {
 		std::cerr << "Must supply path to json document followed optionally by the "
 		             "output file\n";
-		std::cerr << args.program_name( )
-		          << " json_in.json [json_out.json] [--verbose]\n";
+		std::cerr << args.program_name( ) << " json_in.json [json_out.json] [--verbose]\n";
 		exit( EXIT_FAILURE );
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( args[0].value );
@@ -192,16 +184,14 @@ int main( int argc, char **argv )
 		}
 #ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &jex ) {
-		std::cerr << "Exception thrown by parser\n"
-		          << to_formatted_string( jex, data.data( ) ) << '\n';
+		std::cerr << "Exception thrown by parser\n" << to_formatted_string( jex, data.data( ) ) << '\n';
 		exit( 1 );
 	}
 #endif
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

@@ -53,8 +53,8 @@ static std::vector<T> const &make_int_array( ) {
 		auto result = std::vector<T>( );
 		result.reserve( N );
 		for( size_t n = 0; n < N; ++n ) {
-			result.push_back( daw::randint<T>( daw::numeric_limits<T>::min( ),
-			                                   daw::numeric_limits<T>::max( ) ) );
+			result.push_back(
+			  daw::randint<T>( daw::numeric_limits<T>::min( ), daw::numeric_limits<T>::max( ) ) );
 		}
 		return result;
 	}( );
@@ -67,10 +67,9 @@ static std::string_view make_int_array_data( ) {
 		std::string result = "[";
 		result.reserve( N * 23 + 8 );
 		for( size_t n = 0; n < N; ++n ) {
-			result +=
-			  std::to_string( daw::randint<T>( daw::numeric_limits<T>::min( ),
-			                                   daw::numeric_limits<T>::max( ) ) ) +
-			  ',';
+			result += std::to_string( daw::randint<T>( daw::numeric_limits<T>::min( ),
+			                                           daw::numeric_limits<T>::max( ) ) ) +
+			          ',';
 		}
 		result.back( ) = ']';
 		// result.shrink_to_fit( );
@@ -96,9 +95,8 @@ void test_func( ) {
 		result.reserve( NUMVALUES * 23 + 8 );
 		daw::algorithm::do_n( NUMVALUES, [&result] {
 			result += "{\"a\":" +
-			          std::to_string( daw::randint<intmax_t>(
-			            daw::numeric_limits<intmax_t>::min( ),
-			            daw::numeric_limits<intmax_t>::max( ) ) ) +
+			          std::to_string( daw::randint<intmax_t>( daw::numeric_limits<intmax_t>::min( ),
+			                                                  daw::numeric_limits<intmax_t>::max( ) ) ) +
 			          "},";
 		} );
 		result.back( ) = ']';
@@ -115,17 +113,14 @@ void test_func( ) {
 		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<Number,
-			                    std::vector<Number>,
-			                    NoCommentSkippingPolicyUnchecked>( sv );
+			    from_json_array<Number, std::vector<Number>, NoCommentSkippingPolicyUnchecked>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
-		using iterator_t =
-		  daw::json::json_array_iterator<Number, NoCommentSkippingPolicyUnchecked>;
+		using iterator_t = daw::json::json_array_iterator<Number, NoCommentSkippingPolicyUnchecked>;
 
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
@@ -135,9 +130,7 @@ void test_func( ) {
 		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ),
-			             iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy( iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -151,18 +144,14 @@ void test_func( ) {
 		  json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<intmax_t,
-			                    std::vector<intmax_t>,
-			                    NoCommentSkippingPolicyUnchecked>( sv );
+			    from_json_array<intmax_t, std::vector<intmax_t>, NoCommentSkippingPolicyUnchecked>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv_intmax );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t =
-		  daw::json::json_array_iterator<intmax_t,
-		                                 NoCommentSkippingPolicyUnchecked>;
+		using iterator_t = daw::json::json_array_iterator<intmax_t, NoCommentSkippingPolicyUnchecked>;
 
 		auto data = std::vector<intmax_t>( );
 		data.resize( NUMVALUES );
@@ -181,8 +170,7 @@ void test_func( ) {
 
 		{
 			auto to_json_str = std::string( );
-			to_json_str.resize(
-			  static_cast<std::size_t>( ( json_sv_intmax.size( ) * 15 ) ) / 10 );
+			to_json_str.resize( static_cast<std::size_t>( ( json_sv_intmax.size( ) * 15 ) ) / 10 );
 			auto result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "array of intmax_t: to_json presized",
 			  data.size( ) * sizeof( data[0] ),
@@ -196,8 +184,7 @@ void test_func( ) {
 		}
 		{
 			auto to_json_str = std::string( );
-			to_json_str.resize( make_int_array_data<NUMVALUES, int32_t>( ).size( ) *
-			                    2 );
+			to_json_str.resize( make_int_array_data<NUMVALUES, int32_t>( ).size( ) * 2 );
 			auto result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "array of int32_t: to_json presized",
 			  ( NUMVALUES * sizeof( int32_t ) ),
@@ -211,8 +198,7 @@ void test_func( ) {
 		}
 		{
 			auto to_json_str = std::string( );
-			to_json_str.resize( make_int_array_data<NUMVALUES, uint32_t>( ).size( ) *
-			                    2 );
+			to_json_str.resize( make_int_array_data<NUMVALUES, uint32_t>( ).size( ) * 2 );
 			auto result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "array of uint32_t: to_json presized",
 			  ( NUMVALUES * sizeof( uint32_t ) ),
@@ -226,8 +212,7 @@ void test_func( ) {
 		}
 		{
 			auto to_json_str = std::string( );
-			to_json_str.resize( make_int_array_data<NUMVALUES, uintmax_t>( ).size( ) *
-			                    2 );
+			to_json_str.resize( make_int_array_data<NUMVALUES, uintmax_t>( ).size( ) * 2 );
 			auto result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "array of uintmax_t: to_json presized",
 			  ( NUMVALUES * sizeof( uintmax_t ) ),
@@ -267,9 +252,7 @@ void test_func( ) {
 		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ),
-			             iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy( iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -279,22 +262,19 @@ void test_func( ) {
 	}
 	{ // just ints
 		std::cout << "p2. Processing " << json_sv_intmax.size( ) << " bytes "
-		          << daw::utility::to_bytes_per_second( json_sv_intmax.size( ) )
-		          << '\n';
+		          << daw::utility::to_bytes_per_second( json_sv_intmax.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "int parsing 1",
 		  json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data =
-			    from_json_array<json_checked_number_no_name<std::intmax_t>>( sv );
+			  auto const data = from_json_array<json_checked_number_no_name<std::intmax_t>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv_intmax );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t =
-		  daw::json::json_array_iterator<json_checked_number_no_name<intmax_t>>;
+		using iterator_t = daw::json::json_array_iterator<json_checked_number_no_name<intmax_t>>;
 
 		auto data = std::vector<intmax_t>( );
 		data.reserve( NUMVALUES );
@@ -304,9 +284,7 @@ void test_func( ) {
 		  json_sv_intmax.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ),
-			             iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy( iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -333,9 +311,7 @@ void test_func( ) {
 	std::cout << "Unchecked unsigned\n";
 	{
 		// Unsigned
-		using iterator_t =
-		  daw::json::json_array_iterator<uintmax_t,
-		                                 NoCommentSkippingPolicyUnchecked>;
+		using iterator_t = daw::json::json_array_iterator<uintmax_t, NoCommentSkippingPolicyUnchecked>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -364,10 +340,9 @@ void test_func( ) {
 			  "p5. parsing",
 			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto result = daw::json::from_json_array<
-				    int_type,
-				    daw::bounded_vector_t<int_type, NUMVALUES>,
-				    NoCommentSkippingPolicyUnchecked>( sv );
+				  auto result = daw::json::from_json_array<int_type,
+				                                           daw::bounded_vector_t<int_type, NUMVALUES>,
+				                                           NoCommentSkippingPolicyUnchecked>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -409,9 +384,8 @@ void test_func( ) {
 			  "p5. parsing",
 			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto result = daw::json::from_json_array<
-				    int_type,
-				    daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
+				  auto result =
+				    daw::json::from_json_array<int_type, daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -433,10 +407,10 @@ void test_func( ) {
 			  "p5. parsing sse3",
 			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto result = daw::json::from_json_array<
-				    uint_type,
-				    daw::bounded_vector_t<uintmax_t, NUMVALUES>,
-				    SIMDNoCommentSkippingPolicyUnchecked<sse42_exec_tag>>( sv );
+				  auto result =
+				    daw::json::from_json_array<uint_type,
+				                               daw::bounded_vector_t<uintmax_t, NUMVALUES>,
+				                               SIMDNoCommentSkippingPolicyUnchecked<sse42_exec_tag>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -450,9 +424,8 @@ void test_func( ) {
 	{
 		// Unsigned SSE42
 		using uint_type = json_number_no_name<uintmax_t>;
-		using iterator_t = daw::json::json_array_iterator<
-		  uint_type,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<uint_type, SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -481,10 +454,10 @@ void test_func( ) {
 			  "p5. parsing sse3",
 			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto result = daw::json::from_json_array<
-				    uint_type,
-				    daw::bounded_vector_t<uint32_t, NUMVALUES>,
-				    SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>( sv );
+				  auto result =
+				    daw::json::from_json_array<uint_type,
+				                               daw::bounded_vector_t<uint32_t, NUMVALUES>,
+				                               SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -513,8 +486,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

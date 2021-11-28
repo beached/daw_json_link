@@ -38,16 +38,14 @@ namespace daw::json {
 
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
-		using type = json_member_list<
-		  json_variant<member0,
-		               std::variant<int, std::string>,
-		               json_variant_type_list<int, std::string>>,
-		  json_variant_null<member1,
-		                    std::optional<std::variant<std::string, bool>>,
-		                    json_variant_type_list<std::string, bool>>>;
+		using type = json_member_list<json_variant<member0,
+		                                           std::variant<int, std::string>,
+		                                           json_variant_type_list<int, std::string>>,
+		                              json_variant_null<member1,
+		                                                std::optional<std::variant<std::string, bool>>,
+		                                                json_variant_type_list<std::string, bool>>>;
 
-		static inline auto
-		to_json_data( daw::cookbook_variant1::MyVariantStuff1 const &value ) {
+		static inline auto to_json_data( daw::cookbook_variant1::MyVariantStuff1 const &value ) {
 			return std::forward_as_tuple( value.member0, value.member1 );
 		}
 	};
@@ -65,23 +63,18 @@ int main( int argc, char **argv )
 	auto data = *daw::read_file( argv[1] );
 	puts( "Original" );
 	puts( data.c_str( ) );
-	auto stuff =
-	  daw::json::from_json<std::vector<daw::cookbook_variant1::MyVariantStuff1>>(
-	    data );
+	auto stuff = daw::json::from_json<std::vector<daw::cookbook_variant1::MyVariantStuff1>>( data );
 	test_assert( stuff.size( ) == 3, "Unexpected size" );
 	test_assert( stuff.front( ).member0.index( ) == 0, "Unexpected value" );
 	test_assert( not stuff[2].member1, "Unexpected value" );
-	test_assert( ( std::get<0>( stuff.front( ).member0 ) == 5 ),
-	             "Unexpected value" );
+	test_assert( ( std::get<0>( stuff.front( ).member0 ) == 5 ), "Unexpected value" );
 	test_assert( stuff.front( ).member1->index( ) == 0, "Unexpected value" );
-	test_assert( ( std::get<0>( stuff.front( ).member1.value( ) ) == "hello" ),
-	             "Unexpected value" );
+	test_assert( ( std::get<0>( stuff.front( ).member1.value( ) ) == "hello" ), "Unexpected value" );
 
 	auto const str = daw::json::to_json_array( stuff );
 	puts( "After" );
 	puts( str.c_str( ) );
-	auto stuff2 =
-	  daw::json::from_json_array<daw::cookbook_variant1::MyVariantStuff1>( str );
+	auto stuff2 = daw::json::from_json_array<daw::cookbook_variant1::MyVariantStuff1>( str );
 	test_assert( stuff == stuff2, "Unexpected round trip error" );
 	return 0;
 }
@@ -90,8 +83,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

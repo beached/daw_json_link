@@ -26,10 +26,9 @@ namespace daw::json {
 		static constexpr char const a[] = "a";
 		static constexpr char const b[] = "b";
 		static constexpr char const c[] = "c";
-		using type = json_member_list<
-		  json_link<a, int>,
-		  json_link<b, std::string>,
-		  json_link<c, std::vector<std::map<std::string, double>>>>;
+		using type = json_member_list<json_link<a, int>,
+		                              json_link<b, std::string>,
+		                              json_link<c, std::vector<std::map<std::string, double>>>>;
 
 		static constexpr auto to_json_data( Foo const &f ) {
 			return std::forward_as_tuple( f.a, f.b, f.c );
@@ -48,9 +47,7 @@ int main( ) {
 	daw_json_assert( foo_val.a == 5, daw::json::ErrorReason::InvalidNumber );
 	auto json_data2 = daw::json::to_json( foo_val );
 	auto foo_val2 = daw::json::from_json<Foo>( json_data2 );
-	daw_json_assert( foo_val.a == foo_val2.a,
-	                 daw::json::ErrorReason::InvalidNumber );
-	daw_json_assert( foo_val.b == foo_val2.b,
-	                 daw::json::ErrorReason::InvalidString );
+	daw_json_assert( foo_val.a == foo_val2.a, daw::json::ErrorReason::InvalidNumber );
+	daw_json_assert( foo_val.b == foo_val2.b, daw::json::ErrorReason::InvalidString );
 	daw_json_assert( foo_val.c == foo_val2.c, daw::json::ErrorReason::Unknown );
 }

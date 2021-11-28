@@ -37,16 +37,14 @@ namespace daw::json {
 				  daw::string_view Name,
 				  basic_json_value_iterator<ParseState> val )
 				  : name( Name )
-				  , hash_value(
-				      daw::name_hash<ParseState::expect_long_strings>( Name ) )
+				  , hash_value( daw::name_hash<ParseState::expect_long_strings>( Name ) )
 				  , location( DAW_MOVE( val ) ) {}
 
 				[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
 					return name == Name;
 				}
 
-				[[nodiscard]] constexpr bool is_match( daw::string_view Name,
-				                                       daw::UInt32 hash ) const {
+				[[nodiscard]] constexpr bool is_match( daw::string_view Name, daw::UInt32 hash ) const {
 					if( hash != hash_value ) {
 						return false;
 					}
@@ -72,8 +70,7 @@ namespace daw::json {
 		template<typename ParseState>
 		class basic_stateful_json_value {
 			basic_json_value<ParseState> m_value;
-			std::vector<json_details::basic_stateful_json_value_state<ParseState>>
-			  m_locs{ };
+			std::vector<json_details::basic_stateful_json_value_state<ParseState>> m_locs{ };
 
 			/***
 			 * Move parser until member name matches key if needed
@@ -101,9 +98,8 @@ namespace daw::json {
 				while( it != last ) {
 					auto name = it.name( );
 					daw_json_assert_weak( name, ErrorReason::MissingMemberName );
-					auto const &new_loc = m_locs.emplace_back(
-					  daw::string_view( std::data( *name ), std::size( *name ) ),
-					  it );
+					auto const &new_loc =
+					  m_locs.emplace_back( daw::string_view( std::data( *name ), std::size( *name ) ), it );
 					if( new_loc.is_match( member.name ) ) {
 						return pos;
 					}
@@ -135,9 +131,7 @@ namespace daw::json {
 				while( it != last ) {
 					auto name = it.name( );
 					if( name ) {
-						m_locs.emplace_back(
-						  daw::string_view( std::data( *name ), std::size( *name ) ),
-						  it );
+						m_locs.emplace_back( daw::string_view( std::data( *name ), std::size( *name ) ), it );
 					} else {
 						m_locs.emplace_back( daw::string_view( ), it );
 					}
@@ -167,8 +161,7 @@ namespace daw::json {
 			  : basic_stateful_json_value( basic_json_value<ParseState>( "{}" ) ) {}
 
 			constexpr basic_stateful_json_value( std::string_view json_data )
-			  : basic_stateful_json_value(
-			      basic_json_value<ParseState>( json_data ) ) {}
+			  : basic_stateful_json_value( basic_json_value<ParseState>( json_data ) ) {}
 			/**
 			 * Reuse state storage for another basic_json_value
 			 * @param val Value to contain state for
@@ -184,11 +177,9 @@ namespace daw::json {
 			 * @param key name of member
 			 * @return a new basic_json_member
 			 */
-			[[nodiscard]] constexpr basic_json_value<ParseState>
-			operator[]( std::string_view key ) {
+			[[nodiscard]] constexpr basic_json_value<ParseState> operator[]( std::string_view key ) {
 				std::size_t pos = move_to( json_member_name( key ) );
-				daw_json_assert_weak( pos < std::size( m_locs ),
-				                      ErrorReason::UnknownMember );
+				daw_json_assert_weak( pos < std::size( m_locs ), ErrorReason::UnknownMember );
 				return m_locs[pos].location->value;
 			}
 
@@ -198,11 +189,9 @@ namespace daw::json {
 			 * @param member name of member
 			 * @return a new basic_json_member
 			 */
-			[[nodiscard]] constexpr basic_json_value<ParseState>
-			operator[]( json_member_name member ) {
+			[[nodiscard]] constexpr basic_json_value<ParseState> operator[]( json_member_name member ) {
 				std::size_t pos = move_to( member );
-				daw_json_assert_weak( pos < std::size( m_locs ),
-				                      ErrorReason::UnknownMember );
+				daw_json_assert_weak( pos < std::size( m_locs ), ErrorReason::UnknownMember );
 				return m_locs[pos].location->value;
 			}
 
@@ -213,8 +202,7 @@ namespace daw::json {
 			 * @return a new basic_json_member for the JSON data or an empty one if
 			 * the member does not exist
 			 */
-			[[nodiscard]] constexpr basic_json_value<ParseState>
-			at( std::string_view key ) {
+			[[nodiscard]] constexpr basic_json_value<ParseState> at( std::string_view key ) {
 				auto const k = std::string_view( std::data( key ), std::size( key ) );
 				std::size_t pos = move_to( k );
 				if( pos < std::size( m_locs ) ) {
@@ -281,8 +269,7 @@ namespace daw::json {
 			 * @return The name of the member or an empty optional
 			 */
 			template<typename Integer,
-			         std::enable_if_t<std::is_integral<Integer>::value,
-			                          std::nullptr_t> = nullptr>
+			         std::enable_if_t<std::is_integral<Integer>::value, std::nullptr_t> = nullptr>
 			[[nodiscard]] std::optional<std::string_view> name_of( Integer index ) {
 				if constexpr( std::is_signed<Integer>::value ) {
 					if( index < 0 ) {
@@ -313,10 +300,8 @@ namespace daw::json {
 			 * @return A new basic_json_value for the indexed member
 			 */
 			template<typename Integer,
-			         std::enable_if_t<std::is_integral<Integer>::value,
-			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] constexpr basic_json_value<ParseState>
-			operator[]( Integer index ) {
+			         std::enable_if_t<std::is_integral<Integer>::value, std::nullptr_t> = nullptr>
+			[[nodiscard]] constexpr basic_json_value<ParseState> operator[]( Integer index ) {
 				if constexpr( std::is_signed<Integer>::value ) {
 					if( index < 0 ) {
 						index = -index;
@@ -328,8 +313,7 @@ namespace daw::json {
 					}
 				}
 				std::size_t pos = move_to( static_cast<std::size_t>( index ) );
-				daw_json_assert_weak( pos < std::size( m_locs ),
-				                      ErrorReason::UnknownMember );
+				daw_json_assert_weak( pos < std::size( m_locs ), ErrorReason::UnknownMember );
 				return m_locs[pos].location->value;
 			}
 
@@ -341,10 +325,8 @@ namespace daw::json {
 			 * @return A new basic_json_value for the indexed member
 			 */
 			template<typename Integer,
-			         std::enable_if_t<std::is_integral<Integer>::value,
-			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] constexpr std::optional<basic_json_value<ParseState>>
-			at( Integer index ) {
+			         std::enable_if_t<std::is_integral<Integer>::value, std::nullptr_t> = nullptr>
+			[[nodiscard]] constexpr std::optional<basic_json_value<ParseState>> at( Integer index ) {
 				if constexpr( std::is_signed<Integer>::value ) {
 					if( index < 0 ) {
 						index = -index;
@@ -366,13 +348,11 @@ namespace daw::json {
 			/***
 			 * @return A copy of the underlying basic_json_value
 			 */
-			[[nodiscard]] constexpr basic_json_value<ParseState>
-			get_json_value( ) const {
+			[[nodiscard]] constexpr basic_json_value<ParseState> get_json_value( ) const {
 				return m_value;
 			}
 		};
 
-		using json_value_state =
-		  basic_stateful_json_value<NoCommentSkippingPolicyChecked>;
+		using json_value_state = basic_stateful_json_value<NoCommentSkippingPolicyChecked>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

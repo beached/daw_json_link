@@ -24,47 +24,36 @@
 namespace daw::cookbook_dates2 {
 	struct MyClass2 {
 		std::string name;
-		std::chrono::time_point<std::chrono::system_clock,
-		                        std::chrono::milliseconds>
-		  timestamp;
+		std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> timestamp;
 	};
 
 	bool operator==( MyClass2 const &lhs, MyClass2 const &rhs ) {
-		return std::tie( lhs.name, lhs.timestamp ) ==
-		       std::tie( rhs.name, rhs.timestamp );
+		return std::tie( lhs.name, lhs.timestamp ) == std::tie( rhs.name, rhs.timestamp );
 	}
 
 	struct TimestampConverter {
-		DAW_CONSTEXPR std::chrono::time_point<std::chrono::system_clock,
-		                                      std::chrono::milliseconds>
+		DAW_CONSTEXPR std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>
 		operator( )( std::string_view sv ) const {
-			test_assert( sv.size( ) >= 26,
-			             "Date format is always 26 characters long" );
+			test_assert( sv.size( ) >= 26, "Date format is always 26 characters long" );
 			// Skip Day of Week
 			sv.remove_prefix( 4 );
 			auto const mo = daw::json::datetime::parse_short_month( sv );
 			sv.remove_prefix( 4 );
-			auto const dy =
-			  daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
+			auto const dy = daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
 			sv.remove_prefix( 3 );
-			auto const hr =
-			  daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
+			auto const hr = daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
 			sv.remove_prefix( 3 );
-			auto const mn =
-			  daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
+			auto const mn = daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
 			sv.remove_prefix( 3 );
-			auto const se =
-			  daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
+			auto const se = daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
 			sv.remove_prefix( 3 );
 			auto const sign = sv.front( ) == '+' ? 1 : -1;
 			sv.remove_prefix( 1 );
 			auto const off_hr =
-			  daw::json::parse_utils::parse_unsigned<int_least32_t, 2>( sv.data( ) ) *
-			  sign;
+			  daw::json::parse_utils::parse_unsigned<int_least32_t, 2>( sv.data( ) ) * sign;
 			sv.remove_prefix( 2 );
 			auto const off_mn =
-			  daw::json::parse_utils::parse_unsigned<int_least32_t, 2>( sv.data( ) ) *
-			  sign;
+			  daw::json::parse_utils::parse_unsigned<int_least32_t, 2>( sv.data( ) ) * sign;
 			sv.remove_prefix( 3 );
 			int const yr_sign = [&] {
 				if( sv.front( ) == '-' ) {
@@ -76,36 +65,23 @@ namespace daw::cookbook_dates2 {
 				return 1;
 			}( );
 			auto const yr =
-			  yr_sign *
-			  daw::json::parse_utils::parse_unsigned2<int_least32_t>( sv.data( ) );
+			  yr_sign * daw::json::parse_utils::parse_unsigned2<int_least32_t>( sv.data( ) );
 
-			return daw::json::datetime::civil_to_time_point( yr,
-			                                                 mo,
-			                                                 dy,
-			                                                 hr,
-			                                                 mn,
-			                                                 se,
-			                                                 0 ) +
+			return daw::json::datetime::civil_to_time_point( yr, mo, dy, hr, mn, se, 0 ) +
 			       std::chrono::hours( off_hr ) + std::chrono::minutes( off_mn );
 		}
 
 		template<typename OutputIterator>
-		DAW_CONSTEXPR OutputIterator
-		operator( )( OutputIterator it,
-		             std::chrono::time_point<std::chrono::system_clock,
-		                                     std::chrono::milliseconds> tp ) const {
+		DAW_CONSTEXPR OutputIterator operator( )(
+		  OutputIterator it,
+		  std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> tp ) const {
 
-			auto const &[yr, mo, dy, hr, mn, se, ms] =
-			  daw::json::datetime::time_point_to_civil( tp );
+			auto const &[yr, mo, dy, hr, mn, se, ms] = daw::json::datetime::time_point_to_civil( tp );
 			// Day of Week
-			it = daw::json::utils::copy_to_iterator(
-			  it,
-			  daw::json::datetime::short_day_of_week( tp ) );
+			it = daw::json::utils::copy_to_iterator( it, daw::json::datetime::short_day_of_week( tp ) );
 			*it++ = ' ';
 			// Month
-			it = daw::json::utils::copy_to_iterator(
-			  it,
-			  daw::json::datetime::month_short_name( mo ) );
+			it = daw::json::utils::copy_to_iterator( it, daw::json::datetime::month_short_name( mo ) );
 			*it++ = ' ';
 			it = daw::json::utils::integer_to_string( it, dy );
 			*it++ = ' ';
@@ -130,12 +106,11 @@ namespace daw::cookbook_dates2 {
 	};
 
 	template<JSONNAMETYPE name>
-	using json_timestamp =
-	  daw::json::json_custom<name,
-	                         std::chrono::time_point<std::chrono::system_clock,
-	                                                 std::chrono::milliseconds>,
-	                         TimestampConverter,
-	                         TimestampConverter>;
+	using json_timestamp = daw::json::json_custom<
+	  name,
+	  std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>,
+	  TimestampConverter,
+	  TimestampConverter>;
 } // namespace daw::cookbook_dates2
 
 namespace daw::json {
@@ -143,17 +118,14 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_dates2::MyClass2> {
 #if defined( __cpp_nontype_template_parameter_class )
 		using type =
-		  json_member_list<json_string<"name">,
-		                   daw::cookbook_dates2::json_timestamp<"timestamp">>;
+		  json_member_list<json_string<"name">, daw::cookbook_dates2::json_timestamp<"timestamp">>;
 #else
 		static constexpr char const name[] = "name";
 		static constexpr char const timestamp[] = "timestamp";
 		using type =
-		  json_member_list<json_string<name>,
-		                   daw::cookbook_dates2::json_timestamp<timestamp>>;
+		  json_member_list<json_string<name>, daw::cookbook_dates2::json_timestamp<timestamp>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_dates2::MyClass2 const &value ) {
+		static inline auto to_json_data( daw::cookbook_dates2::MyClass2 const &value ) {
 			return std::forward_as_tuple( value.name, value.timestamp );
 		}
 	};
@@ -188,8 +160,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

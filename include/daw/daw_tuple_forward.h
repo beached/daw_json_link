@@ -15,8 +15,8 @@
 #include <type_traits>
 namespace daw {
 	template<typename T>
-	using remove_rvalue_ref_t = std::
-	  conditional_t<std::is_rvalue_reference_v<T>, daw::remove_cvref_t<T>, T>;
+	using remove_rvalue_ref_t =
+	  std::conditional_t<std::is_rvalue_reference_v<T>, daw::remove_cvref_t<T>, T>;
 	/// Forwards arguments but stores rvalues.  This allows use to prevent
 	/// dangling ref's
 	template<typename... Ts>

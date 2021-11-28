@@ -90,24 +90,20 @@ namespace daw::json {
 			         std::size_t... Is,
 			         typename Tuple,
 			         typename Value>
-			[[nodiscard]] inline constexpr serialization_policy<OutputIterator,
-			                                                    SerializationOptions>
-			serialize_json_class(
-			  serialization_policy<OutputIterator, SerializationOptions> it,
-			  Tuple const &args,
-			  Value const &value,
-			  std::index_sequence<Is...> ) {
+			[[nodiscard]] inline constexpr serialization_policy<OutputIterator, SerializationOptions>
+			serialize_json_class( serialization_policy<OutputIterator, SerializationOptions> it,
+			                      Tuple const &args,
+			                      Value const &value,
+			                      std::index_sequence<Is...> ) {
 
 				*it++ = '{';
 				it.add_indent( );
 
 				using visit_size = daw::constant<(
 				  sizeof...( JsonMembers ) +
-				  ( static_cast<std::size_t>(
-				      has_dependent_member_v<without_name<JsonMembers>> ) +
-				    ... + 0 ) )>;
-				auto visited_members =
-				  basic_array_t<daw::string_view, visit_size::value>{ };
+				  ( static_cast<std::size_t>( has_dependent_member_v<without_name<JsonMembers>> ) + ... +
+				    0 ) )>;
+				auto visited_members = basic_array_t<daw::string_view, visit_size::value>{ };
 
 				// Tag Members, if any.  Putting them ahead means we can parse this
 				// faster in the future
@@ -121,10 +117,12 @@ namespace daw::json {
 				{
 					using Names = fwd_pack<JsonMembers...>;
 					daw::Empty const expander[]{
-					  ( dependent_member_to_json_str<
-					      Is,
-					      traits::nth_element<Is, JsonMembers...>,
-					      Names>( is_first, it, args, value, visited_members ),
+					  ( dependent_member_to_json_str<Is, traits::nth_element<Is, JsonMembers...>, Names>(
+					      is_first,
+					      it,
+					      args,
+					      value,
+					      visited_members ),
 					    daw::Empty{ } )...,
 					  daw::Empty{} };
 					(void)expander;
@@ -133,12 +131,11 @@ namespace daw::json {
 				// Regular Members
 				{
 					daw::Empty const expander[]{
-					  ( to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
-					      is_first,
-					      it,
-					      args,
-					      value,
-					      visited_members ),
+					  ( to_json_str<Is, traits::nth_element<Is, JsonMembers...>>( is_first,
+					                                                              it,
+					                                                              args,
+					                                                              value,
+					                                                              visited_members ),
 					    daw::Empty{ } )...,
 					  daw::Empty{} };
 					(void)expander;
@@ -160,13 +157,11 @@ namespace daw::json {
 			         typename Tuple,
 			         typename Value,
 			         std::size_t... Is>
-			[[nodiscard]] inline constexpr serialization_policy<OutputIterator,
-			                                                    SerializerOptions>
-			serialize_ordered_json_class(
-			  serialization_policy<OutputIterator, SerializerOptions> it,
-			  Tuple const &args,
-			  Value const &value,
-			  std::index_sequence<Is...> ) {
+			[[nodiscard]] inline constexpr serialization_policy<OutputIterator, SerializerOptions>
+			serialize_ordered_json_class( serialization_policy<OutputIterator, SerializerOptions> it,
+			                              Tuple const &args,
+			                              Value const &value,
+			                              std::index_sequence<Is...> ) {
 
 				*it++ = '[';
 				it.add_indent( );
@@ -176,11 +171,10 @@ namespace daw::json {
 				Unused( value );
 				{
 					daw::Empty const expander[]{
-					  ( to_json_ordered_str<Is, traits::nth_element<Is, JsonMembers...>>(
-					      array_idx,
-					      sizeof...( Is ),
-					      it,
-					      args ),
+					  ( to_json_ordered_str<Is, traits::nth_element<Is, JsonMembers...>>( array_idx,
+					                                                                      sizeof...( Is ),
+					                                                                      it,
+					                                                                      args ),
 					    daw::Empty{ } )...,
 					  daw::Empty{} };
 					(void)expander;

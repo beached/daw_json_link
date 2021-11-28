@@ -32,30 +32,28 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<kv_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<
-		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
+		using type = json_member_list<json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
 #else
 		constexpr inline static char const kv[] = "kv";
-		using type = json_member_list<
-		  json_key_value<kv, std::unordered_map<std::string, int>, int>>;
+		using type = json_member_list<json_key_value<kv, std::unordered_map<std::string, int>, int>>;
 #endif
 	};
 
 	template<>
 	struct json_data_contract<kv2_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_key_value<
-		  "kv",
-		  daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
-		  int,
-		  daw::string_view>>;
+		using type = json_member_list<
+		  json_key_value<"kv",
+		                 daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
+		                 int,
+		                 daw::string_view>>;
 #else
 		constexpr inline static char const kv[] = "kv";
-		using type = json_member_list<json_key_value<
-		  kv,
-		  daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
-		  int,
-		  daw::string_view>>;
+		using type = json_member_list<
+		  json_key_value<kv,
+		                 daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
+		                 int,
+		                 daw::string_view>>;
 #endif
 	};
 } // namespace daw::json
@@ -86,8 +84,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

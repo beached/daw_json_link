@@ -24,6 +24,5 @@ namespace daw::json {
 	from_json<daw::twitter::twitter_object_t,
 	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>,
 	          false,
-	          daw::twitter::twitter_object_t>(
-	  std::string_view const &json_data );
+	          daw::twitter::twitter_object_t>( std::string_view const &json_data );
 } // namespace daw::json

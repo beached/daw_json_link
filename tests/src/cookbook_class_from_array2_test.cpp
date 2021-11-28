@@ -34,12 +34,9 @@ namespace daw::cookbook_class_from_array2 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_class_from_array2::Point> {
-		using type =
-		  json_tuple_member_list<double,
-		                         json_tuple_member<5, json_link_no_name<double>>>;
+		using type = json_tuple_member_list<double, json_tuple_member<5, json_link_no_name<double>>>;
 
-		static inline auto
-		to_json_data( daw::cookbook_class_from_array2::Point const &p ) {
+		static inline auto to_json_data( daw::cookbook_class_from_array2::Point const &p ) {
 			return std::forward_as_tuple( p.x, p.y );
 		}
 	};
@@ -64,9 +61,8 @@ int main( int argc, char **argv )
 	std::string const str = daw::json::to_json( cls );
 	puts( "Round trip\n" );
 	puts( str.c_str( ) );
-	auto const cls2 =
-	  daw::json::from_json<daw::cookbook_class_from_array2::Point>(
-	    std::string_view( str.data( ), str.size( ) ) );
+	auto const cls2 = daw::json::from_json<daw::cookbook_class_from_array2::Point>(
+	  std::string_view( str.data( ), str.size( ) ) );
 
 	if( cls != cls2 ) {
 		puts( "not exact same\n" );
@@ -77,8 +73,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

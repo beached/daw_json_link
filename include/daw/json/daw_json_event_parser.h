@@ -45,13 +45,12 @@ namespace daw::json {
 			namespace hnd_checks {
 				// On Next Value
 				template<typename Handler, typename ParseState>
-				using has_on_value_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_value(
-				    std::declval<basic_json_pair<ParseState>>( ) ) );
+				using has_on_value_handler_detect = decltype( std::declval<Handler>( ).handle_on_value(
+				  std::declval<basic_json_pair<ParseState>>( ) ) );
 
 				template<typename Handler, typename ParseState>
-				inline constexpr bool has_on_value_handler_v = daw::
-				  is_detected<has_on_value_handler_detect, Handler, ParseState>::value;
+				inline constexpr bool has_on_value_handler_v =
+				  daw::is_detected<has_on_value_handler_detect, Handler, ParseState>::value;
 
 				// On Array Start
 				template<typename Handler, typename ParseState>
@@ -61,9 +60,7 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_array_start_handler_v =
-				  daw::is_detected<has_on_array_start_handler_detect,
-				                   Handler,
-				                   ParseState>::value;
+				  daw::is_detected<has_on_array_start_handler_detect, Handler, ParseState>::value;
 
 				// On Array End
 				template<typename Handler>
@@ -82,9 +79,7 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_class_start_handler_v =
-				  daw::is_detected<has_on_class_start_handler_detect,
-				                   Handler,
-				                   ParseState>::value;
+				  daw::is_detected<has_on_class_start_handler_detect, Handler, ParseState>::value;
 
 				// On Class End
 				template<typename Handler>
@@ -97,15 +92,12 @@ namespace daw::json {
 
 				// On Number
 				template<typename Handler, typename ParseState>
-				using has_on_number_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_number(
-				    std::declval<basic_json_value<ParseState>>( ) ) );
+				using has_on_number_handler_detect_jv = decltype( std::declval<Handler>( ).handle_on_number(
+				  std::declval<basic_json_value<ParseState>>( ) ) );
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_number_handler_jv_v =
-				  daw::is_detected<has_on_number_handler_detect_jv,
-				                   Handler,
-				                   ParseState>::value;
+				  daw::is_detected<has_on_number_handler_detect_jv, Handler, ParseState>::value;
 
 				template<typename Handler>
 				using has_on_number_handler_detect_dbl =
@@ -117,14 +109,12 @@ namespace daw::json {
 
 				// On Bool
 				template<typename Handler, typename ParseState>
-				using has_on_bool_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_bool(
-				    std::declval<basic_json_value<ParseState>>( ) ) );
+				using has_on_bool_handler_detect_jv = decltype( std::declval<Handler>( ).handle_on_bool(
+				  std::declval<basic_json_value<ParseState>>( ) ) );
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_bool_handler_jv_v =
-				  daw::is_detected<has_on_bool_handler_detect_jv, Handler, ParseState>::
-				    value;
+				  daw::is_detected<has_on_bool_handler_detect_jv, Handler, ParseState>::value;
 
 				template<typename Handler>
 				using has_on_bool_handler_detect_bl =
@@ -136,20 +126,16 @@ namespace daw::json {
 
 				// On String
 				template<typename Handler, typename ParseState>
-				using has_on_string_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_string(
-				    std::declval<basic_json_value<ParseState>>( ) ) );
+				using has_on_string_handler_detect_jv = decltype( std::declval<Handler>( ).handle_on_string(
+				  std::declval<basic_json_value<ParseState>>( ) ) );
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_string_handler_jv_v =
-				  daw::is_detected<has_on_string_handler_detect_jv,
-				                   Handler,
-				                   ParseState>::value;
+				  daw::is_detected<has_on_string_handler_detect_jv, Handler, ParseState>::value;
 
 				template<typename Handler>
 				using has_on_string_handler_detect_str =
-				  decltype( std::declval<Handler>( ).handle_on_string(
-				    std::declval<std::string>( ) ) );
+				  decltype( std::declval<Handler>( ).handle_on_string( std::declval<std::string>( ) ) );
 
 				template<typename Handler>
 				inline constexpr bool has_on_string_handler_str_v =
@@ -157,18 +143,15 @@ namespace daw::json {
 
 				// On Null
 				template<typename Handler, typename ParseState>
-				using has_on_null_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_null(
-				    std::declval<basic_json_value<ParseState>>( ) ) );
+				using has_on_null_handler_detect_jv = decltype( std::declval<Handler>( ).handle_on_null(
+				  std::declval<basic_json_value<ParseState>>( ) ) );
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_null_handler_jv_v =
-				  daw::is_detected<has_on_null_handler_detect_jv, Handler, ParseState>::
-				    value;
+				  daw::is_detected<has_on_null_handler_detect_jv, Handler, ParseState>::value;
 
 				template<typename Handler>
-				using has_on_null_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_null( ) );
+				using has_on_null_handler_detect = decltype( std::declval<Handler>( ).handle_on_null( ) );
 
 				template<typename Handler>
 				inline constexpr bool has_on_null_handler_v =
@@ -176,13 +159,12 @@ namespace daw::json {
 
 				// On Error
 				template<typename Handler, typename ParseState>
-				using has_on_error_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_error(
-				    std::declval<basic_json_value<ParseState>>( ) ) );
+				using has_on_error_handler_detect = decltype( std::declval<Handler>( ).handle_on_error(
+				  std::declval<basic_json_value<ParseState>>( ) ) );
 
 				template<typename Handler, typename ParseState>
-				inline constexpr bool has_on_error_handler_v = daw::
-				  is_detected<has_on_error_handler_detect, Handler, ParseState>::value;
+				inline constexpr bool has_on_error_handler_v =
+				  daw::is_detected<has_on_error_handler_detect, Handler, ParseState>::value;
 			} // namespace hnd_checks
 
 			template<typename T>
@@ -191,10 +173,9 @@ namespace daw::json {
 			}
 
 			template<typename Handler, typename ParseState>
-			inline constexpr handler_result_holder
-			handle_on_value( Handler &&handler, basic_json_pair<ParseState> p ) {
-				if constexpr( hnd_checks::has_on_value_handler_v<Handler,
-				                                                 ParseState> ) {
+			inline constexpr handler_result_holder handle_on_value( Handler &&handler,
+			                                                        basic_json_pair<ParseState> p ) {
+				if constexpr( hnd_checks::has_on_value_handler_v<Handler, ParseState> ) {
 					return handler.handle_on_value( DAW_MOVE( p ) );
 				} else {
 					(void)p;
@@ -204,10 +185,8 @@ namespace daw::json {
 
 			template<typename Handler, typename ParseState>
 			inline constexpr handler_result_holder
-			handle_on_array_start( Handler &&handler,
-			                       basic_json_value<ParseState> jv ) {
-				if constexpr( hnd_checks::has_on_array_start_handler_v<Handler,
-				                                                       ParseState> ) {
+			handle_on_array_start( Handler &&handler, basic_json_value<ParseState> jv ) {
+				if constexpr( hnd_checks::has_on_array_start_handler_v<Handler, ParseState> ) {
 					return handler.handle_on_array_start( DAW_MOVE( jv ) );
 				} else {
 					(void)jv;
@@ -216,8 +195,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler>
-			inline constexpr handler_result_holder
-			handle_on_array_end( Handler &&handler ) {
+			inline constexpr handler_result_holder handle_on_array_end( Handler &&handler ) {
 				if constexpr( hnd_checks::has_on_array_end_handler_v<Handler> ) {
 					return handler.handle_on_array_end( );
 				} else {
@@ -227,10 +205,8 @@ namespace daw::json {
 
 			template<typename Handler, typename ParseState>
 			inline constexpr handler_result_holder
-			handle_on_class_start( Handler &&handler,
-			                       basic_json_value<ParseState> jv ) {
-				if constexpr( hnd_checks::has_on_class_start_handler_v<Handler,
-				                                                       ParseState> ) {
+			handle_on_class_start( Handler &&handler, basic_json_value<ParseState> jv ) {
+				if constexpr( hnd_checks::has_on_class_start_handler_v<Handler, ParseState> ) {
 					return handler.handle_on_class_start( DAW_MOVE( jv ) );
 				} else {
 					(void)jv;
@@ -239,8 +215,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler>
-			inline constexpr handler_result_holder
-			handle_on_class_end( Handler &&handler ) {
+			inline constexpr handler_result_holder handle_on_class_end( Handler &&handler ) {
 				if constexpr( hnd_checks::has_on_class_end_handler_v<Handler> ) {
 					return handler.handle_on_class_end( );
 				} else {
@@ -249,13 +224,11 @@ namespace daw::json {
 			}
 
 			template<typename Handler, typename ParseState>
-			inline constexpr handler_result_holder
-			handle_on_number( Handler &&handler, basic_json_value<ParseState> &jv ) {
-				if constexpr( hnd_checks::has_on_number_handler_jv_v<Handler,
-				                                                     ParseState> ) {
+			inline constexpr handler_result_holder handle_on_number( Handler &&handler,
+			                                                         basic_json_value<ParseState> &jv ) {
+				if constexpr( hnd_checks::has_on_number_handler_jv_v<Handler, ParseState> ) {
 					return handler.handle_on_number( as_copy( jv ) );
-				} else if constexpr( hnd_checks::has_on_number_handler_dbl_v<
-				                       Handler> ) {
+				} else if constexpr( hnd_checks::has_on_number_handler_dbl_v<Handler> ) {
 					return handler.handle_on_number( from_json<double>( jv ) );
 				} else {
 					(void)jv;
@@ -264,10 +237,9 @@ namespace daw::json {
 			}
 
 			template<typename Handler, typename ParseState>
-			inline constexpr handler_result_holder
-			handle_on_bool( Handler &&handler, basic_json_value<ParseState> jv ) {
-				if constexpr( hnd_checks::has_on_bool_handler_jv_v<Handler,
-				                                                   ParseState> ) {
+			inline constexpr handler_result_holder handle_on_bool( Handler &&handler,
+			                                                       basic_json_value<ParseState> jv ) {
+				if constexpr( hnd_checks::has_on_bool_handler_jv_v<Handler, ParseState> ) {
 					return handler.handle_on_bool( as_copy( jv ) );
 				} else if constexpr( hnd_checks::has_on_bool_handler_bl_v<Handler> ) {
 					return handler.handle_on_bool( from_json<bool>( jv ) );
@@ -278,13 +250,11 @@ namespace daw::json {
 			}
 
 			template<typename Handler, typename ParseState>
-			inline constexpr handler_result_holder
-			handle_on_string( Handler &&handler, basic_json_value<ParseState> &jv ) {
-				if constexpr( hnd_checks::has_on_string_handler_jv_v<Handler,
-				                                                     ParseState> ) {
+			inline constexpr handler_result_holder handle_on_string( Handler &&handler,
+			                                                         basic_json_value<ParseState> &jv ) {
+				if constexpr( hnd_checks::has_on_string_handler_jv_v<Handler, ParseState> ) {
 					return handler.handle_on_string( as_copy( jv ) );
-				} else if constexpr( hnd_checks::has_on_string_handler_str_v<
-				                       Handler> ) {
+				} else if constexpr( hnd_checks::has_on_string_handler_str_v<Handler> ) {
 					return handler.handle_on_string( jv.get_string( ) );
 				} else {
 					(void)jv;
@@ -293,10 +263,9 @@ namespace daw::json {
 			}
 
 			template<typename Handler, typename ParseState>
-			inline constexpr handler_result_holder
-			handle_on_null( Handler &&handler, basic_json_value<ParseState> &jv ) {
-				if constexpr( hnd_checks::has_on_null_handler_jv_v<Handler,
-				                                                   ParseState> ) {
+			inline constexpr handler_result_holder handle_on_null( Handler &&handler,
+			                                                       basic_json_value<ParseState> &jv ) {
+				if constexpr( hnd_checks::has_on_null_handler_jv_v<Handler, ParseState> ) {
 					return handler.handle_on_null( as_copy( jv ) );
 				} else if constexpr( hnd_checks::has_on_null_handler_v<Handler> ) {
 					return handler.handle_on_null( );
@@ -306,10 +275,9 @@ namespace daw::json {
 			}
 
 			template<typename Handler, typename ParseState>
-			inline constexpr handler_result_holder
-			handle_on_error( Handler &&handler, basic_json_value<ParseState> jv ) {
-				if constexpr( hnd_checks::has_on_error_handler_v<Handler,
-				                                                 ParseState> ) {
+			inline constexpr handler_result_holder handle_on_error( Handler &&handler,
+			                                                        basic_json_value<ParseState> jv ) {
+				if constexpr( hnd_checks::has_on_error_handler_v<Handler, ParseState> ) {
 					return handler.handle_on_error( DAW_MOVE( jv ) );
 				} else {
 					(void)jv;
@@ -361,12 +329,11 @@ namespace daw::json {
 		};
 
 		template<typename ParseState = NoCommentSkippingPolicyChecked,
-		         typename StackContainerPolicy = DefaultJsonEventParserStackPolicy<
-		           JsonEventParserStackValue<ParseState>>,
+		         typename StackContainerPolicy =
+		           DefaultJsonEventParserStackPolicy<JsonEventParserStackValue<ParseState>>,
 		         typename Handler>
-		inline constexpr void json_event_parser(
-		  basic_json_value<ParseState> jvalue,
-		  Handler && handler ) {
+		inline constexpr void json_event_parser( basic_json_value<ParseState> jvalue,
+		                                         Handler && handler ) {
 			using iterator = basic_json_value_iterator<ParseState>;
 			using json_value_t = basic_json_pair<ParseState>;
 			using stack_value_t = JsonEventParserStackValue<ParseState>;
@@ -409,9 +376,8 @@ namespace daw::json {
 					case json_parse_handler_result::Continue:
 						break;
 					}
-					parent_stack.push_back(
-					  { StackParseStateType::Array,
-					    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
+					parent_stack.push_back( { StackParseStateType::Array,
+					                          std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
 				} break;
 				case JsonBaseParseTypes::Class: {
 					++class_depth;
@@ -426,9 +392,8 @@ namespace daw::json {
 					case json_parse_handler_result::Continue:
 						break;
 					}
-					parent_stack.push_back(
-					  { StackParseStateType::Class,
-					    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
+					parent_stack.push_back( { StackParseStateType::Class,
+					                          std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
 				} break;
 				case JsonBaseParseTypes::Number: {
 					auto result = json_details::handle_on_number( handler, jv );
@@ -508,11 +473,10 @@ namespace daw::json {
 				} else {
 					switch( v.type ) {
 					case StackParseStateType::Class: {
-						daw_json_assert_weak(
-						  ( class_depth > 0 ) &
-						    ( v.value.first.get_raw_state( ).has_more( ) and
-						      v.value.first.get_raw_state( ).front( ) == '}' ),
-						  ErrorReason::InvalidEndOfValue );
+						daw_json_assert_weak( ( class_depth > 0 ) &
+						                        ( v.value.first.get_raw_state( ).has_more( ) and
+						                          v.value.first.get_raw_state( ).front( ) == '}' ),
+						                      ErrorReason::InvalidEndOfValue );
 						--class_depth;
 						auto result = json_details::handle_on_class_end( handler );
 						switch( result.value ) {
@@ -525,11 +489,10 @@ namespace daw::json {
 						}
 					} break;
 					case StackParseStateType::Array: {
-						daw_json_assert_weak(
-						  ( array_depth > 0 ) &
-						    ( v.value.first.get_raw_state( ).has_more( ) and
-						      v.value.first.get_raw_state( ).front( ) == ']' ),
-						  ErrorReason::InvalidEndOfValue );
+						daw_json_assert_weak( ( array_depth > 0 ) &
+						                        ( v.value.first.get_raw_state( ).has_more( ) and
+						                          v.value.first.get_raw_state( ).front( ) == ']' ),
+						                      ErrorReason::InvalidEndOfValue );
 						--array_depth;
 						auto result = json_details::handle_on_array_end( handler );
 						switch( result.value ) {
@@ -552,14 +515,11 @@ namespace daw::json {
 				parent_stack.pop_back( );
 				process_range( v );
 			}
-			daw_json_assert( class_depth == 0 and array_depth == 0,
-			                 ErrorReason::InvalidEndOfValue );
+			daw_json_assert( class_depth == 0 and array_depth == 0, ErrorReason::InvalidEndOfValue );
 		}
 
-		template<typename ParsePolicy = NoCommentSkippingPolicyChecked,
-		         typename Handler>
-		inline void json_event_parser( std::string_view json_document,
-		                               Handler && handler ) {
+		template<typename ParsePolicy = NoCommentSkippingPolicyChecked, typename Handler>
+		inline void json_event_parser( std::string_view json_document, Handler && handler ) {
 			return json_event_parser( basic_json_value<ParsePolicy>( json_document ),
 			                          DAW_FWD2( Handler, handler ) );
 		}

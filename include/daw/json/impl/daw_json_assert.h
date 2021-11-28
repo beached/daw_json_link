@@ -35,8 +35,7 @@ inline constexpr bool use_daw_json_exceptions_v = false;
 namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE void daw_json_error(
-		  ErrorReason reason ) {
+		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE void daw_json_error( ErrorReason reason ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				throw json_exception( reason );
@@ -117,22 +116,18 @@ namespace daw::json {
 					static constexpr std::size_t max_len = 150;
 					std::size_t const len = [&]( ) -> std::size_t {
 						if( location.first == nullptr or location.class_first == nullptr ) {
-							if( location.class_first == nullptr or
-							    location.class_last == nullptr ) {
+							if( location.class_first == nullptr or location.class_last == nullptr ) {
 								return 0;
 							}
-							return ( std::min )(
-							  static_cast<std::size_t>(
-							    std::distance( location.class_first, location.class_last ) ),
-							  max_len );
+							return ( std::min )( static_cast<std::size_t>(
+							                       std::distance( location.class_first, location.class_last ) ),
+							                     max_len );
 						}
 						return ( std::min )(
-						  static_cast<std::size_t>(
-						    std::distance( location.class_first, location.first + 1 ) ),
+						  static_cast<std::size_t>( std::distance( location.class_first, location.first + 1 ) ),
 						  max_len );
 					}( );
-					throw json_exception( reason,
-					                      std::string_view( location.class_first, len ) );
+					throw json_exception( reason, std::string_view( location.class_first, len ) );
 				} else {
 					throw json_exception( reason );
 				}

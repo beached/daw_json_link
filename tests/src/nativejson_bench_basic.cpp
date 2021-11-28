@@ -45,24 +45,19 @@ int main( int argc, char **argv )
 	auto const mm_twitter = *daw::read_file( argv[1] );
 	auto const mm_citm = *daw::read_file( argv[2] );
 	auto const mm_canada = *daw::read_file( argv[3] );
-	auto const sv_twitter =
-	  std::string_view( mm_twitter.data( ), mm_twitter.size( ) );
+	auto const sv_twitter = std::string_view( mm_twitter.data( ), mm_twitter.size( ) );
 	auto const sv_citm = std::string_view( mm_citm.data( ), mm_citm.size( ) );
-	auto const sv_canada =
-	  std::string_view( mm_canada.data( ), mm_canada.size( ) );
+	auto const sv_canada = std::string_view( mm_canada.data( ), mm_canada.size( ) );
 
 #ifdef NDEBUG
 	std::cout << "non-debug run\n";
 	for( std::size_t n = 0; n < DAW_NUM_RUNS; ++n ) {
 		[&]( auto f1, auto f2, auto f3 ) {
 			auto const j1 =
-			  daw::json::from_json<daw::twitter::twitter_object_t,
-			                       NoCommentSkippingPolicyChecked>( f1 );
+			  daw::json::from_json<daw::twitter::twitter_object_t, NoCommentSkippingPolicyChecked>( f1 );
 			auto const j2 =
-			  daw::json::from_json<daw::citm::citm_object_t,
-			                       NoCommentSkippingPolicyChecked>( f2 );
-			auto const j3 = daw::json::from_json<daw::geojson::Polygon,
-			                                     NoCommentSkippingPolicyChecked>(
+			  daw::json::from_json<daw::citm::citm_object_t, NoCommentSkippingPolicyChecked>( f2 );
+			auto const j3 = daw::json::from_json<daw::geojson::Polygon, NoCommentSkippingPolicyChecked>(
 			  f3,
 			  "features[0].geometry" );
 			daw::do_not_optimize( sv_twitter );
@@ -76,13 +71,11 @@ int main( int argc, char **argv )
 #else
 	for( size_t n = 0; n < 25; ++n ) {
 		auto const j1 =
-		  daw::json::from_json<daw::twitter::twitter_object_t,
-		                       NoCommentSkippingPolicyChecked>( sv_twitter );
+		  daw::json::from_json<daw::twitter::twitter_object_t, NoCommentSkippingPolicyChecked>(
+		    sv_twitter );
 		auto const j2 =
-		  daw::json::from_json<daw::citm::citm_object_t,
-		                       NoCommentSkippingPolicyChecked>( sv_citm );
-		auto const j3 = daw::json::from_json<daw::geojson::Polygon,
-		                                     NoCommentSkippingPolicyChecked>(
+		  daw::json::from_json<daw::citm::citm_object_t, NoCommentSkippingPolicyChecked>( sv_citm );
+		auto const j3 = daw::json::from_json<daw::geojson::Polygon, NoCommentSkippingPolicyChecked>(
 		  sv_canada,
 		  "features[0].geometry" );
 		daw::do_not_optimize( sv_twitter );
@@ -99,8 +92,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

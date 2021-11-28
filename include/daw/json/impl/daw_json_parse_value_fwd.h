@@ -17,121 +17,77 @@
 namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Real> );
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
+			[[nodiscard]] constexpr json_result<JsonMember> parse_value( ParseState &parse_state,
+			                                                             ParseTag<JsonParseTypes::Real> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Signed> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::Unsigned> );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Unsigned> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
+			[[nodiscard]] constexpr json_result<JsonMember> parse_value( ParseState &parse_state,
+			                                                             ParseTag<JsonParseTypes::Null> );
+
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
+			[[nodiscard]] constexpr json_result<JsonMember> parse_value( ParseState &parse_state,
+			                                                             ParseTag<JsonParseTypes::Bool> );
+
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Null> );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::StringRaw> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Bool> );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::StringEscaped> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::StringRaw> );
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
+			[[nodiscard]] constexpr json_result<JsonMember> parse_value( ParseState &parse_state,
+			                                                             ParseTag<JsonParseTypes::Date> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::StringEscaped> );
-
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Date> );
-
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Custom> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Class> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Tuple> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::SizedArray> );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::SizedArray> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::KeyValue> );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::KeyValue> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::KeyValueArray> );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::KeyValueArray> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Variant> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::VariantTagged> );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::VariantTagged> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::VariantIntrusive> );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::VariantIntrusive> );
 
 			template<typename JsonMember,
 			         bool KnownBounds = false,
@@ -139,12 +95,9 @@ namespace daw::json {
 			         typename ParseState,
 			         bool B>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::VariantTagged> );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::VariantTagged> );
 
-			template<typename JsonMember,
-			         bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 			[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Unknown> );
 

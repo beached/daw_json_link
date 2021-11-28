@@ -36,8 +36,7 @@ namespace daw::json {
 				using difference_type = std::ptrdiff_t;
 				ParseState *parse_state = nullptr;
 
-				constexpr difference_type
-				operator-( json_parse_kv_class_iterator_base const &rhs ) const {
+				constexpr difference_type operator-( json_parse_kv_class_iterator_base const &rhs ) const {
 					if( rhs.parse_state ) {
 						return static_cast<difference_type>( rhs.parse_state->counter );
 					}
@@ -51,26 +50,23 @@ namespace daw::json {
 
 				template<typename JsonMember>
 				using default_value_type =
-				  std::pair<typename JsonMember::json_key_t,
-				            typename JsonMember::json_element_t>;
+				  std::pair<typename JsonMember::json_key_t, typename JsonMember::json_element_t>;
 
 				template<typename JsonMember, typename T>
-				using container_value_type_or = daw::
-				  detected_or_t<default_value_type<JsonMember>, container_value_t, T>;
+				using container_value_type_or =
+				  daw::detected_or_t<default_value_type<JsonMember>, container_value_t, T>;
 			} // namespace kv_class_iter_impl
 
 			template<typename JsonMember, typename ParseState, bool IsKnown>
 			struct json_parse_kv_class_iterator :
 			  json_parse_kv_class_iterator_base<ParseState, can_random_v<IsKnown>> {
 
-				using base =
-				  json_parse_kv_class_iterator_base<ParseState, can_random_v<IsKnown>>;
+				using base = json_parse_kv_class_iterator_base<ParseState, can_random_v<IsKnown>>;
 				using iterator_category = typename base::iterator_category;
 				using element_t = typename JsonMember::json_element_t;
 				using member_container_type = typename JsonMember::base_type;
 				using value_type =
-				  kv_class_iter_impl::container_value_type_or<JsonMember,
-				                                              member_container_type>;
+				  kv_class_iter_impl::container_value_type_or<JsonMember, member_container_type>;
 				using reference = value_type;
 				using pointer = arrow_proxy<value_type>;
 				using iterator_range_t = ParseState;
@@ -81,8 +77,7 @@ namespace daw::json {
 
 				inline constexpr json_parse_kv_class_iterator( ) = default;
 
-				inline constexpr explicit json_parse_kv_class_iterator(
-				  iterator_range_t &r )
+				inline constexpr explicit json_parse_kv_class_iterator( iterator_range_t &r )
 				  : base{ &r } {
 					if( base::parse_state->front( ) == '}' ) {
 						// Cleanup at end of value
@@ -96,19 +91,15 @@ namespace daw::json {
 				}
 
 				inline constexpr value_type operator*( ) {
-					daw_json_assert_weak( base::parse_state and
-					                        base::parse_state->has_more( ),
+					daw_json_assert_weak( base::parse_state and base::parse_state->has_more( ),
 					                      ErrorReason::UnexpectedEndOfData,
 					                      *base::parse_state );
-					auto key = parse_value<key_t>( *base::parse_state,
-					                               ParseTag<key_t::expected_type>{ } );
+					auto key = parse_value<key_t>( *base::parse_state, ParseTag<key_t::expected_type>{ } );
 					name::name_parser::trim_end_of_name( *base::parse_state );
 
-					return json_class_constructor<value_type,
-					                              default_constructor<value_type>>(
+					return json_class_constructor<value_type, default_constructor<value_type>>(
 					  DAW_MOVE( key ),
-					  parse_value<value_t>( *base::parse_state,
-					                        ParseTag<value_t::expected_type>{ } ) );
+					  parse_value<value_t>( *base::parse_state, ParseTag<value_t::expected_type>{ } ) );
 				}
 
 				inline constexpr json_parse_kv_class_iterator &operator++( ) {
@@ -151,16 +142,14 @@ namespace daw::json {
 					return *this;
 				}
 
-				friend inline constexpr bool
-				operator==( json_parse_kv_class_iterator const &lhs,
-				            json_parse_kv_class_iterator const &rhs ) {
+				friend inline constexpr bool operator==( json_parse_kv_class_iterator const &lhs,
+				                                         json_parse_kv_class_iterator const &rhs ) {
 					// using identity as equality
 					return lhs.parse_state == rhs.base::parse_state;
 				}
 
-				friend inline constexpr bool
-				operator!=( json_parse_kv_class_iterator const &lhs,
-				            json_parse_kv_class_iterator const &rhs ) {
+				friend inline constexpr bool operator!=( json_parse_kv_class_iterator const &lhs,
+				                                         json_parse_kv_class_iterator const &rhs ) {
 					return not( lhs == rhs );
 				}
 			};

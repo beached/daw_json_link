@@ -25,8 +25,7 @@ namespace daw::json {
 				 * the string can be escaped too
 				 */
 				template<typename ParseState>
-				[[maybe_unused]] static constexpr void
-				trim_end_of_name( ParseState &parse_state ) {
+				[[maybe_unused]] static constexpr void trim_end_of_name( ParseState &parse_state ) {
 					parse_state.trim_left( );
 					// TODO: should we check for end
 					daw_json_assert_weak( parse_state.front_checked( ) == ':',
@@ -69,8 +68,7 @@ namespace daw::json {
 			// Paths are specified with dot separators, if the name has a dot in it,
 			// it must be escaped
 			// memberA.memberB.member\.C has 3 parts['memberA', 'memberB', 'member.C']
-			[[nodiscard]] constexpr pop_json_path_result
-			pop_json_path( daw::string_view &path ) {
+			[[nodiscard]] constexpr pop_json_path_result pop_json_path( daw::string_view &path ) {
 				auto result = pop_json_path_result{ };
 				if( path.empty( ) ) {
 					return result;
@@ -78,31 +76,29 @@ namespace daw::json {
 				if( path.front( ) == '.' ) {
 					path.remove_prefix( );
 				}
-				result.current =
-				  path.pop_front_until( [&, in_escape = false]( char c ) mutable {
-					  if( in_escape ) {
-						  in_escape = false;
-						  return false;
-					  }
-					  switch( c ) {
-					  case '\\':
-						  in_escape = true;
-						  return false;
-					  case '.':
-					  case '[':
-					  case ']':
-						  result.found_char = c;
-						  return true;
-					  default:
-						  return false;
-					  }
-				  } );
+				result.current = path.pop_front_until( [&, in_escape = false]( char c ) mutable {
+					if( in_escape ) {
+						in_escape = false;
+						return false;
+					}
+					switch( c ) {
+					case '\\':
+						in_escape = true;
+						return false;
+					case '.':
+					case '[':
+					case ']':
+						result.found_char = c;
+						return true;
+					default:
+						return false;
+					}
+				} );
 				return result;
 			}
 
-			[[nodiscard]] constexpr bool
-			json_path_compare( daw::string_view json_path_item,
-			                   daw::string_view member_name ) {
+			[[nodiscard]] constexpr bool json_path_compare( daw::string_view json_path_item,
+			                                                daw::string_view member_name ) {
 				if( json_path_item.front( ) == '\\' ) {
 					json_path_item.remove_prefix( );
 				}
@@ -111,8 +107,7 @@ namespace daw::json {
 						return false;
 					}
 					json_path_item.remove_prefix( );
-					if( not json_path_item.empty( ) and
-					    json_path_item.front( ) == '\\' ) {
+					if( not json_path_item.empty( ) and json_path_item.front( ) == '\\' ) {
 						json_path_item.remove_prefix( );
 					}
 					member_name.remove_prefix( );
@@ -135,8 +130,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			constexpr bool find_range2( ParseState &parse_state,
-			                            daw::string_view path ) {
+			constexpr bool find_range2( ParseState &parse_state, daw::string_view path ) {
 
 				auto pop_result = pop_json_path( path );
 				while( not pop_result.current.empty( ) ) {
@@ -147,15 +141,13 @@ namespace daw::json {
 						                      parse_state );
 						parse_state.remove_prefix( );
 						parse_state.trim_left_unchecked( );
-						auto idx = daw::parser::parse_unsigned_int<std::size_t>(
-						  pop_result.current );
+						auto idx = daw::parser::parse_unsigned_int<std::size_t>( pop_result.current );
 
 						while( idx > 0 ) {
 							--idx;
 							(void)skip_value( parse_state );
 							parse_state.trim_left_checked( );
-							if( ( idx > 0 ) & ( parse_state.has_more( ) and
-							                    ( parse_state.front( ) != ',' ) ) ) {
+							if( ( idx > 0 ) & ( parse_state.has_more( ) and ( parse_state.front( ) != ',' ) ) ) {
 								return false;
 							}
 							parse_state.move_next_member_or_end( );
@@ -184,11 +176,10 @@ namespace daw::json {
 			template<typename ParsePolicy, typename String>
 			[[nodiscard]] constexpr std::pair<bool, ParsePolicy>
 			find_range( String &&str, daw::string_view start_path ) {
-				static_assert( std::is_convertible_v<decltype( std::data( str ) ),
-				                                     typename ParsePolicy::CharT *> );
+				static_assert(
+				  std::is_convertible_v<decltype( std::data( str ) ), typename ParsePolicy::CharT *> );
 
-				auto parse_state =
-				  ParsePolicy( std::data( str ), daw::data_end( str ) );
+				auto parse_state = ParsePolicy( std::data( str ), daw::data_end( str ) );
 				parse_state.trim_left_checked( );
 				bool found = true;
 				if( parse_state.has_more( ) and not start_path.empty( ) ) {
@@ -198,15 +189,12 @@ namespace daw::json {
 			}
 
 			template<typename ParsePolicy, typename String, typename Allocator>
-			[[nodiscard]] constexpr auto find_range( String &&str,
-			                                         daw::string_view start_path,
-			                                         Allocator &alloc ) {
-				static_assert(
-				  std::is_same<char const *, typename ParsePolicy::iterator>::value,
-				  "Only char const * ranges are currently supported" );
-				auto parse_state = ParsePolicy::with_allocator( std::data( str ),
-				                                                daw::data_end( str ),
-				                                                alloc );
+			[[nodiscard]] constexpr auto
+			find_range( String &&str, daw::string_view start_path, Allocator &alloc ) {
+				static_assert( std::is_same<char const *, typename ParsePolicy::iterator>::value,
+				               "Only char const * ranges are currently supported" );
+				auto parse_state =
+				  ParsePolicy::with_allocator( std::data( str ), daw::data_end( str ), alloc );
 				parse_state.trim_left_checked( );
 				if( parse_state.has_more( ) and not start_path.empty( ) ) {
 					if( not find_range2( parse_state, start_path ) ) {

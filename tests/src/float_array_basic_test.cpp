@@ -44,15 +44,13 @@ void test_func( ankerl::nanobench::Bench &b ) {
 	std::string json_data3 = [] {
 		std::string result = "[";
 		result.reserve( NUMVALUES * 23 + 8 );
-		daw::algorithm::do_n( NUMVALUES, [&result] {
-			result += std::to_string( rand_float<float>( ) ) + ',';
-		} );
+		daw::algorithm::do_n( NUMVALUES,
+		                      [&result] { result += std::to_string( rand_float<float>( ) ) + ','; } );
 		result.back( ) = ']';
 		return result;
 	}( );
 
-	auto const json_sv =
-	  daw::string_view( json_data3.data( ), json_data3.size( ) );
+	auto const json_sv = daw::string_view( json_data3.data( ), json_data3.size( ) );
 	auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
 	b.batch( sizeof( float ) * NUMVALUES );
 	b.run( "float", [&]( ) noexcept {
@@ -84,8 +82,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

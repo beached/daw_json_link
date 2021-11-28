@@ -21,17 +21,14 @@ namespace daw::json {
 				return ( eq( keys ) | ... );
 			}
 
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool
-			at_end_of_item( char c ) {
-				return static_cast<bool>( static_cast<unsigned>( c == ',' ) |
-				                          static_cast<unsigned>( c == '}' ) |
-				                          static_cast<unsigned>( c == ']' ) |
-				                          static_cast<unsigned>( c == ':' ) |
-				                          static_cast<unsigned>( c <= 0x20 ) );
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool at_end_of_item( char c ) {
+				return static_cast<bool>(
+				  static_cast<unsigned>( c == ',' ) | static_cast<unsigned>( c == '}' ) |
+				  static_cast<unsigned>( c == ']' ) | static_cast<unsigned>( c == ':' ) |
+				  static_cast<unsigned>( c <= 0x20 ) );
 			}
 
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool
-			is_number( char c ) {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool is_number( char c ) {
 				return static_cast<unsigned>( static_cast<unsigned char>( c ) -
 				                              static_cast<unsigned char>( '0' ) ) < 10U;
 			}
@@ -72,27 +69,22 @@ namespace daw::json {
 			template<typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr int
 			validate_signed_first( ParseState &parse_state ) {
-				daw_json_assert( parse_state.has_more( ),
-				                 ErrorReason::UnexpectedEndOfData,
-				                 parse_state );
+				daw_json_assert( parse_state.has_more( ), ErrorReason::UnexpectedEndOfData, parse_state );
 				switch( parse_state.front( ) ) {
 				case '-':
 					parse_state.remove_prefix( );
-					daw_json_assert_weak(
-					  DAW_LIKELY( parse_state.has_more( ) ) and
-					    DAW_LIKELY( is_number( parse_state.front( ) ) ),
-					  ErrorReason::InvalidNumber,
-					  parse_state );
+					daw_json_assert_weak( DAW_LIKELY( parse_state.has_more( ) ) and
+					                        DAW_LIKELY( is_number( parse_state.front( ) ) ),
+					                      ErrorReason::InvalidNumber,
+					                      parse_state );
 					return -1;
 				case '0':
 					if( parse_state.size( ) > 1 ) {
-						auto const dig = static_cast<unsigned>(
-						  static_cast<unsigned char>( *( parse_state.first + 1 ) ) );
+						auto const dig =
+						  static_cast<unsigned>( static_cast<unsigned char>( *( parse_state.first + 1 ) ) );
 						auto const tst = dig - static_cast<unsigned char>( '0' );
 						// Cannot be a digit
-						daw_json_assert( tst >= 10U,
-						                 ErrorReason::InvalidNumberStart,
-						                 parse_state );
+						daw_json_assert( tst >= 10U, ErrorReason::InvalidNumberStart, parse_state );
 					}
 					break;
 				case '1':
@@ -111,8 +103,7 @@ namespace daw::json {
 				return 1;
 			}
 
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool
-			is_number_start( char c ) {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool is_number_start( char c ) {
 				switch( c ) {
 				case '0': // TODO: CONFORMANCE We are accepting starting with zero for
 				          // now

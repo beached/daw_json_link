@@ -41,8 +41,7 @@ namespace daw::json {
 	struct json_data_contract<daw::Empty> {
 		using type = json_member_list<>;
 
-		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::Empty const & ) {
+		[[nodiscard, maybe_unused]] static inline auto to_json_data( daw::Empty const & ) {
 			return std::tuple<>( );
 		}
 	};
@@ -55,9 +54,7 @@ bool empty_class_empty_json_class( ) {
 	std::string_view sv = "{}";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_class_no_name<daw::Empty>>(
-	  rng,
-	  ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value<json_class_no_name<daw::Empty>>( rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -69,9 +66,7 @@ bool empty_class_nonempty_json_class( ) {
 	std::string_view sv = R"({ "a": 12345, "b": {} })";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_class_no_name<daw::Empty>>(
-	  rng,
-	  ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value<json_class_no_name<daw::Empty>>( rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -85,9 +80,7 @@ bool missing_members_fail( ) {
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
-	auto v = parse_value<json_class_no_name<class_t>>(
-	  rng,
-	  ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value<json_class_no_name<class_t>>( rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -101,9 +94,7 @@ bool wrong_member_type_fail( ) {
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
-	auto v = parse_value<json_class_no_name<class_t>>(
-	  rng,
-	  ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value<json_class_no_name<class_t>>( rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -117,9 +108,7 @@ bool wrong_member_number_type_fail( ) {
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
-	auto v = parse_value<json_class_no_name<class_t>>(
-	  rng,
-	  ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value<json_class_no_name<class_t>>( rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -133,9 +122,7 @@ bool unexpected_eof_in_class1_fail( ) {
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0>>;
-	auto v = parse_value<json_class_no_name<class_t>>(
-	  rng,
-	  ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value<json_class_no_name<class_t>>( rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -149,11 +136,8 @@ bool wrong_member_stored_pos_fail( ) {
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	static constexpr char const member1[] = "member1";
-	using class_t =
-	  tuple_json_mapping<json_number<member0>, json_number<member1>>;
-	auto v = parse_value<json_class_no_name<class_t>>(
-	  rng,
-	  ParseTag<JsonParseTypes::Class>{ } );
+	using class_t = tuple_json_mapping<json_number<member0>, json_number<member1>>;
+	auto v = parse_value<json_class_no_name<class_t>>( rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -176,8 +160,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

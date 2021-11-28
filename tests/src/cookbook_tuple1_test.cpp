@@ -29,8 +29,7 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<Foo> {
 		static constexpr char const a[] = "a";
-		using type = json_member_list<
-		  json_tuple<a, std::tuple<int, std::string_view, bool, int>>>;
+		using type = json_member_list<json_tuple<a, std::tuple<int, std::string_view, bool, int>>>;
 
 		static inline auto to_json_data( Foo const &f ) {
 			return std::forward_as_tuple( f.a );
@@ -71,10 +70,9 @@ int main( int argc, char **argv )
 	if( not( std::get<3>( cxf.a ) == 55 ) ) {
 		assert( std::get<3>( cxf.a ) == 55 );
 	}
-	Foo f = daw::json::from_json<Foo>(
-	  json_data ); // This does not evaluate the pack in the correct order during
-	               // runtime evaluation but does work at compile time when cxf
-	               // is evaluated
+	Foo f = daw::json::from_json<Foo>( json_data ); // This does not evaluate the pack in the correct
+	                                                // order during runtime evaluation but does work
+	                                                // at compile time when cxf is evaluated
 	if( not( cxf == f ) ) {
 		assert( cxf == f );
 	}
@@ -97,8 +95,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

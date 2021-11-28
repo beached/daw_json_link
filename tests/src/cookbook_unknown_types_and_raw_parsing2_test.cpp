@@ -32,11 +32,10 @@ namespace daw::json {
 		static constexpr char const member_later[] = "member_later";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const opt_member[] = "opt_member";
-		using type =
-		  json_member_list<json_number<member0, int>,
-		                   json_raw<member_later>,
-		                   json_string<member1>,
-		                   json_link<opt_member, std::optional<json_value>>>;
+		using type = json_member_list<json_number<member0, int>,
+		                              json_raw<member_later>,
+		                              json_string<member1>,
+		                              json_link<opt_member, std::optional<json_value>>>;
 
 		static inline auto to_json_data( MyClass2 const &value ) {
 			return std::forward_as_tuple( value.member0,
@@ -97,11 +96,9 @@ int main( int argc, char **argv )
 	}
 	auto data = *daw::read_file( argv[1] );
 
-	auto const val = daw::json::from_json<MyClass2>(
-	  std::string_view( data.data( ), data.size( ) ) );
+	auto const val = daw::json::from_json<MyClass2>( std::string_view( data.data( ), data.size( ) ) );
 
-	auto const delayed_val =
-	  daw::json::from_json<MyDelayedClass>( val.member_later );
+	auto const delayed_val = daw::json::from_json<MyDelayedClass>( val.member_later );
 
 	test_assert( delayed_val.a == 1, "Unexpected value" );
 	test_assert( delayed_val.b, "Unexpected value" );
@@ -116,8 +113,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

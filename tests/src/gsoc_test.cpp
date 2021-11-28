@@ -40,8 +40,7 @@ int main( int argc, char **argv )
 	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 
 	auto const sz = json_data1.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
+	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz ) << '\n';
 	using namespace daw::json;
 
 	std::optional<daw::gsoc::gsoc_object_t> gsoc_result;
@@ -50,8 +49,7 @@ int main( int argc, char **argv )
 	  "gsoc bench(checked)",
 	  sz,
 	  [&]( std::string const &jd ) {
-		  gsoc_result =
-		    from_json<daw::gsoc::gsoc_object_t, nc_checked_policy_t>( jd );
+		  gsoc_result = from_json<daw::gsoc::gsoc_object_t, nc_checked_policy_t>( jd );
 		  daw::do_not_optimize( gsoc_result );
 	  },
 	  json_data1 );
@@ -62,15 +60,12 @@ int main( int argc, char **argv )
 	  "gsoc bench(unchecked)",
 	  sz,
 	  [&gsoc_result]( std::string const &jd ) {
-		  gsoc_result =
-		    from_json<daw::gsoc::gsoc_object_t, NoCommentSkippingPolicyUnchecked>(
-		      jd );
+		  gsoc_result = from_json<daw::gsoc::gsoc_object_t, NoCommentSkippingPolicyUnchecked>( jd );
 		  daw::do_not_optimize( gsoc_result );
 	  },
 	  json_data1 );
 
-	std::cout
-	  << "to_json testing\n*********************************************\n";
+	std::cout << "to_json testing\n*********************************************\n";
 	std::string str{ };
 	str.reserve( 4U * 1024U * 1024U );
 	{
@@ -106,8 +101,7 @@ int main( int argc, char **argv )
 		  *gsoc_result );
 		daw_json_assert( out_ptr != nullptr, ErrorReason::NullOutputIterator );
 		daw_json_assert( out_ptr - str.data( ) > 0, ErrorReason::NumberOutOfRange );
-		daw_json_assert( static_cast<std::size_t>( out_ptr - str.data( ) ) <=
-		                   str.size( ),
+		daw_json_assert( static_cast<std::size_t>( out_ptr - str.data( ) ) <= str.size( ),
 		                 ErrorReason::NumberOutOfRange );
 	}
 }
@@ -116,8 +110,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

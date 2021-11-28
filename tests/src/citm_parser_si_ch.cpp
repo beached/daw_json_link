@@ -17,8 +17,7 @@ namespace daw::json {
 	from_json<daw::citm::citm_object_t,
 	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>,
 	          false,
-	          daw::citm::citm_object_t>( std::string_view const &json_data,
-	                                     std::string_view path );
+	          daw::citm::citm_object_t>( std::string_view const &json_data, std::string_view path );
 
 	template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,

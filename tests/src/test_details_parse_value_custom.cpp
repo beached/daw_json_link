@@ -30,9 +30,9 @@ bool empty_array_empty_json_array( ) {
 	DAW_CONSTEXPR std::string_view sv = R"({ "a": "20200130" })";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	rng.remove_prefix( 7 );
-	auto v = parse_value<json_custom_no_name<std::string_view, NoOp>>(
-	  rng,
-	  ParseTag<JsonParseTypes::Custom>{ } );
+	auto v =
+	  parse_value<json_custom_no_name<std::string_view, NoOp>>( rng,
+	                                                            ParseTag<JsonParseTypes::Custom>{ } );
 	return v.size( ) == 8;
 }
 
@@ -75,8 +75,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

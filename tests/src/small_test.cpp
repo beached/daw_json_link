@@ -50,8 +50,8 @@ int main( int argc, char **argv )
 	}
 	auto data = *daw::read_file( argv[1] );
 
-	auto const cls = daw::json::from_json<daw::Data>(
-	  std::string_view( data.data( ), data.size( ) ) );
+	auto const cls =
+	  daw::json::from_json<daw::Data>( std::string_view( data.data( ), data.size( ) ) );
 
 	test_assert( cls.a == 12345, "Unexpected value" );
 }
@@ -60,8 +60,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

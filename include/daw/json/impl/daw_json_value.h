@@ -45,8 +45,7 @@ namespace daw::json {
 		};
 
 		template<std::size_t Idx, typename ParseState>
-		constexpr decltype( auto ) get(
-		  basic_json_pair<ParseState> const &parse_state ) {
+		constexpr decltype( auto ) get( basic_json_pair<ParseState> const &parse_state ) {
 			static_assert( Idx < 2 );
 			if constexpr( Idx == 0 ) {
 				return parse_state.name;
@@ -56,8 +55,7 @@ namespace daw::json {
 		}
 
 		template<std::size_t Idx, typename ParseState>
-		constexpr decltype( auto ) get( basic_json_pair<ParseState> &
-		                                parse_state ) {
+		constexpr decltype( auto ) get( basic_json_pair<ParseState> & parse_state ) {
 			static_assert( Idx < 2 );
 			if constexpr( Idx == 0 ) {
 				return parse_state.name;
@@ -67,8 +65,7 @@ namespace daw::json {
 		}
 
 		template<std::size_t Idx, typename ParseState>
-		constexpr decltype( auto ) get( basic_json_pair<ParseState> &&
-		                                parse_state ) {
+		constexpr decltype( auto ) get( basic_json_pair<ParseState> && parse_state ) {
 			static_assert( Idx < 2 );
 			if constexpr( Idx == 0 ) {
 				return DAW_MOVE( parse_state.name );
@@ -159,15 +156,12 @@ namespace daw::json {
 			 */
 			[[nodiscard]] constexpr basic_json_pair<ParseState> operator*( ) {
 				if( is_array( ) ) {
-					return {
-					  { },
-					  basic_json_value( ParseState( m_state.first, m_state.last ) ) };
+					return { { }, basic_json_value( ParseState( m_state.first, m_state.last ) ) };
 				}
 				auto parse_state = m_state;
 				auto name = json_details::parse_name( parse_state );
 				return { std::string_view( std::data( name ), std::size( name ) ),
-				         basic_json_value(
-				           ParseState( parse_state.first, parse_state.last ) ) };
+				         basic_json_value( ParseState( parse_state.first, parse_state.last ) ) };
 			}
 
 			/***
@@ -193,8 +187,7 @@ namespace daw::json {
 					} else {
 						(void)json_details::skip_value( m_state );
 						m_state.trim_left( );
-						daw_json_assert_weak( not m_state.has_more( ) or
-						                        m_state.is_at_next_array_element( ),
+						daw_json_assert_weak( not m_state.has_more( ) or m_state.is_at_next_array_element( ),
 						                      ErrorReason::UnexpectedEndOfData,
 						                      m_state );
 						m_state.move_next_member_or_end( );
@@ -352,8 +345,7 @@ namespace daw::json {
 			template<
 			  typename String,
 			  std::enable_if_t<
-			    std::disjunction_v<daw::traits::not_same<basic_json_value,
-			                                             daw::remove_cvref_t<String>>,
+			    std::disjunction_v<daw::traits::not_same<basic_json_value, daw::remove_cvref_t<String>>,
 			                       json_details::is_string_view_like<String>>,
 			    std::nullptr_t> = nullptr>
 			explicit inline constexpr basic_json_value( String &&sv )
@@ -385,8 +377,7 @@ namespace daw::json {
 			 * @return basic_json_value_iterator to the first item/member
 			 */
 			[[nodiscard]] inline constexpr iterator begin( ) const {
-				ParseState parse_state =
-				  ParseState( m_parse_state.first, m_parse_state.last );
+				ParseState parse_state = ParseState( m_parse_state.first, m_parse_state.last );
 				parse_state.remove_prefix( );
 				parse_state.trim_left( );
 				return basic_json_value_iterator<ParseState>( parse_state );
@@ -483,8 +474,7 @@ namespace daw::json {
 			 * Get a copy of the JSON data
 			 * @return the JSON data as a std::string
 			 */
-			template<typename Allocator = std::allocator<char>,
-			         typename Traits = std::char_traits<char>>
+			template<typename Allocator = std::allocator<char>, typename Traits = std::char_traits<char>>
 			[[nodiscard]] std::basic_string<char, Traits, Allocator>
 			get_string( Allocator const &alloc = std::allocator<char>( ) ) const {
 				auto parse_state = m_parse_state;
@@ -589,10 +579,8 @@ namespace daw::json {
 			}
 
 			template<typename NewParseState>
-			explicit inline constexpr
-			operator basic_json_value<NewParseState>( ) const {
-				auto new_range =
-				  NewParseState( m_parse_state.first, m_parse_state.last );
+			explicit inline constexpr operator basic_json_value<NewParseState>( ) const {
+				auto new_range = NewParseState( m_parse_state.first, m_parse_state.last );
 				new_range.class_first = m_parse_state.class_first;
 				new_range.class_last = m_parse_state.class_last;
 				return basic_json_value<NewParseState>( DAW_MOVE( new_range ) );

@@ -37,8 +37,7 @@ bool test_string_trail( ) {
 #ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
-		static DAW_CONSTEXPR std::string_view json_data =
-		  R"({"b": 5, "c": true, "a": "hello", } )";
+		static DAW_CONSTEXPR std::string_view json_data = R"({"b": 5, "c": true, "a": "hello", } )";
 		auto const result = daw::json::from_json<string_trail>( json_data );
 		test_assert( result.a == "hello", "Unexpected result" );
 #ifdef DAW_USE_EXCEPTIONS
@@ -65,8 +64,7 @@ struct daw::json::json_data_contract<string_raw_trail> {
 };
 
 DAW_CONSTEXPR bool test_string_raw_trail( ) {
-	DAW_CONSTEXPR std::string_view json_data =
-	  R"({"b": 5, "c": true, "a": "hello", } )";
+	DAW_CONSTEXPR std::string_view json_data = R"({"b": 5, "c": true, "a": "hello", } )";
 
 	auto const result = daw::json::from_json<string_raw_trail>( json_data );
 
@@ -90,8 +88,7 @@ struct daw::json::json_data_contract<int_trail> {
 };
 
 DAW_CONSTEXPR bool test_int_trail( ) {
-	DAW_CONSTEXPR std::string_view json_data =
-	  R"({"b": 5, "c": true, "a": -5, } )";
+	DAW_CONSTEXPR std::string_view json_data = R"({"b": 5, "c": true, "a": -5, } )";
 
 	auto const result = daw::json::from_json<int_trail>( json_data );
 
@@ -115,8 +112,7 @@ struct daw::json::json_data_contract<unsigned_trail> {
 };
 
 DAW_CONSTEXPR bool test_unsigned_trail( ) {
-	DAW_CONSTEXPR std::string_view json_data =
-	  R"({"b": 5, "c": true, "a": 5, } )";
+	DAW_CONSTEXPR std::string_view json_data = R"({"b": 5, "c": true, "a": 5, } )";
 
 	auto const result = daw::json::from_json<unsigned_trail>( json_data );
 
@@ -139,8 +135,7 @@ struct daw::json::json_data_contract<bool_trail> {
 };
 
 DAW_CONSTEXPR bool test_bool_trail( ) {
-	DAW_CONSTEXPR std::string_view json_data =
-	  R"({"b": 5, "c": true, "a": true, } )";
+	DAW_CONSTEXPR std::string_view json_data = R"({"b": 5, "c": true, "a": true, } )";
 
 	auto const result = daw::json::from_json<bool_trail>( json_data );
 
@@ -191,8 +186,7 @@ struct daw::json::json_data_contract<array_member_trail> {
 bool test_array_member_trail( ) {
 	std::string a;
 
-	static DAW_CONSTEXPR std::string_view json_data =
-	  R"({"b": 5, "c": true, "a": [1,2,3,4], } )";
+	static DAW_CONSTEXPR std::string_view json_data = R"({"b": 5, "c": true, "a": [1,2,3,4], } )";
 #ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
@@ -213,8 +207,7 @@ bool test_array_trail( ) {
 #ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
-		std::vector<int> const result =
-		  daw::json::from_json_array<int>( json_data );
+		std::vector<int> const result = daw::json::from_json_array<int>( json_data );
 		test_assert( result.size( ) == 5, "Unexpected result" );
 		test_assert( result[0] == 1, "Unexpected result" );
 		test_assert( result[4] == 5, "Unexpected result" );
@@ -232,16 +225,11 @@ int main( int, char ** )
   try
 #endif
 {
-	test_assert( test_int_trail( ),
-	             "Signed integers fail to accommodate trailing strings" );
-	test_assert( test_string_raw_trail( ),
-	             "Raw strings fail to accommodate trailing strings" );
-	test_assert( test_unsigned_trail( ),
-	             "Unsigned integers fail to accommodate trailing strings" );
-	test_assert( test_bool_trail( ),
-	             "Bools fail to accommodate trailing strings" );
-	test_assert( test_object_trail( ),
-	             "Objects fail to accommodate trailing strings" );
+	test_assert( test_int_trail( ), "Signed integers fail to accommodate trailing strings" );
+	test_assert( test_string_raw_trail( ), "Raw strings fail to accommodate trailing strings" );
+	test_assert( test_unsigned_trail( ), "Unsigned integers fail to accommodate trailing strings" );
+	test_assert( test_bool_trail( ), "Bools fail to accommodate trailing strings" );
+	test_assert( test_object_trail( ), "Objects fail to accommodate trailing strings" );
 	daw::expecting( test_string_trail( ) );
 	daw::expecting( test_array_member_trail( ) );
 	daw::expecting( test_array_trail( ) );
@@ -251,8 +239,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

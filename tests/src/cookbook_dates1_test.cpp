@@ -24,14 +24,11 @@
 namespace daw::cookbook_dates1 {
 	struct MyClass1 {
 		std::string name;
-		std::chrono::time_point<std::chrono::system_clock,
-		                        std::chrono::milliseconds>
-		  timestamp;
+		std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> timestamp;
 	};
 
 	bool operator==( MyClass1 const &lhs, MyClass1 const &rhs ) {
-		return std::tie( lhs.name, lhs.timestamp ) ==
-		       std::tie( rhs.name, rhs.timestamp );
+		return std::tie( lhs.name, lhs.timestamp ) == std::tie( rhs.name, rhs.timestamp );
 	}
 } // namespace daw::cookbook_dates1
 
@@ -45,8 +42,7 @@ namespace daw::json {
 		static constexpr char const timestamp[] = "timestamp";
 		using type = json_member_list<json_string<name>, json_date<timestamp>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_dates1::MyClass1 const &value ) {
+		static inline auto to_json_data( daw::cookbook_dates1::MyClass1 const &value ) {
 			return std::forward_as_tuple( value.name, value.timestamp );
 		}
 	};
@@ -80,8 +76,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

@@ -33,8 +33,8 @@ std::string to_string( expected_result r ) {
 	DAW_UNREACHABLE( );
 }
 
-constexpr std::pair<std::string_view, bool>
-check_expected( expected_result expected, expected_result actual ) {
+constexpr std::pair<std::string_view, bool> check_expected( expected_result expected,
+                                                            expected_result actual ) {
 	if( expected == actual or expected == expected_result::either ) {
 		return { R"("not_error")", true };
 	}
@@ -89,8 +89,7 @@ public:
 			daw::json::daw_json_error( daw::json::ErrorReason::UnexpectedEndOfData );
 		default: {
 			auto rng = p.value.get_raw_state( );
-			throw daw::json::json_exception( daw::json::ErrorReason::Unknown,
-			                                 rng.first );
+			throw daw::json::json_exception( daw::json::ErrorReason::Unknown, rng.first );
 		}
 		}
 	}
@@ -118,13 +117,11 @@ public:
 	}
 };
 
-std::pair<expected_result, std::string>
-test_pass_fail( std::string_view json_data ) {
+std::pair<expected_result, std::string> test_pass_fail( std::string_view json_data ) {
 	if( json_data.data( ) == nullptr ) {
 		return { expected_result::reject, "empty file"s };
 	}
-	auto ps = daw::json::ConformancePolicy( std::data( json_data ),
-	                                        daw::data_end( json_data ) );
+	auto ps = daw::json::ConformancePolicy( std::data( json_data ), daw::data_end( json_data ) );
 	ps.trim_left( );
 	if( not ps.has_more( ) ) {
 		return { expected_result::reject, "empty file"s };
@@ -151,16 +148,13 @@ test_pass_fail( std::string_view json_data ) {
 		} break;
 		case daw::json::JsonBaseParseTypes::Class:
 		case daw::json::JsonBaseParseTypes::Array:
-			daw::json::json_event_parser<daw::json::ConformancePolicy>(
-			  jv,
-			  JSONValidateHandler{ } );
+			daw::json::json_event_parser<daw::json::ConformancePolicy>( jv, JSONValidateHandler{ } );
 			break;
 		case daw::json::JsonBaseParseTypes::None:
 			return { expected_result::reject, "empty file"s };
 		default: {
 			auto rng = jv.get_raw_state( );
-			throw daw::json::json_exception( daw::json::ErrorReason::Unknown,
-			                                 rng.first );
+			throw daw::json::json_exception( daw::json::ErrorReason::Unknown, rng.first );
 		}
 		}
 		ps = jv.get_raw_state( );
@@ -196,8 +190,7 @@ int main( int argc, char **argv ) {
 	std::string_view allow_list[] = { "n_object_trailing_comma.json",
 	                                  "n_array_number_and_comma.json",
 	                                  "n_array_extra_comma.json" };
-	for( auto const &entry :
-	     std::filesystem::recursive_directory_iterator( p ) ) {
+	for( auto const &entry : std::filesystem::recursive_directory_iterator( p ) ) {
 		if( not entry.is_regular_file( ) ) {
 			continue;
 		}
@@ -213,11 +206,9 @@ int main( int argc, char **argv ) {
 		}
 		auto const json_data = [&] {
 			if constexpr( std::is_same_v<std::filesystem::path::value_type, char> ) {
-				return daw::filesystem::memory_mapped_file_t<char>(
-				  entry.path( ).string( ) );
+				return daw::filesystem::memory_mapped_file_t<char>( entry.path( ).string( ) );
 			} else {
-				return daw::filesystem::memory_mapped_file_t<char>(
-				  entry.path( ).wstring( ) );
+				return daw::filesystem::memory_mapped_file_t<char>( entry.path( ).wstring( ) );
 			}
 		}( );
 		bool const is_on_allow_list =
@@ -229,8 +220,8 @@ int main( int argc, char **argv ) {
 		auto [check_msg, check_stat] =
 		  check_expected( static_cast<expected_result>( fname[0] ), result );
 		std::stringstream ss;
-		ss << check_msg << ',' << std::quoted( fname ) << ',' << to_string( result )
-		   << ',' << std::quoted( message );
+		ss << check_msg << ',' << std::quoted( fname ) << ',' << to_string( result ) << ','
+		   << std::quoted( message );
 		if( is_on_allow_list ) {
 			ss << ", \"allowed\"\n";
 		} else {

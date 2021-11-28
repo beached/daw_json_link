@@ -94,9 +94,7 @@ namespace daw::json {
 			 * Contains an array of member location_info mapped in a json_class
 			 * @tparam MemberCount Number of mapped members from json_class
 			 */
-			template<std::size_t MemberCount,
-			         typename CharT,
-			         bool DoFullNameMatch = true>
+			template<std::size_t MemberCount, typename CharT, bool DoFullNameMatch = true>
 			struct locations_info_t {
 				using value_type = location_info_t<DoFullNameMatch, CharT>;
 				using reference = value_type &;
@@ -121,8 +119,7 @@ namespace daw::json {
 
 				template<bool expect_long_strings, std::size_t start_pos>
 				[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t
-				find_name( daw::template_vals_t<start_pos>,
-				           daw::string_view key ) const {
+				find_name( daw::template_vals_t<start_pos>, daw::string_view key ) const {
 					UInt32 const hash = name_hash<expect_long_strings>( key );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					// MSVC has a bug where the list initialization isn't sequenced in
@@ -148,15 +145,13 @@ namespace daw::json {
 			// Should never be called outside a consteval context
 			template<typename... MemberNames>
 			inline DAW_CONSTEVAL bool do_hashes_collide( ) {
-				daw::UInt32 hashes[sizeof...( MemberNames )]{
-				  name_hash<false>( MemberNames::name )... };
+				daw::UInt32 hashes[sizeof...( MemberNames )]{ name_hash<false>( MemberNames::name )... };
 
 				daw::sort( std::data( hashes ), daw::data_end( hashes ) );
 				return daw::algorithm::adjacent_find( std::data( hashes ),
 				                                      daw::data_end( hashes ),
-				                                      []( UInt32 l, UInt32 r ) {
-					                                      return l == r;
-				                                      } ) != daw::data_end( hashes );
+				                                      []( UInt32 l, UInt32 r ) { return l == r; } ) !=
+				       daw::data_end( hashes );
 			}
 #if defined( _MSC_VER ) and not defined( __clang__ )
 #define DAW_JSON_MAKE_LOC_INFO_CONSTEVAL constexpr
@@ -165,34 +160,23 @@ namespace daw::json {
 #endif
 			// Should never be called outside a consteval context
 			template<typename ParseState, typename... JsonMembers>
-			DAW_ATTRIB_FLATINLINE inline DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto
-			make_locations_info( ) {
+			DAW_ATTRIB_FLATINLINE inline DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto make_locations_info( ) {
 				using CharT = typename ParseState::CharT;
-#if defined( DAW_JSON_PARSER_DIAGNOSTICS ) or \
-  ( defined( __MSC_VER ) and not defined( __clang__ ) )
+#if defined( DAW_JSON_PARSER_DIAGNOSTICS ) or ( defined( __MSC_VER ) and not defined( __clang__ ) )
 				constexpr bool do_full_name_match = true;
-				return locations_info_t<sizeof...( JsonMembers ),
-				                        CharT,
-				                        do_full_name_match>{
+				return locations_info_t<sizeof...( JsonMembers ), CharT, do_full_name_match>{
 				  { daw::name_hash<false>( JsonMembers::name )... },
-				  { location_info_t<do_full_name_match, CharT>{
-				    JsonMembers::name }... } };
+				  { location_info_t<do_full_name_match, CharT>{ JsonMembers::name }... } };
 #else
 				// DAW
 				constexpr bool do_full_name_match =
-				  ParseState::force_name_equal_check or
-				  do_hashes_collide<JsonMembers...>( );
+				  ParseState::force_name_equal_check or do_hashes_collide<JsonMembers...>( );
 				if constexpr( do_full_name_match ) {
-					return locations_info_t<sizeof...( JsonMembers ),
-					                        CharT,
-					                        do_full_name_match>{
+					return locations_info_t<sizeof...( JsonMembers ), CharT, do_full_name_match>{
 					  { daw::name_hash<false>( JsonMembers::name )... },
-					  { location_info_t<do_full_name_match, CharT>{
-					    JsonMembers::name }... } };
+					  { location_info_t<do_full_name_match, CharT>{ JsonMembers::name }... } };
 				} else {
-					return locations_info_t<sizeof...( JsonMembers ),
-					                        CharT,
-					                        do_full_name_match>{
+					return locations_info_t<sizeof...( JsonMembers ), CharT, do_full_name_match>{
 					  { daw::name_hash<false>( JsonMembers::name )... },
 					  {} };
 				}
@@ -237,10 +221,9 @@ namespace daw::json {
 					// TODO: fully unescape name
 					// parse_name checks if we have more and are quotes
 					auto const name = parse_name( parse_state );
-					auto const name_pos =
-					  locations.template find_name<ParseState::expect_long_strings>(
-					    template_vals<( from_start ? 0 : pos )>,
-					    name );
+					auto const name_pos = locations.template find_name<ParseState::expect_long_strings>(
+					  template_vals<( from_start ? 0 : pos )>,
+					  name );
 					if constexpr( must_exist == AllMembersMustExist::yes ) {
 						daw_json_assert_weak( name_pos < std::size( locations ),
 						                      ErrorReason::UnknownMember,
@@ -261,10 +244,8 @@ namespace daw::json {
 						break;
 					} else {
 #if defined( DAW_JSON_PARSER_DIAGNOSTICS )
-						std::cerr << "DEBUG:	Out of order member '"
-						          << locations.names[name_pos].name
-						          << "' found, looking for '" << locations.names[pos].name
-						          << ". It is "
+						std::cerr << "DEBUG:	Out of order member '" << locations.names[name_pos].name
+						          << "' found, looking for '" << locations.names[pos].name << ". It is "
 						          << std::abs( static_cast<long long>( pos ) -
 						                       static_cast<long long>( name_pos ) )
 						          << " members ahead in constructor\n";
@@ -295,14 +276,11 @@ namespace daw::json {
 				}
 				if constexpr( ParseState::has_allocator ) {
 					return std::pair<ParseState, bool>{
-					  locations[pos]
-					    .get_range( template_arg<ParseState> )
-					    .with_allocator( parse_state ),
+					  locations[pos].get_range( template_arg<ParseState> ).with_allocator( parse_state ),
 					  known };
 				} else {
-					return std::pair<ParseState, bool>{
-					  locations[pos].get_range( template_arg<ParseState> ),
-					  known };
+					return std::pair<ParseState, bool>{ locations[pos].get_range( template_arg<ParseState> ),
+					                                    known };
 				}
 			}
 		} // namespace json_details

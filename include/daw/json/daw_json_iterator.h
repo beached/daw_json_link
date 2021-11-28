@@ -58,33 +58,26 @@ namespace daw::json {
 		 * heterogeneous, a basic_json_value_iterator may be more appropriate
 		 * @tparam ParsePolicy Parsing policy type
 		 */
-		template<typename JsonElement,
-		         typename ParsePolicy = NoCommentSkippingPolicyChecked>
+		template<typename JsonElement, typename ParsePolicy = NoCommentSkippingPolicyChecked>
 		class json_array_iterator {
 			using CharT = typename ParsePolicy::CharT;
 
 			template<typename String>
-			static inline constexpr ParsePolicy
-			get_range( String &&data, std::string_view member_path ) {
-				static_assert(
-				  std::is_convertible_v<decltype( std::data( data ) ), CharT *>,
-				  "Attempt to assign a const char * to a char *" );
+			static inline constexpr ParsePolicy get_range( String &&data, std::string_view member_path ) {
+				static_assert( std::is_convertible_v<decltype( std::data( data ) ), CharT *>,
+				               "Attempt to assign a const char * to a char *" );
 
 				auto [is_found, result] = json_details::find_range<ParsePolicy>(
 				  DAW_FWD2( String, data ),
 				  { std::data( member_path ), std::size( member_path ) } );
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
-				daw_json_assert( result.front( ) == '[',
-				                 ErrorReason::InvalidArrayStart,
-				                 result );
+				daw_json_assert( result.front( ) == '[', ErrorReason::InvalidArrayStart, result );
 				return result;
 			}
 
 		public:
-			using element_type =
-			  typename json_details::json_deduced_type<JsonElement>;
-			static_assert( traits::not_same<element_type, void>::value,
-			               "Unknown JsonElement type." );
+			using element_type = typename json_details::json_deduced_type<JsonElement>;
+			static_assert( traits::not_same<element_type, void>::value, "Unknown JsonElement type." );
 			using value_type = typename element_type::parse_to_t;
 			using reference = value_type;
 			using pointer = json_details::arrow_proxy<value_type>;
@@ -106,20 +99,17 @@ namespace daw::json {
 
 			template<
 			  typename String,
-			  std::enable_if_t<traits::not_same<json_array_iterator,
-			                                    daw::remove_cvref_t<String>>::value,
+			  std::enable_if_t<traits::not_same<json_array_iterator, daw::remove_cvref_t<String>>::value,
 			                   std::nullptr_t> = nullptr>
 			inline constexpr explicit json_array_iterator( String &&jd )
 			  : m_state( ParsePolicy( std::data( jd ), daw::data_end( jd ) ) ) {
 
-				static_assert(
-				  traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
-				  "String requires being able to call std::data/std::size.  char const "
-				  "* are not able to do this, pass a string_view for char const * to "
-				  "ensure you are aware of the strlen cost" );
+				static_assert( traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
+				               "String requires being able to call std::data/std::size.  char const "
+				               "* are not able to do this, pass a string_view for char const * to "
+				               "ensure you are aware of the strlen cost" );
 
-				static_assert(
-				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );
+				static_assert( std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart,
@@ -131,23 +121,18 @@ namespace daw::json {
 
 			template<
 			  typename String,
-			  std::enable_if_t<traits::not_same<json_array_iterator,
-			                                    daw::remove_cvref_t<String>>::value,
+			  std::enable_if_t<traits::not_same<json_array_iterator, daw::remove_cvref_t<String>>::value,
 			                   std::nullptr_t> = nullptr>
-			inline constexpr explicit json_array_iterator(
-			  String &&jd,
-			  std::string_view start_path )
+			inline constexpr explicit json_array_iterator( String &&jd, std::string_view start_path )
 			  : m_state( get_range( DAW_FWD2( String, jd ), start_path ) ) {
 
-				static_assert(
-				  traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
-				  "String requires being able to call std::data/std::size.  char const "
-				  "* are not able to do this, pass a string_view for char const * to "
-				  "ensure you are aware of the strlen cost" );
+				static_assert( traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
+				               "String requires being able to call std::data/std::size.  char const "
+				               "* are not able to do this, pass a string_view for char const * to "
+				               "ensure you are aware of the strlen cost" );
 
-				static_assert(
-				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *>,
-				  "Attempt to assign a const char * to a char *" );
+				static_assert( std::is_convertible_v<decltype( std::data( jd ) ), CharT *>,
+				               "Attempt to assign a const char * to a char *" );
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
@@ -170,18 +155,16 @@ namespace daw::json {
 
 				auto tmp = m_state;
 
-				if constexpr( json_details::use_direct_construction_v<ParsePolicy,
-				                                                      element_type> ) {
-					auto const run_after_parse =
-					  op_star_cleanup<CharT, ParseState>{ m_can_skip, tmp };
+				if constexpr( json_details::use_direct_construction_v<ParsePolicy, element_type> ) {
+					auto const run_after_parse = op_star_cleanup<CharT, ParseState>{ m_can_skip, tmp };
 					(void)run_after_parse;
 					return json_details::parse_value<element_type>(
 					  tmp,
 					  ParseTag<element_type::expected_type>{ } );
 				} else {
-					auto result = json_details::parse_value<element_type>(
-					  tmp,
-					  ParseTag<element_type::expected_type>{ } );
+					auto result =
+					  json_details::parse_value<element_type>( tmp,
+					                                           ParseTag<element_type::expected_type>{ } );
 
 					m_can_skip = tmp.first;
 					return result;
@@ -232,8 +215,7 @@ namespace daw::json {
 			 * @return true when there is parse data available
 			 */
 			[[nodiscard]] inline constexpr bool good( ) const {
-				return not m_state.is_null( ) and m_state.has_more( ) and
-				       m_state.front( ) != ']';
+				return not m_state.is_null( ) and m_state.has_more( ) and m_state.front( ) != ']';
 			}
 
 			/***
@@ -249,8 +231,7 @@ namespace daw::json {
 			 * @param rhs Another json_array_iterator
 			 * @return true when equivalent to rhs
 			 */
-			[[nodiscard]] inline constexpr bool
-			operator==( json_array_iterator const &rhs ) const {
+			[[nodiscard]] inline constexpr bool operator==( json_array_iterator const &rhs ) const {
 				if( not( *this ) ) {
 					return not rhs;
 				}
@@ -265,8 +246,7 @@ namespace daw::json {
 			 * @param rhs another json_array_iterator
 			 * @return true when rhs is not equivalent
 			 */
-			[[nodiscard]] inline constexpr bool
-			operator!=( json_array_iterator const &rhs ) const {
+			[[nodiscard]] inline constexpr bool operator!=( json_array_iterator const &rhs ) const {
 				if( not( *this ) ) {
 					return static_cast<bool>( rhs );
 				}
@@ -282,8 +262,7 @@ namespace daw::json {
 		 * @tparam JsonElement Type of each element in array
 		 * @tparam ParsePolicy parsing policy type
 		 */
-		template<typename JsonElement,
-		         typename ParsePolicy = NoCommentSkippingPolicyChecked>
+		template<typename JsonElement, typename ParsePolicy = NoCommentSkippingPolicyChecked>
 		struct json_array_range {
 			using iterator = json_array_iterator<JsonElement, ParsePolicy>;
 			using CharT = typename ParsePolicy::CharT;
@@ -297,26 +276,21 @@ namespace daw::json {
 
 			template<
 			  typename String,
-			  std::enable_if_t<traits::not_same<json_array_range,
-			                                    daw::remove_cvref_t<String>>::value,
+			  std::enable_if_t<traits::not_same<json_array_range, daw::remove_cvref_t<String>>::value,
 			                   std::nullptr_t> = nullptr>
 			constexpr explicit json_array_range( String &&jd )
 			  : m_first( DAW_FWD2( String, jd ) ) {
-				static_assert(
-				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );
+				static_assert( std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );
 			}
 
 			template<
 			  typename String,
-			  std::enable_if_t<traits::not_same<json_array_range,
-			                                    daw::remove_cvref_t<String>>::value,
+			  std::enable_if_t<traits::not_same<json_array_range, daw::remove_cvref_t<String>>::value,
 			                   std::nullptr_t> = nullptr>
-			constexpr explicit json_array_range( String &&jd,
-			                                     std::string_view start_path )
+			constexpr explicit json_array_range( String &&jd, std::string_view start_path )
 			  : m_first( DAW_FWD2( String, jd ), start_path ) {
-				static_assert(
-				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *>,
-				  "Attempt to assign a const char * to a char *" );
+				static_assert( std::is_convertible_v<decltype( std::data( jd ) ), CharT *>,
+				               "Attempt to assign a const char * to a char *" );
 			}
 
 			/***

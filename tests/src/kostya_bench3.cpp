@@ -28,10 +28,8 @@ struct coordinate_t {
 		return x != rhs.x and y != rhs.y and z != rhs.z;
 	}
 
-	friend std::ostream &operator<<( std::ostream &out,
-	                                 coordinate_t const &point ) {
-		out << "coordinate_t {x: " << point.x << ", y: " << point.y
-		    << ", z: " << point.z << "}";
+	friend std::ostream &operator<<( std::ostream &out, coordinate_t const &point ) {
+		out << "coordinate_t {x: " << point.x << ", y: " << point.y << ", z: " << point.z << "}";
 		return out;
 	}
 };
@@ -46,8 +44,7 @@ namespace daw::json {
 		constexpr inline static char const x[] = "x";
 		constexpr inline static char const y[] = "y";
 		constexpr inline static char const z[] = "z";
-		using type =
-		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
+		using type = json_member_list<json_number<x>, json_number<y>, json_number<z>>;
 	};
 } // namespace daw::json
 
@@ -63,8 +60,7 @@ coordinate_t calc( std::string const &text ) {
 	std::size_t len = 0;
 
 	using namespace daw::json;
-	using range_t =
-	  json_array_range<coordinate_t, NoCommentSkippingPolicyUnchecked>;
+	using range_t = json_array_range<coordinate_t, NoCommentSkippingPolicyUnchecked>;
 	auto rng = range_t( text, "coordinates" );
 
 	for( auto c : rng ) {

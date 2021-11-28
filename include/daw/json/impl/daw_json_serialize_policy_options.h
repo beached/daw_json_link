@@ -60,8 +60,7 @@ namespace daw::json {
 			inline constexpr unsigned json_option_bits_width<IndentationType> = 3;
 
 			template<>
-			inline constexpr auto default_json_option_value<IndentationType> =
-			  IndentationType::Space2;
+			inline constexpr auto default_json_option_value<IndentationType> = IndentationType::Space2;
 		} // namespace json_details
 
 		/***
@@ -79,8 +78,7 @@ namespace daw::json {
 
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<RestrictedStringOutput> =
-			  1;
+			inline constexpr unsigned json_option_bits_width<RestrictedStringOutput> = 1;
 
 			template<>
 			inline constexpr auto default_json_option_value<RestrictedStringOutput> =
@@ -94,8 +92,7 @@ namespace daw::json {
 			inline constexpr unsigned json_option_bits_width<NewLineDelimiter> = 1;
 
 			template<>
-			inline constexpr auto default_json_option_value<NewLineDelimiter> =
-			  NewLineDelimiter::n;
+			inline constexpr auto default_json_option_value<NewLineDelimiter> = NewLineDelimiter::n;
 		} // namespace json_details
 
 		enum class OutputTrailingComma : json_details::json_options_t { No, Yes };

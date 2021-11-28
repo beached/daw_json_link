@@ -41,10 +41,9 @@ namespace daw::json {
 				using BASE = daw::constant<10U>;
 				using EXPONENT_MARKER = daw::constant<'e'>;
 				using MANTISSA_MAX =
-				  daw::constant<unsigned_t{ 1U }
-				                << ( fp_properties<Float>::mantissa_width +
-				                     1U )>; // The extra bit is to give
-				                            // space for the implicit 1
+				  daw::constant<unsigned_t{ 1U } << ( fp_properties<Float>::mantissa_width +
+				                                      1U )>; // The extra bit is to give
+				                                             // space for the implicit 1
 				using BITSTYPE_MAX_DIV_BY_BASE =
 				  daw::constant<std::numeric_limits<unsigned_t>::max( ) / BASE::value>;
 				using CharT = typename ParseState::CharT;
@@ -103,10 +102,8 @@ namespace daw::json {
 
 					// The second loop is to run through the remaining digits after we've
 					// filled the mantissa.
-					while(
-					  daw::nsc_or( digit < 10U, cur_char == DECIMAL_POINT::value ) ) {
-						if( daw::nsc_and( cur_char == DECIMAL_POINT::value,
-						                  after_decimal ) ) {
+					while( daw::nsc_or( digit < 10U, cur_char == DECIMAL_POINT::value ) ) {
+						if( daw::nsc_and( cur_char == DECIMAL_POINT::value, after_decimal ) ) {
 							break; // this means that parse_state points to a
 							       // second decimal point, ending the number.
 						} else if( cur_char == DECIMAL_POINT::value ) {
@@ -145,9 +142,7 @@ namespace daw::json {
 								break;
 							}
 							digit = fp_utils_details::to_digit( cur_char );
-							daw_json_assert_weak( digit < 10U,
-							                      json::ErrorReason,
-							                      parse_state );
+							daw_json_assert_weak( digit < 10U, json::ErrorReason, parse_state );
 							std::uint64_t add_to_exponent = 0U;
 							do {
 								add_to_exponent *= 10U;

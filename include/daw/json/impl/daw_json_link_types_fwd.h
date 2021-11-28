@@ -43,14 +43,12 @@ namespace daw::json {
 		template<typename... JsonElements>
 		struct json_variant_type_list {
 			using i_am_variant_type_list = void;
-			using element_map_t =
-			  fwd_pack<json_details::json_deduced_type<JsonElements>...>;
+			using element_map_t = fwd_pack<json_details::json_deduced_type<JsonElements>...>;
 		};
 
 		namespace json_details {
 			template<JsonBaseParseTypes PT>
-			constexpr std::size_t
-			find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
+			constexpr std::size_t find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
 				std::size_t idx = 0;
 				for( auto const &pt : pts ) {
 					if( pt == PT ) {
@@ -85,10 +83,10 @@ namespace daw::json {
 			struct unable_to_determine_underlying_nullable_type;
 
 			template<typename T>
-			using detected_underlying_nullable_type = std::remove_reference_t<
-			  daw::detected_or_t<unable_to_determine_underlying_nullable_type<T>,
-			                     underlying_nullable_type,
-			                     T>>;
+			using detected_underlying_nullable_type =
+			  std::remove_reference_t<daw::detected_or_t<unable_to_determine_underlying_nullable_type<T>,
+			                                             underlying_nullable_type,
+			                                             T>>;
 
 			template<typename T>
 			using is_nullable_type = daw::is_detected<underlying_nullable_type, T>;
@@ -97,8 +95,7 @@ namespace daw::json {
 			inline constexpr bool is_nullable_type_v = is_nullable_type<T>::value;
 
 			template<typename T>
-			[[maybe_unused]] constexpr unknown_variant_type<T>
-			get_variant_type_list( T const * );
+			[[maybe_unused]] constexpr unknown_variant_type<T> get_variant_type_list( T const * );
 
 			/// Allow specialization of variant like types to extract the alternative
 			/// pack
@@ -107,10 +104,9 @@ namespace daw::json {
 
 			template<typename... Ts>
 			struct variant_alternatives_list<std::variant<Ts...>> {
-				using type = std::conditional_t<
-				  std::conjunction<has_json_deduced_type<Ts>...>::value,
-				  json_variant_type_list<json_deduced_type<Ts>...>,
-				  missing_default_type_mapping<json_deduced_type<Ts>...>>;
+				using type = std::conditional_t<std::conjunction<has_json_deduced_type<Ts>...>::value,
+				                                json_variant_type_list<json_deduced_type<Ts>...>,
+				                                missing_default_type_mapping<json_deduced_type<Ts>...>>;
 			};
 
 			template<typename, typename = void>
@@ -132,30 +128,28 @@ namespace daw::json {
 			  std::disjunction_v<daw::not_trait<is_nullable_json_value<Nullable>>,
 			                     daw::not_trait<is_nullable_type<Variant>>>,
 			  variant_alternatives_list<Variant>,
-			  std::conditional_t<
-			    is_nullable_type_v<Variant>,
-			    variant_alternatives_list<detected_underlying_nullable_type<Variant>>,
-			    cannot_deduce_variant_element_types<Nullable, Variant>>>;
+			  std::conditional_t<is_nullable_type_v<Variant>,
+			                     variant_alternatives_list<detected_underlying_nullable_type<Variant>>,
+			                     cannot_deduce_variant_element_types<Nullable, Variant>>>;
 
 			template<JsonNullable, typename>
 			struct cannot_deduce_tuple_types_list;
 
 			template<JsonNullable Nullable, typename Tuple>
-			using determine_tuple_element_types = std::conditional_t<
-			  std::disjunction_v<daw::not_trait<is_nullable_json_value<Nullable>>,
-			                     daw::not_trait<is_nullable_type<Tuple>>>,
-			  typename tuple_types_list<Tuple>::type,
-			  std::conditional_t<is_nullable_type_v<Tuple>,
-			                     typename tuple_types_list<
-			                       detected_underlying_nullable_type<Tuple>>::type,
-			                     cannot_deduce_tuple_types_list<Nullable, Tuple>>>;
+			using determine_tuple_element_types =
+			  std::conditional_t<std::disjunction_v<daw::not_trait<is_nullable_json_value<Nullable>>,
+			                                        daw::not_trait<is_nullable_type<Tuple>>>,
+			                     typename tuple_types_list<Tuple>::type,
+			                     std::conditional_t<is_nullable_type_v<Tuple>,
+			                                        typename tuple_types_list<
+			                                          detected_underlying_nullable_type<Tuple>>::type,
+			                                        cannot_deduce_tuple_types_list<Nullable, Tuple>>>;
 		} // namespace json_details
 
 		template<typename... Ts>
 		struct json_tuple_types_list {
-			static_assert(
-			  std::conjunction_v<json_details::has_json_deduced_type<Ts>...>,
-			  "Missing mapping for type in tuple" );
+			static_assert( std::conjunction_v<json_details::has_json_deduced_type<Ts>...>,
+			               "Missing mapping for type in tuple" );
 			using types = std::tuple<json_details::json_deduced_type<Ts>...>;
 		};
 

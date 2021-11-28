@@ -43,41 +43,34 @@ namespace daw::json {
 			struct is_no_name : std::true_type {};
 
 			template<JSONNAMETYPE Name, typename JsonMember>
-			struct is_no_name<json_named_member<Name, JsonMember>> :
-			  std::false_type {};
+			struct is_no_name<json_named_member<Name, JsonMember>> : std::false_type {};
 
 			template<typename JsonMember>
 			inline constexpr bool is_no_name_v = is_no_name<JsonMember>::value;
 
 			template<typename T>
-			using has_op_bool_test =
-			  decltype( static_cast<bool>( std::declval<T>( ) ) );
+			using has_op_bool_test = decltype( static_cast<bool>( std::declval<T>( ) ) );
 
 			template<typename T>
-			inline constexpr bool has_op_bool_v =
-			  daw::is_detected_v<has_op_bool_test, T>;
+			inline constexpr bool has_op_bool_v = daw::is_detected_v<has_op_bool_test, T>;
 
 			template<typename T>
 			using has_op_star_test = decltype( *std::declval<T>( ) );
 
 			template<typename T>
-			inline constexpr bool has_op_star_v =
-			  daw::is_detected_v<has_op_star_test, T>;
+			inline constexpr bool has_op_star_v = daw::is_detected_v<has_op_star_test, T>;
 
 			template<typename T>
 			using has_empty_member_test = decltype( std::declval<T>( ).empty( ) );
 
 			template<typename T>
-			inline constexpr bool has_empty_member_v =
-			  daw::is_detected_v<has_empty_member_test, T>;
+			inline constexpr bool has_empty_member_v = daw::is_detected_v<has_empty_member_test, T>;
 
 			template<typename T>
-			inline constexpr bool is_readable_v =
-			  has_op_bool_v<T> or has_empty_member_v<T>;
+			inline constexpr bool is_readable_v = has_op_bool_v<T> or has_empty_member_v<T>;
 
 			template<typename T>
-			inline constexpr auto has_value( T const &v )
-			  -> std::enable_if_t<is_readable_v<T>, bool> {
+			inline constexpr auto has_value( T const &v ) -> std::enable_if_t<is_readable_v<T>, bool> {
 
 				if constexpr( has_op_bool_v<T> ) {
 					return static_cast<bool>( v );
@@ -132,13 +125,10 @@ namespace daw::json {
 
 			template<typename JsonMember, JSONNAMETYPE NewName, bool Cond>
 			using copy_name_when =
-			  std::conditional_t<Cond,
-			                     json_named_member<NewName, without_name<JsonMember>>,
-			                     JsonMember>;
+			  std::conditional_t<Cond, json_named_member<NewName, without_name<JsonMember>>, JsonMember>;
 
 			template<typename JsonMember, JSONNAMETYPE NewName>
-			using copy_name_when_noname =
-			  copy_name_when<JsonMember, NewName, is_no_name_v<JsonMember>>;
+			using copy_name_when_noname = copy_name_when<JsonMember, NewName, is_no_name_v<JsonMember>>;
 		} // namespace json_details
 		/***
 		 * This class is used as a way to indicate that a json_data_contract
@@ -169,27 +159,23 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename T>
-			using json_map_alias_test =
-			  typename json_data_contract_trait_t<T>::i_am_a_json_map_alias;
+			using json_map_alias_test = typename json_data_contract_trait_t<T>::i_am_a_json_map_alias;
 
 			template<typename T>
-			inline constexpr bool is_json_map_alias_v =
-			  daw::is_detected_v<json_map_alias_test, T>;
+			inline constexpr bool is_json_map_alias_v = daw::is_detected_v<json_map_alias_test, T>;
 
 			template<typename T>
 			using force_aggregate_construction_test =
 			  typename json_data_contract<T>::force_aggregate_construction;
 
 			template<typename T>
-			using force_aggregate_construction_test2 =
-			  decltype( T::force_aggregate_construction );
+			using force_aggregate_construction_test2 = decltype( T::force_aggregate_construction );
 
 			template<typename JsonMember>
 			using switcher_t = typename JsonMember::switcher;
 
 			template<typename JsonMember>
-			inline constexpr bool has_switcher_v =
-			  daw::is_detected_v<switcher_t, JsonMember>;
+			inline constexpr bool has_switcher_v = daw::is_detected_v<switcher_t, JsonMember>;
 		} // namespace json_details
 		/***
 		 * This trait can be specialized such that when class being returned has
@@ -200,13 +186,12 @@ namespace daw::json {
 		 * @tparam T type to specialize
 		 */
 		template<typename T>
-		using force_aggregate_construction = std::bool_constant<std::disjunction_v<
-		  daw::is_detected<json_details::force_aggregate_construction_test, T>,
-		  daw::is_detected<json_details::force_aggregate_construction_test2, T>>>;
+		using force_aggregate_construction = std::bool_constant<
+		  std::disjunction_v<daw::is_detected<json_details::force_aggregate_construction_test, T>,
+		                     daw::is_detected<json_details::force_aggregate_construction_test2, T>>>;
 
 		template<typename T>
-		inline constexpr bool force_aggregate_construction_v =
-		  force_aggregate_construction<T>::value;
+		inline constexpr bool force_aggregate_construction_v = force_aggregate_construction<T>::value;
 
 		namespace json_details {
 			template<typename T>
@@ -230,26 +215,22 @@ namespace daw::json {
 				return T{ };
 			}
 
-			template<
-			  typename... Args,
-			  std::enable_if_t<std::conjunction_v<std::is_constructible<T, Args...>,
-			                                      not_trait<is_empty_pack<Args...>>>,
-			                   std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
-			operator( )( Args &&...args ) const {
+			template<typename... Args,
+			         std::enable_if_t<std::conjunction_v<std::is_constructible<T, Args...>,
+			                                             not_trait<is_empty_pack<Args...>>>,
+			                          std::nullptr_t> = nullptr>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T operator( )( Args &&...args ) const {
 
 				return T( DAW_FWD2( Args, args )... );
 			}
 
-			template<
-			  typename... Args,
-			  typename std::enable_if_t<
-			    std::conjunction_v<daw::not_trait<std::is_constructible<T, Args...>>,
-			                       daw::not_trait<is_empty_pack<Args...>>,
-			                       daw::traits::is_list_constructible<T, Args...>>,
-			    std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
-			operator( )( Args &&...args ) const
+			template<typename... Args,
+			         typename std::enable_if_t<
+			           std::conjunction_v<daw::not_trait<std::is_constructible<T, Args...>>,
+			                              daw::not_trait<is_empty_pack<Args...>>,
+			                              daw::traits::is_list_constructible<T, Args...>>,
+			           std::nullptr_t> = nullptr>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T operator( )( Args &&...args ) const
 			  noexcept( noexcept( T{ DAW_FWD2( Args, args )... } ) ) {
 
 				return T{ DAW_FWD2( Args, args )... };
@@ -263,8 +244,7 @@ namespace daw::json {
 		struct is_default_constructor<default_constructor<T>> : std::true_type {};
 
 		template<typename T>
-		inline constexpr bool is_default_constructor_v =
-		  is_default_constructor<T>::value;
+		inline constexpr bool is_default_constructor_v = is_default_constructor<T>::value;
 
 		namespace json_details {
 			template<typename>
@@ -310,9 +290,7 @@ namespace daw::json {
 
 			template<typename Iterator, std::size_t... Is>
 			DAW_ATTRIB_INLINE static constexpr std::array<T, Sz>
-			construct_array( Iterator first,
-			                 Iterator last,
-			                 std::index_sequence<Is...> ) {
+			construct_array( Iterator first, Iterator last, std::index_sequence<Is...> ) {
 				auto const get_result = [&]( std::size_t ) {
 					if( first != last ) {
 						if constexpr( std::is_move_constructible_v<T> ) {
@@ -331,8 +309,8 @@ namespace daw::json {
 			}
 
 			template<typename Iterator>
-			DAW_ATTRIB_INLINE constexpr std::array<T, Sz>
-			operator( )( Iterator first, Iterator last ) const {
+			DAW_ATTRIB_INLINE constexpr std::array<T, Sz> operator( )( Iterator first,
+			                                                           Iterator last ) const {
 				return construct_array( first, last, std::make_index_sequence<Sz>{ } );
 			}
 		};
@@ -345,20 +323,16 @@ namespace daw::json {
 				return { };
 			}
 
-			DAW_ATTRIB_INLINE std::vector<T, Alloc> &&
-			operator( )( std::vector<T, Alloc> &&v ) const
+			DAW_ATTRIB_INLINE std::vector<T, Alloc> &&operator( )( std::vector<T, Alloc> &&v ) const
 			  noexcept( noexcept( std::vector<T, Alloc>( v ) ) ) {
 				return DAW_MOVE( v );
 			}
 
 			template<typename Iterator>
 			DAW_ATTRIB_INLINE std::vector<T, Alloc>
-			operator( )( Iterator first,
-			             Iterator last,
-			             Alloc const &alloc = Alloc{ } ) const {
+			operator( )( Iterator first, Iterator last, Alloc const &alloc = Alloc{ } ) const {
 				if constexpr( std::is_same_v<std::random_access_iterator_tag,
-				                             typename std::iterator_traits<
-				                               Iterator>::iterator_category> or
+				                             typename std::iterator_traits<Iterator>::iterator_category> or
 				              not json_details::is_std_allocator<Alloc>::value ) {
 					return std::vector<T, Alloc>( first, last, alloc );
 				} else {
@@ -385,35 +359,28 @@ namespace daw::json {
 		struct nullable_constructor<std::optional<T>> {
 			using value_type = T;
 
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::optional<T>
-			operator( )( ) const noexcept {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::optional<T> operator( )( ) const noexcept {
 				return std::optional<T>( );
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( Args &&...args ) const
-			  noexcept( std::is_nothrow_constructible<std::optional<T>,
-			                                          std::in_place_t,
-			                                          Args...>::value )
-			    -> std::enable_if_t<
-			      ( ( sizeof...( Args ) > 0 ) and
-			        std::is_constructible<T, std::in_place_t, Args...>::value ),
-			      std::optional<T>> {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto operator( )( Args &&...args ) const
+			  noexcept( std::is_nothrow_constructible<std::optional<T>, std::in_place_t, Args...>::value )
+			    -> std::enable_if_t<( ( sizeof...( Args ) > 0 ) and
+			                          std::is_constructible<T, std::in_place_t, Args...>::value ),
+			                        std::optional<T>> {
 
 				return std::optional<T>( std::in_place, DAW_FWD2( Args, args )... );
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( Args &&...args ) const noexcept(
-			  std::conjunction<traits::is_nothrow_list_constructible<T, Args...>,
-			                   std::is_nothrow_move_constructible<T>>::value )
-			  -> std::enable_if_t<
-			    ( ( sizeof...( Args ) > 0 ) and
-			      not std::is_constructible<T, std::in_place_t, Args...>::value and
-			      traits::is_list_constructible<T, Args...>::value ),
-			    std::optional<T>> {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto operator( )( Args &&...args ) const
+			  noexcept( std::conjunction<traits::is_nothrow_list_constructible<T, Args...>,
+			                             std::is_nothrow_move_constructible<T>>::value )
+			    -> std::enable_if_t<( ( sizeof...( Args ) > 0 ) and
+			                          not std::is_constructible<T, std::in_place_t, Args...>::value and
+			                          traits::is_list_constructible<T, Args...>::value ),
+			                        std::optional<T>> {
 
 				return std::optional<T>( T{ DAW_FWD2( Args, args )... } );
 			}
@@ -423,33 +390,28 @@ namespace daw::json {
 		struct nullable_constructor<std::unique_ptr<T, Deleter>> {
 			using value_type = T;
 
-			DAW_ATTRIB_INLINE constexpr std::unique_ptr<T, Deleter>
-			operator( )( ) const noexcept {
+			DAW_ATTRIB_INLINE constexpr std::unique_ptr<T, Deleter> operator( )( ) const noexcept {
 				return std::unique_ptr<T, Deleter>{ };
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE auto operator( )( Args &&...args ) const
-			  noexcept( std::is_nothrow_constructible<T, Args...>::value )
-			    -> std::enable_if_t<( sizeof...( Args ) > 0 and
-			                          std::is_constructible<T, Args...>::value ),
-			                        std::unique_ptr<T, Deleter>> {
+			[[nodiscard]] DAW_ATTRIB_INLINE auto operator( )( Args &&...args ) const noexcept(
+			  std::is_nothrow_constructible<T, Args...>::value )
+			  -> std::enable_if_t<( sizeof...( Args ) > 0 and std::is_constructible<T, Args...>::value ),
+			                      std::unique_ptr<T, Deleter>> {
 
-				return std::unique_ptr<T, Deleter>(
-				  new T( DAW_FWD2( Args, args )... ) );
+				return std::unique_ptr<T, Deleter>( new T( DAW_FWD2( Args, args )... ) );
 			}
 
 			template<typename... Args>
 			[[nodiscard]] DAW_ATTRIB_INLINE auto operator( )( Args &&...args ) const
 			  noexcept( traits::is_nothrow_list_constructible<T, Args...>::value )
-			    -> std::enable_if_t<
-			      ( ( sizeof...( Args ) > 0 ) and
-			        not std::is_constructible<T, Args...>::value and
-			        traits::is_list_constructible<T, Args...>::value ),
-			      std::unique_ptr<T, Deleter>> {
+			    -> std::enable_if_t<( ( sizeof...( Args ) > 0 ) and
+			                          not std::is_constructible<T, Args...>::value and
+			                          traits::is_list_constructible<T, Args...>::value ),
+			                        std::unique_ptr<T, Deleter>> {
 
-				return std::unique_ptr<T, Deleter>(
-				  new T{ DAW_FWD2( Args, args )... } );
+				return std::unique_ptr<T, Deleter>( new T{ DAW_FWD2( Args, args )... } );
 			}
 		};
 
@@ -464,8 +426,8 @@ namespace daw::json {
 		struct can_single_allocation_string : std::false_type {};
 
 		template<typename Char, typename CharTrait, typename Allocator>
-		struct can_single_allocation_string<
-		  std::basic_string<Char, CharTrait, Allocator>> : std::true_type {};
+		struct can_single_allocation_string<std::basic_string<Char, CharTrait, Allocator>> :
+		  std::true_type {};
 
 		namespace json_details {
 			template<typename T>
@@ -477,18 +439,15 @@ namespace daw::json {
 			template<typename T>
 			using is_a_named_json_type = daw::is_detected<json_named_type_t, T>;
 			template<typename T>
-			inline constexpr bool is_a_named_json_type_v =
-			  is_a_named_json_type<T>::value;
+			inline constexpr bool is_a_named_json_type_v = is_a_named_json_type<T>::value;
 
 			template<typename T>
 			using is_an_unnamed_json_type = daw::is_detected<json_type_t, T>;
 			template<typename T>
-			inline constexpr bool is_an_unnamed_json_type_v =
-			  is_an_unnamed_json_type<T>::value;
+			inline constexpr bool is_an_unnamed_json_type_v = is_an_unnamed_json_type<T>::value;
 
 			template<typename T>
-			using is_a_json_type =
-			  std::disjunction<is_an_unnamed_json_type<T>, is_a_named_json_type<T>>;
+			using is_a_json_type = std::disjunction<is_an_unnamed_json_type<T>, is_a_named_json_type<T>>;
 
 			template<typename T>
 			inline constexpr bool is_a_json_type_v = is_a_json_type<T>::value;
@@ -505,20 +464,16 @@ namespace daw::json {
 			using is_an_ordered_member = daw::is_detected<ordered_member_t, T>;
 
 			template<typename T>
-			inline constexpr bool is_an_ordered_member_v =
-			  is_an_ordered_member<T>::value;
+			inline constexpr bool is_an_ordered_member_v = is_an_ordered_member<T>::value;
 
 			template<typename T>
-			using is_a_json_tagged_variant_test =
-			  typename T::i_am_a_json_tagged_variant;
+			using is_a_json_tagged_variant_test = typename T::i_am_a_json_tagged_variant;
 
 			template<typename T>
-			using is_a_json_tagged_variant =
-			  daw::is_detected<is_a_json_tagged_variant_test, T>;
+			using is_a_json_tagged_variant = daw::is_detected<is_a_json_tagged_variant_test, T>;
 
 			template<typename T>
-			inline constexpr bool is_a_json_tagged_variant_v =
-			  is_a_json_tagged_variant<T>::value;
+			inline constexpr bool is_a_json_tagged_variant_v = is_a_json_tagged_variant<T>::value;
 
 			template<typename T, bool, bool>
 			struct json_data_contract_constructor_impl {
@@ -527,8 +482,7 @@ namespace daw::json {
 
 			template<typename T>
 			using has_json_data_constract_constructor_test =
-			  decltype( decltype( std::declval<
-			                      json_data_contract_trait_t<T>> )::constructor );
+			  decltype( decltype( std::declval<json_data_contract_trait_t<T>> )::constructor );
 
 			template<typename T>
 			struct json_data_contract_constructor_impl<T, true, true> {
@@ -536,15 +490,13 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			using json_data_contract_constructor =
-			  json_data_contract_constructor_impl<
-			    T,
-			    daw::is_detected<json_data_contract_trait_t, T>::value,
-			    daw::is_detected<has_json_data_constract_constructor_test, T>::value>;
+			using json_data_contract_constructor = json_data_contract_constructor_impl<
+			  T,
+			  daw::is_detected<json_data_contract_trait_t, T>::value,
+			  daw::is_detected<has_json_data_constract_constructor_test, T>::value>;
 
 			template<typename T>
-			using json_data_contract_constructor_t =
-			  typename json_data_contract_constructor<T>::type;
+			using json_data_contract_constructor_t = typename json_data_contract_constructor<T>::type;
 
 			// DAW 20210801
 			/*template<typename T, typename Default>
@@ -554,20 +506,17 @@ namespace daw::json {
 			  daw::traits::identity<Default>>::type;*/
 
 			template<typename T>
-			using json_class_constructor_t_impl =
-			  typename json_data_contract<T>::constructor;
+			using json_class_constructor_t_impl = typename json_data_contract<T>::constructor;
 
 			template<typename T, typename Default>
 			using json_class_constructor_t =
 			  daw::detected_or_t<Default, json_class_constructor_t_impl, T>;
 
 			template<typename T>
-			using json_class_never_constexpr_impl =
-			  typename json_data_contract<T>::never_constexpr;
+			using json_class_never_constexpr_impl = typename json_data_contract<T>::never_constexpr;
 
 			template<typename T>
-			using json_class_never_constexpr =
-			  daw::is_detected<json_class_never_constexpr_impl, T>;
+			using json_class_never_constexpr = daw::is_detected<json_class_never_constexpr_impl, T>;
 
 			namespace is_string_like_impl {
 				template<typename T>
@@ -577,13 +526,12 @@ namespace daw::json {
 				using has_size_test = decltype( std::size( std::declval<T>( ) ) );
 			} // namespace is_string_like_impl
 			template<typename T>
-			using is_string_view_like = std::conjunction<
-			  daw::is_detected<is_string_like_impl::has_data_test, T>,
-			  daw::is_detected<is_string_like_impl::has_size_test, T>>;
+			using is_string_view_like =
+			  std::conjunction<daw::is_detected<is_string_like_impl::has_data_test, T>,
+			                   daw::is_detected<is_string_like_impl::has_size_test, T>>;
 
 			template<typename T>
-			inline constexpr bool is_string_view_like_v =
-			  is_string_view_like<T>::value;
+			inline constexpr bool is_string_view_like_v = is_string_view_like<T>::value;
 
 			static_assert( is_string_view_like_v<std::string_view> );
 
@@ -597,54 +545,44 @@ namespace daw::json {
 		struct is_zero_terminated_string : std::false_type {};
 
 		template<typename CharT, typename Traits, typename Alloc>
-		struct is_zero_terminated_string<std::basic_string<CharT, Traits, Alloc>> :
-		  std::true_type {};
+		struct is_zero_terminated_string<std::basic_string<CharT, Traits, Alloc>> : std::true_type {};
 
 		template<typename T>
-		inline constexpr bool is_zero_terminated_string_v =
-		  is_zero_terminated_string<T>::value;
+		inline constexpr bool is_zero_terminated_string_v = is_zero_terminated_string<T>::value;
 
 		namespace json_details {
 			template<typename ParsePolicy, auto Option>
-			using apply_policy_option_t =
-			  typename ParsePolicy::template SetPolicyOptions<Option>;
+			using apply_policy_option_t = typename ParsePolicy::template SetPolicyOptions<Option>;
 
 			template<typename ParsePolicy, typename String, auto Option>
-			using apply_zstring_policy_option_t = std::conditional_t<
-			  is_zero_terminated_string_v<daw::remove_cvref_t<String>>,
-			  apply_policy_option_t<ParsePolicy, Option>,
-			  ParsePolicy>;
+			using apply_zstring_policy_option_t =
+			  std::conditional_t<is_zero_terminated_string_v<daw::remove_cvref_t<String>>,
+			                     apply_policy_option_t<ParsePolicy, Option>,
+			                     ParsePolicy>;
 
 			template<typename String>
-			inline constexpr bool is_mutable_string_v =
-			  not std::is_const_v<std::remove_pointer_t<std::remove_reference_t<
-			    decltype( std::data( std::declval<String &&>( ) ) )>>>;
+			inline constexpr bool is_mutable_string_v = not std::is_const_v<std::remove_pointer_t<
+			  std::remove_reference_t<decltype( std::data( std::declval<String &&>( ) ) )>>>;
 
 			template<typename String>
-			constexpr bool is_mutable_string =
-			  json_details::is_mutable_string_v<String>;
+			constexpr bool is_mutable_string = json_details::is_mutable_string_v<String>;
 
 			template<typename String>
 			constexpr bool is_rvalue_string = std::is_rvalue_reference_v<String>;
 
 			template<typename String>
 			constexpr bool is_ref_string =
-			  not is_rvalue_string<String> and
-			  std::is_const_v<std::remove_reference_t<String>>;
+			  not is_rvalue_string<String> and std::is_const_v<std::remove_reference_t<String>>;
 
-			template<typename ParsePolicy,
-			         typename String,
-			         auto OptionMutable,
-			         auto OptionImmutable>
+			template<typename ParsePolicy, typename String, auto OptionMutable, auto OptionImmutable>
 			using apply_mutable_policy = std::conditional_t<
 			  ParsePolicy::allow_temporarily_mutating_buffer,
 			  std::conditional_t<is_mutable_string_v<String>,
 			                     apply_policy_option_t<ParsePolicy, OptionMutable>,
 			                     apply_policy_option_t<ParsePolicy, OptionImmutable>>,
-			  std::conditional_t<
-			    (is_rvalue_string<String> and is_mutable_string_v<String>),
-			    apply_policy_option_t<ParsePolicy, OptionMutable>,
-			    apply_policy_option_t<ParsePolicy, OptionImmutable>>>;
+			  std::conditional_t<(is_rvalue_string<String> and is_mutable_string_v<String>),
+			                     apply_policy_option_t<ParsePolicy, OptionMutable>,
+			                     apply_policy_option_t<ParsePolicy, OptionImmutable>>>;
 		} // namespace json_details
 
 		/***
@@ -677,9 +615,7 @@ namespace daw::json {
 		template<typename T>
 		inline constexpr bool ignore_unknown_members_v = std::disjunction<
 		  ignore_unknown_members<T>,
-		  daw::is_detected<
-		    json_details::has_ignore_unknown_members_trait_in_class_map,
-		    T>>::value;
+		  daw::is_detected<json_details::has_ignore_unknown_members_trait_in_class_map, T>>::value;
 
 		/***
 		 * A trait to specify that this class, when parsed, will describe all
@@ -691,21 +627,19 @@ namespace daw::json {
 		template<typename T>
 		inline constexpr bool is_exact_class_mapping_v = std::disjunction<
 		  is_exact_class_mapping<T>,
-		  daw::is_detected<json_details::has_exact_mapping_trait_in_class_map,
-		                   T>>::value;
+		  daw::is_detected<json_details::has_exact_mapping_trait_in_class_map, T>>::value;
 
 		namespace json_details {
 			template<typename T, typename ParseState>
 			inline constexpr bool all_json_members_must_exist_v =
 			  not ignore_unknown_members_v<T> and
-			  ( is_exact_class_mapping_v<T> or
-			    ParseState::use_exact_mappings_by_default );
+			  ( is_exact_class_mapping_v<T> or ParseState::use_exact_mappings_by_default );
 
 			template<JsonNullable ClassNullability, JsonNullable DependentNullability>
-			inline constexpr bool is_nullability_compatable_v =
-			  ( DependentNullability == JsonNullable::MustExist ) or
-			  ( ClassNullability == JsonNullable::Nullable or
-			    ClassNullability == JsonNullable::NullVisible );
+			inline constexpr bool
+			  is_nullability_compatable_v = ( DependentNullability == JsonNullable::MustExist ) or
+			                                ( ClassNullability == JsonNullable::Nullable or
+			                                  ClassNullability == JsonNullable::NullVisible );
 
 			template<typename T>
 			using element_type_t = typename T::element_type;
@@ -721,8 +655,7 @@ namespace daw::json {
 		 */
 		template<typename T>
 		struct is_pointer_like :
-		  std::disjunction<std::is_pointer<T>, json_details::has_element_type<T>> {
-		};
+		  std::disjunction<std::is_pointer<T>, json_details::has_element_type<T>> {};
 
 		/// Allow tuple like types to be used in json_tuple
 		/// \tparam Tuple tuple like type to
@@ -780,8 +713,7 @@ namespace daw::json {
 
 				template<typename T>
 				struct deref_type_impl {
-					using type =
-					  daw::detected_or_t<unable_to_dereference<T>, deref_type_detect, T>;
+					using type = daw::detected_or_t<unable_to_dereference<T>, deref_type_detect, T>;
 				};
 
 				template<typename T>
@@ -804,23 +736,19 @@ namespace daw::json {
 
 			template<typename T>
 			using is_dereferenceable =
-			  daw::not_trait<std::is_same<dereferenced_t<T>,
-			                              deref_t_impl::unable_to_dereference<T>>>;
+			  daw::not_trait<std::is_same<dereferenced_t<T>, deref_t_impl::unable_to_dereference<T>>>;
 
 			template<typename T>
 			inline constexpr bool is_dereferenceable_v = is_dereferenceable<T>::value;
 
 			namespace unwrapped_impl {
 				template<typename T>
-				using unwrapped_t_impl =
-				  std::conditional_t<is_dereferenceable_v<T>, dereferenced_t<T>, T>;
+				using unwrapped_t_impl = std::conditional_t<is_dereferenceable_v<T>, dereferenced_t<T>, T>;
 			}
 
 			template<typename T, JsonNullable Nullable>
-			using unwrapped_t =
-			  typename std::conditional_t<is_nullable_json_value_v<Nullable>,
-			                              unwrapped_impl::unwrapped_t_impl<T>,
-			                              T>;
+			using unwrapped_t = typename std::
+			  conditional_t<is_nullable_json_value_v<Nullable>, unwrapped_impl::unwrapped_t_impl<T>, T>;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

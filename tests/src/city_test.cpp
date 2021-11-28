@@ -45,21 +45,21 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<City> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<
-		  json_string<"country">,
-		  json_string<"name">,
-		  json_number<"lat", float, number_opt( LiteralAsStringOpt::Always )>,
-		  json_number<"lng", float, number_opt( LiteralAsStringOpt::Always )>>;
+		using type =
+		  json_member_list<json_string<"country">,
+		                   json_string<"name">,
+		                   json_number<"lat", float, number_opt( LiteralAsStringOpt::Always )>,
+		                   json_number<"lng", float, number_opt( LiteralAsStringOpt::Always )>>;
 #else
 		static constexpr char const country[] = "country";
 		static constexpr char const name[] = "name";
 		static constexpr char const lat[] = "lat";
 		static constexpr char const lng[] = "lng";
-		using type = json_member_list<
-		  json_string<country>,
-		  json_string<name>,
-		  json_number<lat, float, number_opt( LiteralAsStringOpt::Always )>,
-		  json_number<lng, float, number_opt( LiteralAsStringOpt::Always )>>;
+		using type =
+		  json_member_list<json_string<country>,
+		                   json_string<name>,
+		                   json_number<lat, float, number_opt( LiteralAsStringOpt::Always )>,
+		                   json_number<lng, float, number_opt( LiteralAsStringOpt::Always )>>;
 #endif
 
 		static inline auto to_json_data( City const &c ) {
@@ -78,8 +78,7 @@ int main( int argc, char **argv )
 		exit( EXIT_FAILURE );
 	}
 	auto const file_data = *daw::read_file( argv[1] );
-	auto const json_data =
-	  std::string_view( file_data.data( ), file_data.size( ) );
+	auto const json_data = std::string_view( file_data.data( ), file_data.size( ) );
 
 	std::cout << "File size(B): " << json_data.size( ) << " "
 	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
@@ -116,8 +115,7 @@ int main( int argc, char **argv )
 	  "cities parsing 3",
 	  json_data.size( ),
 	  []( auto const &sv ) {
-		  return static_cast<size_t>(
-		    std::distance( iterator_t( sv ), iterator_t( ) ) );
+		  return static_cast<size_t>( std::distance( iterator_t( sv ), iterator_t( ) ) );
 	  },
 	  json_data );
 
@@ -127,10 +125,9 @@ int main( int argc, char **argv )
 	  "Find Toronto",
 	  json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
-		  auto pos =
-		    std::find_if( iterator_t( sv ), iterator_t( ), []( City &&city ) {
-			    return city.name == "Toronto";
-		    } );
+		  auto pos = std::find_if( iterator_t( sv ), iterator_t( ), []( City &&city ) {
+			  return city.name == "Toronto";
+		  } );
 		  if( pos != iterator_t( ) ) {
 			  return *pos;
 		  }
@@ -146,10 +143,9 @@ int main( int argc, char **argv )
 	  "Find Chitungwiza(last item)",
 	  json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
-		  auto pos =
-		    std::find_if( iterator_t( sv ), iterator_t( ), []( City &&city ) {
-			    return city.name == "Chitungwiza";
-		    } );
+		  auto pos = std::find_if( iterator_t( sv ), iterator_t( ), []( City &&city ) {
+			  return city.name == "Chitungwiza";
+		  } );
 		  if( pos != iterator_t( ) ) {
 			  return *pos;
 		  }
@@ -157,8 +153,8 @@ int main( int argc, char **argv )
 	  },
 	  json_data );
 
-	std::cout << "Chitungwiza was " << ( has_chitungwiza ? "" : "not" )
-	          << " found at " << daw::json::to_json( *has_chitungwiza ) << '\n';
+	std::cout << "Chitungwiza was " << ( has_chitungwiza ? "" : "not" ) << " found at "
+	          << daw::json::to_json( *has_chitungwiza ) << '\n';
 
 	std::cout << ( *iterator_t( json_data ) ).name << '\n';
 
@@ -166,22 +162,20 @@ int main( int argc, char **argv )
 
 	auto const city_ary_str = daw::json::to_json_array( city_ary );
 	auto sv = std::string_view( city_ary_str );
-	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 )
-	          << '\n';
+	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 ) << '\n';
 
 	auto mid_lat = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "Calculate Middle Latitude",
 	  json_data.size( ),
 	  []( auto const &jstr ) -> float {
 		  uint32_t tot = 0;
-		  auto result =
-		    daw::algorithm::accumulate( iterator_t( jstr ),
-		                                iterator_t( ),
-		                                0.0f,
-		                                [&tot]( float cur, City &&city ) {
-			                                ++tot;
-			                                return cur + city.lat;
-		                                } );
+		  auto result = daw::algorithm::accumulate( iterator_t( jstr ),
+		                                            iterator_t( ),
+		                                            0.0f,
+		                                            [&tot]( float cur, City &&city ) {
+			                                            ++tot;
+			                                            return cur + city.lat;
+		                                            } );
 		  return result / static_cast<float>( tot );
 	  },
 	  json_data );
@@ -198,9 +192,7 @@ int main( int argc, char **argv )
 		                             daw::back_inserter( lats ),
 		                             []( auto &&l ) { return l.lat; } );
 
-		  auto result = daw::algorithm::accumulate( std::cbegin( lats ),
-		                                            std::cend( lats ),
-		                                            0.0f );
+		  auto result = daw::algorithm::accumulate( std::cbegin( lats ), std::cend( lats ), 0.0f );
 		  return result / static_cast<float>( lats.size( ) );
 	  },
 	  json_data );
@@ -211,8 +203,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

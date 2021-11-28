@@ -39,36 +39,29 @@ template<typename T>
 using is_to_json_data_able = decltype( to_json_data( std::declval<T>( ) ) );
 
 template<typename T>
-inline bool DAW_CONSTEXPR is_to_json_data_able_v =
-  daw::is_detected_v<is_to_json_data_able, T>;
+inline bool DAW_CONSTEXPR is_to_json_data_able_v = daw::is_detected_v<is_to_json_data_able, T>;
 
-template<typename T,
-         std::enable_if_t<is_to_json_data_able_v<T>, std::nullptr_t> = nullptr>
+template<typename T, std::enable_if_t<is_to_json_data_able_v<T>, std::nullptr_t> = nullptr>
 DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
-	test_assert( to_json_data( lhs ) == to_json_data( rhs ),
-	             "Expected that values would be equal" );
+	test_assert( to_json_data( lhs ) == to_json_data( rhs ), "Expected that values would be equal" );
 	return true;
 }
 
 template<typename ParsePolicy>
 void test( std::string_view json_sv1 ) {
 	auto const sz = json_sv1.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
+	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz ) << '\n';
 
 	auto apache_builds_result =
 	  daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( json_sv1 );
-	test_assert( not apache_builds_result.jobs.empty( ),
-	             "Bad value for jobs.size( )" );
-	test_assert( apache_builds_result.numExecutors == 0,
-	             "Bad value for numExecutors" );
+	test_assert( not apache_builds_result.jobs.empty( ), "Bad value for jobs.size( )" );
+	test_assert( apache_builds_result.numExecutors == 0, "Bad value for numExecutors" );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "apache_builds bench",
 	  sz,
 	  []( auto f1 ) {
-		  auto r =
-		    daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( f1 );
+		  auto r = daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( f1 );
 		  daw::do_not_optimize( r );
 	  },
 	  json_sv1 );
@@ -111,24 +104,18 @@ int main( int argc, char **argv )
 	auto fname = argv[1];
 	auto const json_data1 = *daw::read_file( fname );
 	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
-	auto const json_sv1 =
-	  std::string_view( json_data1.data( ), json_data1.size( ) );
+	auto const json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
 
 	std::cout << "Using " << daw::json::constexpr_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<daw::json::SIMDCppCommentSkippingPolicyChecked<
-	  daw::json::constexpr_exec_tag>>( json_sv1 );
+	test<daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>>( json_sv1 );
 	std::cout << "Using " << daw::json::runtime_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<daw::json::SIMDCppCommentSkippingPolicyChecked<
-	  daw::json::runtime_exec_tag>>( json_sv1 );
-	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-	                                 daw::json::runtime_exec_tag> ) {
+	test<daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>( json_sv1 );
+	if constexpr( not std::is_same_v<daw::json::simd_exec_tag, daw::json::runtime_exec_tag> ) {
 		std::cout << "Using " << daw::json::simd_exec_tag::name
 		          << " exec model\n*********************************************\n";
-		test<
-		  daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
-		  json_sv1 );
+		test<daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>( json_sv1 );
 	}
 }
 #ifdef DAW_USE_EXCEPTIONS
@@ -136,8 +123,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

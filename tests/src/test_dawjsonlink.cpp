@@ -34,14 +34,12 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<coordinate_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
+		using type = json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
 #else
 		constexpr inline static char const x[] = "x";
 		constexpr inline static char const y[] = "y";
 		constexpr inline static char const z[] = "z";
-		using type =
-		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
+		using type = json_member_list<json_number<x>, json_number<y>, json_number<z>>;
 #endif
 	};
 
@@ -61,8 +59,7 @@ std::string read_file( std::string const &filename ) {
 	if( !f ) {
 		return { };
 	}
-	return std::string( std::istreambuf_iterator<char>( f ),
-	                    std::istreambuf_iterator<char>( ) );
+	return std::string( std::istreambuf_iterator<char>( f ), std::istreambuf_iterator<char>( ) );
 }
 
 int main( int argc, char *argv[] )
@@ -103,8 +100,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

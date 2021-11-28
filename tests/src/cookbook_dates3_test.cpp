@@ -23,8 +23,8 @@
 #include <string>
 
 namespace daw::cookbook_dates3 {
-	using my_timepoint = std::chrono::time_point<std::chrono::system_clock,
-	                                             std::chrono::milliseconds>;
+	using my_timepoint =
+	  std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
 
 	my_timepoint seconds_since_epoch_to_tp( int64_t seconds ) {
 		return my_timepoint{ } + std::chrono::seconds( seconds );
@@ -36,10 +36,7 @@ namespace daw::cookbook_dates3 {
 		my_timepoint date_added;
 		my_timepoint last_modified;
 
-		MyClass3( std::string Title,
-		          unsigned Id,
-		          int64_t DateAdded,
-		          int64_t LastModified )
+		MyClass3( std::string Title, unsigned Id, int64_t DateAdded, int64_t LastModified )
 		  : title( std::move( Title ) )
 		  , id( Id )
 		  , date_added( seconds_since_epoch_to_tp( DateAdded ) )
@@ -59,34 +56,25 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_string<"title">,
 		                   json_number<"id", unsigned>,
-		                   json_number<"dateAdded",
-		                               int64_t,
-		                               number_opt( LiteralAsStringOpt::Always )>,
+		                   json_number<"dateAdded", int64_t, number_opt( LiteralAsStringOpt::Always )>,
 		                   json_number<"lastModified", int64_t>>;
 #else
 		static constexpr char const title[] = "title";
 		static constexpr char const id[] = "id";
 		static constexpr char const dateAdded[] = "dateAdded";
 		static constexpr char const lastModified[] = "lastModified";
-		using type = json_member_list<
-		  json_string<title>,
-		  json_number<id, unsigned>,
-		  json_number<dateAdded, int64_t, number_opt( LiteralAsStringOpt::Always )>,
-		  json_number<lastModified, int64_t>>;
+		using type =
+		  json_member_list<json_string<title>,
+		                   json_number<id, unsigned>,
+		                   json_number<dateAdded, int64_t, number_opt( LiteralAsStringOpt::Always )>,
+		                   json_number<lastModified, int64_t>>;
 #endif
 		static inline auto to_json_data( daw::cookbook_dates3::MyClass3 const &v ) {
 			auto const date_added =
-			  std::chrono::floor<std::chrono::seconds>( v.date_added )
-			    .time_since_epoch( )
-			    .count( );
+			  std::chrono::floor<std::chrono::seconds>( v.date_added ).time_since_epoch( ).count( );
 			auto const last_modified =
-			  std::chrono::floor<std::chrono::seconds>( v.last_modified )
-			    .time_since_epoch( )
-			    .count( );
-			return std::tuple( std::as_const( v.title ),
-			                   v.id,
-			                   date_added,
-			                   last_modified );
+			  std::chrono::floor<std::chrono::seconds>( v.last_modified ).time_since_epoch( ).count( );
+			return std::tuple( std::as_const( v.title ), v.id, date_added, last_modified );
 		}
 	};
 } // namespace daw::json
@@ -119,8 +107,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

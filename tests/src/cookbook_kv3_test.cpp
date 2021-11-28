@@ -34,13 +34,11 @@ namespace daw::json {
 	struct json_data_contract<cookbook_kv3::MyKeyValue3> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
-		  json_member_list<json_key_value<"kv",
-		                                  std::multimap<std::string, std::string>,
-		                                  std::string>>;
+		  json_member_list<json_key_value<"kv", std::multimap<std::string, std::string>, std::string>>;
 #else
 		static constexpr char const kv[] = "kv";
-		using type = json_member_list<
-		  json_key_value<kv, std::multimap<std::string, std::string>, std::string>>;
+		using type =
+		  json_member_list<json_key_value<kv, std::multimap<std::string, std::string>, std::string>>;
 #endif
 		static inline auto to_json_data( cookbook_kv3::MyKeyValue3 const &v ) {
 			return std::forward_as_tuple( v.kv );
@@ -63,10 +61,8 @@ int main( int argc, char **argv )
 	  std::string_view( data.data( ), data.size( ) ) );
 
 	test_assert( kv.kv.size( ) == 2, "Expected data to have 2 items" );
-	test_assert( kv.kv.begin( )->first == std::prev( kv.kv.end( ) )->first,
-	             "Unexpected value" );
-	test_assert( kv.kv.begin( )->second != std::prev( kv.kv.end( ) )->second,
-	             "Unexpected value" );
+	test_assert( kv.kv.begin( )->first == std::prev( kv.kv.end( ) )->first, "Unexpected value" );
+	test_assert( kv.kv.begin( )->second != std::prev( kv.kv.end( ) )->second, "Unexpected value" );
 	auto const str = daw::json::to_json( kv );
 	puts( str.c_str( ) );
 
@@ -79,8 +75,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

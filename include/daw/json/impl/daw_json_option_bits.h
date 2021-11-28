@@ -56,42 +56,38 @@ namespace daw::json {
 			};
 
 			template<typename Policy, typename Policies>
-			inline constexpr json_options_t basic_policy_bits_start =
-			  option_bits_start_impl<Policy, Policies>::template calc(
+			inline constexpr json_options_t
+			  basic_policy_bits_start = option_bits_start_impl<Policy, Policies>::template calc(
 			    std::make_index_sequence<pack_size_v<Policies>>{ } );
 
 			template<typename... Options>
 			struct option_list_impl {
 				using type = pack_list<Options...>;
 
-				static_assert( ( std::is_same_v<json_details::json_options_t,
-				                                std::underlying_type_t<Options>> and
-				                 ... ) );
-				static_assert(
-				  ( json_option_bits_width<Options> + ... ) <=
-				    ( sizeof( json_options_t ) * CHAR_BIT ),
-				  "The size of json_options_t is not large enough "
-				  "to safely hold all the bits of state.  Use a larger size." );
+				static_assert( (
+				  std::is_same_v<json_details::json_options_t, std::underlying_type_t<Options>> and ... ) );
+				static_assert( ( json_option_bits_width<Options> + ... ) <=
+				                 ( sizeof( json_options_t ) * CHAR_BIT ),
+				               "The size of json_options_t is not large enough "
+				               "to safely hold all the bits of state.  Use a larger size." );
 			};
 
 			template<typename Option>
 			inline constexpr bool is_option_flag = json_option_bits_width<Option> > 0;
 
 			template<typename Option, typename Options>
-			inline constexpr json_options_t basic_option_bits_start =
-			  option_bits_start_impl<Option, Options>::template calc(
+			inline constexpr json_options_t
+			  basic_option_bits_start = option_bits_start_impl<Option, Options>::template calc(
 			    std::make_index_sequence<pack_size_v<Options>>{ } );
 
 			template<typename... JsonOptions>
 			struct JsonOptionList;
 
 			template<typename... OptionList, typename Option>
-			static constexpr json_options_t
-			set_bits_for( JsonOptionList<OptionList...>, Option e );
+			static constexpr json_options_t set_bits_for( JsonOptionList<OptionList...>, Option e );
 
 			template<std::size_t Pos, std::size_t Width, typename Unsigned>
-			static constexpr /*cpp20 consteval*/ void
-			set_nth_bits( Unsigned &u, Unsigned new_bits ) {
+			static constexpr /*cpp20 consteval*/ void set_nth_bits( Unsigned &u, Unsigned new_bits ) {
 				static_assert( Width > 0, "Invalid option width" );
 				static_assert( Width + Pos <= ( sizeof( Unsigned ) * CHAR_BIT ) );
 				if( DAW_UNLIKELY( new_bits >= ( 1ULL << ( Width + Pos ) ) ) ) {
@@ -99,10 +95,8 @@ namespace daw::json {
 					std::terminate( );
 				}
 				constexpr auto rmask =
-				  Pos == 0U ? Unsigned{ 0U }
-				            : static_cast<Unsigned>( ( 1ULL << Pos ) - 1ULL );
-				constexpr auto lmask =
-				  static_cast<Unsigned>( ~( ( 1ULL << ( Pos + Width ) ) - 1ULL ) );
+				  Pos == 0U ? Unsigned{ 0U } : static_cast<Unsigned>( ( 1ULL << Pos ) - 1ULL );
+				constexpr auto lmask = static_cast<Unsigned>( ~( ( 1ULL << ( Pos + Width ) ) - 1ULL ) );
 				constexpr auto mask = lmask | rmask;
 				u &= mask;
 				new_bits <<= Pos;
@@ -119,17 +113,14 @@ namespace daw::json {
 
 				template<typename... OptionList, typename Option>
 				static constexpr json_options_t set_bits_for( Option e ) {
-					static_assert( is_option_flag<Option>,
-					               "Only registered policy types are allowed" );
+					static_assert( is_option_flag<Option>, "Only registered policy types are allowed" );
 					auto new_bits = static_cast<json_options_t>( e );
 					new_bits <<= option_bits_start<Option>;
 					return new_bits;
 				}
 
 				static constexpr json_options_t default_option_flag =
-				  ( set_bits_for<JsonOptions>(
-				      default_json_option_value<JsonOptions> ) |
-				    ... );
+				  ( set_bits_for<JsonOptions>( default_json_option_value<JsonOptions> ) | ... );
 
 				/***
 				 * Create the parser options flag for BasicParseOption
@@ -144,8 +135,7 @@ namespace daw::json {
 					               "Only registered option types are allowed" );
 					auto result = default_option_flag;
 					if constexpr( sizeof...( Options ) > 0 ) {
-						( set_nth_bits<option_bits_start<Options>,
-						               json_option_bits_width<Options>>(
+						( set_nth_bits<option_bits_start<Options>, json_option_bits_width<Options>>(
 						    result,
 						    static_cast<json_options_t>( options ) ),
 						  ... );
@@ -156,37 +146,27 @@ namespace daw::json {
 			};
 
 			template<typename... OptionList, typename Option>
-			constexpr void set_bits_in( JsonOptionList<OptionList...>,
-			                            json_options_t &value,
-			                            Option e ) {
-				static_assert( is_option_flag<Option>,
-				               "Only registered policy types are allowed" );
+			constexpr void set_bits_in( JsonOptionList<OptionList...>, json_options_t &value, Option e ) {
+				static_assert( is_option_flag<Option>, "Only registered policy types are allowed" );
 				auto new_bits = static_cast<json_options_t>( e );
-				constexpr json_options_t mask =
-				  (1U << json_option_bits_width<Option>)-1U;
+				constexpr json_options_t mask = (1U << json_option_bits_width<Option>)-1U;
 				new_bits &= mask;
-				new_bits <<=
-				  JsonOptionList<OptionList...>::template option_bits_start<Option>;
+				new_bits <<= JsonOptionList<OptionList...>::template option_bits_start<Option>;
 				value &= ~mask;
 				value |= new_bits;
 			}
 
 			template<typename... OptionList, typename Option, typename... Options>
-			constexpr json_options_t set_bits( JsonOptionList<OptionList...>,
-			                                   json_options_t value,
-			                                   Option pol,
-			                                   Options... pols ) {
+			constexpr json_options_t
+			set_bits( JsonOptionList<OptionList...>, json_options_t value, Option pol, Options... pols ) {
 				static_assert( ( is_option_flag<Options> and ... ),
 				               "Only registered policy types are allowed" );
 
 				auto new_bits = static_cast<json_options_t>( pol );
-				constexpr json_options_t mask =
-				  ( (1ULL << json_option_bits_width<Option>)-1ULL );
+				constexpr json_options_t mask = ( (1ULL << json_option_bits_width<Option>)-1ULL );
 				new_bits &= mask;
-				new_bits <<=
-				  JsonOptionList<OptionList...>::template option_bits_start<Option>;
-				value &= ~( mask << JsonOptionList<
-				              OptionList...>::template option_bits_start<Option> );
+				new_bits <<= JsonOptionList<OptionList...>::template option_bits_start<Option>;
+				value &= ~( mask << JsonOptionList<OptionList...>::template option_bits_start<Option> );
 				value |= new_bits;
 				if constexpr( sizeof...( Options ) > 0 ) {
 					return set_bits( JsonOptionList<OptionList...>{ }, value, pols... );
@@ -196,38 +176,28 @@ namespace daw::json {
 			}
 
 			template<typename... OptionList, typename Option>
-			static constexpr json_options_t
-			set_bits_for( JsonOptionList<OptionList...>, Option e ) {
+			static constexpr json_options_t set_bits_for( JsonOptionList<OptionList...>, Option e ) {
 				return JsonOptionList<OptionList...>::template set_bits_for( e );
 			}
 
-			template<typename Option,
-			         typename Result = Option,
-			         typename... OptionList>
-			constexpr Result get_bits_for( JsonOptionList<OptionList...>,
-			                               json_options_t value ) {
-				static_assert( std::is_enum_v<Option>,
-				               "Only enum options are allowed" );
-				static_assert(
-				  std::is_same_v<json_options_t, std::underlying_type_t<Option>>,
-				  "Looks like option was no specified correctly.  "
-				  "Underlying type should be unsigned" );
-				static_assert( is_option_flag<Option>,
-				               "Only registered option types are allowed" );
+			template<typename Option, typename Result = Option, typename... OptionList>
+			constexpr Result get_bits_for( JsonOptionList<OptionList...>, json_options_t value ) {
+				static_assert( std::is_enum_v<Option>, "Only enum options are allowed" );
+				static_assert( std::is_same_v<json_options_t, std::underlying_type_t<Option>>,
+				               "Looks like option was no specified correctly.  "
+				               "Underlying type should be unsigned" );
+				static_assert( is_option_flag<Option>, "Only registered option types are allowed" );
 				constexpr json_options_t mask =
-				  ( 1ULL << (JsonOptionList<OptionList...>::template option_bits_start<
-				               Option> +
+				  ( 1ULL << (JsonOptionList<OptionList...>::template option_bits_start<Option> +
 				             json_option_bits_width<Option>)) -
 				  1ULL;
 				value &= mask;
-				value >>=
-				  JsonOptionList<OptionList...>::template option_bits_start<Option>;
+				value >>= JsonOptionList<OptionList...>::template option_bits_start<Option>;
 				return static_cast<Result>( value );
 			}
 
 			template<typename... OptionList, typename... Options>
-			constexpr json_options_t json_option( JsonOptionList<OptionList...>,
-			                                      Options... options ) {
+			constexpr json_options_t json_option( JsonOptionList<OptionList...>, Options... options ) {
 				return JsonOptionList<OptionList...>::template options( options... );
 			}
 

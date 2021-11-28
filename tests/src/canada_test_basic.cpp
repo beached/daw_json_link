@@ -38,8 +38,7 @@ int main( int argc, char **argv )
 #endif
 		for( int n = 0; n < 100; ++n ) {
 			auto const canada_result =
-			  daw::json::from_json<daw::geojson::Polygon>( json_data,
-			                                               "features[0].geometry" );
+			  daw::json::from_json<daw::geojson::Polygon>( json_data, "features[0].geometry" );
 			daw::do_not_optimize( canada_result );
 
 			auto new_json_result = std::string( );
@@ -59,8 +58,7 @@ int main( int argc, char **argv )
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

@@ -30,8 +30,7 @@ namespace daw::cookbook_array2 {
 	};
 
 	bool operator==( MyClass4 const &lhs, MyClass4 const &rhs ) {
-		return std::tie( lhs.a, lhs.b, lhs.c, lhs.d ) ==
-		       std::tie( rhs.a, rhs.b, rhs.c, rhs.d );
+		return std::tie( lhs.a, lhs.b, lhs.c, lhs.d ) == std::tie( rhs.a, rhs.b, rhs.c, rhs.d );
 	}
 } // namespace daw::cookbook_array2
 
@@ -53,8 +52,7 @@ namespace daw::json {
 		                              json_number<c, float>,
 		                              json_bool<d>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_array2::MyClass4 const &value ) {
+		static inline auto to_json_data( daw::cookbook_array2::MyClass4 const &value ) {
 			return std::forward_as_tuple( value.a, value.b, value.c, value.d );
 		}
 	};
@@ -87,8 +85,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

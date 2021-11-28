@@ -21,7 +21,7 @@
 #define DAW_JSON_INLINE_NS
 #endif
 
-#if defined( __GNUC__ ) and not defined( __clang__ ) and \
-  not defined( DAW_JSON_FLATTEN ) and not defined( DAW_NO_FLATTEN )
+#if defined( __GNUC__ ) and not defined( __clang__ ) and not defined( DAW_JSON_FLATTEN ) and \
+  not defined( DAW_NO_FLATTEN )
 #define DAW_NO_FLATTEN
 #endif

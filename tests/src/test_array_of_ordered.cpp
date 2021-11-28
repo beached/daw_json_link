@@ -25,8 +25,8 @@ struct Fixed8JsonConverter {
 	}
 };
 
-using json_fixed8 = daw::json::
-  json_custom_no_name<double, Fixed8JsonConverter, Fixed8JsonConverter>;
+using json_fixed8 =
+  daw::json::json_custom_no_name<double, Fixed8JsonConverter, Fixed8JsonConverter>;
 
 struct Change {
 	double rate;
@@ -85,8 +85,8 @@ int main( ) {
 #ifdef DAW_USE_EXCEPTIONS
 	catch( daw::json::json_exception const &e ) {
 		std::cout << "formatted: " << to_formatted_string( e ) << "\n\n";
-		std::cout << "daw error: " << e.reason( ) << " near: '"
-		          << e.parse_location( ) << "'" << std::endl;
+		std::cout << "daw error: " << e.reason( ) << " near: '" << e.parse_location( ) << "'"
+		          << std::endl;
 	}
 #endif
 }

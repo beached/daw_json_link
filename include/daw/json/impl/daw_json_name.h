@@ -56,8 +56,7 @@ namespace daw::json {
 
 		private:
 			template<std::size_t... Is>
-			DAW_CONSTEVAL json_name( char const ( &ptr )[N],
-			                         std::index_sequence<Is...> )
+			DAW_CONSTEVAL json_name( char const ( &ptr )[N], std::index_sequence<Is...> )
 			  : m_data{ ptr[Is]... } {}
 
 		public:

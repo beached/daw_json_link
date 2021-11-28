@@ -38,8 +38,7 @@ namespace daw::json {
 		static constexpr char const uris[] = "uris";
 		using type = json_member_list<json_array<uris, std::string>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_escaped_strings1::WebData const &value ) {
+		static inline auto to_json_data( daw::cookbook_escaped_strings1::WebData const &value ) {
 			return std::forward_as_tuple( value.uris );
 		}
 	};
@@ -54,30 +53,27 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_escaped_strings1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto const expected_wd =
-	  daw::cookbook_escaped_strings1::WebData{ { "example.com",
-	                                             "Bücher.ch",
-	                                             "happy.cn",
-	                                             "happy快乐.cn",
-	                                             "快乐.cn",
-	                                             "happy.中国",
-	                                             "快乐.中国",
-	                                             "www.ハンドボールサムズ.com",
-	                                             "🦄.com" } };
+	auto const expected_wd = daw::cookbook_escaped_strings1::WebData{ { "example.com",
+	                                                                    "Bücher.ch",
+	                                                                    "happy.cn",
+	                                                                    "happy快乐.cn",
+	                                                                    "快乐.cn",
+	                                                                    "happy.中国",
+	                                                                    "快乐.中国",
+	                                                                    "www.ハンドボールサムズ.com",
+	                                                                    "🦄.com" } };
 
 	auto data = *daw::read_file( argv[1] );
 
-	auto const cls =
-	  daw::json::from_json<daw::cookbook_escaped_strings1::WebData>(
-	    std::string_view( data.data( ), data.size( ) ) );
+	auto const cls = daw::json::from_json<daw::cookbook_escaped_strings1::WebData>(
+	  std::string_view( data.data( ), data.size( ) ) );
 
 	test_assert( cls == expected_wd, "Unexpected value" );
 	auto const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
-	auto const cls2 =
-	  daw::json::from_json<daw::cookbook_escaped_strings1::WebData>(
-	    std::string_view( str.data( ), str.size( ) ) );
+	auto const cls2 = daw::json::from_json<daw::cookbook_escaped_strings1::WebData>(
+	  std::string_view( str.data( ), str.size( ) ) );
 
 	test_assert( cls == cls2, "Unexpected round trip error" );
 }
@@ -86,8 +82,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

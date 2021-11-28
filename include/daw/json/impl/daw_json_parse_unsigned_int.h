@@ -42,9 +42,9 @@ namespace daw::json {
 				              daw::is_system_integral_v<unsigned_t> and
 				              daw::is_system_integral_v<Signed> and
 				              sizeof( Signed ) == sizeof( unsigned_t ) ) {
-					if( DAW_UNLIKELY( u == ( static_cast<unsigned_t>(
-					                           ( daw::numeric_limits<Signed>::max )( ) ) +
-					                         1 ) ) ) {
+					if( DAW_UNLIKELY(
+					      u ==
+					      ( static_cast<unsigned_t>( ( daw::numeric_limits<Signed>::max )( ) ) + 1 ) ) ) {
 						// the bits of static_cast<unsigned_t>( limits<Signed>::max( ) ) + 1
 						// are the same as limits<Signed>::min( ).  We can just cast
 						return static_cast<Signed>( u );
@@ -55,20 +55,18 @@ namespace daw::json {
 				}
 			}
 
-			[[nodiscard]] static inline constexpr bool
-			is_made_of_eight_digits_cx( const char *ptr ) {
+			[[nodiscard]] static inline constexpr bool is_made_of_eight_digits_cx( const char *ptr ) {
 				// The copy to local buffer is to get the compiler to treat it like a
 				// reinterpret_cast
 
-				std::array<unsigned char, 8> buff{
-				  static_cast<unsigned char>( ptr[0] ),
-				  static_cast<unsigned char>( ptr[1] ),
-				  static_cast<unsigned char>( ptr[2] ),
-				  static_cast<unsigned char>( ptr[3] ),
-				  static_cast<unsigned char>( ptr[4] ),
-				  static_cast<unsigned char>( ptr[5] ),
-				  static_cast<unsigned char>( ptr[6] ),
-				  static_cast<unsigned char>( ptr[7] ) };
+				std::array<unsigned char, 8> buff{ static_cast<unsigned char>( ptr[0] ),
+				                                   static_cast<unsigned char>( ptr[1] ),
+				                                   static_cast<unsigned char>( ptr[2] ),
+				                                   static_cast<unsigned char>( ptr[3] ),
+				                                   static_cast<unsigned char>( ptr[4] ),
+				                                   static_cast<unsigned char>( ptr[5] ),
+				                                   static_cast<unsigned char>( ptr[6] ),
+				                                   static_cast<unsigned char>( ptr[7] ) };
 
 				UInt64 val = [&] {
 #if defined( DAW_CX_BIT_CAST )
@@ -82,17 +80,13 @@ namespace daw::json {
 #endif
 				}( );
 				return ( ( ( val & 0xF0F0'F0F0'F0F0'F0F0_u64 ) |
-				           ( ( ( val + 0x0606'0606'0606'0606_u64 ) &
-				               0xF0F0'F0F0'F0F0'F0F0_u64 ) >>
+				           ( ( ( val + 0x0606'0606'0606'0606_u64 ) & 0xF0F0'F0F0'F0F0'F0F0_u64 ) >>
 				             4U ) ) == 0x3333'3333'3333'3333_u64 );
 			}
 
-			template<JsonRangeCheck RangeCheck,
-			         typename Unsigned,
-			         typename MaxArithUnsigned>
+			template<JsonRangeCheck RangeCheck, typename Unsigned, typename MaxArithUnsigned>
 			using max_unsigned_t = std::conditional_t<
-			  std::disjunction<daw::is_integral<Unsigned>,
-			                   std::is_enum<Unsigned>>::value,
+			  std::disjunction<daw::is_integral<Unsigned>, std::is_enum<Unsigned>>::value,
 			  std::conditional_t<( sizeof( Unsigned ) > sizeof( MaxArithUnsigned ) ),
 			                     Unsigned,
 			                     MaxArithUnsigned>,
@@ -103,24 +97,18 @@ namespace daw::json {
 			inline constexpr UInt64 parse_8_digits( const char *const str ) {
 				auto const chunk = daw::to_uint64_buffer( str );
 				// 1-byte mask trick (works on 4 pairs of single digits)
-				auto const lower_digits =
-				  ( chunk & 0x0F'00'0F'00'0F'00'0F'00_u64 ) >> 8U;
-				auto const upper_digits =
-				  ( chunk & 0x00'0F'00'0F'00'0F'00'0F_u64 ) * 10U;
+				auto const lower_digits = ( chunk & 0x0F'00'0F'00'0F'00'0F'00_u64 ) >> 8U;
+				auto const upper_digits = ( chunk & 0x00'0F'00'0F'00'0F'00'0F_u64 ) * 10U;
 				auto const chunk2 = lower_digits + upper_digits;
 
 				// 2-byte mask trick (works on 2 pairs of two digits)
-				auto const lower_digits2 =
-				  ( chunk2 & 0x00'FF'00'00'00'FF'00'00_u64 ) >> 16U;
-				auto const upper_digits2 =
-				  ( chunk2 & 0x00'00'00'FF'00'00'00'FF_u64 ) * 100U;
+				auto const lower_digits2 = ( chunk2 & 0x00'FF'00'00'00'FF'00'00_u64 ) >> 16U;
+				auto const upper_digits2 = ( chunk2 & 0x00'00'00'FF'00'00'00'FF_u64 ) * 100U;
 				auto const chunk3 = lower_digits2 + upper_digits2;
 
 				// 4-byte mask trick (works on pair of four digits)
-				auto const lower_digits3 =
-				  ( chunk3 & 0x00'00'FF'FF'00'00'00'00_u64 ) >> 32U;
-				auto const upper_digits3 =
-				  ( chunk3 & 0x00'00'00'00'00'00'FF'FF_u64 ) * 10000U;
+				auto const lower_digits3 = ( chunk3 & 0x00'00'FF'FF'00'00'00'00_u64 ) >> 32U;
+				auto const upper_digits3 = ( chunk3 & 0x00'00'00'00'00'00'FF'FF_u64 ) * 10000U;
 				auto const chunk4 = lower_digits3 + upper_digits3;
 
 				return chunk4 & 0xFFFF'FFFF_u64;
@@ -153,8 +141,7 @@ namespace daw::json {
 				auto const lower = parse_8_digits( str + 8 );
 				return upper * 100'000'000_u64 + lower;
 			}
-			static_assert( parse_16_digits( "1234567890123456" ) ==
-			                 1234567890123456_u64,
+			static_assert( parse_16_digits( "1234567890123456" ) == 1234567890123456_u64,
 			               "16 digit parser does not work on this platform" );
 
 			template<typename Unsigned,
@@ -162,17 +149,15 @@ namespace daw::json {
 			         bool KnownBounds,
 			         typename ParseState,
 			         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
-			[[nodiscard]] static constexpr Unsigned
-			unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
+			[[nodiscard]] static constexpr Unsigned unsigned_parser( constexpr_exec_tag,
+			                                                         ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				// We know how many digits are in the number
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
-				using uresult_t =
-				  max_unsigned_t<RangeChecked, daw::make_unsigned_t<Unsigned>, UInt64>;
-				static_assert(
-				  not static_cast<bool>( RangeChecked ) or
-				    std::is_same<uresult_t, UInt64>::value,
-				  "Range checking is only supported for std integral types" );
+				using uresult_t = max_unsigned_t<RangeChecked, daw::make_unsigned_t<Unsigned>, UInt64>;
+				static_assert( not static_cast<bool>( RangeChecked ) or
+				                 std::is_same<uresult_t, UInt64>::value,
+				               "Range checking is only supported for std integral types" );
 
 				CharT *first = parse_state.first;
 				CharT *const last = parse_state.last;
@@ -204,11 +189,10 @@ namespace daw::json {
 					}
 				}
 				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
-					auto const count = ( daw::numeric_limits<result_t>::digits10 + 1U ) -
-					                   std::size( parse_state );
+					auto const count =
+					  ( daw::numeric_limits<result_t>::digits10 + 1U ) - std::size( parse_state );
 					daw_json_assert(
-					  ( ( result <= static_cast<uresult_t>(
-					                  ( daw::numeric_limits<result_t>::max )( ) ) ) &
+					  ( ( result <= static_cast<uresult_t>( ( daw::numeric_limits<result_t>::max )( ) ) ) &
 					    ( count >= 0 ) ),
 					  ErrorReason::NumberOutOfRange,
 					  parse_state );
@@ -217,8 +201,7 @@ namespace daw::json {
 				if constexpr( RangeChecked == JsonRangeCheck::Never ) {
 					return daw::construct_a<Unsigned>( static_cast<Unsigned>( result ) );
 				} else {
-					return daw::construct_a<Unsigned>(
-					  daw::narrow_cast<Unsigned>( result ) );
+					return daw::construct_a<Unsigned>( daw::narrow_cast<Unsigned>( result ) );
 				}
 			}
 
@@ -228,17 +211,15 @@ namespace daw::json {
 			         bool KnownBounds,
 			         typename ParseState,
 			         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
-			[[nodiscard]] static constexpr Unsigned
-			unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
+			[[nodiscard]] static constexpr Unsigned unsigned_parser( constexpr_exec_tag,
+			                                                         ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				// We do not know how long the string is
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
-				using uresult_t =
-				  max_unsigned_t<RangeChecked, daw::make_unsigned_t<Unsigned>, UInt64>;
-				static_assert(
-				  not static_cast<bool>( RangeChecked ) or
-				    std::is_same<uresult_t, UInt64>::value,
-				  "Range checking is only supported for std integral types" );
+				using uresult_t = max_unsigned_t<RangeChecked, daw::make_unsigned_t<Unsigned>, UInt64>;
+				static_assert( not static_cast<bool>( RangeChecked ) or
+				                 std::is_same<uresult_t, UInt64>::value,
+				               "Range checking is only supported for std integral types" );
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
@@ -247,17 +228,14 @@ namespace daw::json {
 				(void)orig_first; // only used inside if constexpr and gcc9 warns
 				CharT *const last = parse_state.last;
 				uresult_t result = uresult_t( );
-				bool has_eight =
-				  last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
-				bool has_sixteen =
-				  last - first >= 16 and is_made_of_eight_digits_cx( first + 8 );
+				bool has_eight = last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
+				bool has_sixteen = last - first >= 16 and is_made_of_eight_digits_cx( first + 8 );
 				while( daw::nsc_and( has_eight, has_sixteen ) ) {
 					result *= static_cast<uresult_t>( 10'000'000'000'000'000ULL );
 					result += static_cast<uresult_t>( parse_16_digits( first ) );
 					first += 16;
 					has_eight = last - first >= 8 and is_made_of_eight_digits_cx( first );
-					has_sixteen =
-					  last - first >= 16 and is_made_of_eight_digits_cx( first + 8 );
+					has_sixteen = last - first >= 16 and is_made_of_eight_digits_cx( first + 8 );
 				}
 				if( has_eight ) {
 					result *= static_cast<uresult_t>( 100'000'000ULL );
@@ -283,14 +261,12 @@ namespace daw::json {
 				}
 
 				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
-					auto const count = static_cast<std::ptrdiff_t>(
-					                     daw::numeric_limits<result_t>::digits10 + 1 ) -
-					                   ( first - orig_first );
+					auto const count =
+					  static_cast<std::ptrdiff_t>( daw::numeric_limits<result_t>::digits10 + 1 ) -
+					  ( first - orig_first );
 					auto const r = static_cast<Unsigned>( result );
 					(void)r;
-					daw_json_assert( count >= 0,
-					                 ErrorReason::NumberOutOfRange,
-					                 parse_state );
+					daw_json_assert( count >= 0, ErrorReason::NumberOutOfRange, parse_state );
 				}
 
 				parse_state.first = first;
@@ -298,8 +274,7 @@ namespace daw::json {
 					return daw::construct_a<Unsigned>(
 					  static_cast<Unsigned>( static_cast<result_t>( result ) ) );
 				} else {
-					return daw::construct_a<Unsigned>(
-					  daw::narrow_cast<Unsigned>( result ) );
+					return daw::construct_a<Unsigned>( daw::narrow_cast<Unsigned>( result ) );
 				}
 			}
 

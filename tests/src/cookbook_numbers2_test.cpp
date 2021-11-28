@@ -26,8 +26,7 @@ namespace daw::cookbook_numbers2 {
 
 		DAW_CONSTEXPR bool operator==( MyClass2 const &rhs ) const {
 			return member_unsigned0 == rhs.member_unsigned0 and
-			       member_unsigned1 == rhs.member_unsigned1 and
-			       member_signed == rhs.member_signed;
+			       member_unsigned1 == rhs.member_unsigned1 and member_signed == rhs.member_signed;
 		}
 	};
 } // namespace daw::cookbook_numbers2
@@ -47,8 +46,7 @@ namespace daw::json {
 		                              json_number<member_unsigned1, unsigned>,
 		                              json_number<member_signed, signed>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_numbers2::MyClass2 const &value ) {
+		static inline auto to_json_data( daw::cookbook_numbers2::MyClass2 const &value ) {
 			return std::forward_as_tuple( value.member_unsigned0,
 			                              value.member_unsigned1,
 			                              value.member_signed );
@@ -85,8 +83,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

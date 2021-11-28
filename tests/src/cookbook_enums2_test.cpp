@@ -37,15 +37,12 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_enums2::MyClass1> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_array<"member0", daw::cookbook_enums2::Colours>>;
+		using type = json_member_list<json_array<"member0", daw::cookbook_enums2::Colours>>;
 #else
 		static constexpr char const member0[] = "member0";
-		using type =
-		  json_member_list<json_array<member0, daw::cookbook_enums2::Colours>>;
+		using type = json_member_list<json_array<member0, daw::cookbook_enums2::Colours>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_enums2::MyClass1 const &value ) {
+		static inline auto to_json_data( daw::cookbook_enums2::MyClass1 const &value ) {
 			return std::forward_as_tuple( value.member0 );
 		}
 	};
@@ -65,14 +62,10 @@ int main( int argc, char **argv )
 	auto const cls = daw::json::from_json<daw::cookbook_enums2::MyClass1>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	test_assert( cls.member0[0] == daw::cookbook_enums2::Colours::red,
-	             "Unexpected value" );
-	test_assert( cls.member0[1] == daw::cookbook_enums2::Colours::green,
-	             "Unexpected value" );
-	test_assert( cls.member0[2] == daw::cookbook_enums2::Colours::blue,
-	             "Unexpected value" );
-	test_assert( cls.member0[3] == daw::cookbook_enums2::Colours::black,
-	             "Unexpected value" );
+	test_assert( cls.member0[0] == daw::cookbook_enums2::Colours::red, "Unexpected value" );
+	test_assert( cls.member0[1] == daw::cookbook_enums2::Colours::green, "Unexpected value" );
+	test_assert( cls.member0[2] == daw::cookbook_enums2::Colours::blue, "Unexpected value" );
+	test_assert( cls.member0[3] == daw::cookbook_enums2::Colours::black, "Unexpected value" );
 	auto const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
@@ -86,8 +79,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

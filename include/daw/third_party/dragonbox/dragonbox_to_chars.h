@@ -36,8 +36,7 @@ namespace daw::jkj::dragonbox {
 			using policy_holder = decltype( make_policy_holder(
 			  base_default_pair_list<
 			    base_default_pair<trailing_zero::base, trailing_zero::remove>,
-			    base_default_pair<rounding_mode::base,
-			                      rounding_mode::nearest_to_even>,
+			    base_default_pair<rounding_mode::base, rounding_mode::nearest_to_even>,
 			    base_default_pair<correct_rounding::base, correct_rounding::to_even>,
 			    base_default_pair<cache::base, cache::normal>>{ },
 			  policies... ) );
@@ -46,8 +45,7 @@ namespace daw::jkj::dragonbox {
 			               "jkj::dragonbox::policy::trailing_zeros::report is not "
 			               "valid for to_chars & to_chars_n" );
 
-			using ieee754_format_info =
-			  ieee754_format_info<ieee754_traits<Float>::format>;
+			using ieee754_format_info = ieee754_format_info<ieee754_traits<Float>::format>;
 
 			auto br = ieee754_bits( x );
 			if( br.is_finite( ) ) {

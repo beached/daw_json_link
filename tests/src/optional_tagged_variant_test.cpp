@@ -48,25 +48,22 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type =
 	  json_member_list<json_string<"name">,
-	                   json_tagged_variant_null<
-	                     "value",
-	                     std::optional<std::variant<std::string, int, bool>>,
-	                     json_number<"type", int>,
-	                     daw::cookbook_variant2::MyClassSwitcher>>;
+	                   json_tagged_variant_null<"value",
+	                                            std::optional<std::variant<std::string, int, bool>>,
+	                                            json_number<"type", int>,
+	                                            daw::cookbook_variant2::MyClassSwitcher>>;
 #else
 	static constexpr char const type_mem[] = "type";
 	static constexpr char const name[] = "name";
 	static constexpr char const value[] = "value";
 	using type =
 	  json_member_list<json_string<name>,
-	                   json_tagged_variant_null<
-	                     value,
-	                     std::optional<std::variant<std::string, int, bool>>,
-	                     json_number<type_mem, int>,
-	                     daw::cookbook_variant2::MyClassSwitcher>>;
+	                   json_tagged_variant_null<value,
+	                                            std::optional<std::variant<std::string, int, bool>>,
+	                                            json_number<type_mem, int>,
+	                                            daw::cookbook_variant2::MyClassSwitcher>>;
 #endif
-	static DAW_CONSTEXPR inline auto
-	to_json_data( daw::cookbook_variant2::MyClass const &v ) {
+	static DAW_CONSTEXPR inline auto to_json_data( daw::cookbook_variant2::MyClass const &v ) {
 		return std::forward_as_tuple( v.name, v.value );
 	}
 };
@@ -98,8 +95,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

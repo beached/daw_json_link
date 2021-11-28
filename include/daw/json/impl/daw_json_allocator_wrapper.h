@@ -49,21 +49,17 @@ namespace daw::json {
 			};
 
 			template<typename Alloc>
-			struct AllocatorWrapper :
-			  AllocatorWrapperBase<Alloc, std::is_empty<Alloc>::value> {
+			struct AllocatorWrapper : AllocatorWrapperBase<Alloc, std::is_empty<Alloc>::value> {
 				using allocator_type = std::remove_reference_t<Alloc>;
 
 				explicit AllocatorWrapper( allocator_type &alloc ) noexcept
-				  : AllocatorWrapperBase<allocator_type,
-				                         std::is_empty<allocator_type>::value>(
-				      alloc ) {}
+				  : AllocatorWrapperBase<allocator_type, std::is_empty<allocator_type>::value>( alloc ) {}
 
 				static constexpr bool has_allocator = true;
 
 				template<typename A, typename T>
 				struct allocator_type_as_rebind {
-					using type =
-					  typename std::allocator_traits<A>::template rebind_alloc<T>;
+					using type = typename std::allocator_traits<A>::template rebind_alloc<T>;
 				};
 
 				template<typename A, typename T>
@@ -76,10 +72,9 @@ namespace daw::json {
 
 				// DAW FIX
 				template<typename T>
-				using allocator_type_as =
-				  std::conditional_t<has_rebind_v<allocator_type, T>,
-				                     allocator_type_as_rebind<allocator_type, T>,
-				                     allocator_type>;
+				using allocator_type_as = std::conditional_t<has_rebind_v<allocator_type, T>,
+				                                             allocator_type_as_rebind<allocator_type, T>,
+				                                             allocator_type>;
 
 				template<typename T>
 				auto get_allocator_for( template_param<T> ) const {
@@ -100,8 +95,7 @@ namespace daw::json {
 				using allocator_type_as = std::allocator<T>;
 
 				template<typename T>
-				[[maybe_unused]] inline std::allocator<T>
-				get_allocator_for( template_param<T> ) const {
+				[[maybe_unused]] inline std::allocator<T> get_allocator_for( template_param<T> ) const {
 					return std::allocator<T>( );
 				}
 			};

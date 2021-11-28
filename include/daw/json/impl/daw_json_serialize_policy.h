@@ -28,14 +28,12 @@ namespace daw::json {
 		 * @return A json_options_t that encodes the options for the parser
 		 */
 		template<typename... Policies>
-		constexpr json_details::json_options_t serialize_options(
-		  Policies... policies ) {
+		constexpr json_details::json_options_t serialize_options( Policies... policies ) {
 			static_assert( ( json_details::is_option_flag<Policies> and ... ),
 			               "Only registered policy types are allowed" );
 			auto result = json_details::serialization::default_policy_flag;
 			if constexpr( sizeof...( Policies ) > 0 ) {
-				result |=
-				  ( json_details::serialization::set_bits_for( policies ) | ... );
+				result |= ( json_details::serialization::set_bits_for( policies ) | ... );
 			}
 			return result;
 		}
@@ -43,8 +41,7 @@ namespace daw::json {
 		template<typename OutputIterator,
 		         json_details::json_options_t PolicyFlags =
 		           json_details::serialization::default_policy_flag>
-		struct serialization_policy :
-		  json_details::iterator_wrapper<OutputIterator> {
+		struct serialization_policy : json_details::iterator_wrapper<OutputIterator> {
 			using i_am_a_serialization_policy = void;
 
 			std::size_t indentation_level = 0;
@@ -53,24 +50,19 @@ namespace daw::json {
 			  : json_details::iterator_wrapper<OutputIterator>{ DAW_MOVE( it ) } {}
 
 			static constexpr SerializationFormat serialization_format =
-			  json_details::serialization::get_bits_for<SerializationFormat>(
-			    PolicyFlags );
+			  json_details::serialization::get_bits_for<SerializationFormat>( PolicyFlags );
 
 			static constexpr IndentationType indentation_type =
-			  json_details::serialization::get_bits_for<IndentationType>(
-			    PolicyFlags );
+			  json_details::serialization::get_bits_for<IndentationType>( PolicyFlags );
 
 			static constexpr RestrictedStringOutput restricted_string_output =
-			  json_details::serialization::get_bits_for<RestrictedStringOutput>(
-			    PolicyFlags );
+			  json_details::serialization::get_bits_for<RestrictedStringOutput>( PolicyFlags );
 
 			static constexpr NewLineDelimiter newline_delimiter =
-			  json_details::serialization::get_bits_for<NewLineDelimiter>(
-			    PolicyFlags );
+			  json_details::serialization::get_bits_for<NewLineDelimiter>( PolicyFlags );
 
 			static constexpr OutputTrailingComma output_trailing_comma =
-			  json_details::serialization::get_bits_for<OutputTrailingComma>(
-			    PolicyFlags );
+			  json_details::serialization::get_bits_for<OutputTrailingComma>( PolicyFlags );
 
 			inline constexpr void add_indent( ) {
 				++indentation_level;
@@ -82,12 +74,9 @@ namespace daw::json {
 
 			inline constexpr void output_indent( ) {
 				constexpr std::string_view ident =
-				  json_details::serialization::generate_indent<serialization_format,
-				                                               indentation_type>;
+				  json_details::serialization::generate_indent<serialization_format, indentation_type>;
 				for( std::size_t n = 0; n < indentation_level; ++n ) {
-					daw::algorithm::copy( std::data( ident ),
-					                      daw::data_end( ident ),
-					                      this->raw_it( ) );
+					daw::algorithm::copy( std::data( ident ), daw::data_end( ident ), this->raw_it( ) );
 				}
 			}
 
@@ -119,7 +108,7 @@ namespace daw::json {
 		struct is_serialization_policy : std::false_type {};
 
 		template<typename OutputIterator, json_details::json_options_t PolicyFlags>
-		struct is_serialization_policy<
-		  serialization_policy<OutputIterator, PolicyFlags>> : std::true_type {};
+		struct is_serialization_policy<serialization_policy<OutputIterator, PolicyFlags>> :
+		  std::true_type {};
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

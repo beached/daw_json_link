@@ -43,8 +43,7 @@ namespace daw::json {
 
 				constexpr json_parse_array_iterator_base( ) noexcept = default;
 
-				explicit inline constexpr json_parse_array_iterator_base(
-				  ParseState *pd ) noexcept
+				explicit inline constexpr json_parse_array_iterator_base( ParseState *pd ) noexcept
 				  : parse_state( pd )
 				  , counter( static_cast<difference_type>( pd->counter ) ) {}
 
@@ -62,8 +61,7 @@ namespace daw::json {
 			struct json_parse_array_iterator :
 			  json_parse_array_iterator_base<ParseState, can_random_v<KnownBounds>> {
 
-				using base =
-				  json_parse_array_iterator_base<ParseState, can_random_v<KnownBounds>>;
+				using base = json_parse_array_iterator_base<ParseState, can_random_v<KnownBounds>>;
 
 				using iterator_category = typename base::iterator_category;
 				using element_t = typename JsonMember::json_element_t;
@@ -91,14 +89,12 @@ namespace daw::json {
 
 				DAW_ATTRIB_INLINE
 				constexpr value_type operator*( ) {
-					daw_json_assert_weak( base::parse_state and
-					                        base::parse_state->has_more( ),
+					daw_json_assert_weak( base::parse_state and base::parse_state->has_more( ),
 					                      ErrorReason::UnexpectedEndOfData,
 					                      *base::parse_state );
 
-					return parse_value<element_t>(
-					  *base::parse_state,
-					  ParseTag<element_t::expected_type>{ } );
+					return parse_value<element_t>( *base::parse_state,
+					                               ParseTag<element_t::expected_type>{ } );
 				}
 
 				DAW_ATTRIB_INLINE constexpr json_parse_array_iterator &operator++( ) {
@@ -107,11 +103,10 @@ namespace daw::json {
 					                      *base::parse_state );
 					base::parse_state->trim_left( );
 
-					daw_json_assert_weak(
-					  base::parse_state->has_more( ) and
-					    base::parse_state->is_at_next_array_element( ),
-					  ErrorReason::UnexpectedEndOfData,
-					  *base::parse_state );
+					daw_json_assert_weak( base::parse_state->has_more( ) and
+					                        base::parse_state->is_at_next_array_element( ),
+					                      ErrorReason::UnexpectedEndOfData,
+					                      *base::parse_state );
 
 					base::parse_state->move_next_member_or_end( );
 					daw_json_assert_weak( base::parse_state->has_more( ),
@@ -145,15 +140,13 @@ namespace daw::json {
 					return *this;
 				}
 
-				friend inline constexpr bool
-				operator==( json_parse_array_iterator const &lhs,
-				            json_parse_array_iterator const &rhs ) {
+				friend inline constexpr bool operator==( json_parse_array_iterator const &lhs,
+				                                         json_parse_array_iterator const &rhs ) {
 					return lhs.parse_state == rhs.parse_state;
 				}
 
-				friend inline constexpr bool
-				operator!=( json_parse_array_iterator const &lhs,
-				            json_parse_array_iterator const &rhs ) {
+				friend inline constexpr bool operator!=( json_parse_array_iterator const &lhs,
+				                                         json_parse_array_iterator const &rhs ) {
 					return not( lhs == rhs );
 				}
 

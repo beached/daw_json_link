@@ -21,8 +21,7 @@ namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename T>
-			using is_opted_into_json_iostreams =
-			  typename json_data_contract<T>::opt_into_iostreams;
+			using is_opted_into_json_iostreams = typename json_data_contract<T>::opt_into_iostreams;
 
 			template<typename Container>
 			using is_container_opted_into_json_iostreams =
@@ -40,9 +39,8 @@ namespace daw::json {
 } // namespace daw::json
 
 template<typename T>
-auto operator<<( std::ostream &os, T const &value ) -> std::enable_if_t<
-  daw::json::json_details::is_opted_into_json_iostreams_v<T>,
-  std::ostream &> {
+auto operator<<( std::ostream &os, T const &value )
+  -> std::enable_if_t<daw::json::json_details::is_opted_into_json_iostreams_v<T>, std::ostream &> {
 
 	auto out_it = std::ostreambuf_iterator<char>( os );
 	daw::json::to_json( value, out_it );
@@ -50,9 +48,9 @@ auto operator<<( std::ostream &os, T const &value ) -> std::enable_if_t<
 }
 
 template<typename Container>
-auto operator<<( std::ostream &os, Container const &c ) -> std::enable_if_t<
-  daw::json::json_details::is_container_opted_into_json_iostreams_v<Container>,
-  std::ostream &> {
+auto operator<<( std::ostream &os, Container const &c )
+  -> std::enable_if_t<daw::json::json_details::is_container_opted_into_json_iostreams_v<Container>,
+                      std::ostream &> {
 
 	auto out_it = std::ostreambuf_iterator<char>( os );
 	(void)daw::json::to_json_array( c, out_it );

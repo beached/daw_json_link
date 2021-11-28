@@ -37,15 +37,12 @@ namespace tests {
 template<>
 struct daw::json::json_data_contract<tests::Coordinate> {
 #ifdef __cpp_nontype_template_parameter_class
-	using type = json_member_list<json_number<"lat">,
-	                              json_number<"lng">,
-	                              json_string<"name">>;
+	using type = json_member_list<json_number<"lat">, json_number<"lng">, json_string<"name">>;
 #else
 	static constexpr char const lat[] = "lat";
 	static constexpr char const lng[] = "lng";
 	static constexpr char const name[] = "name";
-	using type =
-	  json_member_list<json_number<lat>, json_number<lng>, json_string<name>>;
+	using type = json_member_list<json_number<lat>, json_number<lng>, json_string<name>>;
 #endif
 };
 
@@ -78,8 +75,7 @@ namespace tests {
 	}
 
 	bool bool_in_numbers( ) {
-		static DAW_CONSTEXPR std::string_view data =
-		  R"({"lat": true, "lng": false })";
+		static DAW_CONSTEXPR std::string_view data = R"({"lat": true, "lng": false })";
 		try {
 			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
@@ -88,8 +84,7 @@ namespace tests {
 	}
 
 	bool invalid_numbers( ) {
-		static DAW_CONSTEXPR std::string_view data =
-		  R"({"lat": 1.23b34, "lng": 1234.4 })";
+		static DAW_CONSTEXPR std::string_view data = R"({"lat": 1.23b34, "lng": 1234.4 })";
 		try {
 			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
@@ -116,8 +111,7 @@ namespace tests {
 	}
 
 	bool missing_value_003( ) {
-		static DAW_CONSTEXPR std::string_view data =
-		  R"({"name": "lat": 1.23, "lng": 1.34 })";
+		static DAW_CONSTEXPR std::string_view data = R"({"name": "lat": 1.23, "lng": 1.34 })";
 		try {
 			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
@@ -135,8 +129,7 @@ namespace tests {
 	}
 
 	bool missing_closing_brace( ) {
-		static DAW_CONSTEXPR std::string_view data =
-		  R"({"lng": 1.23, "lat": 1.22 )";
+		static DAW_CONSTEXPR std::string_view data = R"({"lng": 1.23, "lat": 1.22 )";
 		try {
 			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
@@ -220,8 +213,7 @@ namespace tests {
 		try {
 			using namespace daw::json;
 			std::vector<std::optional<int>> numbers =
-			  from_json_array<json_checked_number_null_no_name<std::optional<int>>>(
-			    data );
+			  from_json_array<json_checked_number_null_no_name<std::optional<int>>>( data );
 			(void)numbers;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -294,12 +286,9 @@ int main( int, char ** )
 #ifdef DAW_USE_EXCEPTIONS
 	std::exception_ptr last_uncaught_except = nullptr;
 #endif
-	expect_fail( tests::quotes_in_numbers( ),
-	             "Failed to find unexpected quotes in numbers" );
-	expect_fail( tests::quotes_in_numbers_str( ),
-	             "Failed to find unexpected quotes in numbers" );
-	expect_fail( tests::bool_in_numbers( ),
-	             "Failed to find a bool when a number was expected" );
+	expect_fail( tests::quotes_in_numbers( ), "Failed to find unexpected quotes in numbers" );
+	expect_fail( tests::quotes_in_numbers_str( ), "Failed to find unexpected quotes in numbers" );
+	expect_fail( tests::bool_in_numbers( ), "Failed to find a bool when a number was expected" );
 	expect_fail( tests::invalid_numbers( ), "Failed to find an invalid number" );
 	expect_fail( tests::invalid_strings( ), "Failed to find missing quote" );
 	expect_fail( tests::invalid_strings2( ), "Failed to find missing quote" );
@@ -317,23 +306,18 @@ int main( int, char ** )
 	expect_fail( tests::missing_value_003( ),
 	             "Failed to catch a missing value that has a member name" );
 
-	expect_fail( tests::missing_member( ),
-	             "Failed to catch a missing required member" );
+	expect_fail( tests::missing_member( ), "Failed to catch a missing required member" );
 
 	expect_fail( tests::missing_closing_brace( ),
 	             "Failed to catch a missing closing brace on object" );
 
-	expect_fail( tests::very_large_signed_int( ),
-	             "Failed to catch a very large signed number" );
+	expect_fail( tests::very_large_signed_int( ), "Failed to catch a very large signed number" );
 
-	expect_fail( tests::incomplete_null( ),
-	             "Incomplete null in array not caught" );
+	expect_fail( tests::incomplete_null( ), "Incomplete null in array not caught" );
 
-	expect_fail( tests::incomplete_true( ),
-	             "Incomplete true in array not caught" );
+	expect_fail( tests::incomplete_true( ), "Incomplete true in array not caught" );
 
-	expect_fail( tests::incomplete_false( ),
-	             "Incomplete false in array not caught" );
+	expect_fail( tests::incomplete_false( ), "Incomplete false in array not caught" );
 
 	expect_fail( tests::bad_true( ), "bad true value not caught" );
 #ifdef DAW_USE_EXCEPTIONS
@@ -345,12 +329,10 @@ int main( int, char ** )
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
-	std::cerr << "Uncaught exception reached the end scope of main\n"
-	          << std::flush;
+	std::cerr << "Uncaught exception reached the end scope of main\n" << std::flush;
 	throw;
 }
 #endif

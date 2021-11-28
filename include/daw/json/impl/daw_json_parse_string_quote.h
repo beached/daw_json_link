@@ -13,6 +13,7 @@
 #include "version.h"
 
 #include <daw/daw_logic.h>
+#include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
 
@@ -23,8 +24,8 @@
 namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
-			constexpr std::pair<std::size_t, bool>
-			validate_utf8( constexpr_exec_tag, std::string_view sv ) {
+			constexpr std::pair<std::size_t, bool> validate_utf8( constexpr_exec_tag,
+			                                                      daw::string_view sv ) {
 				std::size_t err_pos = 1;
 				auto len = static_cast<std::ptrdiff_t>( std::size( sv ) );
 				char const *data = std::data( sv );
@@ -46,8 +47,8 @@ namespace daw::json {
 						auto const byte2 = static_cast<unsigned char>( data[1] );
 
 						/* Is byte2, byte3 between 0x80 ~ 0xBF */
-						bool const byte2_ok = static_cast<signed char>( byte2 ) <=
-						                      static_cast<signed char>( 0xBF );
+						bool const byte2_ok =
+						  static_cast<signed char>( byte2 ) <= static_cast<signed char>( 0xBF );
 						bool const byte3_ok = data[2] <= static_cast<signed char>( 0xBF );
 
 						if( byte2_ok & byte3_ok &
@@ -62,8 +63,8 @@ namespace daw::json {
 							bytes = 3;
 						} else if( len >= 4 ) {
 							/* Is byte4 between 0x80 ~ 0xBF */
-							bool const byte4_ok = static_cast<signed char>( data[3] ) <=
-							                      static_cast<signed char>( 0xBF );
+							bool const byte4_ok =
+							  static_cast<signed char>( data[3] ) <= static_cast<signed char>( 0xBF );
 
 							if( byte2_ok & byte3_ok & byte4_ok &
 							    /* F0, 90..BF, 80..BF, 80..BF */
@@ -93,16 +94,14 @@ namespace daw::json {
 			template<std::size_t N, char c>
 			inline constexpr UInt8 test_at_byte( UInt64 b ) {
 				auto const lhs = b & ( 0xFF_u64 << ( N * 8U ) );
-				using rhs = daw::constant<to_uint64( static_cast<unsigned char>( c ) )
-				                          << ( N * 8U )>;
+				using rhs = daw::constant<to_uint64( static_cast<unsigned char>( c ) ) << ( N * 8U )>;
 				return to_uint8( not( lhs - rhs::value ) );
 			}
 
 			template<std::size_t N, char c>
 			DAW_ATTRIB_INLINE constexpr UInt8 test_at_byte( UInt32 b ) {
 				auto const lhs = b & ( 0xFF_u32 << ( N * 8U ) );
-				using rhs = daw::constant<to_uint32( static_cast<unsigned char>( c ) )
-				                          << ( N * 8U )>;
+				using rhs = daw::constant<to_uint32( static_cast<unsigned char>( c ) ) << ( N * 8U )>;
 				return to_uint8( not( lhs - rhs::value ) );
 			}
 
@@ -128,22 +127,8 @@ namespace daw::json {
 					auto const s1 = test_at_byte<1U, '\\'>( buff );
 					auto const s0 = test_at_byte<0U, '\\'>( buff );
 
-					keep_going = not daw::nsc_or( q0,
-					                              q1,
-					                              q2,
-					                              q3,
-					                              q4,
-					                              q5,
-					                              q6,
-					                              q7,
-					                              s0,
-					                              s1,
-					                              s2,
-					                              s3,
-					                              s4,
-					                              s5,
-					                              s6,
-					                              s7 );
+					keep_going =
+					  not daw::nsc_or( q0, q1, q2, q3, q4, q5, q6, q7, s0, s1, s2, s3, s4, s5, s6, s7 );
 					keep_going = daw::nsc_and( keep_going, last - first >= 16 );
 					first += static_cast<int>( keep_going ) * 8;
 				}
@@ -183,8 +168,7 @@ namespace daw::json {
 					// This is a logic error to happen.
 					// daw_json_assert_weak( first != '"', "Unexpected quote", parse_state
 					// );
-					if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
-					                                 constexpr_exec_tag> ) {
+					if constexpr( traits::not_same_v<typename ParseState::exec_tag_t, constexpr_exec_tag> ) {
 						first = mem_skip_until_end_of_string<true>( ParseState::exec_tag,
 						                                            first,
 						                                            last,
@@ -200,9 +184,8 @@ namespace daw::json {
 							}
 						}
 						while( *first != '"' ) {
-							while( []( char c ) {
-								return daw::nsc_and( ( c != '"' ), ( c != '\\' ) );
-							}( *first ) ) {
+							while(
+							  []( char c ) { return daw::nsc_and( ( c != '"' ), ( c != '\\' ) ); }( *first ) ) {
 								++first;
 							}
 							if( *first == '\\' ) {
@@ -230,8 +213,7 @@ namespace daw::json {
 					CharT *const last = parse_state.class_last;
 
 					if constexpr( not ParseState::exclude_special_escapes and
-					              ParseState::eight_bit_mode ==
-					                GlobalEightBitModes::AllowFull ) {
+					              ParseState::eight_bit_mode == GlobalEightBitModes::AllowFull ) {
 						if( CharT *const l = parse_state.last; l - first >= 8 ) {
 							skip_to_first8( first, l );
 						} else if( last - first >= 4 ) {
@@ -242,10 +224,9 @@ namespace daw::json {
 						if constexpr( ParseState::exclude_special_escapes ) {
 							while( *first != '\0' ) {
 								char c = *first;
-								if constexpr( ParseState::eight_bit_mode !=
-								              GlobalEightBitModes::AllowFull ) {
-									daw_json_assert( static_cast<unsigned>(
-									                   static_cast<unsigned char>( c ) ) <= 0x7FU,
+								if constexpr( ParseState::eight_bit_mode != GlobalEightBitModes::AllowFull ) {
+									daw_json_assert( static_cast<unsigned>( static_cast<unsigned char>( c ) ) <=
+									                   0x7FU,
 									                 ErrorReason::InvalidString,
 									                 parse_state );
 								}
@@ -253,9 +234,7 @@ namespace daw::json {
 								                 ErrorReason::InvalidString,
 								                 parse_state );
 								if( c == '\\' ) {
-									daw_json_assert( last - first > 1,
-									                 ErrorReason::InvalidString,
-									                 parse_state );
+									daw_json_assert( last - first > 1, ErrorReason::InvalidString, parse_state );
 									if( need_slow_path < 0 ) {
 										need_slow_path = first - parse_state.first;
 									}
@@ -282,15 +261,12 @@ namespace daw::json {
 							}
 						} else {
 							while( daw::nsc_and( *first != 0, *first != '"' ) ) {
-								while(
-								  daw::nsc_and( *first != 0, *first != '"', *first != '\\' ) ) {
-									if constexpr( ParseState::eight_bit_mode !=
-									              GlobalEightBitModes::AllowFull ) {
-										daw_json_assert( static_cast<unsigned>(
-										                   static_cast<unsigned char>( *first ) ) <=
-										                   0x7FU,
-										                 ErrorReason::InvalidString,
-										                 parse_state );
+								while( daw::nsc_and( *first != 0, *first != '"', *first != '\\' ) ) {
+									if constexpr( ParseState::eight_bit_mode != GlobalEightBitModes::AllowFull ) {
+										daw_json_assert(
+										  static_cast<unsigned>( static_cast<unsigned char>( *first ) ) <= 0x7FU,
+										  ErrorReason::InvalidString,
+										  parse_state );
 									}
 									++first;
 								}
@@ -316,18 +292,14 @@ namespace daw::json {
 								daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
 								                 ErrorReason::InvalidString,
 								                 parse_state );
-								if constexpr( ParseState::eight_bit_mode !=
-								              GlobalEightBitModes::AllowFull ) {
-									daw_json_assert( static_cast<unsigned>(
-									                   static_cast<unsigned char>( *first ) ) <=
+								if constexpr( ParseState::eight_bit_mode != GlobalEightBitModes::AllowFull ) {
+									daw_json_assert( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) <=
 									                   0x7FU,
 									                 ErrorReason::InvalidString,
 									                 parse_state );
 								}
 								if( c == '\\' ) {
-									daw_json_assert( last - first > 1,
-									                 ErrorReason::InvalidString,
-									                 parse_state );
+									daw_json_assert( last - first > 1, ErrorReason::InvalidString, parse_state );
 									if( need_slow_path < 0 ) {
 										need_slow_path = first - parse_state.first;
 									}
@@ -354,8 +326,7 @@ namespace daw::json {
 							}
 						} else {
 							while( first < last and *first != '"' ) {
-								while( first < last and
-								       daw::nsc_and( *first != '"', *first != '\\' ) ) {
+								while( first < last and daw::nsc_and( *first != '"', *first != '\\' ) ) {
 									++first;
 								}
 
@@ -372,23 +343,20 @@ namespace daw::json {
 					}
 
 					if constexpr( ParseState::is_zero_terminated_string ) {
-						daw_json_assert_weak( *first == '"',
-						                      ErrorReason::InvalidString,
-						                      parse_state );
+						daw_json_assert_weak( *first == '"', ErrorReason::InvalidString, parse_state );
 					} else {
 						daw_json_assert_weak( first < last and *first == '"',
 						                      ErrorReason::InvalidString,
 						                      parse_state );
 					}
 					if constexpr( ParseState::validate_utf8 ) {
-						daw_json_assert(
-						  validate_utf8( ParseState::exec_tag,
-						                 std::string_view( parse_state.first,
-						                                   static_cast<std::size_t>(
-						                                     first - parse_state.first ) ) )
-						    .second,
-						  ErrorReason::InvalidUTFCodepoint,
-						  parse_state );
+						daw_json_assert( validate_utf8( ParseState::exec_tag,
+						                                daw::string_view( parse_state.first,
+						                                                  static_cast<std::size_t>(
+						                                                    first - parse_state.first ) ) )
+						                   .second,
+						                 ErrorReason::InvalidUTFCodepoint,
+						                 parse_state );
 					}
 					parse_state.first = first;
 					return static_cast<std::size_t>( need_slow_path );

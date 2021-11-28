@@ -23,14 +23,13 @@
 
 using constexpr_checked_pol =
   daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>;
-using constexpr_unchecked_pol = daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-  daw::json::constexpr_exec_tag>;
+using constexpr_unchecked_pol =
+  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::constexpr_exec_tag>;
 using runtime_checked_pol =
   daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>;
 using runtime_unchecked_pol =
   daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::runtime_exec_tag>;
-using simd_checked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
+using simd_checked_pol = daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
 using simd_unchecked_pol =
   daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>;
 
@@ -41,8 +40,7 @@ struct parser_t {
 	constexpr parser_t( ) = default;
 
 	bool operator( )( std::string_view jd ) const {
-		ankerl::nanobench::doNotOptimizeAway(
-		  daw::json::from_json<ParseObj, ParsePolicy>( jd ) );
+		ankerl::nanobench::doNotOptimizeAway( daw::json::from_json<ParseObj, ParsePolicy>( jd ) );
 		return true;
 	}
 
@@ -73,27 +71,23 @@ void bench( ankerl::nanobench::Bench &b,
 
 	// Constexpr Checked
 	b.batch( twitter_doc.size( ) );
-	b.run( fmt::format( "twitter {}", title ).c_str( ), [&]( ) {
-		do_test<ParsePolicy, daw::twitter::twitter_object_t>( twitter_doc );
-	} );
+	b.run( fmt::format( "twitter {}", title ).c_str( ),
+	       [&]( ) { do_test<ParsePolicy, daw::twitter::twitter_object_t>( twitter_doc ); } );
 
 	b.batch( citm_doc.size( ) );
-	b.run( fmt::format( "citm {}", title ).c_str( ), [&]( ) {
-		do_test<ParsePolicy, daw::citm::citm_object_t>( citm_doc );
-	} );
+	b.run( fmt::format( "citm {}", title ).c_str( ),
+	       [&]( ) { do_test<ParsePolicy, daw::citm::citm_object_t>( citm_doc ); } );
 
 	b.batch( canada_doc.size( ) );
 	b.run( fmt::format( "canada {}", title ).c_str( ), [&]( ) {
-		do_test<ParsePolicy, daw::geojson::Polygon>(
-		  PPair{ canada_doc, "features[0].geometry" } );
+		do_test<ParsePolicy, daw::geojson::Polygon>( PPair{ canada_doc, "features[0].geometry" } );
 	} );
 
 	b.batch( twitter_doc.size( ) + citm_doc.size( ) + canada_doc.size( ) );
 	b.run( fmt::format( "nativejson {0}", title ).c_str( ), [&]( ) {
 		do_test<ParsePolicy, daw::twitter::twitter_object_t>( twitter_doc );
 		do_test<ParsePolicy, daw::citm::citm_object_t>( citm_doc );
-		do_test<ParsePolicy, daw::geojson::Polygon>(
-		  PPair{ canada_doc, "features[0].geometry" } );
+		do_test<ParsePolicy, daw::geojson::Polygon>( PPair{ canada_doc, "features[0].geometry" } );
 	} );
 	// Constexpr Unchecked
 	// Runtime Checked
@@ -119,37 +113,13 @@ int main( int argc, char **argv ) {
 	std::string const citm_doc = *daw::read_file( argv[2] );
 	std::string const canada_doc = *daw::read_file( argv[3] );
 
-	bench<constexpr_checked_pol>( b1,
-	                              "constexpr checked",
-	                              twitter_doc,
-	                              citm_doc,
-	                              canada_doc );
-	bench<constexpr_unchecked_pol>( b1,
-	                                "constexpr unchecked",
-	                                twitter_doc,
-	                                citm_doc,
-	                                canada_doc );
-	bench<runtime_checked_pol>( b1,
-	                            "runtime checked",
-	                            twitter_doc,
-	                            citm_doc,
-	                            canada_doc );
-	bench<runtime_unchecked_pol>( b1,
-	                              "runtime unchecked",
-	                              twitter_doc,
-	                              citm_doc,
-	                              canada_doc );
+	bench<constexpr_checked_pol>( b1, "constexpr checked", twitter_doc, citm_doc, canada_doc );
+	bench<constexpr_unchecked_pol>( b1, "constexpr unchecked", twitter_doc, citm_doc, canada_doc );
+	bench<runtime_checked_pol>( b1, "runtime checked", twitter_doc, citm_doc, canada_doc );
+	bench<runtime_unchecked_pol>( b1, "runtime unchecked", twitter_doc, citm_doc, canada_doc );
 
-	bench<simd_checked_pol>( b1,
-	                         "simd checked",
-	                         twitter_doc,
-	                         citm_doc,
-	                         canada_doc );
-	bench<simd_unchecked_pol>( b1,
-	                           "simd unchecked",
-	                           twitter_doc,
-	                           citm_doc,
-	                           canada_doc );
+	bench<simd_checked_pol>( b1, "simd checked", twitter_doc, citm_doc, canada_doc );
+	bench<simd_unchecked_pol>( b1, "simd unchecked", twitter_doc, citm_doc, canada_doc );
 
 	if( argc > 4 ) {
 		std::string_view const fname = argv[4];

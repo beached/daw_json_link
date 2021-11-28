@@ -23,9 +23,7 @@ bool empty_array_empty_json_array( ) {
 
 	DAW_CONSTEXPR std::string_view sv = "[]";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v =
-	  parse_value<json_array_no_name<int>>( rng,
-	                                        ParseTag<JsonParseTypes::Array>{ } );
+	auto v = parse_value<json_array_no_name<int>>( rng, ParseTag<JsonParseTypes::Array>{ } );
 	return v.empty( );
 }
 
@@ -36,9 +34,7 @@ bool int_array_json_string_array_fail( ) {
 	std::string_view sv = R"([ "this is strange" ])";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v =
-	  parse_value<json_array_no_name<int>>( rng,
-	                                        ParseTag<JsonParseTypes::Array>{ } );
+	auto v = parse_value<json_array_no_name<int>>( rng, ParseTag<JsonParseTypes::Array>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -47,11 +43,10 @@ template<typename... Members>
 struct InlineClass {
 	std::tuple<typename Members::parse_to_t...> members;
 
-	template<
-	  typename... Ts,
-	  std::enable_if_t<( not daw::traits::is_first_type_v<InlineClass, Ts...> and
-	                     ( std::is_convertible_v<Ts, Members> and ... ) ),
-	                   std::nullptr_t> = nullptr>
+	template<typename... Ts,
+	         std::enable_if_t<( not daw::traits::is_first_type_v<InlineClass, Ts...> and
+	                            ( std::is_convertible_v<Ts, Members> and ... ) ),
+	                          std::nullptr_t> = nullptr>
 	inline DAW_CONSTEXPR InlineClass( Ts &&...values )
 	  : members{ std::forward<Ts>( values )... } {}
 };
@@ -76,9 +71,8 @@ bool array_with_closing_class_fail( ) {
 	std::string_view sv = R"([ {}}, ])";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_array_no_name<InlineClass<>>>(
-	  rng,
-	  ParseTag<JsonParseTypes::Array>{ } );
+	auto v =
+	  parse_value<json_array_no_name<InlineClass<>>>( rng, ParseTag<JsonParseTypes::Array>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -115,8 +109,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

@@ -38,30 +38,27 @@ void test( std::string_view json_sv1 ) {
 	auto const sz = json_sv1.size( );
 	auto twitter_result = std::vector<daw::twitter::tweet>( );
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet,
-		  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+		using range_t =
+		  daw::json::json_array_range<daw::twitter::tweet,
+		                              daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
 		auto rng = range_t( json_sv1 );
 		twitter_result.insert( twitter_result.end( ), rng.begin( ), rng.end( ) );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet,
-		  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+		using range_t =
+		  daw::json::json_array_range<daw::twitter::tweet,
+		                              daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(checked)",
 		  sz,
-		  [&]( auto rng ) {
-			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
-		  },
+		  [&]( auto rng ) { std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) ); },
 		  range_t( json_sv1 ) );
-		test_assert( res.has_value( ),
-		             "Exception while parsing: res.get_exception_message()" );
+		test_assert( res.has_value( ), "Exception while parsing: res.get_exception_message()" );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet,
-		  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+		using range_t =
+		  daw::json::json_array_range<daw::twitter::tweet,
+		                              daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(checked, nostore)",
 		  sz,
@@ -73,23 +70,20 @@ void test( std::string_view json_sv1 ) {
 		  range_t( json_sv1 ) );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet,
-		  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
+		using range_t =
+		  daw::json::json_array_range<daw::twitter::tweet,
+		                              daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(unchecked)",
 		  sz,
-		  [&]( auto rng ) {
-			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
-		  },
+		  [&]( auto rng ) { std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) ); },
 		  range_t( json_sv1 ) );
-		test_assert( res.has_value( ),
-		             "Exception while parsing: res.get_exception_message()" );
+		test_assert( res.has_value( ), "Exception while parsing: res.get_exception_message()" );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet,
-		  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
+		using range_t =
+		  daw::json::json_array_range<daw::twitter::tweet,
+		                              daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(unchecked, nostore)",
 		  sz,
@@ -117,18 +111,15 @@ int main( int argc, char **argv )
 	}
 
 	auto const json_data1 = *daw::read_file( argv[1] );
-	auto const json_sv1 =
-	  std::string_view( json_data1.data( ), json_data1.size( ) );
+	auto const json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
 	assert( json_sv1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 
 	auto const sz = json_sv1.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
+	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz ) << '\n';
 
 	test<daw::json::constexpr_exec_tag>( json_sv1 );
 	test<daw::json::runtime_exec_tag>( json_sv1 );
-	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-	                                 daw::json::runtime_exec_tag> ) {
+	if constexpr( not std::is_same_v<daw::json::simd_exec_tag, daw::json::runtime_exec_tag> ) {
 		test<daw::json::simd_exec_tag>( json_sv1 );
 	}
 }
@@ -137,8 +128,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

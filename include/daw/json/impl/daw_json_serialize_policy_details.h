@@ -104,15 +104,13 @@ namespace daw::json {
 					return *this;
 				}
 
-				inline constexpr iterator_wrapper
-				operator+( difference_type n ) const noexcept {
+				inline constexpr iterator_wrapper operator+( difference_type n ) const noexcept {
 					iterator_wrapper result = *this;
 					ptr += n;
 					return result;
 				}
 
-				inline constexpr iterator_wrapper
-				operator-( difference_type n ) const noexcept {
+				inline constexpr iterator_wrapper operator-( difference_type n ) const noexcept {
 					iterator_wrapper result = *this;
 					ptr -= n;
 					return result;
@@ -167,18 +165,16 @@ namespace daw::json {
 			                                              OutputTrailingComma>::type;
 
 			template<typename Policy, typename Policies>
-			inline constexpr unsigned basic_policy_bits_start =
-			  option_bits_start_impl<Policy, Policies>::template calc(
+			inline constexpr unsigned
+			  basic_policy_bits_start = option_bits_start_impl<Policy, Policies>::template calc(
 			    std::make_index_sequence<pack_size_v<Policies>>{ } );
 
 			template<typename Policy>
-			inline constexpr unsigned policy_bits_start =
-			  basic_policy_bits_start<Policy, policy_list>;
+			inline constexpr unsigned policy_bits_start = basic_policy_bits_start<Policy, policy_list>;
 
 			template<typename Policy>
 			constexpr void set_bits_in( json_options_t &value, Policy e ) {
-				static_assert( is_option_flag<Policy>,
-				               "Only registered policy types are allowed" );
+				static_assert( is_option_flag<Policy>, "Only registered policy types are allowed" );
 				auto new_bits = static_cast<unsigned>( e );
 				constexpr unsigned mask = (1U << json_option_bits_width<Policy>)-1U;
 				new_bits &= mask;
@@ -188,8 +184,7 @@ namespace daw::json {
 			}
 
 			template<typename Policy, typename... Policies>
-			constexpr json_options_t
-			set_bits( json_options_t value, Policy pol, Policies... pols ) {
+			constexpr json_options_t set_bits( json_options_t value, Policy pol, Policies... pols ) {
 				static_assert( ( is_option_flag<Policies> and ... ),
 				               "Only registered policy types are allowed" );
 
@@ -212,8 +207,7 @@ namespace daw::json {
 
 			template<typename Policy>
 			constexpr json_options_t set_bits_for( Policy e ) {
-				static_assert( is_option_flag<Policy>,
-				               "Only registered policy types are allowed" );
+				static_assert( is_option_flag<Policy>, "Only registered policy types are allowed" );
 				auto new_bits = static_cast<json_options_t>( e );
 				new_bits <<= policy_bits_start<Policy>;
 				return new_bits;
@@ -225,8 +219,7 @@ namespace daw::json {
 			template<typename... Policies>
 			struct default_policy_flag_t<pack_list<Policies...>> {
 				static constexpr json_options_t value =
-				  ( set_bits_for<Policies>( default_json_option_value<Policies> ) |
-				    ... );
+				  ( set_bits_for<Policies>( default_json_option_value<Policies> ) | ... );
 			};
 
 			/***
@@ -237,11 +230,9 @@ namespace daw::json {
 
 			template<typename Policy, typename Result = Policy>
 			constexpr Result get_bits_for( json_options_t value ) {
-				static_assert( is_option_flag<Policy>,
-				               "Only registered policy types are allowed" );
-				constexpr unsigned mask = ( 1U << (policy_bits_start<Policy> +
-				                                   json_option_bits_width<Policy>)) -
-				                          1U;
+				static_assert( is_option_flag<Policy>, "Only registered policy types are allowed" );
+				constexpr unsigned mask =
+				  ( 1U << (policy_bits_start<Policy> + json_option_bits_width<Policy>)) - 1U;
 				value &= mask;
 				value >>= policy_bits_start<Policy>;
 				return static_cast<Result>( Policy{ value } );
@@ -252,38 +243,31 @@ namespace daw::json {
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Tab> =
-			    "\t";
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Tab> = "\t";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space1> =
-			    " ";
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space1> = " ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space2> =
-			    "  ";
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space2> = "  ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space3> =
-			    "   ";
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space3> = "   ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space4> =
-			    "    ";
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space4> = "    ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space5> =
-			    "     ";
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space5> = "     ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space8> =
-			    "        ";
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space8> = "        ";
 
 		} // namespace json_details::serialization
 	}   // namespace DAW_JSON_VER

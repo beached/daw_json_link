@@ -29,8 +29,7 @@ struct Foo {
 
 template<JSONNAMETYPE, typename T>
 struct ArrayPointerConstructor {
-	inline static thread_local std::size_t size =
-	  std::numeric_limits<std::size_t>::max( );
+	inline static thread_local std::size_t size = std::numeric_limits<std::size_t>::max( );
 
 	struct SizeCtor {
 		inline std::size_t operator( )( std::size_t v ) const noexcept {
@@ -65,10 +64,7 @@ namespace daw::json {
 		              std::size_t,
 		              number_opts_def,
 		              ArrayPointerConstructor<member_data, int>::SizeCtor>,
-		  json_array<member_data,
-		             int,
-		             int *,
-		             ArrayPointerConstructor<member_data, int>::ArrayCtor>>;
+		  json_array<member_data, int, int *, ArrayPointerConstructor<member_data, int>::ArrayCtor>>;
 
 		static constexpr auto to_json_data( Foo const &f ) {
 			return std::tuple{ f.n, daw::span<int const>( f.data, f.n ) };

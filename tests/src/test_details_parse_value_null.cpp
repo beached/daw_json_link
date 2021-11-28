@@ -34,8 +34,7 @@ bool test_null_literal_known( ) {
 
 	using my_number = json_number_null_no_name<std::optional<int>>;
 	auto rng = DefaultParsePolicy( );
-	auto v =
-	  parse_value<my_number, true>( rng, ParseTag<JsonParseTypes::Null>{ } );
+	auto v = parse_value<my_number, true>( rng, ParseTag<JsonParseTypes::Null>{ } );
 	return not v;
 }
 
@@ -68,8 +67,7 @@ bool test_null_number_untrusted_known( ) {
 	using my_number = json_number_null_no_name<std::optional<int>>;
 	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) - 1 );
-	auto v =
-	  parse_value<my_number, true>( rng, ParseTag<JsonParseTypes::Null>{ } );
+	auto v = parse_value<my_number, true>( rng, ParseTag<JsonParseTypes::Null>{ } );
 	return v and *v == 5;
 }
 
@@ -116,8 +114,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

@@ -44,46 +44,43 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::Metadata> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_number<"member0", int>,
-		                              json_string<"member1">,
-		                              json_bool<"member2">>;
+		using type =
+		  json_member_list<json_number<"member0", int>, json_string<"member1">, json_bool<"member2">>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
-		using type = json_member_list<json_number<member0, int>,
-		                              json_string<member1>,
-		                              json_bool<member2>>;
+		using type =
+		  json_member_list<json_number<member0, int>, json_string<member1>, json_bool<member2>>;
 #endif
 	};
 
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::GraphNode> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<
-		  json_number<"id", size_t, number_opt( LiteralAsStringOpt::Always )>,
-		  json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
+		using type =
+		  json_member_list<json_number<"id", size_t, number_opt( LiteralAsStringOpt::Always )>,
+		                   json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
 #else
 		static constexpr char const id[] = "id";
 		static constexpr char const metadata[] = "metadata";
-		using type = json_member_list<
-		  json_number<id, size_t, number_opt( LiteralAsStringOpt::Always )>,
-		  json_class<metadata, daw::cookbook_graphs1::Metadata>>;
+		using type = json_member_list<json_number<id, size_t, number_opt( LiteralAsStringOpt::Always )>,
+		                              json_class<metadata, daw::cookbook_graphs1::Metadata>>;
 #endif
 	};
 
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::GraphEdge> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<
-		  json_number<"source", size_t, number_opt( LiteralAsStringOpt::Always )>,
-		  json_number<"target", size_t, number_opt( LiteralAsStringOpt::Always )>>;
+		using type =
+		  json_member_list<json_number<"source", size_t, number_opt( LiteralAsStringOpt::Always )>,
+		                   json_number<"target", size_t, number_opt( LiteralAsStringOpt::Always )>>;
 #else
 		static constexpr char const source[] = "source";
 		static constexpr char const target[] = "target";
-		using type = json_member_list<
-		  json_number<source, size_t, number_opt( LiteralAsStringOpt::Always )>,
-		  json_number<target, size_t, number_opt( LiteralAsStringOpt::Always )>>;
+		using type =
+		  json_member_list<json_number<source, size_t, number_opt( LiteralAsStringOpt::Always )>,
+		                   json_number<target, size_t, number_opt( LiteralAsStringOpt::Always )>>;
 #endif
 	};
 } // namespace daw::json
@@ -109,13 +106,9 @@ int main( int argc, char **argv )
 
 	daw::graph_t<Node> g{ };
 
-	using node_range_t =
-	  daw::json::json_array_range<daw::cookbook_graphs1::GraphNode>;
+	using node_range_t = daw::json::json_array_range<daw::cookbook_graphs1::GraphNode>;
 	for( auto node : node_range_t( json_sv, "nodes" ) ) {
-		g.add_node( node.id,
-		            node.metadata.member0,
-		            node.metadata.member1,
-		            node.metadata.member2 );
+		g.add_node( node.id, node.metadata.member0, node.metadata.member1, node.metadata.member2 );
 	}
 
 	auto const find_node_id = [&g]( size_t id ) -> std::optional<daw::node_id_t> {
@@ -136,8 +129,7 @@ int main( int argc, char **argv )
 		return g.get_node( *result );
 	};
 
-	using edge_range_t =
-	  daw::json::json_array_range<daw::cookbook_graphs1::GraphEdge>;
+	using edge_range_t = daw::json::json_array_range<daw::cookbook_graphs1::GraphEdge>;
 	for( auto edge : edge_range_t( json_sv, "edges" ) ) {
 		auto source_id = *find_node_id( edge.source );
 		auto target_id = *find_node_id( edge.target );
@@ -156,13 +148,11 @@ int main( int argc, char **argv )
 
 	auto const &n0 = find_node( 0 );
 
-	test_assert( n0.outgoing_edges( ).size( ) == 1U,
-	             "Node id 0 should only have 1 outgoing edge" );
+	test_assert( n0.outgoing_edges( ).size( ) == 1U, "Node id 0 should only have 1 outgoing edge" );
 	test_assert( n0.outgoing_edges( ).count( *nid_1 ) == 1U,
 	             "Node id 0 should only have 2 incoming edge from node id 1" );
 
-	test_assert( n0.incoming_edges( ).size( ) == 2U,
-	             "Node id 0 should 2 incoming edges" );
+	test_assert( n0.incoming_edges( ).size( ) == 2U, "Node id 0 should 2 incoming edges" );
 	test_assert( n0.incoming_edges( ).count( *nid_1 ) == 1U,
 	             "Node id 0 should have 1 incoming edge from node id 1" );
 
@@ -176,8 +166,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

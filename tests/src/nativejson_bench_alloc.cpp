@@ -45,8 +45,7 @@ void test( char **argv, AllocType &alloc ) {
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( ) + json_sv2.size( ) + json_sv3.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
+	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz ) << '\n';
 
 	std::cout << std::flush;
 
@@ -62,9 +61,11 @@ void test( char **argv, AllocType &alloc ) {
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
 			  alloc.release( );
-			  twitter_result = daw::json::from_json_alloc<
-			    daw::twitter::twitter_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
+			  twitter_result =
+			    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+			                               daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+			      f1,
+			      alloc );
 		  },
 		  json_sv1 );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -76,8 +77,7 @@ void test( char **argv, AllocType &alloc ) {
 	}
 #endif
 	test_assert( twitter_result, "Missing value -> twitter_result" );
-	test_assert( not twitter_result->statuses.empty( ),
-	             "Expected values: twitter_result is empty" );
+	test_assert( not twitter_result->statuses.empty( ), "Expected values: twitter_result is empty" );
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             std::string( "Expected values: user_id had wrong value, "
 	                          "expected 1186275104.  Got " ) +
@@ -91,10 +91,11 @@ void test( char **argv, AllocType &alloc ) {
 		  {
 			  twitter_result.reset( );
 			  alloc.release( );
-			  twitter_result = daw::json::from_json_alloc<
-			    daw::twitter::twitter_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1,
-			                                                               alloc );
+			  twitter_result =
+			    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+			                               daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+			      f1,
+			      alloc );
 		  }
 	  },
 	  json_sv1 );
@@ -102,8 +103,7 @@ void test( char **argv, AllocType &alloc ) {
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Expected values" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Expected values" );
 	twitter_result.reset( );
 	alloc.release( );
 
@@ -115,19 +115,18 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
 		  alloc.release( );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2, alloc );
+		  citm_result =
+		    daw::json::from_json_alloc<daw::citm::citm_object_t,
+		                               daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2,
+		                                                                                        alloc );
 	  },
 	  json_sv2 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	daw::do_not_optimize( citm_result );
 	test_assert( citm_result, "Missing value" );
 	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
-	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
+	test_assert( citm_result->areaNames.count( 205706005 ) == 1, "Expected value" );
+	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin", "Incorrect value" );
 
 	std::cout << std::flush;
 
@@ -137,18 +136,18 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
 		  alloc.release( );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2, alloc );
+		  citm_result =
+		    daw::json::from_json_alloc<daw::citm::citm_object_t,
+		                               daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		      f2,
+		      alloc );
 	  },
 	  json_sv2 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	test_assert( citm_result, "Missing value" );
 	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
-	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
+	test_assert( citm_result->areaNames.count( 205706005 ) == 1, "Expected value" );
+	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin", "Incorrect value" );
 	citm_result.reset( );
 
 	std::cout << std::flush;
@@ -159,12 +158,12 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
 		  alloc.release( );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3,
-		    "features[0].geometry",
-		    alloc );
+		  canada_result =
+		    daw::json::from_json_alloc<daw::geojson::Polygon,
+		                               daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+		      f3,
+		      "features[0].geometry",
+		      alloc );
 	  },
 	  json_sv3 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -179,12 +178,12 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
 		  alloc.release( );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3,
-		    "features[0].geometry",
-		    alloc );
+		  canada_result =
+		    daw::json::from_json_alloc<daw::geojson::Polygon,
+		                               daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		      f3,
+		      "features[0].geometry",
+		      alloc );
 	  },
 	  json_sv3 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -202,18 +201,20 @@ void test( char **argv, AllocType &alloc ) {
 		  citm_result.reset( );
 		  canada_result.reset( );
 		  alloc.release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2, alloc );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3,
-		    "features[0].geometry",
-		    alloc );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+		                               daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1,
+		                                                                                        alloc );
+		  citm_result =
+		    daw::json::from_json_alloc<daw::citm::citm_object_t,
+		                               daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2,
+		                                                                                        alloc );
+		  canada_result =
+		    daw::json::from_json_alloc<daw::geojson::Polygon,
+		                               daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+		      f3,
+		      "features[0].geometry",
+		      alloc );
 	  },
 	  json_sv1,
 	  json_sv2,
@@ -227,14 +228,11 @@ void test( char **argv, AllocType &alloc ) {
 	daw::do_not_optimize( canada_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Missing value" );
 	test_assert( citm_result, "Missing value" );
 	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
-	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
+	test_assert( citm_result->areaNames.count( 205706005 ) == 1, "Expected value" );
+	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin", "Incorrect value" );
 	test_assert( canada_result, "Missing value" );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -245,18 +243,22 @@ void test( char **argv, AllocType &alloc ) {
 		  citm_result.reset( );
 		  canada_result.reset( );
 		  alloc.release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1, alloc );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2, alloc );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3,
-		    "features[0].geometry",
-		    alloc );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t,
+		                               daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		      f1,
+		      alloc );
+		  citm_result =
+		    daw::json::from_json_alloc<daw::citm::citm_object_t,
+		                               daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		      f2,
+		      alloc );
+		  canada_result =
+		    daw::json::from_json_alloc<daw::geojson::Polygon,
+		                               daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		      f3,
+		      "features[0].geometry",
+		      alloc );
 	  },
 	  json_sv1,
 	  json_sv2,
@@ -271,14 +273,11 @@ void test( char **argv, AllocType &alloc ) {
 
 	test_assert( twitter_result, "Missing value" );
 	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104, "Missing value" );
 	test_assert( citm_result, "Missing value" );
 	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
-	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
+	test_assert( citm_result->areaNames.count( 205706005 ) == 1, "Expected value" );
+	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin", "Incorrect value" );
 	test_assert( canada_result, "Missing value" );
 	twitter_result.reset( );
 	citm_result.reset( );
@@ -307,8 +306,7 @@ int main( int argc, char **argv )
 			exit( 1 );
 		}
 		test<daw::json::constexpr_exec_tag>( argv, alloc );
-		if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-		                                 daw::json::runtime_exec_tag> ) {
+		if constexpr( not std::is_same_v<daw::json::simd_exec_tag, daw::json::runtime_exec_tag> ) {
 			test<daw::json::runtime_exec_tag>( argv, alloc );
 		}
 		test<daw::json::simd_exec_tag>( argv, alloc );
@@ -324,8 +322,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

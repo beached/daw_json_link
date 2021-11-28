@@ -47,29 +47,26 @@ struct daw::json::json_data_contract<daw::cookbook_variant3::MyClass> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<
 	  json_string<"name">,
-	  json_tagged_variant<"value",
-	                      std::variant<std::string, int, bool>,
-	                      json_number<"type", int>,
-	                      daw::cookbook_variant3::MyClassSwitcher,
-	                      json_variant_type_list<std::string,
-	                                             json_number_no_name<int>,
-	                                             json_bool_no_name<>>>>;
+	  json_tagged_variant<
+	    "value",
+	    std::variant<std::string, int, bool>,
+	    json_number<"type", int>,
+	    daw::cookbook_variant3::MyClassSwitcher,
+	    json_variant_type_list<std::string, json_number_no_name<int>, json_bool_no_name<>>>>;
 #else
 	static constexpr char const type_mem[] = "type";
 	static constexpr char const name[] = "name";
 	static constexpr char const value[] = "value";
 	using type = json_member_list<
 	  json_string<name>,
-	  json_tagged_variant<value,
-	                      std::variant<std::string, int, bool>,
-	                      json_number<type_mem, int>,
-	                      daw::cookbook_variant3::MyClassSwitcher,
-	                      json_variant_type_list<std::string,
-	                                             json_number_no_name<int>,
-	                                             json_bool_no_name<>>>>;
+	  json_tagged_variant<
+	    value,
+	    std::variant<std::string, int, bool>,
+	    json_number<type_mem, int>,
+	    daw::cookbook_variant3::MyClassSwitcher,
+	    json_variant_type_list<std::string, json_number_no_name<int>, json_bool_no_name<>>>>;
 #endif
-	static DAW_CONSTEXPR inline auto
-	to_json_data( daw::cookbook_variant3::MyClass const &v ) {
+	static DAW_CONSTEXPR inline auto to_json_data( daw::cookbook_variant3::MyClass const &v ) {
 		return std::forward_as_tuple( v.name, v.value );
 	}
 };
@@ -101,8 +98,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

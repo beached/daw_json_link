@@ -49,11 +49,8 @@ namespace daw::json {
 		                              json_array<member1, int>,
 		                              json_array<member2, std::string>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_array3::MyArrayClass1 const &value ) {
-			return std::forward_as_tuple( value.member0,
-			                              value.member1,
-			                              value.member2 );
+		static inline auto to_json_data( daw::cookbook_array3::MyArrayClass1 const &value ) {
+			return std::forward_as_tuple( value.member0, value.member1, value.member2 );
 		}
 	};
 } // namespace daw::json
@@ -71,15 +68,13 @@ int main( int argc, char **argv )
 
 	using namespace daw::json;
 
-	auto const my_array_class =
-	  from_json<daw::cookbook_array3::MyArrayClass1>( data );
+	auto const my_array_class = from_json<daw::cookbook_array3::MyArrayClass1>( data );
 
 	test_assert( my_array_class.member1.size( ) == 5, "Expected 5 items" );
 	test_assert( my_array_class.member2.size( ) == 2, "Expected 2 items" );
 	auto const str = to_json( my_array_class );
 	puts( str.c_str( ) );
-	auto const my_array_class2 =
-	  from_json<daw::cookbook_array3::MyArrayClass1>( str );
+	auto const my_array_class2 = from_json<daw::cookbook_array3::MyArrayClass1>( str );
 
 	test_assert( my_array_class == my_array_class2, "Round trip failed" );
 }
@@ -88,8 +83,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

@@ -379,8 +379,8 @@ int main( int, char ** ) {
 	std::uint32_t last = 0;
 	{
 		auto const &c = codes.front( );
-		std::cerr << "Block " << c.name << " from " << std::hex << c.low << " to "
-		          << std::hex << c.high << '\n';
+		std::cerr << "Block " << c.name << " from " << std::hex << c.low << " to " << std::hex << c.high
+		          << '\n';
 		last = c.high;
 		for( uint32_t cp = c.low; cp <= c.high; ++cp ) {
 			if( not is_first ) {
@@ -393,8 +393,8 @@ int main( int, char ** ) {
 	}
 	for( size_t n = 1; n < codes.size( ); ++n ) {
 		auto const &c = codes[n];
-		std::cerr << "Block " << c.name << " from " << std::hex << c.low << " to "
-		          << std::hex << c.high << '\n';
+		std::cerr << "Block " << c.name << " from " << std::hex << c.low << " to " << std::hex << c.high
+		          << '\n';
 		std::cerr << "Diff: " << ( ( c.low - last ) - 1 ) << '\n';
 		last = c.high;
 		for( uint32_t cp = c.low; cp <= c.high; ++cp ) {

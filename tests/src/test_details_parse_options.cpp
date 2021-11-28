@@ -17,8 +17,7 @@ int main( ) {
 	using namespace daw::json;
 	{
 		constexpr auto precise_opt = parse_options( IEEE754Precise::yes );
-		constexpr auto precise_val =
-		  json_details::get_bits_for<IEEE754Precise>( precise_opt );
+		constexpr auto precise_val = json_details::get_bits_for<IEEE754Precise>( precise_opt );
 		static_assert( precise_val == IEEE754Precise::yes );
 	}
 }

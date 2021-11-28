@@ -29,8 +29,7 @@ namespace daw::cookbook_class2 {
 	};
 
 	bool operator==( MyClass1 const &lhs, MyClass1 const &rhs ) {
-		return std::tie( lhs.member_1, lhs.member_2 ) ==
-		       std::tie( rhs.member_1, rhs.member_2 );
+		return std::tie( lhs.member_1, lhs.member_2 ) == std::tie( rhs.member_1, rhs.member_2 );
 	}
 
 	struct MyClass2 {
@@ -47,22 +46,17 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_class2::MyClass1> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_string<"member0">,
-		                              json_number<"member1", int>,
-		                              json_bool<"member2">>;
+		using type =
+		  json_member_list<json_string<"member0">, json_number<"member1", int>, json_bool<"member2">>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
-		using type = json_member_list<json_string<member0>,
-		                              json_number<member1, int>,
-		                              json_bool<member2>>;
+		using type =
+		  json_member_list<json_string<member0>, json_number<member1, int>, json_bool<member2>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_class2::MyClass1 const &value ) {
-			return std::forward_as_tuple( value.member_0,
-			                              value.member_1,
-			                              value.member_2 );
+		static inline auto to_json_data( daw::cookbook_class2::MyClass1 const &value ) {
+			return std::forward_as_tuple( value.member_0, value.member_1, value.member_2 );
 		}
 	};
 
@@ -70,16 +64,14 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_class2::MyClass2> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
-		  json_member_list<json_class<"a", daw::cookbook_class2::MyClass1>,
-		                   json_number<"b", unsigned>>;
+		  json_member_list<json_class<"a", daw::cookbook_class2::MyClass1>, json_number<"b", unsigned>>;
 #else
 		static constexpr char const a[] = "a";
 		static constexpr char const b[] = "b";
-		using type = json_member_list<json_class<a, daw::cookbook_class2::MyClass1>,
-		                              json_number<b, unsigned>>;
+		using type =
+		  json_member_list<json_class<a, daw::cookbook_class2::MyClass1>, json_number<b, unsigned>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_class2::MyClass2 const &value ) {
+		static inline auto to_json_data( daw::cookbook_class2::MyClass2 const &value ) {
 			return std::forward_as_tuple( value.a, value.b );
 		}
 	};
@@ -116,8 +108,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

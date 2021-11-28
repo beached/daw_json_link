@@ -27,10 +27,8 @@ struct ToConverter {
 		char const *last = daw::data_end( sv );
 		auto result = std::u16string( );
 		result.resize( sv.size( ) );
-		auto *olast =
-		  daw::utf8::unchecked::utf8to16( first, last, std::data( result ) );
-		result.resize(
-		  static_cast<std::size_t>( std::distance( std::data( result ), olast ) ) );
+		auto *olast = daw::utf8::unchecked::utf8to16( first, last, std::data( result ) );
+		result.resize( static_cast<std::size_t>( std::distance( std::data( result ), olast ) ) );
 		return result;
 	}
 };
@@ -41,16 +39,13 @@ struct FromConverter {
 		char16_t const *last = daw::data_end( str );
 		auto result = std::string( );
 		result.resize( str.size( ) * 3 );
-		auto *olast =
-		  daw::utf8::unchecked::utf16to8( first, last, std::data( result ) );
-		result.resize(
-		  static_cast<std::size_t>( std::distance( std::data( result ), olast ) ) );
+		auto *olast = daw::utf8::unchecked::utf16to8( first, last, std::data( result ) );
+		result.resize( static_cast<std::size_t>( std::distance( std::data( result ), olast ) ) );
 		return result;
 	}
 };
 
-using json_u16string =
-  daw::json::json_custom_no_name<std::u16string, ToConverter, FromConverter>;
+using json_u16string = daw::json::json_custom_no_name<std::u16string, ToConverter, FromConverter>;
 
 int main( int, char ** ) {
 	std::string in_str = R"(["testing🎉", "🙈monkey"])";
@@ -58,8 +53,7 @@ int main( int, char ** ) {
 	puts( "Before" );
 	puts( in_str.c_str( ) );
 
-	std::vector<std::u16string> ary =
-	  daw::json::from_json_array<json_u16string>( in_str );
+	std::vector<std::u16string> ary = daw::json::from_json_array<json_u16string>( in_str );
 
 	assert( ary.size( ) == 2 );
 

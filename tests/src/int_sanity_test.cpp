@@ -23,8 +23,8 @@ std::vector<T> make_random_data( ) {
 	std::vector<T> result{ };
 	result.reserve( N );
 	for( size_t n = 0; n < N; ++n ) {
-		result.push_back( daw::randint<T>( daw::numeric_limits<T>::min( ),
-		                                   daw::numeric_limits<T>::max( ) ) );
+		result.push_back(
+		  daw::randint<T>( daw::numeric_limits<T>::min( ), daw::numeric_limits<T>::max( ) ) );
 	}
 	return result;
 }
@@ -71,8 +71,7 @@ int main( int, char ** )
 {
 	test<daw::json::constexpr_exec_tag, 1000>( );
 	test<daw::json::runtime_exec_tag, 1000>( );
-	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-	                                 daw::json::runtime_exec_tag> ) {
+	if constexpr( not std::is_same_v<daw::json::simd_exec_tag, daw::json::runtime_exec_tag> ) {
 		test<daw::json::simd_exec_tag, 1000>( );
 	}
 }
@@ -81,8 +80,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

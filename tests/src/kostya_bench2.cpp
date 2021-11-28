@@ -22,8 +22,7 @@ std::string read_file( std::string const &filename ) {
 	if( !f ) {
 		return { };
 	}
-	return std::string( std::istreambuf_iterator<char>( f ),
-	                    std::istreambuf_iterator<char>( ) );
+	return std::string( std::istreambuf_iterator<char>( f ), std::istreambuf_iterator<char>( ) );
 }
 
 int main( int, char ** ) {
@@ -35,9 +34,8 @@ int main( int, char ** ) {
 	int len = 0;
 
 	using namespace daw::json;
-	auto rng = from_json<json_raw_no_name<>, NoCommentSkippingPolicyUnchecked>(
-	  json_text,
-	  "coordinates" );
+	auto rng =
+	  from_json<json_raw_no_name<>, NoCommentSkippingPolicyUnchecked>( json_text, "coordinates" );
 
 	auto val = json_value_state( );
 	for( json_pair item : rng ) {

@@ -48,21 +48,18 @@ namespace daw::jkj::dragonbox {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace to_chars_detail {
 			inline constexpr char radix_100_table[] = {
-			  '0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6',
-			  '0', '7', '0', '8', '0', '9', '1', '0', '1', '1', '1', '2', '1', '3',
-			  '1', '4', '1', '5', '1', '6', '1', '7', '1', '8', '1', '9', '2', '0',
-			  '2', '1', '2', '2', '2', '3', '2', '4', '2', '5', '2', '6', '2', '7',
-			  '2', '8', '2', '9', '3', '0', '3', '1', '3', '2', '3', '3', '3', '4',
-			  '3', '5', '3', '6', '3', '7', '3', '8', '3', '9', '4', '0', '4', '1',
-			  '4', '2', '4', '3', '4', '4', '4', '5', '4', '6', '4', '7', '4', '8',
-			  '4', '9', '5', '0', '5', '1', '5', '2', '5', '3', '5', '4', '5', '5',
-			  '5', '6', '5', '7', '5', '8', '5', '9', '6', '0', '6', '1', '6', '2',
-			  '6', '3', '6', '4', '6', '5', '6', '6', '6', '7', '6', '8', '6', '9',
-			  '7', '0', '7', '1', '7', '2', '7', '3', '7', '4', '7', '5', '7', '6',
-			  '7', '7', '7', '8', '7', '9', '8', '0', '8', '1', '8', '2', '8', '3',
-			  '8', '4', '8', '5', '8', '6', '8', '7', '8', '8', '8', '9', '9', '0',
-			  '9', '1', '9', '2', '9', '3', '9', '4', '9', '5', '9', '6', '9', '7',
-			  '9', '8', '9', '9' };
+			  '0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6', '0', '7', '0',
+			  '8', '0', '9', '1', '0', '1', '1', '1', '2', '1', '3', '1', '4', '1', '5', '1', '6',
+			  '1', '7', '1', '8', '1', '9', '2', '0', '2', '1', '2', '2', '2', '3', '2', '4', '2',
+			  '5', '2', '6', '2', '7', '2', '8', '2', '9', '3', '0', '3', '1', '3', '2', '3', '3',
+			  '3', '4', '3', '5', '3', '6', '3', '7', '3', '8', '3', '9', '4', '0', '4', '1', '4',
+			  '2', '4', '3', '4', '4', '4', '5', '4', '6', '4', '7', '4', '8', '4', '9', '5', '0',
+			  '5', '1', '5', '2', '5', '3', '5', '4', '5', '5', '5', '6', '5', '7', '5', '8', '5',
+			  '9', '6', '0', '6', '1', '6', '2', '6', '3', '6', '4', '6', '5', '6', '6', '6', '7',
+			  '6', '8', '6', '9', '7', '0', '7', '1', '7', '2', '7', '3', '7', '4', '7', '5', '7',
+			  '6', '7', '7', '7', '8', '7', '9', '8', '0', '8', '1', '8', '2', '8', '3', '8', '4',
+			  '8', '5', '8', '6', '8', '7', '8', '8', '8', '9', '9', '0', '9', '1', '9', '2', '9',
+			  '3', '9', '4', '9', '5', '9', '6', '9', '7', '9', '8', '9', '9' };
 
 			template<class UInt>
 			static constexpr std::uint32_t decimal_length( UInt const v ) {
@@ -156,9 +153,7 @@ namespace daw::jkj::dragonbox {
 			}
 
 			template<class Float>
-			inline char *to_chars_impl( unsigned_fp_t<Float> v,
-			                            char *buffer,
-			                            std::uint32_t olength ) {
+			inline char *to_chars_impl( unsigned_fp_t<Float> v, char *buffer, std::uint32_t olength ) {
 				auto output = v.significand;
 				if( olength == 0 ) {
 					olength = decimal_length( output );
@@ -181,8 +176,8 @@ namespace daw::jkj::dragonbox {
 					if( ( output >> 32 ) != 0 ) {
 						// Expensive 64-bit division.
 						const std::uint64_t q = output / 100000000;
-						std::uint32_t output2 = static_cast<std::uint32_t>( output ) -
-						                        100000000 * static_cast<std::uint32_t>( q );
+						std::uint32_t output2 =
+						  static_cast<std::uint32_t>( output ) - 100000000 * static_cast<std::uint32_t>( q );
 						output = q;
 
 						const std::uint32_t c = output2 % 10000;
@@ -192,18 +187,10 @@ namespace daw::jkj::dragonbox {
 						const std::uint32_t c1 = ( c / 100 ) << 1;
 						const std::uint32_t d0 = ( d % 100 ) << 1;
 						const std::uint32_t d1 = ( d / 100 ) << 1;
-						daw::algorithm::copy_n( radix_100_table + c0,
-						                        buffer + olength - i - 1,
-						                        2 );
-						daw::algorithm::copy_n( radix_100_table + c1,
-						                        buffer + olength - i - 3,
-						                        2 );
-						daw::algorithm::copy_n( radix_100_table + d0,
-						                        buffer + olength - i - 5,
-						                        2 );
-						daw::algorithm::copy_n( radix_100_table + d1,
-						                        buffer + olength - i - 7,
-						                        2 );
+						daw::algorithm::copy_n( radix_100_table + c0, buffer + olength - i - 1, 2 );
+						daw::algorithm::copy_n( radix_100_table + c1, buffer + olength - i - 3, 2 );
+						daw::algorithm::copy_n( radix_100_table + d0, buffer + olength - i - 5, 2 );
+						daw::algorithm::copy_n( radix_100_table + d1, buffer + olength - i - 7, 2 );
 						i += 8;
 					}
 				}
@@ -218,20 +205,14 @@ namespace daw::jkj::dragonbox {
 					output2 /= 10000;
 					const std::uint32_t c0 = ( c % 100 ) << 1;
 					const std::uint32_t c1 = ( c / 100 ) << 1;
-					daw::algorithm::copy_n( radix_100_table + c0,
-					                        buffer + olength - i - 1,
-					                        2 );
-					daw::algorithm::copy_n( radix_100_table + c1,
-					                        buffer + olength - i - 3,
-					                        2 );
+					daw::algorithm::copy_n( radix_100_table + c0, buffer + olength - i - 1, 2 );
+					daw::algorithm::copy_n( radix_100_table + c1, buffer + olength - i - 3, 2 );
 					i += 4;
 				}
 				if( output2 >= 100 ) {
 					const std::uint32_t c = ( output2 % 100 ) << 1;
 					output2 /= 100;
-					daw::algorithm::copy_n( radix_100_table + c,
-					                        buffer + olength - i - 1,
-					                        2 );
+					daw::algorithm::copy_n( radix_100_table + c, buffer + olength - i - 1, 2 );
 					i += 2;
 				}
 				if( output2 >= 10 ) {
@@ -255,8 +236,7 @@ namespace daw::jkj::dragonbox {
 				// Print the exponent.
 				*buffer = 'e';
 				++buffer;
-				std::int32_t exp =
-				  v.exponent + static_cast<std::int32_t>( olength ) - 1;
+				std::int32_t exp = v.exponent + static_cast<std::int32_t>( olength ) - 1;
 				if( exp < 0 ) {
 					*buffer = '-';
 					++buffer;
@@ -265,15 +245,14 @@ namespace daw::jkj::dragonbox {
 				if constexpr( sizeof( Float ) == 8 ) {
 					if( exp >= 100 ) {
 						const std::int32_t c = exp % 10;
-						daw::algorithm::copy_n(
-						  radix_100_table + static_cast<std::ptrdiff_t>( 2 * ( exp / 10 ) ),
-						  buffer,
-						  2 );
+						daw::algorithm::copy_n( radix_100_table +
+						                          static_cast<std::ptrdiff_t>( 2 * ( exp / 10 ) ),
+						                        buffer,
+						                        2 );
 						buffer[2] = static_cast<char>( '0' + c );
 						buffer += 3;
 					} else if( exp >= 10 ) {
-						daw::algorithm::copy_n( radix_100_table +
-						                          static_cast<std::ptrdiff_t>( 2 * exp ),
+						daw::algorithm::copy_n( radix_100_table + static_cast<std::ptrdiff_t>( 2 * exp ),
 						                        buffer,
 						                        2 );
 						buffer += 2;
@@ -283,8 +262,7 @@ namespace daw::jkj::dragonbox {
 					}
 				} else {
 					if( exp >= 10 ) {
-						daw::algorithm::copy_n( radix_100_table +
-						                          static_cast<std::ptrdiff_t>( 2 * exp ),
+						daw::algorithm::copy_n( radix_100_table + static_cast<std::ptrdiff_t>( 2 * exp ),
 						                        buffer,
 						                        2 );
 						buffer += 2;
@@ -297,14 +275,11 @@ namespace daw::jkj::dragonbox {
 				return buffer;
 			}
 
-			inline char *to_chars( unsigned_fp_t<float> v,
-			                       char *buffer,
-			                       std::uint32_t digit_count = 0 ) {
+			inline char *to_chars( unsigned_fp_t<float> v, char *buffer, std::uint32_t digit_count = 0 ) {
 				return to_chars_impl( v, buffer, digit_count );
 			}
-			inline char *to_chars( unsigned_fp_t<double> v,
-			                       char *buffer,
-			                       std::uint32_t digit_count = 0 ) {
+			inline char *
+			to_chars( unsigned_fp_t<double> v, char *buffer, std::uint32_t digit_count = 0 ) {
 				return to_chars_impl( v, buffer, digit_count );
 			}
 		} // namespace to_chars_detail

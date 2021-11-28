@@ -45,8 +45,7 @@ auto test( std::string_view json_data ) {
 	std::vector<std::string> values =
 	  from_json_array<std::string,
 	                  std::vector<std::string>,
-	                  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-	    json_data );
+	                  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
 	daw::do_not_optimize( values );
 	auto const v2 = values;
 	clear( values );
@@ -55,9 +54,8 @@ auto test( std::string_view json_data ) {
 	  "strings.json checked",
 	  json_data.size( ),
 	  []( auto sv, auto ptr ) {
-		  auto range = json_array_range<
-		    std::string,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( sv );
+		  auto range =
+		    json_array_range<std::string, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( sv );
 		  for( auto v : range ) {
 			  daw::do_not_optimize( v );
 			  *ptr++ = v;
@@ -68,27 +66,22 @@ auto test( std::string_view json_data ) {
 	daw::do_not_optimize( values );
 	test_assert( v2 == values, "Expected them to parse the same" );
 	auto const h0 =
-	  std::accumulate( values.begin( ),
-	                   values.end( ),
-	                   0ULL,
-	                   []( auto old, auto current ) {
-		                   return old += std::hash<std::string>{ }(
-		                            static_cast<std::string>( current ) );
-	                   } );
+	  std::accumulate( values.begin( ), values.end( ), 0ULL, []( auto old, auto current ) {
+		  return old += std::hash<std::string>{ }( static_cast<std::string>( current ) );
+	  } );
 	daw::do_not_optimize( json_data );
 	std::vector<std::string> values2 =
 	  from_json_array<std::string,
 	                  std::vector<std::string>,
-	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-	    json_data );
+	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( json_data );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "strings.json unchecked",
 	  json_data.size( ),
 	  []( auto sv, auto ptr ) mutable {
-		  auto range = json_array_range<
-		    std::string,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( sv );
+		  auto range =
+		    json_array_range<std::string, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		      sv );
 		  for( auto v : range ) {
 			  daw::do_not_optimize( v );
 			  *ptr++ = v;
@@ -99,13 +92,9 @@ auto test( std::string_view json_data ) {
 	daw::do_not_optimize( json_data );
 	daw::do_not_optimize( values2 );
 	auto const h1 =
-	  std::accumulate( values2.begin( ),
-	                   values2.end( ),
-	                   0ULL,
-	                   []( auto old, auto current ) {
-		                   return old += std::hash<std::string>{ }(
-		                            static_cast<std::string>( current ) );
-	                   } );
+	  std::accumulate( values2.begin( ), values2.end( ), 0ULL, []( auto old, auto current ) {
+		  return old += std::hash<std::string>{ }( static_cast<std::string>( current ) );
+	  } );
 	test_assert( values == values2, "Parses don't match" );
 	test_assert( h0 == h1, "Hashes don't match" );
 	return h1;
@@ -127,8 +116,7 @@ int main( int argc, char **argv )
 	auto const h0 = test<daw::json::constexpr_exec_tag>( json_string );
 	auto const h1 = test<daw::json::runtime_exec_tag>( json_string );
 	test_assert( h0 == h1, "constexpr/runtime exec model hashes do not match" );
-	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-	                                 daw::json::runtime_exec_tag> ) {
+	if constexpr( not std::is_same_v<daw::json::simd_exec_tag, daw::json::runtime_exec_tag> ) {
 		auto const h2 = test<daw::json::simd_exec_tag>( json_string );
 		test_assert( h0 == h2, "constexpr/fast exec model hashes do not match" );
 	}
@@ -138,8 +126,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

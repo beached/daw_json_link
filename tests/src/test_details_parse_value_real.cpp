@@ -90,8 +90,7 @@ bool test_bad_real_untrusted2( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number =
-	  json_number_no_name<double, number_opt( LiteralAsStringOpt::Always )>;
+	using my_number = json_number_no_name<double, number_opt( LiteralAsStringOpt::Always )>;
 	DAW_CONSTEXPR std::string_view sv = R"("1.0fsdf3",)";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Real>{ } );
@@ -136,8 +135,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";

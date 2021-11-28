@@ -22,36 +22,30 @@
 #include <string>
 
 namespace daw::cookbook_dates4 {
-	using timepoint_t = std::chrono::time_point<std::chrono::system_clock,
-	                                            std::chrono::milliseconds>;
+	using timepoint_t = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
 	struct MyClass4 {
 		std::string name;
 		timepoint_t timestamp;
 	};
 
 	bool operator==( MyClass4 const &lhs, MyClass4 const &rhs ) {
-		return std::tie( lhs.name, lhs.timestamp ) ==
-		       std::tie( rhs.name, rhs.timestamp );
+		return std::tie( lhs.name, lhs.timestamp ) == std::tie( rhs.name, rhs.timestamp );
 	}
 	static DAW_CONSTEXPR std::string_view const prefix = "/Date(";
 	static DAW_CONSTEXPR std::string_view const suffix = ")/";
 
 	struct TimestampConverter {
 		DAW_CONSTEXPR timepoint_t operator( )( std::string_view sv ) const {
-			test_assert( sv.size( ) > ( prefix.size( ) + suffix.size( ) ),
-			             "Unexpected date size" );
+			test_assert( sv.size( ) > ( prefix.size( ) + suffix.size( ) ), "Unexpected date size" );
 			auto const sv_prefix = sv.substr( 0, prefix.size( ) );
 			test_assert( sv_prefix == prefix, "Unexpected date format" );
 			sv.remove_prefix( prefix.size( ) );
-			auto const sv_suffix =
-			  sv.substr( sv.size( ) - suffix.size( ), suffix.size( ) );
+			auto const sv_suffix = sv.substr( sv.size( ) - suffix.size( ), suffix.size( ) );
 			test_assert( sv_suffix == suffix, "Unexpected date format" );
 			sv.remove_suffix( suffix.size( ) );
 
 			auto const val =
-			  daw::json::from_json<std::int64_t,
-			                       daw::json::NoCommentSkippingPolicyChecked,
-			                       true>( sv );
+			  daw::json::from_json<std::int64_t, daw::json::NoCommentSkippingPolicyChecked, true>( sv );
 			DAW_CONSTEXPR const auto epoch =
 			  daw::json::datetime::civil_to_time_point( 1970, 1, 1, 0, 0, 0, 0 );
 
@@ -59,8 +53,7 @@ namespace daw::cookbook_dates4 {
 		}
 
 		template<typename OutputIterator>
-		DAW_CONSTEXPR OutputIterator operator( )( OutputIterator it,
-		                                          timepoint_t tp ) const {
+		DAW_CONSTEXPR OutputIterator operator( )( OutputIterator it, timepoint_t tp ) const {
 
 			DAW_CONSTEXPR const auto epoch =
 			  daw::json::datetime::civil_to_time_point( 1970, 1, 1, 0, 0, 0, 0 );
@@ -75,8 +68,8 @@ namespace daw::cookbook_dates4 {
 	};
 
 	template<JSONNAMETYPE name>
-	using json_timestamp = daw::json::
-	  json_custom<name, timepoint_t, TimestampConverter, TimestampConverter>;
+	using json_timestamp =
+	  daw::json::json_custom<name, timepoint_t, TimestampConverter, TimestampConverter>;
 } // namespace daw::cookbook_dates4
 
 namespace daw::json {
@@ -84,17 +77,14 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_dates4::MyClass4> {
 #if defined( __cpp_nontype_template_parameter_class )
 		using type =
-		  json_member_list<json_string<"name">,
-		                   daw::cookbook_dates4::json_timestamp<"timestamp">>;
+		  json_member_list<json_string<"name">, daw::cookbook_dates4::json_timestamp<"timestamp">>;
 #else
 		static constexpr char const name[] = "name";
 		static constexpr char const timestamp[] = "timestamp";
 		using type =
-		  json_member_list<json_string<name>,
-		                   daw::cookbook_dates4::json_timestamp<timestamp>>;
+		  json_member_list<json_string<name>, daw::cookbook_dates4::json_timestamp<timestamp>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_dates4::MyClass4 const &value ) {
+		static inline auto to_json_data( daw::cookbook_dates4::MyClass4 const &value ) {
 			return std::forward_as_tuple( value.name, value.timestamp );
 		}
 	};
@@ -129,8 +119,7 @@ catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( ) << '\n';
 	exit( 1 );
 } catch( ... ) {
 	std::cerr << "Unknown exception thrown during testing\n";
