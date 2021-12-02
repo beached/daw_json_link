@@ -40,16 +40,17 @@ namespace daw::json {
 					} else if( daw::nsc_and( len >= 2,
 					                         byte1 >= 0xC2,
 					                         byte1 <= 0xDF,
-					                         static_cast<signed char>( data[1] ) <=
-					                           static_cast<signed char>( 0xBF ) ) ) {
+					                         static_cast<unsigned char>( data[1] ) <=
+					                           static_cast<unsigned char>( 0xBF ) ) ) {
 						bytes = 2;
 					} else if( len >= 3 ) {
 						auto const byte2 = static_cast<unsigned char>( data[1] );
 
 						/* Is byte2, byte3 between 0x80 ~ 0xBF */
 						bool const byte2_ok =
-						  static_cast<signed char>( byte2 ) <= static_cast<signed char>( 0xBF );
-						bool const byte3_ok = data[2] <= static_cast<signed char>( 0xBF );
+						  static_cast<unsigned char>( byte2 ) <= static_cast<unsigned char>( 0xBF );
+						bool const byte3_ok =
+						  static_cast<unsigned char>( data[2] ) <= static_cast<unsigned char>( 0xBF );
 
 						if( byte2_ok & byte3_ok &
 						    /* E0, A0..BF, 80..BF */
@@ -64,7 +65,7 @@ namespace daw::json {
 						} else if( len >= 4 ) {
 							/* Is byte4 between 0x80 ~ 0xBF */
 							bool const byte4_ok =
-							  static_cast<signed char>( data[3] ) <= static_cast<signed char>( 0xBF );
+							  static_cast<unsigned char>( data[3] ) <= static_cast<unsigned char>( 0xBF );
 
 							if( byte2_ok & byte3_ok & byte4_ok &
 							    /* F0, 90..BF, 80..BF, 80..BF */
