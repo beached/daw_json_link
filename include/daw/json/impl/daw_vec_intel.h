@@ -107,7 +107,7 @@ namespace daw::vec {
 		}
 
 		friend inline mask128 operator>( vec128 const &lhs, vec128 const &rhs ) {
-			return mask128( _mm_cmpgt_ps( lhs.data, rhs.data ) );
+			return mask128( _mm_cmpgt_epi8( lhs.data, rhs.data ) );
 		}
 
 		friend inline mask128 operator>=( vec128 const &lhs, vec128 const &rhs ) {
