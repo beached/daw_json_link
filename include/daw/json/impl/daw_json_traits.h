@@ -481,7 +481,7 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			using has_json_data_constract_constructor_test =
+			using has_json_data_contract_constructor_test =
 			  decltype( decltype( std::declval<json_data_contract_trait_t<T>> )::constructor );
 
 			template<typename T>
@@ -493,7 +493,7 @@ namespace daw::json {
 			using json_data_contract_constructor = json_data_contract_constructor_impl<
 			  T,
 			  daw::is_detected<json_data_contract_trait_t, T>::value,
-			  daw::is_detected<has_json_data_constract_constructor_test, T>::value>;
+			  daw::is_detected<has_json_data_contract_constructor_test, T>::value>;
 
 			template<typename T>
 			using json_data_contract_constructor_t = typename json_data_contract_constructor<T>::type;

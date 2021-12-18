@@ -5,6 +5,10 @@ cmake_policy(SET CMP0065 NEW)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+if( CMAKE_BUILD_TYPE EQUAL "Debug" )
+	add_compile_definitions(DEBUG=1)
+endif( )
+
 option(DAW_JSON_TEST_EXTERN_TEMPLATE "Use extern templates in larger tests to improve compile time" ON)
 if (DAW_JSON_TEST_EXTERN_TEMPLATE)
     add_compile_definitions(DAW_JSON_TEST_EXTERN_TEMPLATE=ON)

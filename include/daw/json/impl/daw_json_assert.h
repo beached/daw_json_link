@@ -190,5 +190,7 @@ namespace daw::json {
 			if( DAW_UNLIKELY( not( Bool ) ) ) {                \
 				daw_json_error( __VA_ARGS__ );                   \
 			}                                                  \
+		} else {                                             \
+			DAW_ASSUME( ( Bool ) );                            \
 		}                                                    \
 	} while( false )
