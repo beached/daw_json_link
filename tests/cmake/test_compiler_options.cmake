@@ -29,6 +29,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
         message("Clang ${CMAKE_CXX_COMPILER_VERSION} detected")
         add_compile_options(
                 -pedantic
+                -pedantic-errors
                 -Weverything
                 -ftemplate-backtrace-limit=0
                 -Wno-c++98-compat
@@ -111,6 +112,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
             -Wall
             -Wextra
             -pedantic
+            -pedantic-errors
             -Wpedantic
             -Wconversion
             -Wduplicated-cond
