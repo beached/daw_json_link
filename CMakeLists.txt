@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project("daw-json-link"
-        VERSION "2.11.1"
+        VERSION "2.11.2"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
         LANGUAGES C CXX)
@@ -39,27 +39,27 @@ set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
 if (DAW_JSON_NO_CONST_EXPR)
-    message("DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
+	message(STATUS "DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
     add_definitions(-DDAW_JSON_NO_CONST_EXPR)
 else ()
-    message("DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
+    message(STATUS "DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
 endif ()
 
 set(DAW_JSON_FORCE_INT128 OFF CACHE STRING "Force support for 128bit int")
 if (DAW_JSON_FORCE_INT128)
     if (DAW_JSON_NO_INT128)
     else ()
-        message("Forcing support of int128")
+        message(STATUS "Forcing support of int128")
         add_definitions(-DDAW_HAS_INT128)
     endif ()
 endif ()
 
 set(DAW_USE_JSON_EXCEPTIONS ON CACHE STRING "Throw exceptions when json errors occur")
 if (DAW_USE_JSON_EXCEPTIONS)
-    message("DAW_USE_JSON_EXCEPTIONS=ON: Errors throw json_exception")
+    message(STATUS "DAW_USE_JSON_EXCEPTIONS=ON: Errors throw json_exception")
     add_definitions(-DDAW_USE_JSON_EXCEPTIONS=true)
 else ()
-    message("DAW_USE_JSON_EXCEPTIONS=OFF: Errors call std::terminate")
+    message(STATUS "DAW_USE_JSON_EXCEPTIONS=OFF: Errors call std::terminate")
     add_definitions(-DDAW_DONT_USE_JSON_EXCEPTIONS=true)
 endif ()
 
@@ -71,7 +71,7 @@ else( )
 endif()
 
 if (DAW_NO_FLATTEN)
-    message("DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
+    message(STATUS "DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
     add_definitions(-DDAW_NO_FLATTEN)
 endif ()
 
