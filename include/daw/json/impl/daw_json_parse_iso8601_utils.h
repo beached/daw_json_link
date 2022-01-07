@@ -15,6 +15,7 @@
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
@@ -27,7 +28,7 @@ namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace parse_utils {
 			template<typename Result, std::size_t count>
-			constexpr Result parse_unsigned( char const *digit_str ) {
+			constexpr Result parse_unsigned( daw::not_null<char const *> digit_str ) {
 				UInt64 result = UInt64( );
 				for( std::size_t n = 0; n < count; ++n ) {
 					result *= 10U;
@@ -37,7 +38,7 @@ namespace daw::json {
 			}
 
 			template<typename Result>
-			constexpr Result parse_unsigned2( char const *digit_str ) {
+			constexpr Result parse_unsigned2( daw::not_null<char const *> digit_str ) {
 				UInt64 result = UInt64( );
 				unsigned dig = json_details::parse_digit( *digit_str );
 				while( dig < 10 ) {

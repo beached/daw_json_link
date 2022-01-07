@@ -19,6 +19,7 @@
 #include <daw/daw_function_table.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_logic.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_traits.h>
 
 #include <ciso646>
@@ -34,10 +35,9 @@ namespace daw::json {
 				if constexpr( ParseState::minified_document ) {
 					return;
 				} else {
-					using CharT = typename ParseState::CharT;
 					// SIMD here was much slower, most JSON has very minimal whitespace
-					CharT *first = parse_state.first;
-					CharT *const last = parse_state.last;
+					auto first = daw::not_null( daw::never_null, parse_state.first );
+					auto const last = daw::not_null( daw::never_null, parse_state.last );
 
 					// only used when not zero terminated string and gcc9 warns
 					(void)last;
@@ -78,8 +78,7 @@ namespace daw::json {
 				if constexpr( ParseState::minified_document ) {
 					return;
 				} else {
-					using CharT = typename ParseState::CharT;
-					CharT *first = parse_state.first;
+					auto first = daw::not_null( daw::never_null, parse_state.first );
 					while( DAW_UNLIKELY(
 					  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) - 1U ) <= 0x1F ) ) {
 
@@ -104,8 +103,6 @@ namespace daw::json {
 				static_assert( sizeof...( keys ) > 0 );
 				static_assert( sizeof...( keys ) <= 16 );
 
-				using CharT = typename ParseState::CharT;
-
 				if constexpr( traits::not_same<typename ParseState::exec_tag_t,
 				                               constexpr_exec_tag>::value ) {
 					parse_state.first = json_details::mempbrk<ParseState::is_unchecked_input,
@@ -113,8 +110,8 @@ namespace daw::json {
 					                                          ParseState::expect_long_strings,
 					                                          keys...>( parse_state.first, parse_state.last );
 				} else {
-					CharT *first = parse_state.first;
-					CharT *const last = parse_state.last;
+					auto first = daw::not_null( daw::never_null, parse_state.first );
+					auto const last = daw::not_null( daw::never_null, parse_state.last );
 
 					// silencing gcc9 unused warning.  last is used inside if constexpr
 					// blocks
@@ -150,14 +147,13 @@ namespace daw::json {
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight, typename ParseState>
 			DAW_ATTRIB_FLATTEN static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
-				using CharT = typename ParseState::CharT;
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
-				CharT *const ptr_last = parse_state.last;
+				auto ptr_first = daw::not_null( daw::never_null, parse_state.first );
+				auto const ptr_last = daw::not_null( daw::never_null, parse_state.last );
 
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
@@ -180,7 +176,7 @@ namespace daw::json {
 								  json_details::mem_skip_until_end_of_string<ParseState::is_unchecked_input>(
 								    ParseState::exec_tag,
 								    ptr_first,
-								    parse_state.last );
+								    ptr_last );
 							} else {
 								char c = *ptr_first;
 								while( daw::nsc_and( c != '\0', c != '"' ) ) {
@@ -247,7 +243,7 @@ namespace daw::json {
 								  json_details::mem_skip_until_end_of_string<ParseState::is_unchecked_input>(
 								    ParseState::exec_tag,
 								    ptr_first,
-								    parse_state.last );
+								    ptr_last );
 							} else {
 								while( DAW_LIKELY( ptr_first < ptr_last ) and *ptr_first != '"' ) {
 									if( *ptr_first == '\\' ) {
@@ -312,12 +308,11 @@ namespace daw::json {
 			DAW_ATTRIB_FLATTEN static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
-				using CharT = typename ParseState::CharT;
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
+				auto ptr_first = daw::not_null( daw::never_null, parse_state.first );
 
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
@@ -335,7 +330,7 @@ namespace daw::json {
 							  json_details::mem_skip_until_end_of_string<ParseState::is_unchecked_input>(
 							    ParseState::exec_tag,
 							    ptr_first,
-							    parse_state.last );
+							    daw::not_null( daw::never_null, parse_state.last ) );
 						} else {
 							while( *ptr_first != '"' ) {
 								if( *ptr_first == '\\' ) {

@@ -131,8 +131,8 @@ namespace daw::json {
 			}
 
 			template<bool skip_end_check, typename CharT>
-			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr CharT *skip_digits( CharT *first,
-			                                                                         CharT *const last ) {
+			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr daw::not_null<CharT *>
+			skip_digits( daw::not_null<CharT *> first, daw::not_null<CharT *> const last ) {
 				(void)last; // only used inside if constexpr and gcc9 warns
 				if( DAW_LIKELY( first < last ) ) {
 					unsigned dig = parse_digit( *first );
@@ -207,14 +207,15 @@ namespace daw::json {
 			template<typename ParseState>
 #endif
 			[[nodiscard]] constexpr ParseState skip_number( ParseState &parse_state ) {
+				DAW_ASSUME( parse_state.first != nullptr );
 				using CharT = typename ParseState::CharT;
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
 
 				auto result = parse_state;
-				CharT *first = parse_state.first;
-				CharT *const last = parse_state.last;
+				auto first = daw::not_null( daw::never_null, parse_state.first );
+				auto const last = daw::not_null( daw::never_null, parse_state.last );
 				if constexpr( ParseState::allow_leading_zero_plus ) {
 					if( *first == '-' ) {
 						++first;

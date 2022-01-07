@@ -14,6 +14,8 @@
 #include "daw_json_parse_std_string.h"
 #include "daw_not_const_ex_functions.h"
 
+#include <daw/daw_not_null.h>
+
 #include <ciso646>
 
 namespace daw::json {
@@ -38,12 +40,13 @@ namespace daw::json {
 				template<typename ParseState>
 				[[nodiscard, maybe_unused]] DAW_ATTRIB_INLINE constexpr daw::string_view
 				parse_nq( ParseState &parse_state ) {
+					DAW_ASSUME( parse_state.first != nullptr );
 					if constexpr( ParseState::allow_escaped_names ) {
 						auto r = skip_string_nq( parse_state );
 						trim_end_of_name( parse_state );
 						return daw::string_view( std::data( r ), std::size( r ) );
 					} else {
-						char const *const ptr = parse_state.first;
+						auto const ptr = daw::not_null( daw::never_null, parse_state.first );
 						if constexpr( ParseState::is_unchecked_input ) {
 							parse_state.template move_to_next_of_unchecked<'"'>( );
 						} else {

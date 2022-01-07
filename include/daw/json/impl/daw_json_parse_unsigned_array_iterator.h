@@ -32,7 +32,7 @@ namespace daw::json {
 			inline constexpr std::uint32_t array_end_found = 1U << 16U;
 
 			[[nodiscard]] inline std::pair<std::uint64_t, std::uint32_t>
-			init_unsigned_mask( char const *__restrict first, char const *__restrict last ) {
+			init_unsigned_mask( daw::not_null<char const *> first, daw::not_null<char const *> last ) {
 				std::size_t offset = 0;
 				while( last - first >= 16 ) {
 					auto const data = vec::vec128( first );

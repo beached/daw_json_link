@@ -12,6 +12,7 @@
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_not_null.h>
 
 #if not defined( DAW_JSON_USE_STRTOD ) and defined( __cpp_lib_to_chars )
 #include <charconv>
@@ -23,7 +24,8 @@ namespace daw::json {
 
 			template<typename Real,
 			         std::enable_if_t<std::is_floating_point_v<Real>, std::nullptr_t> = nullptr>
-			DAW_ATTRIB_NOINLINE Real parse_with_strtod( char const *first, char const *last ) {
+			DAW_ATTRIB_NOINLINE Real parse_with_strtod( daw::not_null<char const *> first,
+			                                            daw::not_null<char const *> last ) {
 #if false and not defined( DAW_JSON_USE_STRTOD ) and defined( __cpp_lib_to_chars )
 				Real result;
 				std::from_chars_result fc_res = std::from_chars( first, last, result );

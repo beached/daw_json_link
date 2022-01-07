@@ -15,6 +15,7 @@
 #include "daw_not_const_ex_functions.h"
 
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
 
 #include <ciso646>
 #include <string>
@@ -34,7 +35,8 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input>
-			[[nodiscard]] inline constexpr UInt16 byte_from_nibbles( char const *&first ) {
+			[[nodiscard]] inline constexpr UInt16
+			byte_from_nibbles( daw::not_null<char const *> &first ) {
 				auto const n0 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				auto const n1 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				if constexpr( not is_unchecked_input ) {
@@ -48,12 +50,13 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] static constexpr char *decode_utf16( ParseState &parse_state, char *it ) {
+			[[nodiscard]] static constexpr daw::not_null<char *>
+			decode_utf16( ParseState &parse_state, daw::not_null<char *> it ) {
 				constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
 				daw_json_assert_weak( parse_state.size( ) >= 5,
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
-				char const *first = parse_state.first;
+				auto first = daw::not_null( daw::never_null, parse_state.first );
 				++first;
 				UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
 				cp |= byte_from_nibbles<is_unchecked_input>( first );
@@ -117,7 +120,7 @@ namespace daw::json {
 			template<typename ParseState, typename Appender>
 			static constexpr void decode_utf16( ParseState &parse_state, Appender &app ) {
 				constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
-				char const *first = parse_state.first;
+				auto first = daw::not_null( daw::never_null, parse_state.first );
 				++first;
 				UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
 				cp |= byte_from_nibbles<is_unchecked_input>( first );
@@ -180,11 +183,12 @@ namespace daw::json {
 			template<bool AllowHighEight, typename JsonMember, bool KnownBounds, typename ParseState>
 			[[nodiscard, maybe_unused]] constexpr auto // json_result<JsonMember>
 			parse_string_known_stdstring( ParseState &parse_state ) {
+				DAW_ASSUME( parse_state.first != nullptr );
 				using string_type = json_base_type<JsonMember>;
 				string_type result = string_type( std::size( parse_state ),
 				                                  '\0',
 				                                  parse_state.get_allocator_for( template_arg<char> ) );
-				char *it = std::data( result );
+				auto it = daw::not_null( daw::never_null, std::data( result ) );
 
 				bool const has_quote = parse_state.front( ) == '"';
 				if( has_quote ) {
@@ -206,8 +210,8 @@ namespace daw::json {
 
 				while( pred( parse_state ) ) {
 					{
-						char const *first = parse_state.first;
-						char const *const last = parse_state.last;
+						auto first = daw::not_null( daw::never_null, parse_state.first );
+						auto const last = daw::not_null( daw::never_null, parse_state.last );
 						if constexpr( std::is_same<typename ParseState::exec_tag_t,
 						                           constexpr_exec_tag>::value or
 						              not AllowHighEight ) {
@@ -291,7 +295,7 @@ namespace daw::json {
 					                      ErrorReason::UnexpectedEndOfData,
 					                      parse_state );
 				}
-				auto const sz = static_cast<std::size_t>( std::distance( std::data( result ), it ) );
+				auto const sz = static_cast<std::size_t>( std::distance( std::data( result ), it.get( ) ) );
 				daw_json_assert_weak( std::size( result ) >= sz, ErrorReason::InvalidString, parse_state );
 				result.resize( sz );
 				if constexpr( std::is_convertible<string_type, json_result<JsonMember>>::value ) {

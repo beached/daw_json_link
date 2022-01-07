@@ -13,6 +13,7 @@
 #include "version.h"
 
 #include <daw/daw_logic.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
@@ -28,7 +29,7 @@ namespace daw::json {
 			                                                      daw::string_view sv ) {
 				std::size_t err_pos = 1;
 				auto len = static_cast<std::ptrdiff_t>( std::size( sv ) );
-				char const *data = std::data( sv );
+				auto data = daw::not_null( daw::never_null, std::data( sv ) );
 				while( len ) {
 					auto const byte1 = static_cast<unsigned char>( data[0] );
 
@@ -107,7 +108,8 @@ namespace daw::json {
 			}
 
 			template<typename CharT>
-			inline constexpr void skip_to_first8( CharT *&first, CharT *const last ) {
+			inline constexpr void skip_to_first8( daw::not_null<CharT *> &first,
+			                                      daw::not_null<CharT *> const last ) {
 				bool keep_going = last - first >= 8;
 				while( keep_going ) {
 					auto buff = daw::to_uint64_buffer( first );
@@ -137,7 +139,8 @@ namespace daw::json {
 			}
 
 			template<typename CharT>
-			inline constexpr void skip_to_first4( CharT *&first, CharT *const last ) {
+			inline constexpr void skip_to_first4( daw::not_null<CharT *> &first,
+			                                      daw::not_null<CharT *> const last ) {
 				bool keep_going = last - first >= 4;
 				while( keep_going ) {
 					// Need to look for escapes as this is fast path
@@ -162,10 +165,9 @@ namespace daw::json {
 				[[nodiscard]] static constexpr auto parse_nq( ParseState &parse_state )
 				  -> std::enable_if_t<ParseState::is_unchecked_input, std::size_t> {
 
-					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
-					CharT *first = parse_state.first;
-					CharT *const last = parse_state.last;
+					auto first = daw::not_null( daw::never_null, parse_state.first );
+					auto const last = daw::not_null( daw::never_null, parse_state.last );
 					// This is a logic error to happen.
 					// daw_json_assert_weak( first != '"', "Unexpected quote", parse_state
 					// );
@@ -208,17 +210,16 @@ namespace daw::json {
 				[[nodiscard]] static constexpr auto parse_nq( ParseState &parse_state )
 				  -> std::enable_if_t<not ParseState::is_unchecked_input, std::size_t> {
 
-					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
-					CharT *first = parse_state.first;
-					CharT *const last = parse_state.class_last;
+					auto first = daw::not_null( daw::never_null, parse_state.first );
+					auto const last = daw::not_null( daw::never_null, parse_state.class_last );
 
 					if constexpr( not ParseState::exclude_special_escapes and
 					              ParseState::eight_bit_mode == GlobalEightBitModes::AllowFull ) {
-						if( CharT *const l = parse_state.last; l - first >= 8 ) {
-							skip_to_first8( first, l );
+						if( last - first >= 8 ) {
+							skip_to_first8( first, last );
 						} else if( last - first >= 4 ) {
-							skip_to_first4( first, l );
+							skip_to_first4( first, last );
 						}
 					}
 					if constexpr( ParseState::is_zero_terminated_string ) {

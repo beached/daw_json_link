@@ -143,14 +143,13 @@ namespace daw::json {
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight, typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
-				using CharT = typename ParseState::CharT;
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
-				CharT *const ptr_last = parse_state.last;
+				auto ptr_first = daw::not_null( daw::never_null, parse_state.first );
+				auto const ptr_last = daw::not_null( daw::never_null, parse_state.last );
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
 				}
@@ -170,7 +169,7 @@ namespace daw::json {
 							  json_details::mem_skip_until_end_of_string<ParseState::is_unchecked_input>(
 							    ParseState::exec_tag,
 							    ptr_first,
-							    parse_state.last );
+							    ptr_last );
 						} else {
 							while( ptr_first < ptr_last and *ptr_first != '"' ) {
 								if( *ptr_first == '\\' ) {
@@ -252,12 +251,11 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
-				using CharT = typename ParseState::CharT;
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
+				auto ptr_first = daw::not_null( daw::never_null, parse_state.first );
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}
@@ -274,7 +272,7 @@ namespace daw::json {
 							  json_details::mem_skip_until_end_of_string<ParseState::is_unchecked_input>(
 							    ParseState::exec_tag,
 							    ptr_first,
-							    parse_state.last );
+							    daw::not_null( daw::never_null, parse_state.last ) );
 						} else {
 							while( *ptr_first != '"' ) {
 								if( *ptr_first == '\\' ) {

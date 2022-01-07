@@ -19,6 +19,7 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_logic.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_utility.h>
 
 #include <ciso646>
@@ -31,7 +32,8 @@ namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
 			template<bool is_unchecked_input>
-			constexpr unsigned round_to_msd( char const *first, char const *last ) {
+			constexpr unsigned round_to_msd( daw::not_null<char const *> first,
+			                                 daw::not_null<char const *> last ) {
 				if constexpr( not is_unchecked_input ) {
 					daw_json_assert( first < last, ErrorReason::InvalidNumber );
 				}
@@ -52,7 +54,9 @@ namespace daw::json {
 
 			template<bool skip_end_check, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE inline constexpr void
-			parse_digits_until_last( char const *first, char const *const last, Unsigned &v ) {
+			parse_digits_until_last( daw::not_null<char const *> first,
+			                         daw::not_null<char const *> const last,
+			                         Unsigned &v ) {
 				Unsigned value = v;
 				if constexpr( skip_end_check ) {
 					auto dig = parse_digit( *first );
@@ -73,8 +77,10 @@ namespace daw::json {
 			}
 
 			template<bool skip_end_check, typename Unsigned, typename CharT>
-			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
-			parse_digits_while_number( CharT *first, CharT *const last, Unsigned &v ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr daw::not_null<CharT *>
+			parse_digits_while_number( daw::not_null<CharT *> first,
+			                           daw::not_null<CharT *> const last,
+			                           Unsigned &v ) {
 
 				// silencing gcc9 unused warning.  last is used inside if constexpr
 				// blocks
@@ -103,6 +109,7 @@ namespace daw::json {
 			         std::enable_if_t<KnownRange, std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
 			parse_real( ParseState &parse_state ) {
+				DAW_ASSUME( parse_state.first != nullptr );
 				using CharT = typename ParseState::CharT;
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 				daw_json_assert_weak( parse_state.has_more( ) and
@@ -110,13 +117,13 @@ namespace daw::json {
 				                      ErrorReason::InvalidNumberStart,
 				                      parse_state );
 
-				CharT *whole_first = parse_state.first;
+				auto whole_first = daw::not_null( daw::never_null, parse_state.first );
 				CharT *whole_last =
 				  parse_state.class_first ? parse_state.class_first : parse_state.class_last;
 				CharT *fract_first = parse_state.class_first ? parse_state.class_first + 1 : nullptr;
 				CharT *fract_last = parse_state.class_last;
 				CharT *exp_first = parse_state.class_last ? parse_state.class_last + 1 : nullptr;
-				CharT *const exp_last = parse_state.last;
+				auto const exp_last = daw::not_null( daw::never_null, parse_state.last );
 
 				if( parse_state.class_first == nullptr ) {
 					if( parse_state.class_last == nullptr ) {
@@ -255,15 +262,15 @@ namespace daw::json {
 			         std::enable_if_t<not KnownRange, std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
 			parse_real( ParseState &parse_state ) {
+				DAW_ASSUME( parse_state.first != nullptr );
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
-				using CharT = typename ParseState::CharT;
 				daw_json_assert_weak( parse_state.has_more( ) and
 				                        parse_policy_details::is_number_start( parse_state.front( ) ),
 				                      ErrorReason::InvalidNumberStart,
 				                      parse_state );
 
-				CharT *const orig_first = parse_state.first;
-				CharT *const orig_last = parse_state.last;
+				auto const orig_first = daw::not_null( daw::never_null, parse_state.first );
+				auto const orig_last = daw::not_null( daw::never_null, parse_state.last );
 
 				// silencing gcc9 warning as these are only used when precise ieee is in
 				// play.
@@ -282,17 +289,17 @@ namespace daw::json {
 				using signed_t = std::
 				  conditional_t<max_storage_digits::value >= max_exponent::value, std::int64_t, Result>;
 
-				CharT *first = parse_state.first;
-				CharT *const whole_last =
+				auto first = daw::not_null( daw::never_null, parse_state.first );
+				auto const whole_last = daw::not_null(
 				  parse_state.first + ( std::min )( parse_state.last - parse_state.first,
-				                                    static_cast<std::ptrdiff_t>( max_exponent::value ) );
+				                                    static_cast<std::ptrdiff_t>( max_exponent::value ) ) );
 
 				unsigned_t significant_digits = 0;
 				daw_json_assert_weak( not( whole_last - first > 1 and *first == '0' and
 				                           daw::json::parse_policy_details::is_number( *( first + 1 ) ) ),
 				                      ErrorReason::InvalidNumber,
 				                      parse_state );
-				CharT *last_char =
+				auto last_char =
 				  parse_digits_while_number<( ParseState::is_zero_terminated_string or
 				                              ParseState::is_unchecked_input )>( first,
 				                                                                 whole_last,
@@ -308,9 +315,10 @@ namespace daw::json {
 						}
 						// We have sig digits we cannot parse because there isn't enough
 						// room in a std::uint64_t
-						CharT *ptr =
-						  skip_digits<( ParseState::is_zero_terminated_string or
-						                ParseState::is_unchecked_input )>( last_char, parse_state.last );
+						auto ptr = skip_digits<( ParseState::is_zero_terminated_string or
+						                         ParseState::is_unchecked_input )>(
+						  last_char,
+						  daw::not_null( daw::never_null, parse_state.last ) );
 						auto const diff = ptr - last_char;
 
 						last_char = ptr;
@@ -331,11 +339,15 @@ namespace daw::json {
 						if( first < parse_state.last ) {
 							if constexpr( ParseState::is_unchecked_input ) {
 								first = skip_digits<( ParseState::is_zero_terminated_string or
-								                      ParseState::is_unchecked_input )>( first, parse_state.last );
+								                      ParseState::is_unchecked_input )>(
+								  first,
+								  daw::not_null( daw::never_null, parse_state.last ) );
 							} else {
 								auto old_first = first;
 								first = skip_digits<( ParseState::is_zero_terminated_string or
-								                      ParseState::is_unchecked_input )>( first, parse_state.last );
+								                      ParseState::is_unchecked_input )>(
+								  first,
+								  daw::not_null( daw::never_null, parse_state.last ) );
 								daw_json_assert( DAW_LIKELY( old_first < first ),
 								                 ErrorReason::InvalidNumber,
 								                 parse_state );
@@ -347,7 +359,7 @@ namespace daw::json {
 						auto const sig_digits_avail =
 						  static_cast<std::ptrdiff_t>( max_exponent::value - cur_digit_count );
 						auto const fract_last_diff = ( std::min )( max_digits_left, sig_digits_avail );
-						CharT *fract_last = first + fract_last_diff;
+						auto fract_last = first + fract_last_diff;
 
 						last_char =
 						  parse_digits_while_number<( ParseState::is_zero_terminated_string or
@@ -363,9 +375,10 @@ namespace daw::json {
 						exponent_p1 -= static_cast<signed_t>( last_char - first );
 						first = last_char;
 						if( daw::nsc_and( ( first >= fract_last ), ( first < parse_state.last ) ) ) {
-							auto new_first =
-							  skip_digits<( ParseState::is_zero_terminated_string or
-							                ParseState::is_unchecked_input )>( first, parse_state.last );
+							auto new_first = skip_digits<( ParseState::is_zero_terminated_string or
+							                               ParseState::is_unchecked_input )>(
+							  first,
+							  daw::not_null( daw::never_null, parse_state.last ) );
 							if constexpr( std::is_floating_point_v<Result> and ParseState::precise_ieee754 ) {
 								use_strtod |= new_first > first;
 							}
@@ -404,11 +417,11 @@ namespace daw::json {
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
 						unsigned_t exp_tmp = 0;
-						last_char =
-						  parse_digits_while_number<( ParseState::is_zero_terminated_string or
-						                              ParseState::is_unchecked_input )>( first,
-						                                                                 parse_state.last,
-						                                                                 exp_tmp );
+						last_char = parse_digits_while_number<( ParseState::is_zero_terminated_string or
+						                                        ParseState::is_unchecked_input )>(
+						  first,
+						  daw::not_null( daw::never_null, parse_state.last ),
+						  exp_tmp );
 						first = last_char;
 						return to_signed( exp_tmp, exp_sign );
 					}

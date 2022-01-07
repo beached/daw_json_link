@@ -399,11 +399,12 @@ namespace daw::json {
 						                        std::data( str ),
 						                        std::size( str ) );
 					} else {
+						DAW_ASSUME( parse_state.first != nullptr );
 						parse_state.remove_prefix( );
 
-						char const *const first = parse_state.first;
+						auto const first = daw::not_null( daw::never_null, parse_state.first );
 						parse_state.template move_to_next_of<'"'>( );
-						char const *const last = parse_state.first;
+						auto const last = daw::not_null( daw::never_null, parse_state.first );
 						parse_state.remove_prefix( );
 						if constexpr( JsonMember::empty_is_null == EmptyStringNull::yes ) {
 							if( first == last ) {

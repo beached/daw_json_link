@@ -11,6 +11,7 @@
 #include <daw/daw_do_n.h>
 #include <daw/daw_endian.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
 
@@ -32,7 +33,7 @@ namespace daw {
 	} // namespace murmur3_details
 
 	template<std::size_t N, typename CharT>
-	[[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32 fnv1a_32_N( CharT *first,
+	[[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32 fnv1a_32_N( daw::not_null<CharT *> first,
 	                                                             UInt32 hash = 0x811c'9dc5_u32 ) {
 		daw::algorithm::do_n_arg<N>( [&]( std::size_t n ) {
 			hash ^= static_cast<UInt32>( first[n] );
@@ -45,7 +46,7 @@ namespace daw {
 	[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr auto fnv1a_32( StringView key )
 	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>, UInt32> {
 		std::size_t len = std::size( key );
-		auto *ptr = std::data( key );
+		auto ptr = daw::not_null( daw::never_null, std::data( std::as_const( key ) ) );
 		auto hash = 0x811c'9dc5_u32;
 		if constexpr( expect_long_strings ) {
 			while( len >= 8 ) {
@@ -71,7 +72,7 @@ namespace daw {
 	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>, UInt32> {
 		if( auto const Sz = std::size( key ); DAW_LIKELY( Sz <= sizeof( UInt32 ) ) ) {
 			auto result = 0_u32;
-			auto const *ptr = std::data( key );
+			auto ptr = daw::not_null( daw::never_null, std::data( std::as_const( key ) ) );
 			for( std::size_t n = 0; n < Sz; ++n ) {
 				result <<= 8U;
 				result |= static_cast<unsigned char>( ptr[n] );
@@ -87,8 +88,8 @@ namespace daw {
 	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>, UInt32> {
 		UInt32 h = to_uint32( seed );
 		UInt32 k = 0_u32;
-		char const *first = std::data( key );
-		char const *const last = daw::data_end( key );
+		auto first = daw::not_null( daw::never_null, std::data( key ) );
+		auto const last = daw::not_null( daw::never_null, daw::data_end( key ) );
 		while( ( last - first ) >= 4 ) {
 			// Here is a source of differing results across endianness.
 			// A swap here has no effects on hash properties though.

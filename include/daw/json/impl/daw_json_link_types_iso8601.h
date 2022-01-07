@@ -13,6 +13,7 @@
 #include "daw_json_enums.h"
 #include "daw_json_parse_iso8601_utils.h"
 
+#include <daw/daw_not_null.h>
 #include <daw/daw_string_view.h>
 
 #include <chrono>
@@ -30,8 +31,8 @@ namespace daw::json {
 				return { };
 			}
 
-			[[maybe_unused, nodiscard]] inline constexpr result_type operator( )( char const *ptr,
-			                                                                      std::size_t sz ) const {
+			[[maybe_unused, nodiscard]] inline constexpr result_type
+			operator( )( daw::not_null<char const *> ptr, std::size_t sz ) const {
 				return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
 			}
 		};
@@ -41,8 +42,8 @@ namespace daw::json {
 			using result_type =
 			  std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
 
-			[[maybe_unused, nodiscard]] inline constexpr result_type operator( )( char const *ptr,
-			                                                                      std::size_t sz ) const {
+			[[maybe_unused, nodiscard]] inline constexpr result_type
+			operator( )( daw::not_null<char const *> ptr, std::size_t sz ) const {
 				return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
 			}
 		};

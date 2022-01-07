@@ -23,6 +23,7 @@
 #include <daw/daw_attributes.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_logic.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_traits.h>
 
 #include <cassert>
@@ -386,8 +387,8 @@ namespace daw::json {
 			}
 
 			inline constexpr void move_to_end_of_literal( ) {
-				CharT *f = first;
-				CharT *const l = last;
+				auto f = daw::not_null( daw::never_null, first );
+				auto const l = daw::not_null( daw::never_null, last );
 				if constexpr( is_unchecked_input ) {
 					while( daw::nsc_and( static_cast<unsigned char>( *f ) > 0x20U,
 					                     not CommentPolicy::is_literal_end( *f ) ) ) {

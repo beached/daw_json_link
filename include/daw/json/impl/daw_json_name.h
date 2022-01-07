@@ -68,13 +68,13 @@ namespace daw::json {
 			}
 
 			// Needed for copy_to_iterator
-			[[nodiscard]] constexpr char const *begin( ) const {
-				return m_data;
+			[[nodiscard]] constexpr daw::not_null<char const *> begin( ) const {
+				return { daw::never_null, m_data };
 			}
 
 			// Needed for copy_to_iterator
-			[[nodiscard]] constexpr char const *end( ) const {
-				return m_data + static_cast<ptrdiff_t>( size( ) );
+			[[nodiscard]] constexpr daw::not_null<char const *> end( ) const {
+				return { daw::never_null, m_data + static_cast<ptrdiff_t>( size( ) ) };
 			}
 
 			[[nodiscard]] static constexpr std::size_t size( ) {

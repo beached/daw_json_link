@@ -15,6 +15,7 @@
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_logic.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_uint_buffer.h>
 
 #include <ciso646>
@@ -55,7 +56,8 @@ namespace daw::json {
 				}
 			}
 
-			[[nodiscard]] static inline constexpr bool is_made_of_eight_digits_cx( const char *ptr ) {
+			[[nodiscard]] static inline constexpr bool
+			is_made_of_eight_digits_cx( daw::not_null<char const *> ptr ) {
 				// The copy to local buffer is to get the compiler to treat it like a
 				// reinterpret_cast
 
@@ -94,7 +96,7 @@ namespace daw::json {
 
 			// Constexpr'ified version from
 			// https://kholdstare.github.io/technical/2020/05/26/faster-integer-parsing.html
-			inline constexpr UInt64 parse_8_digits( const char *const str ) {
+			inline constexpr UInt64 parse_8_digits( daw::not_null<char const *> const str ) {
 				auto const chunk = daw::to_uint64_buffer( str );
 				// 1-byte mask trick (works on 4 pairs of single digits)
 				auto const lower_digits = ( chunk & 0x0F'00'0F'00'0F'00'0F'00_u64 ) >> 8U;
@@ -116,7 +118,7 @@ namespace daw::json {
 			static_assert( parse_8_digits( "12345678" ) == 1234'5678_u64,
 			               "8 digit parser does not work on this platform" );
 
-			inline constexpr UInt32 parse_4_digits( const char *const str ) {
+			inline constexpr UInt32 parse_4_digits( daw::not_null<char const *> const str ) {
 				auto const chunk = to_uint32_buffer( str );
 				// 1-byte mask trick (works on 4 pairs of single digits)
 				auto const lower_digits = ( chunk & 0x0F'00'0F'00_u32 ) >> 8U;
@@ -136,7 +138,7 @@ namespace daw::json {
 			}
 			static_assert( parse_4_digits( "1234" ) == 1234_u32 );
 
-			inline constexpr UInt64 parse_16_digits( const char *const str ) {
+			inline constexpr UInt64 parse_16_digits( daw::not_null<char const *> const str ) {
 				auto const upper = parse_8_digits( str );
 				auto const lower = parse_8_digits( str + 8 );
 				return upper * 100'000'000_u64 + lower;
@@ -151,7 +153,7 @@ namespace daw::json {
 			         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr Unsigned unsigned_parser( constexpr_exec_tag,
 			                                                         ParseState &parse_state ) {
-				using CharT = typename ParseState::CharT;
+				DAW_ASSUME( parse_state.first != nullptr );
 				// We know how many digits are in the number
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 				using uresult_t = max_unsigned_t<RangeChecked, daw::make_unsigned_t<Unsigned>, UInt64>;
@@ -159,8 +161,8 @@ namespace daw::json {
 				                 std::is_same<uresult_t, UInt64>::value,
 				               "Range checking is only supported for std integral types" );
 
-				CharT *first = parse_state.first;
-				CharT *const last = parse_state.last;
+				auto first = daw::not_null( daw::never_null, parse_state.first );
+				auto const last = daw::not_null( daw::never_null, parse_state.last );
 				uresult_t result = uresult_t( );
 
 				while( last - first >= 16 ) {
@@ -213,7 +215,6 @@ namespace daw::json {
 			         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr Unsigned unsigned_parser( constexpr_exec_tag,
 			                                                         ParseState &parse_state ) {
-				using CharT = typename ParseState::CharT;
 				// We do not know how long the string is
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 				using uresult_t = max_unsigned_t<RangeChecked, daw::make_unsigned_t<Unsigned>, UInt64>;
@@ -223,10 +224,10 @@ namespace daw::json {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
-				CharT *first = parse_state.first;
-				CharT *const orig_first = first;
+				auto first = daw::not_null( daw::never_null, parse_state.first );
+				auto const orig_first = first;
 				(void)orig_first; // only used inside if constexpr and gcc9 warns
-				CharT *const last = parse_state.last;
+				auto const last = daw::not_null( daw::never_null, parse_state.last );
 				uresult_t result = uresult_t( );
 				bool has_eight = last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
 				bool has_sixteen = last - first >= 16 and is_made_of_eight_digits_cx( first + 8 );
@@ -284,7 +285,7 @@ namespace daw::json {
 			//
 			//
 			https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
-			static inline UInt64 parse_eight_digits_unrolled( const char *ptr ) {
+			static inline UInt64 parse_eight_digits_unrolled( daw::not_null<char const *> ptr ) {
 			  // this actually computes *16* values so we are being wasteful.
 			  static __m128i const ascii0 = _mm_set1_epi8( '0' );
 
@@ -309,7 +310,7 @@ namespace daw::json {
 			rest
 			}
 
-			static inline UInt64 parse_sixteen_digits_unrolled( const char *ptr ) {
+			static inline UInt64 parse_sixteen_digits_unrolled( daw::not_null<char const *> ptr ) {
 			  static __m128i const ascii0 = _mm_set1_epi8( '0' );
 
 			  static __m128i const mul_1_10 =
@@ -332,7 +333,7 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] static inline bool
-			is_made_of_eight_digits_fast( const char *ptr ) {
+			is_made_of_eight_digits_fast( daw::not_null<char const *> ptr ) {
 			  UInt64 val;
 			  memcpy( &val, ptr, sizeof( std::uint64_t ) );
 			  return ( ( ( val & 0xF0F0F0F0F0F0F0F0_u64 ) |

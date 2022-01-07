@@ -16,6 +16,7 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_do_n.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_uint_buffer.h>
 #include <daw/daw_unreachable.h>
 
@@ -38,7 +39,8 @@
 namespace daw::json {
 	DAW_JSON_INLINE_NS namespace DAW_JSON_VER {
 		namespace json_details {
-			DAW_ATTRIB_INLINE constexpr bool is_escaped( char const *ptr, char const *min_ptr ) {
+			DAW_ATTRIB_INLINE constexpr bool is_escaped( daw::not_null<char const *> ptr,
+			                                             daw::not_null<char const *> min_ptr ) {
 				if( *( ptr - 1 ) != '\\' ) {
 					return false;
 				}
@@ -105,12 +107,16 @@ namespace daw::json {
 				return _mm_set_epi8( c15, c14, c13, c12, c11, c10, c9, c8, c7, c6, c5, c4, c3, c2, c1, c0 );
 			}
 
-			DAW_ATTRIB_INLINE __m128i uload16_char_data( sse42_exec_tag, char const *ptr ) {
-				return _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) );
+			DAW_ATTRIB_INLINE __m128i uload16_char_data( sse42_exec_tag,
+			                                             daw::not_null<char const *> ptr ) {
+				return _mm_loadu_si128(
+				  reinterpret_cast<__m128i const *>( static_cast<char const *>( ptr ) ) );
 			}
 
-			DAW_ATTRIB_INLINE __m128i load16_char_data( sse42_exec_tag, char const *ptr ) {
-				return _mm_load_si128( reinterpret_cast<__m128i const *>( ptr ) );
+			DAW_ATTRIB_INLINE __m128i load16_char_data( sse42_exec_tag,
+			                                            daw::not_null<char const *> ptr ) {
+				return _mm_load_si128(
+				  reinterpret_cast<__m128i const *>( static_cast<char const *>( ptr ) ) );
 			}
 
 			template<char k>
@@ -128,8 +134,10 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, char... keys, typename CharT>
-			DAW_ATTRIB_INLINE CharT *
-			mem_move_to_next_of( sse42_exec_tag tag, CharT *first, CharT *const last ) {
+			DAW_ATTRIB_INLINE daw::not_null<CharT *>
+			mem_move_to_next_of( sse42_exec_tag tag,
+			                     daw::not_null<CharT *> first,
+			                     daw::not_null<CharT *> const last ) {
 
 				while( last - first >= 16 ) {
 					auto const val0 = uload16_char_data( tag, first );
@@ -154,8 +162,10 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, char... keys, typename CharT>
-			DAW_ATTRIB_INLINE CharT *
-			mem_move_to_next_not_of( sse42_exec_tag tag, CharT *first, CharT *last ) {
+			DAW_ATTRIB_INLINE daw::not_null<CharT *>
+			mem_move_to_next_not_of( sse42_exec_tag tag,
+			                         daw::not_null<CharT *> first,
+			                         daw::not_null<CharT *> last ) {
 				using keys_len = daw::constant<static_cast<int>( sizeof...( keys ) )>;
 				using compare_mode = daw::constant<static_cast<int>( _SIDD_SBYTE_OPS | _SIDD_CMP_EQUAL_ANY |
 				                                                     _SIDD_NEGATIVE_POLARITY )>;
@@ -239,8 +249,10 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename CharT>
-			inline CharT *
-			mem_skip_until_end_of_string( simd_exec_tag tag, CharT *first, CharT *const last ) {
+			inline daw::not_null<CharT *>
+			mem_skip_until_end_of_string( simd_exec_tag tag,
+			                              daw::not_null<CharT *> first,
+			                              daw::not_null<CharT *> const last ) {
 				UInt32 prev_escapes = 0_u32;
 				while( last - first >= 16 ) {
 					auto const val0 = uload16_char_data( tag, first );
@@ -282,11 +294,11 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename CharT>
-			inline CharT *mem_skip_until_end_of_string( simd_exec_tag tag,
-			                                            CharT *first,
-			                                            CharT *const last,
-			                                            std::ptrdiff_t &first_escape ) {
-				CharT *const first_first = first;
+			inline daw::not_null<CharT *> mem_skip_until_end_of_string( simd_exec_tag tag,
+			                                                            daw::not_null<CharT *> first,
+			                                                            daw::not_null<CharT *> const last,
+			                                                            std::ptrdiff_t &first_escape ) {
+				daw::not_null<CharT *> const first_first = first;
 				UInt32 prev_escapes = 0_u32;
 				while( last - first >= 16 ) {
 					auto const val0 = uload16_char_data( tag, first );
@@ -338,10 +350,12 @@ namespace daw::json {
 
 #endif
 			template<bool is_unchecked_input, char... keys, typename CharT>
-			DAW_ATTRIB_INLINE CharT *mem_move_to_next_of( runtime_exec_tag, CharT *first, CharT *last ) {
+			DAW_ATTRIB_INLINE daw::not_null<CharT *> mem_move_to_next_of( runtime_exec_tag,
+			                                                              daw::not_null<CharT *> first,
+			                                                              daw::not_null<CharT *> last ) {
 				if constexpr( sizeof...( keys ) == 1 ) {
 					char const key[]{ keys... };
-					auto *ptr = reinterpret_cast<CharT *>(
+					auto *ptr = reinterpret_cast<daw::not_null<CharT *>>(
 					  std::memchr( first, key[0], static_cast<std::size_t>( last - first ) ) );
 					if( ptr == nullptr ) {
 						ptr = last;
@@ -365,8 +379,10 @@ namespace daw::json {
 			         typename CharT,
 			         std::enable_if_t<std::is_base_of<runtime_exec_tag, ExecTag>::value, std::nullptr_t> =
 			           nullptr>
-			DAW_ATTRIB_INLINE CharT *
-			mem_skip_string( ExecTag const &tag, CharT *first, CharT *const last ) {
+			DAW_ATTRIB_INLINE daw::not_null<CharT *>
+			mem_skip_string( ExecTag const &tag,
+			                 daw::not_null<CharT *> first,
+			                 daw::not_null<CharT *> const last ) {
 				return mem_move_to_next_of<is_unchecked_input, '"', '\\'>( tag, first, last );
 			}
 
@@ -375,8 +391,10 @@ namespace daw::json {
 			         typename CharT,
 			         std::enable_if_t<std::is_base_of<runtime_exec_tag, ExecTag>::value, std::nullptr_t> =
 			           nullptr>
-			DAW_ATTRIB_INLINE CharT *
-			mem_skip_until_end_of_string( ExecTag const &tag, CharT *first, CharT *const last ) {
+			DAW_ATTRIB_INLINE daw::not_null<CharT *>
+			mem_skip_until_end_of_string( ExecTag const &tag,
+			                              daw::not_null<CharT *> first,
+			                              daw::not_null<CharT *> const last ) {
 				if constexpr( not is_unchecked_input ) {
 					daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData );
 				}
@@ -400,11 +418,12 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename CharT>
-			DAW_ATTRIB_INLINE CharT *mem_skip_until_end_of_string( runtime_exec_tag tag,
-			                                                       CharT *first,
-			                                                       CharT *const last,
-			                                                       std::ptrdiff_t &first_escape ) {
-				CharT *const first_first = first;
+			DAW_ATTRIB_INLINE daw::not_null<CharT *>
+			mem_skip_until_end_of_string( runtime_exec_tag tag,
+			                              daw::not_null<CharT *> first,
+			                              daw::not_null<CharT *> const last,
+			                              std::ptrdiff_t &first_escape ) {
+				daw::not_null<CharT *> const first_first = first;
 				if constexpr( not is_unchecked_input ) {
 					daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData );
 				}
