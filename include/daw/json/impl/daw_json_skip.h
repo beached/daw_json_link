@@ -19,6 +19,7 @@
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_cast.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_unreachable.h>
 
 #if defined( DAW_CX_BIT_CAST )

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <daw/daw_cxmath.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_uint_buffer.h>
 
 #include <array>

@@ -16,6 +16,7 @@
 #include "version.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_not_null.h>
 
 #include <ciso646>
 #include <cstddef>

@@ -26,6 +26,7 @@
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 

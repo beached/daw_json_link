@@ -13,6 +13,7 @@
 #include <daw/daw_consteval.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_string_view.h>
 
 #include <cstddef>
