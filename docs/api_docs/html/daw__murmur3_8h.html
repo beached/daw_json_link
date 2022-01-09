@@ -75,6 +75,8 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;daw/daw_do_n.h&gt;</code><br />
 <code>#include &lt;daw/daw_endian.h&gt;</code><br />
+<code>#include &lt;daw/daw_likely.h&gt;</code><br />
+<code>#include &lt;daw/daw_not_null.h&gt;</code><br />
 <code>#include &lt;daw/daw_string_view.h&gt;</code><br />
 <code>#include &lt;daw/daw_uint_buffer.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
@@ -94,9 +96,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ae0c650e03692cc9c3a13a4933f0f9d42"><td class="memTemplParams" colspan="2">template&lt;bool expect_long_strings, typename StringView &gt; </td></tr>
 <tr class="memitem:ae0c650e03692cc9c3a13a4933f0f9d42"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATTEN auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#ae0c650e03692cc9c3a13a4933f0f9d42">daw::fnv1a_32</a> (StringView key) -&gt; std::enable_if_t&lt; daw::traits::is_string_view_like_v&lt; StringView &gt;, UInt32 &gt;</td></tr>
 <tr class="separator:ae0c650e03692cc9c3a13a4933f0f9d42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6676704c4ec0cedf7ebf25cd37bf8b6e"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, typename CharT &gt; </td></tr>
-<tr class="memitem:a6676704c4ec0cedf7ebf25cd37bf8b6e"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_INLINE UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a6676704c4ec0cedf7ebf25cd37bf8b6e">daw::fnv1a_32_N</a> (CharT *first, UInt32 hash=0x811c '9dc5_u32)</td></tr>
-<tr class="separator:a6676704c4ec0cedf7ebf25cd37bf8b6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeb6feab927124c8d61a36b045b4cae4"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, typename CharT &gt; </td></tr>
+<tr class="memitem:afeb6feab927124c8d61a36b045b4cae4"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_INLINE UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#afeb6feab927124c8d61a36b045b4cae4">daw::fnv1a_32_N</a> (daw::not_null&lt; CharT * &gt; first, UInt32 hash=0x811c '9dc5_u32)</td></tr>
+<tr class="separator:afeb6feab927124c8d61a36b045b4cae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9cf0c5eefb6ea530802bcdaa4b3c07af"><td class="memTemplParams" colspan="2">template&lt;typename StringView &gt; </td></tr>
 <tr class="memitem:a9cf0c5eefb6ea530802bcdaa4b3c07af"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a9cf0c5eefb6ea530802bcdaa4b3c07af">daw::murmur3_32</a> (StringView key, std::uint32_t seed=0) -&gt; std::enable_if_t&lt; daw::traits::is_string_view_like_v&lt; StringView &gt;, UInt32 &gt;</td></tr>
 <tr class="separator:a9cf0c5eefb6ea530802bcdaa4b3c07af"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -79,6 +79,7 @@ $(function() {
 <code>#include &quot;<a class="el" href="daw__json__parse__common_8h_source.html">daw_json_parse_common.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__not__const__ex__functions_8h_source.html">daw_not_const_ex_functions.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_likely.h&gt;</code><br />
+<code>#include &lt;daw/daw_not_null.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
@@ -100,15 +101,15 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a503e30628f9d9c1781a4f4842d209eee"><td class="memTemplParams" colspan="2">template&lt;bool is_unchecked_input&gt; </td></tr>
-<tr class="memitem:a503e30628f9d9c1781a4f4842d209eee"><td class="memTemplItemLeft" align="right" valign="top">constexpr UInt16&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a503e30628f9d9c1781a4f4842d209eee">daw::json::DAW_JSON_VER::json_details::byte_from_nibbles</a> (char const *&amp;first)</td></tr>
-<tr class="separator:a503e30628f9d9c1781a4f4842d209eee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa951eeb0d1fff6650ad310616112d5fe"><td class="memTemplParams" colspan="2">template&lt;bool is_unchecked_input&gt; </td></tr>
+<tr class="memitem:aa951eeb0d1fff6650ad310616112d5fe"><td class="memTemplItemLeft" align="right" valign="top">constexpr UInt16&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa951eeb0d1fff6650ad310616112d5fe">daw::json::DAW_JSON_VER::json_details::byte_from_nibbles</a> (daw::not_null&lt; char const * &gt; &amp;first)</td></tr>
+<tr class="separator:aa951eeb0d1fff6650ad310616112d5fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78525ee1bbdd856f32b47aea94821795"><td class="memTemplParams" colspan="2">template&lt;typename ParseState , typename Appender &gt; </td></tr>
 <tr class="memitem:a78525ee1bbdd856f32b47aea94821795"><td class="memTemplItemLeft" align="right" valign="top">static constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a78525ee1bbdd856f32b47aea94821795">daw::json::DAW_JSON_VER::json_details::decode_utf16</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, Appender &amp;app)</td></tr>
 <tr class="separator:a78525ee1bbdd856f32b47aea94821795"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac46bd159e99453009c75de6b9be7558"><td class="memTemplParams" colspan="2">template&lt;typename ParseState &gt; </td></tr>
-<tr class="memitem:aac46bd159e99453009c75de6b9be7558"><td class="memTemplItemLeft" align="right" valign="top">static constexpr char *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aac46bd159e99453009c75de6b9be7558">daw::json::DAW_JSON_VER::json_details::decode_utf16</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, char *<a class="el" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>)</td></tr>
-<tr class="separator:aac46bd159e99453009c75de6b9be7558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbfa14325b4029b84753af81625e7301"><td class="memTemplParams" colspan="2">template&lt;typename ParseState &gt; </td></tr>
+<tr class="memitem:afbfa14325b4029b84753af81625e7301"><td class="memTemplItemLeft" align="right" valign="top">static constexpr daw::not_null&lt; char * &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#afbfa14325b4029b84753af81625e7301">daw::json::DAW_JSON_VER::json_details::decode_utf16</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, daw::not_null&lt; char * &gt; <a class="el" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>)</td></tr>
+<tr class="separator:afbfa14325b4029b84753af81625e7301"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1dee65848c986a81c212248a0bad3b9f"><td class="memTemplParams" colspan="2">template&lt;bool AllowHighEight, typename JsonMember , bool KnownBounds, typename ParseState &gt; </td></tr>
 <tr class="memitem:a1dee65848c986a81c212248a0bad3b9f"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a1dee65848c986a81c212248a0bad3b9f">daw::json::DAW_JSON_VER::json_details::parse_string_known_stdstring</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>)</td></tr>
 <tr class="separator:a1dee65848c986a81c212248a0bad3b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>

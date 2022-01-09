@@ -76,51 +76,37 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>&gt;</code></p>
-<div class="dynheader">
-Inheritance diagram for daw::json::DAW_JSON_VER::json_base::json_array&lt; JsonElement, Container, Constructor, Nullable &gt;:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.png" usemap="#daw::json::DAW_5FJSON_5FVER::json_5Fbase::json_5Farray_3C_20JsonElement_2C_20Container_2C_20Constructor_2C_20Nullable_20_3E_map" alt=""/>
-  <map id="daw::json::DAW_5FJSON_5FVER::json_5Fbase::json_5Farray_3C_20JsonElement_2C_20Container_2C_20Constructor_2C_20Nullable_20_3E_map" name="daw::json::DAW_5FJSON_5FVER::json_5Fbase::json_5Farray_3C_20JsonElement_2C_20Container_2C_20Constructor_2C_20Nullable_20_3E_map">
-<area href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__array.html" alt="daw::json::DAW_JSON_VER::json_array&lt; Name, JsonElement, Container, Constructor, Nullable &gt;" shape="rect" coords="0,56,591,80"/>
-  </map>
-</div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ad121e0fb7e9a191d700db357e81824bb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#ad121e0fb7e9a191d700db357e81824bb">base_type</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ad84b7edc3a2f04e1e151433c26ce9c05">json_details::unwrapped_t</a>&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a> &gt;</td></tr>
+<tr class="memitem:ad121e0fb7e9a191d700db357e81824bb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#ad121e0fb7e9a191d700db357e81824bb">base_type</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a52056fda9ca0676d15d891605d3d475b">json_details::unwrapped_t</a>&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a> &gt;</td></tr>
 <tr class="separator:ad121e0fb7e9a191d700db357e81824bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a535a8e8337c7c00fdaf38ea285595361"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a535a8e8337c7c00fdaf38ea285595361">constructor_t</a> = std::conditional_t&lt; std::is_same_v&lt; Constructor, json_deduce_type &gt;, std::conditional_t&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a>==<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881a05ce745d91b630573ce1c1dfa1e747b4">JsonNullable::MustExist</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1default__constructor.html">default_constructor</a>&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a> &gt;, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1nullable__constructor.html">nullable_constructor</a>&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a> &gt; &gt;, Constructor &gt;</td></tr>
-<tr class="separator:a535a8e8337c7c00fdaf38ea285595361"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeb6881998707364cccec81333fea362"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#afeb6881998707364cccec81333fea362">constructor_t</a> = std::conditional_t&lt; std::is_same_v&lt; Constructor, json_deduce_type &gt;, std::conditional_t&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a>==<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367a05ce745d91b630573ce1c1dfa1e747b4">JsonNullable::MustExist</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1default__constructor.html">default_constructor</a>&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a> &gt;, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1nullable__constructor.html">nullable_constructor</a>&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a> &gt; &gt;, Constructor &gt;</td></tr>
+<tr class="separator:afeb6881998707364cccec81333fea362"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1cf02ad5d2b62dc1661c3cd8dca44cc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a> = std::conditional_t&lt; std::is_same_v&lt; Container, json_deduce_type &gt;, std::vector&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> &gt;, Container &gt;</td></tr>
 <tr class="separator:aa1cf02ad5d2b62dc1661c3cd8dca44cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a383394509315de29963d5800bd4979ff"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a383394509315de29963d5800bd4979ff">i_am_a_json_type</a> = void</td></tr>
 <tr class="separator:a383394509315de29963d5800bd4979ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98461f334724c4d7639c8a99a563aaa2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> = typename json_element_t::parse_to_t</td></tr>
 <tr class="separator:a98461f334724c4d7639c8a99a563aaa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2386075a3a534c7ff1952c9978668a5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#af2386075a3a534c7ff1952c9978668a5">json_element_t</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ad916d23d285e651ee7d73d402da53fb9">json_details::json_deduced_type</a>&lt; JsonElement &gt;</td></tr>
+<tr class="memitem:af2386075a3a534c7ff1952c9978668a5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#af2386075a3a534c7ff1952c9978668a5">json_element_t</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a1de4f3bec3f2a04077cb22986cb6f4b1">json_details::json_deduced_type</a>&lt; JsonElement &gt;</td></tr>
 <tr class="separator:af2386075a3a534c7ff1952c9978668a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f1a70b56e46f4474b1162f3a041e8b9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a8f1a70b56e46f4474b1162f3a041e8b9">parse_to_t</a> = typename <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a158d3d131059c3035d8742cfecd566e9">json_details::construction_result</a>&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a> !=<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881a05ce745d91b630573ce1c1dfa1e747b4">JsonNullable::MustExist</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a535a8e8337c7c00fdaf38ea285595361">constructor_t</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> const *, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> const * &gt;::type</td></tr>
-<tr class="separator:a8f1a70b56e46f4474b1162f3a041e8b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b58b4ab122915d549e0b88e622feb1a"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> NewName&gt; </td></tr>
-<tr class="memitem:a4b58b4ab122915d549e0b88e622feb1a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a4b58b4ab122915d549e0b88e622feb1a">with_name</a> = <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__array.html">daw::json::json_array</a>&lt; NewName, JsonElement, Container, Constructor, Nullable &gt;</td></tr>
-<tr class="separator:a4b58b4ab122915d549e0b88e622feb1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d9388399bddcd04a75deb0c46471464"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a8d9388399bddcd04a75deb0c46471464">parse_to_t</a> = typename <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a158d3d131059c3035d8742cfecd566e9">json_details::construction_result</a>&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a> !=<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367a05ce745d91b630573ce1c1dfa1e747b4">JsonNullable::MustExist</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#afeb6881998707364cccec81333fea362">constructor_t</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> const *, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> const * &gt;::type</td></tr>
+<tr class="separator:a8d9388399bddcd04a75deb0c46471464"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c375b3615a1aea88caad98076548f34"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a8c375b3615a1aea88caad98076548f34">without_name</a> = <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">json_array</a></td></tr>
 <tr class="separator:a8c375b3615a1aea88caad98076548f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:ab578f45a8000cb5f9532c59bac8a1003"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#ab578f45a8000cb5f9532c59bac8a1003">base_expected_type</a></td></tr>
+<tr class="memitem:ab578f45a8000cb5f9532c59bac8a1003"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#ab578f45a8000cb5f9532c59bac8a1003">base_expected_type</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a4410ec34d9e6c1a68100ca0ce033fb17">JsonParseTypes::Array</a></td></tr>
 <tr class="separator:ab578f45a8000cb5f9532c59bac8a1003"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a004f724b4c537984f9ed59c7a24f0d92"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a004f724b4c537984f9ed59c7a24f0d92">expected_type</a></td></tr>
 <tr class="separator:a004f724b4c537984f9ed59c7a24f0d92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affa40761b9cd2432c389d4e643da03b7"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#affa40761b9cd2432c389d4e643da03b7">must_be_class_member</a> = false</td></tr>
 <tr class="separator:affa40761b9cd2432c389d4e643da03b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27ec8d3467b38606b3c16569c9327a60"><td class="memItemLeft" align="right" valign="top">static constexpr daw::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a27ec8d3467b38606b3c16569c9327a60">name</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a922bb1b4e6e7243e15691c63597dbe9b">no_name</a></td></tr>
-<tr class="separator:a27ec8d3467b38606b3c16569c9327a60"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e801bb3e86d11cf0adb54c0baabaa2c"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a> = Nullable</td></tr>
+<tr class="memitem:a0e801bb3e86d11cf0adb54c0baabaa2c"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a> = Nullable</td></tr>
 <tr class="separator:a0e801bb3e86d11cf0adb54c0baabaa2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5814b1b0fc4e76eeffc50cd60e0c61b4"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">JsonBaseParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a5814b1b0fc4e76eeffc50cd60e0c61b4">underlying_json_type</a></td></tr>
+<tr class="memitem:a5814b1b0fc4e76eeffc50cd60e0c61b4"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">JsonBaseParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a5814b1b0fc4e76eeffc50cd60e0c61b4">underlying_json_type</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487a4410ec34d9e6c1a68100ca0ce033fb17">JsonBaseParseTypes::Array</a></td></tr>
 <tr class="separator:a5814b1b0fc4e76eeffc50cd60e0c61b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
@@ -130,26 +116,26 @@ Static Public Attributes</h2></td></tr>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#ad121e0fb7e9a191d700db357e81824bb">base_type</a> =  <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ad84b7edc3a2f04e1e151433c26ce9c05">json_details::unwrapped_t</a>&lt;<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a>&gt;</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#ad121e0fb7e9a191d700db357e81824bb">base_type</a> =  <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a52056fda9ca0676d15d891605d3d475b">json_details::unwrapped_t</a>&lt;<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a535a8e8337c7c00fdaf38ea285595361" name="a535a8e8337c7c00fdaf38ea285595361"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a535a8e8337c7c00fdaf38ea285595361">&#9670;&nbsp;</a></span>constructor_t</h2>
+<a id="afeb6881998707364cccec81333fea362" name="afeb6881998707364cccec81333fea362"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeb6881998707364cccec81333fea362">&#9670;&nbsp;</a></span>constructor_t</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a535a8e8337c7c00fdaf38ea285595361">constructor_t</a> =  std::conditional_t&lt; std::is_same_v&lt;Constructor, json_deduce_type&gt;, std::conditional_t&lt;<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a> == <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881a05ce745d91b630573ce1c1dfa1e747b4">JsonNullable::MustExist</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1default__constructor.html">default_constructor</a>&lt;<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a>&gt;, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1nullable__constructor.html">nullable_constructor</a>&lt;<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a>&gt; &gt;, Constructor&gt;</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#afeb6881998707364cccec81333fea362">constructor_t</a> =  std::conditional_t&lt;std::is_same_v&lt;Constructor, json_deduce_type&gt;, std::conditional_t&lt;<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a> == <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367a05ce745d91b630573ce1c1dfa1e747b4">JsonNullable::MustExist</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1default__constructor.html">default_constructor</a>&lt;<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a>&gt;, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1nullable__constructor.html">nullable_constructor</a>&lt;<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a>&gt; &gt;, Constructor&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -162,7 +148,7 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#aa1cf02ad5d2b62dc1661c3cd8dca44cc">container_t</a> =  std::conditional_t&lt;std::is_same_v&lt;Container, json_deduce_type&gt;, std::vector&lt;<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a>&gt;, Container&gt;</td>
@@ -178,7 +164,7 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a383394509315de29963d5800bd4979ff">i_am_a_json_type</a> =  void</td>
@@ -194,7 +180,7 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> =  typename json_element_t::parse_to_t</td>
@@ -210,44 +196,26 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#af2386075a3a534c7ff1952c9978668a5">json_element_t</a> =  <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ad916d23d285e651ee7d73d402da53fb9">json_details::json_deduced_type</a>&lt;JsonElement&gt;</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#af2386075a3a534c7ff1952c9978668a5">json_element_t</a> =  <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a1de4f3bec3f2a04077cb22986cb6f4b1">json_details::json_deduced_type</a>&lt;JsonElement&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a8f1a70b56e46f4474b1162f3a041e8b9" name="a8f1a70b56e46f4474b1162f3a041e8b9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8f1a70b56e46f4474b1162f3a041e8b9">&#9670;&nbsp;</a></span>parse_to_t</h2>
+<a id="a8d9388399bddcd04a75deb0c46471464" name="a8d9388399bddcd04a75deb0c46471464"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d9388399bddcd04a75deb0c46471464">&#9670;&nbsp;</a></span>parse_to_t</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a8f1a70b56e46f4474b1162f3a041e8b9">parse_to_t</a> =  typename <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a158d3d131059c3035d8742cfecd566e9">json_details::construction_result</a>&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a> != <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881a05ce745d91b630573ce1c1dfa1e747b4">JsonNullable::MustExist</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a535a8e8337c7c00fdaf38ea285595361">constructor_t</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> const *, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> const *&gt;::type</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a4b58b4ab122915d549e0b88e622feb1a" name="a4b58b4ab122915d549e0b88e622feb1a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4b58b4ab122915d549e0b88e622feb1a">&#9670;&nbsp;</a></span>with_name</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
-<div class="memtemplate">
-template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> NewName&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a4b58b4ab122915d549e0b88e622feb1a">with_name</a> =  <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__array.html">daw::json::json_array</a>&lt;NewName, JsonElement, Container, Constructor, Nullable&gt;</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a8d9388399bddcd04a75deb0c46471464">parse_to_t</a> =  typename <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a158d3d131059c3035d8742cfecd566e9">json_details::construction_result</a>&lt;<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a0e801bb3e86d11cf0adb54c0baabaa2c">nullable</a> != <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367a05ce745d91b630573ce1c1dfa1e747b4">JsonNullable::MustExist</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#afeb6881998707364cccec81333fea362">constructor_t</a>, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> const *, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a98461f334724c4d7639c8a99a563aaa2">json_element_parse_to_t</a> const *&gt;::type</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -260,7 +228,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html#a8c375b3615a1aea88caad98076548f34">without_name</a> =  <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">json_array</a></td>
@@ -277,13 +245,13 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::base_expected_type</td>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::base_expected_type = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a4410ec34d9e6c1a68100ca0ce033fb17">JsonParseTypes::Array</a></td>
         </tr>
       </table>
   </td>
@@ -292,10 +260,7 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">          <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a4410ec34d9e6c1a68100ca0ce033fb17">JsonParseTypes::Array</a></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_a08a2ab70588cc1921dda10f110406119a4410ec34d9e6c1a68100ca0ce033fb17"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a4410ec34d9e6c1a68100ca0ce033fb17">daw::json::DAW_JSON_VER::JsonParseTypes::Array</a></div><div class="ttdeci">@ Array</div><div class="ttdoc">A class type with named members.</div></div>
-</div><!-- fragment -->
+
 </div>
 </div>
 <a id="a004f724b4c537984f9ed59c7a24f0d92" name="a004f724b4c537984f9ed59c7a24f0d92"></a>
@@ -304,7 +269,7 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -330,7 +295,7 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -348,43 +313,19 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
 
 </div>
 </div>
-<a id="a27ec8d3467b38606b3c16569c9327a60" name="a27ec8d3467b38606b3c16569c9327a60"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a27ec8d3467b38606b3c16569c9327a60">&#9670;&nbsp;</a></span>name</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr daw::string_view <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::name = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a922bb1b4e6e7243e15691c63597dbe9b">no_name</a></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a0e801bb3e86d11cf0adb54c0baabaa2c" name="a0e801bb3e86d11cf0adb54c0baabaa2c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0e801bb3e86d11cf0adb54c0baabaa2c">&#9670;&nbsp;</a></span>nullable</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::nullable = Nullable</td>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::nullable = Nullable</td>
         </tr>
       </table>
   </td>
@@ -402,13 +343,13 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;typename JsonElement , typename Container , typename Constructor , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">JsonBaseParseTypes</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::underlying_json_type</td>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">JsonBaseParseTypes</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__base_1_1json__array.html">daw::json::DAW_JSON_VER::json_base::json_array</a>&lt; JsonElement, Container, Constructor, Nullable &gt;::underlying_json_type = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487a4410ec34d9e6c1a68100ca0ce033fb17">JsonBaseParseTypes::Array</a></td>
         </tr>
       </table>
   </td>
@@ -417,10 +358,7 @@ template&lt;typename JsonElement , typename Container , typename Constructor , <
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">          <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487a4410ec34d9e6c1a68100ca0ce033fb17">JsonBaseParseTypes::Array</a></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_a9fa3d743161867acbc830a21ef6a9487a4410ec34d9e6c1a68100ca0ce033fb17"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487a4410ec34d9e6c1a68100ca0ce033fb17">daw::json::DAW_JSON_VER::JsonBaseParseTypes::Array</a></div><div class="ttdeci">@ Array</div></div>
-</div><!-- fragment -->
+
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>

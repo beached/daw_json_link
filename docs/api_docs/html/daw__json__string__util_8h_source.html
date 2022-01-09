@@ -91,193 +91,176 @@ $(function() {
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#if defined( __GNUC__ )</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#define DAW_CAN_CONSTANT_EVAL( ... ) \</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">  ( __builtin_constant_p( __VA_ARGS__ ) == 1 )</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">   25</a></span><span class="preprocessor">#define DAW_CAN_CONSTANT_EVAL( ... ) true</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code hl_define" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">namespace </span>json_details {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span> c, <span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_<span class="keywordtype">long</span>, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#abecc92b478c2e90574ab184796b80f3a">   42</a></span>      <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#abecc92b478c2e90574ab184796b80f3a">memchr_unchecked</a>( CharT *first, CharT *last ) {</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#if DAW_HAS_BUILTIN( __builtin_char_memchr )</span></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>          <span class="keywordflow">return</span> __builtin_char_memchr(</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            first, <span class="charliteral">&#39;&quot;&#39;</span>, <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( last - first ) );</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#define DAW_CAN_CONSTANT_EVAL( ... ) ( __builtin_constant_p( __VA_ARGS__ ) == 1 )</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">   24</a></span><span class="preprocessor">#define DAW_CAN_CONSTANT_EVAL( ... ) true</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  <a class="code hl_define" href="version_8h.html#a954d0757ae48f08a6d2c60447b060ad9">DAW_JSON_INLINE_NS</a> <span class="keyword">namespace </span><a class="code hl_define" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">namespace </span>json_details {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span> c, <span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_<span class="keywordtype">long</span>, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#abecc92b478c2e90574ab184796b80f3a">   40</a></span>      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *<a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#abecc92b478c2e90574ab184796b80f3a">memchr_unchecked</a>( CharT *first, CharT *last ) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#if DAW_HAS_BUILTIN( __builtin_char_memchr )</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>          <span class="keywordflow">return</span> __builtin_char_memchr( first, <span class="charliteral">&#39;&quot;&#39;</span>, <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( last - first ) );</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordtype">bool</span> is_cxeval = DAW_IS_CONSTANT_EVALUATED( ) | <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordtype">bool</span> is_cxeval =</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>          DAW_IS_CONSTANT_EVALUATED( ) | <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordtype">bool</span> is_cxeval = <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>          <span class="keywordflow">if</span>( ( not is_cxeval ) |</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>              daw::traits::not_same_v&lt;ExecTag, constexpr_exec_tag&gt; ) {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>CharT *<span class="keyword">&gt;</span>(</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>              std::memchr( <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span> <span class="keyword">const </span>*<span class="keyword">&gt;</span>( first ), <span class="charliteral">&#39;&quot;&#39;</span>,</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                           <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( last - first ) ) );</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>          }</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>          (void)last;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>          <span class="keywordflow">while</span>( *first != c ) {</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            ++first;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>          }</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>          <span class="keywordflow">return</span> first;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        } <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        {</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>          (void)last;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>          <span class="keywordflow">while</span>( *first != c ) {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            ++first;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>          }</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>          <span class="keywordflow">return</span> first;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        }</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>      }</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span> c, <span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_<span class="keywordtype">long</span>, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7e318a48d5850e056d4c923fe466ac69">   89</a></span>      <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7e318a48d5850e056d4c923fe466ac69">memchr_checked</a>( CharT *first, CharT *last ) {</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="preprocessor">#if DAW_HAS_BUILTIN( __builtin_char_memchr )</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>          <span class="keywordflow">return</span> __builtin_char_memchr(</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            first, <span class="charliteral">&#39;&quot;&#39;</span>, <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( last - first ) );</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        } <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordtype">bool</span> is_cxeval =</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>          DAW_IS_CONSTANT_EVALUATED( ) | <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordtype">bool</span> is_cxeval = <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>          <span class="keywordflow">if</span>( ( not is_cxeval ) |</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>              daw::traits::not_same_v&lt;ExecTag, constexpr_exec_tag&gt; ) {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>CharT *<span class="keyword">&gt;</span>(</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>              std::memchr( <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span> <span class="keyword">const </span>*<span class="keyword">&gt;</span>( first ), <span class="charliteral">&#39;&quot;&#39;</span>,</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                           <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( last - first ) ) );</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>          }</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>          <span class="keywordflow">while</span>( DAW_LIKELY( first &lt; last ) and *first != c ) {</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            ++first;</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>          }</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>          <span class="keywordflow">return</span> first;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        } <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        {</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>          <span class="keywordflow">while</span>( DAW_LIKELY( first &lt; last ) and *first != c ) {</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            ++first;</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>          }</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>          <span class="keywordflow">return</span> first;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        }</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>      }</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_long, <span class="keywordtype">char</span>... chars,</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>               <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa8e7ed8c34b00cd8eefe4c6a0eaa4aae">  126</a></span>      <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa8e7ed8c34b00cd8eefe4c6a0eaa4aae">mempbrk_unchecked</a>( CharT *first, CharT * <span class="comment">/*last*/</span> ) {</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="preprocessor">#if DAW_HAS_BUILTIN( __builtin_strpbrk )</span></div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>          <span class="keyword">constexpr</span> <span class="keywordtype">char</span> <span class="keyword">const</span> needles[]{ chars..., <span class="charliteral">&#39;\0&#39;</span> };</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>          CharT *res = __builtin_strpbrk( first, needles );</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="preprocessor">#if not defined( NDEBUG )</span></div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>          <a class="code hl_define" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( res != <span class="keyword">nullptr</span>, ErrorReason::UnexpectedEndOfData );</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>          <span class="keywordflow">return</span> res;</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        } <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span><span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keywordtype">bool</span> is_cxeval =</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>          DAW_IS_CONSTANT_EVALUATED( ) | <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordtype">bool</span> is_cxeval = <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>          <span class="keywordflow">if</span>( ( not is_cxeval ) |</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>              daw::traits::not_same_v&lt;ExecTag, constexpr_exec_tag&gt; ) {</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            <span class="keyword">constexpr</span> <span class="keywordtype">char</span> <span class="keyword">const</span> needles[]{ chars..., <span class="charliteral">&#39;\0&#39;</span> };</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            CharT *res = std::strpbrk( first, needles );</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="preprocessor">#if not defined( NDEBUG )</span></div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            <a class="code hl_define" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( res != <span class="keyword">nullptr</span>, ErrorReason::UnexpectedEndOfData );</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            <span class="keywordflow">return</span> res;</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>          }</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>          <span class="keywordflow">while</span>( not parse_policy_details::in&lt;chars...&gt;( *first ) ) {</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>            ++first;</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>          }</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>          <span class="keywordflow">return</span> first;</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        } <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        {</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>          <span class="keywordflow">while</span>( not parse_policy_details::in&lt;chars...&gt;( *first ) ) {</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>            ++first;</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>          }</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>          <span class="keywordflow">return</span> first;</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        }</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>      }</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_long, <span class="keywordtype">char</span>... chars,</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>               <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af101b5569cda85f3bee4a7188f214199">  170</a></span>      <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af101b5569cda85f3bee4a7188f214199">mempbrk_checked</a>( CharT *first, CharT *last ) {</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>          <span class="keywordtype">bool</span> is_cxeval =</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            DAW_IS_CONSTANT_EVALUATED( ) | <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>          <span class="keywordtype">bool</span> is_cxeval = <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>          <span class="keywordflow">if</span>( ( not is_cxeval ) |</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>              daw::traits::not_same_v&lt;ExecTag, constexpr_exec_tag&gt; ) {</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a79c567f1fd7e926b341ae0f02aaf292e">mem_move_to_next_of</a>&lt;<span class="keyword">false</span>, chars...&gt;( first, last );</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>          }</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>          <span class="keywordflow">while</span>( DAW_LIKELY( first &lt; last ) and</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                 not <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1parse__policy__details.html#af80bc3acaec59df7058a7530f2b49cfe">parse_policy_details::in</a>&lt;chars...&gt;( *first ) ) {</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            ++first;</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>          }</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordtype">bool</span> is_cxeval = <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>          <span class="keywordflow">if</span>( ( not is_cxeval ) | daw::traits::not_same_v&lt;ExecTag, constexpr_exec_tag&gt; ) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>CharT *<span class="keyword">&gt;</span>( std::memchr( <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span> <span class="keyword">const </span>*<span class="keyword">&gt;</span>( first ),</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                                      <span class="charliteral">&#39;&quot;&#39;</span>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                                      <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( last - first ) ) );</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>          }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>          (void)last;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>          <span class="keywordflow">while</span>( *first != c ) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            ++first;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>          }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>          (void)last;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>          <span class="keywordflow">while</span>( *first != c ) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            ++first;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>          }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>      }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span> c, <span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_<span class="keywordtype">long</span>, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7e318a48d5850e056d4c923fe466ac69">   83</a></span>      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *<a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7e318a48d5850e056d4c923fe466ac69">memchr_checked</a>( CharT *first, CharT *last ) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="preprocessor">#if DAW_HAS_BUILTIN( __builtin_char_memchr )</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>          <span class="keywordflow">return</span> __builtin_char_memchr( first, <span class="charliteral">&#39;&quot;&#39;</span>, <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( last - first ) );</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordtype">bool</span> is_cxeval = DAW_IS_CONSTANT_EVALUATED( ) | <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordtype">bool</span> is_cxeval = <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>          <span class="keywordflow">if</span>( ( not is_cxeval ) | daw::traits::not_same_v&lt;ExecTag, constexpr_exec_tag&gt; ) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>CharT *<span class="keyword">&gt;</span>( std::memchr( <span class="keyword">static_cast&lt;</span><span class="keywordtype">void</span> <span class="keyword">const </span>*<span class="keyword">&gt;</span>( first ),</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                                                      <span class="charliteral">&#39;&quot;&#39;</span>,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                                                      <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( last - first ) ) );</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>          }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>          <span class="keywordflow">while</span>( DAW_LIKELY( first &lt; last ) and *first != c ) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            ++first;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>          }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>          <span class="keywordflow">while</span>( DAW_LIKELY( first &lt; last ) and *first != c ) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            ++first;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>          }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>      }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_long, <span class="keywordtype">char</span>... chars, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa8e7ed8c34b00cd8eefe4c6a0eaa4aae">  115</a></span>      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *<a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa8e7ed8c34b00cd8eefe4c6a0eaa4aae">mempbrk_unchecked</a>( CharT *first,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                                                                       CharT * <span class="comment">/*last*/</span> ) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="preprocessor">#if DAW_HAS_BUILTIN( __builtin_strpbrk )</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>          <span class="keyword">constexpr</span> <span class="keywordtype">char</span> <span class="keyword">const</span> needles[]{ chars..., <span class="charliteral">&#39;\0&#39;</span> };</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>          CharT *res = __builtin_strpbrk( first, needles );</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="preprocessor">#if not defined( NDEBUG )</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>          <a class="code hl_define" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( res != <span class="keyword">nullptr</span>, ErrorReason::UnexpectedEndOfData );</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>          <span class="keywordflow">return</span> res;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordtype">bool</span> is_cxeval = DAW_IS_CONSTANT_EVALUATED( ) | <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keywordtype">bool</span> is_cxeval = <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>          <span class="keywordflow">if</span>( ( not is_cxeval ) | daw::traits::not_same_v&lt;ExecTag, constexpr_exec_tag&gt; ) {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            <span class="keyword">constexpr</span> <span class="keywordtype">char</span> <span class="keyword">const</span> needles[]{ chars..., <span class="charliteral">&#39;\0&#39;</span> };</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            CharT *res = std::strpbrk( first, needles );</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="preprocessor">#if not defined( NDEBUG )</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            <a class="code hl_define" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( res != <span class="keyword">nullptr</span>, ErrorReason::UnexpectedEndOfData );</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            <span class="keywordflow">return</span> res;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>          }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>          <span class="keywordflow">while</span>( not parse_policy_details::in&lt;chars...&gt;( *first ) ) {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            ++first;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>          }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        {</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>          <span class="keywordflow">while</span>( not parse_policy_details::in&lt;chars...&gt;( *first ) ) {</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            ++first;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>          }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>      }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_long, <span class="keywordtype">char</span>... chars, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af101b5569cda85f3bee4a7188f214199">  156</a></span>      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *<a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af101b5569cda85f3bee4a7188f214199">mempbrk_checked</a>( CharT *first, CharT *last ) {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( expect_long ) {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>          <span class="keywordtype">bool</span> is_cxeval = DAW_IS_CONSTANT_EVALUATED( ) | <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>          <span class="keywordtype">bool</span> is_cxeval = <a class="code hl_define" href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a>( first );</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>          <span class="keywordflow">if</span>( ( not is_cxeval ) | daw::traits::not_same_v&lt;ExecTag, constexpr_exec_tag&gt; ) {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a6bfc5bd6c942e48086720132453d2af4">mem_move_to_next_of</a>&lt;<span class="keyword">false</span>, chars...&gt;( first, last );</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>          }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>          <span class="keywordflow">while</span>( DAW_LIKELY( first &lt; last ) and not <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1parse__policy__details.html#af80bc3acaec59df7058a7530f2b49cfe">parse_policy_details::in</a>&lt;chars...&gt;( *first ) ) {</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            ++first;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>          }</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>          <span class="keywordflow">while</span>( DAW_LIKELY( first &lt; last ) and not <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1parse__policy__details.html#af80bc3acaec59df7058a7530f2b49cfe">parse_policy_details::in</a>&lt;chars...&gt;( *first ) ) {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            ++first;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>          }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        }</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>      }</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> is_unchecked_input,</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>               <span class="keyword">typename</span> ExecTag,</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>               <span class="keywordtype">bool</span> expect_long,</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>               <span class="keywordtype">char</span>... chars,</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>               <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a89d206ab077f7865ab207cc0f0d8445a">  184</a></span>      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *<a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a89d206ab077f7865ab207cc0f0d8445a">mempbrk</a>( CharT *first, CharT *last ) {</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( is_unchecked_input ) {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>          <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa8e7ed8c34b00cd8eefe4c6a0eaa4aae">mempbrk_unchecked</a>&lt;ExecTag, expect_long, chars...&gt;( first, last );</div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>          <span class="keywordflow">while</span>( DAW_LIKELY( first &lt; last ) and</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                 not <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1parse__policy__details.html#af80bc3acaec59df7058a7530f2b49cfe">parse_policy_details::in</a>&lt;chars...&gt;( *first ) ) {</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            ++first;</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>          }</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>          <span class="keywordflow">return</span> first;</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        }</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>      }</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> is_unchecked_input, <span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_long,</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>               <span class="keywordtype">char</span>... chars, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a89d206ab077f7865ab207cc0f0d8445a">  199</a></span>      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *<a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a89d206ab077f7865ab207cc0f0d8445a">mempbrk</a>( CharT *first,</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                                                             CharT *last ) {</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( is_unchecked_input ) {</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>          <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa8e7ed8c34b00cd8eefe4c6a0eaa4aae">mempbrk_unchecked</a>&lt;ExecTag, expect_long, chars...&gt;( first,</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>                                                                    last );</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>          <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa8e7ed8c34b00cd8eefe4c6a0eaa4aae">mempbrk_unchecked</a>&lt;ExecTag, expect_long, chars...&gt;( first,</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>                                                                    last );</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        }</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>      }</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>} <span class="comment">// namespace daw::json</span></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a7eec2e453676338364b2bb153a5fce45"><div class="ttname"><a href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a></div><div class="ttdeci">#define daw_json_assert(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:179</div></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>          <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa8e7ed8c34b00cd8eefe4c6a0eaa4aae">mempbrk_unchecked</a>&lt;ExecTag, expect_long, chars...&gt;( first, last );</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>      }</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a7eec2e453676338364b2bb153a5fce45"><div class="ttname"><a href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a></div><div class="ttdeci">#define daw_json_assert(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:176</div></div>
 <div class="ttc" id="adaw__json__exec__modes_8h_html"><div class="ttname"><a href="daw__json__exec__modes_8h.html">daw_json_exec_modes.h</a></div></div>
 <div class="ttc" id="adaw__json__parse__policy__policy__details_8h_html"><div class="ttname"><a href="daw__json__parse__policy__policy__details_8h.html">daw_json_parse_policy_policy_details.h</a></div></div>
-<div class="ttc" id="adaw__json__string__util_8h_html_a8cb0d4148c769e159049833bde8aadf9"><div class="ttname"><a href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a></div><div class="ttdeci">#define DAW_CAN_CONSTANT_EVAL(...)</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:25</div></div>
+<div class="ttc" id="adaw__json__string__util_8h_html_a8cb0d4148c769e159049833bde8aadf9"><div class="ttname"><a href="daw__json__string__util_8h.html#a8cb0d4148c769e159049833bde8aadf9">DAW_CAN_CONSTANT_EVAL</a></div><div class="ttdeci">#define DAW_CAN_CONSTANT_EVAL(...)</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:24</div></div>
 <div class="ttc" id="adaw__not__const__ex__functions_8h_html"><div class="ttname"><a href="daw__not__const__ex__functions_8h.html">daw_not_const_ex_functions.h</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a79c567f1fd7e926b341ae0f02aaf292e"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a79c567f1fd7e926b341ae0f02aaf292e">daw::json::DAW_JSON_VER::json_details::mem_move_to_next_of</a></div><div class="ttdeci">DAW_ATTRIB_INLINE CharT * mem_move_to_next_of(runtime_exec_tag, CharT *first, CharT *last)</div><div class="ttdef"><b>Definition:</b> daw_not_const_ex_functions.h:353</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a7e318a48d5850e056d4c923fe466ac69"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7e318a48d5850e056d4c923fe466ac69">daw::json::DAW_JSON_VER::json_details::memchr_checked</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE CharT * memchr_checked(CharT *first, CharT *last)</div><div class="ttdoc">Search for a character in a string.</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:89</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a89d206ab077f7865ab207cc0f0d8445a"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a89d206ab077f7865ab207cc0f0d8445a">daw::json::DAW_JSON_VER::json_details::mempbrk</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE CharT * mempbrk(CharT *first, CharT *last)</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:199</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_aa8e7ed8c34b00cd8eefe4c6a0eaa4aae"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa8e7ed8c34b00cd8eefe4c6a0eaa4aae">daw::json::DAW_JSON_VER::json_details::mempbrk_unchecked</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE CharT * mempbrk_unchecked(CharT *first, CharT *)</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:126</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_abecc92b478c2e90574ab184796b80f3a"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#abecc92b478c2e90574ab184796b80f3a">daw::json::DAW_JSON_VER::json_details::memchr_unchecked</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE CharT * memchr_unchecked(CharT *first, CharT *last)</div><div class="ttdoc">Search for a character in a string.</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:42</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_af101b5569cda85f3bee4a7188f214199"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af101b5569cda85f3bee4a7188f214199">daw::json::DAW_JSON_VER::json_details::mempbrk_checked</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE CharT * mempbrk_checked(CharT *first, CharT *last)</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:170</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a6bfc5bd6c942e48086720132453d2af4"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a6bfc5bd6c942e48086720132453d2af4">daw::json::DAW_JSON_VER::json_details::mem_move_to_next_of</a></div><div class="ttdeci">DAW_ATTRIB_INLINE daw::not_null&lt; CharT * &gt; mem_move_to_next_of(runtime_exec_tag, daw::not_null&lt; CharT * &gt; first, daw::not_null&lt; CharT * &gt; last)</div><div class="ttdef"><b>Definition:</b> daw_not_const_ex_functions.h:353</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a7e318a48d5850e056d4c923fe466ac69"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7e318a48d5850e056d4c923fe466ac69">daw::json::DAW_JSON_VER::json_details::memchr_checked</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE CharT * memchr_checked(CharT *first, CharT *last)</div><div class="ttdoc">Search for a character in a string.</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:83</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a89d206ab077f7865ab207cc0f0d8445a"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a89d206ab077f7865ab207cc0f0d8445a">daw::json::DAW_JSON_VER::json_details::mempbrk</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE CharT * mempbrk(CharT *first, CharT *last)</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:184</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_aa8e7ed8c34b00cd8eefe4c6a0eaa4aae"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa8e7ed8c34b00cd8eefe4c6a0eaa4aae">daw::json::DAW_JSON_VER::json_details::mempbrk_unchecked</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE CharT * mempbrk_unchecked(CharT *first, CharT *)</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:115</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_abecc92b478c2e90574ab184796b80f3a"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#abecc92b478c2e90574ab184796b80f3a">daw::json::DAW_JSON_VER::json_details::memchr_unchecked</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE CharT * memchr_unchecked(CharT *first, CharT *last)</div><div class="ttdoc">Search for a character in a string.</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:40</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_af101b5569cda85f3bee4a7188f214199"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af101b5569cda85f3bee4a7188f214199">daw::json::DAW_JSON_VER::json_details::mempbrk_checked</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE CharT * mempbrk_checked(CharT *first, CharT *last)</div><div class="ttdef"><b>Definition:</b> daw_json_string_util.h:156</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1parse__policy__details_html_af80bc3acaec59df7058a7530f2b49cfe"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1parse__policy__details.html#af80bc3acaec59df7058a7530f2b49cfe">daw::json::DAW_JSON_VER::parse_policy_details::in</a></div><div class="ttdeci">constexpr DAW_ATTRIB_FLATINLINE bool in(char c)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_policy_details.h:19</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> daw_from_json.h:22</div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> version.h:16</div></div>
+<div class="ttc" id="aversion_8h_html_a954d0757ae48f08a6d2c60447b060ad9"><div class="ttname"><a href="version_8h.html#a954d0757ae48f08a6d2c60447b060ad9">DAW_JSON_INLINE_NS</a></div><div class="ttdeci">#define DAW_JSON_INLINE_NS</div><div class="ttdef"><b>Definition:</b> version.h:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

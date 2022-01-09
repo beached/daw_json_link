@@ -75,6 +75,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;daw/daw_cxmath.h&gt;</code><br />
+<code>#include &lt;daw/daw_not_null.h&gt;</code><br />
 <code>#include &lt;daw/daw_uint_buffer.h&gt;</code><br />
 <code>#include &lt;array&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
@@ -95,15 +96,15 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a07caaa5843106ab2391339d94b4c9416"><td class="memTemplParams" colspan="2">template&lt;typename Predicate &gt; </td></tr>
-<tr class="memitem:a07caaa5843106ab2391339d94b4c9416"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE std::int32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a07caaa5843106ab2391339d94b4c9416">daw::json::DAW_JSON_VER::json_details::count_4digits</a> (char const *first, Predicate pred)</td></tr>
-<tr class="separator:a07caaa5843106ab2391339d94b4c9416"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92dbb71a144f63d4c48b69ef7bad5075"><td class="memTemplParams" colspan="2">template&lt;typename Predicate &gt; </td></tr>
-<tr class="memitem:a92dbb71a144f63d4c48b69ef7bad5075"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE std::int32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a92dbb71a144f63d4c48b69ef7bad5075">daw::json::DAW_JSON_VER::json_details::count_8digits</a> (char const *first, Predicate pred)</td></tr>
-<tr class="separator:a92dbb71a144f63d4c48b69ef7bad5075"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2bac5119d3f44a8ecdd096173fbefe0b"><td class="memTemplParams" colspan="2">template&lt;typename CharT &gt; </td></tr>
-<tr class="memitem:a2bac5119d3f44a8ecdd096173fbefe0b"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATTEN CharT *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a2bac5119d3f44a8ecdd096173fbefe0b">daw::json::DAW_JSON_VER::json_details::count_digits</a> (CharT *first, CharT *last)</td></tr>
-<tr class="separator:a2bac5119d3f44a8ecdd096173fbefe0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a611aa96ef6d60975815a7a4bbce5f9de"><td class="memTemplParams" colspan="2">template&lt;typename Predicate &gt; </td></tr>
+<tr class="memitem:a611aa96ef6d60975815a7a4bbce5f9de"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE std::int32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a611aa96ef6d60975815a7a4bbce5f9de">daw::json::DAW_JSON_VER::json_details::count_4digits</a> (daw::not_null&lt; char const * &gt; first, Predicate pred)</td></tr>
+<tr class="separator:a611aa96ef6d60975815a7a4bbce5f9de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30132f8da5557720968fefa5b899a21d"><td class="memTemplParams" colspan="2">template&lt;typename Predicate &gt; </td></tr>
+<tr class="memitem:a30132f8da5557720968fefa5b899a21d"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE std::int32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a30132f8da5557720968fefa5b899a21d">daw::json::DAW_JSON_VER::json_details::count_8digits</a> (daw::not_null&lt; char const * &gt; first, Predicate pred)</td></tr>
+<tr class="separator:a30132f8da5557720968fefa5b899a21d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0f99fa88e564adcb7059d6b6c739c33"><td class="memTemplParams" colspan="2">template&lt;typename CharT &gt; </td></tr>
+<tr class="memitem:af0f99fa88e564adcb7059d6b6c739c33"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATTEN daw::not_null&lt; CharT * &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af0f99fa88e564adcb7059d6b6c739c33">daw::json::DAW_JSON_VER::json_details::count_digits</a> (daw::not_null&lt; CharT * &gt; first, daw::not_null&lt; CharT * &gt; last)</td></tr>
+<tr class="separator:af0f99fa88e564adcb7059d6b6c739c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

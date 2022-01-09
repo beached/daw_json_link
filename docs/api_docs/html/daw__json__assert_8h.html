@@ -199,6 +199,8 @@ Variables</h2></td></tr>
 <div class="line">      if( DAW_UNLIKELY( not( Bool ) ) ) {                \</div>
 <div class="line">        daw_json_error( __VA_ARGS__ );                   \</div>
 <div class="line">      }                                                  \</div>
+<div class="line">    } <span class="keywordflow">else</span> {                                             \</div>
+<div class="line">      DAW_ASSUME( ( Bool ) );                            \</div>
 <div class="line">    }                                                    \</div>
 <div class="line">  } <span class="keywordflow">while</span>( <span class="keyword">false</span> )</div>
 </div><!-- fragment -->

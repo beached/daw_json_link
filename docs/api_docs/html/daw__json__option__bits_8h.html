@@ -70,14 +70,15 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">daw_json_option_bits.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;daw/cpp_17.h&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="daw__json__enums_8h_source.html">daw_json_enums.h</a>&quot;</code><br />
+<code>#include &lt;daw/cpp_17.h&gt;</code><br />
 <code>#include &lt;daw/daw_attributes.h&gt;</code><br />
+<code>#include &lt;daw/daw_likely.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;climits&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
@@ -108,11 +109,6 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html">daw::json::DAW_JSON_VER::json_details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a880218c930e6f38105e474e4ad23b0ee"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a880218c930e6f38105e474e4ad23b0ee">daw::json::DAW_JSON_VER::json_details::json_options_t</a> = std::uint32_t</td></tr>
-<tr class="separator:a880218c930e6f38105e474e4ad23b0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ad4969bbc0210a49ce842990729907109"><td class="memTemplParams" colspan="2">template&lt;typename Option , typename Result  = Option, typename... OptionList&gt; </td></tr>
@@ -130,12 +126,18 @@ Functions</h2></td></tr>
 <tr class="memitem:acfeb5c44215de3db4acfa968d2c934fd"><td class="memTemplParams" colspan="2">template&lt;typename... OptionList, typename Option &gt; </td></tr>
 <tr class="memitem:acfeb5c44215de3db4acfa968d2c934fd"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#acfeb5c44215de3db4acfa968d2c934fd">daw::json::DAW_JSON_VER::json_details::set_bits_in</a> (JsonOptionList&lt; OptionList... &gt;, json_options_t &amp;value, Option e)</td></tr>
 <tr class="separator:acfeb5c44215de3db4acfa968d2c934fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b1798efd680378fc59d8f2298f277de"><td class="memTemplParams" colspan="2">template&lt;std::size_t Pos, std::size_t Width, typename Unsigned &gt; </td></tr>
+<tr class="memitem:a0b1798efd680378fc59d8f2298f277de"><td class="memTemplItemLeft" align="right" valign="top">static constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a0b1798efd680378fc59d8f2298f277de">daw::json::DAW_JSON_VER::json_details::set_nth_bits</a> (Unsigned &amp;u, Unsigned new_bits)</td></tr>
+<tr class="separator:a0b1798efd680378fc59d8f2298f277de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:aeea962ee07a4de5cf182926bd95547a4"><td class="memTemplParams" colspan="2">template&lt;typename Option , typename Options &gt; </td></tr>
-<tr class="memitem:aeea962ee07a4de5cf182926bd95547a4"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aeea962ee07a4de5cf182926bd95547a4">daw::json::DAW_JSON_VER::json_details::basic_option_bits_start</a></td></tr>
-<tr class="separator:aeea962ee07a4de5cf182926bd95547a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9642b09cbeb5736b1a2794782778127a"><td class="memTemplParams" colspan="2">template&lt;typename Option , typename Options &gt; </td></tr>
+<tr class="memitem:a9642b09cbeb5736b1a2794782778127a"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_options_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a9642b09cbeb5736b1a2794782778127a">daw::json::DAW_JSON_VER::json_details::basic_option_bits_start</a></td></tr>
+<tr class="separator:a9642b09cbeb5736b1a2794782778127a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad854e22dc1b6dce64e160950f83bd29e"><td class="memTemplParams" colspan="2">template&lt;typename Policy , typename Policies &gt; </td></tr>
+<tr class="memitem:ad854e22dc1b6dce64e160950f83bd29e"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_options_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ad854e22dc1b6dce64e160950f83bd29e">daw::json::DAW_JSON_VER::json_details::basic_policy_bits_start</a></td></tr>
+<tr class="separator:ad854e22dc1b6dce64e160950f83bd29e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6d7b857f939cf86c79562a34f3401a1"><td class="memTemplParams" colspan="2">template&lt;typename &gt; </td></tr>
 <tr class="memitem:ae6d7b857f939cf86c79562a34f3401a1"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae6d7b857f939cf86c79562a34f3401a1">daw::json::DAW_JSON_VER::json_details::default_json_option_value</a></td></tr>
 <tr class="separator:ae6d7b857f939cf86c79562a34f3401a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,9 +147,9 @@ Variables</h2></td></tr>
 <tr class="memitem:ae6cf183392ecea3e4c143689e80614f4"><td class="memTemplParams" colspan="2">template&lt;typename Option &gt; </td></tr>
 <tr class="memitem:ae6cf183392ecea3e4c143689e80614f4"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae6cf183392ecea3e4c143689e80614f4">daw::json::DAW_JSON_VER::json_details::is_option_flag</a> = json_option_bits_width&lt;Option&gt; &gt; 0</td></tr>
 <tr class="separator:ae6cf183392ecea3e4c143689e80614f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a715c251914b9cd35197919e4b2725f0c"><td class="memTemplParams" colspan="2">template&lt;typename &gt; </td></tr>
-<tr class="memitem:a715c251914b9cd35197919e4b2725f0c"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a715c251914b9cd35197919e4b2725f0c">daw::json::DAW_JSON_VER::json_details::json_option_bits_width</a> = 0</td></tr>
-<tr class="separator:a715c251914b9cd35197919e4b2725f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57a3c3546e121e2a16a2367aad113f18"><td class="memTemplParams" colspan="2">template&lt;typename &gt; </td></tr>
+<tr class="memitem:a57a3c3546e121e2a16a2367aad113f18"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_options_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a57a3c3546e121e2a16a2367aad113f18">daw::json::DAW_JSON_VER::json_details::json_option_bits_width</a> = 0</td></tr>
+<tr class="separator:a57a3c3546e121e2a16a2367aad113f18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

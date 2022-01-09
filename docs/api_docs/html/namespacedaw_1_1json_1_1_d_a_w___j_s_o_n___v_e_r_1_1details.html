@@ -75,7 +75,7 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:aa372eed6afec1724b12e5c1f6dcff7c6"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a> ParseType, <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </td></tr>
+<tr class="memitem:aa372eed6afec1724b12e5c1f6dcff7c6"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a> ParseType, <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </td></tr>
 <tr class="memitem:aa372eed6afec1724b12e5c1f6dcff7c6"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1details.html#aa372eed6afec1724b12e5c1f6dcff7c6">get_parse_type_v</a></td></tr>
 <tr class="separator:aa372eed6afec1724b12e5c1f6dcff7c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -86,7 +86,7 @@ Variables</h2></td></tr>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a> ParseType, <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> Nullable&gt; </div>
+template&lt;<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a> ParseType, <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">JsonNullable</a> Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -102,8 +102,7 @@ template&lt;<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        json_details::is_nullable_json_value_v&lt;Nullable&gt; ? JsonParseTypes::Null</div>
-<div class="line">                                                         : ParseType</div>
+<div class="line">        json_details::is_nullable_json_value_v&lt;Nullable&gt; ? JsonParseTypes::Null : ParseType</div>
 </div><!-- fragment -->
 </div>
 </div>

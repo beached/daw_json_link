@@ -80,9 +80,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ae0c650e03692cc9c3a13a4933f0f9d42"><td class="memTemplParams" colspan="2">template&lt;bool expect_long_strings, typename StringView &gt; </td></tr>
 <tr class="memitem:ae0c650e03692cc9c3a13a4933f0f9d42"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATTEN auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#ae0c650e03692cc9c3a13a4933f0f9d42">fnv1a_32</a> (StringView key) -&gt; std::enable_if_t&lt; daw::traits::is_string_view_like_v&lt; StringView &gt;, UInt32 &gt;</td></tr>
 <tr class="separator:ae0c650e03692cc9c3a13a4933f0f9d42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6676704c4ec0cedf7ebf25cd37bf8b6e"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, typename CharT &gt; </td></tr>
-<tr class="memitem:a6676704c4ec0cedf7ebf25cd37bf8b6e"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_INLINE UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a6676704c4ec0cedf7ebf25cd37bf8b6e">fnv1a_32_N</a> (CharT *first, UInt32 hash=0x811c '9dc5_u32)</td></tr>
-<tr class="separator:a6676704c4ec0cedf7ebf25cd37bf8b6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeb6feab927124c8d61a36b045b4cae4"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, typename CharT &gt; </td></tr>
+<tr class="memitem:afeb6feab927124c8d61a36b045b4cae4"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_INLINE UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#afeb6feab927124c8d61a36b045b4cae4">fnv1a_32_N</a> (daw::not_null&lt; CharT * &gt; first, UInt32 hash=0x811c '9dc5_u32)</td></tr>
+<tr class="separator:afeb6feab927124c8d61a36b045b4cae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9cf0c5eefb6ea530802bcdaa4b3c07af"><td class="memTemplParams" colspan="2">template&lt;typename StringView &gt; </td></tr>
 <tr class="memitem:a9cf0c5eefb6ea530802bcdaa4b3c07af"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a9cf0c5eefb6ea530802bcdaa4b3c07af">murmur3_32</a> (StringView key, std::uint32_t seed=0) -&gt; std::enable_if_t&lt; daw::traits::is_string_view_like_v&lt; StringView &gt;, UInt32 &gt;</td></tr>
 <tr class="separator:a9cf0c5eefb6ea530802bcdaa4b3c07af"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,8 +107,7 @@ template&lt;bool expect_long_strings, typename StringView &gt; </div>
           <td>(</td>
           <td class="paramtype">StringView&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
-          <td> -&gt; std::enable_if_t&lt;daw::traits::is_string_view_like_v&lt;StringView&gt;,
-	                      UInt32&gt; </td>
+          <td> -&gt; std::enable_if_t&lt;daw::traits::is_string_view_like_v&lt;StringView&gt;, UInt32&gt; </td>
         </tr>
       </table>
   </td>
@@ -120,8 +119,8 @@ template&lt;bool expect_long_strings, typename StringView &gt; </div>
 
 </div>
 </div>
-<a id="a6676704c4ec0cedf7ebf25cd37bf8b6e" name="a6676704c4ec0cedf7ebf25cd37bf8b6e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6676704c4ec0cedf7ebf25cd37bf8b6e">&#9670;&nbsp;</a></span>fnv1a_32_N()</h2>
+<a id="afeb6feab927124c8d61a36b045b4cae4" name="afeb6feab927124c8d61a36b045b4cae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeb6feab927124c8d61a36b045b4cae4">&#9670;&nbsp;</a></span>fnv1a_32_N()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -134,7 +133,7 @@ template&lt;std::size_t N, typename CharT &gt; </div>
         <tr>
           <td class="memname">constexpr DAW_ATTRIB_INLINE UInt32 daw::fnv1a_32_N </td>
           <td>(</td>
-          <td class="paramtype">CharT *&#160;</td>
+          <td class="paramtype">daw::not_null&lt; CharT * &gt;&#160;</td>
           <td class="paramname"><em>first</em>, </td>
         </tr>
         <tr>
@@ -184,8 +183,7 @@ template&lt;typename StringView &gt; </div>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> -&gt; std::enable_if_t&lt;daw::traits::is_string_view_like_v&lt;StringView&gt;,
-	                      UInt32&gt; </td>
+          <td></td><td> -&gt; std::enable_if_t&lt;daw::traits::is_string_view_like_v&lt;StringView&gt;, UInt32&gt; </td>
         </tr>
       </table>
   </td>
@@ -213,13 +211,12 @@ template&lt;bool expect_long_strings, typename StringView &gt; </div>
           <td>(</td>
           <td class="paramtype">StringView&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
-          <td> -&gt; std::enable_if_t&lt;daw::traits::is_string_view_like_v&lt;StringView&gt;,
-	                      UInt32&gt; </td>
+          <td> -&gt; std::enable_if_t&lt;daw::traits::is_string_view_like_v&lt;StringView&gt;, UInt32&gt; </td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

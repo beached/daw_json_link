@@ -79,6 +79,8 @@ $(function() {
 <code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_arith_traits.h&gt;</code><br />
 <code>#include &lt;daw/daw_cxmath.h&gt;</code><br />
+<code>#include &lt;daw/daw_logic.h&gt;</code><br />
+<code>#include &lt;daw/daw_not_null.h&gt;</code><br />
 <code>#include &lt;daw/daw_uint_buffer.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
@@ -106,12 +108,14 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab27fc96a11a26f6147bf9a3dccf7af45"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ab27fc96a11a26f6147bf9a3dccf7af45">daw::json::DAW_JSON_VER::json_details::is_made_of_eight_digits_cx</a> (const char *ptr)</td></tr>
-<tr class="separator:ab27fc96a11a26f6147bf9a3dccf7af45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a806012ba57ba86cdc70db69a11f7801d"><td class="memItemLeft" align="right" valign="top">constexpr UInt64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a806012ba57ba86cdc70db69a11f7801d">daw::json::DAW_JSON_VER::json_details::parse_16_digits</a> (const char *const str)</td></tr>
-<tr class="separator:a806012ba57ba86cdc70db69a11f7801d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5907048132a4e7342e3558ecb8d8710f"><td class="memItemLeft" align="right" valign="top">constexpr UInt64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a5907048132a4e7342e3558ecb8d8710f">daw::json::DAW_JSON_VER::json_details::parse_8_digits</a> (const char *const str)</td></tr>
-<tr class="separator:a5907048132a4e7342e3558ecb8d8710f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a7c73db5e8d0189fb207ae19d8b522f"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a1a7c73db5e8d0189fb207ae19d8b522f">daw::json::DAW_JSON_VER::json_details::is_made_of_eight_digits_cx</a> (daw::not_null&lt; char const * &gt; ptr)</td></tr>
+<tr class="separator:a1a7c73db5e8d0189fb207ae19d8b522f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7789d1956201384835d71c99f8f8d832"><td class="memItemLeft" align="right" valign="top">constexpr UInt64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7789d1956201384835d71c99f8f8d832">daw::json::DAW_JSON_VER::json_details::parse_16_digits</a> (daw::not_null&lt; char const * &gt; const str)</td></tr>
+<tr class="separator:a7789d1956201384835d71c99f8f8d832"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e742212b8faf53d09e9da6a38d89dd7"><td class="memItemLeft" align="right" valign="top">constexpr UInt32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a9e742212b8faf53d09e9da6a38d89dd7">daw::json::DAW_JSON_VER::json_details::parse_4_digits</a> (daw::not_null&lt; char const * &gt; const str)</td></tr>
+<tr class="separator:a9e742212b8faf53d09e9da6a38d89dd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a3272d1418cf072799bbd7df0bde78f"><td class="memItemLeft" align="right" valign="top">constexpr UInt64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a2a3272d1418cf072799bbd7df0bde78f">daw::json::DAW_JSON_VER::json_details::parse_8_digits</a> (daw::not_null&lt; char const * &gt; const str)</td></tr>
+<tr class="separator:a2a3272d1418cf072799bbd7df0bde78f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb4f00ceb4835377132a4c74a5a13061"><td class="memTemplParams" colspan="2">template&lt;typename Signed , typename Unsigned &gt; </td></tr>
 <tr class="memitem:aeb4f00ceb4835377132a4c74a5a13061"><td class="memTemplItemLeft" align="right" valign="top">constexpr Signed&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aeb4f00ceb4835377132a4c74a5a13061">daw::json::DAW_JSON_VER::json_details::to_signed</a> (Unsigned &amp;&amp;u, Signed sign)</td></tr>
 <tr class="separator:aeb4f00ceb4835377132a4c74a5a13061"><td class="memSeparator" colspan="2">&#160;</td></tr>

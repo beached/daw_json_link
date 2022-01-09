@@ -77,9 +77,9 @@ $(function() {
 Functions</h2></td></tr>
 <tr class="memitem:a9a5fb59e3372b3edff0e7cffdfe5ed20"><td class="memItemLeft" align="right" valign="top">constexpr std::uint_least32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1datetime_1_1datetime__details.html#a9a5fb59e3372b3edff0e7cffdfe5ed20">month2num</a> (std::string_view ts)</td></tr>
 <tr class="separator:a9a5fb59e3372b3edff0e7cffdfe5ed20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19e107da40dfb36ef96ca845e4694aa9"><td class="memTemplParams" colspan="2">template&lt;typename Result , typename Bounds , std::ptrdiff_t Ex&gt; </td></tr>
-<tr class="memitem:a19e107da40dfb36ef96ca845e4694aa9"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1datetime_1_1datetime__details.html#a19e107da40dfb36ef96ca845e4694aa9">parse_number</a> (daw::basic_string_view&lt; char, Bounds, Ex &gt; sv)</td></tr>
-<tr class="separator:a19e107da40dfb36ef96ca845e4694aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b075469d09b98bac79d564a69fe3a91"><td class="memTemplParams" colspan="2">template&lt;typename Result , daw::string_view_bounds_type Bounds&gt; </td></tr>
+<tr class="memitem:a9b075469d09b98bac79d564a69fe3a91"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1datetime_1_1datetime__details.html#a9b075469d09b98bac79d564a69fe3a91">parse_number</a> (daw::basic_string_view&lt; char, Bounds &gt; sv)</td></tr>
+<tr class="separator:a9b075469d09b98bac79d564a69fe3a91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a9a5fb59e3372b3edff0e7cffdfe5ed20" name="a9a5fb59e3372b3edff0e7cffdfe5ed20"></a>
@@ -108,13 +108,13 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a19e107da40dfb36ef96ca845e4694aa9" name="a19e107da40dfb36ef96ca845e4694aa9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19e107da40dfb36ef96ca845e4694aa9">&#9670;&nbsp;</a></span>parse_number()</h2>
+<a id="a9b075469d09b98bac79d564a69fe3a91" name="a9b075469d09b98bac79d564a69fe3a91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b075469d09b98bac79d564a69fe3a91">&#9670;&nbsp;</a></span>parse_number()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Result , typename Bounds , std::ptrdiff_t Ex&gt; </div>
+template&lt;typename Result , daw::string_view_bounds_type Bounds&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -122,7 +122,7 @@ template&lt;typename Result , typename Bounds , std::ptrdiff_t Ex&gt; </div>
         <tr>
           <td class="memname">constexpr Result daw::json::DAW_JSON_VER::datetime::datetime_details::parse_number </td>
           <td>(</td>
-          <td class="paramtype">daw::basic_string_view&lt; char, Bounds, Ex &gt;&#160;</td>
+          <td class="paramtype">daw::basic_string_view&lt; char, Bounds &gt;&#160;</td>
           <td class="paramname"><em>sv</em></td><td>)</td>
           <td></td>
         </tr>

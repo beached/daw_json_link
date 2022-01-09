@@ -79,6 +79,7 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_utility.h&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;daw/daw_uint_buffer.h&gt;</code><br />
 <code>#include &lt;string_view&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 </div>
@@ -102,12 +103,18 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a4b8f8427ce547ff6705d7c690ac70ff8"><td class="memTemplParams" colspan="2">template&lt;JsonNullable nullable&gt; </td></tr>
 <tr class="memitem:a4b8f8427ce547ff6705d7c690ac70ff8"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a4b8f8427ce547ff6705d7c690ac70ff8">daw::json::DAW_JSON_VER::json_details::is_nullable_json_value</a> = std::bool_constant&lt; nullable !=JsonNullable::MustExist &gt;</td></tr>
 <tr class="separator:a4b8f8427ce547ff6705d7c690ac70ff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a880218c930e6f38105e474e4ad23b0ee"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a880218c930e6f38105e474e4ad23b0ee">daw::json::DAW_JSON_VER::json_details::json_options_t</a> = std::uint32_t</td></tr>
+<tr class="separator:a880218c930e6f38105e474e4ad23b0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09a06023cd8d0d8e7ba16441c830069b"><td class="memTemplParams" colspan="2">template&lt;JsonParseTypes v&gt; </td></tr>
 <tr class="memitem:a09a06023cd8d0d8e7ba16441c830069b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a09a06023cd8d0d8e7ba16441c830069b">daw::json::DAW_JSON_VER::ParseTag</a> = daw::constant&lt; v &gt;</td></tr>
 <tr class="separator:a09a06023cd8d0d8e7ba16441c830069b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
+<tr class="memitem:a8b7da4d4e014061ffb416a1ecfe9a5ee"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a8b7da4d4e014061ffb416a1ecfe9a5ee">daw::json::DAW_JSON_VER::EightBitModes</a> : json_details::json_options_t { <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a8b7da4d4e014061ffb416a1ecfe9a5eea92c261a689e015f3fc7bfab8b0b9893b">daw::json::DAW_JSON_VER::DisallowHigh</a> = 0
+, <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a8b7da4d4e014061ffb416a1ecfe9a5eea93072ae463cd6505c69c37152ac6fad6">daw::json::DAW_JSON_VER::AllowFull</a> = 1
+ }</td></tr>
+<tr class="separator:a8b7da4d4e014061ffb416a1ecfe9a5ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fa3d743161867acbc830a21ef6a9487"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">daw::json::DAW_JSON_VER::JsonBaseParseTypes</a> : std::uint_fast8_t { <br />
 &#160;&#160;<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487ab2ee912b91d69b435159c7c3f6df7f5f">daw::json::DAW_JSON_VER::Number</a>
 , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487ac26f15e86e3de4c398a8273272aba034">daw::json::DAW_JSON_VER::Bool</a>
@@ -121,11 +128,11 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a9fa3d743161867acbc830a21ef6a9487"><td class="mdescLeft">&#160;</td><td class="mdescRight">The fundamental JSON types.  <a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">More...</a><br /></td></tr>
 <tr class="separator:a9fa3d743161867acbc830a21ef6a9487"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e6893cf505e9df2b452921587a35881"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">daw::json::DAW_JSON_VER::JsonNullable</a> : unsigned { <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881a05ce745d91b630573ce1c1dfa1e747b4">daw::json::DAW_JSON_VER::MustExist</a>
-, <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881a46ad517b8b7aa4e368a7cc226533bfb6">daw::json::DAW_JSON_VER::Nullable</a>
-, <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881aac611fa037fd1d6a26b71b58be1572dc">daw::json::DAW_JSON_VER::NullVisible</a>
+<tr class="memitem:a302a5e9ec35851517872bc2d8082d367"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367">daw::json::DAW_JSON_VER::JsonNullable</a> : json_details::json_options_t { <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367a05ce745d91b630573ce1c1dfa1e747b4">daw::json::DAW_JSON_VER::MustExist</a>
+, <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367a46ad517b8b7aa4e368a7cc226533bfb6">daw::json::DAW_JSON_VER::Nullable</a>
+, <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a302a5e9ec35851517872bc2d8082d367aac611fa037fd1d6a26b71b58be1572dc">daw::json::DAW_JSON_VER::NullVisible</a>
  }</td></tr>
-<tr class="separator:a7e6893cf505e9df2b452921587a35881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a302a5e9ec35851517872bc2d8082d367"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08a2ab70588cc1921dda10f110406119"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">daw::json::DAW_JSON_VER::JsonParseTypes</a> : std::uint_fast8_t { <br />
 &#160;&#160;<a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a7f80fcc452c2f1ed2bb51b39d0864df1">daw::json::DAW_JSON_VER::Real</a>
 , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a71fed0c3428bf1a2e19af257c4bac379">daw::json::DAW_JSON_VER::Signed</a>
@@ -166,7 +173,7 @@ Variables</h2></td></tr>
 <tr class="memitem:aa372eed6afec1724b12e5c1f6dcff7c6"><td class="memTemplItemLeft" align="right" valign="top">constexpr JsonParseTypes&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1details.html#aa372eed6afec1724b12e5c1f6dcff7c6">daw::json::DAW_JSON_VER::details::get_parse_type_v</a></td></tr>
 <tr class="separator:aa372eed6afec1724b12e5c1f6dcff7c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e7c742fa6c6da60ba90b930ad34f91"><td class="memTemplParams" colspan="2">template&lt;JsonNullable nullable&gt; </td></tr>
-<tr class="memitem:a84e7c742fa6c6da60ba90b930ad34f91"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a84e7c742fa6c6da60ba90b930ad34f91">daw::json::DAW_JSON_VER::json_details::is_nullable_json_value_v</a></td></tr>
+<tr class="memitem:a84e7c742fa6c6da60ba90b930ad34f91"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a84e7c742fa6c6da60ba90b930ad34f91">daw::json::DAW_JSON_VER::json_details::is_nullable_json_value_v</a> = is_nullable_json_value&lt;nullable&gt;::value</td></tr>
 <tr class="separator:a84e7c742fa6c6da60ba90b930ad34f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac17ba99e500c1c3a11e622dd6481d560"><td class="memItemLeft" align="right" valign="top">constexpr JsonNullable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ac17ba99e500c1c3a11e622dd6481d560">daw::json::DAW_JSON_VER::JsonNullDefault</a> = JsonNullable::Nullable</td></tr>
 <tr class="separator:ac17ba99e500c1c3a11e622dd6481d560"><td class="memSeparator" colspan="2">&#160;</td></tr>

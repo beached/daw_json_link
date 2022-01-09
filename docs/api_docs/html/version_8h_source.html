@@ -85,11 +85,16 @@ $(function() {
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">   16</a></span><span class="preprocessor">#define DAW_JSON_VER DAW_JSON_VER_OVERRIDE</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#if defined( __GNUC__ ) and not defined( __clang__ ) and \</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">  not defined( DAW_JSON_FLATTEN ) and not defined( DAW_NO_FLATTEN )</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#define DAW_NO_FLATTEN</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#if not defined( DAW_JSON_VER_INLINE_OVERRIDE )</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#define DAW_JSON_INLINE_NS inline</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="version_8h.html#a954d0757ae48f08a6d2c60447b060ad9">   21</a></span><span class="preprocessor">#define DAW_JSON_INLINE_NS</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#if defined( __GNUC__ ) and not defined( __clang__ ) and not defined( DAW_JSON_FLATTEN ) and \</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">  not defined( DAW_NO_FLATTEN )</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#define DAW_NO_FLATTEN</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
