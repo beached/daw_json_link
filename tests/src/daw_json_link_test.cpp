@@ -21,6 +21,7 @@
 #include <chrono>
 #include <cstdint>
 #include <iostream>
+#include <map>
 #include <optional>
 #include <random>
 #include <sstream>
