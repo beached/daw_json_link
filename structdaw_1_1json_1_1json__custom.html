@@ -107,7 +107,7 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:a3c207a9f2aa68e08cfe55b4a36ea6e50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;JSONNAMETYPE Name, typename T, typename FromJsonConverter, typename ToJsonConverter, CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt;<br />
+<div class="textblock"><h3>template&lt;char const * Name, typename T, typename FromJsonConverter, typename ToJsonConverter, CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt;<br />
 struct daw::json::json_custom&lt; Name, T, FromJsonConverter, ToJsonConverter, CustomJsonType, Nullable &gt;</h3>
 
 <p>Allow parsing of a nullable type that does not fit </p><dl class="tparams"><dt>Template Parameters</dt><dd>
@@ -140,7 +140,7 @@ struct daw::json::json_custom&lt; Name, T, FromJsonConverter, ToJsonConverter, C
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__custom.html">daw::json::json_custom</a>&lt; Name, T, FromJsonConverter, ToJsonConverter, CustomJsonType, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__custom.html#a369d3b309625a0e9259b7ae5d53a1169">base_type</a> =  json_details::unwrap_type&lt;T, Nullable&gt;</td>
@@ -158,7 +158,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__custom.html">daw::json::json_custom</a>&lt; Name, T, FromJsonConverter, ToJsonConverter, CustomJsonType, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__custom.html#a5c55b56b7135bc28c04b43f7502ca6cd">constructor_t</a> =  FromJsonConverter</td>
@@ -176,7 +176,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__custom.html">daw::json::json_custom</a>&lt; Name, T, FromJsonConverter, ToJsonConverter, CustomJsonType, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__custom.html#ab6982ab3799cb6bef817fb6a02346d7e">from_converter_t</a> =  FromJsonConverter</td>
@@ -194,7 +194,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__custom.html">daw::json::json_custom</a>&lt; Name, T, FromJsonConverter, ToJsonConverter, CustomJsonType, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__custom.html#a060390b8449636774e6ad873ed62da78">i_am_a_json_type</a> =  void</td>
@@ -212,7 +212,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__custom.html">daw::json::json_custom</a>&lt; Name, T, FromJsonConverter, ToJsonConverter, CustomJsonType, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__custom.html#aeec32457c77452992876a2c7e6711e90">parse_to_t</a> =  std::invoke_result_t&lt;FromJsonConverter, std::string_view&gt;</td>
@@ -230,7 +230,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__custom.html">daw::json::json_custom</a>&lt; Name, T, FromJsonConverter, ToJsonConverter, CustomJsonType, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__custom.html#afc50521127091b1d85f8a7c9b360c2f7">to_converter_t</a> =  ToJsonConverter</td>
@@ -249,7 +249,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -275,7 +275,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -301,7 +301,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -329,7 +329,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -355,7 +355,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -381,7 +381,7 @@ template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typenam
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename T , typename FromJsonConverter , typename ToJsonConverter , CustomJsonTypes CustomJsonType, JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">

@@ -105,7 +105,7 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:a9f14558214721bbb549629c07383c6ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;JSONNAMETYPE Name, typename Container, typename JsonValueType, typename JsonKeyType, typename Constructor, JsonNullable Nullable&gt;<br />
+<div class="textblock"><h3>template&lt;char const * Name, typename Container, typename JsonValueType, typename JsonKeyType, typename Constructor, JsonNullable Nullable&gt;<br />
 struct daw::json::json_key_value&lt; Name, Container, JsonValueType, JsonKeyType, Constructor, Nullable &gt;</h3>
 
 <p>Map a KV type json class { "Key StringRaw": ValueType, ... } to a c++ class. Keys are Always string like and the destination needs to be constructable with a pointer, size </p><dl class="tparams"><dt>Template Parameters</dt><dd>
@@ -128,7 +128,7 @@ struct daw::json::json_key_value&lt; Name, Container, JsonValueType, JsonKeyType
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__key__value.html">daw::json::json_key_value</a>&lt; Name, Container, JsonValueType, JsonKeyType, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__key__value.html#aa5d0ea096bf415ba90853e71f3ddf033">base_type</a> =  json_details::unwrap_type&lt;Container, Nullable&gt;</td>
@@ -146,7 +146,7 @@ template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typ
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__key__value.html">daw::json::json_key_value</a>&lt; Name, Container, JsonValueType, JsonKeyType, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__key__value.html#a67597c0a407bcf699bccad7a01cfd576">constructor_t</a> =  Constructor</td>
@@ -164,7 +164,7 @@ template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typ
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__key__value.html">daw::json::json_key_value</a>&lt; Name, Container, JsonValueType, JsonKeyType, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__key__value.html#a636e16e99ab1e9b638848ecf95c7a916">i_am_a_json_type</a> =  void</td>
@@ -182,7 +182,7 @@ template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typ
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__key__value.html">daw::json::json_key_value</a>&lt; Name, Container, JsonValueType, JsonKeyType, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__key__value.html#a9f61a1a44ad94bdb46060f0bf6f5eea6">json_element_t</a> =  json_details::unnamed_default_type_mapping&lt;JsonValueType&gt;</td>
@@ -200,7 +200,7 @@ template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typ
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__key__value.html">daw::json::json_key_value</a>&lt; Name, Container, JsonValueType, JsonKeyType, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__key__value.html#a146eb90ab2992da1f3fd60645505331d">json_key_t</a> =  json_details::unnamed_default_type_mapping&lt;JsonKeyType&gt;</td>
@@ -218,7 +218,7 @@ template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typ
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1json__key__value.html">daw::json::json_key_value</a>&lt; Name, Container, JsonValueType, JsonKeyType, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1json__key__value.html#a0ebab984a036f3dfd92a7919a1cd0039">parse_to_t</a> =  std::invoke_result_t&lt;Constructor&gt;</td>
@@ -237,7 +237,7 @@ template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typ
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -265,7 +265,7 @@ template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typ
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -293,7 +293,7 @@ template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typ
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -319,7 +319,7 @@ template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typ
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -345,7 +345,7 @@ template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typ
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
+template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor , JsonNullable Nullable&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
