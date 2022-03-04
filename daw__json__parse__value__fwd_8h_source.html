@@ -150,7 +150,7 @@ $(function() {
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  [[nodiscard, maybe_unused]] <span class="keyword">static</span> constexpr json_result&lt;JsonMember&gt;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  parse_value( ParseTag&lt;JsonParseTypes::Unknown&gt;, Range &amp;rng );</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#if( defined( _MSC_VER ) and not defined( __clang__ ) )</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#if defined( _MSC_VER ) and not defined( __clang__ )</span></div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// Lying to MSVC about being a random iterator causes issues I have not found</span></div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">// yet</span></div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span>&gt;</div>
