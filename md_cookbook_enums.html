@@ -73,7 +73,7 @@ As StringRaw</h1>
 <div class="line">  &quot;member0&quot;: [ &quot;red&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;black&quot; ]</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The above JSON object has a member, <code>"member0"</code>, that is an array of strings. In order to store the enum as a JSON string, an overload for <code>to_string</code> and <code>from_string</code> are required. <code>to_string</code> is required to return a <code>Container</code> where the <code>begin( )</code> iterator's <code>value_type</code> is <code>char, not necessarily a</code>std::string`.</p>
-<p>To see a working example using this code, refer to <a href="../tests/src/cookbook_enums1_test.cpp">cookbook_enums1_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
+<p>To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_enums1_test.cpp">cookbook_enums1_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">enum class Colours : uint8_t { red, green, blue, black };</div>
 <div class="line"> </div>
 <div class="line">constexpr std::string_view to_string( Colours c ) {</div>
@@ -125,7 +125,7 @@ As Number</h1>
 <div class="line">}</div>
 </div><!-- fragment --><p>With a C++ enum of </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">enum class Colours : uint8_t { red = 0, green = 1, blue = 2, black = 3 };</div>
-</div><!-- fragment --><p>The enum type is encoded as the type in the <code>json_number</code> member type. To see a working example using this code, refer to <a href="../tests/src/cookbook_enums2_test.cpp">cookbook_enums2_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
+</div><!-- fragment --><p>The enum type is encoded as the type in the <code>json_number</code> member type. To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_enums2_test.cpp">cookbook_enums2_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">enum class Colours : uint8_t { red, green, blue, black };</div>
 <div class="line"> </div>
 <div class="line">struct MyClass1 {</div>

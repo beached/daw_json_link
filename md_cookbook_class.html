@@ -75,7 +75,7 @@ Basic class mapping</h1>
 <div class="line">  &quot;member2&quot;: true </div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The above JSON describes a class with three members, a string named <code>member0</code>, an integer named <code>member1</code>, and a boolean named <code>member2</code></p>
-<p>Below is the C++ data structure and the trait to map the members to that of the JSON object. Note that the names of the C++ data members do not have to be the same as the JSON object's. To see a working example using this code, refer to <a href="../tests/src/cookbook_class1_test.cpp">cookbook_class1_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
+<p>Below is the C++ data structure and the trait to map the members to that of the JSON object. Note that the names of the C++ data members do not have to be the same as the JSON object's. To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_class1_test.cpp">cookbook_class1_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyClass1 {</div>
 <div class="line">  std::string member_0;</div>
 <div class="line">  int member_1;</div>
@@ -111,7 +111,7 @@ Class as a member</h1>
 <div class="line">  },</div>
 <div class="line">  &quot;b&quot;: 1234</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>The JSON object that has a member <code>"a"</code> that matches <code>MyClass1</code>, and a second member is an <code>unsigned</code> To see a working example using this code, refer to <a href="../tests/src/cookbook_class2_test.cpp">cookbook_class2_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
+</div><!-- fragment --><p>The JSON object that has a member <code>"a"</code> that matches <code>MyClass1</code>, and a second member is an <code>unsigned</code> To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_class2_test.cpp">cookbook_class2_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">// Code from previous MyClass1 example</div>
 <div class="line"> </div>
 <div class="line">struct MyClass2 {</div>
@@ -135,7 +135,7 @@ Class as a member</h1>
 <div class="line">} // namespace daw::json</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md9"></a>
 Selective mapping</h1>
-<p>Not all of the JSON objects members need to be mapped. Below is the same JSON object as in the <code>MyClass2</code> example above. To see a working example using this code, refer to <a href="../tests/src/cookbook_class3_test.cpp">cookbook_class3_test.cpp</a> </p><div class="fragment"><div class="line">{</div>
+<p>Not all of the JSON objects members need to be mapped. Below is the same JSON object as in the <code>MyClass2</code> example above. To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_class3_test.cpp">cookbook_class3_test.cpp</a> </p><div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;a&quot;: {</div>
 <div class="line">    &quot;member0&quot;: &quot;this is a test&quot;,</div>
 <div class="line">    &quot;member1&quot;: 314159,</div>
