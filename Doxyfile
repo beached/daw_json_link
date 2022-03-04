@@ -165,7 +165,7 @@ INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
 FILTER_SOURCE_PATTERNS =
-USE_MDFILE_AS_MAINPAGE = cookbook/readme.md
+USE_MDFILE_AS_MAINPAGE = cookbook/readme.html
 SOURCE_BROWSER         = YES
 INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
@@ -190,22 +190,22 @@ HTML_EXTRA_FILES       =	docs/theme/img/closed-folder.png \
 													docs/theme/img/off_sync.png \
 													docs/theme/img/on_sync.png \
 													docs/theme/img/opened-folder.png \
-													cookbook/array.md \
-													cookbook/automated_code_generation.md \
-													cookbook/class.md \
-													cookbook/class_from_array.md \
-													cookbook/dates.md \
-													cookbook/enums.md \
-													cookbook/graphs.md \
-													cookbook/key_values.md \
-													cookbook/numbers.md \
-													cookbook/optional_values.md \
-													cookbook/parser_policies.md \
-													cookbook/parsing_individual_members.md \
-													cookbook/readme.md \
-													cookbook/strings.md \
-													cookbook/unknown_types_and_delayed_parsing.md \
-													cookbook/variant.md
+													cookbook/array.html \
+													cookbook/automated_code_generation.html \
+													cookbook/class.html \
+													cookbook/class_from_array.html \
+													cookbook/dates.html \
+													cookbook/enums.html \
+													cookbook/graphs.html \
+													cookbook/key_values.html \
+													cookbook/numbers.html \
+													cookbook/optional_values.html \
+													cookbook/parser_policies.html \
+													cookbook/parsing_individual_members.html \
+													cookbook/readme.html \
+													cookbook/strings.html \
+													cookbook/unknown_types_and_delayed_parsing.html \
+													cookbook/variant.html
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
