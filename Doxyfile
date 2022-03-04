@@ -103,7 +103,7 @@ WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
 WARN_LOGFILE           =
-INPUT                  = include/daw/json cookbook
+INPUT                  = include/daw/json /docs/cookbook docs
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -153,7 +153,7 @@ FILE_PATTERNS          = *.c \
                          *.qsf \
                          *.ice
 RECURSIVE              = YES
-EXCLUDE                =
+EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        = *::json_details *::murmur3_details *::utils_details *::*_details *::*_detail *::*_impl *::impl *::fp_utils
@@ -165,7 +165,7 @@ INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
 FILTER_SOURCE_PATTERNS =
-USE_MDFILE_AS_MAINPAGE = 
+USE_MDFILE_AS_MAINPAGE = docs/mainpage.md
 SOURCE_BROWSER         = YES
 INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
@@ -184,8 +184,32 @@ HTML_FILE_EXTENSION    = .html
 HTML_HEADER            =
 HTML_FOOTER            =
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  =
-HTML_EXTRA_FILES       =
+HTML_EXTRA_STYLESHEET  = docs/theme/doxygen-style.css
+HTML_EXTRA_FILES       =	docs/theme/img/closed-folder.png \
+													docs/theme/img/document.png \
+													docs/theme/img/off_sync.png \
+													docs/theme/img/on_sync.png \
+													docs/theme/img/opened-folder.png \
+													docs/mainpage.md \
+													docs/images/json_link_logo_128.png \
+													docs/cookbook/class.md \
+													docs/cookbook/class_from_array.md \
+													docs/cookbook/parser_policies.md \
+													docs/cookbook/strings.md \
+													docs/cookbook/key_values.md \
+													docs/cookbook/variant.md \
+													docs/cookbook/dates.md \
+													docs/cookbook/array.md \
+													docs/cookbook/graphs.md \
+													docs/cookbook/unknown_types_and_raw_parsing.md \
+													docs/cookbook/readme.md \
+													docs/cookbook/mapping_deduction.md \
+													docs/cookbook/optional_values.md \
+													docs/cookbook/parsing_individual_members.md \
+													docs/cookbook/automated_code_generation.md \
+													docs/cookbook/enums.md \
+													docs/cookbook/inserting_extracting_raw_json.md \
+													docs/cookbook/numbers.md
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
