@@ -103,7 +103,7 @@ WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
 WARN_LOGFILE           =
-INPUT                  = include/daw/json cookbook docs images
+INPUT                  = include/daw/json 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -202,7 +202,7 @@ HTML_EXTRA_FILES       =	docs/theme/img/closed-folder.png \
 													cookbook/html/optional_values.html \
 													cookbook/html/parser_policies.html \
 													cookbook/html/parsing_individual_members.html \
-													cookbook/html/readme.html \
+													cookbook/html/readme.html.md \
 													cookbook/html/strings.html \
 													cookbook/html/unknown_types_and_delayed_parsing.html \
 													cookbook/html/variant.html
