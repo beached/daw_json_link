@@ -165,7 +165,7 @@ INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
 FILTER_SOURCE_PATTERNS =
-USE_MDFILE_AS_MAINPAGE = cookbook/readme.html
+USE_MDFILE_AS_MAINPAGE = cookbook/html/readme.html.md
 SOURCE_BROWSER         = YES
 INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
@@ -190,22 +190,22 @@ HTML_EXTRA_FILES       =	docs/theme/img/closed-folder.png \
 													docs/theme/img/off_sync.png \
 													docs/theme/img/on_sync.png \
 													docs/theme/img/opened-folder.png \
-													cookbook/array.html \
-													cookbook/automated_code_generation.html \
-													cookbook/class.html \
-													cookbook/class_from_array.html \
-													cookbook/dates.html \
-													cookbook/enums.html \
-													cookbook/graphs.html \
-													cookbook/key_values.html \
-													cookbook/numbers.html \
-													cookbook/optional_values.html \
-													cookbook/parser_policies.html \
-													cookbook/parsing_individual_members.html \
-													cookbook/readme.html \
-													cookbook/strings.html \
-													cookbook/unknown_types_and_delayed_parsing.html \
-													cookbook/variant.html
+													cookbook/html/array.html \
+													cookbook/html/automated_code_generation.html \
+													cookbook/html/class.html \
+													cookbook/html/class_from_array.html \
+													cookbook/html/dates.html \
+													cookbook/html/enums.html \
+													cookbook/html/graphs.html \
+													cookbook/html/key_values.html \
+													cookbook/html/numbers.html \
+													cookbook/html/optional_values.html \
+													cookbook/html/parser_policies.html \
+													cookbook/html/parsing_individual_members.html \
+													cookbook/html/readme.html \
+													cookbook/html/strings.html \
+													cookbook/html/unknown_types_and_delayed_parsing.html \
+													cookbook/html/variant.html
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
