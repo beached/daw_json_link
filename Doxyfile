@@ -51,14 +51,14 @@ PROJECT_BRIEF          =
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = images/json_link_logo_55.png
+PROJECT_LOGO           = docs/images/json_link_logo_55.png
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = docs
+OUTPUT_DIRECTORY       = $(DOXYGEN_OUTPUT_DIRECTORY)
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -959,8 +959,7 @@ EXCLUDE_PATTERNS       =
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories use the pattern */test/*
 
-EXCLUDE_SYMBOLS        = daw::json::json_details daw::murmur3_details daw::json::utils::utils_details std daw::json::parse_policy_details daw::json::datetime::datetime_details
-
+EXCLUDE_SYMBOLS        = daw::json::json_details daw::murmur3_details daw::json::utils::utils_details std daw::json::parse_policy_details daw::json::datetime::datetime_details daw::*_details daw::*_detail daw::*_impl daw::details daw::detail daw::impl daw::*::impl daw::*::details
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
 # that contain example code fragments that are included (see the \include
 # command).
@@ -1054,7 +1053,7 @@ USE_MDFILE_AS_MAINPAGE = cookbook/readme.md
 # also VERBATIM_HEADERS is set to NO.
 # The default value is: NO.
 
-SOURCE_BROWSER         = NO
+SOURCE_BROWSER         = YES
 
 # Setting the INLINE_SOURCES tag to YES will include the body of functions,
 # classes and enums directly into the documentation.
