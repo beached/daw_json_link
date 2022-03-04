@@ -1,0 +1,25 @@
+name: Doxygen
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release
+
+jobs:
+  doxygen:
+    env:
+      DOXYGEN_OUTPUT_DIRECTORY: ${{ github.workspace }}/docs
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install doxygen and graphviz
+        run: sudo apt-get install -y doxygen graphviz
+      - name: Build 🏗️ doxygen site
+        run: doxygen
+      - name: Deploy 🚀 GitHub Pages Site
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: gh-pages
+          folder: ${{ env.DOXYGEN_OUTPUT_DIRECTORY }}/html
