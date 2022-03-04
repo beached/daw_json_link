@@ -185,7 +185,7 @@ HTML_HEADER            =
 HTML_FOOTER            =
 HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = docs/theme/doxygen-style.css
-													docs/theme/img/closed-folder.png \
+HTML_EXTRA_FILES       =	docs/theme/img/closed-folder.png \
 													docs/theme/img/document.png \
 													docs/theme/img/off_sync.png \
 													docs/theme/img/on_sync.png \
@@ -240,6 +240,7 @@ HTML_EXTRA_STYLESHEET  = docs/theme/doxygen-style.css
 													tests/src/cookbook_variant3_test.cpp \
 													tests/src/cookbook_variant4_test.cpp \
 													tests/src/cookbook_variant5_test.cpp
+
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
