@@ -103,7 +103,7 @@ WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
 WARN_LOGFILE           =
-INPUT                  = include/daw/json 
+INPUT                  = include/daw/json cookbook docs
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -165,7 +165,7 @@ INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
 FILTER_SOURCE_PATTERNS =
-USE_MDFILE_AS_MAINPAGE = cookbook/html/readme.html.md
+USE_MDFILE_AS_MAINPAGE = docs/mainpage.md
 SOURCE_BROWSER         = YES
 INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
@@ -190,22 +190,24 @@ HTML_EXTRA_FILES       =	docs/theme/img/closed-folder.png \
 													docs/theme/img/off_sync.png \
 													docs/theme/img/on_sync.png \
 													docs/theme/img/opened-folder.png \
-													cookbook/html/array.html \
-													cookbook/html/automated_code_generation.html \
-													cookbook/html/class.html \
-													cookbook/html/class_from_array.html \
-													cookbook/html/dates.html \
-													cookbook/html/enums.html \
-													cookbook/html/graphs.html \
-													cookbook/html/key_values.html \
-													cookbook/html/numbers.html \
-													cookbook/html/optional_values.html \
-													cookbook/html/parser_policies.html \
-													cookbook/html/parsing_individual_members.html \
-													cookbook/html/readme.html.md \
-													cookbook/html/strings.html \
-													cookbook/html/unknown_types_and_delayed_parsing.html \
-													cookbook/html/variant.html
+													docs/mainpage.md \
+													images/json_link_logo_128.png
+													cookbook/array.md \
+													cookbook/automated_code_generation.md \
+													cookbook/class.md \
+													cookbook/class_from_array.md \
+													cookbook/dates.md \
+													cookbook/enums.md \
+													cookbook/graphs.md \
+													cookbook/key_values.md \
+													cookbook/numbers.md \
+													cookbook/optional_values.md \
+													cookbook/parser_policies.md \
+													cookbook/parsing_individual_members.md \
+													cookbook/strings.md \
+													cookbook/unknown_types_and_delayed_parsing.md \
+													cookbook/variant.md \
+													cookbook/readme.md 
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
