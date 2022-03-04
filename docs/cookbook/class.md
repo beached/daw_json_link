@@ -13,7 +13,7 @@ Below is an ordinary JSON object
 The above JSON describes a class with three members, a string named `member0`, an integer named `member1`, and a boolean named `member2`
 
 Below is the C++ data structure and the trait to map the members to that of the JSON object.  Note that the names of the C++ data members do not have to be the same as the JSON object's.
-To see a working example using this code, refer to [cookbook_class1_test.cpp](../tests/src/cookbook_class1_test.cpp) 
+To see a working example using this code, refer to [cookbook_class1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_class1_test.cpp) 
 ```c++
 struct MyClass1 {
   std::string member_0;
@@ -56,7 +56,7 @@ The serializing and deserializing is recursive.  So if a class contains another 
 ```
 
 The JSON object that has a member `"a"` that matches `MyClass1`, and a second member is an `unsigned`
-To see a working example using this code, refer to [cookbook_class2_test.cpp](../tests/src/cookbook_class2_test.cpp) 
+To see a working example using this code, refer to [cookbook_class2_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_class2_test.cpp) 
 ```c++
 // Code from previous MyClass1 example
 
@@ -84,7 +84,7 @@ namespace daw::json {
 ## Selective mapping
 
 Not all of the JSON objects members need to be mapped. Below is the same JSON object as in the `MyClass2` example above.
-To see a working example using this code, refer to [cookbook_class3_test.cpp](../tests/src/cookbook_class3_test.cpp) 
+To see a working example using this code, refer to [cookbook_class3_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_class3_test.cpp) 
 ```json
 {
   "a": {
@@ -122,7 +122,7 @@ Only the `"a"` member is mapped, the `"b"` member of the JSON object is ignored.
 
 If a type is already mapped or has many possible JSON mappings you can provide an alternate mapping.  This is accomplished by mapping to the `daw::json::json_alt<Type, Index>` type.  The optional index allows for any number of mappings that fit into a `std::size_t`.
 
-To see a working example using this code, refer to [cookbook_class_alternate1_test.cpp](../tests/src/cookbook_class_alternate1_test.cpp)
+To see a working example using this code, refer to [cookbook_class_alternate1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_class_alternate1_test.cpp)
 ```c++
 struct Thing {
 	int a;

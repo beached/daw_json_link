@@ -13,7 +13,7 @@ Timestmaps are common in JSON datasets. DAW JSON Link has a convienience type to
 
 The above JSON object consists of a 2 string members, where the second stores an [ISO8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) combinded representation timestamp.
 
-Too see a working example using this code, refer to [cookbook_dates1_test.cpp](../tests/src/cookbook_dates1_test.cpp) 
+Too see a working example using this code, refer to [cookbook_dates1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/releahttps://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_dates1_test.cpp) 
 
 Below is code that code serialize/deserialize the above JSON using the `json_date` class.
 
@@ -53,7 +53,7 @@ The above json is like the first example, but the timestamp format is not iso860
 
 The To and From Converters can be the same type with different overloads for `operator()`.  T will be a `std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>`.
 
-Too see a working example using this code, refer to [cookbook_dates2_test.cpp](../tests/src/cookbook_dates2_test.cpp) 
+Too see a working example using this code, refer to [cookbook_dates2_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/releahttps://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_dates2_test.cpp) 
 
 ```c++
 struct TimestampConverter {
@@ -107,7 +107,7 @@ A time_point can be encoded into JSON a the number of seconds since epoch(Jan 1,
 
 This example will use the constructor of the class to construct the `time_point` from the integer.  Otherwise, a `json_custom` type could be used here too.  It demonstrates using a constructor to do the data conversions, along with `to_json_data` to reverse the conversion.  Another alternative is to use the `Constructor` template argument to do the conversion of the integer to the `time_point`.  The `dateAdded` member shows parsing strings into numbers.  This is often done as numbers in JSON are double and can only hold integers as large as 2^53.
 
-Too see a working example using this code, refer to [cookbook_dates3_test.cpp](../tests/src/cookbook_dates3_test.cpp) 
+Too see a working example using this code, refer to [cookbook_dates3_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/releahttps://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_dates3_test.cpp) 
 
 ```c++
 using my_timepoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
@@ -170,7 +170,7 @@ Taking the first example, modified the time to use the MS AJAX format, the times
 
 When parsing the `timestamp` member we need to skip the first 6 characters, optionally verifying it says `"/DATE(`. Then parse the number and add it to a `std::chrono` timestamp with the time of Unix Epoc, Midight January 1, 1970.
  
-Too see a working example using this code, refer to [cookbook_dates4_test.cpp](../tests/src/cookbook_dates4_test.cpp) 
+Too see a working example using this code, refer to [cookbook_dates4_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/releahttps://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_dates4_test.cpp) 
 
 ```c++
 using timepoint_t = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;

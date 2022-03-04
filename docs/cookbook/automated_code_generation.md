@@ -17,7 +17,7 @@ cmake --build .
 
 Now we will have an executable called `json_to_cpp` or `json_to_cpp.exe` that will allow us to convert a json file to C++ structures along with the JSON Link mappings.
 
-For example, let's use [cookbook_class2.json](../test_data/cookbook_class2.json) from the [class.md](class.md) cookbook
+For example, let's use [cookbook_class2.json](https://raw.githubusercontent.com/beached/daw_json_link/release/test_data/cookbook_class2.json) from the [class.md](class.md) cookbook
 
 ```bash
 json_to_cpp --infile=cookbook_class2.json
