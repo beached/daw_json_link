@@ -185,9 +185,27 @@ HTML_HEADER            =
 HTML_FOOTER            =
 HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = docs/theme/doxygen-style.css
-HTML_EXTRA_FILES       =	docs/theme/img/*
-													cookbook/* \
-													tests/* 
+													docs/theme/img/closed-folder.png \
+													docs/theme/img/document.png \
+													docs/theme/img/off_sync.png \
+													docs/theme/img/on_sync.png \
+													docs/theme/img/opened-folder.png \
+													cookbook/array.md \
+													cookbook/automated_code_generation.md \
+													cookbook/class.md \
+													cookbook/class_from_array.md \
+													cookbook/dates.md \
+													cookbook/enums.md \
+													cookbook/graphs.md \
+													cookbook/key_values.md \
+													cookbook/numbers.md \
+													cookbook/optional_values.md \
+													cookbook/parser_policies.md \
+													cookbook/parsing_individual_members.md \
+													cookbook/readme.md \
+													cookbook/strings.md \
+													cookbook/unknown_types_and_delayed_parsing.md \
+													cookbook/variant.md \
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
