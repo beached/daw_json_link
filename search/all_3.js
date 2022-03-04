@@ -36,7 +36,7 @@ var searchData=
   ['custom_5fjson_5ftype_62',['custom_json_type',['../structdaw_1_1json_1_1json__custom.html#a567d70bddf3d3ca2c48d055f8fb04b66',1,'daw::json::json_custom']]],
   ['custom_5fto_5fconverter_5ft_63',['custom_to_converter_t',['../structdaw_1_1json_1_1custom__to__converter__t.html',1,'daw::json']]],
   ['customjsontypes_64',['CustomJsonTypes',['../namespacedaw_1_1json.html#a36083c9f336bce20bf3f0df6ee32aa1a',1,'daw::json']]],
-  ['classes_65',['Classes',['../md_cookbook_class.html',1,'']]],
-  ['classes_20from_20array_27s_66',['Classes from array&apos;s',['../md_cookbook_class_from_array.html',1,'']]],
-  ['cookbook_67',['CookBook',['../md_cookbook_readme.html',1,'']]]
+  ['cookbook_65',['CookBook',['../index.html',1,'']]],
+  ['classes_66',['Classes',['../md_cookbook_class.html',1,'']]],
+  ['classes_20from_20array_27s_67',['Classes from array&apos;s',['../md_cookbook_class_from_array.html',1,'']]]
 ];
