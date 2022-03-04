@@ -189,58 +189,7 @@ HTML_EXTRA_FILES       =	docs/theme/img/closed-folder.png \
 													docs/theme/img/document.png \
 													docs/theme/img/off_sync.png \
 													docs/theme/img/on_sync.png \
-													docs/theme/img/opened-folder.png \
-													cookbook/array.md \
-													cookbook/automated_code_generation.md \
-													cookbook/class.md \
-													cookbook/class_from_array.md \
-													cookbook/dates.md \
-													cookbook/enums.md \
-													cookbook/graphs.md \
-													cookbook/key_values.md \
-													cookbook/numbers.md \
-													cookbook/optional_values.md \
-													cookbook/parser_policies.md \
-													cookbook/parsing_individual_members.md \
-													cookbook/readme.md \
-													cookbook/strings.md \
-													cookbook/unknown_types_and_delayed_parsing.md \
-													cookbook/variant.md \
-													tests/src/cookbook_array1_test.cpp \
-													tests/src/cookbook_array2_test.cpp \
-													tests/src/cookbook_array3_test.cpp \
-													tests/src/cookbook_class1_test.cpp \
-													tests/src/cookbook_class2_test.cpp \
-													tests/src/cookbook_class3_test.cpp \
-													tests/src/cookbook_class_from_array1_test.cpp \
-													tests/src/cookbook_class_from_array2_test.cpp \
-													tests/src/cookbook_dates1_test.cpp \
-													tests/src/cookbook_dates2_test.cpp \
-													tests/src/cookbook_dates3_test.cpp \
-													tests/src/cookbook_dates4_test.cpp \
-													tests/src/cookbook_enums1_test.cpp \
-													tests/src/cookbook_enums2_test.cpp \
-													tests/src/cookbook_escaped_strings1_test.cpp \
-													tests/src/cookbook_graphs1_test.cpp \
-													tests/src/cookbook_kv1_test.cpp \
-													tests/src/cookbook_kv2_test.cpp \
-													tests/src/cookbook_kv3_test.cpp \
-													tests/src/cookbook_kv4_test.cpp \
-													tests/src/cookbook_numbers1_test.cpp \
-													tests/src/cookbook_numbers2_test.cpp \
-													tests/src/cookbook_optional_values1_test.cpp \
-													tests/src/cookbook_parsing_individual_members1_test.cpp \
-													tests/src/cookbook_parsing_individual_members2_test.cpp \
-													tests/src/cookbook_parsing_individual_members3_test.cpp \
-													tests/src/cookbook_unknown_types_and_delayed_parsing1_test.cpp \
-													tests/src/cookbook_unknown_types_and_delayed_parsing2_test.cpp \
-													tests/src/cookbook_unknown_types_and_delayed_parsing3_test.cpp \
-													tests/src/cookbook_variant1_test.cpp \
-													tests/src/cookbook_variant2_test.cpp \
-													tests/src/cookbook_variant3_test.cpp \
-													tests/src/cookbook_variant4_test.cpp \
-													tests/src/cookbook_variant5_test.cpp
-
+													docs/theme/img/opened-folder.png 
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80

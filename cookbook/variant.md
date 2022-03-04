@@ -21,7 +21,7 @@ Here we have an array of a class that has two members. A variant of types number
 type string and bool, member1.
 
 Too see a working example using this code, refer
-to [cookbook_variant1_test.cpp](../tests/src/cookbook_variant1_test.cpp)
+to [cookbook_variant1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_variant1_test.cpp)
 
 The following C++ can provide a mapping. It, also, highlights that the types bool, integers, floating point, std::
 string, and previously mapped types can be default mapped to elements that do not require a name. Such as variant,
@@ -88,7 +88,7 @@ member. In many JSON documents, the discriminator will be a string.
 A member name and a callable are needed to tell the parser which type will parsed.
 
 Too see a working example using this code, refer
-to [cookbook_variant2_test.cpp](../tests/src/cookbook_variant2_test.cpp)
+to [cookbook_variant2_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_variant2_test.cpp)
 
 ```c++
 struct MyClass {
@@ -156,7 +156,7 @@ member. In many JSON documents, the discriminator will be a string.
 A member name and a Callable are needed to tell the parser which type will parsed.
 
 Too see a working example using this code, refer
-to [cookbook_variant3_test.cpp](../tests/src/cookbook_variant3_test.cpp)
+to [cookbook_variant3_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_variant3_test.cpp)
 
  ```c++
  struct MyClass {
