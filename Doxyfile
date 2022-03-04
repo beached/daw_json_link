@@ -103,7 +103,7 @@ WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
 WARN_LOGFILE           =
-INPUT                  = include/daw/json cookbook docs
+INPUT                  = include/daw/json cookbook docs images
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -153,7 +153,7 @@ FILE_PATTERNS          = *.c \
                          *.qsf \
                          *.ice
 RECURSIVE              = YES
-EXCLUDE                =
+EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        = *::json_details *::murmur3_details *::utils_details *::*_details *::*_detail *::*_impl *::impl *::fp_utils
@@ -185,27 +185,9 @@ HTML_HEADER            =
 HTML_FOOTER            =
 HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = docs/theme/doxygen-style.css
-HTML_EXTRA_FILES       =	docs/theme/img/closed-folder.png \
-													docs/theme/img/document.png \
-													docs/theme/img/off_sync.png \
-													docs/theme/img/on_sync.png \
-													docs/theme/img/opened-folder.png \
-													cookbook/array.md \
-													cookbook/automated_code_generation.md \
-													cookbook/class.md \
-													cookbook/class_from_array.md \
-													cookbook/dates.md \
-													cookbook/enums.md \
-													cookbook/graphs.md \
-													cookbook/key_values.md \
-													cookbook/numbers.md \
-													cookbook/optional_values.md \
-													cookbook/parser_policies.md \
-													cookbook/parsing_individual_members.md \
-													cookbook/readme.md \
-													cookbook/strings.md \
-													cookbook/unknown_types_and_delayed_parsing.md \
-													cookbook/variant.md
+HTML_EXTRA_FILES       =	docs/theme/img/*
+													cookbook/* \
+													tests/* 
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
