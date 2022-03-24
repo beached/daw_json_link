@@ -27,7 +27,6 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-missing-braces 
 				-Wno-unneeded-internal-declaration 
 				-Wno-tautological-type-limit-compare 
-				-Wno-return-std-move-in-c++11 
 				-Wno-float-equal 
 				-Wno-unused-macros 
 				-Wno-global-constructors 
@@ -35,8 +34,16 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-weak-vtables 
 				-Wno-documentation 
 				-Wno-undefined-inline 
-				-Wno-poison-system-directories
 				)
+			if ((${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION LESS "13.1.6") OR CMAKE_CXX_COMPILER_VERSION LESS 13.0.0)
+        # This was removed in clang-13
+        add_compile_options(-Wno-return-std-move-in-c++11)
+      elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14.0.0)
+        add_compile_options(-Wno-bitwise-instead-of-logical)
+      endif ()
+      if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0)
+      	add_compile_options(-Wno-poison-system-directories)
+      endif ()
 			if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
 				if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
 					if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
