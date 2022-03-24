@@ -91,7 +91,7 @@ $(function() {
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> * Construct a json_value from a string literal</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"> * @return A json_value representing the json document</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">daw::json::json_value</a> <span class="keyword">operator</span><span class="stringliteral">&quot;&quot;</span> _dawjson( <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr,</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">daw::json::json_value</a> <span class="keyword">operator</span><span class="stringliteral">&quot;&quot;</span>_dawjson( <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr,</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                                                     std::size_t sz ) {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="namespacedaw_1_1json.html#a014ebfd35abe0f65c97ccc2fd20dcba5">daw::json::json_value</a>( std::string_view( ptr, sz ) );</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;}</div>
