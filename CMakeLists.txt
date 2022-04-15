@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project("daw-json-link"
-        VERSION "2.12.9"
+        VERSION "2.12.10"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
         LANGUAGES C CXX)
@@ -19,12 +19,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
-if( NOT DAW_USE_PACKAGE_MANAGEMENT ) 
-	add_subdirectory(extern)
-else( )	
-	find_package( daw-header-libraries REQUIRED )
-	find_package( daw-utf-range REQUIRED )
-endif( )
+if (NOT DAW_USE_PACKAGE_MANAGEMENT)
+    add_subdirectory(extern)
+else ()
+    find_package(daw-header-libraries REQUIRED)
+    find_package(daw-utf-range REQUIRED)
+endif ()
 
 option(DAW_ENABLE_TESTING "Build unit tests" OFF)
 
@@ -39,7 +39,7 @@ set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
 if (DAW_JSON_NO_CONST_EXPR)
-	message(STATUS "DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
+    message(STATUS "DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
     add_definitions(-DDAW_JSON_NO_CONST_EXPR)
 else ()
     message(STATUS "DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
@@ -65,10 +65,10 @@ endif ()
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     # G++ has difficulty and takes too long to compile
-    option(DAW_NO_FLATTEN "Disable function flattening optimization" ON )
-else( )
-    option(DAW_NO_FLATTEN "Disable function flattening optimization" OFF )
-endif()
+    option(DAW_NO_FLATTEN "Disable function flattening optimization" ON)
+else ()
+    option(DAW_NO_FLATTEN "Disable function flattening optimization" OFF)
+endif ()
 
 if (DAW_NO_FLATTEN)
     message(STATUS "DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
