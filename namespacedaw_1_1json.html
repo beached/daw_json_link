@@ -266,6 +266,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a832887f1545909837f7871083da81630"><td class="memTemplParams" colspan="2">template&lt;char const * Name, typename T  = std::optional&lt;std::chrono::time_point&lt;	           std::chrono::system_clock, std::chrono::milliseconds&gt;&gt;, typename Constructor  = construct_from_iso8601_timestamp&lt;JsonNullable::Nullable&gt;&gt; </td></tr>
 <tr class="memitem:a832887f1545909837f7871083da81630"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a832887f1545909837f7871083da81630">json_date_null</a> = <a class="el" href="structdaw_1_1json_1_1json__date.html">json_date</a>&lt; Name, T, Constructor, <a class="el" href="namespacedaw_1_1json.html#ad386e4018df7e72e41e7268ca9302af2a46ad517b8b7aa4e368a7cc226533bfb6">JsonNullable::Nullable</a> &gt;</td></tr>
 <tr class="separator:a832887f1545909837f7871083da81630"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab78aab656cda5e77965268a42d8ffe4c"><td class="memTemplParams" colspan="2">template&lt;char const * Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;&gt; </td></tr>
+<tr class="memitem:ab78aab656cda5e77965268a42d8ffe4c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ab78aab656cda5e77965268a42d8ffe4c">json_delayed_null</a> = <a class="el" href="structdaw_1_1json_1_1json__delayed.html">json_delayed</a>&lt; Name, T, Constructor &gt;</td></tr>
+<tr class="separator:ab78aab656cda5e77965268a42d8ffe4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0aadb9ded2ef80c4a0034aa2b623b30f"><td class="memTemplParams" colspan="2">template&lt;char const * Name, typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor  = nullable_constructor&lt;Container&gt;&gt; </td></tr>
 <tr class="memitem:a0aadb9ded2ef80c4a0034aa2b623b30f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a0aadb9ded2ef80c4a0034aa2b623b30f">json_key_value_array_null</a> = <a class="el" href="structdaw_1_1json_1_1json__key__value__array.html">json_key_value_array</a>&lt; Name, Container, JsonValueType, JsonKeyType, Constructor, <a class="el" href="namespacedaw_1_1json.html#ad386e4018df7e72e41e7268ca9302af2a46ad517b8b7aa4e368a7cc226533bfb6">JsonNullable::Nullable</a> &gt;</td></tr>
 <tr class="separator:a0aadb9ded2ef80c4a0034aa2b623b30f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -808,6 +811,24 @@ template&lt;char const * Name, typename T  = std::optional&lt;std::chrono::time_
 
 </div>
 </div>
+<a id="ab78aab656cda5e77965268a42d8ffe4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab78aab656cda5e77965268a42d8ffe4c">&#9670;&nbsp;</a></span>json_delayed_null</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;char const * Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacedaw_1_1json.html#ab78aab656cda5e77965268a42d8ffe4c">daw::json::json_delayed_null</a> = typedef <a class="el" href="structdaw_1_1json_1_1json__delayed.html">json_delayed</a>&lt;Name, T, Constructor&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00846">846</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+
+</div>
+</div>
 <a id="a0aadb9ded2ef80c4a0034aa2b623b30f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0aadb9ded2ef80c4a0034aa2b623b30f">&#9670;&nbsp;</a></span>json_key_value_array_null</h2>
 
@@ -1011,7 +1032,7 @@ template&lt;char const * Name, typename T , typename TagMember , typename Switch
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__value__state_8h_source.html#l00365">365</a> of file <a class="el" href="daw__json__value__state_8h_source.html">daw_json_value_state.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__value__state_8h_source.html#l00369">369</a> of file <a class="el" href="daw__json__value__state_8h_source.html">daw_json_value_state.h</a>.</p>
 
 </div>
 </div>
