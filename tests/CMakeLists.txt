@@ -24,11 +24,11 @@ endif ()
 include(cmake/test_compiler_options.cmake)
 
 add_library(json_test INTERFACE)
-if( NOT DAW_USE_PACKAGE_MANAGEMENT ) 
-target_link_libraries(json_test INTERFACE daw::daw-json-link daw::daw-header-libraries daw::daw-utf-range ${COMPILER_SPECIFIC_LIBS})
-else( ) 
-target_link_libraries(json_test INTERFACE ${COMPILER_SPECIFIC_LIBS})
-endif( )
+if (NOT DAW_USE_PACKAGE_MANAGEMENT)
+    target_link_libraries(json_test INTERFACE daw::daw-json-link daw::daw-header-libraries daw::daw-utf-range ${COMPILER_SPECIFIC_LIBS})
+else ()
+    target_link_libraries(json_test INTERFACE ${COMPILER_SPECIFIC_LIBS})
+endif ()
 
 target_include_directories(json_test INTERFACE include/)
 
@@ -593,11 +593,14 @@ add_executable(daw_json_minify_full src/daw_json_minify_full.cpp)
 target_link_libraries(daw_json_minify_full json_test)
 add_dependencies(full daw_json_minify_full)
 
-
 add_executable(test_array_of_ordered src/test_array_of_ordered.cpp)
 target_link_libraries(test_array_of_ordered json_test)
 add_dependencies(full test_array_of_ordered)
 
+add_executable(variant_on_members src/variant_on_members.cpp)
+target_link_libraries(variant_on_members json_test)
+add_test(NAME variant_on_members_test COMMAND variant_on_members)
+add_dependencies(full variant_on_members)
 
 # **************************************************
 # JSON Benchmark

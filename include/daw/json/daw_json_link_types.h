@@ -820,7 +820,7 @@ namespace daw::json {
 		               "Failed to detect base type" );
 
 		using parse_to_t =
-		  std::invoke_result_t<Constructor, char const *, char const *>;
+		  std::invoke_result_t<Constructor, char const *, std::size_t>;
 		static constexpr daw::string_view name = Name;
 
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Unknown;
@@ -831,4 +831,17 @@ namespace daw::json {
 		  JsonBaseParseTypes::None;
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
+
+	/***
+	 * Do not parse this member but return a T that can be used to
+	 * parse later.  Any whitespace surrounding the value may not be preserved.
+	 *
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T destination type.  Must be constructable from a char const * and
+	 * a std::size_t
+	 * @tparam Constructor A callable used to construct T.  The
+	 */
+	template<JSONNAMETYPE Name, typename T = json_value,
+	         typename Constructor = daw::construct_a_t<T>>
+	using json_delayed_null = json_delayed<Name, T, Constructor>;
 } // namespace daw::json

@@ -16,7 +16,7 @@ if (NOT TARGET daw::daw-header-libraries)
     FetchContent_Declare(
             daw_header_libraries
             GIT_REPOSITORY https://github.com/beached/header_libraries.git
-            GIT_TAG v2.33.2
+            GIT_TAG v2.44.1
     )
     FetchContent_MakeAvailable(daw_header_libraries)
 endif ()
@@ -25,7 +25,7 @@ if (NOT TARGET daw::daw_utf_range)
     FetchContent_Declare(
             daw_utf_range
             GIT_REPOSITORY https://github.com/beached/utf_range.git
-            GIT_TAG v2.2.0
+            GIT_TAG v2.2.2
     )
     FetchContent_MakeAvailable(daw_utf_range)
 endif ()
