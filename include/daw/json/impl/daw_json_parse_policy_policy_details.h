@@ -18,7 +18,7 @@ namespace daw::json {
 			template<char... keys>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool in( char c ) {
 				auto const eq = [c]( char k ) { return c == k; };
-				return ( eq( keys ) | ... );
+				return nsc_or( eq( keys )... );
 			}
 
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool

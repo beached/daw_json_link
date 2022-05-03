@@ -180,8 +180,9 @@ int main( int argc, char **argv ) {
 	{
 		if( args.size( ) > 1 and args[1].name.empty( ) ) {
 			test_assert( data.size( ) > 0, "Invalid JSON document" );
-			auto ofile = std::ofstream( args[1].value.to_string( ).c_str( ),
-			                            std::ios::trunc | std::ios::binary );
+			auto ofile =
+			  std::ofstream( static_cast<std::string>( args[1].value ).c_str( ),
+			                 std::ios::trunc | std::ios::binary );
 			test_assert( ofile, "Unable to output file" );
 			minify( args, data, std::ostreambuf_iterator<char>( ofile ) );
 		} else {

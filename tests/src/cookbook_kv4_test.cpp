@@ -15,7 +15,9 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 #include <iostream>
+#include <map>
 #include <string>
 
 int main( int argc, char **argv )

@@ -23,9 +23,11 @@
 #include <deque>
 #include <iostream>
 #include <list>
+#include <map>
 #include <optional>
 #include <random>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 #define AS_CONSTEXPR( ... ) \
@@ -133,7 +135,7 @@ std::string to_string( blah_t e ) noexcept {
 	case blah_t::c:
 		return "c";
 	}
-	std::abort( );
+	std::terminate( );
 }
 
 DAW_CONSTEXPR blah_t from_string( daw::tag_t<blah_t>,
@@ -147,7 +149,7 @@ DAW_CONSTEXPR blah_t from_string( daw::tag_t<blah_t>,
 	case 'c':
 		return blah_t::c;
 	default:
-		std::abort( );
+		std::terminate( );
 	}
 }
 

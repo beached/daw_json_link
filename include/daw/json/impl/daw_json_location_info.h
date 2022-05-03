@@ -119,7 +119,7 @@ namespace daw::json {
 				}
 
 				template<bool expect_long_strings, std::size_t start_pos>
-				DAW_ATTRIB_INLINE [[nodiscard]] inline constexpr std::size_t
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t
 				find_name( daw::template_vals_t<start_pos>,
 				           daw::string_view key ) const {
 					UInt32 const hash = name_hash<expect_long_strings>( key );
@@ -216,13 +216,15 @@ namespace daw::json {
 				(void)is_nullable;
 				(void)member_name;
 
-				daw_json_assert_weak( is_nullable | ( not locations[pos].missing( ) ) |
-				                        ( not parse_state.is_closing_brace_checked( ) ),
-				                      missing_member( member_name ), parse_state );
+				daw_json_assert_weak(
+				  nsc_or( is_nullable, ( not locations[pos].missing( ) ),
+				          ( not parse_state.is_closing_brace_checked( ) ) ),
+				  missing_member( member_name ), parse_state );
 
 				parse_state.trim_left_unchecked( );
 				bool known = not locations[pos].missing( );
-				while( locations[pos].missing( ) & ( parse_state.front( ) != '}' ) ) {
+				while( nsc_and( locations[pos].missing( ),
+				                ( parse_state.front( ) != '}' ) ) ) {
 					// TODO: fully unescape name
 					// parse_name checks if we have more and are quotes
 					auto const name = parse_name( parse_state );

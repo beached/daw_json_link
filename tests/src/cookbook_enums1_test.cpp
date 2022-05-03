@@ -35,7 +35,7 @@ namespace daw::cookbook_enums1 {
 		case Colours::black:
 			return "black";
 		}
-		std::abort( );
+		std::terminate( );
 	}
 
 	DAW_CONSTEXPR Colours from_string( daw::tag_t<Colours>,
@@ -52,7 +52,7 @@ namespace daw::cookbook_enums1 {
 		if( sv == "black" ) {
 			return Colours::black;
 		}
-		std::abort( );
+		std::terminate( );
 	}
 
 	struct MyClass1 {

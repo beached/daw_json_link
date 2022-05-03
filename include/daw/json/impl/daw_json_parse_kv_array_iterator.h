@@ -95,7 +95,7 @@ namespace daw::json {
 					                   std::get<1>( DAW_MOVE( v.members ) ) );
 				}
 
-				DAW_ATTRIB_INLINE inline constexpr value_type operator*( ) {
+				DAW_ATTRIB_INLINE constexpr value_type operator*( ) {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
@@ -104,7 +104,7 @@ namespace daw::json {
 					  *base::parse_state, ParseTag<JsonParseTypes::Class>{ } ) );
 				}
 
-				DAW_ATTRIB_INLINE inline constexpr json_parse_kv_array_iterator &
+				DAW_ATTRIB_INLINE constexpr json_parse_kv_array_iterator &
 				operator++( ) {
 					daw_json_assert_weak( base::parse_state,
 					                      ErrorReason::UnexpectedEndOfData );

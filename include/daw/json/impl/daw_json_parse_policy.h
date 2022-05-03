@@ -345,19 +345,17 @@ namespace daw::json {
 				}
 			}
 
-			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr char front( ) const {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr char front( ) const {
 				return *first;
 			}
 
-			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr char
-			front_checked( ) const {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr char front_checked( ) const {
 				daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData,
 				                 *this );
 				return *first;
 			}
 
-			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr std::size_t
-			size( ) const {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t size( ) const {
 				return static_cast<std::size_t>( last - first );
 			}
 
@@ -365,11 +363,11 @@ namespace daw::json {
 				return first == nullptr;
 			}
 
-			DAW_ATTRIB_INLINE inline constexpr void remove_prefix( ) {
+			DAW_ATTRIB_INLINE constexpr void remove_prefix( ) {
 				++first;
 			}
 
-			DAW_ATTRIB_INLINE inline constexpr void remove_prefix( std::size_t n ) {
+			DAW_ATTRIB_INLINE constexpr void remove_prefix( std::size_t n ) {
 				first += static_cast<std::ptrdiff_t>( n );
 			}
 
@@ -421,15 +419,14 @@ namespace daw::json {
 				return CommentPolicy::is_literal_end( *first );
 			}
 
-			DAW_ATTRIB_INLINE [[nodiscard]] inline constexpr bool
-			is_space_checked( ) const {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool is_space_checked( ) const {
 				daw_json_assert_weak( has_more( ), ErrorReason::UnexpectedEndOfData,
 				                      *this );
 				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 				         1U ) <= 0x1FU;
 			}
 
-			DAW_ATTRIB_INLINE [[nodiscard]] inline constexpr bool
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
 			is_space_unchecked( ) const {
 				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 				         1U ) <= 0x1FU;

@@ -40,6 +40,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-float-equal
                 -Wno-documentation
                 -Wno-newline-eof
+                -Wno-weak-vtables
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
                 -Wno-mismatched-tags
         )

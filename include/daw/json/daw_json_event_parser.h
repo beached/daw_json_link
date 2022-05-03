@@ -337,23 +337,23 @@ namespace daw::json {
 
 			CPP20CONSTEXPR DefaultJsonEventParserStackPolicy( ) = default;
 
-			CPP20CONSTEXPR inline void push_back( value_type &&v ) {
+			CPP20CONSTEXPR void push_back( value_type &&v ) {
 				m_stack.push_back( DAW_MOVE( v ) );
 			}
 
-			[[nodiscard]] CPP20CONSTEXPR inline reference back( ) {
+			[[nodiscard]] CPP20CONSTEXPR reference back( ) {
 				return m_stack.back( );
 			}
 
-			CPP20CONSTEXPR inline void clear( ) {
+			CPP20CONSTEXPR void clear( ) {
 				m_stack.clear( );
 			}
 
-			CPP20CONSTEXPR inline void pop_back( ) {
+			CPP20CONSTEXPR void pop_back( ) {
 				m_stack.pop_back( );
 			}
 
-			[[nodiscard]] CPP20CONSTEXPR inline bool empty( ) const {
+			[[nodiscard]] CPP20CONSTEXPR bool empty( ) const {
 				return m_stack.empty( );
 			}
 		};
