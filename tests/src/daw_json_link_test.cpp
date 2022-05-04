@@ -36,7 +36,7 @@ struct NumberX {
 namespace daw::json {
 	template<>
 	struct json_data_contract<NumberX> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_number<"x", int>>;
 #else
 		static constexpr char const x[] = "x";
@@ -143,7 +143,7 @@ struct e_test_001_t {
 namespace daw::json {
 	template<>
 	struct json_data_contract<test_001_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_number<"i", int>, json_number<"d">, json_bool<"b">,
 		                   json_string_raw<"s", std::string_view>,
@@ -180,7 +180,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<test_002_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_class<"a", test_001_t>>;
 #else
 		static constexpr char const a[] = "a";
@@ -193,7 +193,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<test_003_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_class_null<"a", std::optional<test_001_t>>>;
 #else
@@ -208,7 +208,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<e_test_001_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_custom<"a", blah_t>>;
 #else
 		static constexpr char const a[] = "a";
@@ -361,7 +361,7 @@ struct Empty2 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Empty2> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_class<"b", EmptyClassTest>, json_number<"c", int>>;
 #else

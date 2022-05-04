@@ -40,7 +40,7 @@ struct Number2 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Number> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_number<"a", float>>;
 #else
 		static constexpr char const a[] = "a";
@@ -50,7 +50,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<Number2> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_number<"a", float>>;
 #else
 		static constexpr char const a[] = "a";

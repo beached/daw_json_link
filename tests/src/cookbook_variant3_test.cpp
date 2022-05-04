@@ -44,7 +44,7 @@ namespace daw::cookbook_variant3 {
 
 template<>
 struct daw::json::json_data_contract<daw::cookbook_variant3::MyClass> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 	using type = json_member_list<
 	  json_string<"name">,
 	  json_tagged_variant<

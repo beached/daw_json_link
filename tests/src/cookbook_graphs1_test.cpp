@@ -43,7 +43,7 @@ namespace daw::cookbook_graphs1 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::Metadata> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_number<"member0", int>,
 		                              json_string<"member1">, json_bool<"member2">>;
 #else
@@ -57,7 +57,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::GraphNode> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_number<"id", size_t, LiteralAsStringOpt::Always>,
 		                   json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
@@ -72,7 +72,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::GraphEdge> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_number<"source", size_t, LiteralAsStringOpt::Always>,
 		  json_number<"target", size_t, LiteralAsStringOpt::Always>>;

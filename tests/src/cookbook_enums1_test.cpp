@@ -67,7 +67,7 @@ namespace daw::cookbook_enums1 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_enums1::MyClass1> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_array<
 		  "member0", json_custom<no_name, daw::cookbook_enums1::Colours>>>;
 #else

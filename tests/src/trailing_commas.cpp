@@ -25,7 +25,7 @@ struct string_trail {
 
 template<>
 struct daw::json::json_data_contract<string_trail> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 	using type = json_member_list<json_string<"a">>;
 #else
 	static constexpr char const a[] = "a";
@@ -52,7 +52,7 @@ struct string_raw_trail {
 
 template<>
 struct daw::json::json_data_contract<string_raw_trail> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 	using type = json_member_list<json_string_raw<"a", std::string_view>>;
 #else
 	static constexpr char const a[] = "a";
@@ -77,7 +77,7 @@ struct int_trail {
 
 template<>
 struct daw::json::json_data_contract<int_trail> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 	using type = json_member_list<json_number<"a", int>>;
 #else
 	static constexpr char const a[] = "a";
@@ -102,7 +102,7 @@ struct unsigned_trail {
 
 template<>
 struct daw::json::json_data_contract<unsigned_trail> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 	using type = json_member_list<json_number<"a", unsigned>>;
 #else
 	static constexpr char const a[] = "a";
@@ -126,7 +126,7 @@ struct bool_trail {
 
 template<>
 struct daw::json::json_data_contract<bool_trail> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 	using type = json_member_list<json_bool<"a">>;
 #else
 	static constexpr char const a[] = "a";
@@ -151,7 +151,7 @@ struct object_trail {
 
 template<>
 struct daw::json::json_data_contract<object_trail> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 	using type = json_member_list<json_class<"a", int_trail>>;
 #else
 	static constexpr char const a[] = "a";
@@ -176,7 +176,7 @@ struct array_member_trail {
 
 template<>
 struct daw::json::json_data_contract<array_member_trail> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 	using type = json_member_list<json_array<"a", int>>;
 #else
 	static constexpr char const a[] = "a";

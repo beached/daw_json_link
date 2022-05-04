@@ -45,7 +45,7 @@ namespace daw::cookbook_class3 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_class3::MyClass1> {
-#if defined( __cpp_nontype_template_parameter_class )
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_string<"member0">, json_number<"member1", int>,
 		                   json_bool<"member2">>;
@@ -66,7 +66,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::cookbook_class3::MyClass3> {
-#if defined( __cpp_nontype_template_parameter_class )
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_class<"a", daw::cookbook_class3::MyClass1>>;
 #else
