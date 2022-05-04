@@ -38,7 +38,7 @@ namespace daw::cookbook_array2 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_array2::MyClass4> {
-#if defined( __cpp_nontype_template_parameter_class )
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_string<"a">, json_number<"b", unsigned>,
 		                              json_number<"c", float>, json_bool<"d">>;
 #else

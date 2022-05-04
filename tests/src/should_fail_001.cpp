@@ -36,7 +36,7 @@ namespace tests {
 
 template<>
 struct daw::json::json_data_contract<tests::Coordinate> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 	using type = json_member_list<json_number<"lat">, json_number<"lng">,
 	                              json_string<"name">>;
 #else
@@ -50,7 +50,7 @@ struct daw::json::json_data_contract<tests::Coordinate> {
 
 template<>
 struct daw::json::json_data_contract<tests::UriList> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 	using type = json_member_list<json_array<"uris", std::string>>;
 #else
 	static constexpr char const uris[] = "uris";

@@ -38,7 +38,7 @@ struct Number {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Number> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_number<"a", intmax_t>>;
 #else
 		static constexpr char const a[] = "a";

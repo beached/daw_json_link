@@ -33,7 +33,7 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<A> {
 		using force_aggregate_construction = void;
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_number<"some_num", int>>;
 
 #else
@@ -48,7 +48,7 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<B> {
 		using force_aggregate_construction = void;
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_class<"a", A>>;
 
 #else

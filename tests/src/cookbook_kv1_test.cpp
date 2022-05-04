@@ -32,7 +32,7 @@ namespace daw::cookbook_kv1 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_kv1::MyKeyValue1> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
 #else

@@ -21,7 +21,7 @@
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::twitter2::metadata_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_string_raw<"result_type", std::string_view>,
 		                   json_string_raw<"iso_language_code", std::string_view>>;
@@ -61,7 +61,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::url_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_array<"urls", daw::twitter2::urls_element_t>>;
 #else
@@ -77,7 +77,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::description_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_array<"urls", daw::twitter2::urls_element_t>>;
 #else
@@ -93,7 +93,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::entities_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_class_null<"url", std::optional<daw::twitter2::url_t>,
 		                  opt_construct_a<daw::twitter2::url_t>>,
@@ -376,7 +376,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::thumb_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_custom<"w", std::string_view>,
 		                              json_custom<"h", std::string_view>,
 		                              json_string_raw<"resize", std::string_view>>;
@@ -396,7 +396,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::large_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_custom<"w", std::string_view>,
 		                              json_custom<"h", std::string_view>,
 		                              json_string_raw<"resize", std::string_view>>;
@@ -416,7 +416,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::sizes_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_class<"medium", daw::twitter2::medium_t>,
 		                              json_class<"small", daw::twitter2::small_t>,
 		                              json_class<"thumb", daw::twitter2::thumb_t>,

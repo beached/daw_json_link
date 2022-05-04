@@ -37,7 +37,7 @@ bool operator==( unicode_data const &lhs, unicode_data const &rhs ) {
 namespace daw::json {
 	template<>
 	struct json_data_contract<unicode_data> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_string<"escaped">, json_string<"unicode">>;
 #else
