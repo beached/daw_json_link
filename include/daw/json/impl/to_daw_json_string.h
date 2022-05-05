@@ -642,7 +642,7 @@ namespace daw::json {
 			[[nodiscard]] inline constexpr OutputIterator
 			to_daw_json_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 			                    Optional const &value ) {
-				static_assert( is_dereferenceable_v<Optional> );
+				static_assert( is_dereferenceable_v<Optional>, "For _null mappings, it is expected that the data type has operator* and can be read from" );
 
 				if( not json_details::has_value( value ) ) {
 					return utils::copy_to_iterator( it, "null" );

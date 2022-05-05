@@ -86,9 +86,9 @@ namespace daw::json {
 
 		static inline auto to_json_data( Foo const &foo ) {
 			if( not foo.member ) {
-				return std::tuple<std::string>{ "null" };
+				return std::tuple<std::optional<std::string>>{ };
 			}
-			return std::tuple{ std::visit(
+			return std::tuple<std::optional<std::string>>{ std::visit(
 			  []( auto const &value ) { return to_json( value ); }, *foo.member ) };
 		}
 	};
