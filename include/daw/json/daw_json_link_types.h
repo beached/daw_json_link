@@ -680,7 +680,7 @@ namespace daw::json {
 
 				using parse_to_t = typename json_details::construction_result<
 				  nullable != JsonNullable::MustExist, Constructor, char const *,
-				  char const *>::type;
+				  std::size_t>::type;
 
 				static constexpr daw::string_view name = no_name;
 				static constexpr JsonParseTypes expected_type =
@@ -1953,7 +1953,7 @@ std::pair<typename json_key_t::parse_to_t const,
 
 				using parse_to_t = typename json_details::construction_result<
 				  nullable != JsonNullable::MustExist, Constructor, char const *,
-				  char const *>::type;
+				  std::size_t>::type;
 
 				static constexpr daw::string_view name = no_name;
 
