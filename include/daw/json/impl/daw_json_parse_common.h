@@ -898,9 +898,8 @@ namespace daw::json {
 
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
-				static_assert(
-				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
-				  "Detection failure" );
+				static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
+				               "Detection failure" );
 			};
 
 			template<typename T,
@@ -913,9 +912,8 @@ namespace daw::json {
 				                              daw::traits::identity<T>>::type;
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
-				static_assert(
-				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
-				  "Detection failure" );
+				static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
+				               "Detection failure" );
 			};
 
 			template<typename T /*bool Contract, bool JsonType, bool QuickMap*/,
@@ -923,12 +921,11 @@ namespace daw::json {
 			struct json_type_deducer<T, false, false, false, true, Container> {
 				static_assert( not std::is_same_v<T, void> );
 				using type = json_link_quick_map_t<T>;
-				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+				using rcvref_type = remove_cvref_t<type>;
+				static_assert( not std::is_same_v<rcvref_type, void>,
 				               "Detection failure" );
-				static_assert(
-				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
-				  "Detection failure" );
-				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+				static_assert( not is_nonesuch_v<rcvref_type>, "Detection failure" );
+				static_assert( not std::is_same_v<rcvref_type, void>,
 				               "Detection failure" );
 			};
 
@@ -939,9 +936,8 @@ namespace daw::json {
 				using type = json_base::json_array<typename T::value_type, T>;
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
-				static_assert(
-				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
-				  "Detection failure" );
+				static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
+				               "Detection failure" );
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
 			};
