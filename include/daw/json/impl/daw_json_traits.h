@@ -743,12 +743,12 @@ namespace daw::json {
 			using dereferenced_t = typename deref_t_impl::deref_type_impl<T>::type;
 
 			template<typename T>
-			using is_dereferenceable =
-			  daw::not_trait<std::is_same<dereferenced_t<T>,
-			                              deref_t_impl::unable_to_dereference<T>>>;
+			inline constexpr bool is_dereferenceable_v =
+			  not std::is_same_v<dereferenced_t<T>,
+			                     deref_t_impl::unable_to_dereference<T>>;
 
 			template<typename T>
-			inline constexpr bool is_dereferenceable_v = is_dereferenceable<T>::value;
+			using is_dereferenceable = std::bool_constant<is_dereferenceable_v<T>>;
 
 			namespace unwrapped_impl {
 				template<typename T>

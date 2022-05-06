@@ -30,6 +30,7 @@
 #include <ciso646>
 #include <cstddef>
 #include <iterator>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -173,12 +174,13 @@ namespace daw::json {
 			  daw::is_detected<has_deallocate_test, Allocator>>::value;
 
 			template<typename T>
-			using has_json_data_contract_trait =
-			  not_trait<std::is_same<missing_json_data_contract_for<T>,
-			                         json_data_contract_trait_t<T>>>;
-			template<typename T>
 			inline constexpr bool has_json_data_contract_trait_v =
-			  has_json_data_contract_trait<T>::value;
+			  not std::is_same_v<missing_json_data_contract_for<T>,
+			                     json_data_contract_trait_t<T>>;
+
+			template<typename T>
+			using has_json_data_contract_trait =
+			  std::bool_constant<has_json_data_contract_trait_v<T>>;
 
 			template<typename Container, typename Value>
 			using detect_push_back = decltype( std::declval<Container &>( ).push_back(
@@ -479,7 +481,7 @@ namespace daw::json {
 
 			template<typename JsonType>
 			struct json_deduced_type_map<
-			  JsonType, std::enable_if_t<json_details::is_a_json_type_v<JsonType>>> {
+			  JsonType, std::enable_if_t<is_a_json_type_v<JsonType>>> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
 
@@ -489,7 +491,7 @@ namespace daw::json {
 
 			template<typename T>
 			struct json_deduced_type_map<
-			  T, std::enable_if_t<json_details::has_json_data_contract_trait_v<T>>> {
+			  T, std::enable_if_t<has_json_data_contract_trait_v<T>>> {
 				static constexpr bool is_null = false;
 				using type = typename json_data_contract<T>::type;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
@@ -546,10 +548,9 @@ namespace daw::json {
 
 			template<typename Integer>
 			struct json_deduced_type_map<
-			  Integer,
-			  std::enable_if_t<std::conjunction_v<
-			    not_trait<json_details::has_json_data_contract_trait<Integer>>,
-			    daw::is_integral<Integer>>>> {
+			  Integer, std::enable_if_t<
+			             not json_details::has_json_data_contract_trait_v<Integer> and
+			             daw::is_integral_v<Integer>>> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type =
 				  daw::is_signed_v<Integer> ? JsonParseTypes::Signed
@@ -560,9 +561,9 @@ namespace daw::json {
 
 			template<typename Enum>
 			struct json_deduced_type_map<
-			  Enum, std::enable_if_t<std::conjunction_v<
-			          not_trait<json_details::has_json_data_contract_trait<Enum>>,
-			          std::is_enum<Enum>>>> {
+			  Enum, std::enable_if_t<
+			          not json_details::has_json_data_contract_trait_v<Enum> and
+			          std::is_enum_v<Enum>>> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type =
 				  daw::is_signed_v<std::underlying_type<Enum>>
@@ -575,9 +576,9 @@ namespace daw::json {
 			template<typename FloatingPoint>
 			struct json_deduced_type_map<
 			  FloatingPoint,
-			  std::enable_if_t<std::conjunction_v<
-			    not_trait<json_details::has_json_data_contract_trait<FloatingPoint>>,
-			    daw::is_floating_point<FloatingPoint>>>> {
+			  std::enable_if_t<
+			    not json_details::has_json_data_contract_trait_v<FloatingPoint> and
+			    daw::is_floating_point_v<FloatingPoint>>> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Real;
 
@@ -586,9 +587,9 @@ namespace daw::json {
 
 			template<typename Tuple>
 			struct json_deduced_type_map<
-			  Tuple, std::enable_if_t<std::conjunction_v<
-			           not_trait<json_details::has_json_data_contract_trait<Tuple>>,
-			           is_tuple<Tuple>>>> {
+			  Tuple, std::enable_if_t<
+			           not json_details::has_json_data_contract_trait_v<Tuple> and
+			           is_tuple_v<Tuple>>> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Tuple;
 
@@ -686,24 +687,24 @@ namespace daw::json {
 			template<typename T>
 			struct json_deduced_type_map<
 			  std::optional<T>,
-			  std::enable_if_t<std::conjunction_v<
-			    not_trait<has_json_data_contract_trait<std::optional<T>>>,
-			    daw::is_detected<json_deduced_type_map, T>>>> {
+			  std::enable_if_t<
+			    not has_json_data_contract_trait_v<std::optional<T>> and
+			    daw::is_detected_v<json_deduced_type_map, T>>> {
 
 				static constexpr bool is_null = true;
 				using type = json_deduced_type_map<T>;
+				using sub_type = T;
 				static constexpr JsonParseTypes parse_type = type::parse_type;
-
 				static constexpr bool type_map_found = true;
 			};
 
 			template<typename T>
-			using has_deduced_type_mapping =
-			  std::bool_constant<json_deduced_type_map<T>::type_map_found>;
-
-			template<typename T>
 			inline constexpr bool has_deduced_type_mapping_v =
 			  json_deduced_type_map<T>::type_map_found;
+
+			template<typename T>
+			using has_deduced_type_mapping =
+			  bool_constant<has_deduced_type_mapping_v<T>>;
 
 			template<typename Mapped, bool Found = true>
 			struct json_link_quick_map_type : std::bool_constant<Found> {
@@ -711,12 +712,11 @@ namespace daw::json {
 			};
 
 			template<auto Value, auto... Values>
-			using equal_to_one_of =
-			  std::bool_constant<( ( Value == Values ) or ... )>;
+			inline constexpr bool equal_to_one_of_v = ( ( Value == Values ) or ... );
 
 			template<auto Value, auto... Values>
-			inline constexpr bool equal_to_one_of_v =
-			  equal_to_one_of<Value, Values...>::value;
+			using equal_to_one_of =
+			  std::bool_constant<equal_to_one_of_v<Value, Values...>>;
 
 			template<typename T>
 			inline constexpr auto json_link_quick_map( ) {
@@ -728,7 +728,13 @@ namespace daw::json {
 					using is_null = daw::constant<mapped_type_t::is_null>;
 					if constexpr( parse_type::value == JsonParseTypes::Unknown ) {
 						if constexpr( is_null::value ) {
-							return json_link_quick_map_type<json_base::json_raw_null<T>>{ };
+							if constexpr( has_json_data_contract_trait_v<
+							                typename mapped_type_t::sub_type> ) {
+								return json_link_quick_map_type<
+								  json_base::json_class_null<T>>{ };
+							} else {
+								return json_link_quick_map_type<json_base::json_raw_null<T>>{ };
+							}
 						} else {
 							return json_link_quick_map_type<json_base::json_raw<T>>{ };
 						}
