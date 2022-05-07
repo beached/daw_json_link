@@ -194,7 +194,7 @@ namespace daw::json {
 		 * brace construction for them
 		 * @tparam T type to construct
 		 */
-		template<typename T>
+		template<typename T, typename = void>
 		struct default_constructor {
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T operator( )( ) const {
 				return T{ };
@@ -342,14 +342,22 @@ namespace daw::json {
 		};
 
 		/***
-		 * Auto generated constructor for nullable types.
+		 * Default constructor for nullable types.
 		 * Specializations must accept accept an operator( )( ) that signifies a
 		 * JSON null. Any other arguments only need to be valid to construct the
 		 * type.
 		 */
 		template<typename T, typename = void>
-		struct nullable_constructor : default_constructor<T> {};
+		struct nullable_constructor : default_constructor<T> {
+			/// used for types like string_view that have an empty state
+		};
 
+		/***
+		 * Default constructor for nullable types.
+		 * Specializations must accept accept an operator( )( ) that signifies a
+		 * JSON null. Any other arguments only need to be valid to construct the
+		 * type.
+		 */
 		template<typename T>
 		struct nullable_constructor<T, std::enable_if_t<is_readable_value_v<T>>> {
 			using value_type = readable_value_type_t<T>;

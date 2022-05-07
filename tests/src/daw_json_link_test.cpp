@@ -754,7 +754,8 @@ int main( int, char ** )
 	static_assert( std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1> );
 	auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
 	assert( not foo2_val.m1 );
-
+	auto const foo2_str = daw::json::to_json( foo2_val );
+	(void)foo2_str;
 	using namespace std::string_literals;
 	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
 	using namespace daw::json;

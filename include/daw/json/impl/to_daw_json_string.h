@@ -766,7 +766,7 @@ namespace daw::json {
 
 				static_assert(
 				  std::is_convertible<parse_to_t,
-				                      typename JsonMember::parse_to_t>::value,
+				                      typename JsonMember::base_type>::value,
 				  "value must be convertible to specified type in class contract" );
 
 				using std::to_string;
@@ -892,6 +892,7 @@ namespace daw::json {
 				template<typename Integer>
 				struct number {
 					using parse_to_t = Integer;
+					using base_type = Integer;
 					static constexpr LiteralAsStringOpt literal_as_string =
 					  LiteralAsStringOpt::Never;
 				};
