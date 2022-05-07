@@ -9,6 +9,30 @@
 #pragma once
 
 namespace daw {
+	namespace readable_impl {
+		template<typename T, typename... Args>
+		using is_list_constructible_test = decltype( T{
+		  std::declval<Args>( )... } );
+
+		template<typename T, typename... Args>
+		inline constexpr bool is_list_constructible_v =
+		  is_detected_v<is_list_constructible_test, T, Args...>;
+
+		template<typename T, typename... Args>
+		inline constexpr bool is_readable_value_type_constructible_v =
+		  std::is_constructible_v<T, Args...> or
+		  is_list_constructible_v<T, Args...>;
+
+	} // namespace readable_impl
+
+	struct construct_readable_value_t {};
+	inline constexpr auto construct_readable_value =
+	  construct_readable_value_t{ };
+
+	struct construct_readable_empty_t {};
+	inline constexpr auto construct_readable_empty =
+	  construct_readable_empty_t{ };
+
 	/***
 	 * @brief Readable values models an option/maybe/nullable type
 	 * @tparam T The option type
@@ -37,11 +61,11 @@ namespace daw {
 		/***
 		 * @brief Construct a value in readable type and return it
 		 */
-		static readable_type construct_value( );
+		readable_type operator( )( construct_readable_value_t );
 		/***
 		 * @brief Return an empty readable type
 		 */
-		static readable_type construct_emtpy( );
+		readable_type operator( )( construct_readable_empty_t );
 		/***
 		 * @brief Check the state of the readable type for a value
 		 */
@@ -72,7 +96,7 @@ namespace daw {
 	 */
 	template<typename T>
 	constexpr bool readable_value_has_value( T const &opt ) {
-		assert( is_readable_value_v<T> );
+		static_assert( is_readable_value_v<T> );
 		return readable_value_traits<T>::has_value( opt );
 	}
 
@@ -82,7 +106,29 @@ namespace daw {
 	 */
 	template<typename T>
 	constexpr decltype( auto ) readable_value_read( T const &opt ) {
-		assert( is_readable_value_v<T> );
+		static_assert( is_readable_value_v<T> );
 		return readable_value_traits<T>::read( opt );
 	}
+
+	template<typename T, typename... Args>
+	inline constexpr bool is_readable_value_constructible_v =
+	  is_readable_value_v<T> and std::is_invocable_v<
+	    readable_value_traits<T>, construct_readable_value_t, Args...>;
+
+	template<typename T, typename... Args>
+	inline constexpr bool is_readable_value_nothrow_constructible_v =
+	  is_readable_value_constructible_v<T, Args...>
+	    and std::is_nothrow_invocable_v<readable_value_traits<T>,
+	                                    construct_readable_value_t, Args...>;
+
+	template<typename T>
+	inline constexpr bool is_readable_empty_constructible_v =
+	  is_readable_value_v<T> and
+	    std::is_invocable_v<readable_value_traits<T>, construct_readable_empty_t>;
+
+	template<typename T>
+	inline constexpr bool is_readable_empty_nothrow_constructible_v =
+	  is_readable_empty_constructible_v<T> and std::is_nothrow_invocable_v<
+	    readable_value_traits<T>, construct_readable_empty_t>;
+
 } // namespace daw

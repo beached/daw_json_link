@@ -347,77 +347,29 @@ namespace daw::json {
 		 * JSON null. Any other arguments only need to be valid to construct the
 		 * type.
 		 */
-		template<typename T>
+		template<typename T, typename = void>
 		struct nullable_constructor : default_constructor<T> {};
 
 		template<typename T>
-		struct nullable_constructor<std::optional<T>> {
-			using value_type = T;
+		struct nullable_constructor<T, std::enable_if_t<is_readable_value_v<T>>> {
+			using value_type = readable_value_type_t<T>;
+			using rtraits_t = readable_value_traits<T>;
 
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::optional<T>
-			operator( )( ) const noexcept {
-				return std::optional<T>( );
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto operator( )( ) const
+			  noexcept( is_readable_empty_nothrow_constructible_v<T> ) {
+				static_assert( is_readable_empty_constructible_v<T> );
+				return rtraits_t{ }( construct_readable_empty );
 			}
 
-			template<typename... Args>
+			template<
+			  typename Arg, typename... Args,
+			  std::enable_if_t<is_readable_value_constructible_v<T, Arg, Args...>,
+			                   std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( Args &&...args ) const
-			  noexcept( std::is_nothrow_constructible<
-			            std::optional<T>, std::in_place_t, Args...>::value )
-			    -> std::enable_if_t<
-			      ( ( sizeof...( Args ) > 0 ) and
-			        std::is_constructible<T, std::in_place_t, Args...>::value ),
-			      std::optional<T>> {
-
-				return std::optional<T>( std::in_place, DAW_FWD2( Args, args )... );
-			}
-
-			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( Args &&...args ) const noexcept(
-			  std::conjunction<traits::is_nothrow_list_constructible<T, Args...>,
-			                   std::is_nothrow_move_constructible<T>>::value )
-			  -> std::enable_if_t<
-			    ( ( sizeof...( Args ) > 0 ) and
-			      not std::is_constructible<T, std::in_place_t, Args...>::value and
-			      traits::is_list_constructible<T, Args...>::value ),
-			    std::optional<T>> {
-
-				return std::optional<T>( T{ DAW_FWD2( Args, args )... } );
-			}
-		};
-
-		template<typename T, typename Deleter>
-		struct nullable_constructor<std::unique_ptr<T, Deleter>> {
-			using value_type = T;
-
-			DAW_ATTRIB_INLINE constexpr std::unique_ptr<T, Deleter>
-			operator( )( ) const noexcept {
-				return std::unique_ptr<T, Deleter>{ };
-			}
-
-			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE auto operator( )( Args &&...args ) const
-			  noexcept( std::is_nothrow_constructible<T, Args...>::value )
-			    -> std::enable_if_t<( sizeof...( Args ) > 0 and
-			                          std::is_constructible<T, Args...>::value ),
-			                        std::unique_ptr<T, Deleter>> {
-
-				return std::unique_ptr<T, Deleter>(
-				  new T( DAW_FWD2( Args, args )... ) );
-			}
-
-			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIB_INLINE auto operator( )( Args &&...args ) const
-			  noexcept( traits::is_nothrow_list_constructible<T, Args...>::value )
-			    -> std::enable_if_t<
-			      ( ( sizeof...( Args ) > 0 ) and
-			        not std::is_constructible<T, Args...>::value and
-			        traits::is_list_constructible<T, Args...>::value ),
-			      std::unique_ptr<T, Deleter>> {
-
-				return std::unique_ptr<T, Deleter>(
-				  new T{ DAW_FWD2( Args, args )... } );
+			operator( )( Arg &&arg, Args &&...args ) const
+			  noexcept( is_readable_value_nothrow_constructible_v<T, Arg, Args...> ) {
+				return rtraits_t{ }( construct_readable_value, DAW_FWD( arg ),
+				                     DAW_FWD( args )... );
 			}
 		};
 

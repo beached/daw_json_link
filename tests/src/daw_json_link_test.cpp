@@ -719,7 +719,7 @@ struct Foo1 {};
 
 struct Foo2 {
 	std::optional<Foo1> m1;
-	std::unique_ptr<int> m2;
+	std::shared_ptr<int> m2;
 };
 
 namespace daw::json {
@@ -736,7 +736,7 @@ namespace daw::json {
 		static constexpr char const m1[] = "m1";
 		static constexpr char const m2[] = "m2";
 		using type = json_member_list<json_link<m1, std::optional<Foo1>>,
-		                              json_link<m2, std::unique_ptr<int>>>;
+		                              json_link<m2, std::shared_ptr<int>>>;
 
 		static constexpr auto to_json_data( Foo2 const &val ) {
 			return std::forward_as_tuple( val.m1, val.m2 );
