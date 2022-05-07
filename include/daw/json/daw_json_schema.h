@@ -772,7 +772,7 @@ namespace daw::json {
 		                                         std::string_view title ) {
 
 			using iter_t =
-			  std::conditional_t<is_serialization_policy<OutputIterator>::value,
+			  std::conditional_t<is_serialization_policy_v<OutputIterator>,
 			                     OutputIterator,
 			                     serialization_policy<OutputIterator>>;
 			auto out_it = iter_t( it );

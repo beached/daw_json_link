@@ -114,11 +114,11 @@ namespace daw::json {
 
 		struct use_default_serialization_policy;
 
-		template<typename, typename = void>
-		struct is_serialization_policy : std::false_type {};
+		template<typename, typename...>
+		inline constexpr bool is_serialization_policy_v = false;
 
 		template<typename OutputIterator, json_details::json_options_t PolicyFlags>
-		struct is_serialization_policy<
-		  serialization_policy<OutputIterator, PolicyFlags>> : std::true_type {};
+		inline constexpr bool is_serialization_policy_v<
+		  serialization_policy<OutputIterator, PolicyFlags>> = true;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

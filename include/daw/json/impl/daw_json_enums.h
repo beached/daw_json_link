@@ -97,12 +97,13 @@ namespace daw::json {
 
 		namespace json_details {
 			template<JsonNullable nullable>
-			using is_nullable_json_value =
-			  std::bool_constant<nullable != JsonNullable::MustExist>;
+			inline constexpr bool is_nullable_json_value_v =
+			  nullable != JsonNullable::MustExist;
 
 			template<JsonNullable nullable>
-			inline constexpr bool is_nullable_json_value_v =
-			  is_nullable_json_value<nullable>::value;
+			using is_nullable_json_value =
+			  std::bool_constant<is_nullable_json_value_v<nullable>>;
+
 		} // namespace json_details
 
 		inline namespace details {

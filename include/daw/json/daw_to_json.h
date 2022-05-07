@@ -28,7 +28,7 @@ namespace daw::json {
 			if constexpr( std::is_pointer<OutputIterator>::value ) {
 				daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 			}
-			if constexpr( is_serialization_policy<OutputIterator>::value ) {
+			if constexpr( is_serialization_policy_v<OutputIterator> ) {
 				auto state = json_details::member_to_string( template_arg<JsonClass>,
 				                                             out_it, value );
 			} else {
@@ -68,7 +68,7 @@ namespace daw::json {
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			  "Supplied container must support begin( )/end( )" );
 			using iter_t =
-			  std::conditional_t<is_serialization_policy<OutputIterator>::value,
+			  std::conditional_t<is_serialization_policy_v<OutputIterator>,
 			                     OutputIterator,
 			                     serialization_policy<OutputIterator>>;
 

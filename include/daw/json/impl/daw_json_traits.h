@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include "../../daw_readable_value.h"
 #include "daw_json_enums.h"
 
 #include <daw/cpp_17.h>
@@ -54,21 +55,19 @@ namespace daw::json {
 			inline constexpr bool has_empty_member_v =
 			  daw::is_detected_v<has_empty_member_test, T>;
 
+			/*
 			template<typename T>
-			inline constexpr bool is_readable_v =
-			  has_op_bool_v<T> or has_empty_member_v<T>;
+			inline constexpr auto has_value( T const &v )
+			  -> std::enable_if_t<is_readable_value_v<T>, bool> {
+
+			  return readable_value_traits<T>::has_value( v );
+			}
 
 			template<typename T>
 			inline constexpr auto has_value( T const &v )
-			  -> std::enable_if_t<is_readable_v<T>, bool> {
-
-				if constexpr( has_op_bool_v<T> ) {
-					return static_cast<bool>( v );
-				} else if constexpr( has_empty_member_v<T> ) {
-					return not v.empty( );
-				}
-				DAW_UNREACHABLE( );
-			}
+			  -> std::enable_if_t<not is_readable_value_v<T> and
+			has_empty_member_v<T>, bool> { return not v.empty( );
+			}*/
 
 			template<typename Constructor, typename... Args>
 			struct nullable_constructor_cannot_be_invoked;
@@ -227,22 +226,23 @@ namespace daw::json {
 			}
 		};
 
-		template<typename, typename = void>
-		struct is_default_constructor : std::false_type {};
+		template<typename, typename...>
+		inline constexpr bool is_default_constructor_v = false;
 
 		template<typename T>
-		struct is_default_constructor<default_constructor<T>> : std::true_type {};
+		inline constexpr bool is_default_constructor_v<default_constructor<T>> =
+		  true;
 
-		template<typename T>
-		inline constexpr bool is_default_constructor_v =
-		  is_default_constructor<T>::value;
+		template<typename T, typename... Ignore>
+		struct is_default_constructor
+		  : std::bool_constant<is_default_constructor_v<T, Ignore...>> {};
 
 		namespace json_details {
 			template<typename>
-			struct is_std_allocator : std::false_type {};
+			inline constexpr bool is_std_allocator_v = false;
 
-			template<typename... Ts>
-			struct is_std_allocator<std::allocator<Ts...>> : std::true_type {};
+			template<typename T>
+			inline constexpr bool is_std_allocator_v<std::allocator<T>> = true;
 		} // namespace json_details
 
 		inline namespace {
@@ -328,7 +328,7 @@ namespace daw::json {
 				if constexpr( std::is_same_v<std::random_access_iterator_tag,
 				                             typename std::iterator_traits<
 				                               Iterator>::iterator_category> or
-				              not json_details::is_std_allocator<Alloc>::value ) {
+				              not json_details::is_std_allocator_v<Alloc> ) {
 					return std::vector<T, Alloc>( first, last, alloc );
 				} else {
 					constexpr auto reserve_amount = 4096U / ( sizeof( T ) * 8U );
@@ -429,19 +429,23 @@ namespace daw::json {
 		 * first for distance calc
 		 */
 		template<typename>
-		struct can_single_allocation_string : std::false_type {};
+		inline constexpr bool can_single_allocation_string_v = false;
 
 		template<typename Char, typename CharTrait, typename Allocator>
-		struct can_single_allocation_string<
-		  std::basic_string<Char, CharTrait, Allocator>> : std::true_type {};
+		inline constexpr bool can_single_allocation_string_v<
+		  std::basic_string<Char, CharTrait, Allocator>> = true;
+
+		template<typename T>
+		struct can_single_allocation_string
+		  : std::bool_constant<can_single_allocation_string_v<T>> {};
 
 		namespace json_details {
 			template<typename T>
 			using json_type_t = typename T::i_am_a_json_type;
 
 			template<typename T>
-			using is_a_json_type =
-			  std::bool_constant<daw::is_detected_v<json_type_t, T>>;
+			struct is_a_json_type
+			  : std::bool_constant<daw::is_detected_v<json_type_t, T>> {};
 
 			template<typename T>
 			inline constexpr bool is_a_json_type_v = is_a_json_type<T>::value;
@@ -538,15 +542,16 @@ namespace daw::json {
 		 * guarantees it.
 		 */
 		template<typename>
-		struct is_zero_terminated_string : std::false_type {};
+		inline constexpr bool is_zero_terminated_string_v = false;
 
 		template<typename CharT, typename Traits, typename Alloc>
-		struct is_zero_terminated_string<std::basic_string<CharT, Traits, Alloc>>
-		  : std::true_type {};
+		inline constexpr bool
+		  is_zero_terminated_string_v<std::basic_string<CharT, Traits, Alloc>> =
+		    true;
 
 		template<typename T>
-		inline constexpr bool is_zero_terminated_string_v =
-		  is_zero_terminated_string<T>::value;
+		struct is_zero_terminated_string
+		  : std::bool_constant<is_zero_terminated_string_v<T>> {};
 
 		namespace json_details {
 			template<typename ParsePolicy, auto Option>
@@ -589,16 +594,6 @@ namespace daw::json {
 		} // namespace json_details
 
 		/***
-		 * A trait to specify that this class, when parsed, will describe all
-		 * members of the JSON object. Anything not mapped is an error.
-		 * Either specialize the class daw::json::is_exact_class_mapping, the
-		 * variable is_exact_class_mapping_v, or have a type in your
-		 * json_data_contract named exact_class_mapping for your type
-		 */
-		template<typename>
-		struct is_exact_class_mapping : std::false_type {};
-
-		/***
 		 * Ignore unknown members trait allows the parser to skip unknown members
 		 * when the default is exact
 		 */
@@ -624,15 +619,13 @@ namespace daw::json {
 		/***
 		 * A trait to specify that this class, when parsed, will describe all
 		 * members of the JSON object. Anything not mapped is an error.
-		 * Either specialize the class daw::json::is_exact_class_mapping, the
-		 * variable is_exact_class_mapping_v, or have a type in your
-		 * json_data_contract named exact_class_mapping for your type
+		 * Either specialize this variable daw::json::is_exact_class_mapping_v, or
+		 * have a type in your json_data_contract named exact_class_mapping for your
+		 * type
 		 */
 		template<typename T>
-		inline constexpr bool is_exact_class_mapping_v = std::disjunction<
-		  is_exact_class_mapping<T>,
-		  daw::is_detected<json_details::has_exact_mapping_trait_in_class_map,
-		                   T>>::value;
+		inline constexpr bool is_exact_class_mapping_v =
+		  daw::is_detected_v<json_details::has_exact_mapping_trait_in_class_map, T>;
 
 		namespace json_details {
 			template<typename T, typename ParseState>
@@ -711,55 +704,10 @@ namespace daw::json {
 			template<typename T>
 			inline constexpr bool is_tuple_v = is_tuple<T>::value;
 
-			namespace deref_t_impl {
-				template<typename>
-				using unable_to_dereference = void;
-
-				template<typename T>
-				using deref_type_detect = DAW_TYPEOF( *std::declval<T>( ) );
-
-				template<typename T>
-				struct deref_type_impl {
-					using type =
-					  daw::detected_or_t<unable_to_dereference<T>, deref_type_detect, T>;
-				};
-
-				template<typename T>
-				struct deref_type_impl<T *> {
-					using type = std::remove_cv_t<T>;
-				};
-
-				template<typename T>
-				struct deref_type_impl<std::unique_ptr<T>> {
-					using type = std::remove_cv_t<T>;
-				};
-
-				template<typename T>
-				struct deref_type_impl<std::optional<T>> {
-					using type = std::remove_cv_t<T>;
-				};
-			} // namespace deref_t_impl
-			template<typename T>
-			using dereferenced_t = typename deref_t_impl::deref_type_impl<T>::type;
-
-			template<typename T>
-			inline constexpr bool is_dereferenceable_v =
-			  not std::is_same_v<dereferenced_t<T>,
-			                     deref_t_impl::unable_to_dereference<T>>;
-
-			template<typename T>
-			using is_dereferenceable = std::bool_constant<is_dereferenceable_v<T>>;
-
-			namespace unwrapped_impl {
-				template<typename T>
-				using unwrapped_t_impl =
-				  std::conditional_t<is_dereferenceable_v<T>, dereferenced_t<T>, T>;
-			}
-
 			template<typename T, JsonNullable Nullable>
 			using unwrapped_t =
 			  typename std::conditional_t<is_nullable_json_value_v<Nullable>,
-			                              unwrapped_impl::unwrapped_t_impl<T>, T>;
+			                              readable_value_type_t<T>, T>;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -137,41 +137,48 @@ namespace daw::json {
 					return to_string( value );
 				} else if constexpr( std::is_enum_v<U> ) {
 					return to_string( static_cast<std::underlying_type_t<U>>( value ) );
-				} else if constexpr( json_details::is_dereferenceable_v<U> ) {
-					static_assert( json_details::has_op_bool_v<U>,
-					               "default_to_converter cannot work with type" );
-					using dereferenced_type = json_details::dereferenced_t<U>;
-					if constexpr( json_details::is_string_view_like_v<
-					                dereferenced_type> ) {
-						if( value ) {
-							auto const &v = *value;
-							return std::string_view( std::data( v ), std::size( v ) );
-						}
-						return std::string_view( "null", 4 );
-					} else if constexpr( json_details::to_strings::has_to_string_v<
-					                       dereferenced_type> ) {
-						if( value ) {
-							using json_details::to_strings::to_string;
-							return to_string( *value );
+				} else if constexpr( is_readable_value_v<U> ) {
+					using value_type = readable_value_type_t<U>;
+					if constexpr( json_details::is_string_view_like_v<value_type> ) {
+						if constexpr( std::is_reference_v<DAW_TYPEOF(
+						                readable_value_read( value ) )> ) {
+							if( readable_value_has_value( value ) ) {
+								return daw::string_view( readable_value_read( value ) );
+							}
+							return daw::string_view( "null" );
 						} else {
-							using result_t = DAW_TYPEOF( to_string( *value ) );
+							if( readable_value_has_value( value ) ) {
+								auto const &v = readable_value_read( value );
+								return std::string( std::data( v ), std::size( v ) );
+							}
+							return std::string( "null", 4 );
+						}
+					} else if constexpr( json_details::to_strings::has_to_string_v<
+					                       value_type> ) {
+						if( readable_value_has_value( value ) ) {
+							using json_details::to_strings::to_string;
+							return to_string( readable_value_read( value ) );
+						} else {
+							using result_t =
+							  DAW_TYPEOF( to_string( readable_value_read( value ) ) );
 							return result_t{ "null" };
 						}
-					} else if constexpr( std::is_convertible_v<dereferenced_type,
+					} else if constexpr( std::is_convertible_v<value_type,
 					                                           std::string_view> ) {
-						if( value ) {
-							return static_cast<std::string_view>( value );
+						if( readable_value_has_value( value ) ) {
+							return static_cast<std::string_view>(
+							  readable_value_read( value ) );
 						}
 						return std::string_view{ "null" };
-					} else if constexpr( std::is_convertible_v<dereferenced_type,
+					} else if constexpr( std::is_convertible_v<value_type,
 					                                           std::string> ) {
-						if( value ) {
-							return static_cast<std::string>( value );
+						if( readable_value_has_value( value ) ) {
+							return static_cast<std::string>( readable_value_read( value ) );
 						}
 						return std::string( "null" );
 					} else {
-						if( value ) {
-							return use_stream( *value );
+						if( readable_value_has_value( value ) ) {
+							return use_stream( readable_value_has_value( value ) );
 						} else {
 							return std::string( "null" );
 						}
@@ -642,9 +649,11 @@ namespace daw::json {
 			[[nodiscard]] inline constexpr OutputIterator
 			to_daw_json_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 			                    Optional const &value ) {
-				static_assert( is_dereferenceable_v<Optional>, "For _null mappings, it is expected that the data type has operator* and can be read from" );
+				static_assert( is_readable_value_v<Optional>,
+				               "For _null mappings, it is expected that the data type "
+				               "has operator* and can be read from" );
 
-				if( not json_details::has_value( value ) ) {
+				if( not readable_value_has_value( value ) ) {
 					return utils::copy_to_iterator( it, "null" );
 				}
 				using tag_type = ParseTag<JsonMember::base_expected_type>;
@@ -1468,7 +1477,7 @@ namespace daw::json {
 				               "Unsupported data type" );
 				if constexpr( json_details::is_json_nullable<JsonMember>::value and
 				              JsonMember::nullable == JsonNullable::Nullable ) {
-					if( not json_details::has_value( get<pos>( tp ) ) ) {
+					if( not readable_value_has_value( get<pos>( tp ) ) ) {
 						return;
 					}
 				}
