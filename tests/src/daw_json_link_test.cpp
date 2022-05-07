@@ -719,6 +719,7 @@ struct Foo1 {};
 
 struct Foo2 {
 	std::optional<Foo1> m1;
+	std::unique_ptr<int> m2;
 };
 
 namespace daw::json {
@@ -733,10 +734,12 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<Foo2> {
 		static constexpr char const m1[] = "m1";
-		using type = json_member_list<json_link<m1, std::optional<Foo1>>>;
+		static constexpr char const m2[] = "m2";
+		using type = json_member_list<json_link<m1, std::optional<Foo1>>,
+		                              json_link<m2, std::unique_ptr<int>>>;
 
 		static constexpr auto to_json_data( Foo2 const &val ) {
-			return std::forward_as_tuple( val.m1 );
+			return std::forward_as_tuple( val.m1, val.m2 );
 		}
 	};
 } // namespace daw::json
@@ -746,11 +749,11 @@ int main( int, char ** )
   try
 #endif
 {
-	constexpr daw::string_view foo2_json = R"json( { "m1": {} } )json";
+	constexpr daw::string_view foo2_json = R"json( { "m1": {}, "m2": 42  } )json";
 	constexpr auto foo1_val = daw::json::from_json<Foo1>( foo2_json, "m1" );
 	static_assert( std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1> );
-	constexpr auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
-	static_assert( not foo2_val.m1 );
+	auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
+	assert( not foo2_val.m1 );
 
 	using namespace std::string_literals;
 	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";

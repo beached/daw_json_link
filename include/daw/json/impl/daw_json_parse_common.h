@@ -686,14 +686,14 @@ namespace daw::json {
 
 			template<typename T>
 			struct json_deduced_type_map<
-			  std::optional<T>,
-			  std::enable_if_t<
-			    not has_json_data_contract_trait_v<std::optional<T>> and
-			    daw::is_detected_v<json_deduced_type_map, T>>> {
+			  T, std::enable_if_t<is_readable_value_v<T> and
+			                      not has_json_data_contract_trait_v<T> and
+			                      daw::is_detected_v<json_deduced_type_map,
+			                                         readable_value_type_t<T>>>> {
 
 				static constexpr bool is_null = true;
-				using type = json_deduced_type_map<T>;
-				using sub_type = T;
+				using sub_type = readable_value_type_t<T>;
+				using type = json_deduced_type_map<sub_type>;
 				static constexpr JsonParseTypes parse_type = type::parse_type;
 				static constexpr bool type_map_found = true;
 			};
