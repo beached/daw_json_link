@@ -475,7 +475,7 @@ namespace daw::json {
 
 			template<typename... Ts>
 			[[maybe_unused]] constexpr std::conditional_t<
-			  std::conjunction_v<has_json_deduced_type_v<Ts>...>,
+			  std::conjunction_v<has_json_deduced_type<Ts>...>,
 			  json_variant_type_list<json_deduced_type<Ts>...>,
 			  missing_default_type_mapping<json_deduced_type<Ts>...>>
 			get_variant_type_list( std::variant<Ts...> const * );
