@@ -75,10 +75,8 @@ namespace daw::json {
 
 				// DAW FIX
 				template<typename T>
-				using allocator_type_as =
-				  std::conditional_t<has_rebind_v<allocator_type, T>,
-				                     allocator_type_as_rebind<allocator_type, T>,
-				                     allocator_type>;
+				using allocator_type_as = typename std::allocator_traits<
+				  allocator_type>::template rebind_alloc<T>;
 
 				template<typename T>
 				auto get_allocator_for( template_param<T> ) const {

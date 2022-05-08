@@ -66,19 +66,20 @@ namespace daw::json {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
 					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
+					auto ctor = Constructor{ };
+					(void)ctor;
 					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
-						return Constructor{ }( DAW_FWD2( Args, args )...,
-						                       DAW_MOVE( alloc ) );
-					} else if constexpr( daw::traits::is_callable_v<Constructor,
-					                                                std::allocator_arg_t,
-					                                                alloc_t, Args...> ) {
+						return Constructor{ }( DAW_FWD( args )..., DAW_MOVE( alloc ) );
+					} else if constexpr( std::is_invocable_v<Constructor,
+					                                         std::allocator_arg_t,
+					                                         alloc_t, Args...> ) {
 						return Constructor{ }( std::allocator_arg, DAW_MOVE( alloc ),
-						                       DAW_FWD2( Args, args )... );
+						                       DAW_FWD( args )... );
 					} else {
 						static_assert(
 						  std::is_invocable_v<Constructor, Args...>,
 						  "Unable to construct value with the supplied arguments" );
-						return Constructor{ }( DAW_FWD2( Args, args )... );
+						return Constructor{ }( DAW_FWD( args )... );
 					}
 				} else {
 					static_assert(
@@ -133,9 +134,9 @@ namespace daw::json {
 						return construct_value_tp_invoke<Constructor>(
 						  DAW_MOVE( tp_args ), DAW_MOVE( alloc ),
 						  std::index_sequence_for<Args...>{ } );
-					} else if constexpr( daw::traits::is_callable_v<Constructor,
-					                                                std::allocator_arg_t,
-					                                                alloc_t, Args...> ) {
+					} else if constexpr( std::is_invocable_v<Constructor,
+					                                         std::allocator_arg_t,
+					                                         alloc_t, Args...> ) {
 						return construct_value_tp_invoke<Constructor>(
 						  std::allocator_arg, DAW_MOVE( alloc ), DAW_MOVE( tp_args ),
 						  std::index_sequence_for<Args...>{ } );

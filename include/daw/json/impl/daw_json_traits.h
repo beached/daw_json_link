@@ -337,6 +337,33 @@ namespace daw::json {
 			}
 		};
 
+		template<typename Key, typename T, typename Hash, typename CompareEqual,
+		         typename Alloc>
+		struct default_constructor<
+		  std::unordered_map<Key, T, Hash, CompareEqual, Alloc>> {
+			DAW_ATTRIB_INLINE std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
+			operator( )( ) const noexcept(
+			  noexcept( std::unordered_map<Key, T, Hash, CompareEqual, Alloc>( ) ) ) {
+				return { };
+			}
+
+			DAW_ATTRIB_INLINE std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
+			operator( )( std::unordered_map<Key, T, Hash, CompareEqual, Alloc> &&v )
+			  const noexcept( noexcept(
+			    std::unordered_map<Key, T, Hash, CompareEqual, Alloc>( v ) ) ) {
+				return DAW_MOVE( v );
+			}
+
+			static constexpr std::size_t count = 1;
+			template<typename Iterator>
+			DAW_ATTRIB_INLINE std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
+			operator( )( Iterator first, Iterator last,
+			             Alloc const &alloc = Alloc{ } ) const {
+				return std::unordered_map<Key, T, Hash, CompareEqual, Alloc>(
+				  first, last, count, Hash{ }, CompareEqual{ }, alloc );
+			}
+		};
+
 		/***
 		 * Default constructor for nullable types.
 		 * Specializations must accept accept an operator( )( ) that signifies a
