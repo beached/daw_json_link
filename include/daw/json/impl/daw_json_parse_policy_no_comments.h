@@ -113,7 +113,7 @@ namespace daw::json {
 					(void)last;
 
 					if( ParseState::is_zero_terminated_string ) {
-						daw_json_assert_weak( first < last and * first != '\0',
+						daw_json_assert_weak( first < last and *first != '\0',
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
 						while( not parse_policy_details::in<keys...>( *first ) ) {
@@ -223,38 +223,34 @@ namespace daw::json {
 						++ptr_first;
 					}
 				} else {
-					auto const SZ = ptr_last - ptr_first;
-					std::ptrdiff_t ptr_idx = 0;
-					for( ptr_idx = 0; DAW_LIKELY( ptr_idx < SZ ); ++ptr_idx ) {
-						switch( ptr_first[ptr_idx] ) {
+					while( DAW_LIKELY( ptr_first < ptr_last ) ) {
+						switch( *ptr_first ) {
 						case '\\':
-							++ptr_idx;
+							++ptr_first;
 							break;
 						case '"':
-							++ptr_idx;
+							++ptr_first;
 							if constexpr( traits::not_same<typename ParseState::exec_tag_t,
 							                               constexpr_exec_tag>::value ) {
-								ptr_idx = json_details::mem_skip_until_end_of_string<
-								            ParseState::is_unchecked_input>(
-								            ParseState::exec_tag, ptr_first + ptr_idx,
-								            parse_state.last ) -
-								          ptr_first;
+								ptr_first = json_details::mem_skip_until_end_of_string<
+								  ParseState::is_unchecked_input>(
+								  ParseState::exec_tag, ptr_first, parse_state.last );
 							} else {
-								while( DAW_LIKELY( ptr_idx < SZ ) and
-								       ptr_first[ptr_idx] != '"' ) {
-									if( ptr_first[ptr_idx] == '\\' ) {
-										if( ptr_idx + 1 < SZ ) {
-											ptr_idx += 2;
+								while( DAW_LIKELY( ptr_first < ptr_last ) and
+								       *ptr_first != '"' ) {
+									if( *ptr_first == '\\' ) {
+										if( ptr_first + 1 < ptr_last ) {
+											ptr_first += 2;
 											continue;
 										} else {
-											ptr_idx = SZ;
+											ptr_first = ptr_last;
 											break;
 										}
 									}
-									++ptr_idx;
+									++ptr_first;
 								}
 							}
-							daw_json_assert( ptr_idx < SZ and ptr_first[ptr_idx] == '"',
+							daw_json_assert( ptr_first < ptr_last and *ptr_first == '"',
 							                 ErrorReason::UnexpectedEndOfData, parse_state );
 							break;
 						case ',':
@@ -269,12 +265,12 @@ namespace daw::json {
 						case PrimRight:
 							--prime_bracket_count;
 							if( prime_bracket_count == 0 ) {
-								++ptr_idx;
+								++ptr_first;
 								daw_json_assert( second_bracket_count == 0,
 								                 ErrorReason::InvalidBracketing, parse_state );
-								result.last = ptr_first + ptr_idx;
+								result.last = ptr_first;
 								result.counter = cnt;
-								parse_state.first = ptr_first + ptr_idx;
+								parse_state.first = ptr_first;
 								return result;
 							}
 							break;
@@ -285,8 +281,8 @@ namespace daw::json {
 							--second_bracket_count;
 							break;
 						}
+						++ptr_first;
 					}
-					ptr_first += ptr_idx;
 				}
 				daw_json_assert( ( prime_bracket_count == 0 ) &
 				                   ( second_bracket_count == 0 ),
