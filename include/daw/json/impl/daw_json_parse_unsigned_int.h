@@ -78,8 +78,7 @@ namespace daw::json {
 			template<JsonRangeCheck RangeCheck, typename Unsigned,
 			         typename MaxArithUnsigned>
 			using max_unsigned_t = std::conditional_t<
-			  std::disjunction<daw::is_integral<Unsigned>,
-			                   std::is_enum<Unsigned>>::value,
+			  daw::is_integral_v<Unsigned> or std::is_enum_v<Unsigned>,
 			  std::conditional_t<( sizeof( Unsigned ) > sizeof( MaxArithUnsigned ) ),
 			                     Unsigned, MaxArithUnsigned>,
 			  Unsigned>;
@@ -134,7 +133,7 @@ namespace daw::json {
 				  max_unsigned_t<RangeChecked, daw::make_unsigned_t<Unsigned>, UInt64>;
 				static_assert(
 				  not static_cast<bool>( RangeChecked ) or
-				    std::is_same<uresult_t, UInt64>::value,
+				    std::is_same_v<uresult_t, UInt64>,
 				  "Range checking is only supported for std integral types" );
 
 				CharT *first = parse_state.first;
@@ -197,7 +196,7 @@ namespace daw::json {
 				  max_unsigned_t<RangeChecked, daw::make_unsigned_t<Unsigned>, UInt64>;
 				static_assert(
 				  not static_cast<bool>( RangeChecked ) or
-				    std::is_same<uresult_t, UInt64>::value,
+				    std::is_same_v<uresult_t, UInt64>,
 				  "Range checking is only supported for std integral types" );
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );

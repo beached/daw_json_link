@@ -112,8 +112,8 @@ namespace daw::json {
 			template<typename Result, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE static inline constexpr Result
 			power10( runtime_exec_tag, Result result, Unsigned p ) {
-				if constexpr( std::disjunction<std::is_same<Result, double>,
-				                               std::is_same<Result, float>>::value ) {
+				if constexpr( std::is_same_v<Result, double> or
+				              std::is_same_v<Result, float> ) {
 					return power10( constexpr_exec_tag{ }, result,
 					                static_cast<std::int32_t>( p ) );
 				} else {

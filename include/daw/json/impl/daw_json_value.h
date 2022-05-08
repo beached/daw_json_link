@@ -343,9 +343,8 @@ namespace daw::json {
 			template<
 			  typename String,
 			  std::enable_if_t<
-			    std::disjunction_v<daw::traits::not_same<basic_json_value,
-			                                             daw::remove_cvref_t<String>>,
-			                       json_details::is_string_view_like<String>>,
+			    not std::is_same_v<basic_json_value, daw::remove_cvref_t<String>> or
+			      json_details::is_string_view_like_v<String>,
 			    std::nullptr_t> = nullptr>
 			explicit inline constexpr basic_json_value( String &&sv )
 			  : m_parse_state( std::data( sv ), daw::data_end( sv ) ) {}

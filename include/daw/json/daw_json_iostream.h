@@ -30,11 +30,11 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool is_opted_into_json_iostreams_v =
-			  daw::is_detected<is_opted_into_json_iostreams, T>::value;
+			  daw::is_detected_v<is_opted_into_json_iostreams, T>;
 
 			template<typename T>
 			inline constexpr bool is_container_opted_into_json_iostreams_v =
-			  daw::is_detected<is_container_opted_into_json_iostreams, T>::value;
+			  daw::is_detected_v<is_container_opted_into_json_iostreams, T>;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

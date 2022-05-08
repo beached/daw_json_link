@@ -51,8 +51,7 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_value_handler_v =
-				  daw::is_detected<has_on_value_handler_detect, Handler,
-				                   ParseState>::value;
+				  daw::is_detected_v<has_on_value_handler_detect, Handler, ParseState>;
 
 				// On Array Start
 				template<typename Handler, typename ParseState>
@@ -62,8 +61,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_array_start_handler_v =
-				  daw::is_detected<has_on_array_start_handler_detect, Handler,
-				                   ParseState>::value;
+				  daw::is_detected_v<has_on_array_start_handler_detect, Handler,
+				                     ParseState>;
 
 				// On Array End
 				template<typename Handler>
@@ -72,7 +71,7 @@ namespace daw::json {
 
 				template<typename Handler>
 				inline constexpr bool has_on_array_end_handler_v =
-				  daw::is_detected<has_on_array_end_handler_detect, Handler>::value;
+				  daw::is_detected_v<has_on_array_end_handler_detect, Handler>;
 
 				// On Class Start
 				template<typename Handler, typename ParseState>
@@ -82,8 +81,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_class_start_handler_v =
-				  daw::is_detected<has_on_class_start_handler_detect, Handler,
-				                   ParseState>::value;
+				  daw::is_detected_v<has_on_class_start_handler_detect, Handler,
+				                     ParseState>;
 
 				// On Class End
 				template<typename Handler>
@@ -92,7 +91,7 @@ namespace daw::json {
 
 				template<typename Handler>
 				inline constexpr bool has_on_class_end_handler_v =
-				  daw::is_detected<has_on_class_end_handler_detect, Handler>::value;
+				  daw::is_detected_v<has_on_class_end_handler_detect, Handler>;
 
 				// On Number
 				template<typename Handler, typename ParseState>
@@ -102,8 +101,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_number_handler_jv_v =
-				  daw::is_detected<has_on_number_handler_detect_jv, Handler,
-				                   ParseState>::value;
+				  daw::is_detected_v<has_on_number_handler_detect_jv, Handler,
+				                     ParseState>;
 
 				template<typename Handler>
 				using has_on_number_handler_detect_dbl =
@@ -111,7 +110,7 @@ namespace daw::json {
 
 				template<typename Handler>
 				inline constexpr bool has_on_number_handler_dbl_v =
-				  daw::is_detected<has_on_number_handler_detect_dbl, Handler>::value;
+				  daw::is_detected_v<has_on_number_handler_detect_dbl, Handler>;
 
 				// On Bool
 				template<typename Handler, typename ParseState>
@@ -121,8 +120,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_bool_handler_jv_v =
-				  daw::is_detected<has_on_bool_handler_detect_jv, Handler,
-				                   ParseState>::value;
+				  daw::is_detected_v<has_on_bool_handler_detect_jv, Handler,
+				                     ParseState>;
 
 				template<typename Handler>
 				using has_on_bool_handler_detect_bl =
@@ -130,7 +129,7 @@ namespace daw::json {
 
 				template<typename Handler>
 				inline constexpr bool has_on_bool_handler_bl_v =
-				  daw::is_detected<has_on_bool_handler_detect_bl, Handler>::value;
+				  daw::is_detected_v<has_on_bool_handler_detect_bl, Handler>;
 
 				// On String
 				template<typename Handler, typename ParseState>
@@ -140,8 +139,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_string_handler_jv_v =
-				  daw::is_detected<has_on_string_handler_detect_jv, Handler,
-				                   ParseState>::value;
+				  daw::is_detected_v<has_on_string_handler_detect_jv, Handler,
+				                     ParseState>;
 
 				template<typename Handler>
 				using has_on_string_handler_detect_str =
@@ -150,7 +149,7 @@ namespace daw::json {
 
 				template<typename Handler>
 				inline constexpr bool has_on_string_handler_str_v =
-				  daw::is_detected<has_on_string_handler_detect_str, Handler>::value;
+				  daw::is_detected_v<has_on_string_handler_detect_str, Handler>;
 
 				// On Null
 				template<typename Handler, typename ParseState>
@@ -160,8 +159,8 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_null_handler_jv_v =
-				  daw::is_detected<has_on_null_handler_detect_jv, Handler,
-				                   ParseState>::value;
+				  daw::is_detected_v<has_on_null_handler_detect_jv, Handler,
+				                     ParseState>;
 
 				template<typename Handler>
 				using has_on_null_handler_detect =
@@ -169,7 +168,7 @@ namespace daw::json {
 
 				template<typename Handler>
 				inline constexpr bool has_on_null_handler_v =
-				  daw::is_detected<has_on_null_handler_detect, Handler>::value;
+				  daw::is_detected_v<has_on_null_handler_detect, Handler>;
 
 				// On Error
 				template<typename Handler, typename ParseState>
@@ -179,8 +178,7 @@ namespace daw::json {
 
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_error_handler_v =
-				  daw::is_detected<has_on_error_handler_detect, Handler,
-				                   ParseState>::value;
+				  daw::is_detected_v<has_on_error_handler_detect, Handler, ParseState>;
 			} // namespace hnd_checks
 
 			template<typename T>

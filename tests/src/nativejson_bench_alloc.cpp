@@ -36,8 +36,14 @@ using AllocType = daw::fixed_allocator<char>;
 template<typename ExecTag>
 void test( char **argv, AllocType &alloc ) {
 	auto const json_data1 = *daw::read_file( argv[1] );
+	daw_json_assert( not json_data1.empty( ),
+	                 daw::json::ErrorReason::EmptyJSONDocument );
 	auto const json_data2 = *daw::read_file( argv[2] );
+	daw_json_assert( not json_data2.empty( ),
+	                 daw::json::ErrorReason::EmptyJSONDocument );
 	auto const json_data3 = *daw::read_file( argv[3] );
+	daw_json_assert( not json_data3.empty( ),
+	                 daw::json::ErrorReason::EmptyJSONDocument );
 	auto json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
 	auto json_sv2 = std::string_view( json_data2.data( ), json_data2.size( ) );
 	auto json_sv3 = std::string_view( json_data3.data( ), json_data3.size( ) );
@@ -271,7 +277,7 @@ int main( int argc, char **argv )
   try
 #endif
 {
-	auto alloc = AllocType( 100'000'000ULL );
+	auto alloc = AllocType( 1'500'000'000ULL );
 #ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif

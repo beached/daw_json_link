@@ -475,7 +475,7 @@ namespace daw::json {
 
 			template<typename... Ts>
 			[[maybe_unused]] constexpr std::conditional_t<
-			  std::conjunction<has_json_deduced_type<Ts>...>::value,
+			  std::conjunction_v<has_json_deduced_type_v<Ts>...>,
 			  json_variant_type_list<json_deduced_type<Ts>...>,
 			  missing_default_type_mapping<json_deduced_type<Ts>...>>
 			get_variant_type_list( std::variant<Ts...> const * );
@@ -488,10 +488,11 @@ namespace daw::json {
 			  std::remove_reference_t<daw::detected_t<underlying_nullable_type, T>>;
 
 			template<typename T>
-			using is_nullable_type = daw::is_detected<underlying_nullable_type, T>;
+			inline constexpr bool is_nullable_type_v =
+			  daw::is_detected_v<underlying_nullable_type, T>;
 
 			template<typename T>
-			inline constexpr bool is_nullable_type_v = is_nullable_type<T>::value;
+			using is_nullable_type = std::bool_constant<is_nullable_type_v<T>>;
 
 			template<typename T>
 			[[maybe_unused]] constexpr unknown_variant_type<T>
@@ -505,7 +506,7 @@ namespace daw::json {
 			template<typename... Ts>
 			struct variant_alternatives_list<std::variant<Ts...>> {
 				using type = std::conditional_t<
-				  std::conjunction<has_json_deduced_type<Ts>...>::value,
+				  std::conjunction_v<has_json_deduced_type<Ts>...>,
 				  json_variant_type_list<json_deduced_type<Ts>...>,
 				  missing_default_type_mapping<json_deduced_type<Ts>...>>;
 			};

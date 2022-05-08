@@ -218,7 +218,7 @@ namespace daw::json {
 			         std::size_t... Is>
 			[[nodiscard]] constexpr json_result<JsonClass>
 			parse_json_class( ParseState &parse_state, std::index_sequence<Is...> ) {
-				static_assert( is_a_json_type<JsonClass>::value );
+				static_assert( is_a_json_type_v<JsonClass> );
 				using T = typename JsonClass::base_type;
 				using Constructor = typename JsonClass::constructor_t;
 				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
@@ -316,13 +316,12 @@ namespace daw::json {
 			[[nodiscard]] static constexpr json_result<JsonClass>
 			parse_json_tuple_class( template_params<JsonClass, JsonMembers...>,
 			                        ParseState &parse_state ) {
-				static_assert( is_a_json_type<JsonClass>::value );
+				static_assert( is_a_json_type_v<JsonClass> );
 				using T = typename JsonClass::base_type;
 				using Constructor = typename JsonClass::constructor_t;
 				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
 				static_assert(
-				  std::is_invocable<Constructor,
-				                    typename JsonMembers::parse_to_t...>::value,
+				  std::is_invocable_v<Constructor, typename JsonMembers::parse_to_t...>,
 				  "Supplied types cannot be used for construction of this type" );
 
 				parse_state.trim_left( ); // Move to array start '['

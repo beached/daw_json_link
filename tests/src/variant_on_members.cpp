@@ -118,10 +118,12 @@ int main( ) {
 		assert( foo_ary[0].member );
 		assert( foo_ary[0].member->index( ) == 0 );
 		A const &a = std::get<0>( *foo_ary[0].member );
+		(void)a;
 		assert( a.a == 5 );
 		assert( foo_ary[1].member );
 		assert( foo_ary[1].member->index( ) == 1 );
 		B const &b = std::get<1>( *foo_ary[1].member );
+		(void)b;
 		assert( b.b == "Hello World" );
 		assert( ( b.c == std::vector{ 1, 2, 3, 4 } ) );
 		std::cout << "Serialized to: \n"

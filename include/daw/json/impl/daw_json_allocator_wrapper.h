@@ -50,13 +50,12 @@ namespace daw::json {
 
 			template<typename Alloc>
 			struct AllocatorWrapper
-			  : AllocatorWrapperBase<Alloc, std::is_empty<Alloc>::value> {
+			  : AllocatorWrapperBase<Alloc, std::is_empty_v<Alloc>> {
 				using allocator_type = std::remove_reference_t<Alloc>;
 
 				explicit AllocatorWrapper( allocator_type &alloc ) noexcept
 				  : AllocatorWrapperBase<allocator_type,
-				                         std::is_empty<allocator_type>::value>(
-				      alloc ) {}
+				                         std::is_empty_v<allocator_type>>( alloc ) {}
 
 				static constexpr bool has_allocator = true;
 
@@ -72,7 +71,7 @@ namespace daw::json {
 
 				template<typename A, typename T>
 				static inline constexpr bool has_rebind_v =
-				  daw::is_detected<has_allocator_type_as_rebind, A, T>::value;
+				  daw::is_detected_v<has_allocator_type_as_rebind, A, T>;
 
 				// DAW FIX
 				template<typename T>

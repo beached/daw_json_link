@@ -165,8 +165,7 @@ namespace daw::json {
 				                              std::underlying_type<element_t>,
 				                              daw::traits::identity<element_t>>::type;
 
-				static_assert( daw::is_signed<int_type>::value,
-				               "Expected signed type" );
+				static_assert( daw::is_signed_v<int_type>, "Expected signed type" );
 				if constexpr( KnownBounds ) {
 					daw_json_assert_weak(
 					  parse_policy_details::is_number_start( parse_state.front( ) ),
@@ -467,10 +466,9 @@ namespace daw::json {
 			 * pointer to the data( ).
 			 */
 			template<typename JsonMember>
-			struct can_parse_to_stdstring_fast
-			  : std::disjunction<
-			      can_single_allocation_string<json_result<JsonMember>>,
-			      can_single_allocation_string<json_base_type<JsonMember>>> {};
+			inline constexpr bool can_parse_to_stdstring_fast_v = std::disjunction_v<
+			  can_single_allocation_string<json_result<JsonMember>>,
+			  can_single_allocation_string<json_base_type<JsonMember>>>;
 
 			template<typename T>
 			using json_member_constructor_t = typename T::constructor_t;
@@ -480,11 +478,11 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool has_json_member_constructor_v =
-			  daw::is_detected<json_member_constructor_t, T>::value;
+			  daw::is_detected_v<json_member_constructor_t, T>;
 
 			template<typename T>
 			inline constexpr bool has_json_member_parse_to_v =
-			  daw::is_detected<json_member_constructor_t, T>::value;
+			  daw::is_detected_v<json_member_constructor_t, T>;
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
 			[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
@@ -494,7 +492,7 @@ namespace daw::json {
 				static_assert( has_json_member_parse_to_v<JsonMember> );
 
 				using constructor_t = typename JsonMember::constructor_t;
-				if constexpr( can_parse_to_stdstring_fast<JsonMember>::value ) {
+				if constexpr( can_parse_to_stdstring_fast_v<JsonMember> ) {
 					using AllowHighEightbits =
 					  std::bool_constant<JsonMember::eight_bit_mode !=
 					                     EightBitModes::DisallowHigh>;
@@ -1184,7 +1182,7 @@ namespace daw::json {
 #endif
 				};
 
-				static_assert( is_a_json_type<JsonMember>::value );
+				static_assert( is_a_json_type_v<JsonMember> );
 				using Constructor = typename JsonMember::constructor_t;
 
 				parse_state.trim_left( );

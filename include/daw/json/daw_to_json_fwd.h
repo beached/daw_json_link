@@ -45,6 +45,13 @@ namespace daw::json {
 		  typename SerializationPolicy = use_default_serialization_policy>
 		[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value );
 
+		template<
+		  typename Result = std::string, typename Value,
+		  typename JsonClass = typename json_details::json_deduced_type<Value>,
+		  typename SerializationPolicy = use_default_serialization_policy>
+		[[maybe_unused, nodiscard]] constexpr Result
+		to_prety_json( Value const &value );
+
 		namespace json_details {
 			/***
 			 * Tag type to indicate that the element of a Container is not being

@@ -82,7 +82,7 @@ namespace daw::json {
 		public:
 			using element_type =
 			  typename json_details::json_deduced_type<JsonElement>::without_name;
-			static_assert( traits::not_same<element_type, void>::value,
+			static_assert( not std::is_same_v<element_type, void>,
 			               "Unknown JsonElement type." );
 			using value_type = typename element_type::parse_to_t;
 			using reference = value_type;
@@ -103,11 +103,10 @@ namespace daw::json {
 		public:
 			inline constexpr json_array_iterator( ) = default;
 
-			template<
-			  typename String,
-			  std::enable_if_t<traits::not_same<json_array_iterator,
-			                                    daw::remove_cvref_t<String>>::value,
-			                   std::nullptr_t> = nullptr>
+			template<typename String,
+			         std::enable_if_t<not std::is_same_v<json_array_iterator,
+			                                             daw::remove_cvref_t<String>>,
+			                          std::nullptr_t> = nullptr>
 			inline constexpr explicit json_array_iterator( String &&jd )
 			  : m_state( ParsePolicy( std::data( jd ), daw::data_end( jd ) ) ) {
 
@@ -127,11 +126,10 @@ namespace daw::json {
 				m_state.trim_left( );
 			}
 
-			template<
-			  typename String,
-			  std::enable_if_t<traits::not_same<json_array_iterator,
-			                                    daw::remove_cvref_t<String>>::value,
-			                   std::nullptr_t> = nullptr>
+			template<typename String,
+			         std::enable_if_t<not std::is_same_v<json_array_iterator,
+			                                             daw::remove_cvref_t<String>>,
+			                          std::nullptr_t> = nullptr>
 			inline constexpr explicit json_array_iterator(
 			  String &&jd, std::string_view start_path )
 			  : m_state( get_range( DAW_FWD2( String, jd ), start_path ) ) {
@@ -287,22 +285,20 @@ namespace daw::json {
 		public:
 			constexpr json_array_range( ) = default;
 
-			template<
-			  typename String,
-			  std::enable_if_t<traits::not_same<json_array_range,
-			                                    daw::remove_cvref_t<String>>::value,
-			                   std::nullptr_t> = nullptr>
+			template<typename String,
+			         std::enable_if_t<not std::is_same_v<json_array_range,
+			                                             daw::remove_cvref_t<String>>,
+			                          std::nullptr_t> = nullptr>
 			constexpr explicit json_array_range( String &&jd )
 			  : m_first( DAW_FWD2( String, jd ) ) {
 				static_assert(
 				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );
 			}
 
-			template<
-			  typename String,
-			  std::enable_if_t<traits::not_same<json_array_range,
-			                                    daw::remove_cvref_t<String>>::value,
-			                   std::nullptr_t> = nullptr>
+			template<typename String,
+			         std::enable_if_t<not std::is_same_v<json_array_range,
+			                                             daw::remove_cvref_t<String>>,
+			                          std::nullptr_t> = nullptr>
 			constexpr explicit json_array_range( String &&jd,
 			                                     std::string_view start_path )
 			  : m_first( DAW_FWD2( String, jd ), start_path ) {

@@ -42,7 +42,7 @@ namespace daw::json {
 			                 ErrorReason::EmptyJSONDocument );
 
 			static_assert(
-			  json_details::has_json_deduced_type<JsonMember>::value,
+			  json_details::has_json_deduced_type_v<JsonMember>,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using json_member = json_details::json_deduced_type<JsonMember>;
@@ -381,7 +381,7 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using element_type = json_details::json_deduced_type<JsonElement>;
-			static_assert( traits::not_same<element_type, void>::value,
+			static_assert( traits::not_same_v<element_type, void>,
 			               "Unknown JsonElement type." );
 
 			using parser_t =

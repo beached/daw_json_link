@@ -25,7 +25,7 @@ namespace daw::json {
 		template<typename Value, typename JsonClass, typename OutputIterator>
 		[[maybe_unused]] constexpr OutputIterator to_json( Value const &value,
 		                                                   OutputIterator out_it ) {
-			if constexpr( std::is_pointer<OutputIterator>::value ) {
+			if constexpr( std::is_pointer_v<OutputIterator> ) {
 				daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 			}
 			if constexpr( is_serialization_policy_v<OutputIterator> ) {
@@ -61,6 +61,28 @@ namespace daw::json {
 			return result;
 		}
 
+		template<typename Result, typename Value, typename JsonClass,
+		         typename SerializationPolicy>
+		[[maybe_unused, nodiscard]] constexpr Result
+		to_pretty_json( Value const &value ) {
+			Result result{ };
+			if constexpr( std::is_same_v<Result, std::string> ) {
+				result.reserve( 4096 );
+			}
+
+			using iter_t = std::back_insert_iterator<Result>;
+			using policy = std::conditional_t<
+			  std::is_same_v<SerializationPolicy, use_default_serialization_policy>,
+			  serialization_policy<iter_t>, SerializationPolicy>;
+
+			(void)json_details::member_to_string( template_arg<JsonClass>,
+			                                      policy( iter_t( result ) ), value );
+			if constexpr( std::is_same_v<Result, std::string> ) {
+				result.shrink_to_fit( );
+			}
+			return result;
+		}
+
 		template<typename JsonElement, typename Container, typename OutputIterator>
 		[[maybe_unused]] constexpr OutputIterator
 		to_json_array( Container const &c, OutputIterator it ) {
@@ -73,7 +95,7 @@ namespace daw::json {
 			                     serialization_policy<OutputIterator>>;
 
 			auto out_it = iter_t( it );
-			if constexpr( std::is_pointer<OutputIterator>::value ) {
+			if constexpr( std::is_pointer_v<OutputIterator> ) {
 				daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 			}
 			*out_it++ = '[';
@@ -87,8 +109,7 @@ namespace daw::json {
 				auto const &v = *first;
 				using v_type = DAW_TYPEOF( v );
 				constexpr bool is_auto_detect_v =
-				  std::is_same<JsonElement,
-				               json_details::auto_detect_array_element>::value;
+				  std::is_same_v<JsonElement, json_details::auto_detect_array_element>;
 				using JsonMember =
 				  std::conditional_t<is_auto_detect_v,
 				                     json_details::json_deduced_type<v_type>,

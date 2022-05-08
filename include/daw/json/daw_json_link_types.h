@@ -190,7 +190,7 @@ namespace daw::json {
 			static constexpr JSONNAMETYPE name = no_name;
 			static constexpr std::size_t member_index = Index;
 			static_assert(
-			  json_details::has_json_deduced_type<JsonMember>::value,
+			  json_details::has_json_deduced_type_v<JsonMember>,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using json_member = json_details::json_deduced_type<JsonMember>;
@@ -246,8 +246,8 @@ namespace daw::json {
 				  "<daw/daw_tuple_forward.h> can forward only non-rvalue refs and "
 				  "store the temporaries" );
 				static_assert(
-				  std::conjunction<json_details::is_a_json_type<
-				    json_details::json_tuple_member_wrapper<JsonMembers>>...>::value,
+				  std::conjunction_v<json_details::is_a_json_type<
+				    json_details::json_tuple_member_wrapper<JsonMembers>>...>,
 				  "Only value JSON types can be used" );
 				return json_details::serialize_ordered_json_class<
 				  json_details::json_tuple_member_wrapper<JsonMembers>...>(
@@ -271,7 +271,7 @@ namespace daw::json {
 			[[maybe_unused,
 			  nodiscard]] static inline constexpr json_details::json_result<JsonClass>
 			parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
-				static_assert( json_details::is_a_json_type<JsonClass>::value );
+				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
 				               "Unexpected type" );
@@ -346,7 +346,7 @@ namespace daw::json {
 			  nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
 			  from_json_result_t<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
-				static_assert( json_details::is_a_json_type<JsonClass>::value );
+				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
 				               "Unexpected type" );
@@ -383,10 +383,10 @@ namespace daw::json {
 				static constexpr JsonNullable nullable =
 				  json_details::get_bits_for<JsonNullable>( number_opts, Options );
 				using base_type = json_details::unwrapped_t<T, nullable>;
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
-				static_assert( daw::is_arithmetic<base_type>::value,
+				static_assert( daw::is_arithmetic_v<base_type>,
 				               "json_number requires an arithmetic type" );
 
 				using parse_to_t = typename json_details::construction_result<
@@ -515,7 +515,7 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 				using wrapped_type = T;
 				using base_type = json_details::unwrapped_t<T, nullable>;
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
@@ -587,7 +587,7 @@ namespace daw::json {
 				using constructor_t = Constructor;
 				using wrapped_type = String;
 				using base_type = json_details::unwrapped_t<String, nullable>;
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
@@ -675,7 +675,7 @@ namespace daw::json {
 				using constructor_t = Constructor;
 				using wrapped_type = String;
 				using base_type = json_details::unwrapped_t<String, nullable>;
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
@@ -750,7 +750,7 @@ namespace daw::json {
 				using wrapped_type = T;
 				static constexpr bool must_be_class_member = false;
 				using base_type = json_details::unwrapped_t<T, Nullable>;
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
@@ -819,13 +819,13 @@ namespace daw::json {
 				  json_details::json_class_constructor_t<base_type, Constructor>;
 
 				using json_member_list = json_data_contract_trait_t<base_type>;
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using data_contract = json_data_contract_trait_t<base_type>;
 
 				using parse_to_t = typename std::conditional_t<
-				  force_aggregate_construction<base_type>::value,
+				  force_aggregate_construction_v<base_type>,
 				  daw::traits::identity<base_type>,
 				  daw::traits::identity<
 				    typename data_contract::template result_type<constructor_t>>>::type;
@@ -903,8 +903,8 @@ namespace daw::json {
 			  "There can be at most 5 items, one for each JsonBaseParseTypes" );
 
 			static_assert(
-			  std::conjunction<
-			    json_details::has_json_deduced_type<JsonElements>...>::value,
+			  std::conjunction_v<
+			    json_details::has_json_deduced_type<JsonElements>...>,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 
@@ -935,12 +935,11 @@ namespace daw::json {
 				static constexpr JsonNullable nullable = Nullable;
 
 				using json_elements = typename std::conditional_t<
-				  std::is_same<JsonElements, json_deduce_type>::value,
+				  std::is_same_v<JsonElements, json_deduce_type>,
 				  json_details::determine_variant_element_types<nullable, Variant>,
 				  daw::traits::identity<JsonElements>>::type;
 				static_assert(
-				  std::is_same<typename json_elements::i_am_variant_type_list,
-				               void>::value,
+				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 
@@ -948,7 +947,7 @@ namespace daw::json {
 				using base_type = json_details::unwrapped_t<Variant, nullable>;
 				using constructor_t =
 				  json_details::json_class_constructor_t<Variant, Constructor>;
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 				using parse_to_t = Variant;
 				static constexpr daw::string_view name = no_name;
@@ -1020,12 +1019,11 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 
 				using json_elements = typename std::conditional_t<
-				  std::is_same<JsonElements, json_deduce_type>::value,
+				  std::is_same_v<JsonElements, json_deduce_type>,
 				  json_details::determine_variant_element_types<nullable, T>,
 				  daw::traits::identity<JsonElements>>::type;
 				static_assert(
-				  std::is_same<typename json_elements::i_am_variant_type_list,
-				               void>::value,
+				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 
@@ -1049,7 +1047,7 @@ namespace daw::json {
 				  "for TagMember" );
 
 				using tag_member = typename std::conditional_t<
-				  json_details::is_a_json_type<TagMember>::value,
+				  json_details::is_a_json_type_v<TagMember>,
 				  daw::traits::identity<TagMember>,
 				  daw::traits::identity<json_details::json_deduced_type<TagMember>>>::
 				  type;
@@ -1065,7 +1063,7 @@ namespace daw::json {
 				using base_type = json_details::unwrapped_t<T, nullable>;
 				using constructor_t =
 				  json_details::json_class_constructor_t<T, Constructor>;
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 				using parse_to_t = T;
 				static constexpr daw::string_view name = no_name;
@@ -1152,7 +1150,7 @@ namespace daw::json {
 				  json_details::get_bits_for<JsonNullable>( json_custom_opts, Options );
 
 				using base_type = json_details::unwrapped_t<T, nullable>;
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
@@ -1161,8 +1159,7 @@ namespace daw::json {
 
 				static_assert(
 				  std::is_invocable_v<ToJsonConverter, parse_to_t> or
-				    std::is_invocable_r<char *, ToJsonConverter, char *,
-				                        parse_to_t>::value,
+				    std::is_invocable_r_v<char *, ToJsonConverter, char *, parse_to_t>,
 				  "ToConverter must be callable with T or T and and OutputIterator" );
 				static constexpr daw::string_view name = no_name;
 				static constexpr JsonParseTypes expected_type =
@@ -1258,7 +1255,7 @@ namespace daw::json {
 				using json_element_t = json_details::json_deduced_type<JsonElement>;
 				using json_element_parse_to_t = typename json_element_t::parse_to_t;
 
-				static_assert( traits::not_same_v<json_element_t, void>,
+				static_assert( not std::is_same_v<json_element_t, void>,
 				               "Unknown JsonElement type." );
 				static_assert( json_details::is_a_json_type_v<json_element_t>,
 				               "Error determining element type" );
@@ -1274,7 +1271,7 @@ namespace daw::json {
 				  Constructor>;
 
 				using base_type = json_details::unwrapped_t<container_t, nullable>;
-				static_assert( traits::not_same_v<void, base_type>,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
@@ -1356,7 +1353,7 @@ namespace daw::json {
 				  "Missing specialization of daw::json::json_data_contract for class "
 				  "mapping or specialization of daw::json::json_link_basic_type_map" );
 				using json_element_t = json_details::json_deduced_type<JsonElement>;
-				static_assert( traits::not_same_v<json_element_t, void>,
+				static_assert( not std::is_same_v<json_element_t, void>,
 				               "Unknown JsonElement type." );
 				static_assert( json_details::is_a_json_type_v<json_element_t>,
 				               "Error determining element type" );
@@ -1382,7 +1379,7 @@ namespace daw::json {
 				using dependent_member = SizeMember;
 
 				using base_type = json_details::unwrapped_t<Container, nullable>;
-				static_assert( traits::not_same_v<void, base_type>,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
@@ -1458,7 +1455,7 @@ namespace daw::json {
 				using constructor_t =
 				  json_details::json_class_constructor_t<base_type, Constructor>;
 
-				static_assert( traits::not_same_v<void, base_type>,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				static_assert(
@@ -1468,7 +1465,7 @@ namespace daw::json {
 
 				using json_element_t = json_details::json_deduced_type<JsonValueType>;
 
-				static_assert( traits::not_same_v<json_element_t, void>,
+				static_assert( not std::is_same_v<json_element_t, void>,
 				               "Unknown JsonValueType type." );
 				static_assert( json_element_t::name == no_name_sv,
 				               "Value member name must be the default no_name" );
@@ -1479,7 +1476,7 @@ namespace daw::json {
 
 				using json_key_t = json_details::json_deduced_type<JsonKeyType>;
 
-				static_assert( traits::not_same_v<json_key_t, void>,
+				static_assert( not std::is_same_v<json_key_t, void>,
 				               "Unknown JsonKeyType type." );
 				static_assert( json_details::is_no_name_v<json_key_t>,
 				               "Key member name must be the default no_name" );
@@ -1571,7 +1568,7 @@ std::pair<typename json_key_t::parse_to_t const,
 				using base_type = json_details::unwrapped_t<Container, Nullable>;
 				using constructor_t =
 				  json_details::json_class_constructor_t<base_type, Constructor>;
-				static_assert( traits::not_same_v<void, base_type>,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
@@ -1581,7 +1578,7 @@ std::pair<typename json_key_t::parse_to_t const,
 				  json_details::json_deduced_type<JsonKeyType>,
 				  json_details::default_key_name>;
 
-				static_assert( traits::not_same_v<json_key_t, void>,
+				static_assert( not std::is_same_v<json_key_t, void>,
 				               "Unknown JsonKeyType type." );
 				static_assert( daw::string_view( json_key_t::name ) !=
 				                 daw::string_view( no_name ),
@@ -1597,7 +1594,7 @@ std::pair<typename json_key_t::parse_to_t const,
 				    default_constructor<tuple_json_mapping<json_key_t, json_value_t>>,
 				    nullable_constructor<tuple_json_mapping<json_key_t, json_value_t>>>,
 				  class_opts_def>;
-				static_assert( traits::not_same_v<json_value_t, void>,
+				static_assert( not std::is_same_v<json_value_t, void>,
 				               "Unknown JsonValueType type." );
 				static_assert( daw::string_view( json_value_t::name ) !=
 				                 daw::string_view( no_name ),
@@ -1695,13 +1692,13 @@ std::pair<typename json_key_t::parse_to_t const,
 				using base_type = json_details::unwrapped_t<Tuple, nullable>;
 
 				using sub_member_list = typename std::conditional_t<
-				  std::is_same<JsonTupleTypesList, json_deduce_type>::value,
+				  std::is_same_v<JsonTupleTypesList, json_deduce_type>,
 				  daw::traits::identity<json_details::tuple_types_list<Tuple>>,
 				  daw::traits::identity<
 				    json_details::tuple_types_list<JsonTupleTypesList>>>::type::types;
 
 				using constructor_t = std::conditional_t<
-				  std::is_same<Constructor, json_deduce_type>::value,
+				  std::is_same_v<Constructor, json_deduce_type>,
 				  std::conditional_t<nullable == JsonNullable::MustExist,
 				                     json_details::json_class_constructor_t<
 				                       base_type, default_constructor<Tuple>>,
@@ -1709,7 +1706,7 @@ std::pair<typename json_key_t::parse_to_t const,
 				                       base_type, nullable_constructor<Tuple>>>,
 				  json_details::json_class_constructor_t<base_type, Constructor>>;
 
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
@@ -1778,15 +1775,14 @@ std::pair<typename json_key_t::parse_to_t const,
 				  daw::traits::identity<AlternativeMappings>>::type;
 
 				static_assert(
-				  std::is_same<typename json_elements::i_am_variant_type_list,
-				               void>::value,
+				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 
 				using wrapped_type = Variant;
 
 				using tag_submember = typename std::conditional_t<
-				  json_details::is_an_ordered_member<TagMember>::value,
+				  json_details::is_an_ordered_member_v<TagMember>,
 				  daw::traits::identity<TagMember>,
 				  daw::traits::identity<json_details::json_deduced_type<TagMember>>>::
 				  type;
@@ -1803,7 +1799,7 @@ std::pair<typename json_key_t::parse_to_t const,
 				using switcher = Switcher;
 
 				using tag_submember_class_wrapper = std::conditional_t<
-				  json_details::is_an_ordered_member<tag_submember>::value,
+				  json_details::is_an_ordered_member_v<tag_submember>,
 				  json_tuple<std::tuple<typename tag_submember::parse_to_t>,
 				             json_deduce_type, tuple_opts_def,
 				             json_tuple_types_list<tag_submember>>,
@@ -1812,7 +1808,7 @@ std::pair<typename json_key_t::parse_to_t const,
 				using base_type = json_details::unwrapped_t<Variant, nullable>;
 				using constructor_t =
 				  json_details::json_class_constructor_t<Variant, Constructor>;
-				static_assert( traits::not_same<void, base_type>::value,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 				using parse_to_t = Variant;
 				static constexpr daw::string_view name = no_name;
@@ -1948,7 +1944,7 @@ std::pair<typename json_key_t::parse_to_t const,
 				using constructor_t = Constructor;
 				static constexpr JsonNullable nullable = Nullable;
 				using base_type = json_details::unwrapped_t<T, nullable>;
-				static_assert( traits::not_same_v<void, base_type>,
+				static_assert( not std::is_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<

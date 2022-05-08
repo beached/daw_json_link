@@ -129,10 +129,11 @@ namespace daw::json {
 #endif
 		namespace json_details {
 			template<typename JsonMember>
-			using is_no_name = std::bool_constant<( JsonMember::name == no_name_sv )>;
+			inline constexpr bool is_no_name_v = JsonMember::name == no_name_sv;
 
 			template<typename JsonMember>
-			inline constexpr bool is_no_name_v = is_no_name<JsonMember>::value;
+			using is_no_name = std::bool_constant<is_no_name_v<JsonMember>>;
+
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

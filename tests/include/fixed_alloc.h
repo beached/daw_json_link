@@ -54,7 +54,7 @@ namespace daw {
 			return count;
 		}
 
-		constexpr ref_counted_ptr( ) noexcept = default;
+		ref_counted_ptr( ) = default;
 
 		~ref_counted_ptr( ) {
 			release( );
@@ -91,10 +91,10 @@ namespace daw {
 			}
 		}
 
-		constexpr T *operator->( ) const {
+		constexpr T *operator->( ) const noexcept {
 			return ptr;
 		}
-		constexpr T &operator*( ) const {
+		constexpr T &operator*( ) const noexcept {
 			return *ptr;
 		}
 
@@ -108,13 +108,13 @@ namespace daw {
 	};
 
 	struct fixed_allocator_impl {
-		unsigned char *buf;
+		unsigned char *buffer_start;
 		unsigned char *ptr;
 		std::size_t capacity;
 
 		fixed_allocator_impl( std::size_t Size )
-		  : buf( new unsigned char[Size] )
-		  , ptr( buf )
+		  : buffer_start( new unsigned char[Size] )
+		  , ptr( buffer_start )
 		  , capacity( Size ) {}
 
 		fixed_allocator_impl( fixed_allocator_impl const & ) = delete;
@@ -123,7 +123,7 @@ namespace daw {
 		fixed_allocator_impl &operator=( fixed_allocator_impl && ) = delete;
 
 		~fixed_allocator_impl( ) {
-			delete[] buf;
+			delete[] buffer_start;
 		}
 	};
 
@@ -132,7 +132,9 @@ namespace daw {
 		ref_counted_ptr<fixed_allocator_impl> m_data;
 
 		constexpr fixed_allocator( ref_counted_ptr<fixed_allocator_impl> const &d )
-		  : m_data( d ) {}
+		  : m_data( d ) {
+			assert( m_data->buffer_start and m_data->ptr );
+		}
 
 	public:
 		template<class U>
@@ -141,14 +143,15 @@ namespace daw {
 		};
 		using value_type = T;
 
-		fixed_allocator( ) noexcept {
-			putchar( 0 );
-		}
+		fixed_allocator( ) = default;
 
 		fixed_allocator( std::size_t Size )
-		  : m_data( new fixed_allocator_impl( Size ) ) {}
+		  : m_data( new fixed_allocator_impl( Size ) ) {
+			assert( m_data->buffer_start and m_data->ptr );
+		}
 
 		[[nodiscard]] T *allocate( std::size_t n ) noexcept {
+			assert( m_data->buffer_start and m_data->ptr );
 			// Ensure aligned.  Underlying ptr could be shared so must be done
 #ifndef NDEBUG
 			daw_json_assert( ( ( used( ) + n ) < m_data->capacity ),
@@ -163,14 +166,17 @@ namespace daw {
 			return r;
 		}
 
-		static void deallocate( void *const, std::size_t ) noexcept {}
+		static constexpr void deallocate( void *const, std::size_t ) noexcept {}
 
-		void release( ) noexcept {
-			m_data->ptr = m_data->buf;
+		void constexpr release( ) noexcept {
+			assert( m_data->buffer_start and m_data->ptr );
+			m_data->ptr = m_data->buffer_start;
 		}
 
-		[[nodiscard]] std::size_t used( ) const {
-			return static_cast<std::size_t>( m_data->ptr - m_data->buf );
+		[[nodiscard]] constexpr std::size_t used( ) const {
+			assert( m_data->ptr and m_data->buffer_start and
+			        m_data->buffer_start <= m_data->ptr );
+			return static_cast<std::size_t>( m_data->ptr - m_data->buffer_start );
 		}
 
 		template<typename>
@@ -182,18 +188,17 @@ namespace daw {
 		}
 
 		template<typename U>
-		[[nodiscard]] bool
+		[[nodiscard]] constexpr bool
 		operator==( fixed_allocator<U> const &rhs ) const noexcept {
 			return m_data == rhs.m_data;
 		}
 
 		template<typename U>
-		[[nodiscard]] bool
+		[[nodiscard]] constexpr bool
 		operator!=( fixed_allocator<U> const &rhs ) const noexcept {
 			return m_data != rhs.m_data;
 		}
 	};
 	template<typename T>
 	fixed_allocator( T ) -> fixed_allocator<char>;
-
 } // namespace daw

@@ -282,11 +282,10 @@ namespace daw::json {
 			 * from one past last, e.g. -1 is last item
 			 * @return The name of the member or an empty optional
 			 */
-			template<typename Integer,
-			         std::enable_if_t<std::is_integral<Integer>::value,
-			                          std::nullptr_t> = nullptr>
+			template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
+			                                            std::nullptr_t> = nullptr>
 			[[nodiscard]] std::optional<std::string_view> name_of( Integer index ) {
-				if constexpr( std::is_signed<Integer>::value ) {
+				if constexpr( std::is_signed_v<Integer> ) {
 					if( index < 0 ) {
 						index = -index;
 						auto sz = size( );
@@ -314,12 +313,11 @@ namespace daw::json {
 			 * @pre index must exist
 			 * @return A new basic_json_value for the indexed member
 			 */
-			template<typename Integer,
-			         std::enable_if_t<std::is_integral<Integer>::value,
-			                          std::nullptr_t> = nullptr>
+			template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
+			                                            std::nullptr_t> = nullptr>
 			[[nodiscard]] constexpr basic_json_value<ParseState>
 			operator[]( Integer index ) {
-				if constexpr( std::is_signed<Integer>::value ) {
+				if constexpr( std::is_signed_v<Integer> ) {
 					if( index < 0 ) {
 						index = -index;
 						auto sz = size( );
@@ -342,12 +340,11 @@ namespace daw::json {
 			 * from one past last, e.g. -1 is last item
 			 * @return A new basic_json_value for the indexed member
 			 */
-			template<typename Integer,
-			         std::enable_if_t<std::is_integral<Integer>::value,
-			                          std::nullptr_t> = nullptr>
+			template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
+			                                            std::nullptr_t> = nullptr>
 			[[nodiscard]] constexpr std::optional<basic_json_value<ParseState>>
 			at( Integer index ) {
-				if constexpr( std::is_signed<Integer>::value ) {
+				if constexpr( std::is_signed_v<Integer> ) {
 					if( index < 0 ) {
 						index = -index;
 						auto sz = size( );

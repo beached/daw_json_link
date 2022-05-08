@@ -220,7 +220,7 @@ namespace daw::json {
 			template<typename Alloc>
 			[[nodiscard]] constexpr auto
 			with_allocator( BasicParsePolicy<PolicyFlags, Alloc> p ) const {
-				if constexpr( std::is_same<Alloc, json_details::NoAllocator>::value ) {
+				if constexpr( std::is_same_v<Alloc, json_details::NoAllocator> ) {
 					return *this;
 				} else {
 					auto result = with_allocator( first, last, class_first, class_last,
