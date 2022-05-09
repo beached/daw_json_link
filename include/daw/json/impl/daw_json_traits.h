@@ -11,7 +11,7 @@
 #include "version.h"
 
 #include "../../daw_readable_value.h"
-#include "../daw_json_default_constuctor.h"
+#include "daw_json_default_constuctor.h"
 #include "daw_json_enums.h"
 
 #include <daw/cpp_17.h>
