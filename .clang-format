@@ -1,4 +1,4 @@
-BasedOnStyle: LLVM
+
 AccessModifierOffset: -2
 AlignAfterOpenBracket: "true"
 AlignEscapedNewlines: Left
@@ -13,7 +13,7 @@ AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: true
 AlwaysBreakTemplateDeclarations: Yes
-SpaceAfterTemplateKeyword: false
+BasedOnStyle: LLVM
 BinPackArguments: true
 BinPackParameters: true
 BreakBeforeBinaryOperators: None
@@ -47,6 +47,7 @@ PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Right
 SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: Never
 SpaceInEmptyParentheses: true
@@ -59,4 +60,3 @@ SpacesInSquareBrackets: false
 Standard: c++17
 TabWidth: 2
 UseTab: ForIndentation
-
