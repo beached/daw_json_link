@@ -37,15 +37,20 @@ namespace daw::json {
 				ParseState &tmp;
 
 				DAW_ATTRIB_INLINE
-				DAW_SG_CXDTOR ~op_star_cleanup( ) noexcept( false ) {
+				DAW_SG_CXDTOR ~op_star_cleanup( ) noexcept(
+				  not use_daw_json_exceptions_v ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 						m_can_skip = tmp.first;
 					} else {
 #endif
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 						if( std::uncaught_exceptions( ) == 0 ) {
+#endif
 							m_can_skip = tmp.first;
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 						}
+#endif
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 					}
 #endif

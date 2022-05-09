@@ -26,7 +26,7 @@
 #include <string>
 #include <string_view>
 
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 inline constexpr bool use_daw_json_exceptions_v = true;
 #else
 inline constexpr bool use_daw_json_exceptions_v = false;

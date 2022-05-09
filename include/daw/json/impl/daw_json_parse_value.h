@@ -597,15 +597,20 @@ namespace daw::json {
 				struct trim_left_cleanup {
 					ParseState &parse_state;
 
-					CPP20CONSTEXPR ~trim_left_cleanup( ) noexcept( false ) {
+					CPP20CONSTEXPR ~trim_left_cleanup( ) noexcept(
+					  not use_daw_json_exceptions_v ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 							parse_state.trim_left_checked( );
 						} else {
 #endif
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 							if( std::uncaught_exceptions( ) == 0 ) {
+#endif
 								parse_state.trim_left_checked( );
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 							}
+#endif
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 						}
 #endif
@@ -968,7 +973,8 @@ namespace daw::json {
 				OldClassPos const &old_class_pos;
 
 				DAW_ATTRIB_INLINE
-				CPP20CONSTEXPR ~ordered_class_cleanup( ) noexcept( false ) {
+				CPP20CONSTEXPR ~ordered_class_cleanup( ) noexcept(
+				  not use_daw_json_exceptions_v ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 						if constexpr( AllMembersMustExist ) {
@@ -983,7 +989,9 @@ namespace daw::json {
 						parse_state.set_class_position( old_class_pos );
 					} else {
 #endif
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 						if( std::uncaught_exceptions( ) == 0 ) {
+#endif
 							if constexpr( AllMembersMustExist ) {
 								parse_state.trim_left( );
 								daw_json_assert_weak( parse_state.front( ) == ']',
@@ -994,7 +1002,9 @@ namespace daw::json {
 								(void)parse_state.skip_array( );
 							}
 							parse_state.set_class_position( old_class_pos );
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 						}
+#endif
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 					}
 #endif

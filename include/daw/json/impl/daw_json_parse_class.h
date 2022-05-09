@@ -183,17 +183,21 @@ namespace daw::json {
 					OldClassPos const &old_class_pos;
 
 					DAW_ATTRIB_INLINE
-					CPP20CONSTEXPR ~class_cleanup( ) noexcept( false ) {
+					CPP20CONSTEXPR ~class_cleanup( ) noexcept( not use_daw_json_exceptions_v ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 							class_cleanup_now<AllMembersMustExist>( parse_state,
 							                                        old_class_pos );
 						} else {
 #endif
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 							if( std::uncaught_exceptions( ) == 0 ) {
+#endif
 								class_cleanup_now<AllMembersMustExist>( parse_state,
 								                                        old_class_pos );
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 							}
+#endif
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 						}
 #endif
