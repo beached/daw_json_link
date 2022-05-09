@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include <daw/daw_attributes.h>
 #include <daw/daw_move.h>
 
@@ -17,83 +19,84 @@
 #include <type_traits>
 
 namespace daw::json {
-	namespace json_details {
-		template<typename Container, typename Value>
-		using detect_push_back = decltype( std::declval<Container &>( ).push_back(
-		  std::declval<Value>( ) ) );
+	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			template<typename Container, typename Value>
+			using detect_push_back = decltype( std::declval<Container &>( ).push_back(
+			  std::declval<Value>( ) ) );
 
-		template<typename Container, typename Value>
-		using detect_insert_end = decltype( std::declval<Container &>( ).insert(
-		  std::end( std::declval<Container &>( ) ), std::declval<Value>( ) ) );
+			template<typename Container, typename Value>
+			using detect_insert_end = decltype( std::declval<Container &>( ).insert(
+			  std::end( std::declval<Container &>( ) ), std::declval<Value>( ) ) );
 
-		template<typename Container, typename Value>
-		inline constexpr bool has_push_back_v =
-		  daw::is_detected_v<detect_push_back, Container, Value>;
+			template<typename Container, typename Value>
+			inline constexpr bool has_push_back_v =
+			  daw::is_detected_v<detect_push_back, Container, Value>;
 
-		template<typename Container, typename Value>
-		inline constexpr bool has_insert_end_v =
-		  daw::is_detected_v<detect_insert_end, Container, Value>;
-	} // namespace json_details
-	/***
-	 * @brief A generic output iterator that can push_back or insert depending on
-	 * what the type supports. This is like std::back_inserter
-	 * @tparam Container Container object to append to
-	 */
-	template<typename Container>
-	struct basic_appender {
-		using value_type = typename Container::value_type;
-		using reference = value_type;
-		using pointer = value_type const *;
-		using difference_type = std::ptrdiff_t;
-		using iterator_category = std::output_iterator_tag;
+			template<typename Container, typename Value>
+			inline constexpr bool has_insert_end_v =
+			  daw::is_detected_v<detect_insert_end, Container, Value>;
+		} // namespace json_details
+		/***
+		 * @brief A generic output iterator that can push_back or insert depending
+		 * on what the type supports. This is like std::back_inserter
+		 * @tparam Container Container object to append to
+		 */
+		template<typename Container>
+		struct basic_appender {
+			using value_type = typename Container::value_type;
+			using reference = value_type;
+			using pointer = value_type const *;
+			using difference_type = std::ptrdiff_t;
+			using iterator_category = std::output_iterator_tag;
 
-	private:
-		Container *m_container;
+		private:
+			Container *m_container;
 
-	public:
-		explicit inline constexpr basic_appender( Container &container )
-		  : m_container( &container ) {}
+		public:
+			explicit inline constexpr basic_appender( Container &container )
+			  : m_container( &container ) {}
 
-		template<typename Value>
-		DAW_ATTRIB_FLATINLINE inline constexpr void
-		operator( )( Value &&value ) {
-			if constexpr( json_details::has_push_back_v<
-			                Container, daw::remove_cvref_t<Value>> ) {
-				m_container->push_back( DAW_FWD( value ) );
-			} else if constexpr( json_details::has_insert_end_v<
-			                       Container, daw::remove_cvref_t<Value>> ) {
-				m_container->insert( std::end( *m_container ), DAW_FWD( value ) );
-			} else {
-				static_assert(
-				  json_details::has_push_back_v<Container,
-				                                daw::remove_cvref_t<Value>> or
-				    json_details::has_insert_end_v<Container,
-				                                   daw::remove_cvref_t<Value>>,
-				  "basic_appender requires a Container that either has push_back "
-				  "or "
-				  "insert with the end iterator as first argument" );
+			template<typename Value>
+			DAW_ATTRIB_FLATINLINE inline constexpr void operator( )( Value &&value ) {
+				if constexpr( json_details::has_push_back_v<
+				                Container, daw::remove_cvref_t<Value>> ) {
+					m_container->push_back( DAW_FWD( value ) );
+				} else if constexpr( json_details::has_insert_end_v<
+				                       Container, daw::remove_cvref_t<Value>> ) {
+					m_container->insert( std::end( *m_container ), DAW_FWD( value ) );
+				} else {
+					static_assert(
+					  json_details::has_push_back_v<Container,
+					                                daw::remove_cvref_t<Value>> or
+					    json_details::has_insert_end_v<Container,
+					                                   daw::remove_cvref_t<Value>>,
+					  "basic_appender requires a Container that either has push_back "
+					  "or "
+					  "insert with the end iterator as first argument" );
+				}
 			}
-		}
 
-		template<typename Value,
-		         std::enable_if_t<
-		           not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>>,
-		           std::nullptr_t> = nullptr>
-		inline constexpr basic_appender &operator=( Value &&v ) {
-			operator( )( DAW_FWD( v ) );
-			return *this;
-		}
+			template<typename Value,
+			         std::enable_if_t<
+			           not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>>,
+			           std::nullptr_t> = nullptr>
+			inline constexpr basic_appender &operator=( Value &&v ) {
+				operator( )( DAW_FWD( v ) );
+				return *this;
+			}
 
-		inline constexpr basic_appender &operator++( ) {
-			return *this;
-		}
+			inline constexpr basic_appender &operator++( ) {
+				return *this;
+			}
 
-		inline constexpr basic_appender operator++( int ) & {
-			return *this;
-		}
+			inline constexpr basic_appender operator++( int ) & {
+				return *this;
+			}
 
-		inline constexpr basic_appender &operator*( ) {
-			return *this;
-		}
-	};
+			inline constexpr basic_appender &operator*( ) {
+				return *this;
+			}
+		};
+	} // namespace DAW_JSON_VER
 } // namespace daw::json
