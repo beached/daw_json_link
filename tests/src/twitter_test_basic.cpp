@@ -33,7 +33,7 @@ int main( int argc, char **argv )
 	}( );
 
 	daw::twitter::twitter_object_t twitter_result;
-	for( std::size_t n = 0; n < 10'000; ++n ) {
+	for( std::size_t n = 0; n < 1'000; ++n ) {
 		daw::do_not_optimize( json_data );
 		twitter_result =
 		  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );

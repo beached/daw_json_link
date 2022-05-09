@@ -43,31 +43,30 @@ namespace daw::json {
 			inline constexpr bool is_std_allocator_v<std::allocator<T>> = true;
 		} // namespace json_details
 
-		inline namespace {
-			template<typename Iterator>
-			struct construct_array_cleanup {
-				Iterator &it;
+		template<typename Iterator>
+		struct construct_array_cleanup {
+			Iterator &it;
 
-				DAW_ATTRIB_INLINE
-				DAW_SG_CXDTOR ~construct_array_cleanup( ) noexcept( not use_daw_json_exceptions_v ) {
+			DAW_ATTRIB_INLINE
+			DAW_SG_CXDTOR ~construct_array_cleanup( ) noexcept(
+			  not use_daw_json_exceptions_v ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
-					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+				if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+					++it;
+				} else {
+#endif
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
+					if( std::uncaught_exceptions( ) == 0 ) {
+#endif
 						++it;
-					} else {
-#endif
 #if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-						if( std::uncaught_exceptions( ) == 0 ) {
-#endif
-							++it;
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-						}
-#endif
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 					}
 #endif
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 				}
-			};
-		} // namespace
+#endif
+			}
+		};
 
 		/// @brief Default constructor type for std::array and allows (Iterator,
 		/// Iterator) construction

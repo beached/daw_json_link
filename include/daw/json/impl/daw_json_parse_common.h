@@ -609,7 +609,7 @@ namespace daw::json {
 			inline constexpr bool equal_to_one_of_v = ( ( Value == Values ) or ... );
 
 			template<typename T>
-			inline constexpr auto json_link_quick_map( ) {
+			inline DAW_CONSTEVAL auto json_link_quick_map( ) {
 				if constexpr( is_a_json_type_v<T> ) {
 					return json_link_quick_map_type<T>{ };
 				} else if constexpr( has_deduced_type_mapping_v<T> ) {
@@ -727,80 +727,62 @@ namespace daw::json {
 			  std::conjunction_v<has_json_data_contract_trait<T>,
 			                     is_json_class_map<json_data_contract_trait_t<T>>>;
 
-			template<typename T, bool Ordered, bool Contract, bool JsonType,
-			         bool QuickMap, bool Container>
-			struct json_type_deducer {
-				using type = missing_json_data_contract_for<T>;
-			};
+			template<typename T>
+			inline DAW_CONSTEVAL auto json_deduced_type_impl( ) {
+				if constexpr( is_an_ordered_member_v<T> ) {
+					using type = T;
+					return daw::traits::identity<type>{ };
+				} else if constexpr( has_json_data_contract_trait_v<T> ) {
+					static_assert( not std::is_same_v<T, void> );
 
-			template<typename T, /* typename Ordered, */ bool Contract, bool JsonType,
-			         bool QuickMap, bool Container>
-			struct json_type_deducer<T, true, Contract, JsonType, QuickMap,
-			                         Container> {
+					using type = json_base::json_class<
+					  T, json_class_constructor_t<T, default_constructor<T>>>;
 
-				using type = T;
-			};
-
-			template<typename T, /*typename Contract,*/ bool JsonType, bool QuickMap,
-			         bool Container>
-			struct json_type_deducer<T, false, true, JsonType, QuickMap, Container> {
-
-				static_assert( not std::is_same_v<T, void> );
-
-				using type = json_base::json_class<
-				  T, json_class_constructor_t<T, default_constructor<T>>>;
-
-				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
-				               "Detection failure" );
-				static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
-				               "Detection failure" );
-			};
-
-			template<typename T,
-			         /*bool Contract, bool JsonType,*/ bool QuickMap, bool Container>
-			struct json_type_deducer<T, false, false, true, QuickMap, Container> {
-				static_assert( not std::is_same_v<T, void> );
-				using type =
-				  typename std::conditional_t<is_json_class_map_v<T>,
-				                              json_class_map_type<T>,
-				                              daw::traits::identity<T>>::type;
-				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
-				               "Detection failure" );
-				static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
-				               "Detection failure" );
-			};
-
-			template<typename T /*bool Contract, bool JsonType, bool QuickMap*/,
-			         bool Container>
-			struct json_type_deducer<T, false, false, false, true, Container> {
-				static_assert( not std::is_same_v<T, void> );
-				using type = json_link_quick_map_t<T>;
-				using rcvref_type = remove_cvref_t<type>;
-				static_assert( not std::is_same_v<rcvref_type, void>,
-				               "Detection failure" );
-				static_assert( not is_nonesuch_v<rcvref_type>, "Detection failure" );
-				static_assert( not std::is_same_v<rcvref_type, void>,
-				               "Detection failure" );
-			};
-
-			template<typename T
-			         /*bool Contract, bool JsonType, bool QuickMap,bool Container*/>
-			struct json_type_deducer<T, false, false, false, false, true> {
-				static_assert( not std::is_same_v<T, void> );
-				using type = json_base::json_array<typename T::value_type, T>;
-				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
-				               "Detection failure" );
-				static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
-				               "Detection failure" );
-				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
-				               "Detection failure" );
-			};
+					static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+					               "Detection failure" );
+					static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
+					               "Detection failure" );
+					return daw::traits::identity<type>{ };
+				} else if constexpr( json_details::is_a_json_type_v<T> ) {
+					static_assert( not std::is_same_v<T, void> );
+					using type =
+					  typename std::conditional_t<is_json_class_map_v<T>,
+					                              json_class_map_type<T>,
+					                              daw::traits::identity<T>>::type;
+					static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+					               "Detection failure" );
+					static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
+					               "Detection failure" );
+					return daw::traits::identity<type>{ };
+				} else if constexpr( has_json_link_quick_map_v<T> ) {
+					static_assert( not std::is_same_v<T, void> );
+					using type = json_link_quick_map_t<T>;
+					using rcvref_type = remove_cvref_t<type>;
+					static_assert( not std::is_same_v<rcvref_type, void>,
+					               "Detection failure" );
+					static_assert( not is_nonesuch_v<rcvref_type>, "Detection failure" );
+					static_assert( not std::is_same_v<rcvref_type, void>,
+					               "Detection failure" );
+					return daw::traits::identity<type>{ };
+				} else if constexpr( is_container_v<T> ) {
+					static_assert( not std::is_same_v<T, void> );
+					using type = json_base::json_array<typename T::value_type, T>;
+					static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+					               "Detection failure" );
+					static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
+					               "Detection failure" );
+					static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+					               "Detection failure" );
+					return daw::traits::identity<type>{ };
+				} else {
+					using type = missing_json_data_contract_for<T>;
+					return daw::traits::identity<type>{ };
+				}
+			}
 
 			template<typename T>
-			using json_deduced_type = typename json_type_deducer<
-			  T, is_an_ordered_member_v<T>, has_json_data_contract_trait_v<T>,
-			  json_details::is_a_json_type_v<T>, has_json_link_quick_map_v<T>,
-			  is_container_v<T>>::type;
+			using json_deduced_type =
+			  typename DAW_TYPEOF( json_deduced_type_impl<T>( ) )::type;
 
 			/***
 			 * Some types cannot use construct_value or dont needed it.
