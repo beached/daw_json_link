@@ -33,13 +33,8 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<A> {
 		using force_aggregate_construction = void;
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<json_number<"some_num", int>>;
-
-#else
 		static constexpr char const i[] = "some_num";
 		using type = json_member_list<json_number<i, int>>;
-#endif
 		static DAW_CONSTEXPR auto to_json_data( A const &v ) {
 			return std::forward_as_tuple( v.member );
 		}
