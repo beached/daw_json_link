@@ -92,13 +92,18 @@ namespace daw::json::json_details {
 					struct cleanup_t {
 						Range *ptr;
 						std::size_t counter;
-						CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
+						CPP20CONSTEXPR inline ~cleanup_t( ) noexcept(
+						  not use_daw_json_exceptions_v ) {
 #ifdef HAS_CPP20CONSTEXPR
 							if( std::is_constant_evaluated( ) ) {
 #endif
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 								if( std::uncaught_exceptions( ) == 0 ) {
+#endif
 									ptr->counter = counter;
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 								}
+#endif
 #ifdef HAS_CPP20CONSTEXPR
 							} else {
 								ptr->counter = counter;

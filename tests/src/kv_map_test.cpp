@@ -31,7 +31,7 @@ struct kv2_t {
 namespace daw::json {
 	template<>
 	struct json_data_contract<kv_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
 #else
@@ -43,7 +43,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<kv2_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_key_value<
 		  "kv", daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
 		  int, daw::string_view>>;

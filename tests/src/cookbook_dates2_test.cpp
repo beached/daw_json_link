@@ -133,7 +133,7 @@ namespace daw::cookbook_dates2 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_dates2::MyClass2> {
-#if defined( __cpp_nontype_template_parameter_class )
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_string<"name">,
 		                   daw::cookbook_dates2::json_timestamp<"timestamp">>;

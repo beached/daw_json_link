@@ -20,7 +20,7 @@
 namespace daw::json {
 	template<>
 	struct json_data_contract<apache_builds::jobs_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_string_raw<"name", std::string_view>,
 		                              json_string_raw<"url", std::string_view>,
 		                              json_string_raw<"color", std::string_view>>;
@@ -40,7 +40,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<apache_builds::views_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_string_raw<"name", std::string_view>,
 		                              json_string_raw<"url", std::string_view>>;
 #else
@@ -57,7 +57,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<apache_builds::apache_builds> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_string_raw<"mode", std::string_view>,
 		                   json_string_raw<"nodeDescription", std::string_view>,

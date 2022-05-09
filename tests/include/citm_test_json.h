@@ -22,7 +22,7 @@
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::citm::events_value_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_number<"id", std::int64_t>,
 		                   json_string_raw_null<"logo", std::string_view>,
@@ -50,7 +50,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::prices_element_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_number<"amount", std::int64_t>,
 		                   json_number<"audienceSubCategoryId", std::int64_t>,
@@ -74,7 +74,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::areas_element_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_number<"areaId", std::int64_t>>;
 #else
 		static inline constexpr char const areaId[] = "areaId";
@@ -88,7 +88,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::seatCategories_element_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_array<"areas", daw::citm::areas_element_t>,
 		                   json_number<"seatCategoryId", std::int64_t>>;
@@ -106,7 +106,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::performances_element_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_number<"eventId", std::int64_t>, json_number<"id", std::int64_t>,
 		  json_string_raw_null<"logo", std::string_view>,
@@ -140,7 +140,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::venueNames_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_string_raw<"PLEYEL_PLEYEL", std::string_view>>;
 #else
@@ -156,7 +156,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::citm_object_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_key_value<
 		    "areaNames", std::unordered_map<std::int64_t, std::string_view>,

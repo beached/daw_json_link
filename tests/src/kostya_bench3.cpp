@@ -56,7 +56,7 @@ struct coordinates_t {
 namespace daw::json {
 	template<>
 	struct json_data_contract<coordinate_t> {
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
 #else

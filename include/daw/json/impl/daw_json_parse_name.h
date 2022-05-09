@@ -71,24 +71,25 @@ namespace daw::json::json_details {
 		if( path.front( ) == '.' ) {
 			path.remove_prefix( );
 		}
-		result.current = path.pop_front( [&, in_escape = false]( char c ) mutable {
-			if( in_escape ) {
-				in_escape = false;
-				return false;
-			}
-			switch( c ) {
-			case '\\':
-				in_escape = true;
-				return false;
-			case '.':
-			case '[':
-			case ']':
-				result.found_char = c;
-				return true;
-			default:
-				return false;
-			}
-		} );
+		result.current =
+		  path.pop_front_until( [&, in_escape = false]( char c ) mutable {
+			  if( in_escape ) {
+				  in_escape = false;
+				  return false;
+			  }
+			  switch( c ) {
+			  case '\\':
+				  in_escape = true;
+				  return false;
+			  case '.':
+			  case '[':
+			  case ']':
+				  result.found_char = c;
+				  return true;
+			  default:
+				  return false;
+			  }
+		  } );
 		return result;
 	}
 

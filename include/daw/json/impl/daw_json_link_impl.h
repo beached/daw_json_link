@@ -447,13 +447,17 @@ namespace daw::json::json_details {
 				struct cleanup_t {
 					Range *rng_ptr;
 					CPP20CONSTEXPR
-					inline ~cleanup_t( ) noexcept( false ) {
+					inline ~cleanup_t( ) noexcept( not use_daw_json_exceptions_v ) {
 #ifdef HAS_CPP20CONSTEXPR
 						if( not std::is_constant_evaluated( ) ) {
 #endif
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 							if( std::uncaught_exceptions( ) == 0 ) {
+#endif
 								class_cleanup_now( *rng_ptr );
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 							}
+#endif
 #ifdef HAS_CPP20CONSTEXPR
 						} else {
 							class_cleanup_now( *rng_ptr );
@@ -524,13 +528,17 @@ namespace daw::json::json_details {
 		if constexpr( is_guaranteed_rvo_v<Range> ) {
 			struct cleanup_t {
 				Range *ptr;
-				CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
+				CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( not use_daw_json_exceptions_v ) {
 #ifdef HAS_CPP20CONSTEXPR
 					if( not std::is_constant_evaluated( ) ) {
 #endif
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 						if( std::uncaught_exceptions( ) == 0 ) {
+#endif
 							(void)ptr->skip_array( );
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 						}
+#endif
 #ifdef HAS_CPP20CONSTEXPR
 					} else {
 						(void)ptr->skip_array( );

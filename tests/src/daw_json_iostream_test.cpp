@@ -19,7 +19,7 @@ namespace daw::json {
 		// ostream &, NumberX const & ) is available.  When used, it will output the
 		// JSON serialization
 		using opt_into_iostreams = void;
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_number<"x", int>>;
 #else
 		static constexpr char const x[] = "x";

@@ -227,6 +227,11 @@ namespace daw::json {
 			case JsonBaseParseTypes::Array:
 			case JsonBaseParseTypes::Class:
 				return move_to( daw::numeric_limits<std::size_t>::max( ) );
+			case JsonBaseParseTypes::Number:
+			case JsonBaseParseTypes::Bool:
+			case JsonBaseParseTypes::String:
+			case JsonBaseParseTypes::Null:
+			case JsonBaseParseTypes::None:
 			default:
 				return 0;
 			}
@@ -239,8 +244,7 @@ namespace daw::json {
 		 * @return the position of the member or the count of members if not present
 		 */
 		[[nodiscard]] std::size_t index_of( std::string_view key ) {
-			daw::string_view const k =
-			  daw::string_view( std::data( key ), std::size( key ) );
+			auto const k = json_member_name( key );
 			return move_to( k );
 		}
 

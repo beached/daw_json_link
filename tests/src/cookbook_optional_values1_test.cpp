@@ -75,7 +75,7 @@ namespace daw::cookbook_optional_values1 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_optional_values1::MyOptionalStuff1> {
-#if defined( __cpp_nontype_template_parameter_class )
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_number_null<"member0", std::optional<int>>, json_string<"member1">,
 		  json_bool_null<

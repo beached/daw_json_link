@@ -13,8 +13,17 @@
 #include <utility>
 
 namespace daw::json {
-#if defined( __cpp_nontype_template_parameter_class ) and \
-  not defined( DAW_JSON_NO_CPP_NAMES )
+#if not defined( DAW_JSON_NO_CPP_NAMES )
+#if defined( __cpp_nontype_template_parameter_class )
+#define DAW_JSON_CNTTP_JSON_NAME
+#elif defined( __cpp_nontype_template_args )
+#if __cpp_nontype_template_args >= 201911L
+#define DAW_JSON_CNTTP_JSON_NAME
+#endif
+#endif
+#endif
+
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	// C++ 20 Non-Type Class Template Arguments
 
 	/**
