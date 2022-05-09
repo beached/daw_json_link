@@ -201,8 +201,8 @@ namespace daw::json {
 		  std::basic_string<Char, CharTrait, Allocator>> = true;
 
 		template<typename T>
-		struct can_single_allocation_string
-		  : std::bool_constant<can_single_allocation_string_v<T>> {};
+		using can_single_allocation_string =
+		  std::bool_constant<can_single_allocation_string_v<T>>;
 
 		namespace json_details {
 			template<typename T>
@@ -213,12 +213,7 @@ namespace daw::json {
 			  daw::is_detected_v<json_type_t, T>;
 
 			template<typename T>
-			struct is_a_json_type : std::bool_constant<is_a_json_type_v<T>> {};
-
-			template<typename T>
-			struct ensure_json_type : std::true_type {
-				static_assert( is_a_json_type_v<T> );
-			};
+			using is_a_json_type = std::bool_constant<is_a_json_type_v<T>>;
 
 			template<typename T>
 			using ordered_member_t = typename T::i_am_an_ordered_member;

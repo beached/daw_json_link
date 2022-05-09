@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_to_json_fwd.h"
+#include "impl/daw_json_container_appender.h"
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/to_daw_json_string.h"
 #include "impl/version.h"
@@ -145,7 +146,7 @@ namespace daw::json {
 			static_assert(
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			  "Supplied container must support begin( )/end( )" );
-			using iter_t = json_details::basic_appender<Result>;
+			using iter_t = basic_appender<Result>;
 			using policy = std::conditional_t<
 			  std::is_same_v<SerializationPolicy, use_default_serialization_policy>,
 			  serialization_policy<iter_t>, SerializationPolicy>;

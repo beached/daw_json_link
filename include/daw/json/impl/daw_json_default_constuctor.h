@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "version.h"
 
-#include "../daw_readable_value.h"
-#include "daw_json_default_constuctor_fwd.h"
+#include "../../daw_readable_value.h"
+#include "../daw_json_default_constuctor_fwd.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
