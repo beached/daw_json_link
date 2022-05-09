@@ -52,13 +52,17 @@ namespace daw::json::json_details {
 		Range *ptr;
 		std::size_t counter;
 
-		DAW_JSON_CXDTOR inline ~json_array_iterator_cleanup_t( ) noexcept( false ) {
+		DAW_JSON_CXDTOR inline ~json_array_iterator_cleanup_t( ) noexcept( not use_daw_json_exceptions_v ) {
 #if defined( __cpp_lib_is_constant_evaluated )
 			if( std::is_constant_evaluated( ) ) {
 #endif
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 				if( std::uncaught_exceptions( ) == 0 ) {
+#endif
 					ptr->counter = counter;
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 				}
+#endif
 #if defined( __cpp_lib_is_constant_evaluated )
 			} else {
 				ptr->counter = counter;
