@@ -605,11 +605,14 @@ namespace daw::json {
 				using mapped_type = Mapped;
 			};
 
-			template<auto Value, auto... Values>
-			inline constexpr bool equal_to_one_of_v = ( ( Value == Values ) or ... );
+			template<JsonParseTypes Value>
+			inline constexpr bool is_arithmetic_parse_type_v =
+			  daw::traits::equal_to_any_of_v<Value, JsonParseTypes::Signed,
+			                                 JsonParseTypes::Unsigned,
+			                                 JsonParseTypes::Real>;
 
 			template<typename T>
-			inline DAW_CONSTEVAL auto json_link_quick_map( ) {
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_link_quick_map( ) noexcept {
 				if constexpr( is_a_json_type_v<T> ) {
 					return json_link_quick_map_type<T>{ };
 				} else if constexpr( has_deduced_type_mapping_v<T> ) {
@@ -650,10 +653,7 @@ namespace daw::json {
 						} else {
 							return json_link_quick_map_type<json_base::json_bool<T>>{ };
 						}
-					} else if constexpr( equal_to_one_of_v<parse_type::value,
-					                                       JsonParseTypes::Signed,
-					                                       JsonParseTypes::Unsigned,
-					                                       JsonParseTypes::Real> ) {
+					} else if constexpr( is_arithmetic_parse_type_v<parse_type::value> ) {
 						if constexpr( is_null::value ) {
 							return json_link_quick_map_type<
 							  json_base::json_number_null<T>>{ };
@@ -701,11 +701,8 @@ namespace daw::json {
 			 * Check if the current type has a quick map specialized for it
 			 */
 			template<typename T>
-			using has_json_link_quick_map = decltype( json_link_quick_map<T>( ) );
-
-			template<typename T>
 			inline constexpr bool has_json_link_quick_map_v =
-			  has_json_link_quick_map<T>::value;
+			  decltype( json_link_quick_map<T>( ) )::value;
 
 			/***
 			 * Get the quick mapped json type for type T
@@ -728,7 +725,7 @@ namespace daw::json {
 			                     is_json_class_map<json_data_contract_trait_t<T>>>;
 
 			template<typename T>
-			inline DAW_CONSTEVAL auto json_deduced_type_impl( ) {
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_deduced_type_impl( ) noexcept {
 				if constexpr( is_an_ordered_member_v<T> ) {
 					using type = T;
 					return daw::traits::identity<type>{ };

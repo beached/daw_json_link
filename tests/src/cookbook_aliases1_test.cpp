@@ -24,7 +24,7 @@ struct MyClass {
 namespace daw::json {
 	template<>
 	struct json_data_contract<MyClass> {
-		using type = json_class_map<std::string>;
+		using type = json_type_alias<std::string>;
 
 		static inline auto to_json_data( MyClass const &v ) {
 			return v.value;

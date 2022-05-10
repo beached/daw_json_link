@@ -103,15 +103,16 @@ namespace daw::json {
 		 * the specialized type, it's constructor must have an overload for that of
 		 * what would be expected for the JsonMember's parse_to_t
 		 * @tparam JsonMember This is the json_ type to be aliased
+		 * @example using type = json_type_alias<json_class<T>>;
 		 */
 		template<typename JsonMember>
-		struct json_class_map {
+		struct json_type_alias {
 			using i_am_a_json_member_list = void;
 			using i_am_a_json_map_alias = void;
 			using json_member = json_details::json_deduced_type<JsonMember>;
 			static_assert( json_details::is_a_json_type_v<json_member>,
 			               "Only JSON Link mapping types can appear in a "
-			               "json_class_map(e.g. json_number, json_string...)" );
+			               "json_type_alias(e.g. json_number, json_string...)" );
 
 			static_assert(
 			  json_details::is_no_name_v<json_member>,
@@ -150,7 +151,7 @@ namespace daw::json {
 		};
 
 		template<typename JsonType>
-		struct json_details::is_json_class_map<json_class_map<JsonType>>
+		struct json_details::is_json_class_map<json_type_alias<JsonType>>
 		  : std::true_type {};
 
 		/***
@@ -2062,7 +2063,7 @@ std::pair<typename json_key_t::parse_to_t const,
 		template<typename ParseState>
 		struct json_data_contract<basic_json_value<ParseState>> {
 			using type =
-			  json_class_map<json_raw_no_name<basic_json_value<ParseState>>>;
+			  json_type_alias<json_raw_no_name<basic_json_value<ParseState>>>;
 		};
 
 		///

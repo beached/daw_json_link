@@ -82,7 +82,7 @@ namespace daw::json {
 ## Big Numbers, Rationals, ...
 The parser supports parsing big numbers that model arithmetic types directly.  However, some types have built in serialization/deserialization and that is often more efficient.
 
-The json_class_map lets us parse as if it was another json type.  Often this is json_string via std::string, but there is no restriction on it.  The result is passed to the constructor of the type being mapped.
+The json_type_alias lets us parse as if it was another json type.  Often this is json_string via std::string, but there is no restriction on it.  The result is passed to the constructor of the type being mapped.
 
 For instance, if we have an array of large numbers we want to parse to boost::multiprecision::cpp_dec_float_100,
 ```json
@@ -103,7 +103,7 @@ namespace daw::json {
   struct json_data_contract<
   boost::multiprecision::number<Backend, ExpressionTemplates>> {
 
-    using type = json_class_map<std::string>;
+    using type = json_type_alias<std::string>;
 
     static inline auto to_json_data( boost::multiprecision::number<Backend, ExpressionTemplates> const &value ) {
     	return value.str( );

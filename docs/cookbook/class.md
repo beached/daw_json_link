@@ -83,7 +83,7 @@ namespace daw::json {
 
 ## Selective mapping
 
-Not all of the JSON objects members need to be mapped. Below is the same JSON object as in the `MyClass2` example above.
+Not all the JSON objects members need to be mapped. Below is the same JSON object as in the `MyClass2` example above.
 To see a working example using this code, refer to [cookbook_class3_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_class3_test.cpp) 
 ```json
 {

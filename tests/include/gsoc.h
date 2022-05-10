@@ -100,7 +100,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::gsoc::gsoc_object_t> {
-		using type = json_class_map<json_key_value_no_name<
+		using type = json_type_alias<json_key_value_no_name<
 		  daw::gsoc::gsoc_object_t, gsoc::gsoc_element_t,
 		  json_number_no_name<std::uint64_t,
 		                      number_opt( LiteralAsStringOpt::Always )>>>;
