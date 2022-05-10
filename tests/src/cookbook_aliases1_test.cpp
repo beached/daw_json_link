@@ -38,7 +38,7 @@ int main( int argc, char **argv )
 #endif
 {
 	if( argc <= 1 ) {
-		puts( "Must supply path to cookbook_class_from_json_mapping1.json file\n" );
+		puts( "Must supply path to cookbook_aliases1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 	auto data = daw::read_file( argv[1] );
