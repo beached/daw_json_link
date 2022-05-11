@@ -25,7 +25,7 @@ namespace daw::json {
 	struct json_data_contract<
 	  boost::multiprecision::number<Backend, ExpressionTemplates>> {
 
-		using type = json_class_map<std::string_view>;
+		using type = json_type_alias<std::string>;
 
 		static inline auto to_json_data(
 		  boost::multiprecision::number<Backend, ExpressionTemplates> const

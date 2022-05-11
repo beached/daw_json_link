@@ -98,12 +98,12 @@ namespace daw::json {
 		};
 
 		/***
-		 * Allow the JsonMember type to parse like JsonMember.  This is required to
+		 * @brief Allow the JsonMember type to parse like JsonMember.  This is required to
 		 * be aliased to type in a json_data_contract specialization.  Assuming T is
 		 * the specialized type, it's constructor must have an overload for that of
 		 * what would be expected for the JsonMember's parse_to_t
+		 * @note using type = json_type_alias<json_class<T>>;
 		 * @tparam JsonMember This is the json_ type to be aliased
-		 * @example using type = json_type_alias<json_class<T>>;
 		 */
 		template<typename JsonMember>
 		struct json_type_alias {
