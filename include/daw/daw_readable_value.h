@@ -40,9 +40,9 @@ namespace daw {
 		  std::enable_if_t<readable_impl::is_readable_value_type_constructible_v<
 		                     value_type, Args...>,
 		                   std::nullptr_t> = nullptr>
-		constexpr readable_type
-		operator( )( construct_readable_value_t, Args &&...args ) noexcept(
-		  std::is_nothrow_constructible_v<value_type, Args...> ) {
+		constexpr readable_type operator( )( construct_readable_value_t,
+		                                     Args &&...args ) const
+		  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 			if constexpr( std::is_aggregate_v<value_type> and
 			              readable_impl::is_list_constructible_v<value_type,
@@ -56,7 +56,8 @@ namespace daw {
 #endif
 		}
 
-		constexpr readable_type operator( )( construct_readable_empty_t ) noexcept {
+		constexpr readable_type
+		operator( )( construct_readable_empty_t ) const noexcept {
 			return readable_type( );
 		}
 
@@ -81,9 +82,9 @@ namespace daw {
 		  std::enable_if_t<readable_impl::is_readable_value_type_constructible_v<
 		                     value_type, Args...>,
 		                   std::nullptr_t> = nullptr>
-		constexpr readable_type
-		operator( )( construct_readable_value_t, Args &&...args ) noexcept(
-		  std::is_nothrow_constructible_v<value_type, Args...> ) {
+		constexpr readable_type operator( )( construct_readable_value_t,
+		                                     Args &&...args ) const
+		  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 			if constexpr( std::is_aggregate_v<value_type> and
 			              readable_impl::is_list_constructible_v<value_type,
@@ -97,7 +98,8 @@ namespace daw {
 #endif
 		}
 
-		constexpr readable_type operator( )( construct_readable_empty_t ) noexcept {
+		constexpr readable_type
+		operator( )( construct_readable_empty_t ) const noexcept {
 			return readable_type( );
 		}
 
@@ -122,9 +124,9 @@ namespace daw {
 		  std::enable_if_t<readable_impl::is_readable_value_type_constructible_v<
 		                     value_type, Args...>,
 		                   std::nullptr_t> = nullptr>
-		constexpr readable_type
-		operator( )( construct_readable_value_t, Args &&...args ) noexcept(
-		  std::is_nothrow_constructible_v<value_type, Args...> ) {
+		constexpr readable_type operator( )( construct_readable_value_t,
+		                                     Args &&...args ) const
+		  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 			if constexpr( std::is_aggregate_v<value_type> and
 			              readable_impl::is_list_constructible_v<value_type,
@@ -138,7 +140,8 @@ namespace daw {
 #endif
 		}
 
-		constexpr readable_type operator( )( construct_readable_empty_t ) noexcept {
+		constexpr readable_type
+		operator( )( construct_readable_empty_t ) const noexcept {
 			return readable_type( );
 		}
 
@@ -163,9 +166,9 @@ namespace daw {
 		  std::enable_if_t<readable_impl::is_readable_value_type_constructible_v<
 		                     value_type, Args...>,
 		                   std::nullptr_t> = nullptr>
-		constexpr readable_type
-		operator( )( construct_readable_value_t, Args &&...args ) noexcept(
-		  std::is_nothrow_constructible_v<value_type, Args...> ) {
+		constexpr readable_type operator( )( construct_readable_value_t,
+		                                     Args &&...args ) const
+		  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 			if constexpr( std::is_aggregate_v<T> and
 			              readable_impl::is_list_constructible_v<T, Args...> ) {
@@ -178,7 +181,8 @@ namespace daw {
 #endif
 		}
 
-		constexpr readable_type operator( )( construct_readable_empty_t ) noexcept {
+		constexpr readable_type
+		operator( )( construct_readable_empty_t ) const noexcept {
 			return nullptr;
 		}
 

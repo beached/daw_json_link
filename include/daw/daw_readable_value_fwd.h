@@ -61,11 +61,11 @@ namespace daw {
 		/***
 		 * @brief Construct a value in readable type and return it
 		 */
-		readable_type operator( )( construct_readable_value_t );
+		readable_type operator( )( construct_readable_value_t ) const;
 		/***
 		 * @brief Return an empty readable type
 		 */
-		readable_type operator( )( construct_readable_empty_t );
+		readable_type operator( )( construct_readable_empty_t ) const;
 		/***
 		 * @brief Check the state of the readable type for a value
 		 */

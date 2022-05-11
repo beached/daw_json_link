@@ -445,7 +445,7 @@ add_dependencies(full cookbook_unknown_types_and_delayed_parsing3_test)
 
 add_executable(cookbook_aliases1_test src/cookbook_aliases1_test.cpp)
 target_link_libraries(cookbook_aliases1_test PRIVATE json_test)
-add_test(NAME cookbook_aliases1_test COMMAND cookbook_aliases1_test ./cookbook_aliases11.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_test(NAME cookbook_aliases1_test COMMAND cookbook_aliases1_test ./cookbook_aliases1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_aliases1_test)
 
 add_executable(cookbook_class_alternate_test src/cookbook_class_alternate1_test.cpp)
