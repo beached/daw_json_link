@@ -84,9 +84,9 @@ std::size_t test( std::string_view json_data ) {
 	                          daw::construct_a_t<std::string_view>>;
 
 	std::vector<std::string_view> values =
-	  from_json_array<JString, std::vector<std::string_view>,
-	                  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-	    json_data );
+	  from_json_array<JString, std::vector<std::string_view>>(
+	    json_data,
+	    options::parse_flags<json_details::exec_mode_from_tag<ExecTag>> );
 	auto const v2 = values;
 	clear( values );
 	auto checked_tst = []( auto sv, auto ptr ) {
@@ -105,9 +105,10 @@ std::size_t test( std::string_view json_data ) {
 		                            static_cast<std::string>( current ) );
 	                   } );
 	std::vector<std::string_view> values2 =
-	  from_json_array<JString, std::vector<std::string_view>,
-	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-	    json_data );
+	  from_json_array<JString, std::vector<std::string_view>>(
+	    json_data,
+	    options::parse_flags<CheckedParseMode::no,
+	                         json_details::exec_mode_from_tag<ExecTag>> );
 
 	auto unchecked_tst = []( auto sv, auto ptr ) {
 		auto range = json_array_range<

@@ -60,10 +60,9 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	  std::string_view( json_str.data( ), json_str.size( ) ) );
 	std::vector<unicode_data> const unicode_test_from_escaped =
-	  daw::json::from_json_array<
-	    unicode_data, std::vector<unicode_data>,
-	    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-	    std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
+	  daw::json::from_json_array<unicode_data, std::vector<unicode_data>>(
+	    json_str_escaped,
+	    daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> );
 
 	test_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
 	             "Expected same size" );

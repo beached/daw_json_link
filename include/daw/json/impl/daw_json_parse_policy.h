@@ -543,18 +543,41 @@ namespace daw::json {
 				}
 			}
 		};
+		namespace options {
+			/***
+			 * @brief Specify parse policy flags in to_json calls.  See cookbook item
+			 * parse_options.md
+			 */
+			template<auto... PolicyFlags>
+			struct parse_flags_t {
+				static_assert(
+				  ( json_details::is_option_flag<decltype( PolicyFlags )> and ... ),
+				  "Only registered policy types are allowed" );
+				static constexpr json_details::json_options_t value =
+				  parse_options( PolicyFlags... );
+			};
+			template<>
+			struct parse_flags_t<> {
+				static constexpr json_details::json_options_t value =
+				  json_details::default_policy_flag;
+			};
 
-		using NoCommentSkippingPolicyChecked = BasicParsePolicy<>;
-		using DefaultParsePolicy = BasicParsePolicy<>;
+			/***
+			 * @brief Specify parse policy flags in to_json calls.  See cookbook item
+			 * parse_options.md
+			 */
+			template<auto... PolicyFlags>
+			inline constexpr auto parse_flags =
+			  options::parse_flags_t<PolicyFlags...>{ };
+		} // namespace options
 
-		using NoCommentZeroSkippingPolicyChecked =
-		  BasicParsePolicy<parse_options( ZeroTerminatedString::yes )>;
+		inline constexpr auto NoCommentSkippingPolicyChecked =
+		  options::parse_flags<>;
 
-		using NoCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<parse_options( CheckedParseMode::no )>;
+		inline constexpr auto DefaultParsePolicy = options::parse_flags<>;
 
-		using NoCommentZeroSkippingPolicyUnchecked = BasicParsePolicy<parse_options(
-		  CheckedParseMode::no, ZeroTerminatedString::yes )>;
+		inline constexpr auto NoCommentSkippingPolicyUnchecked =
+		  options::parse_flags<CheckedParseMode::no>;
 
 		namespace json_details {
 			template<typename>
@@ -581,71 +604,50 @@ namespace daw::json {
 			  exec_mode_from_tag_t<ExecMode>::value;
 		} // namespace json_details
 
-		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-		using SIMDNoCommentSkippingPolicyChecked = BasicParsePolicy<
-		  parse_options( json_details::exec_mode_from_tag<ExecTag> ), Allocator>;
+		template<typename ExecTag>
+		inline constexpr auto SIMDNoCommentSkippingPolicyChecked =
+		  options::parse_flags<json_details::exec_mode_from_tag<ExecTag>>;
 
-		static_assert( SIMDNoCommentSkippingPolicyChecked<
-		               runtime_exec_tag>::exec_tag_t::always_rvo );
+		template<typename ExecTag>
+		inline constexpr auto SIMDNoCommentSkippingPolicyUnchecked =
+		  options::parse_flags<CheckedParseMode::no,
+		                       json_details::exec_mode_from_tag<ExecTag>>;
 
-		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-		using SIMDNoCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<parse_options(
-		                     CheckedParseMode::no,
-		                     json_details::exec_mode_from_tag<ExecTag> ),
-		                   Allocator>;
+		inline constexpr auto HashCommentSkippingPolicyChecked =
+		  options::parse_flags<PolicyCommentTypes::hash>;
 
-		using HashCommentSkippingPolicyChecked =
-		  BasicParsePolicy<parse_options( PolicyCommentTypes::hash )>;
+		inline constexpr auto HashCommentSkippingPolicyUnchecked =
+		  options::parse_flags<CheckedParseMode::no, PolicyCommentTypes::hash>;
 
-		using HashCommentSkippingPolicyUnchecked = BasicParsePolicy<parse_options(
-		  CheckedParseMode::no, PolicyCommentTypes::hash )>;
+		template<typename ExecTag>
+		inline constexpr auto SIMDHashCommentSkippingPolicyChecked =
+		  options::parse_flags<PolicyCommentTypes::hash,
+		                       json_details::exec_mode_from_tag<ExecTag>>;
 
-		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-		using SIMDHashCommentSkippingPolicyChecked =
-		  BasicParsePolicy<parse_options(
-		                     PolicyCommentTypes::hash,
-		                     json_details::exec_mode_from_tag<ExecTag> ),
-		                   Allocator>;
+		template<typename ExecTag>
+		inline constexpr auto SIMDHashCommentSkippingPolicyUnchecked =
+		  options::parse_flags<CheckedParseMode::no, PolicyCommentTypes::hash,
+		                       json_details::exec_mode_from_tag<ExecTag>>;
 
-		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-		using SIMDHashCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<parse_options(
-		                     CheckedParseMode::no, PolicyCommentTypes::hash,
-		                     json_details::exec_mode_from_tag<ExecTag> ),
-		                   Allocator>;
+		inline constexpr auto CppCommentSkippingPolicyChecked =
+		  options::parse_flags<PolicyCommentTypes::cpp>;
 
-		using CppCommentSkippingPolicyChecked =
-		  BasicParsePolicy<parse_options( PolicyCommentTypes::cpp )>;
+		inline constexpr auto CppCommentSkippingPolicyUnchecked =
+		  options::parse_flags<CheckedParseMode::no, PolicyCommentTypes::cpp>;
 
-		using CppCommentSkippingPolicyUnchecked = BasicParsePolicy<parse_options(
-		  CheckedParseMode::no, PolicyCommentTypes::cpp )>;
+		template<typename ExecTag>
+		inline constexpr auto SIMDCppCommentSkippingPolicyChecked =
+		  options::parse_flags<PolicyCommentTypes::cpp,
+		                       json_details::exec_mode_from_tag<ExecTag>>;
 
-		/***
-		 * Parse using SIMD instructions if available, allow C++ comments and fully
-		 * check input
-		 */
+		template<typename ExecTag>
+		inline constexpr auto SIMDCppCommentSkippingPolicyUnchecked =
+		  options::parse_flags<CheckedParseMode::no, PolicyCommentTypes::cpp,
+		                       json_details::exec_mode_from_tag<ExecTag>>;
 
-		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-		using SIMDCppCommentSkippingPolicyChecked =
-		  BasicParsePolicy<parse_options(
-		                     PolicyCommentTypes::cpp,
-		                     json_details::exec_mode_from_tag<ExecTag> ),
-		                   Allocator>;
-
-		/***
-		 * Parse using SIMD instructions if available, allow C++ comments and do not
-		 * do more than minimum checking
-		 */
-		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-		using SIMDCppCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<parse_options(
-		                     CheckedParseMode::no, PolicyCommentTypes::cpp,
-		                     json_details::exec_mode_from_tag<ExecTag> ),
-		                   Allocator>;
-
-		using ConformancePolicy = BasicParsePolicy<parse_options(
-		  AllowEscapedNames::yes, MustVerifyEndOfDataIsValid::yes,
-		  IEEE754Precise::yes, ExcludeSpecialEscapes::yes )>;
+		inline constexpr auto ConformancePolicy =
+		  options::parse_flags<AllowEscapedNames::yes,
+		                       MustVerifyEndOfDataIsValid::yes, IEEE754Precise::yes,
+		                       ExcludeSpecialEscapes::yes>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

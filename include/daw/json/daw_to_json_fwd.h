@@ -14,7 +14,6 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-
 		namespace options {
 			/***
 			 * @brief Specify output policy flags in to_json calls.  See cookbook item

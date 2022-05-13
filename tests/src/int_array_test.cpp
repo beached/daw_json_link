@@ -114,9 +114,8 @@ void test_func( ) {
 		  "array of class with single intmax_t element: from_json_array",
 		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data =
-			    from_json_array<Number, std::vector<Number>,
-			                    NoCommentSkippingPolicyUnchecked>( sv );
+			  auto const data = from_json_array<Number, std::vector<Number>>(
+			    sv, options::parse_flags<CheckedParseMode::no> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -147,9 +146,8 @@ void test_func( ) {
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "array of intmax_t: from_json_array", json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data =
-			    from_json_array<intmax_t, std::vector<intmax_t>,
-			                    NoCommentSkippingPolicyUnchecked>( sv );
+			  auto const data = from_json_array<intmax_t, std::vector<intmax_t>>(
+			    sv, options::parse_flags<CheckedParseMode::no> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -350,8 +348,8 @@ void test_func( ) {
 			  "p5. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>,
-				    NoCommentSkippingPolicyUnchecked>( sv );
+				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>>(
+				    sv, options::parse_flags<CheckedParseMode::no> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -403,7 +401,7 @@ void test_func( ) {
 		}
 	}
 
-#ifdef DAW_ALLOW_SSE42
+#if true or defined( DAW_ALLOW_SSE42 )
 	{
 		// Unsigned SSE42
 		using uint_type = json_number_no_name<uintmax_t>;
@@ -414,8 +412,9 @@ void test_func( ) {
 			  "p5. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>,
-				    SIMDNoCommentSkippingPolicyUnchecked<sse42_exec_tag>>( sv );
+				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>>(
+				    sv,
+				    options::parse_flags<CheckedParseMode::no, ExecModeTypes::simd> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -458,8 +457,8 @@ void test_func( ) {
 			  "p5. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>,
-				    SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>( sv );
+				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>>(
+				    sv, options::parse_flags<ExecModeTypes::simd> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );

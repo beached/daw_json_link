@@ -18,6 +18,9 @@ namespace daw::json {
 			inline constexpr bool is_output_option_v = false;
 		}
 
+		/***
+		 * @brief Parser and Output Options
+		 */
 		namespace options {
 			/***
 			 * Choose whether to produce minified or pretty output

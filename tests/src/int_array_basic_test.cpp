@@ -45,8 +45,8 @@ static void test_from_json_array( std::string_view json_sv ) {
 	for( size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_sv );
 		auto result =
-		  daw::json::from_json_array<T, daw::bounded_vector_t<T, NUMVALUES>,
-		                             NoCommentSkippingPolicyUnchecked>( json_sv );
+		  daw::json::from_json_array<T, daw::bounded_vector_t<T, NUMVALUES>>(
+		    json_sv, options::parse_flags<CheckedParseMode::no> );
 		daw::do_not_optimize( result );
 	}
 }
