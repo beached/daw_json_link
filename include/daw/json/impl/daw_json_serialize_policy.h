@@ -47,7 +47,14 @@ namespace daw::json {
 		  : json_details::iterator_wrapper<OutputIterator> {
 			using i_am_a_serialization_policy = void;
 
+			json_details::json_options_t policy_flags = PolicyFlags;
+
+			using json_details::iterator_wrapper<OutputIterator>::get;
+			using iterator_type = OutputIterator;
+
 			std::size_t indentation_level = 0;
+
+			template<typename... Flags>
 
 			constexpr serialization_policy( OutputIterator it )
 			  : json_details::iterator_wrapper<OutputIterator>{ DAW_MOVE( it ) } {}

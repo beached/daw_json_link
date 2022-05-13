@@ -18,7 +18,7 @@ Take the following JSON
 
 The JSON document is an array of an object with two members, an optional int, a string, and an optional bool.
 
-Too see a working example using this code, refer to [cookbook_optional_values1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_optional_values1_test.cpp). 
+To see a working example using this code, refer to [cookbook_optional_values1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_optional_values1_test.cpp). 
 
 ```c++
 struct MyOptionalStuff1 {

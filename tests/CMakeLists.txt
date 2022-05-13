@@ -463,6 +463,11 @@ target_link_libraries(cookbook_inserting_extracting_raw_json1_test PRIVATE json_
 add_test(NAME cookbook_inserting_extracting_raw_json1_test COMMAND cookbook_inserting_extracting_raw_json1_test ./cookbook_inserting_extracting_raw_json1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_inserting_extracting_raw_json1_test)
 
+add_executable(cookbook_output_flags1_test src/cookbook_output_flags1_test.cpp)
+target_link_libraries(cookbook_output_flags1_test PRIVATE json_test)
+add_test(NAME cookbook_output_flags1_test COMMAND cookbook_output_flags1_test ./cookbook_output_flags1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_output_flags1_test)
+
 add_executable(gsoc_test src/gsoc_test.cpp)
 target_link_libraries(gsoc_test PRIVATE json_test)
 add_test(NAME gsoc_test COMMAND gsoc_test ./gsoc-2018.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")

@@ -284,6 +284,10 @@ namespace daw::json {
 			  generate_indent<SerializationFormat::Pretty, IndentationType::Space8> =
 			    "        ";
 
+			template<>
+			inline constexpr std::string_view
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space10> =
+			    "          ";
 		} // namespace json_details::serialization
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

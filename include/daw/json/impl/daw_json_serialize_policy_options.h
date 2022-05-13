@@ -13,6 +13,11 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			template<typename>
+			inline constexpr bool is_output_option_v = false;
+		}
+
 		/***
 		 * Choose whether to produce minified or pretty output
 		 */
@@ -24,6 +29,9 @@ namespace daw::json {
 		}; // 1bit
 
 		namespace json_details {
+			template<>
+			inline constexpr bool is_output_option_v<SerializationFormat> = true;
+
 			template<>
 			inline constexpr unsigned json_option_bits_width<SerializationFormat> = 1;
 
@@ -39,8 +47,6 @@ namespace daw::json {
 		enum class IndentationType : unsigned {
 			/* Use tabs for indentation */
 			Tab,
-			/* Use 0 spaces for indentation */
-			Space0,
 			/* Use 1 space for indentation */
 			Space1,
 			/* Use 2 spaces for indentation */
@@ -53,9 +59,13 @@ namespace daw::json {
 			Space5,
 			/* Use 8 spaces for indentation */
 			Space8,
+			/* Use 10 spaces for indentation */
+			Space10,
 		};
-
 		namespace json_details {
+			template<>
+			inline constexpr bool is_output_option_v<IndentationType> = true;
+
 			template<>
 			inline constexpr unsigned json_option_bits_width<IndentationType> = 3;
 
@@ -72,12 +82,14 @@ namespace daw::json {
 			   serialization */
 			None,
 			/* Restrict all string member values and all member names to 7bits.  This
-			   will result in escaping all values >= 0x7FS.  This can affect round
+			   will result in escaping all values >= 0x7F.  This can affect round
 			   trips where the name contains high bits set*/
 			OnlyAllow7bitsStrings
 		};
-
 		namespace json_details {
+			template<>
+			inline constexpr bool is_output_option_v<RestrictedStringOutput> = true;
+
 			template<>
 			inline constexpr unsigned json_option_bits_width<RestrictedStringOutput> =
 			  1;
@@ -91,6 +103,9 @@ namespace daw::json {
 
 		namespace json_details {
 			template<>
+			inline constexpr bool is_output_option_v<NewLineDelimiter> = true;
+
+			template<>
 			inline constexpr unsigned json_option_bits_width<NewLineDelimiter> = 1;
 
 			template<>
@@ -99,7 +114,11 @@ namespace daw::json {
 		} // namespace json_details
 
 		enum class OutputTrailingComma : unsigned { No, Yes };
+
 		namespace json_details {
+			template<>
+			inline constexpr bool is_output_option_v<OutputTrailingComma> = true;
+
 			template<>
 			inline constexpr unsigned json_option_bits_width<OutputTrailingComma> = 1;
 
@@ -107,6 +126,5 @@ namespace daw::json {
 			inline constexpr auto default_json_option_value<OutputTrailingComma> =
 			  OutputTrailingComma::No;
 		} // namespace json_details
-
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json
