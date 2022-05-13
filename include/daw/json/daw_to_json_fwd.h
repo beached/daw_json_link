@@ -14,36 +14,40 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		/***
-		 * @brief Specify output policy flags in to_json calls.  See cookbook item
-		 * output_options.md
-		 */
-		template<auto... PolicyFlags>
-		struct output_flags_t {
-			static_assert(
-			  ( json_details::is_output_option_v<decltype( PolicyFlags )> and ... ),
-			  "Only valid output flags can be used.  See cookbook "
-			  "output_options.md" );
-			static constexpr json_details::json_options_t value =
-			  json_details::serialization::set_bits(
-			    json_details::serialization::default_policy_flag, PolicyFlags... );
-		};
-		/***
-		 * @brief Specify output policy flags in to_json calls.  See cookbook item
-		 * output_options.md
-		 */
-		template<>
-		struct output_flags_t<> {
-			static constexpr json_details::json_options_t value =
-			  json_details::serialization::default_policy_flag;
-		};
 
-		/***
-		 * @brief Specify output policy flags in to_json calls.  See cookbook item
-		 * output_options.md
-		 */
-		template<auto... PolicyFlags>
-		inline constexpr auto output_flags = output_flags_t<PolicyFlags...>{ };
+		namespace options {
+			/***
+			 * @brief Specify output policy flags in to_json calls.  See cookbook item
+			 * output_options.md
+			 */
+			template<auto... PolicyFlags>
+			struct output_flags_t {
+				static_assert(
+				  ( json_details::is_output_option_v<decltype( PolicyFlags )> and ... ),
+				  "Only valid output flags can be used.  See cookbook "
+				  "output_options.md" );
+				static constexpr json_details::json_options_t value =
+				  json_details::serialization::set_bits(
+				    json_details::serialization::default_policy_flag, PolicyFlags... );
+			};
+			/***
+			 * @brief Specify output policy flags in to_json calls.  See cookbook item
+			 * output_options.md
+			 */
+			template<>
+			struct output_flags_t<> {
+				static constexpr json_details::json_options_t value =
+				  json_details::serialization::default_policy_flag;
+			};
+
+			/***
+			 * @brief Specify output policy flags in to_json calls.  See cookbook item
+			 * output_options.md
+			 */
+			template<auto... PolicyFlags>
+			inline constexpr auto output_flags =
+			  options::output_flags_t<PolicyFlags...>{ };
+		} // namespace options
 
 		/**
 		 *
@@ -57,9 +61,9 @@ namespace daw::json {
 		  typename Value,
 		  typename JsonClass = typename json_details::json_deduced_type<Value>,
 		  typename OutputIterator, auto... PolicyFlags>
-		[[maybe_unused]] constexpr OutputIterator
-		to_json( Value const &value, OutputIterator out_it,
-		         output_flags_t<PolicyFlags...> flags = output_flags<> );
+		[[maybe_unused]] constexpr OutputIterator to_json(
+		  Value const &value, OutputIterator out_it,
+		  options::output_flags_t<PolicyFlags...> flags = options::output_flags<> );
 
 		/**
 		 * Serialize a value to JSON.  Some types(std::string, string_view.
@@ -75,9 +79,9 @@ namespace daw::json {
 		  typename Result = std::string, typename Value,
 		  typename JsonClass = typename json_details::json_deduced_type<Value>,
 		  auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr Result
-		to_json( Value const &value,
-		         output_flags_t<PolicyFlags...> flags = output_flags<> );
+		[[maybe_unused, nodiscard]] constexpr Result to_json(
+		  Value const &value,
+		  options::output_flags_t<PolicyFlags...> flags = options::output_flags<> );
 
 		namespace json_details {
 			/***
@@ -98,9 +102,9 @@ namespace daw::json {
 		 */
 		template<typename JsonElement = json_details::auto_detect_array_element,
 		         typename Container, typename OutputIterator, auto... PolicyFlags>
-		[[maybe_unused]] constexpr OutputIterator
-		to_json_array( Container const &c, OutputIterator out_it,
-		               output_flags_t<PolicyFlags...> flags = output_flags<> );
+		[[maybe_unused]] constexpr OutputIterator to_json_array(
+		  Container const &c, OutputIterator out_it,
+		  options::output_flags_t<PolicyFlags...> flags = options::output_flags<> );
 
 		/**
 		 * Serialize a container to JSON.  This convenience method allows for easier
@@ -113,8 +117,8 @@ namespace daw::json {
 		template<typename Result = std::string,
 		         typename JsonElement = json_details::auto_detect_array_element,
 		         typename Container, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr Result
-		to_json_array( Container &&c,
-		               output_flags_t<PolicyFlags...> flags = output_flags<> );
+		[[maybe_unused, nodiscard]] constexpr Result to_json_array(
+		  Container &&c,
+		  options::output_flags_t<PolicyFlags...> flags = options::output_flags<> );
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

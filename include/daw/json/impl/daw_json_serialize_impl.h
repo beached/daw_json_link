@@ -134,7 +134,8 @@ namespace daw::json {
 				}
 				it.del_indent( );
 				if constexpr( sizeof...( Is ) > 0 ) {
-					if constexpr( it.output_trailing_comma == OutputTrailingComma::Yes ) {
+					if constexpr( it.output_trailing_comma ==
+					              options::OutputTrailingComma::Yes ) {
 						*it++ = ',';
 					}
 					it.next_member( );
@@ -168,7 +169,8 @@ namespace daw::json {
 				}
 				it.del_indent( );
 				if constexpr( sizeof...( Is ) != 0 ) {
-					if constexpr( it.output_trailing_comma == OutputTrailingComma::Yes ) {
+					if constexpr( it.output_trailing_comma ==
+					              options::OutputTrailingComma::Yes ) {
 						*it++ = ',';
 					}
 					it.next_member( );

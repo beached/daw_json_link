@@ -1,7 +1,7 @@
 # Output Options
 
-`to_json` allows optional policy flags to control the output. The default's are specified below under Format Policy
-Flags.
+`to_json` allows optional policy flags to control the output. The defaults are specified below under Format Policy
+Flags. All the enum's below are in the `daw::json::options` namespace
 
 ## Example
 
@@ -30,10 +30,10 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( ) {
+  using namespace daw::json::options;
   auto const v = OutputFlags1{ "Hello", { 1, 2, 3 } };
   puts( daw::json::to_json( v ).c_str( ) );
-  puts( daw::json::to_json(
-    v, daw::json::output_flags<daw::json::SerializationFormat::Pretty> ).c_str( ) );
+  puts( daw::json::to_json( v, output_flags<SerializationFormat::Pretty> ).c_str( ) );
 }
 ```
 

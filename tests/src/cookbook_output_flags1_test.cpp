@@ -31,9 +31,9 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( ) {
+	using namespace daw::json::options;
 	auto const v = OutputFlags1{ "Hello", { 1, 2, 3 } };
 	puts( daw::json::to_json( v ).c_str( ) );
-	puts( daw::json::to_json(
-	        v, daw::json::output_flags<daw::json::SerializationFormat::Pretty> )
+	puts( daw::json::to_json( v, output_flags<SerializationFormat::Pretty> )
 	        .c_str( ) );
 }

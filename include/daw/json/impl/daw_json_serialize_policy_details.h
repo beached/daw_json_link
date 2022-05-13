@@ -160,10 +160,10 @@ namespace daw::json {
 		} // namespace json_details
 
 		namespace json_details::serialization {
-			using policy_list =
-			  typename option_list_impl<SerializationFormat, IndentationType,
-			                            RestrictedStringOutput, NewLineDelimiter,
-			                            OutputTrailingComma>::type;
+			using policy_list = typename option_list_impl<
+			  options::SerializationFormat, options::IndentationType,
+			  options::RestrictedStringOutput, options::NewLineDelimiter,
+			  options::OutputTrailingComma>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =
@@ -246,48 +246,48 @@ namespace daw::json {
 				return static_cast<Result>( Policy{ value } );
 			}
 
-			template<SerializationFormat, IndentationType>
+			template<options::SerializationFormat, options::IndentationType>
 			inline constexpr std::string_view generate_indent{ };
 
 			template<>
-			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Tab> =
-			    "\t";
+			inline constexpr std::string_view generate_indent<
+			  options::SerializationFormat::Pretty, options::IndentationType::Tab> =
+			  "\t";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space1> =
-			    " ";
+			  generate_indent<options::SerializationFormat::Pretty,
+			                  options::IndentationType::Space1> = " ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space2> =
-			    "  ";
+			  generate_indent<options::SerializationFormat::Pretty,
+			                  options::IndentationType::Space2> = "  ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space3> =
-			    "   ";
+			  generate_indent<options::SerializationFormat::Pretty,
+			                  options::IndentationType::Space3> = "   ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space4> =
-			    "    ";
+			  generate_indent<options::SerializationFormat::Pretty,
+			                  options::IndentationType::Space4> = "    ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space5> =
-			    "     ";
+			  generate_indent<options::SerializationFormat::Pretty,
+			                  options::IndentationType::Space5> = "     ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space8> =
-			    "        ";
+			  generate_indent<options::SerializationFormat::Pretty,
+			                  options::IndentationType::Space8> = "        ";
 
 			template<>
 			inline constexpr std::string_view
-			  generate_indent<SerializationFormat::Pretty, IndentationType::Space10> =
-			    "          ";
+			  generate_indent<options::SerializationFormat::Pretty,
+			                  options::IndentationType::Space10> = "          ";
 		} // namespace json_details::serialization
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

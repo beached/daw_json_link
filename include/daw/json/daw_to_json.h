@@ -28,7 +28,7 @@ namespace daw::json {
 		         auto... PolicyFlags>
 		[[maybe_unused]] constexpr OutputIterator
 		to_json( Value const &value, OutputIterator it,
-		         output_flags_t<PolicyFlags...> ) {
+		         options::output_flags_t<PolicyFlags...> ) {
 			if constexpr( std::is_pointer_v<OutputIterator> ) {
 				daw_json_assert( it != nullptr, ErrorReason::NullOutputIterator );
 			}
@@ -43,8 +43,8 @@ namespace daw::json {
 						                              PolicyFlags... )>( it.get( ) );
 					}
 				} else {
-					return serialization_policy<OutputIterator,
-					                            output_flags_t<PolicyFlags...>::value>(
+					return serialization_policy<
+					  OutputIterator, options::output_flags_t<PolicyFlags...>::value>(
 					  it );
 				}
 			}( );
@@ -58,7 +58,8 @@ namespace daw::json {
 		template<typename Result, typename Value, typename JsonClass,
 		         auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result
-		to_json( Value const &value, output_flags_t<PolicyFlags...> flags ) {
+		to_json( Value const &value,
+		         options::output_flags_t<PolicyFlags...> flags ) {
 			Result result{ };
 			if constexpr( std::is_same_v<Result, std::string> ) {
 				result.reserve( 4096 );
@@ -76,7 +77,7 @@ namespace daw::json {
 		         auto... PolicyFlags>
 		[[maybe_unused]] constexpr OutputIterator
 		to_json_array( Container const &c, OutputIterator it,
-		               output_flags_t<PolicyFlags...> ) {
+		               options::output_flags_t<PolicyFlags...> ) {
 			static_assert(
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			  "Supplied container must support begin( )/end( )" );
@@ -94,8 +95,8 @@ namespace daw::json {
 						                              PolicyFlags... )>( it.get( ) );
 					}
 				} else {
-					return serialization_policy<OutputIterator,
-					                            output_flags_t<PolicyFlags...>::value>(
+					return serialization_policy<
+					  OutputIterator, options::output_flags_t<PolicyFlags...>::value>(
 					  it );
 				}
 			}( );
@@ -142,7 +143,8 @@ namespace daw::json {
 		template<typename Result, typename JsonElement, typename Container,
 		         auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result
-		to_json_array( Container &&c, output_flags_t<PolicyFlags...> flags ) {
+		to_json_array( Container &&c,
+		               options::output_flags_t<PolicyFlags...> flags ) {
 			static_assert(
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			  "Supplied container must support begin( )/end( )" );

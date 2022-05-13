@@ -399,7 +399,7 @@ namespace daw::json {
 				constexpr bool restrict_high =
 				  EightBitMode != EightBitModes::AllowFull or
 				  ( OutputIterator::restricted_string_output ==
-				    RestrictedStringOutput::OnlyAllow7bitsStrings );
+				    options::RestrictedStringOutput::OnlyAllow7bitsStrings );
 				if constexpr( do_escape ) {
 					using iter = DAW_TYPEOF( std::begin( container ) );
 					using it_t = utf8::unchecked::iterator<iter>;
@@ -485,7 +485,7 @@ namespace daw::json {
 				constexpr bool restrict_high =
 				  EightBitMode != EightBitModes::AllowFull or
 				  ( OutputIterator::restricted_string_output ==
-				    RestrictedStringOutput::OnlyAllow7bitsStrings );
+				    options::RestrictedStringOutput::OnlyAllow7bitsStrings );
 
 				if constexpr( do_escape ) {
 					auto chr_it = utf8::unchecked::iterator<char const *>( ptr );
@@ -1135,7 +1135,8 @@ namespace daw::json {
 				it.del_indent( );
 				if constexpr( element_pack::size > 0 ) {
 					if constexpr( element_pack::size > 0 and
-					              it.output_trailing_comma == OutputTrailingComma::Yes ) {
+					              it.output_trailing_comma ==
+					                options::OutputTrailingComma::Yes ) {
 						*it++ = ',';
 					}
 					it.next_member( );
@@ -1189,7 +1190,8 @@ namespace daw::json {
 					}
 				}
 				it.del_indent( );
-				if constexpr( it.output_trailing_comma == OutputTrailingComma::Yes ) {
+				if constexpr( it.output_trailing_comma ==
+				              options::OutputTrailingComma::Yes ) {
 					if( has_elements ) {
 						*it++ = ',';
 					}
@@ -1269,7 +1271,8 @@ namespace daw::json {
 					                                  it, json_get_value( *first ) );
 
 					it.del_indent( );
-					if constexpr( it.output_trailing_comma == OutputTrailingComma::Yes ) {
+					if constexpr( it.output_trailing_comma ==
+					              options::OutputTrailingComma::Yes ) {
 						if( has_elements ) {
 							*it++ = ',';
 						}
@@ -1282,7 +1285,8 @@ namespace daw::json {
 					}
 				}
 				it.del_indent( );
-				if constexpr( it.output_trailing_comma == OutputTrailingComma::Yes ) {
+				if constexpr( it.output_trailing_comma ==
+				              options::OutputTrailingComma::Yes ) {
 					if( has_elements ) {
 						*it++ = ',';
 					}
@@ -1325,7 +1329,8 @@ namespace daw::json {
 					}
 				}
 				it.del_indent( );
-				if constexpr( it.output_trailing_comma == OutputTrailingComma::Yes ) {
+				if constexpr( it.output_trailing_comma ==
+				              options::OutputTrailingComma::Yes ) {
 					if( has_elements ) {
 						*it++ = ',';
 					}

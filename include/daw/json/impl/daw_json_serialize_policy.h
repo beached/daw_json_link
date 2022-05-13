@@ -59,24 +59,24 @@ namespace daw::json {
 			constexpr serialization_policy( OutputIterator it )
 			  : json_details::iterator_wrapper<OutputIterator>{ DAW_MOVE( it ) } {}
 
-			static constexpr SerializationFormat serialization_format =
-			  json_details::serialization::get_bits_for<SerializationFormat>(
+			static constexpr options::SerializationFormat serialization_format =
+			  json_details::serialization::get_bits_for<options::SerializationFormat>(
 			    PolicyFlags );
 
-			static constexpr IndentationType indentation_type =
-			  json_details::serialization::get_bits_for<IndentationType>(
+			static constexpr options::IndentationType indentation_type =
+			  json_details::serialization::get_bits_for<options::IndentationType>(
 			    PolicyFlags );
 
-			static constexpr RestrictedStringOutput restricted_string_output =
-			  json_details::serialization::get_bits_for<RestrictedStringOutput>(
+			static constexpr options::RestrictedStringOutput
+			  restricted_string_output = json_details::serialization::get_bits_for<
+			    options::RestrictedStringOutput>( PolicyFlags );
+
+			static constexpr options::NewLineDelimiter newline_delimiter =
+			  json_details::serialization::get_bits_for<options::NewLineDelimiter>(
 			    PolicyFlags );
 
-			static constexpr NewLineDelimiter newline_delimiter =
-			  json_details::serialization::get_bits_for<NewLineDelimiter>(
-			    PolicyFlags );
-
-			static constexpr OutputTrailingComma output_trailing_comma =
-			  json_details::serialization::get_bits_for<OutputTrailingComma>(
+			static constexpr options::OutputTrailingComma output_trailing_comma =
+			  json_details::serialization::get_bits_for<options::OutputTrailingComma>(
 			    PolicyFlags );
 
 			inline constexpr void add_indent( ) {
@@ -98,8 +98,9 @@ namespace daw::json {
 			}
 
 			inline constexpr void output_newline( ) {
-				if constexpr( serialization_format != SerializationFormat::Minified ) {
-					if constexpr( newline_delimiter == NewLineDelimiter::n ) {
+				if constexpr( serialization_format !=
+				              options::SerializationFormat::Minified ) {
+					if constexpr( newline_delimiter == options::NewLineDelimiter::n ) {
 						*( *this )++ = '\n';
 					} else {
 						*( *this )++ = '\r';
@@ -113,7 +114,8 @@ namespace daw::json {
 			}
 
 			inline constexpr void output_space( ) {
-				if constexpr( serialization_format != SerializationFormat::Minified ) {
+				if constexpr( serialization_format !=
+				              options::SerializationFormat::Minified ) {
 					*( *this )++ = ' ';
 				}
 			}
