@@ -37,6 +37,29 @@ int main( ) {
 }
 ```
 
+The program will output
+
+```json
+{
+  "s": "Hello",
+  "ary": [
+    1,
+    2,
+    3
+  ]
+}
+```
+```json
+{
+  "s": "Hello",
+  "ary": [
+    1,
+    2,
+    3
+  ]
+}
+```
+
 # Format Policy Flags
 
 ## `SerializationFormat`
