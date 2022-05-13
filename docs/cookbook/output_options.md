@@ -79,7 +79,7 @@ Control how the file is indented
 * `Space4` - Indent 4 spaces
 * `Space5` - Indent 5 spaces
 * `Space8` - Indent 8 spaces
-* `Space10` - Indent 10 spaces
+* `Space10` - Indent 10 spaces :) https://youtu.be/SsoOG6ZeyUI
 
 ### Default
 
