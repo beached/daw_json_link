@@ -1,6 +1,6 @@
 # Output Options
 
-`to_json` allows optional policy flags to control the output. The defaults are specified below under Format Policy
+`daw::json::to_json` allows optional policy flags to control the output. The defaults are specified below under Format Policy
 Flags. All the enum's below are in the `daw::json::options` namespace
 
 ## Example
