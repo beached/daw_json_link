@@ -562,19 +562,43 @@ namespace daw::json {
 				  json_details::default_policy_flag;
 			};
 
+			namespace details {
+				template<typename... Ts>
+				std::false_type is_policy_flag( Ts... );
+
+				template<auto... PolicyFlags>
+				std::true_type is_policy_flag( parse_flags_t<PolicyFlags...> );
+
+				template<auto... PolicyFlags>
+				DAW_CONSTEVAL auto make_parse_flags( ) {
+					if constexpr( decltype( details::is_policy_flag(
+					                PolicyFlags... ) )::value ) {
+						static_assert( sizeof...( PolicyFlags ) == 1 );
+						// We know there is only one but need to unpack
+						return ( PolicyFlags, ... );
+					} else {
+						return parse_flags_t<PolicyFlags...>{ };
+					}
+				}
+
+			}; // namespace details
 			/***
 			 * @brief Specify parse policy flags in to_json calls.  See cookbook item
 			 * parse_options.md
 			 */
 			template<auto... PolicyFlags>
-			inline constexpr auto parse_flags =
-			  options::parse_flags_t<PolicyFlags...>{ };
+			inline constexpr auto
+			  parse_flags = details::make_parse_flags<PolicyFlags...>( );
+
+			template<auto... PolicyFlags>
+			inline constexpr auto parse_flags_v = parse_flags<PolicyFlags...>.value;
 		} // namespace options
 
 		inline constexpr auto NoCommentSkippingPolicyChecked =
 		  options::parse_flags<>;
 
-		inline constexpr auto DefaultParsePolicy = options::parse_flags<>;
+		using DefaultParsePolicy =
+		  BasicParsePolicy<NoCommentSkippingPolicyChecked.value>;
 
 		inline constexpr auto NoCommentSkippingPolicyUnchecked =
 		  options::parse_flags<CheckedParseMode::no>;

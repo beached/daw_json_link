@@ -356,7 +356,8 @@ namespace daw::json {
 			}
 		};
 
-		template<typename ParseState = NoCommentSkippingPolicyChecked,
+		template<typename ParseState =
+		           BasicParsePolicy<NoCommentSkippingPolicyChecked.value>,
 		         typename StackContainerPolicy = DefaultJsonEventParserStackPolicy<
 		           JsonEventParserStackValue<ParseState>>,
 		         typename Handler>
@@ -552,7 +553,8 @@ namespace daw::json {
 			                 ErrorReason::InvalidEndOfValue );
 		}
 
-		template<typename ParsePolicy = NoCommentSkippingPolicyChecked,
+		template<typename ParsePolicy =
+		           BasicParsePolicy<NoCommentSkippingPolicyChecked.value>,
 		         typename Handler>
 		inline void json_event_parser( std::string_view json_document,
 		                               Handler &&handler ) {
