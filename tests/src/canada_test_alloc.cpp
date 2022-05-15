@@ -49,11 +49,11 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 }
 
 using AllocType = daw::fixed_allocator<char>;
-
-template<typename ExecTag>
+using namespace daw::json::options;
+template<ExecModeTypes ExecMode>
 void test( std::string_view json_sv1, AllocType &alloc ) {
 
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( );
 	//**************************
@@ -63,10 +63,8 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 	  [&]( auto f1 ) {
 		  canada_result.reset( );
 		  alloc.release( );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::json_details::exec_mode_from_tag<ExecTag>>>(
-		    f1, "features[0].geometry", alloc );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f1, "features[0].geometry", alloc, parse_flags<ExecMode> );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -79,10 +77,9 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 	  [&]( auto f1 ) {
 		  canada_result.reset( );
 		  alloc.release( );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
-		    f1, "features[0].geometry", alloc );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f1, "features[0].geometry", alloc,
+		    parse_flags<ExecMode, CheckedParseMode::no> );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -111,11 +108,11 @@ int main( int argc, char **argv )
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	test<daw::json::constexpr_exec_tag>( json_sv1, alloc );
-	test<daw::json::runtime_exec_tag>( json_sv1, alloc );
+	test<ExecModeTypes::compile_time>( json_sv1, alloc );
+	test<ExecModeTypes::runtime>( json_sv1, alloc );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag>( json_sv1, alloc );
+		test<ExecModeTypes::simd>( json_sv1, alloc );
 	}
 
 	alloc.release( );

@@ -8,8 +8,8 @@
 
 #include "defines.h"
 
-#include "daw/json/daw_json_link.h"
 #include "twitter_test_pmr_json.h"
+#include <daw/json/daw_json_link.h>
 
 #include <daw/cpp_17.h>
 #include <daw/daw_benchmark.h>
@@ -48,7 +48,9 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 using AllocType =
   boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>;
 
-template<typename ExecTag>
+using namespace daw::json::options;
+
+template<ExecModeTypes ExecMode>
 void test( std::string_view json_data,
            boost::container::pmr::monotonic_buffer_resource *alloc )
 #ifdef DAW_USE_EXCEPTIONS
@@ -56,7 +58,7 @@ void test( std::string_view json_data,
 #endif
 {
 	auto const sz = json_data.size( );
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	std::optional<daw::twitter::twitter_object_t> twitter_result;
 	// ******************************
@@ -66,11 +68,12 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::json_details::exec_mode_from_tag<ExecTag>>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<
+		        daw::twitter::twitter_object_t>( alloc ),
+		      parse_flags<ExecMode> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -87,11 +90,12 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<
+		        daw::twitter::twitter_object_t>( alloc ),
+		      parse_flags<ExecMode, CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -108,11 +112,12 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDCppCommentSkippingPolicyChecked<ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<
+		        daw::twitter::twitter_object_t>( alloc ),
+		      parse_flags<ExecMode, PolicyCommentTypes::cpp> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -129,11 +134,13 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDCppCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<
+		        daw::twitter::twitter_object_t>( alloc ),
+		      parse_flags<ExecMode, PolicyCommentTypes::cpp,
+		                  CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -150,11 +157,12 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDHashCommentSkippingPolicyChecked<ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<
+		        daw::twitter::twitter_object_t>( alloc ),
+		      parse_flags<ExecMode, PolicyCommentTypes::hash> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -171,11 +179,13 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDHashCommentSkippingPolicyUnchecked<ExecTag, AllocType>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<
+		        daw::twitter::twitter_object_t>( alloc ),
+		      parse_flags<ExecMode, PolicyCommentTypes::hash,
+		                  CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -193,11 +203,12 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::json_details::exec_mode_from_tag<ExecTag>>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<
+		        daw::twitter::twitter_object_t>( alloc ),
+		      parse_flags<ExecMode> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -214,11 +225,12 @@ void test( std::string_view json_data,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
-		    f1, boost::container::pmr::polymorphic_allocator<
-		          daw::twitter::twitter_object_t>( alloc ) );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1,
+		      boost::container::pmr::polymorphic_allocator<
+		        daw::twitter::twitter_object_t>( alloc ),
+		      parse_flags<ExecMode, CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -269,10 +281,10 @@ int main( int argc, char **argv )
 	auto const sz = json_data.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
-	test<constexpr_exec_tag>( json_data, alloc );
-	test<runtime_exec_tag>( json_data, alloc );
+	test<ExecModeTypes::compile_time>( json_data, alloc );
+	test<ExecModeTypes::runtime>( json_data, alloc );
 	if constexpr( not std::is_same_v<runtime_exec_tag, simd_exec_tag> ) {
-		test<simd_exec_tag>( json_data, alloc );
+		test<ExecModeTypes::simd>( json_data, alloc );
 	}
 
 	// ******************************

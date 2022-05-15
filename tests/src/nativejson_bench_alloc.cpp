@@ -32,8 +32,9 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 static_assert( DAW_NUM_RUNS > 0 );
 
 using AllocType = daw::fixed_allocator<char>;
+using namespace daw::json::options;
 
-template<typename ExecTag>
+template<ExecModeTypes ExecMode>
 void test( char **argv, AllocType &alloc ) {
 	auto const json_data1 = *daw::read_file( argv[1] );
 	daw_json_assert( not json_data1.empty( ),
@@ -48,7 +49,7 @@ void test( char **argv, AllocType &alloc ) {
 	auto json_sv2 = std::string_view( json_data2.data( ), json_data2.size( ) );
 	auto json_sv3 = std::string_view( json_data3.data( ), json_data3.size( ) );
 
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( ) + json_sv2.size( ) + json_sv3.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
@@ -67,9 +68,9 @@ void test( char **argv, AllocType &alloc ) {
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
 			  alloc.release( );
-			  twitter_result = daw::json::from_json_alloc<
-			    daw::twitter::twitter_object_t,
-			    daw::json::json_details::exec_mode_from_tag<ExecTag>>>( f1, alloc );
+			  twitter_result =
+			    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+			      f1, alloc, parse_flags<ExecMode> );
 		  },
 		  json_sv1 );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -95,10 +96,9 @@ void test( char **argv, AllocType &alloc ) {
 		  {
 			  twitter_result.reset( );
 			  alloc.release( );
-			  twitter_result = daw::json::from_json_alloc<
-			    daw::twitter::twitter_object_t,
-			    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1,
-			                                                               alloc );
+			  twitter_result =
+			    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+			      f1, alloc, parse_flags<ExecMode, CheckedParseMode::no> );
 		  }
 	  },
 	  json_sv1 );
@@ -118,9 +118,8 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
 		  alloc.release( );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::json_details::exec_mode_from_tag<ExecTag>>>( f2, alloc );
+		  citm_result = daw::json::from_json_alloc<daw::citm::citm_object_t>(
+		    f2, alloc, parse_flags<ExecMode> );
 	  },
 	  json_sv2 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -139,9 +138,8 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
 		  alloc.release( );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f2, alloc );
+		  citm_result = daw::json::from_json_alloc<daw::citm::citm_object_t>(
+		    f2, alloc, parse_flags<ExecMode, CheckedParseMode::no> );
 	  },
 	  json_sv2 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -160,10 +158,8 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
 		  alloc.release( );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::json_details::exec_mode_from_tag<ExecTag>>>(
-		    f3, "features[0].geometry", alloc );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", alloc, parse_flags<ExecMode> );
 	  },
 	  json_sv3 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -177,10 +173,9 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
 		  alloc.release( );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
-		    f3, "features[0].geometry", alloc );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", alloc,
+		    parse_flags<ExecMode, CheckedParseMode::no> );
 	  },
 	  json_sv3 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -197,16 +192,13 @@ void test( char **argv, AllocType &alloc ) {
 		  citm_result.reset( );
 		  canada_result.reset( );
 		  alloc.release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::json_details::exec_mode_from_tag<ExecTag>>>( f1, alloc );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::json_details::exec_mode_from_tag<ExecTag>>>( f2, alloc );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::json_details::exec_mode_from_tag<ExecTag>>>(
-		    f3, "features[0].geometry", alloc );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1, alloc, parse_flags<ExecMode> );
+		  citm_result = daw::json::from_json_alloc<daw::citm::citm_object_t>(
+		    f2, alloc, parse_flags<ExecMode> );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", alloc, parse_flags<ExecMode> );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -235,16 +227,14 @@ void test( char **argv, AllocType &alloc ) {
 		  citm_result.reset( );
 		  canada_result.reset( );
 		  alloc.release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1, alloc );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f2, alloc );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
-		    f3, "features[0].geometry", alloc );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1, alloc, parse_flags<ExecMode, CheckedParseMode::no> );
+		  citm_result = daw::json::from_json_alloc<daw::citm::citm_object_t>(
+		    f2, alloc, parse_flags<ExecMode, CheckedParseMode::no> );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", alloc,
+		    parse_flags<ExecMode, CheckedParseMode::no> );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -292,12 +282,12 @@ int main( int argc, char **argv )
 			std::cerr << "twitter citm canada\n";
 			exit( 1 );
 		}
-		test<daw::json::constexpr_exec_tag>( argv, alloc );
+		test<ExecModeTypes::compile_time>( argv, alloc );
 		if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 		                                 daw::json::runtime_exec_tag> ) {
-			test<daw::json::runtime_exec_tag>( argv, alloc );
+			test<ExecModeTypes::runtime>( argv, alloc );
 		}
-		test<daw::json::simd_exec_tag>( argv, alloc );
+		test<ExecModeTypes::simd>( argv, alloc );
 #ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';

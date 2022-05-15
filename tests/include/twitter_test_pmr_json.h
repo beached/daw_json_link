@@ -111,7 +111,7 @@ namespace daw::twitter {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::twitter::String> {
-		using type = json_class_map<json_string_raw_no_name<daw::twitter::String>>;
+		using type = json_type_alias<json_string_raw_no_name<daw::twitter::String>>;
 	};
 
 	template<>

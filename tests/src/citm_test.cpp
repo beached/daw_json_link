@@ -31,9 +31,11 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-template<typename ExecTag>
+using namespace daw::json::options;
+
+template<ExecModeTypes ExecMode>
 void test( std::string_view json_sv1 ) {
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( );
 	{
@@ -41,8 +43,7 @@ void test( std::string_view json_sv1 ) {
 		  "citm_catalog bench(checked)", sz,
 		  []( auto f1 ) {
 			  return daw::json::from_json<daw::citm::citm_object_t>(
-			    f1, daw::json::options::parse_flags<
-			          daw::json::json_details::exec_mode_from_tag<ExecTag>> );
+			    f1, parse_flags<ExecMode> );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( citm_result2 );
@@ -58,9 +59,7 @@ void test( std::string_view json_sv1 ) {
 		  "citm_catalog bench(unchecked)", sz,
 		  []( auto f1 ) {
 			  return daw::json::from_json<daw::citm::citm_object_t>(
-			    f1, daw::json::options::parse_flags<
-			          daw::json::options::CheckedParseMode::no,
-			          daw::json::json_details::exec_mode_from_tag<ExecTag>> );
+			    f1, parse_flags<CheckedParseMode::no, ExecMode> );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( citm_result2 );
@@ -91,11 +90,11 @@ int main( int argc, char **argv )
 	auto const sz = json_sv1.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
-	test<daw::json::constexpr_exec_tag>( json_sv1 );
-	test<daw::json::runtime_exec_tag>( json_sv1 );
+	test<ExecModeTypes::compile_time>( json_sv1 );
+	test<ExecModeTypes::runtime>( json_sv1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag>( json_sv1 );
+		test<ExecModeTypes::simd>( json_sv1 );
 	}
 
 	std::cout
