@@ -115,7 +115,7 @@ void test_func( ) {
 		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number, std::vector<Number>>(
-			    sv, options::parse_flags<CheckedParseMode::no> );
+			    sv, options::parse_flags<options::CheckedParseMode::no> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -123,7 +123,7 @@ void test_func( ) {
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<Number, CheckedParseMode::no>;
+		  daw::json::json_array_iterator<Number, options::CheckedParseMode::no>;
 
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
@@ -147,7 +147,7 @@ void test_func( ) {
 		  "array of intmax_t: from_json_array", json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<intmax_t, std::vector<intmax_t>>(
-			    sv, options::parse_flags<CheckedParseMode::no> );
+			    sv, options::parse_flags<options::CheckedParseMode::no> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -155,7 +155,7 @@ void test_func( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<intmax_t, CheckedParseMode::no>;
+		  daw::json::json_array_iterator<intmax_t, options::CheckedParseMode::no>;
 
 		auto data = std::vector<intmax_t>( );
 		data.resize( NUMVALUES );
@@ -318,7 +318,7 @@ void test_func( ) {
 	{
 		// Unsigned
 		using iterator_t =
-		  daw::json::json_array_iterator<uintmax_t, CheckedParseMode::no>;
+		  daw::json::json_array_iterator<uintmax_t, options::CheckedParseMode::no>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -347,7 +347,7 @@ void test_func( ) {
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
 				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>>(
-				    sv, options::parse_flags<CheckedParseMode::no> );
+				    sv, options::parse_flags<options::CheckedParseMode::no> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -412,7 +412,7 @@ void test_func( ) {
 				  auto result = daw::json::from_json_array<
 				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>>(
 				    sv,
-				    options::parse_flags<CheckedParseMode::no, ExecModeTypes::simd> );
+				    options::parse_flags<options::CheckedParseMode::no, options::ExecModeTypes::simd> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -427,7 +427,7 @@ void test_func( ) {
 		// Unsigned SSE42
 		using uint_type = json_number_no_name<uintmax_t>;
 		using iterator_t =
-		  daw::json::json_array_iterator<uint_type, ExecModeTypes::simd>;
+		  daw::json::json_array_iterator<uint_type, options::ExecModeTypes::simd>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -456,7 +456,7 @@ void test_func( ) {
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
 				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>>(
-				    sv, options::parse_flags<ExecModeTypes::simd> );
+				    sv, options::parse_flags<options::ExecModeTypes::simd> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );

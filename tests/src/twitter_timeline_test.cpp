@@ -30,7 +30,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-template<daw::json::ExecModeTypes ExecMode>
+template<daw::json::options::ExecModeTypes ExecMode>
 void test( std::string_view json_sv1 ) {
 	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
@@ -68,7 +68,7 @@ void test( std::string_view json_sv1 ) {
 	{
 		using range_t =
 		  daw::json::json_array_range<daw::twitter::tweet,
-		                              daw::json::CheckedParseMode::no, ExecMode>;
+		                              daw::json::options::CheckedParseMode::no, ExecMode>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(unchecked)", sz,
 		  [&]( auto rng ) {
@@ -81,7 +81,7 @@ void test( std::string_view json_sv1 ) {
 	{
 		using range_t =
 		  daw::json::json_array_range<daw::twitter::tweet,
-		                              daw::json::CheckedParseMode::no, ExecMode>;
+		                              daw::json::options::CheckedParseMode::no, ExecMode>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(unchecked, nostore)", sz,
 		  [&]( auto rng ) {
@@ -116,11 +116,11 @@ int main( int argc, char **argv )
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	test<ExecModeTypes::compile_time>( json_sv1 );
-	test<ExecModeTypes::runtime>( json_sv1 );
+	test<options::ExecModeTypes::compile_time>( json_sv1 );
+	test<options::ExecModeTypes::runtime>( json_sv1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<ExecModeTypes::simd>( json_sv1 );
+		test<options::ExecModeTypes::simd>( json_sv1 );
 	}
 }
 #ifdef DAW_USE_EXCEPTIONS

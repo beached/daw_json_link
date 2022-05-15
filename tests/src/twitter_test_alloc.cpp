@@ -76,7 +76,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Missing value" );
 
-	// CheckedParseMode::no
+	// options::CheckedParseMode::no
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&]( auto f1 ) {
@@ -84,7 +84,7 @@ void test( std::string_view json_data, AllocType &alloc )
 		  alloc.release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
-		    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1, alloc );
+		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1, alloc );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -192,7 +192,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Missing value" );
 
-	// CheckedParseMode::no Escaped Names
+	// options::CheckedParseMode::no Escaped Names
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked, escaped names)", sz,
 	  [&]( auto f1 ) {
@@ -200,7 +200,7 @@ void test( std::string_view json_data, AllocType &alloc )
 		  alloc.release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
-		    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1, alloc );
+		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1, alloc );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );

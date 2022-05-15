@@ -11,7 +11,7 @@
 #include "daw_json_allocator_wrapper.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
-#include "daw_json_parse_options.h"
+#include "daw_json_parse_options_impl.h"
 #include "daw_json_parse_policy_cpp_comments.h"
 #include "daw_json_parse_policy_hash_comments.h"
 #include "daw_json_parse_policy_no_comments.h"
@@ -54,97 +54,99 @@ namespace daw::json {
 			 * checking costs
 			 */
 			static constexpr bool allow_temporarily_mutating_buffer =
-			  json_details::get_bits_for<TemporarilyMutateBuffer>( PolicyFlags ) ==
-			  TemporarilyMutateBuffer::yes;
+			  json_details::get_bits_for<options::TemporarilyMutateBuffer>(
+			    PolicyFlags ) == options::TemporarilyMutateBuffer::yes;
 
 			using CharT =
 			  std::conditional_t<allow_temporarily_mutating_buffer, char, char const>;
 			using iterator = CharT *;
 
 			/***
-			 * see CheckedParseMode
+			 * see options::CheckedParseMode
 			 */
 			static constexpr bool is_unchecked_input =
-			  json_details::get_bits_for<CheckedParseMode>( PolicyFlags ) ==
-			  CheckedParseMode::no;
+			  json_details::get_bits_for<options::CheckedParseMode>( PolicyFlags ) ==
+			  options::CheckedParseMode::no;
 
 			/***
-			 * See ExecModeTypes
+			 * See options::ExecModeTypes
 			 */
 			using exec_tag_t =
-			  switch_t<json_details::get_bits_for<ExecModeTypes, std::size_t>(
-			             PolicyFlags ),
+			  switch_t<json_details::get_bits_for<options::ExecModeTypes,
+			                                      std::size_t>( PolicyFlags ),
 			           constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
 
 			static constexpr exec_tag_t exec_tag = exec_tag_t{ };
 
 			/***
-			 * see AllowEscapedNames
+			 * see options::AllowEscapedNames
 			 */
 			static constexpr bool allow_escaped_names =
-			  json_details::get_bits_for<AllowEscapedNames>( PolicyFlags ) ==
-			  AllowEscapedNames::yes;
+			  json_details::get_bits_for<options::AllowEscapedNames>( PolicyFlags ) ==
+			  options::AllowEscapedNames::yes;
 
 			/***
-			 * see ForceFullNameCheck
+			 * see options::ForceFullNameCheck
 			 */
 			static constexpr bool force_name_equal_check =
-			  json_details::get_bits_for<ForceFullNameCheck>( PolicyFlags ) ==
-			  ForceFullNameCheck::yes;
+			  json_details::get_bits_for<options::ForceFullNameCheck>(
+			    PolicyFlags ) == options::ForceFullNameCheck::yes;
 
 			/***
-			 * see ZeroTerminatedString
+			 * see options::ZeroTerminatedString
 			 */
 			static constexpr bool is_zero_terminated_string =
-			  json_details::get_bits_for<ZeroTerminatedString>( PolicyFlags ) ==
-			  ZeroTerminatedString::yes;
+			  json_details::get_bits_for<options::ZeroTerminatedString>(
+			    PolicyFlags ) == options::ZeroTerminatedString::yes;
 
 			/***
-			 * See IEEE754Precise
+			 * See options::IEEE754Precise
 			 */
 			static constexpr bool precise_ieee754 =
-			  json_details::get_bits_for<IEEE754Precise>( PolicyFlags ) ==
-			  IEEE754Precise::yes;
+			  json_details::get_bits_for<options::IEEE754Precise>( PolicyFlags ) ==
+			  options::IEEE754Precise::yes;
 
 			/***
-			 * See MinifiedDocument
+			 * See options::MinifiedDocument
 			 */
 			static constexpr bool minified_document =
-			  json_details::get_bits_for<MinifiedDocument>( PolicyFlags ) ==
-			  MinifiedDocument::yes;
+			  json_details::get_bits_for<options::MinifiedDocument>( PolicyFlags ) ==
+			  options::MinifiedDocument::yes;
 
 			/***
-			 * See ExcludeSpecialEscapes
+			 * See options::ExcludeSpecialEscapes
 			 */
 			static constexpr bool exclude_special_escapes =
-			  json_details::get_bits_for<ExcludeSpecialEscapes>( PolicyFlags ) ==
-			  ExcludeSpecialEscapes::yes;
+			  json_details::get_bits_for<options::ExcludeSpecialEscapes>(
+			    PolicyFlags ) == options::ExcludeSpecialEscapes::yes;
 
 			static constexpr bool allow_leading_zero_plus = true;
 
-			using as_unchecked = BasicParsePolicy<
-			  json_details::set_bits( PolicyFlags, CheckedParseMode::no ), Allocator>;
+			using as_unchecked =
+			  BasicParsePolicy<json_details::set_bits(
+			                     PolicyFlags, options::CheckedParseMode::no ),
+			                   Allocator>;
 
 			using as_checked =
-			  BasicParsePolicy<json_details::set_bits( PolicyFlags,
-			                                           CheckedParseMode::yes ),
+			  BasicParsePolicy<json_details::set_bits(
+			                     PolicyFlags, options::CheckedParseMode::yes ),
 			                   Allocator>;
 
 			static constexpr bool use_exact_mappings_by_default =
-			  json_details::get_bits_for<UseExactMappingsByDefault>( PolicyFlags ) ==
-			  UseExactMappingsByDefault::yes;
+			  json_details::get_bits_for<options::UseExactMappingsByDefault>(
+			    PolicyFlags ) == options::UseExactMappingsByDefault::yes;
 
 			static constexpr bool must_verify_end_of_data_is_valid =
-			  json_details::get_bits_for<MustVerifyEndOfDataIsValid>( PolicyFlags ) ==
-			  MustVerifyEndOfDataIsValid::yes;
+			  json_details::get_bits_for<options::MustVerifyEndOfDataIsValid>(
+			    PolicyFlags ) == options::MustVerifyEndOfDataIsValid::yes;
 
 			static constexpr bool expect_long_strings =
-			  json_details::get_bits_for<ExpectLongStrings>( PolicyFlags ) ==
-			  ExpectLongStrings::yes;
+			  json_details::get_bits_for<options::ExpectLongNames>( PolicyFlags ) ==
+			  options::ExpectLongNames::yes;
 
 			using CommentPolicy =
-			  switch_t<json_details::get_bits_for<PolicyCommentTypes, std::size_t>(
-			             PolicyFlags ),
+			  switch_t<json_details::get_bits_for<options::PolicyCommentTypes,
+			                                      std::size_t>( PolicyFlags ),
 			           NoCommentSkippingPolicy, CppCommentSkippingPolicy,
 			           HashCommentSkippingPolicy>;
 
@@ -621,60 +623,65 @@ namespace daw::json {
 
 			template<>
 			struct exec_mode_from_tag_t<constexpr_exec_tag> {
-				static inline constexpr ExecModeTypes value =
-				  ExecModeTypes::compile_time;
+				static inline constexpr options::ExecModeTypes value =
+				  options::ExecModeTypes::compile_time;
 			};
 
 			template<>
 			struct exec_mode_from_tag_t<runtime_exec_tag> {
-				static inline constexpr ExecModeTypes value = ExecModeTypes::runtime;
+				static inline constexpr options::ExecModeTypes value =
+				  options::ExecModeTypes::runtime;
 			};
 
 			template<>
 			struct exec_mode_from_tag_t<simd_exec_tag> {
-				static inline constexpr ExecModeTypes value = ExecModeTypes::simd;
+				static inline constexpr options::ExecModeTypes value =
+				  options::ExecModeTypes::simd;
 			};
 
 			template<typename ExecMode>
-			inline constexpr ExecModeTypes exec_mode_from_tag =
+			inline constexpr options::ExecModeTypes exec_mode_from_tag =
 			  exec_mode_from_tag_t<ExecMode>::value;
 		} // namespace json_details
 
 		inline constexpr auto HashCommentSkippingPolicyChecked =
-		  options::parse_flags<PolicyCommentTypes::hash>;
+		  options::parse_flags<options::PolicyCommentTypes::hash>;
 
 		inline constexpr auto HashCommentSkippingPolicyUnchecked =
-		  options::parse_flags<CheckedParseMode::no, PolicyCommentTypes::hash>;
+		  options::parse_flags<options::CheckedParseMode::no,
+		                       options::PolicyCommentTypes::hash>;
 
 		template<typename ExecTag>
 		inline constexpr auto SIMDHashCommentSkippingPolicyChecked =
-		  options::parse_flags<PolicyCommentTypes::hash,
+		  options::parse_flags<options::PolicyCommentTypes::hash,
 		                       json_details::exec_mode_from_tag<ExecTag>>;
 
 		template<typename ExecTag>
 		inline constexpr auto SIMDHashCommentSkippingPolicyUnchecked =
-		  options::parse_flags<CheckedParseMode::no, PolicyCommentTypes::hash,
+		  options::parse_flags<options::CheckedParseMode::no,
+		                       options::PolicyCommentTypes::hash,
 		                       json_details::exec_mode_from_tag<ExecTag>>;
 
 		inline constexpr auto CppCommentSkippingPolicyChecked =
-		  options::parse_flags<PolicyCommentTypes::cpp>;
+		  options::parse_flags<options::PolicyCommentTypes::cpp>;
 
 		inline constexpr auto CppCommentSkippingPolicyUnchecked =
-		  options::parse_flags<CheckedParseMode::no, PolicyCommentTypes::cpp>;
+		  options::parse_flags<options::CheckedParseMode::no,
+		                       options::PolicyCommentTypes::cpp>;
 
 		template<typename ExecTag>
 		inline constexpr auto SIMDCppCommentSkippingPolicyChecked =
-		  options::parse_flags<PolicyCommentTypes::cpp,
+		  options::parse_flags<options::PolicyCommentTypes::cpp,
 		                       json_details::exec_mode_from_tag<ExecTag>>;
 
 		template<typename ExecTag>
 		inline constexpr auto SIMDCppCommentSkippingPolicyUnchecked =
-		  options::parse_flags<CheckedParseMode::no, PolicyCommentTypes::cpp,
+		  options::parse_flags<options::CheckedParseMode::no,
+		                       options::PolicyCommentTypes::cpp,
 		                       json_details::exec_mode_from_tag<ExecTag>>;
 
-		inline constexpr auto ConformancePolicy =
-		  options::parse_flags<AllowEscapedNames::yes,
-		                       MustVerifyEndOfDataIsValid::yes, IEEE754Precise::yes,
-		                       ExcludeSpecialEscapes::yes>;
+		inline constexpr auto ConformancePolicy = options::parse_flags<
+		  options::AllowEscapedNames::yes, options::MustVerifyEndOfDataIsValid::yes,
+		  options::IEEE754Precise::yes, options::ExcludeSpecialEscapes::yes>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

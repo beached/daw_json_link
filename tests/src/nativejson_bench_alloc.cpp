@@ -97,7 +97,7 @@ void test( char **argv, AllocType &alloc ) {
 			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
-			    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1,
+			    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1,
 			                                                               alloc );
 		  }
 	  },
@@ -141,7 +141,7 @@ void test( char **argv, AllocType &alloc ) {
 		  alloc.release( );
 		  citm_result = daw::json::from_json_alloc<
 		    daw::citm::citm_object_t,
-		    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f2, alloc );
+		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f2, alloc );
 	  },
 	  json_sv2 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -179,7 +179,7 @@ void test( char **argv, AllocType &alloc ) {
 		  alloc.release( );
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
-		    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
+		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
 		    f3, "features[0].geometry", alloc );
 	  },
 	  json_sv3 );
@@ -237,13 +237,13 @@ void test( char **argv, AllocType &alloc ) {
 		  alloc.release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
-		    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1, alloc );
+		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1, alloc );
 		  citm_result = daw::json::from_json_alloc<
 		    daw::citm::citm_object_t,
-		    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f2, alloc );
+		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f2, alloc );
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
-		    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
+		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
 		    f3, "features[0].geometry", alloc );
 	  },
 	  json_sv1, json_sv2, json_sv3 );

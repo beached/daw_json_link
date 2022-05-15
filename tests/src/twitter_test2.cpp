@@ -85,7 +85,7 @@ int main( int argc, char **argv )
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<daw::twitter2::twitter_object_t>(
-		    f1, daw::json::options::parse_flags<CheckedParseMode::no> );
+		    f1, daw::json::options::parse_flags<options::CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_sv1 );

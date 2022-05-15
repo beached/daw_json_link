@@ -26,7 +26,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-template<daw::json::ExecModeTypes ExecMode>
+template<daw::json::options::ExecModeTypes ExecMode>
 void test( std::string_view data ) {
 	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
@@ -47,7 +47,7 @@ void test( std::string_view data ) {
 	  range_t( data ) );
 	daw::do_not_optimize( results );
 	using range2_t =
-	  daw::json::json_array_range<double, daw::json::CheckedParseMode::no,
+	  daw::json::json_array_range<double, daw::json::options::CheckedParseMode::no,
 	                              ExecMode>;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "numbers bench (unchecked)", data.size( ),
@@ -81,10 +81,10 @@ int main( int argc, char **argv )
 #ifndef NDEBUG
 	std::cout << "non-debug run\n";
 #endif
-	test<daw::json::ExecModeTypes::compile_time>( sv_numbers );
-	test<daw::json::ExecModeTypes::runtime>( sv_numbers );
+	test<daw::json::options::ExecModeTypes::compile_time>( sv_numbers );
+	test<daw::json::options::ExecModeTypes::runtime>( sv_numbers );
 #if defined( DAW_ALLOW_SSE42 )
-	test<daw::json::ExecModeTypes::simd>( sv_numbers );
+	test<daw::json::options::ExecModeTypes::simd>( sv_numbers );
 #endif
 }
 #ifdef DAW_USE_EXCEPTIONS

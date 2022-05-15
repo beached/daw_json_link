@@ -49,11 +49,11 @@
 #endif
 
 inline constexpr auto CheckedPolicy =
-  daw::json::options::parse_flags<daw::json::ExecModeTypes::simd>;
+  daw::json::options::parse_flags<daw::json::options::ExecModeTypes::simd>;
 
 inline constexpr auto UncheckedPolicy =
-  daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-                                  daw::json::ExecModeTypes::simd>;
+  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+                                  daw::json::options::ExecModeTypes::simd>;
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
@@ -177,9 +177,9 @@ inline namespace {
 
 		daw::bench::bench_result res[3] = {
 		  tst( daw::json::options::parse_flags<
-		       daw::json::ExecModeTypes::compile_time> ),
-		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime> ),
-		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> ) };
+		       daw::json::options::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -204,12 +204,12 @@ inline namespace {
 
 		daw::bench::bench_result res[3] = {
 		  tst( daw::json::options::parse_flags<
-		       daw::json::CheckedParseMode::no,
-		       daw::json::ExecModeTypes::compile_time> ),
-		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-		                                       daw::json::ExecModeTypes::runtime> ),
-		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-		                                       daw::json::ExecModeTypes::simd> ) };
+		       daw::json::options::CheckedParseMode::no,
+		       daw::json::options::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                       daw::json::options::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                       daw::json::options::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -234,9 +234,9 @@ inline namespace {
 
 		daw::bench::bench_result res[3] = {
 		  tst( daw::json::options::parse_flags<
-		       daw::json::ExecModeTypes::compile_time> ),
-		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime> ),
-		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> ) };
+		       daw::json::options::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -262,12 +262,12 @@ inline namespace {
 
 		daw::bench::bench_result res[3] = {
 		  tst( daw::json::options::parse_flags<
-		       daw::json::CheckedParseMode::no,
-		       daw::json::ExecModeTypes::compile_time> ),
-		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-		                                       daw::json::ExecModeTypes::runtime> ),
-		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-		                                       daw::json::ExecModeTypes::simd> ) };
+		       daw::json::options::CheckedParseMode::no,
+		       daw::json::options::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                       daw::json::options::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                       daw::json::options::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -293,9 +293,9 @@ inline namespace {
 
 		daw::bench::bench_result res[3] = {
 		  tst( daw::json::options::parse_flags<
-		       daw::json::ExecModeTypes::compile_time> ),
-		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime> ),
-		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> ) };
+		       daw::json::options::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -321,12 +321,12 @@ inline namespace {
 
 		daw::bench::bench_result res[3] = {
 		  tst( daw::json::options::parse_flags<
-		       daw::json::CheckedParseMode::no,
-		       daw::json::ExecModeTypes::compile_time> ),
-		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-		                                       daw::json::ExecModeTypes::runtime> ),
-		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-		                                       daw::json::ExecModeTypes::simd> ) };
+		       daw::json::options::CheckedParseMode::no,
+		       daw::json::options::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                       daw::json::options::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                       daw::json::options::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -352,9 +352,9 @@ inline namespace {
 
 		daw::bench::bench_result res[3] = {
 		  tst( daw::json::options::parse_flags<
-		       daw::json::ExecModeTypes::compile_time> ),
-		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime> ),
-		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> ) };
+		       daw::json::options::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -380,12 +380,12 @@ inline namespace {
 
 		daw::bench::bench_result res[3] = {
 		  tst( daw::json::options::parse_flags<
-		       daw::json::CheckedParseMode::no,
-		       daw::json::ExecModeTypes::compile_time> ),
-		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-		                                       daw::json::ExecModeTypes::runtime> ),
-		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-		                                       daw::json::ExecModeTypes::simd> ) };
+		       daw::json::options::CheckedParseMode::no,
+		       daw::json::options::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                       daw::json::options::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                       daw::json::options::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -425,9 +425,9 @@ inline namespace {
 
 		daw::bench::bench_result res[3] = {
 		  tst( daw::json::options::parse_flags<
-		       daw::json::ExecModeTypes::compile_time> ),
-		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime> ),
-		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> ) };
+		       daw::json::options::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -466,12 +466,12 @@ inline namespace {
 
 		daw::bench::bench_result res[3] = {
 		  tst( daw::json::options::parse_flags<
-		       daw::json::CheckedParseMode::no,
-		       daw::json::ExecModeTypes::compile_time> ),
-		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-		                                       daw::json::ExecModeTypes::runtime> ),
-		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
-		                                       daw::json::ExecModeTypes::simd> ) };
+		       daw::json::options::CheckedParseMode::no,
+		       daw::json::options::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                       daw::json::options::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                       daw::json::options::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {

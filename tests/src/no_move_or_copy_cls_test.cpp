@@ -66,7 +66,7 @@ int main( int, char ** )
 	// Need runtime exec mode or constexpr with C++20 constexpr
 	// destructors/is_constant_evaluated to ensure that rvo path is taken
 	static constexpr auto policy_v =
-	  daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime>;
+	  daw::json::options::parse_flags<daw::json::options::ExecModeTypes::runtime>;
 
 	daw::expecting( daw::json::from_json<A>( json_data, policy_v ).member ==
 	                1234 );

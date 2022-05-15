@@ -87,7 +87,7 @@ bool test_missing_quotes_003( ) {
 	return false;
 }
 
-template<daw::json::ExecModeTypes ExecMode>
+template<daw::json::options::ExecModeTypes ExecMode>
 bool test_escaped_quote_001( ) {
 	std::string_view sv =
 	  R"( "abcdefghijklmnop\"qrstuvwxyz"                                        )";
@@ -101,7 +101,7 @@ bool test_escaped_quote_001( ) {
 	return sz == 28;
 }
 
-template<daw::json::ExecModeTypes ExecMode>
+template<daw::json::options::ExecModeTypes ExecMode>
 bool test_escaped_quote_002( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "abcdefghijklmnop\"qrstuvwxy\\"                                        )";
@@ -114,7 +114,7 @@ bool test_escaped_quote_002( ) {
 	return v.size( ) == 29;
 }
 
-template<daw::json::ExecModeTypes ExecMode>
+template<daw::json::options::ExecModeTypes ExecMode>
 bool test_escaped_quote_003( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "abcdefghijklmn\\\"qrstuvwxy\\"                                        )";
@@ -127,7 +127,7 @@ bool test_escaped_quote_003( ) {
 	return v.size( ) == 29;
 }
 
-template<daw::json::ExecModeTypes ExecMode>
+template<daw::json::options::ExecModeTypes ExecMode>
 bool test_escaped_quote_004( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "<a href=\"http://twittbot.net/\" rel=\"nofollow\">twittbot.net</a>"                                 )";
@@ -173,19 +173,19 @@ int main( int, char ** )
 	do_test( test_quoted_number( ) );
 	do_test( test_empty_quoted( ) );
 	do_test( test_embedded_quotes( ) );
-	do_test( test_escaped_quote_001<daw::json::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_002<daw::json::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_003<daw::json::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_004<daw::json::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_001<daw::json::ExecModeTypes::runtime>( ) );
-	do_test( test_escaped_quote_002<daw::json::ExecModeTypes::runtime>( ) );
-	do_test( test_escaped_quote_003<daw::json::ExecModeTypes::runtime>( ) );
-	do_test( test_escaped_quote_004<daw::json::ExecModeTypes::runtime>( ) );
+	do_test( test_escaped_quote_001<daw::json::options::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_002<daw::json::options::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_003<daw::json::options::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_004<daw::json::options::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_001<daw::json::options::ExecModeTypes::runtime>( ) );
+	do_test( test_escaped_quote_002<daw::json::options::ExecModeTypes::runtime>( ) );
+	do_test( test_escaped_quote_003<daw::json::options::ExecModeTypes::runtime>( ) );
+	do_test( test_escaped_quote_004<daw::json::options::ExecModeTypes::runtime>( ) );
 #if defined( DAW_ALLOW_SSE42 )
-	do_test( test_escaped_quote_001<daw::json::ExecModeTypes::simd>( ) );
-	do_test( test_escaped_quote_002<daw::json::ExecModeTypes::simd>( ) );
-	do_test( test_escaped_quote_003<daw::json::ExecModeTypes::simd>( ) );
-	do_test( test_escaped_quote_004<daw::json::ExecModeTypes::simd>( ) );
+	do_test( test_escaped_quote_001<daw::json::options::ExecModeTypes::simd>( ) );
+	do_test( test_escaped_quote_002<daw::json::options::ExecModeTypes::simd>( ) );
+	do_test( test_escaped_quote_003<daw::json::options::ExecModeTypes::simd>( ) );
+	do_test( test_escaped_quote_004<daw::json::options::ExecModeTypes::simd>( ) );
 #endif
 	do_fail_test( test_missing_quotes_001( ) );
 	do_fail_test( test_missing_quotes_002( ) );

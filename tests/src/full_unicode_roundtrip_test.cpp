@@ -51,7 +51,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-template<daw::json::ExecModeTypes ExecMode, typename MMF>
+template<daw::json::options::ExecModeTypes ExecMode, typename MMF>
 void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
@@ -62,7 +62,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	std::vector<unicode_data> const unicode_test_from_escaped =
 	  daw::json::from_json_array<unicode_data, std::vector<unicode_data>>(
 	    json_str_escaped,
-	    daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> );
+	    daw::json::options::parse_flags<daw::json::options::ExecModeTypes::simd> );
 
 	test_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
 	             "Expected same size" );
@@ -105,7 +105,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	}
 	{
 		using range_t =
-		  daw::json::json_array_range<unicode_data, daw::json::CheckedParseMode::no,
+		  daw::json::json_array_range<unicode_data, daw::json::options::CheckedParseMode::no,
 		                              ExecMode>;
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "full unicode bench(unchecked)", json_str.size( ),
@@ -150,11 +150,11 @@ int main( int argc, char **argv )
 	auto const json_str = *daw::read_file( argv[1] );
 	auto const json_str_escaped = *daw::read_file( argv[2] );
 
-	test<ExecModeTypes::compile_time>( json_str, json_str_escaped );
-	test<ExecModeTypes::runtime>( json_str, json_str_escaped );
+	test<options::ExecModeTypes::compile_time>( json_str, json_str_escaped );
+	test<options::ExecModeTypes::runtime>( json_str, json_str_escaped );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<ExecModeTypes::simd>( json_str, json_str_escaped );
+		test<options::ExecModeTypes::simd>( json_str, json_str_escaped );
 	}
 }
 #ifdef DAW_USE_EXCEPTIONS

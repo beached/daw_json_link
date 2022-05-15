@@ -30,7 +30,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 static_assert( DAW_NUM_RUNS > 0 );
 
 inline namespace {
-	template<daw::json::ExecModeTypes ExecMode>
+	template<daw::json::options::ExecModeTypes ExecMode>
 	void test( std::string_view json_data )
 #ifdef DAW_USE_EXCEPTIONS
 	  try
@@ -56,12 +56,12 @@ inline namespace {
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 
-		// CheckedParseMode::no
+		// options::CheckedParseMode::no
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter bench(unchecked)", sz,
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1, daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+			    f1, daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
 			                                        ExecMode> );
 			  daw::do_not_optimize( twitter_result );
 		  },
@@ -79,7 +79,7 @@ inline namespace {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1,
 			    daw::json::options::parse_flags<ExecMode,
-			                                    daw::json::PolicyCommentTypes::cpp> );
+			                                    daw::json::options::PolicyCommentTypes::cpp> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -96,8 +96,8 @@ inline namespace {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1,
 			    daw::json::options::parse_flags<ExecMode,
-			                                    daw::json::CheckedParseMode::no,
-			                                    daw::json::PolicyCommentTypes::cpp> );
+			                                    daw::json::options::CheckedParseMode::no,
+			                                    daw::json::options::PolicyCommentTypes::cpp> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -115,7 +115,7 @@ inline namespace {
 			    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
 			  daw::do_not_optimize(
 			    twitter_result, daw::json::options::parse_flags<
-			                      ExecMode, daw::json::PolicyCommentTypes::hash> );
+			                      ExecMode, daw::json::options::PolicyCommentTypes::hash> );
 		  },
 		  json_data );
 		daw::do_not_optimize( twitter_result );
@@ -130,8 +130,8 @@ inline namespace {
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, daw::json::options::parse_flags<
-			          ExecMode, daw::json::CheckedParseMode::no,
-			          daw::json::PolicyCommentTypes::hash> );
+			          ExecMode, daw::json::options::CheckedParseMode::no,
+			          daw::json::options::PolicyCommentTypes::hash> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -157,15 +157,15 @@ inline namespace {
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 
-		// CheckedParseMode::no Escaped Names
+		// options::CheckedParseMode::no Escaped Names
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter bench(unchecked, escaped names)", sz,
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1,
 			    daw::json::options::parse_flags<ExecMode,
-			                                    daw::json::CheckedParseMode::no,
-			                                    daw::json::PolicyCommentTypes::cpp> );
+			                                    daw::json::options::CheckedParseMode::no,
+			                                    daw::json::options::PolicyCommentTypes::cpp> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -210,10 +210,10 @@ int main( int argc, char **argv )
 	auto const sz = json_data.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
-	test<daw::json::ExecModeTypes::compile_time>( json_data );
-	test<daw::json::ExecModeTypes::runtime>( json_data );
+	test<daw::json::options::ExecModeTypes::compile_time>( json_data );
+	test<daw::json::options::ExecModeTypes::runtime>( json_data );
 	if constexpr( not std::is_same_v<runtime_exec_tag, simd_exec_tag> ) {
-		test<daw::json::ExecModeTypes::simd>( json_data );
+		test<daw::json::options::ExecModeTypes::simd>( json_data );
 	}
 
 	// ******************************

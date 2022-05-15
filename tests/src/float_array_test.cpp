@@ -293,7 +293,7 @@ void test_func( ) {
 		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number2, std::vector<Number2>>(
-			    sv, options::parse_flags<ExecModeTypes::simd> );
+			    sv, options::parse_flags<options::ExecModeTypes::simd> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -329,7 +329,7 @@ void test_func( ) {
 		  []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<json_number_no_name<float>, std::vector<float>>(
-			      sv, options::parse_flags<ExecModeTypes::simd> );
+			      sv, options::parse_flags<options::ExecModeTypes::simd> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -366,7 +366,7 @@ void test_func( ) {
 		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number2, std::vector<Number2>>(
-			    sv, options::parse_flags<ExecModeTypes::simd> );
+			    sv, options::parse_flags<options::ExecModeTypes::simd> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -402,7 +402,7 @@ void test_func( ) {
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<json_checked_number_no_name<float>,
 			                                    std::vector<float>>(
-			    sv, options::parse_flags<ExecModeTypes::simd> );
+			    sv, options::parse_flags<options::ExecModeTypes::simd> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },

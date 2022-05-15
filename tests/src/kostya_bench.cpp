@@ -71,7 +71,7 @@ int main( int, char ** )
 	// auto json_data = daw::filesystem::memory_mapped_file_t<>( "/tmp/1.json" );
 
 	using range_t =
-	  daw::json::json_array_range<coordinate_t, CheckedParseMode::no>;
+	  daw::json::json_array_range<coordinate_t, options::CheckedParseMode::no>;
 
 	double x = 0.0;
 	double y = 0.0;

@@ -64,7 +64,7 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 		  [&]( auto f1 ) {
 			  return daw::json::from_json_alloc<
 			    daw::citm::citm_object_t,
-			    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1,
+			    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1,
 			                                                               alloc );
 		  },
 		  json_sv1 );

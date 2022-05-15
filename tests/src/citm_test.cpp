@@ -59,7 +59,7 @@ void test( std::string_view json_sv1 ) {
 		  []( auto f1 ) {
 			  return daw::json::from_json<daw::citm::citm_object_t>(
 			    f1, daw::json::options::parse_flags<
-			          daw::json::CheckedParseMode::no,
+			          daw::json::options::CheckedParseMode::no,
 			          daw::json::json_details::exec_mode_from_tag<ExecTag>> );
 		  },
 		  json_sv1 );

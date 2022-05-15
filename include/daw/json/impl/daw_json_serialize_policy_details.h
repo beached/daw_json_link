@@ -9,8 +9,8 @@
 #pragma once
 
 #include "daw_json_option_bits.h"
-#include "daw_json_parse_options.h"
-#include "daw_json_serialize_policy_options.h"
+#include "daw_json_parse_options_impl.h"
+#include "daw_json_serialize_options_impl.h"
 #include "version.h"
 
 #include <cstddef>

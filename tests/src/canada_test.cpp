@@ -49,7 +49,7 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	return true;
 }
 
-template<daw::json::ExecModeTypes ExecMode>
+template<daw::json::options::ExecModeTypes ExecMode>
 void test( std::string_view json_sv1 ) {
 	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
@@ -74,7 +74,7 @@ void test( std::string_view json_sv1 ) {
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
 		    f1, "features[0].geometry",
-		    daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		    daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
 		                                    ExecMode> );
 		  daw::do_not_optimize( canada_result );
 	  },
@@ -103,11 +103,11 @@ int main( int argc, char **argv )
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	test<daw::json::ExecModeTypes::compile_time>( json_sv1 );
-	test<daw::json::ExecModeTypes::runtime>( json_sv1 );
+	test<daw::json::options::ExecModeTypes::compile_time>( json_sv1 );
+	test<daw::json::options::ExecModeTypes::runtime>( json_sv1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::ExecModeTypes::simd>( json_sv1 );
+		test<daw::json::options::ExecModeTypes::simd>( json_sv1 );
 	}
 
 	std::cout

@@ -89,7 +89,7 @@ int main( int argc, char **argv )
 		  "nativejson_twitter bench trusted", json_sv1.size( ),
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter2::twitter_object_t>(
-			    f1, options::parse_flags<CheckedParseMode::no> );
+			    f1, options::parse_flags<options::CheckedParseMode::no> );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( twitter_result );
@@ -122,7 +122,7 @@ int main( int argc, char **argv )
 		  "nativejson_citm bench trusted", json_sv2.size( ),
 		  [&citm_result]( auto f2 ) {
 			  citm_result = daw::json::from_json<daw::citm::citm_object_t>(
-			    f2, options::parse_flags<CheckedParseMode::no> );
+			    f2, options::parse_flags<options::CheckedParseMode::no> );
 		  },
 		  json_sv2 );
 		test_assert( citm_result, "Missing value" );
@@ -153,7 +153,7 @@ int main( int argc, char **argv )
 		  [&canada_result]( auto f3 ) {
 			  canada_result = daw::json::from_json<daw::geojson::Polygon>(
 			    f3, "features[0].geometry",
-			    options::parse_flags<CheckedParseMode::no> );
+			    options::parse_flags<options::CheckedParseMode::no> );
 		  },
 		  json_sv3 );
 		daw::do_not_optimize( canada_result );
@@ -197,14 +197,14 @@ int main( int argc, char **argv )
 		  "nativejson bench trusted", sz,
 		  [&]( auto f1, auto f2, auto f3 ) {
 			  twitter_result = daw::json::from_json<daw::twitter2::twitter_object_t>(
-			    f1, daw::json::options::parse_flags<CheckedParseMode::no> );
+			    f1, daw::json::options::parse_flags<options::CheckedParseMode::no> );
 
 			  citm_result = daw::json::from_json<daw::citm::citm_object_t>(
-			    f2, daw::json::options::parse_flags<CheckedParseMode::no> );
+			    f2, daw::json::options::parse_flags<options::CheckedParseMode::no> );
 
 			  canada_result = daw::json::from_json<daw::geojson::Polygon>(
 			    f3, "features[0].geometry",
-			    daw::json::options::parse_flags<CheckedParseMode::no> );
+			    daw::json::options::parse_flags<options::CheckedParseMode::no> );
 		  },
 		  json_sv1, json_sv2, json_sv3 );
 

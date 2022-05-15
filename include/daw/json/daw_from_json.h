@@ -55,7 +55,7 @@ namespace daw::json {
 			 */
 			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              ZeroTerminatedString::yes>;
+			                                              options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
@@ -63,8 +63,8 @@ namespace daw::json {
 			 */
 			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     TemporarilyMutateBuffer::yes,
-			                                     TemporarilyMutateBuffer::no>;
+			                                     options::TemporarilyMutateBuffer::yes,
+			                                     options::TemporarilyMutateBuffer::no>;
 			auto parse_state =
 			  ParseState( std::data( json_data ), daw::data_end( json_data ) );
 
@@ -122,7 +122,7 @@ namespace daw::json {
 			 */
 			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              ZeroTerminatedString::yes>;
+			                                              options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
@@ -130,8 +130,8 @@ namespace daw::json {
 			 */
 			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     TemporarilyMutateBuffer::yes,
-			                                     TemporarilyMutateBuffer::no>;
+			                                     options::TemporarilyMutateBuffer::yes,
+			                                     options::TemporarilyMutateBuffer::no>;
 
 			auto parse_state = ParseState::with_allocator( f, l, a );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
@@ -188,7 +188,7 @@ namespace daw::json {
 			 */
 			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              ZeroTerminatedString::yes>;
+			                                              options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
@@ -196,8 +196,8 @@ namespace daw::json {
 			 */
 			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     TemporarilyMutateBuffer::yes,
-			                                     TemporarilyMutateBuffer::no>;
+			                                     options::TemporarilyMutateBuffer::yes,
+			                                     options::TemporarilyMutateBuffer::no>;
 
 			auto [is_found, parse_state] = json_details::find_range<ParseState>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
@@ -264,7 +264,7 @@ namespace daw::json {
 			 */
 			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              ZeroTerminatedString::yes>;
+			                                              options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
@@ -272,8 +272,8 @@ namespace daw::json {
 			 */
 			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     TemporarilyMutateBuffer::yes,
-			                                     TemporarilyMutateBuffer::no>;
+			                                     options::TemporarilyMutateBuffer::yes,
+			                                     options::TemporarilyMutateBuffer::no>;
 
 			auto [is_found, parse_state] = json_details::find_range<ParseState>(
 			  json_data, { std::data( member_path ), std::size( member_path ) }, a );
@@ -412,7 +412,7 @@ namespace daw::json {
 			 */
 			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              ZeroTerminatedString::yes>;
+			                                              options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
@@ -420,8 +420,8 @@ namespace daw::json {
 			 */
 			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     TemporarilyMutateBuffer::yes,
-			                                     TemporarilyMutateBuffer::no>;
+			                                     options::TemporarilyMutateBuffer::yes,
+			                                     options::TemporarilyMutateBuffer::no>;
 
 			auto parse_state =
 			  ParseState{ std::data( json_data ), daw::data_end( json_data ) };
@@ -496,7 +496,7 @@ namespace daw::json {
 			 */
 			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              ZeroTerminatedString::yes>;
+			                                              options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
@@ -504,8 +504,8 @@ namespace daw::json {
 			 */
 			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     TemporarilyMutateBuffer::yes,
-			                                     TemporarilyMutateBuffer::no>;
+			                                     options::TemporarilyMutateBuffer::yes,
+			                                     options::TemporarilyMutateBuffer::no>;
 
 			auto [is_found, parse_state] = json_details::find_range<ParseState>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );

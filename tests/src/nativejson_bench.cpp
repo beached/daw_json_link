@@ -32,18 +32,18 @@ static_assert( DAW_NUM_RUNS > 0 );
 using namespace daw::json;
 
 // GCC-8 bug workaround
-template<ExecModeTypes ExecMode, bool expect_long_strings>
+template<options::ExecModeTypes ExecMode, bool expect_long_strings>
 inline constexpr auto unchecked_policy_v =
-  options::parse_flags<CheckedParseMode::no, ExecMode,
-                       ( expect_long_strings ? ExpectLongStrings::yes
-                                             : ExpectLongStrings::no )>;
-template<ExecModeTypes ExecMode, bool expect_long_strings>
+  options::parse_flags<options::CheckedParseMode::no, ExecMode,
+                       ( expect_long_strings ? options::ExpectLongNames::yes
+                                             : options::ExpectLongNames::no )>;
+template<options::ExecModeTypes ExecMode, bool expect_long_strings>
 inline constexpr auto checked_policy_v =
   options::parse_flags<ExecMode,
-                       ( expect_long_strings ? ExpectLongStrings::yes
-                                             : ExpectLongStrings::no )>;
+                       ( expect_long_strings ? options::ExpectLongNames::yes
+                                             : options::ExpectLongNames::no )>;
 
-template<ExecModeTypes ExecMode>
+template<options::ExecModeTypes ExecMode>
 void test( char **argv ) {
 	auto const json_sv1 = *daw::read_file( argv[1] );
 	auto const json_sv2 = *daw::read_file( argv[2] );
@@ -251,12 +251,12 @@ int main( int argc, char **argv )
 		std::cerr << "twitter citm canada\n";
 		exit( 1 );
 	}
-	test<ExecModeTypes::compile_time>( argv );
+	test<options::ExecModeTypes::compile_time>( argv );
 
 	if constexpr( not std::is_same_v<simd_exec_tag, runtime_exec_tag> ) {
-		test<ExecModeTypes::runtime>( argv );
+		test<options::ExecModeTypes::runtime>( argv );
 	}
-	test<ExecModeTypes::simd>( argv );
+	test<options::ExecModeTypes::simd>( argv );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

@@ -78,7 +78,7 @@ DAW_CONSTEXPR bool parse_unsigned_test( char const ( &str )[N],
                                         Unsigned expected ) {
 	using policy_t =
 	  typename daw::json::DefaultParsePolicy::template SetPolicyOptions<
-	    daw::json::CheckedParseMode::no>;
+	    daw::json::options::CheckedParseMode::no>;
 	auto tmp = policy_t( str, str + N );
 	return daw::json::json_details::unsigned_parser<
 	         Unsigned, daw::json::JsonRangeCheck::CheckForNarrowing, false>(
@@ -242,14 +242,14 @@ DAW_CONSTEXPR char const test_001_t_json_data[] =
 DAW_CONSTEXPR bool test_004( ) {
 	return daw::json::from_json<int>(
 	         test_001_t_json_data, "i",
-	         daw::json::options::parse_flags<daw::json::CheckedParseMode::no> ) ==
+	         daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> ) ==
 	       55;
 }
 
 DAW_CONSTEXPR bool test_005( ) {
 	return daw::json::from_json<int>(
 	         test_001_t_json_data, "i",
-	         daw::json::options::parse_flags<daw::json::CheckedParseMode::no> ) ==
+	         daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> ) ==
 	       55;
 }
 
@@ -453,8 +453,8 @@ unsigned long long test_dblparse( std::string_view num,
 
 	constexpr auto dbl_lib_parser = []( std::string_view number ) {
 		using namespace daw::json;
-		auto rng = BasicParsePolicy<parse_options( Precise ? IEEE754Precise::yes
-		                                                   : IEEE754Precise::no )>(
+		auto rng = BasicParsePolicy<parse_options( Precise ? options::IEEE754Precise::yes
+		                                                   : options::IEEE754Precise::no )>(
 		  std::data( number ), daw::data_end( number ) );
 		if constexpr( KnownBounds ) {
 			rng = json_details::skip_number( rng );
@@ -1093,7 +1093,7 @@ int main( int, char ** )
 		std::cout << "testing 9223372036854776000e100\n";
 		constexpr std::string_view two63e100 = "9223372036854776000e100";
 		auto const d0 = from_json<long double>(
-		  two63e100, options::parse_flags<ExecModeTypes::runtime> );
+		  two63e100, options::parse_flags<options::ExecModeTypes::runtime> );
 		std::cout << d0 << '\n';
 		std::cout << "using strtold\n";
 		char *end = nullptr;

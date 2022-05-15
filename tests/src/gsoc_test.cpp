@@ -59,7 +59,7 @@ int main( int argc, char **argv )
 	  "gsoc bench(unchecked)", sz,
 	  [&gsoc_result]( std::string const &jd ) {
 		  gsoc_result = from_json<daw::gsoc::gsoc_object_t>(
-		    jd, options::parse_flags<CheckedParseMode::no> );
+		    jd, options::parse_flags<options::CheckedParseMode::no> );
 		  daw::do_not_optimize( gsoc_result );
 	  },
 	  json_data1 );

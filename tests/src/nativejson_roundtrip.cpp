@@ -49,7 +49,7 @@ int main( int argc, char *argv[] )
 	std::string const citm_data = read_file( argv[2] );
 	std::string const canada_data = read_file( argv[3] );
 	static constexpr auto policy_v =
-	  daw::json::options::parse_flags<daw::json::IEEE754Precise::yes>;
+	  daw::json::options::parse_flags<daw::json::options::IEEE754Precise::yes>;
 	std::cout << "C++ DAW JSON Link\n";
 	auto const canada_obj = daw::json::from_json<daw::geojson::Polygon>(
 	  canada_data, "features[0].geometry", policy_v );

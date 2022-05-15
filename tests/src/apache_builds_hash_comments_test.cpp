@@ -114,15 +114,15 @@ int main( int argc, char **argv )
 
 	std::cout << "Using " << daw::json::constexpr_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<PolicyCommentTypes::hash, ExecModeTypes::compile_time>( json_sv1 );
+	test<options::PolicyCommentTypes::hash, options::ExecModeTypes::compile_time>( json_sv1 );
 	std::cout << "Using " << daw::json::runtime_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<PolicyCommentTypes::hash, ExecModeTypes::runtime>( json_sv1 );
+	test<options::PolicyCommentTypes::hash, options::ExecModeTypes::runtime>( json_sv1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
 		std::cout << "Using " << daw::json::simd_exec_tag::name
 		          << " exec model\n*********************************************\n";
-		test<PolicyCommentTypes::hash, ExecModeTypes::simd>( json_sv1 );
+		test<options::PolicyCommentTypes::hash, options::ExecModeTypes::simd>( json_sv1 );
 	}
 }
 #ifdef DAW_USE_EXCEPTIONS

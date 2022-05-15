@@ -81,7 +81,7 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 		  alloc.release( );
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
-		    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
+		    daw::json::options::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
 		    f1, "features[0].geometry", alloc );
 		  daw::do_not_optimize( canada_result );
 	  },
