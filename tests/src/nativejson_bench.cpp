@@ -32,31 +32,24 @@ static_assert( DAW_NUM_RUNS > 0 );
 using namespace daw::json;
 
 // GCC-8 bug workaround
-#if not( defined( __GNUC__ ) and __GNUC__ < 9 )
-template<typename ExecTag, bool expect_long_strings>
-using unchecked_policy_t = BasicParsePolicy<parse_options(
-  ( expect_long_strings ? ExpectLongStrings::yes : ExpectLongStrings::no ),
-  CheckedParseMode::no, json_details::exec_mode_from_tag<ExecTag> )>;
-template<typename ExecTag, bool expect_long_strings>
-using checked_policy_t = BasicParsePolicy<parse_options(
-  ( expect_long_strings ? ExpectLongStrings::yes : ExpectLongStrings::no ),
-  json_details::exec_mode_from_tag<ExecTag> )>;
-#else
-template<typename ExecTag, bool expect_long_strings>
-using unchecked_policy_t = BasicParsePolicy<parse_options(
-  CheckedParseMode::no, json_details::exec_mode_from_tag<ExecTag> )>;
-template<typename ExecTag, bool expect_long_strings>
-using checked_policy_t =
-  BasicParsePolicy<parse_options( json_details::exec_mode_from_tag<ExecTag> )>;
-#endif
+template<ExecModeTypes ExecMode, bool expect_long_strings>
+inline constexpr auto unchecked_policy_v =
+  options::parse_flags<CheckedParseMode::no, ExecMode,
+                       ( expect_long_strings ? ExpectLongStrings::yes
+                                             : ExpectLongStrings::no )>;
+template<ExecModeTypes ExecMode, bool expect_long_strings>
+inline constexpr auto checked_policy_v =
+  options::parse_flags<ExecMode,
+                       ( expect_long_strings ? ExpectLongStrings::yes
+                                             : ExpectLongStrings::no )>;
 
-template<typename ExecTag>
+template<ExecModeTypes ExecMode>
 void test( char **argv ) {
 	auto const json_sv1 = *daw::read_file( argv[1] );
 	auto const json_sv2 = *daw::read_file( argv[2] );
 	auto const json_sv3 = *daw::read_file( argv[3] );
 
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz =
 	  std::size( json_sv1 ) + std::size( json_sv2 ) + std::size( json_sv3 );
@@ -76,8 +69,8 @@ void test( char **argv ) {
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_twitter bench", std::size( json_sv1 ),
 		  [&twitter_result]( auto const &f1 ) {
-			  twitter_result = from_json<daw::twitter::twitter_object_t,
-			                             checked_policy_t<ExecTag, true>>( f1 );
+			  twitter_result = from_json<daw::twitter::twitter_object_t>(
+			    f1, checked_policy_v<ExecMode, true> );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( twitter_result );
@@ -103,8 +96,8 @@ void test( char **argv ) {
 	  "nativejson_twitter bench trusted", std::size( json_sv1 ),
 	  [&twitter_result]( auto const &f1 ) {
 		  {
-			  twitter_result = from_json<daw::twitter::twitter_object_t,
-			                             checked_policy_t<ExecTag, true>>( f1 );
+			  twitter_result = from_json<daw::twitter::twitter_object_t>(
+			    f1, checked_policy_v<ExecMode, true> );
 		  }
 	  },
 	  json_sv1 );
@@ -121,9 +114,8 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_citm bench", std::size( json_sv2 ),
 	  [&citm_result]( auto const &f2 ) {
-		  citm_result =
-		    from_json<daw::citm::citm_object_t, checked_policy_t<ExecTag, true>>(
-		      f2 );
+		  citm_result = from_json<daw::citm::citm_object_t>(
+		    f2, checked_policy_v<ExecMode, true> );
 	  },
 	  json_sv2 );
 	daw::do_not_optimize( citm_result );
@@ -140,9 +132,8 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_citm bench trusted", std::size( json_sv2 ),
 	  [&citm_result]( auto const &f2 ) {
-		  citm_result =
-		    from_json<daw::citm::citm_object_t, checked_policy_t<ExecTag, true>>(
-		      f2 );
+		  citm_result = from_json<daw::citm::citm_object_t>(
+		    f2, checked_policy_v<ExecMode, true> );
 	  },
 	  json_sv2 );
 	test_assert( citm_result, "Missing value" );
@@ -158,9 +149,8 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_canada bench", std::size( json_sv3 ),
 	  [&canada_result]( auto const &f3 ) {
-		  canada_result =
-		    from_json<daw::geojson::Polygon, checked_policy_t<ExecTag, false>>(
-		      f3, "features[0].geometry" );
+		  canada_result = from_json<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -172,9 +162,8 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_canada bench trusted", std::size( json_sv3 ),
 	  [&canada_result]( auto const &f3 ) {
-		  canada_result =
-		    from_json<daw::geojson::Polygon, checked_policy_t<ExecTag, false>>(
-		      f3, "features[0].geometry" );
+		  canada_result = from_json<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -186,14 +175,12 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench", sz,
 	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
-		  twitter_result = from_json<daw::twitter::twitter_object_t,
-		                             checked_policy_t<ExecTag, true>>( f1 );
-		  citm_result =
-		    from_json<daw::citm::citm_object_t, checked_policy_t<ExecTag, true>>(
-		      f2 );
-		  canada_result =
-		    from_json<daw::geojson::Polygon, checked_policy_t<ExecTag, false>>(
-		      f3, "features[0].geometry" );
+		  twitter_result = from_json<daw::twitter::twitter_object_t>(
+		    f1, checked_policy_v<ExecMode, true> );
+		  citm_result = from_json<daw::citm::citm_object_t>(
+		    f2, checked_policy_v<ExecMode, true> );
+		  canada_result = from_json<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -221,14 +208,12 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench trusted", sz,
 	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
-		  twitter_result = from_json<daw::twitter::twitter_object_t,
-		                             unchecked_policy_t<ExecTag, true>>( f1 );
-		  citm_result =
-		    from_json<daw::citm::citm_object_t, unchecked_policy_t<ExecTag, true>>(
-		      f2 );
-		  canada_result =
-		    from_json<daw::geojson::Polygon, unchecked_policy_t<ExecTag, false>>(
-		      f3, "features[0].geometry" );
+		  twitter_result = from_json<daw::twitter::twitter_object_t>(
+		    f1, unchecked_policy_v<ExecMode, true> );
+		  citm_result = from_json<daw::citm::citm_object_t>(
+		    f2, unchecked_policy_v<ExecMode, true> );
+		  canada_result = from_json<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", unchecked_policy_v<ExecMode, false> );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -266,12 +251,12 @@ int main( int argc, char **argv )
 		std::cerr << "twitter citm canada\n";
 		exit( 1 );
 	}
-	test<constexpr_exec_tag>( argv );
+	test<ExecModeTypes::compile_time>( argv );
 
 	if constexpr( not std::is_same_v<simd_exec_tag, runtime_exec_tag> ) {
-		test<runtime_exec_tag>( argv );
+		test<ExecModeTypes::runtime>( argv );
 	}
-	test<simd_exec_tag>( argv );
+	test<ExecModeTypes::simd>( argv );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

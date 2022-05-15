@@ -87,54 +87,54 @@ bool test_missing_quotes_003( ) {
 	return false;
 }
 
-template<typename ExecTag>
+template<daw::json::ExecModeTypes ExecMode>
 bool test_escaped_quote_001( ) {
 	std::string_view sv =
 	  R"( "abcdefghijklmnop\"qrstuvwxyz"                                        )";
 	std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
+	auto rng = BasicParsePolicy<parse_options( ExecMode )>(
 	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	auto const sz = v.size( );
 	return sz == 28;
 }
 
-template<typename ExecTag>
+template<daw::json::ExecModeTypes ExecMode>
 bool test_escaped_quote_002( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "abcdefghijklmnop\"qrstuvwxy\\"                                        )";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
+	auto rng = BasicParsePolicy<parse_options( ExecMode )>(
 	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 29;
 }
 
-template<typename ExecTag>
+template<daw::json::ExecModeTypes ExecMode>
 bool test_escaped_quote_003( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "abcdefghijklmn\\\"qrstuvwxy\\"                                        )";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
+	auto rng = BasicParsePolicy<parse_options( ExecMode )>(
 	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 29;
 }
 
-template<typename ExecTag>
+template<daw::json::ExecModeTypes ExecMode>
 bool test_escaped_quote_004( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "<a href=\"http://twittbot.net/\" rel=\"nofollow\">twittbot.net</a>"                                 )";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
+	auto rng = BasicParsePolicy<parse_options( ExecMode )>(
 	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 66;
@@ -173,19 +173,19 @@ int main( int, char ** )
 	do_test( test_quoted_number( ) );
 	do_test( test_empty_quoted( ) );
 	do_test( test_embedded_quotes( ) );
-	do_test( test_escaped_quote_001<daw::json::constexpr_exec_tag>( ) );
-	do_test( test_escaped_quote_002<daw::json::constexpr_exec_tag>( ) );
-	do_test( test_escaped_quote_003<daw::json::constexpr_exec_tag>( ) );
-	do_test( test_escaped_quote_004<daw::json::constexpr_exec_tag>( ) );
-	do_test( test_escaped_quote_001<daw::json::runtime_exec_tag>( ) );
-	do_test( test_escaped_quote_002<daw::json::runtime_exec_tag>( ) );
-	do_test( test_escaped_quote_003<daw::json::runtime_exec_tag>( ) );
-	do_test( test_escaped_quote_004<daw::json::runtime_exec_tag>( ) );
+	do_test( test_escaped_quote_001<daw::json::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_002<daw::json::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_003<daw::json::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_004<daw::json::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_001<daw::json::ExecModeTypes::runtime>( ) );
+	do_test( test_escaped_quote_002<daw::json::ExecModeTypes::runtime>( ) );
+	do_test( test_escaped_quote_003<daw::json::ExecModeTypes::runtime>( ) );
+	do_test( test_escaped_quote_004<daw::json::ExecModeTypes::runtime>( ) );
 #if defined( DAW_ALLOW_SSE42 )
-	do_test( test_escaped_quote_001<daw::json::sse42_exec_tag>( ) );
-	do_test( test_escaped_quote_002<daw::json::sse42_exec_tag>( ) );
-	do_test( test_escaped_quote_003<daw::json::sse42_exec_tag>( ) );
-	do_test( test_escaped_quote_004<daw::json::sse42_exec_tag>( ) );
+	do_test( test_escaped_quote_001<daw::json::ExecModeTypes::simd>( ) );
+	do_test( test_escaped_quote_002<daw::json::ExecModeTypes::simd>( ) );
+	do_test( test_escaped_quote_003<daw::json::ExecModeTypes::simd>( ) );
+	do_test( test_escaped_quote_004<daw::json::ExecModeTypes::simd>( ) );
 #endif
 	do_fail_test( test_missing_quotes_001( ) );
 	do_fail_test( test_missing_quotes_002( ) );

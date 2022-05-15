@@ -45,7 +45,7 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 		  [&]( auto f1 ) {
 			  return daw::json::from_json_alloc<
 			    daw::citm::citm_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
+			    daw::json::json_details::exec_mode_from_tag<ExecTag>>>( f1, alloc );
 		  },
 		  json_sv1 );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -64,7 +64,7 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 		  [&]( auto f1 ) {
 			  return daw::json::from_json_alloc<
 			    daw::citm::citm_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1,
+			    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>( f1,
 			                                                               alloc );
 		  },
 		  json_sv1 );

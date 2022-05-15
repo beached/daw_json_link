@@ -26,12 +26,11 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-template<typename ExecTag>
+template<daw::json::ExecModeTypes ExecMode>
 void test( std::string_view data ) {
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
-	using range_t = daw::json::json_array_range<
-	  double, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+	using range_t = daw::json::json_array_range<double, ExecMode>;
 
 	std::vector<double> results = [&] {
 		auto rng = range_t( data );
@@ -47,8 +46,9 @@ void test( std::string_view data ) {
 	  },
 	  range_t( data ) );
 	daw::do_not_optimize( results );
-	using range2_t = daw::json::json_array_range<
-	  double, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
+	using range2_t =
+	  daw::json::json_array_range<double, daw::json::CheckedParseMode::no,
+	                              ExecMode>;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "numbers bench (unchecked)", data.size( ),
 	  [&]( auto rng ) {
@@ -81,10 +81,10 @@ int main( int argc, char **argv )
 #ifndef NDEBUG
 	std::cout << "non-debug run\n";
 #endif
-	test<daw::json::constexpr_exec_tag>( sv_numbers );
-	test<daw::json::runtime_exec_tag>( sv_numbers );
+	test<daw::json::ExecModeTypes::compile_time>( sv_numbers );
+	test<daw::json::ExecModeTypes::runtime>( sv_numbers );
 #if defined( DAW_ALLOW_SSE42 )
-	test<daw::json::sse42_exec_tag>( sv_numbers );
+	test<daw::json::ExecModeTypes::simd>( sv_numbers );
 #endif
 }
 #ifdef DAW_USE_EXCEPTIONS

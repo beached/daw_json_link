@@ -48,28 +48,27 @@ int main( int argc, char *argv[] )
 	std::string const twitter_data = read_file( argv[1] );
 	std::string const citm_data = read_file( argv[2] );
 	std::string const canada_data = read_file( argv[3] );
-	using policy_t = daw::json::DefaultParsePolicy::template SetPolicyOptions<
-	  daw::json::IEEE754Precise::yes>;
+	static constexpr auto policy_v =
+	  daw::json::options::parse_flags<daw::json::IEEE754Precise::yes>;
 	std::cout << "C++ DAW JSON Link\n";
-	auto const canada_obj = daw::json::from_json<daw::geojson::Polygon, policy_t>(
-	  canada_data, "features[0].geometry" );
-	auto const twitter_obj =
-	  daw::json::from_json<daw::twitter::twitter_object_t, policy_t>(
-	    twitter_data );
+	auto const canada_obj = daw::json::from_json<daw::geojson::Polygon>(
+	  canada_data, "features[0].geometry", policy_v );
+	auto const twitter_obj = daw::json::from_json<daw::twitter::twitter_object_t>(
+	  twitter_data, policy_v );
 	auto const citm_obj =
-	  daw::json::from_json<daw::citm::citm_object_t, policy_t>( citm_data );
+	  daw::json::from_json<daw::citm::citm_object_t>( citm_data, policy_v );
 
 	auto const canada_out = daw::json::to_json( canada_obj );
 	auto const twitter_out = daw::json::to_json( twitter_obj );
 	auto const citm_out = daw::json::to_json( citm_obj );
 
 	auto const canada_obj2 =
-	  daw::json::from_json<daw::geojson::Polygon, policy_t>( canada_out );
+	  daw::json::from_json<daw::geojson::Polygon>( canada_out, policy_v );
 	auto const twitter_obj2 =
-	  daw::json::from_json<daw::twitter::twitter_object_t, policy_t>(
-	    twitter_out );
+	  daw::json::from_json<daw::twitter::twitter_object_t>( twitter_out,
+	                                                        policy_v );
 	auto const citm_obj2 =
-	  daw::json::from_json<daw::citm::citm_object_t, policy_t>( citm_out );
+	  daw::json::from_json<daw::citm::citm_object_t>( citm_out, policy_v );
 
 	auto const canada_out2 = daw::json::to_json( canada_obj2 );
 	auto const twitter_out2 = daw::json::to_json( twitter_obj2 );

@@ -48,8 +48,7 @@ namespace daw::cookbook_dates4 {
 			test_assert( sv_suffix == suffix, "Unexpected date format" );
 			sv.remove_suffix( suffix.size( ) );
 
-			auto const val = daw::json::from_json<
-			  std::int64_t, daw::json::NoCommentSkippingPolicyChecked, true>( sv );
+			auto const val = daw::json::from_json<std::int64_t, true>( sv );
 			DAW_CONSTEXPR const auto epoch =
 			  daw::json::datetime::civil_to_time_point( 1970, 1, 1, 0, 0, 0, 0 );
 
@@ -111,8 +110,7 @@ int main( int argc, char **argv )
 	auto data = *daw::read_file( argv[1] );
 	puts( data.data( ) );
 
-	auto const cls = daw::json::from_json<daw::cookbook_dates4::MyClass4>(
-	  std::string_view( data.data( ), data.size( ) ) );
+	auto const cls = daw::json::from_json<daw::cookbook_dates4::MyClass4>( data );
 
 	test_assert( cls.name == "Toronto", "Unexpected value" );
 

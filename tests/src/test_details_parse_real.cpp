@@ -48,7 +48,7 @@ void test_lots_of_doubles( ) {
 	auto rd = std::random_device( );
 	auto rnd = std::mt19937_64( rd( ) );
 
-	using num_t = daw::json::NoCommentSkippingPolicyChecked;
+	using num_t = daw::json::DefaultParsePolicy;
 	auto numbers_str = std::vector<std::string>( NUM_VALS );
 	auto numbers = std::vector<num_t>( NUM_VALS );
 	std::size_t bytes = 0;

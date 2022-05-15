@@ -65,14 +65,14 @@ int main( int, char ** )
 
 	// Need runtime exec mode or constexpr with C++20 constexpr
 	// destructors/is_constant_evaluated to ensure that rvo path is taken
-	using policy_t = daw::json::BasicParsePolicy<daw::json::parse_options(
-	  daw::json::ExecModeTypes::runtime )>;
+	static constexpr auto policy_v =
+	  daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime>;
 
-	daw::expecting( daw::json::from_json<A, policy_t>( json_data ).member ==
+	daw::expecting( daw::json::from_json<A>( json_data, policy_v ).member ==
 	                1234 );
 
 	std::string const json_data2 = R"({ "a": { "some_num": 1234 } } )";
-	daw::expecting( daw::json::from_json<B, policy_t>( json_data2 ).a.member ==
+	daw::expecting( daw::json::from_json<B>( json_data2, policy_v ).a.member ==
 	                1234 );
 }
 #ifdef DAW_USE_EXCEPTIONS

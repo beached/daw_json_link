@@ -73,8 +73,7 @@ public:
 		case daw::json::JsonBaseParseTypes::String: {
 			member_preamble( );
 			auto const unescaped =
-			  daw::json::from_json<std::string, ParsePolicy, true>(
-			    p.value.get_string_view( ) );
+			  daw::json::from_json<std::string, true>( p.value.get_string_view( ) );
 
 			daw::json::to_json( unescaped, out_it );
 			return true;
@@ -139,8 +138,8 @@ void minify( daw::Arguments const &args, std::string_view data,
 	auto handler = JSONMinifyHandler( out_it );
 	if( auto pos = args.find_argument_position( "verbose" ); pos ) {
 		auto const time = daw::benchmark( [&] {
-			daw::json::json_event_parser<daw::json::ConformancePolicy>( data,
-			                                                            handler );
+			daw::json::json_event_parser( data, handler,
+			                              daw::json::ConformancePolicy );
 		} );
 		if( not has_out_file ) {
 			std::cout << '\n';
@@ -152,7 +151,7 @@ void minify( daw::Arguments const &args, std::string_view data,
 		               static_cast<double>( data.size( ) ) / time, 2 )
 		          << "/s\n";
 	} else {
-		daw::json::json_event_parser<daw::json::ConformancePolicy>( data, handler );
+		daw::json::json_event_parser( data, handler, daw::json::ConformancePolicy );
 		if( not has_out_file ) {
 			std::cout << '\n';
 		}

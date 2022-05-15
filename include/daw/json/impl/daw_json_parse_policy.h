@@ -46,6 +46,9 @@ namespace daw::json {
 		           json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
+
+			static constexpr json_details::json_options_t policy_flags = PolicyFlags;
+
 			/***
 			 * Allow temporarily setting a sentinel in the buffer to reduce range
 			 * checking costs
@@ -119,13 +122,12 @@ namespace daw::json {
 
 			static constexpr bool allow_leading_zero_plus = true;
 
-			using as_unchecked =
-			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>(
-			                     PolicyFlags, CheckedParseMode::no ),
-			                   Allocator>;
+			using as_unchecked = BasicParsePolicy<
+			  json_details::set_bits( PolicyFlags, CheckedParseMode::no ), Allocator>;
+
 			using as_checked =
-			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>(
-			                     PolicyFlags, CheckedParseMode::yes ),
+			  BasicParsePolicy<json_details::set_bits( PolicyFlags,
+			                                           CheckedParseMode::yes ),
 			                   Allocator>;
 
 			static constexpr bool use_exact_mappings_by_default =
@@ -543,6 +545,13 @@ namespace daw::json {
 				}
 			}
 		};
+
+		namespace json_details {
+			template<json_details::json_options_t PolicyFlags, typename Allocator>
+			inline constexpr bool
+			  is_parse_policy_v<BasicParsePolicy<PolicyFlags, Allocator>> = true;
+		}
+
 		namespace options {
 			/***
 			 * @brief Specify parse policy flags in to_json calls.  See cookbook item
@@ -569,6 +578,12 @@ namespace daw::json {
 				template<auto... PolicyFlags>
 				std::true_type is_policy_flag( parse_flags_t<PolicyFlags...> );
 
+				template<typename... Ts>
+				std::false_type is_policy_value( Ts... );
+
+				template<auto... PolicyFlags>
+				std::true_type is_policy_value( unsigned );
+
 				template<auto... PolicyFlags>
 				DAW_CONSTEVAL auto make_parse_flags( ) {
 					if constexpr( decltype( details::is_policy_flag(
@@ -580,8 +595,7 @@ namespace daw::json {
 						return parse_flags_t<PolicyFlags...>{ };
 					}
 				}
-
-			}; // namespace details
+			} // namespace details
 			/***
 			 * @brief Specify parse policy flags in to_json calls.  See cookbook item
 			 * parse_options.md
@@ -590,18 +604,16 @@ namespace daw::json {
 			inline constexpr auto
 			  parse_flags = details::make_parse_flags<PolicyFlags...>( );
 
-			template<auto... PolicyFlags>
-			inline constexpr auto parse_flags_v = parse_flags<PolicyFlags...>.value;
+			namespace details {
+				template<auto... PolicyFlags>
+				inline constexpr auto parse_flags_v = parse_flags<PolicyFlags...>.value;
+			}
 		} // namespace options
 
 		inline constexpr auto NoCommentSkippingPolicyChecked =
 		  options::parse_flags<>;
 
-		using DefaultParsePolicy =
-		  BasicParsePolicy<NoCommentSkippingPolicyChecked.value>;
-
-		inline constexpr auto NoCommentSkippingPolicyUnchecked =
-		  options::parse_flags<CheckedParseMode::no>;
+		using DefaultParsePolicy = BasicParsePolicy<>;
 
 		namespace json_details {
 			template<typename>
@@ -627,15 +639,6 @@ namespace daw::json {
 			inline constexpr ExecModeTypes exec_mode_from_tag =
 			  exec_mode_from_tag_t<ExecMode>::value;
 		} // namespace json_details
-
-		template<typename ExecTag>
-		inline constexpr auto SIMDNoCommentSkippingPolicyChecked =
-		  options::parse_flags<json_details::exec_mode_from_tag<ExecTag>>;
-
-		template<typename ExecTag>
-		inline constexpr auto SIMDNoCommentSkippingPolicyUnchecked =
-		  options::parse_flags<CheckedParseMode::no,
-		                       json_details::exec_mode_from_tag<ExecTag>>;
 
 		inline constexpr auto HashCommentSkippingPolicyChecked =
 		  options::parse_flags<PolicyCommentTypes::hash>;

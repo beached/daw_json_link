@@ -48,10 +48,12 @@
 #error "BUILD_TYPE must be defined"
 #endif
 
-using CheckedPolicy =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
-using UncheckedPolicy =
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>;
+inline constexpr auto CheckedPolicy =
+  daw::json::options::parse_flags<daw::json::ExecModeTypes::simd>;
+
+inline constexpr auto UncheckedPolicy =
+  daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+                                  daw::json::ExecModeTypes::simd>;
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
@@ -162,22 +164,22 @@ inline namespace {
 
 	daw::bench::bench_result
 	do_apache_builds_from_json_test( std::string const &json_data ) {
-		auto const tst = [json_data]( auto e ) {
+		auto const tst = [json_data]( auto parse_policy ) {
 			return make_bench_result(
 			  "apache builds from_json(checked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
-			    []( std::string const &jd ) {
-				    return daw::json::from_json<
-				      apache_builds::apache_builds,
-				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      jd );
+			    [parse_policy]( std::string const &jd ) {
+				    return daw::json::from_json<apache_builds::apache_builds>(
+				      jd, parse_policy );
 			    },
 			    json_data ) );
 		};
 
-		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
-		                                    tst( daw::json::runtime_exec_tag{ } ),
-		                                    tst( daw::json::simd_exec_tag{ } ) };
+		daw::bench::bench_result res[3] = {
+		  tst( daw::json::options::parse_flags<
+		       daw::json::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -189,22 +191,25 @@ inline namespace {
 
 	daw::bench::bench_result
 	do_apache_builds_from_json_test_unchecked( std::string const &json_data ) {
-		auto const tst = [json_data]( auto e ) {
+		auto const tst = [json_data]( auto parse_policy ) {
 			return make_bench_result(
 			  "apache builds from_json(unchecked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
-			    []( std::string const &jd ) {
-				    return daw::json::from_json<
-				      apache_builds::apache_builds,
-				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      jd );
+			    [parse_policy]( std::string const &jd ) {
+				    return daw::json::from_json<apache_builds::apache_builds>(
+				      jd, parse_policy );
 			    },
 			    json_data ) );
 		};
 
-		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
-		                                    tst( daw::json::runtime_exec_tag{ } ),
-		                                    tst( daw::json::simd_exec_tag{ } ) };
+		daw::bench::bench_result res[3] = {
+		  tst( daw::json::options::parse_flags<
+		       daw::json::CheckedParseMode::no,
+		       daw::json::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                       daw::json::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                       daw::json::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -216,22 +221,22 @@ inline namespace {
 
 	daw::bench::bench_result
 	do_twitter_from_json_test( std::string const &json_data ) {
-		auto const tst = [json_data]( auto e ) {
+		auto const tst = [json_data]( auto parse_policy ) {
 			return make_bench_result(
 			  "twitter from_json(checked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
-			    []( std::string const &jd ) {
-				    return daw::json::from_json<
-				      daw::twitter::twitter_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      jd );
+			    [parse_policy]( std::string const &jd ) {
+				    return daw::json::from_json<daw::twitter::twitter_object_t>(
+				      jd, parse_policy );
 			    },
 			    json_data ) );
 		};
 
-		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
-		                                    tst( daw::json::runtime_exec_tag{ } ),
-		                                    tst( daw::json::simd_exec_tag{ } ) };
+		daw::bench::bench_result res[3] = {
+		  tst( daw::json::options::parse_flags<
+		       daw::json::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -244,22 +249,25 @@ inline namespace {
 
 	daw::bench::bench_result
 	do_twitter_from_json_test_unchecked( std::string const &json_data ) {
-		auto const tst = [json_data]( auto e ) {
+		auto const tst = [json_data]( auto parse_policy ) {
 			return make_bench_result(
 			  "twitter from_json(unchecked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
-			    []( std::string const &jd ) {
-				    return daw::json::from_json<
-				      daw::twitter::twitter_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      jd );
+			    [parse_policy]( std::string const &jd ) {
+				    return daw::json::from_json<daw::twitter::twitter_object_t>(
+				      jd, parse_policy );
 			    },
 			    json_data ) );
 		};
 
-		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
-		                                    tst( daw::json::runtime_exec_tag{ } ),
-		                                    tst( daw::json::simd_exec_tag{ } ) };
+		daw::bench::bench_result res[3] = {
+		  tst( daw::json::options::parse_flags<
+		       daw::json::CheckedParseMode::no,
+		       daw::json::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                       daw::json::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                       daw::json::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -272,22 +280,22 @@ inline namespace {
 
 	daw::bench::bench_result
 	do_citm_from_json_test( std::string const &json_data ) {
-		auto const tst = [json_data]( auto e ) {
+		auto const tst = [json_data]( auto parse_policy ) {
 			return make_bench_result(
 			  "citm catalog from_json(checked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
-			    []( std::string const &jd ) {
-				    return daw::json::from_json<
-				      daw::citm::citm_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      jd );
+			    [parse_policy]( std::string const &jd ) {
+				    return daw::json::from_json<daw::citm::citm_object_t>(
+				      jd, parse_policy );
 			    },
 			    json_data ) );
 		};
 
-		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
-		                                    tst( daw::json::runtime_exec_tag{ } ),
-		                                    tst( daw::json::simd_exec_tag{ } ) };
+		daw::bench::bench_result res[3] = {
+		  tst( daw::json::options::parse_flags<
+		       daw::json::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -300,22 +308,25 @@ inline namespace {
 
 	daw::bench::bench_result
 	do_citm_from_json_test_unchecked( std::string const &json_data ) {
-		auto const tst = [json_data]( auto e ) {
+		auto const tst = [json_data]( auto parse_policy ) {
 			return make_bench_result(
 			  "citm catalog from_json(unchecked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
-			    []( std::string const &jd ) {
-				    return daw::json::from_json<
-				      daw::citm::citm_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      jd );
+			    [parse_policy]( std::string const &jd ) {
+				    return daw::json::from_json<daw::citm::citm_object_t>(
+				      jd, parse_policy );
 			    },
 			    json_data ) );
 		};
 
-		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
-		                                    tst( daw::json::runtime_exec_tag{ } ),
-		                                    tst( daw::json::simd_exec_tag{ } ) };
+		daw::bench::bench_result res[3] = {
+		  tst( daw::json::options::parse_flags<
+		       daw::json::CheckedParseMode::no,
+		       daw::json::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                       daw::json::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                       daw::json::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -328,22 +339,22 @@ inline namespace {
 
 	daw::bench::bench_result
 	do_canada_from_json_test( std::string const &json_data ) {
-		auto const tst = [json_data]( auto e ) {
+		auto const tst = [json_data]( auto parse_policy ) {
 			return make_bench_result(
 			  "canada from_json(checked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
-			    []( std::string const &jd ) {
-				    return daw::json::from_json<
-				      daw::geojson::Polygon,
-				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      jd, "features[0].geometry" );
+			    [parse_policy]( std::string const &jd ) {
+				    return daw::json::from_json<daw::geojson::Polygon>(
+				      jd, "features[0].geometry", parse_policy );
 			    },
 			    json_data ) );
 		};
 
-		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
-		                                    tst( daw::json::runtime_exec_tag{ } ),
-		                                    tst( daw::json::simd_exec_tag{ } ) };
+		daw::bench::bench_result res[3] = {
+		  tst( daw::json::options::parse_flags<
+		       daw::json::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -356,22 +367,25 @@ inline namespace {
 
 	daw::bench::bench_result
 	do_canada_from_json_test_unchecked( std::string const &json_data ) {
-		auto const tst = [json_data]( auto e ) {
+		auto const tst = [json_data]( auto parse_policy ) {
 			return make_bench_result(
 			  "canada from_json(unchecked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
-			    []( std::string const &jd ) {
-				    return daw::json::from_json<
-				      daw::geojson::Polygon,
-				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      jd, "features[0].geometry" );
+			    [parse_policy]( std::string const &jd ) {
+				    return daw::json::from_json<daw::geojson::Polygon>(
+				      jd, "features[0].geometry", parse_policy );
 			    },
 			    json_data ) );
 		};
 
-		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
-		                                    tst( daw::json::runtime_exec_tag{ } ),
-		                                    tst( daw::json::simd_exec_tag{ } ) };
+		daw::bench::bench_result res[3] = {
+		  tst( daw::json::options::parse_flags<
+		       daw::json::CheckedParseMode::no,
+		       daw::json::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                       daw::json::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                       daw::json::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -387,7 +401,7 @@ inline namespace {
 	                              std::string const &json_data_citm,
 	                              std::string const &json_data_canada ) {
 		auto const tst = [json_data_twitter, json_data_citm,
-		                  json_data_canada]( auto e ) {
+		                  json_data_canada]( auto parse_policy ) {
 			return make_bench_result(
 			  "nativejson benchmark from_json(checked)",
 			  json_data_twitter.size( ) + json_data_citm.size( ) +
@@ -395,18 +409,13 @@ inline namespace {
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    [&]( std::string const &tw, std::string const &ci,
 			         std::string const &ca ) {
-				    auto const j1 = daw::json::from_json<
-				      daw::twitter::twitter_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      tw );
-				    auto const j2 = daw::json::from_json<
-				      daw::citm::citm_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      ci );
-				    auto const j3 = daw::json::from_json<
-				      daw::geojson::Polygon,
-				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      ca, "features[0].geometry" );
+				    auto const j1 =
+				      daw::json::from_json<daw::twitter::twitter_object_t>(
+				        tw, parse_policy );
+				    auto const j2 = daw::json::from_json<daw::citm::citm_object_t>(
+				      ci, parse_policy );
+				    auto const j3 = daw::json::from_json<daw::geojson::Polygon>(
+				      ca, "features[0].geometry", parse_policy );
 				    daw::do_not_optimize( j1 );
 				    daw::do_not_optimize( j2 );
 				    daw::do_not_optimize( j3 );
@@ -414,9 +423,11 @@ inline namespace {
 			    json_data_twitter, json_data_citm, json_data_canada ) );
 		};
 
-		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
-		                                    tst( daw::json::runtime_exec_tag{ } ),
-		                                    tst( daw::json::simd_exec_tag{ } ) };
+		daw::bench::bench_result res[3] = {
+		  tst( daw::json::options::parse_flags<
+		       daw::json::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
@@ -431,26 +442,21 @@ inline namespace {
 	  std::string const &json_data_twitter, std::string const &json_data_citm,
 	  std::string const &json_data_canada ) {
 		auto const tst = [json_data_twitter, json_data_citm,
-		                  json_data_canada]( auto e ) {
+		                  json_data_canada]( auto parse_policy ) {
 			return make_bench_result(
-			  "nativejson benchmark from_json(unchecked)",
+			  "nativejson benchmark from_json(checked)",
 			  json_data_twitter.size( ) + json_data_citm.size( ) +
 			    json_data_canada.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    [&]( std::string const &tw, std::string const &ci,
 			         std::string const &ca ) {
-				    auto const j1 = daw::json::from_json<
-				      daw::twitter::twitter_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      tw );
-				    auto const j2 = daw::json::from_json<
-				      daw::citm::citm_object_t,
-				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      ci );
-				    auto const j3 = daw::json::from_json<
-				      daw::geojson::Polygon,
-				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      ca, "features[0].geometry" );
+				    auto const j1 =
+				      daw::json::from_json<daw::twitter::twitter_object_t>(
+				        tw, parse_policy );
+				    auto const j2 = daw::json::from_json<daw::citm::citm_object_t>(
+				      ci, parse_policy );
+				    auto const j3 = daw::json::from_json<daw::geojson::Polygon>(
+				      ca, "features[0].geometry", parse_policy );
 				    daw::do_not_optimize( j1 );
 				    daw::do_not_optimize( j2 );
 				    daw::do_not_optimize( j3 );
@@ -458,9 +464,14 @@ inline namespace {
 			    json_data_twitter, json_data_citm, json_data_canada ) );
 		};
 
-		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
-		                                    tst( daw::json::runtime_exec_tag{ } ),
-		                                    tst( daw::json::simd_exec_tag{ } ) };
+		daw::bench::bench_result res[3] = {
+		  tst( daw::json::options::parse_flags<
+		       daw::json::CheckedParseMode::no,
+		       daw::json::ExecModeTypes::compile_time> ),
+		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                       daw::json::ExecModeTypes::runtime> ),
+		  tst( daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                       daw::json::ExecModeTypes::simd> ) };
 
 		auto &result =
 		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {

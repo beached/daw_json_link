@@ -371,7 +371,6 @@ namespace daw::json {
 			}
 		};
 
-		using json_value_state =
-		  basic_stateful_json_value<NoCommentSkippingPolicyChecked>;
+		using json_value_state = basic_stateful_json_value<BasicParsePolicy<>>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -123,7 +123,7 @@ void test_func( ) {
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<Number, NoCommentSkippingPolicyUnchecked>;
+		  daw::json::json_array_iterator<Number, CheckedParseMode::no>;
 
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
@@ -155,8 +155,7 @@ void test_func( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<intmax_t,
-		                                 NoCommentSkippingPolicyUnchecked>;
+		  daw::json::json_array_iterator<intmax_t, CheckedParseMode::no>;
 
 		auto data = std::vector<intmax_t>( );
 		data.resize( NUMVALUES );
@@ -319,8 +318,7 @@ void test_func( ) {
 	{
 		// Unsigned
 		using iterator_t =
-		  daw::json::json_array_iterator<uintmax_t,
-		                                 NoCommentSkippingPolicyUnchecked>;
+		  daw::json::json_array_iterator<uintmax_t, CheckedParseMode::no>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -428,8 +426,8 @@ void test_func( ) {
 	{
 		// Unsigned SSE42
 		using uint_type = json_number_no_name<uintmax_t>;
-		using iterator_t = daw::json::json_array_iterator<
-		  uint_type, SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<uint_type, ExecModeTypes::simd>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 

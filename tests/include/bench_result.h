@@ -43,8 +43,8 @@ namespace daw::bench {
 
 struct JSONToNano {
 	constexpr std::chrono::nanoseconds operator( )( std::string_view sv ) const {
-		auto rng = daw::json::NoCommentSkippingPolicyChecked(
-		  sv.data( ), sv.data( ) + sv.size( ) );
+		auto rng =
+		  daw::json::DefaultParsePolicy( std::data( sv ), daw::data_end( sv ) );
 		return std::chrono::nanoseconds( daw::json::json_details::parse_value<
 		                                 daw::json::json_number_no_name<long long>>(
 		  rng, daw::json::ParseTag<daw::json::JsonParseTypes::Signed>{ } ) );

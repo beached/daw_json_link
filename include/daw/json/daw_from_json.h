@@ -423,7 +423,8 @@ namespace daw::json {
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 
-			auto parse_state = ParseState( json_data );
+			auto parse_state =
+			  ParseState{ std::data( json_data ), daw::data_end( json_data ) };
 
 			parse_state.trim_left_unchecked( );
 #if defined( _MSC_VER ) and not defined( __clang__ )

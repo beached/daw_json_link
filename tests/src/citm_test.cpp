@@ -40,9 +40,9 @@ void test( std::string_view json_sv1 ) {
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "citm_catalog bench(checked)", sz,
 		  []( auto f1 ) {
-			  return daw::json::from_json<
-			    daw::citm::citm_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
+			  return daw::json::from_json<daw::citm::citm_object_t>(
+			    f1, daw::json::options::parse_flags<
+			          daw::json::json_details::exec_mode_from_tag<ExecTag>> );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( citm_result2 );
@@ -57,9 +57,10 @@ void test( std::string_view json_sv1 ) {
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "citm_catalog bench(unchecked)", sz,
 		  []( auto f1 ) {
-			  return daw::json::from_json<
-			    daw::citm::citm_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
+			  return daw::json::from_json<daw::citm::citm_object_t>(
+			    f1, daw::json::options::parse_flags<
+			          daw::json::CheckedParseMode::no,
+			          daw::json::json_details::exec_mode_from_tag<ExecTag>> );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( citm_result2 );

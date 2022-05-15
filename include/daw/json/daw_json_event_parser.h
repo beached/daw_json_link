@@ -14,11 +14,11 @@
 #include "impl/version.h"
 
 #include <daw/daw_move.h>
+#include <daw/daw_string_view.h>
 
 #include <ciso646>
 #include <cstddef>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -356,19 +356,34 @@ namespace daw::json {
 			}
 		};
 
-		template<typename ParseState =
-		           BasicParsePolicy<NoCommentSkippingPolicyChecked.value>,
-		         typename StackContainerPolicy = DefaultJsonEventParserStackPolicy<
-		           JsonEventParserStackValue<ParseState>>,
-		         typename Handler>
-		inline constexpr void
-		json_event_parser( basic_json_value<ParseState> jvalue,
-		                   Handler &&handler ) {
-			using iterator = basic_json_value_iterator<ParseState>;
-			using json_value_t = basic_json_pair<ParseState>;
-			using stack_value_t = JsonEventParserStackValue<ParseState>;
+		struct use_default_json_event_parser_stack_policy;
 
-			auto parent_stack = StackContainerPolicy( );
+		template<typename ParseState = DefaultParsePolicy,
+		         typename StackContainerPolicy =
+		           use_default_json_event_parser_stack_policy,
+		         typename Handler, auto... ParseFlags>
+		inline constexpr void
+		json_event_parser( basic_json_value<ParseState> bjv, Handler &&handler,
+		                   options::parse_flags_t<ParseFlags...> =
+		                     options::parse_flags<ParseFlags...> ) {
+
+			using ParsePolicy =
+			  typename ParseState::template SetPolicyOptions<ParseFlags...>;
+			auto jvalue = basic_json_value<ParsePolicy>( bjv );
+			using iterator = basic_json_value_iterator<ParsePolicy>;
+			using json_value_t = basic_json_pair<ParsePolicy>;
+			using stack_value_t = JsonEventParserStackValue<ParsePolicy>;
+
+			auto parent_stack = [] {
+				if constexpr( std::is_same_v<
+				                StackContainerPolicy,
+				                use_default_json_event_parser_stack_policy> ) {
+					return DefaultJsonEventParserStackPolicy<
+					  JsonEventParserStackValue<ParsePolicy>>{ };
+				} else {
+					return StackContainerPolicy{ };
+				}
+			}( );
 			long long class_depth = 0;
 			long long array_depth = 0;
 
@@ -542,7 +557,7 @@ namespace daw::json {
 				}
 			};
 
-			process_value( { std::nullopt, DAW_MOVE( jvalue ) } );
+			process_value( json_value_t{ std::nullopt, DAW_MOVE( jvalue ) } );
 
 			while( not parent_stack.empty( ) ) {
 				auto v = DAW_MOVE( parent_stack.back( ) );
@@ -555,11 +570,14 @@ namespace daw::json {
 
 		template<typename ParsePolicy =
 		           BasicParsePolicy<NoCommentSkippingPolicyChecked.value>,
-		         typename Handler>
-		inline void json_event_parser( std::string_view json_document,
-		                               Handler &&handler ) {
+		         typename Handler, auto... ParseFlags>
+		inline void
+		json_event_parser( daw::string_view json_document, Handler &&handler,
+		                   options::parse_flags_t<ParseFlags...> pflags =
+		                     options::parse_flags<ParseFlags...> ) {
+
 			return json_event_parser( basic_json_value<ParsePolicy>( json_document ),
-			                          DAW_FWD2( Handler, handler ) );
+			                          DAW_FWD2( Handler, handler ), pflags );
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

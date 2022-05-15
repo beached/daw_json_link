@@ -49,9 +49,9 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	return true;
 }
 
-template<typename ExecTag>
+template<daw::json::ExecModeTypes ExecMode>
 void test( std::string_view json_sv1 ) {
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( );
 	//**************************
@@ -59,10 +59,8 @@ void test( std::string_view json_sv1 ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(checked)", sz,
 	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f1, "features[0].geometry" );
+		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+		    f1, "features[0].geometry", daw::json::options::parse_flags<ExecMode> );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -74,10 +72,10 @@ void test( std::string_view json_sv1 ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(unchecked)", sz,
 	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1, "features[0].geometry" );
+		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+		    f1, "features[0].geometry",
+		    daw::json::options::parse_flags<daw::json::CheckedParseMode::no,
+		                                    ExecMode> );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -105,11 +103,11 @@ int main( int argc, char **argv )
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	test<daw::json::constexpr_exec_tag>( json_sv1 );
-	test<daw::json::runtime_exec_tag>( json_sv1 );
+	test<daw::json::ExecModeTypes::compile_time>( json_sv1 );
+	test<daw::json::ExecModeTypes::runtime>( json_sv1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag>( json_sv1 );
+		test<daw::json::ExecModeTypes::simd>( json_sv1 );
 	}
 
 	std::cout

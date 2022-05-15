@@ -133,7 +133,7 @@ JSONMinifyHandler( OutputIterator ) -> JSONMinifyHandler<OutputIterator>;
 template<typename Iterator>
 void minify( std::string_view data, Iterator out_it ) {
 	auto handler = JSONMinifyHandler( out_it );
-	daw::json::json_event_parser<daw::json::ConformancePolicy>( data, handler );
+	daw::json::json_event_parser( data, handler, daw::json::ConformancePolicy );
 }
 
 extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,

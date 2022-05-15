@@ -45,12 +45,10 @@ int main( int argc, char **argv )
 	using namespace daw::json;
 
 	std::optional<daw::gsoc::gsoc_object_t> gsoc_result;
-	using nc_checked_policy_t = NoCommentSkippingPolicyChecked;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "gsoc bench(checked)", sz,
 	  [&]( std::string const &jd ) {
-		  gsoc_result =
-		    from_json<daw::gsoc::gsoc_object_t, nc_checked_policy_t>( jd );
+		  gsoc_result = from_json<daw::gsoc::gsoc_object_t>( jd );
 		  daw::do_not_optimize( gsoc_result );
 	  },
 	  json_data1 );
@@ -60,9 +58,8 @@ int main( int argc, char **argv )
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "gsoc bench(unchecked)", sz,
 	  [&gsoc_result]( std::string const &jd ) {
-		  gsoc_result =
-		    from_json<daw::gsoc::gsoc_object_t, NoCommentSkippingPolicyUnchecked>(
-		      jd );
+		  gsoc_result = from_json<daw::gsoc::gsoc_object_t>(
+		    jd, options::parse_flags<CheckedParseMode::no> );
 		  daw::do_not_optimize( gsoc_result );
 	  },
 	  json_data1 );

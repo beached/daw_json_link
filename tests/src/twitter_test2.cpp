@@ -84,9 +84,8 @@ int main( int argc, char **argv )
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
-		  twitter_result =
-		    daw::json::from_json<daw::twitter2::twitter_object_t,
-		                         daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
+		  twitter_result = daw::json::from_json<daw::twitter2::twitter_object_t>(
+		    f1, daw::json::options::parse_flags<CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_sv1 );

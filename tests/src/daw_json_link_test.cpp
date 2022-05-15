@@ -62,8 +62,8 @@ namespace daw::json {
 
 template<typename Real, bool Trusted = false>
 DAW_CONSTEXPR Real parse_real( std::string_view str ) {
-	auto rng = daw::json::NoCommentSkippingPolicyChecked(
-	  str.data( ), str.data( ) + str.size( ) );
+	auto rng =
+	  daw::json::DefaultParsePolicy( str.data( ), str.data( ) + str.size( ) );
 	return daw::json::json_details::parse_real<Real, false>( rng );
 }
 
@@ -76,7 +76,10 @@ DAW_CONSTEXPR bool parse_real_test( std::string_view str, Real expected ) {
 template<typename Unsigned, bool Trusted = false, size_t N>
 DAW_CONSTEXPR bool parse_unsigned_test( char const ( &str )[N],
                                         Unsigned expected ) {
-	auto tmp = daw::json::NoCommentSkippingPolicyUnchecked( str, str + N );
+	using policy_t =
+	  typename daw::json::DefaultParsePolicy::template SetPolicyOptions<
+	    daw::json::CheckedParseMode::no>;
+	auto tmp = policy_t( str, str + N );
 	return daw::json::json_details::unsigned_parser<
 	         Unsigned, daw::json::JsonRangeCheck::CheckForNarrowing, false>(
 	         daw::json::constexpr_exec_tag{ }, tmp ) == expected;
@@ -237,13 +240,17 @@ DAW_CONSTEXPR char const test_001_t_json_data[] =
 	  })";
 
 DAW_CONSTEXPR bool test_004( ) {
-	return daw::json::from_json<int, daw::json::NoCommentSkippingPolicyUnchecked>(
-	         test_001_t_json_data, "i" ) == 55;
+	return daw::json::from_json<int>(
+	         test_001_t_json_data, "i",
+	         daw::json::options::parse_flags<daw::json::CheckedParseMode::no> ) ==
+	       55;
 }
 
 DAW_CONSTEXPR bool test_005( ) {
-	return daw::json::from_json<int, daw::json::NoCommentSkippingPolicyUnchecked>(
-	         test_001_t_json_data, "i" ) == 55;
+	return daw::json::from_json<int>(
+	         test_001_t_json_data, "i",
+	         daw::json::options::parse_flags<daw::json::CheckedParseMode::no> ) ==
+	       55;
 }
 
 DAW_CONSTEXPR bool test_006( ) {
@@ -498,15 +505,14 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 	}
 	double lib_parse_dbl = [&] {
 		if constexpr( KnownBounds ) {
-			auto rng = daw::json::NoCommentSkippingPolicyChecked(
-			  num.data( ), num.data( ) + num.size( ) );
+			auto rng =
+			  daw::json::DefaultParsePolicy( num.data( ), num.data( ) + num.size( ) );
 			rng = daw::json::json_details::skip_number( rng );
 			using json_member = daw::json::json_details::json_deduced_type<double>;
 			return daw::json::json_details::parse_value<json_member, KnownBounds>(
 			  rng, daw::json::ParseTag<json_member::expected_type>{ } );
 		} else {
-			return daw::json::from_json<
-			  double, daw::json::NoCommentSkippingPolicyChecked, KnownBounds>( num );
+			return daw::json::from_json<double, KnownBounds>( num );
 		}
 	}( );
 
@@ -538,16 +544,14 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 
 		lib_parse_dbl = [&] {
 			if constexpr( KnownBounds ) {
-				auto rng = daw::json::NoCommentSkippingPolicyChecked(
-				  num.data( ), num.data( ) + num.size( ) );
+				auto rng = daw::json::DefaultParsePolicy( num.data( ),
+				                                          num.data( ) + num.size( ) );
 				rng = daw::json::json_details::skip_number( rng );
 				using json_member = daw::json::json_details::json_deduced_type<double>;
 				return daw::json::json_details::parse_value<json_member, KnownBounds>(
 				  rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			} else {
-				return daw::json::from_json<
-				  double, daw::json::NoCommentSkippingPolicyChecked, KnownBounds>(
-				  num );
+				return daw::json::from_json<double, KnownBounds>( num );
 			}
 		}( );
 		std::cout.precision( std::numeric_limits<double>::max_digits10 );
@@ -1088,10 +1092,8 @@ int main( int, char ** )
 
 		std::cout << "testing 9223372036854776000e100\n";
 		constexpr std::string_view two63e100 = "9223372036854776000e100";
-		auto const d0 =
-		  from_json<long double,
-		            BasicParsePolicy<parse_options( ExecModeTypes::runtime )>>(
-		    two63e100 );
+		auto const d0 = from_json<long double>(
+		  two63e100, options::parse_flags<ExecModeTypes::runtime> );
 		std::cout << d0 << '\n';
 		std::cout << "using strtold\n";
 		char *end = nullptr;

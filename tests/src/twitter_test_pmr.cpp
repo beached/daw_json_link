@@ -68,7 +68,7 @@ void test( std::string_view json_data,
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+		    daw::json::json_details::exec_mode_from_tag<ExecTag>>>(
 		    f1, boost::container::pmr::polymorphic_allocator<
 		          daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
@@ -81,7 +81,7 @@ void test( std::string_view json_data,
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Missing value" );
 
-	// NoCommentSkippingPolicyUnchecked
+	// CheckedParseMode::no
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&]( auto f1 ) {
@@ -89,7 +89,7 @@ void test( std::string_view json_data,
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
 		    f1, boost::container::pmr::polymorphic_allocator<
 		          daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
@@ -195,7 +195,7 @@ void test( std::string_view json_data,
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+		    daw::json::json_details::exec_mode_from_tag<ExecTag>>>(
 		    f1, boost::container::pmr::polymorphic_allocator<
 		          daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );
@@ -208,7 +208,7 @@ void test( std::string_view json_data,
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Missing value" );
 
-	// NoCommentSkippingPolicyUnchecked Escaped Names
+	// CheckedParseMode::no Escaped Names
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked, escaped names)", sz,
 	  [&]( auto f1 ) {
@@ -216,7 +216,7 @@ void test( std::string_view json_data,
 		  alloc->release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		    daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><ExecTag>>(
 		    f1, boost::container::pmr::polymorphic_allocator<
 		          daw::twitter::twitter_object_t>( alloc ) );
 		  daw::do_not_optimize( twitter_result );

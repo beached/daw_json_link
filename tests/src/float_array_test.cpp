@@ -302,7 +302,7 @@ void test_func( ) {
 		std::cout << "element count: " << count << '\n';
 		using iterator_t = daw::json::json_array_iterator<
 		  json_class_no_name<Number2>,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		  daw::json::json_details::exec_mode_from_tag<sse42_exec_tag>>;
 
 		auto data = std::vector<Number2>( );
 		data.reserve( NUMVALUES );
@@ -338,7 +338,7 @@ void test_func( ) {
 		std::cout << "element count: " << count << '\n';
 		using iterator_t = daw::json::json_array_iterator<
 		  json_number_no_name<float>,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		  daw::json::json_details::exec_mode_from_tag<sse42_exec_tag>>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -375,7 +375,7 @@ void test_func( ) {
 		std::cout << "element count: " << count << '\n';
 		using iterator_t = daw::json::json_array_iterator<
 		  json_class_no_name<Number2>,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		  daw::json::json_details::exec_mode_from_tag<sse42_exec_tag>>;
 
 		auto data = std::vector<Number2>( );
 		data.reserve( NUMVALUES );
@@ -411,7 +411,7 @@ void test_func( ) {
 		std::cout << "element count: " << count << '\n';
 		using iterator_t = daw::json::json_array_iterator<
 		  json_checked_number_no_name<float>,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		  daw::json::json_details::exec_mode_from_tag<sse42_exec_tag>>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -448,7 +448,7 @@ void test_func( ) {
 	{
 		using iterator_t = daw::json::json_array_iterator<
 		  json_number_no_name<double>,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		  daw::json::json_details::exec_mode_from_tag<sse42_exec_tag>>;
 
 		std::string json_data3 = [] {
 			std::string result = "[";

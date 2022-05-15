@@ -69,8 +69,7 @@ public:
 		case daw::json::JsonBaseParseTypes::String: {
 			member_preamble( );
 			auto const unescaped =
-			  daw::json::from_json<std::string, ParsePolicy, true>(
-			    p.value.get_string_view( ) );
+			  daw::json::from_json<std::string, true>( p.value.get_string_view( ) );
 
 			daw::json::to_json( unescaped, out_it );
 			return true;
@@ -134,7 +133,7 @@ JSONMinifyHandler( OutputIterator ) -> JSONMinifyHandler<OutputIterator>;
 template<typename Iterator>
 void minify( std::string_view data, Iterator out_it ) {
 	auto handler = JSONMinifyHandler( out_it );
-	daw::json::json_event_parser<daw::json::ConformancePolicy>( data, handler );
+	daw::json::json_event_parser( data, handler, daw::json::ConformancePolicy );
 }
 
 extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
@@ -149,8 +148,9 @@ extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
 #ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
-		auto jv =
-		  daw::json::basic_json_value<daw::json::ConformancePolicy>( json_doc );
+		using ParseState =
+		  daw::json::BasicParsePolicy<daw::json::ConformancePolicy.value>;
+		auto jv = daw::json::basic_json_value<ParseState>( json_doc );
 		switch( jv.type( ) ) {
 		case daw::json::JsonBaseParseTypes::Number:
 			ofile << daw::json::from_json<double>( jv );

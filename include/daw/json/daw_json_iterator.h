@@ -65,8 +65,8 @@ namespace daw::json {
 		 */
 		template<typename JsonElement, auto... PolicyFlags>
 		class json_array_iterator {
-			using ParsePolicy =
-			  BasicParsePolicy<options::parse_flags_v<PolicyFlags...>>;
+			using ParsePolicy = BasicParsePolicy<
+			  options::details::make_parse_flags<PolicyFlags...>( ).value>;
 			using CharT = typename ParsePolicy::CharT;
 
 			template<typename String>
@@ -278,11 +278,11 @@ namespace daw::json {
 		 * @tparam JsonElement Type of each element in array
 		 * @tparam ParsePolicy parsing policy type
 		 */
-		template<typename JsonElement,
-		         typename ParsePolicy =
-		           BasicParsePolicy<NoCommentSkippingPolicyChecked.value>>
+		template<typename JsonElement, auto... PolicyFlags>
 		struct json_array_range {
-			using iterator = json_array_iterator<JsonElement, ParsePolicy>;
+			using ParsePolicy = BasicParsePolicy<
+			  options::details::make_parse_flags<PolicyFlags...>( ).value>;
+			using iterator = json_array_iterator<JsonElement, PolicyFlags...>;
 			using CharT = typename ParsePolicy::CharT;
 
 		private:

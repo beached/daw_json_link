@@ -117,7 +117,7 @@ namespace daw::json {
 		         typename JsonElement = json_details::auto_detect_array_element,
 		         typename Container, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result to_json_array(
-		  Container &&c,
+		  Container const &c,
 		  options::output_flags_t<PolicyFlags...> flags = options::output_flags<> );
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

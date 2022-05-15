@@ -22,17 +22,17 @@
 #include <string_view>
 
 using constexpr_checked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>;
-using constexpr_unchecked_pol = daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+  daw::json::daw::json::json_details::exec_mode_from_tag<daw::json::constexpr_exec_tag>;
+using constexpr_unchecked_pol = daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><
   daw::json::constexpr_exec_tag>;
 using runtime_checked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>;
+  daw::json::daw::json::json_details::exec_mode_from_tag<daw::json::runtime_exec_tag>;
 using runtime_unchecked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::runtime_exec_tag>;
+  daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><daw::json::runtime_exec_tag>;
 using simd_checked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
+  daw::json::daw::json::json_details::exec_mode_from_tag<daw::json::simd_exec_tag>;
 using simd_unchecked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>;
+  daw::json::CheckedParseMode::no, daw::json::json_details::exec_mode_from_tag<ExecTag><daw::json::simd_exec_tag>;
 
 using PPair = std::pair<std::string_view, std::string_view>;
 

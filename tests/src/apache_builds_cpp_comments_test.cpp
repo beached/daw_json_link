@@ -50,14 +50,16 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	return true;
 }
 
-template<typename ParsePolicy>
+template<auto... ParseFlags>
 void test( std::string_view json_sv1 ) {
+	static constexpr auto ParsePolicy =
+	  daw::json::options::parse_flags<ParseFlags...>;
 	auto const sz = json_sv1.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
 	auto apache_builds_result =
-	  daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( json_sv1 );
+	  daw::json::from_json<apache_builds::apache_builds>( json_sv1, ParsePolicy );
 	test_assert( not apache_builds_result.jobs.empty( ),
 	             "Bad value for jobs.size( )" );
 	test_assert( apache_builds_result.numExecutors == 0,
@@ -67,7 +69,7 @@ void test( std::string_view json_sv1 ) {
 	  "apache_builds bench", sz,
 	  []( auto f1 ) {
 		  auto r =
-		    daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( f1 );
+		    daw::json::from_json<apache_builds::apache_builds>( f1, ParsePolicy );
 		  daw::do_not_optimize( r );
 	  },
 	  json_sv1 );
@@ -87,7 +89,7 @@ void test( std::string_view json_sv1 ) {
 
 	daw::do_not_optimize( str );
 	auto const apache_builds_result2 =
-	  daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( str );
+	  daw::json::from_json<apache_builds::apache_builds>( str, ParsePolicy );
 	daw::do_not_optimize( apache_builds_result2 );
 	// Removing for now as it will do a float compare and fail
 	/*
@@ -114,19 +116,15 @@ int main( int argc, char **argv )
 
 	std::cout << "Using " << daw::json::constexpr_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<daw::json::SIMDCppCommentSkippingPolicyChecked<
-	  daw::json::constexpr_exec_tag>>( json_sv1 );
+	test<PolicyCommentTypes::cpp, ExecModeTypes::compile_time>( json_sv1 );
 	std::cout << "Using " << daw::json::runtime_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<daw::json::SIMDCppCommentSkippingPolicyChecked<
-	  daw::json::runtime_exec_tag>>( json_sv1 );
+	test<PolicyCommentTypes::cpp, ExecModeTypes::runtime>( json_sv1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
 		std::cout << "Using " << daw::json::simd_exec_tag::name
 		          << " exec model\n*********************************************\n";
-		test<
-		  daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
-		  json_sv1 );
+		test<PolicyCommentTypes::cpp, ExecModeTypes::simd>( json_sv1 );
 	}
 }
 #ifdef DAW_USE_EXCEPTIONS

@@ -66,7 +66,7 @@ namespace daw::json {
 			}
 
 			using iter_t = std::back_insert_iterator<Result>;
-			(void)to_json( value, iter_t{ result }, flags );
+			(void)to_json<Value, JsonClass>( value, iter_t{ result }, flags );
 			if constexpr( std::is_same_v<Result, std::string> ) {
 				result.shrink_to_fit( );
 			}
@@ -143,10 +143,10 @@ namespace daw::json {
 		template<typename Result, typename JsonElement, typename Container,
 		         auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result
-		to_json_array( Container &&c,
+		to_json_array( Container const &c,
 		               options::output_flags_t<PolicyFlags...> flags ) {
 			static_assert(
-			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
+			  traits::is_container_like_v<Container>,
 			  "Supplied container must support begin( )/end( )" );
 			using iter_t = basic_appender<Result>;
 			Result result{ };

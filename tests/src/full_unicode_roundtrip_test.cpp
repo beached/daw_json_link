@@ -51,14 +51,14 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-template<typename ExecTag, typename MMF>
+template<daw::json::ExecModeTypes ExecMode, typename MMF>
 void test( MMF const &json_str, MMF const &json_str_escaped ) {
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
-	std::vector<unicode_data> const unicode_test = daw::json::from_json_array<
-	  unicode_data, std::vector<unicode_data>,
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-	  std::string_view( json_str.data( ), json_str.size( ) ) );
+	std::vector<unicode_data> const unicode_test =
+	  daw::json::from_json_array<unicode_data, std::vector<unicode_data>>(
+	    json_str, daw::json::options::parse_flags<ExecMode> );
+
 	std::vector<unicode_data> const unicode_test_from_escaped =
 	  daw::json::from_json_array<unicode_data, std::vector<unicode_data>>(
 	    json_str_escaped,
@@ -73,16 +73,15 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 
 	std::string const json_str2 = daw::json::to_json_array( unicode_test );
 	std::vector<unicode_data> unicode_test2 =
-	  daw::json::from_json_array<unicode_data>(
-	    std::string_view( json_str2.data( ), json_str2.size( ) ) );
+	  daw::json::from_json_array<unicode_data>( json_str2 );
 
 	auto mismatch_pos2 = std::mismatch(
 	  unicode_test.begin( ), unicode_test.end( ), unicode_test2.begin( ) );
 	test_assert( mismatch_pos2.first == unicode_test.end( ),
 	             "Should be the same after parsing" );
 	{
-		using range_t = daw::json::json_array_range<
-		  unicode_data, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+		using range_t = daw::json::json_array_range<unicode_data, ExecMode>;
+
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "full unicode bench(checked)", json_str.size( ),
 		  []( auto rng ) {
@@ -105,8 +104,9 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 		  .get( );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  unicode_data, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
+		using range_t =
+		  daw::json::json_array_range<unicode_data, daw::json::CheckedParseMode::no,
+		                              ExecMode>;
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "full unicode bench(unchecked)", json_str.size( ),
 		  []( auto rng ) {
@@ -150,11 +150,11 @@ int main( int argc, char **argv )
 	auto const json_str = *daw::read_file( argv[1] );
 	auto const json_str_escaped = *daw::read_file( argv[2] );
 
-	test<daw::json::constexpr_exec_tag>( json_str, json_str_escaped );
-	test<daw::json::runtime_exec_tag>( json_str, json_str_escaped );
+	test<ExecModeTypes::compile_time>( json_str, json_str_escaped );
+	test<ExecModeTypes::runtime>( json_str, json_str_escaped );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag>( json_str, json_str_escaped );
+		test<ExecModeTypes::simd>( json_str, json_str_escaped );
 	}
 }
 #ifdef DAW_USE_EXCEPTIONS

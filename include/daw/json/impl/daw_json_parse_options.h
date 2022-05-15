@@ -14,7 +14,9 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
+#include <daw/daw_unreachable.h>
 
 #include <ciso646>
 #include <climits>
@@ -24,6 +26,11 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			template<typename>
+			inline constexpr bool is_parse_policy_v = false;
+		}
+
 		/***
 		 * Allow for different optimizations.  Currently only the compile_time path
 		 * is fully supported. The others may offer faster parsing. The default is
@@ -35,6 +42,18 @@ namespace daw::json {
 			runtime, /* testing */
 			simd     /* testing */
 		};         // 2bits
+
+		constexpr daw::string_view to_string( ExecModeTypes mode ) {
+			switch( mode ) {
+			case ExecModeTypes::compile_time:
+				return "compile_time";
+			case ExecModeTypes::runtime:
+				return "runtime";
+			case ExecModeTypes::simd:
+				return "simd";
+			}
+			DAW_UNREACHABLE( );
+		}
 
 		namespace json_details {
 			template<>
@@ -241,7 +260,7 @@ namespace daw::json {
 			  basic_policy_bits_start<Policy, policy_list>;
 
 			template<typename Policy>
-			constexpr void set_bits_in( json_options_t &value, Policy e ) {
+			DAW_CONSTEVAL void set_bits_in( json_options_t &value, Policy e ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				auto new_bits = static_cast<unsigned>( e );
@@ -252,19 +271,28 @@ namespace daw::json {
 				value |= new_bits;
 			}
 
-			template<typename Policy, typename... Policies>
-			constexpr json_options_t set_bits( json_options_t value, Policy pol,
-			                                   Policies... pols ) {
-				static_assert( ( is_option_flag<Policies> and ... ),
+			DAW_CONSTEVAL inline json_options_t set_bits( json_options_t value ) {
+				return value;
+			}
+
+			template<typename PolicyFlag, typename... PolicyFlags,
+			         std::enable_if_t<( is_option_flag<PolicyFlag> and
+			                            ( is_option_flag<PolicyFlags> and ... ) ),
+			                          std::nullptr_t> = nullptr>
+			DAW_CONSTEVAL json_options_t set_bits( json_options_t value,
+			                                       PolicyFlag pol,
+			                                       PolicyFlags... pols ) {
+				static_assert( ( is_option_flag<PolicyFlags> and ... ),
 				               "Only registered policy types are allowed" );
 
 				auto new_bits = static_cast<unsigned>( pol );
-				constexpr unsigned mask = ( (1U << json_option_bits_width<Policy>)-1U );
+				constexpr unsigned mask =
+				  ( (1U << json_option_bits_width<PolicyFlag>)-1U );
 				new_bits &= mask;
-				new_bits <<= policy_bits_start<Policy>;
-				value &= ~( mask << policy_bits_start<Policy> );
+				new_bits <<= policy_bits_start<PolicyFlag>;
+				value &= ~( mask << policy_bits_start<PolicyFlag> );
 				value |= new_bits;
-				if constexpr( sizeof...( Policies ) > 0 ) {
+				if constexpr( sizeof...( PolicyFlags ) > 0 ) {
 					if constexpr( sizeof...( pols ) > 0 ) {
 						return set_bits( value, pols... );
 					} else {
@@ -276,7 +304,7 @@ namespace daw::json {
 			}
 
 			template<typename Policy>
-			constexpr json_options_t set_bits_for( Policy e ) {
+			DAW_CONSTEVAL json_options_t set_bits_for( Policy e ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				auto new_bits = static_cast<json_options_t>( e );
@@ -301,7 +329,7 @@ namespace daw::json {
 			  default_policy_flag_t<policy_list>::value;
 
 			template<typename Policy, typename Result = Policy>
-			constexpr Result get_bits_for( json_options_t value ) {
+			DAW_CONSTEVAL Result get_bits_for( json_options_t value ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				constexpr unsigned mask = ( 1U << (policy_bits_start<Policy> +
@@ -321,7 +349,7 @@ namespace daw::json {
 		 * @return A json_options_t that encodes the options for the parser
 		 */
 		template<typename... Policies>
-		constexpr json_details::json_options_t
+		DAW_CONSTEVAL json_details::json_options_t
 		parse_options( Policies... policies ) {
 			static_assert( ( json_details::is_option_flag<Policies> and ... ),
 			               "Only registered policy types are allowed" );

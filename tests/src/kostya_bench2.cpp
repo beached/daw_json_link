@@ -35,15 +35,18 @@ int main( int, char ** ) {
 	int len = 0;
 
 	using namespace daw::json;
-	auto rng = from_json<json_raw_no_name<>, NoCommentSkippingPolicyUnchecked>(
-	  json_text, "coordinates" );
+	auto rng = from_json<json_raw_no_name<>>(
+	  json_text, "coordinates", options::parse_flags<CheckedParseMode::no> );
 
 	auto val = json_value_state( );
 	for( json_pair item : rng ) {
 		val.reset( item.value );
-		x += from_json<double, NoCommentSkippingPolicyUnchecked>( val["x"] );
-		y += from_json<double, NoCommentSkippingPolicyUnchecked>( val["y"] );
-		z += from_json<double, NoCommentSkippingPolicyUnchecked>( val["z"] );
+		x +=
+		  from_json<double>( val["x"], options::parse_flags<CheckedParseMode::no> );
+		y +=
+		  from_json<double>( val["y"], options::parse_flags<CheckedParseMode::no> );
+		z +=
+		  from_json<double>( val["z"], options::parse_flags<CheckedParseMode::no> );
 		++len;
 	}
 	std::cout << x / len << '\n';

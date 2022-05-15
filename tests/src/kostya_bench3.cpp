@@ -63,8 +63,7 @@ coordinate_t calc( std::string const &text ) {
 	std::size_t len = 0;
 
 	using namespace daw::json;
-	using range_t =
-	  json_array_range<coordinate_t, NoCommentSkippingPolicyUnchecked>;
+	using range_t = json_array_range<coordinate_t, CheckedParseMode::no>;
 	auto rng = range_t( text, "coordinates" );
 
 	for( auto c : rng ) {

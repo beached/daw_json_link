@@ -56,7 +56,7 @@ static void test_json_array_iterator( std::string_view json_sv ) {
 	using namespace daw::json;
 	for( size_t n = 0; n < 1000; ++n ) {
 		// daw::do_not_optimize( json_sv );
-		auto rng = json_array_range<T, NoCommentSkippingPolicyUnchecked>( json_sv );
+		auto rng = json_array_range<T, CheckedParseMode::no>( json_sv );
 		// daw::do_not_optimize( rng );
 		T sum = std::accumulate( rng.begin( ), rng.end( ), static_cast<T>( 0 ) );
 		daw::do_not_optimize( sum );
