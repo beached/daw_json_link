@@ -194,14 +194,13 @@ namespace daw::json {
 				return *this;
 			}
 
-			/***
-			 * Moved parser to next value
-			 * @return copy of iterator upon entering method
-			 */
-			constexpr basic_json_value_iterator operator++( int ) {
-				auto result = *this;
+			///
+			/// @brief Move parser to next value
+			///
+			inline constexpr void operator++( int ) & {
+				// auto result = *this;
 				operator++( );
-				return result;
+				// return result;
 			}
 
 			/***

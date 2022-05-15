@@ -580,12 +580,6 @@ namespace daw::json {
 				template<auto... PolicyFlags>
 				std::true_type is_policy_flag( parse_flags_t<PolicyFlags...> );
 
-				template<typename... Ts>
-				std::false_type is_policy_value( Ts... );
-
-				template<auto... PolicyFlags>
-				std::true_type is_policy_value( unsigned );
-
 				template<auto... PolicyFlags>
 				DAW_CONSTEVAL auto make_parse_flags( ) {
 					if constexpr( decltype( details::is_policy_flag(
@@ -598,90 +592,24 @@ namespace daw::json {
 					}
 				}
 			} // namespace details
-			/***
-			 * @brief Specify parse policy flags in to_json calls.  See cookbook item
-			 * parse_options.md
-			 */
+			///
+			/// @brief Specify parse policy flags in to_json calls.  See cookbook item
+			/// parse_options.md
+			///
 			template<auto... PolicyFlags>
 			inline constexpr auto
 			  parse_flags = details::make_parse_flags<PolicyFlags...>( );
-
-			namespace details {
-				template<auto... PolicyFlags>
-				inline constexpr auto parse_flags_v = parse_flags<PolicyFlags...>.value;
-			}
 		} // namespace options
-
-		inline constexpr auto NoCommentSkippingPolicyChecked =
-		  options::parse_flags<>;
 
 		using DefaultParsePolicy = BasicParsePolicy<>;
 
-		namespace json_details {
-			template<typename>
-			struct exec_mode_from_tag_t;
+#define DAW_JSON_CONFORMANCE_FLAGS                       \
+	daw::json::options::AllowEscapedNames::yes,            \
+	  daw::json::options::MustVerifyEndOfDataIsValid::yes, \
+	  daw::json::options::IEEE754Precise::yes,             \
+	  daw::json::options::ExcludeSpecialEscapes::yes
 
-			template<>
-			struct exec_mode_from_tag_t<constexpr_exec_tag> {
-				static inline constexpr options::ExecModeTypes value =
-				  options::ExecModeTypes::compile_time;
-			};
-
-			template<>
-			struct exec_mode_from_tag_t<runtime_exec_tag> {
-				static inline constexpr options::ExecModeTypes value =
-				  options::ExecModeTypes::runtime;
-			};
-
-			template<>
-			struct exec_mode_from_tag_t<simd_exec_tag> {
-				static inline constexpr options::ExecModeTypes value =
-				  options::ExecModeTypes::simd;
-			};
-
-			template<typename ExecMode>
-			inline constexpr options::ExecModeTypes exec_mode_from_tag =
-			  exec_mode_from_tag_t<ExecMode>::value;
-		} // namespace json_details
-
-		inline constexpr auto HashCommentSkippingPolicyChecked =
-		  options::parse_flags<options::PolicyCommentTypes::hash>;
-
-		inline constexpr auto HashCommentSkippingPolicyUnchecked =
-		  options::parse_flags<options::CheckedParseMode::no,
-		                       options::PolicyCommentTypes::hash>;
-
-		template<typename ExecTag>
-		inline constexpr auto SIMDHashCommentSkippingPolicyChecked =
-		  options::parse_flags<options::PolicyCommentTypes::hash,
-		                       json_details::exec_mode_from_tag<ExecTag>>;
-
-		template<typename ExecTag>
-		inline constexpr auto SIMDHashCommentSkippingPolicyUnchecked =
-		  options::parse_flags<options::CheckedParseMode::no,
-		                       options::PolicyCommentTypes::hash,
-		                       json_details::exec_mode_from_tag<ExecTag>>;
-
-		inline constexpr auto CppCommentSkippingPolicyChecked =
-		  options::parse_flags<options::PolicyCommentTypes::cpp>;
-
-		inline constexpr auto CppCommentSkippingPolicyUnchecked =
-		  options::parse_flags<options::CheckedParseMode::no,
-		                       options::PolicyCommentTypes::cpp>;
-
-		template<typename ExecTag>
-		inline constexpr auto SIMDCppCommentSkippingPolicyChecked =
-		  options::parse_flags<options::PolicyCommentTypes::cpp,
-		                       json_details::exec_mode_from_tag<ExecTag>>;
-
-		template<typename ExecTag>
-		inline constexpr auto SIMDCppCommentSkippingPolicyUnchecked =
-		  options::parse_flags<options::CheckedParseMode::no,
-		                       options::PolicyCommentTypes::cpp,
-		                       json_details::exec_mode_from_tag<ExecTag>>;
-
-		inline constexpr auto ConformancePolicy = options::parse_flags<
-		  options::AllowEscapedNames::yes, options::MustVerifyEndOfDataIsValid::yes,
-		  options::IEEE754Precise::yes, options::ExcludeSpecialEscapes::yes>;
+		inline constexpr auto ConformancePolicy =
+		  options::parse_flags<DAW_JSON_CONFORMANCE_FLAGS>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

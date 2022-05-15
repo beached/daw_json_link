@@ -58,7 +58,6 @@ void test( std::string_view json_data, AllocType &alloc )
 	          << " exec model\n*********************************************\n";
 	std::optional<daw::twitter::twitter_object_t> twitter_result;
 	// ******************************
-	// NoCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked)", sz,
 	  [&]( auto f1 ) {
@@ -177,7 +176,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	             "Missing value" );
 #endif
 	// ******************************
-	// NoCommentSkippingPolicyChecked Escaped Names
+	// Escaped Names
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked, escaped names)", sz,
 	  [&]( auto f1 ) {

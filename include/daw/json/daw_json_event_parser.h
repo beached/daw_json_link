@@ -568,9 +568,8 @@ namespace daw::json {
 			                 ErrorReason::InvalidEndOfValue );
 		}
 
-		template<typename ParsePolicy =
-		           BasicParsePolicy<NoCommentSkippingPolicyChecked.value>,
-		         typename Handler, auto... ParseFlags>
+		template<typename ParsePolicy = DefaultParsePolicy, typename Handler,
+		         auto... ParseFlags>
 		inline void
 		json_event_parser( daw::string_view json_document, Handler &&handler,
 		                   options::parse_flags_t<ParseFlags...> pflags =

@@ -77,7 +77,7 @@ namespace daw::json {
 					return *this;
 				}
 
-				inline constexpr iterator_wrapper operator++( int ) {
+				inline constexpr iterator_wrapper operator++( int ) & {
 					auto result = *this;
 					++ptr;
 					return result;
@@ -88,7 +88,7 @@ namespace daw::json {
 					return *this;
 				}
 
-				inline constexpr iterator_wrapper operator--( int ) {
+				inline constexpr iterator_wrapper operator--( int ) & {
 					auto result = *this;
 					--ptr;
 					return result;

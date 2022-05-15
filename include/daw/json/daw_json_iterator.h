@@ -213,14 +213,11 @@ namespace daw::json {
 				return *this;
 			}
 
-			/***
-			 * Move the parse state to the next element
-			 * @return iterator prior to moving
-			 */
-			inline constexpr json_array_iterator operator++( int ) & {
-				auto tmp = *this;
+			///
+			/// @brief Move the parse state to the next element
+			///
+			inline constexpr void operator++( int ) & {
 				(void)operator++( );
-				return tmp;
 			}
 
 			/***

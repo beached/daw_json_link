@@ -300,9 +300,9 @@ void test_func( ) {
 		  json_sv );
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
-		using iterator_t = daw::json::json_array_iterator<
-		  json_class_no_name<Number2>,
-		  daw::json::json_details::exec_mode_from_tag<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<json_class_no_name<Number2>,
+		                                 ExecModeTypes::simd>;
 
 		auto data = std::vector<Number2>( );
 		data.reserve( NUMVALUES );
@@ -336,9 +336,9 @@ void test_func( ) {
 		  json_sv );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t = daw::json::json_array_iterator<
-		  json_number_no_name<float>,
-		  daw::json::json_details::exec_mode_from_tag<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<json_number_no_name<float>,
+		                                 ExecModeTypes::simd>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -373,9 +373,9 @@ void test_func( ) {
 		  json_sv );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t = daw::json::json_array_iterator<
-		  json_class_no_name<Number2>,
-		  daw::json::json_details::exec_mode_from_tag<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<json_class_no_name<Number2>,
+		                                 ExecModeTypes::simd>;
 
 		auto data = std::vector<Number2>( );
 		data.reserve( NUMVALUES );
@@ -409,9 +409,9 @@ void test_func( ) {
 		  json_sv );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t = daw::json::json_array_iterator<
-		  json_checked_number_no_name<float>,
-		  daw::json::json_details::exec_mode_from_tag<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<json_checked_number_no_name<float>,
+		                                 ExecModeTypes::simd>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -446,9 +446,9 @@ void test_func( ) {
 
 	std::cout << "double sse3 parsing\n";
 	{
-		using iterator_t = daw::json::json_array_iterator<
-		  json_number_no_name<double>,
-		  daw::json::json_details::exec_mode_from_tag<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<json_number_no_name<double>,
+		                                 ExecModeTypes::simd>;
 
 		std::string json_data3 = [] {
 			std::string result = "[";

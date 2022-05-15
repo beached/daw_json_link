@@ -62,7 +62,6 @@ void test( std::string_view json_data,
 	          << " exec model\n*********************************************\n";
 	std::optional<daw::twitter::twitter_object_t> twitter_result;
 	// ******************************
-	// NoCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked)", sz,
 	  [&]( auto f1 ) {
@@ -106,7 +105,7 @@ void test( std::string_view json_data,
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Missing value" );
 
-	// CppCommentSkippingPolicyChecked
+	// Cpp Comments
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(cpp comments)", sz,
 	  [&]( auto f1 ) {
@@ -128,7 +127,7 @@ void test( std::string_view json_data,
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
-	// CppCommentSkippingPolicyUnchecked
+	// Cpp Comments Unchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(cpp comments, unchecked)", sz,
 	  [&]( auto f1 ) {
@@ -197,7 +196,7 @@ void test( std::string_view json_data,
 	             "Missing value" );
 #endif
 	// ******************************
-	// NoCommentSkippingPolicyChecked Escaped Names
+	// Escaped Names
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked, escaped names)", sz,
 	  [&]( auto f1 ) {
@@ -208,7 +207,7 @@ void test( std::string_view json_data,
 		      f1,
 		      boost::container::pmr::polymorphic_allocator<
 		        daw::twitter::twitter_object_t>( alloc ),
-		      parse_flags<ExecMode> );
+		      parse_flags<ExecMode, AllowEscapedNames::yes> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -230,7 +229,7 @@ void test( std::string_view json_data,
 		      f1,
 		      boost::container::pmr::polymorphic_allocator<
 		        daw::twitter::twitter_object_t>( alloc ),
-		      parse_flags<ExecMode, CheckedParseMode::no> );
+		      parse_flags<ExecMode, CheckedParseMode::no, AllowEscapedNames::yes> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );

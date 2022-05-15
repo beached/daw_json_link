@@ -28,11 +28,11 @@ std::vector<T> make_random_data( ) {
 	}
 	return result;
 }
-
-template<typename ExecTag, size_t N>
+using namespace daw::json::options;
+template<ExecModeTypes ExecMode, size_t N>
 void test( ) {
-	std::cout << "Using " << ExecTag::name
-	          << " exec model\n*********************************************\n";
+	std::cout << "Using " << to_string( ExecMode )
+	          << " exec model\n********************************************\n";
 	{
 		std::cout << "unsigned test\n";
 		using namespace daw::json;
@@ -43,8 +43,7 @@ void test( ) {
 		json_data += "                "; // Ensure SIMD has enough rooom to go full
 		std::vector<unsigned> const parsed_1 =
 		  from_json_array<json_number_no_name<unsigned>, std::vector<unsigned>>(
-		    json_data,
-		    options::parse_flags<json_details::exec_mode_from_tag<ExecTag>> );
+		    json_data, parse_flags<ExecMode> );
 		test_assert( parsed_1 == data, "Failure to parse unsigned" );
 	}
 
@@ -58,8 +57,7 @@ void test( ) {
 		json_data += "        "; // so that SSE has enough room to safely parse
 		std::vector<signed> const parsed_1 =
 		  from_json_array<json_number_no_name<signed>, std::vector<signed>>(
-		    json_data,
-		    options::parse_flags<json_details::exec_mode_from_tag<ExecTag>> );
+		    json_data, parse_flags<ExecMode> );
 		test_assert( parsed_1 == data, "Failure to parse signed" );
 	}
 }
@@ -69,11 +67,11 @@ int main( int, char ** )
   try
 #endif
 {
-	test<daw::json::constexpr_exec_tag, 1000>( );
-	test<daw::json::runtime_exec_tag, 1000>( );
+	test<ExecModeTypes::compile_time, 1000>( );
+	test<ExecModeTypes::runtime, 1000>( );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag, 1000>( );
+		test<ExecModeTypes::simd, 1000>( );
 	}
 }
 #ifdef DAW_USE_EXCEPTIONS
