@@ -57,19 +57,40 @@ namespace daw {
 		 * @return A value_type with the current value
 		 * @pre has_value( ) == true
 		 */
-		static value_type read( T const & );
+		inline constexpr value_type read( T const &v ) const noexcept {
+			return v;
+		}
 		/***
 		 * @brief Construct a value in readable type and return it
 		 */
-		readable_type operator( )( construct_readable_value_t ) const;
+		inline constexpr readable_type
+		operator( )( construct_readable_value_t ) const
+		  noexcept( std::is_nothrow_default_constructible_v<value_type> ) {
+			return value_type{ };
+		}
 		/***
 		 * @brief Return an empty readable type
 		 */
-		readable_type operator( )( construct_readable_empty_t ) const;
+		template<
+		  typename... Args,
+		  std::enable_if_t<readable_impl::is_readable_value_type_constructible_v<
+		                     readable_type, Args...>,
+		                   std::nullptr_t> = nullptr>
+		constexpr readable_type operator( )( construct_readable_empty_t,
+		                                     Args &&...args ) const
+		  noexcept( std::is_nothrow_constructible_v<readable_type, Args...> ) {
+			if constexpr( std::is_constructible_v<readable_type, Args...> ) {
+				return T( DAW_FWD( args )... );
+			} else {
+				return T{ DAW_FWD( args )... };
+			}
+		}
 		/***
 		 * @brief Check the state of the readable type for a value
 		 */
-		static bool has_value( T const & );
+		static constexpr bool has_value( T const & ) noexcept {
+			return true;
+		}
 	};
 
 	/***

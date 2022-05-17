@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <daw/json/daw_from_json_fwd.h>
+#include <daw/json/daw_json_link.h>
 
 #include <cstdint>
 #include <optional>
@@ -18,7 +18,8 @@
 
 template<typename T>
 struct opt_construct_a {
-	constexpr std::optional<T> operator( )( ) const {
+	constexpr std::optional<T>
+	operator( )( daw::construct_readable_empty_t ) const {
 		return daw::construct_a<std::optional<T>>( );
 	}
 

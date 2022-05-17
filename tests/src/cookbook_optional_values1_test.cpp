@@ -20,6 +20,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace daw::cookbook_optional_values1 {
@@ -41,19 +42,14 @@ namespace daw::cookbook_optional_values1 {
 	 * This is used for nullables who's member is a unique_ptr.
 	 * @tparam T Type of value stored in unique_ptr
 	 */
-	template<typename T>
-	struct UniquePtrConstructor {
-		static_assert( not details::is_unique_ptr_v<T>,
-		               "T should be the type contained in the unique_ptr" );
 
-		inline constexpr std::unique_ptr<T> operator( )( ) const {
+	struct UniquePtrConstructor {
+		inline std::unique_ptr<bool> operator( )( ) const {
 			return { };
 		}
 
-		template<typename Arg, typename... Args>
-		inline std::unique_ptr<T> operator( )( Arg &&arg, Args &&...args ) const {
-			return std::make_unique<T>( std::forward<Arg>( arg ),
-			                            std::forward<Args>( args )... );
+		inline std::unique_ptr<bool> operator( )( bool value ) const {
+			return std::make_unique<bool>( value );
 		}
 	};
 
@@ -81,10 +77,10 @@ namespace daw::json {
 		static constexpr char const member2[] = "member2";
 		using type = json_member_list<
 		  json_number_null<member0, std::optional<int>>, json_string<member1>,
-		  json_bool<member2, std::unique_ptr<bool>,
-		            bool_opt( LiteralAsStringOpt::Never,
-		                      JsonNullable::NullVisible ),
-		            daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
+		  json_bool_null<member2, std::unique_ptr<bool>,
+		                 bool_opt( LiteralAsStringOpt::Never,
+		                           JsonNullable::NullVisible ),
+		                 daw::cookbook_optional_values1::UniquePtrConstructor>>;
 
 		static inline auto to_json_data(
 		  daw::cookbook_optional_values1::MyOptionalStuff1 const &value ) {

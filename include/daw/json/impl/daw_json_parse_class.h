@@ -183,7 +183,8 @@ namespace daw::json {
 					OldClassPos const &old_class_pos;
 
 					DAW_ATTRIB_INLINE
-					CPP20CONSTEXPR ~class_cleanup( ) noexcept( not use_daw_json_exceptions_v ) {
+					CPP20CONSTEXPR ~class_cleanup( ) noexcept(
+					  not use_daw_json_exceptions_v ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 							class_cleanup_now<AllMembersMustExist>( parse_state,
@@ -223,7 +224,7 @@ namespace daw::json {
 			[[nodiscard]] constexpr json_result<JsonClass>
 			parse_json_class( ParseState &parse_state, std::index_sequence<Is...> ) {
 				static_assert( is_a_json_type_v<JsonClass> );
-				using T = typename JsonClass::base_type;
+				using T = typename JsonClass::parse_to_t;
 				using Constructor = typename JsonClass::constructor_t;
 				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
 				using must_exist = daw::constant<(
@@ -247,11 +248,15 @@ namespace daw::json {
 					  json_details::all_json_members_must_exist_v<T, ParseState>>(
 					  parse_state, old_class_pos );
 
-					if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
+					if constexpr( force_aggregate_construction_v<T> ) {
 						return T{ };
 					} else {
-						return construct_value( template_args<T, Constructor>,
-						                        parse_state );
+						return construct_value_tp<T, Constructor>( parse_state,
+						                                           fwd_pack{ } );
+						/*
+						            return construct_value( template_args<T, Constructor>,
+						                                    parse_state );
+						                                    */
 					}
 				} else {
 					using NeedClassPositions = std::bool_constant<(

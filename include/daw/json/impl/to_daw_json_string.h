@@ -609,7 +609,7 @@ namespace daw::json {
 					using JsonMember =
 					  typename pack_element<idx, typename element_t::element_map_t>::type;
 					it = to_daw_json_string<JsonMember>(
-					  ParseTag<JsonMember::base_expected_type>{ }, it,
+					  ParseTag<JsonMember::expected_type>{ }, it,
 					  daw::get_nt<idx>( value ) );
 				}
 			}
@@ -656,12 +656,16 @@ namespace daw::json {
 				if( not readable_value_has_value( value ) ) {
 					return utils::copy_to_iterator( it, "null" );
 				}
-				using tag_type = ParseTag<JsonMember::base_expected_type>;
+				using member_type = typename JsonMember::member_type;
+				using tag_type = ParseTag<member_type::expected_type>;
+				return to_daw_json_string<member_type>(
+				  tag_type{ }, it, readable_value_traits<Optional>::read( value ) );
+				/*
 				if constexpr( json_details::has_op_star_v<Optional> ) {
-					return to_daw_json_string<JsonMember>( tag_type{ }, it, *value );
+				  return to_daw_json_string<member_type>( tag_type{ }, it, *value );
 				} else {
-					return to_daw_json_string<JsonMember>( tag_type{ }, it, value );
-				}
+				  return to_daw_json_string<member_type>( tag_type{ }, it, value );
+				}*/
 			}
 
 			template<typename JsonMember, typename OutputIterator,
@@ -1419,10 +1423,12 @@ namespace daw::json {
 				using daw::get;
 				using std::get;
 				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
-				if constexpr( JsonMember::nullable == JsonNullable::Nullable ) {
-					// We have no requirement to output this member when it's null
-					if( not get<pos>( args ) ) {
-						return;
+				if constexpr( is_json_nullable_v<JsonMember> ) {
+					if constexpr( JsonMember::nullable == JsonNullable::Nullable ) {
+						// We have no requirement to output this member when it's null
+						if( not get<pos>( args ) ) {
+							return;
+						}
 					}
 				}
 				if( daw::algorithm::contains( std::data( visited_members ),
@@ -1471,8 +1477,7 @@ namespace daw::json {
 				}
 				visited_members.push_back( json_member_name );
 				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
-				if constexpr( is_json_nullable_v<JsonMember> and
-				              JsonMember::nullable == JsonNullable::Nullable ) {
+				if constexpr( is_json_nullable_v<JsonMember> ) {
 					if( not readable_value_has_value( get<pos>( tp ) ) ) {
 						return;
 					}

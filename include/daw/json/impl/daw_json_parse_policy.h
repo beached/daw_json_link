@@ -47,18 +47,21 @@ namespace daw::json {
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 
-			static constexpr json_details::json_options_t policy_flags = PolicyFlags;
+			static DAW_CONSTEVAL json_details::json_options_t policy_flags( ) {
+				return PolicyFlags;
+			}
 
 			/***
 			 * Allow temporarily setting a sentinel in the buffer to reduce range
 			 * checking costs
 			 */
-			static constexpr bool allow_temporarily_mutating_buffer =
-			  json_details::get_bits_for<options::TemporarilyMutateBuffer>(
-			    PolicyFlags ) == options::TemporarilyMutateBuffer::yes;
+			static DAW_CONSTEVAL bool allow_temporarily_mutating_buffer( ) {
+				return json_details::get_bits_for<options::TemporarilyMutateBuffer>(
+				         PolicyFlags ) == options::TemporarilyMutateBuffer::yes;
+			}
 
-			using CharT =
-			  std::conditional_t<allow_temporarily_mutating_buffer, char, char const>;
+			using CharT = std::conditional_t<allow_temporarily_mutating_buffer( ),
+			                                 char, char const>;
 			using iterator = CharT *;
 
 			/***
@@ -81,46 +84,55 @@ namespace daw::json {
 			/***
 			 * see options::AllowEscapedNames
 			 */
-			static constexpr bool allow_escaped_names =
-			  json_details::get_bits_for<options::AllowEscapedNames>( PolicyFlags ) ==
-			  options::AllowEscapedNames::yes;
+			static DAW_CONSTEVAL bool allow_escaped_names( ) {
+				return json_details::get_bits_for<options::AllowEscapedNames>(
+				         PolicyFlags ) == options::AllowEscapedNames::yes;
+			}
 
 			/***
 			 * see options::ForceFullNameCheck
 			 */
-			static constexpr bool force_name_equal_check =
-			  json_details::get_bits_for<options::ForceFullNameCheck>(
-			    PolicyFlags ) == options::ForceFullNameCheck::yes;
+			static DAW_CONSTEVAL bool force_name_equal_check( ) {
+				return json_details::get_bits_for<options::ForceFullNameCheck>(
+				         PolicyFlags ) == options::ForceFullNameCheck::yes;
+			}
 
 			/***
 			 * see options::ZeroTerminatedString
 			 */
-			static constexpr bool is_zero_terminated_string =
-			  json_details::get_bits_for<options::ZeroTerminatedString>(
-			    PolicyFlags ) == options::ZeroTerminatedString::yes;
+			static DAW_CONSTEVAL bool is_zero_terminated_string( ) {
+				return json_details::get_bits_for<options::ZeroTerminatedString>(
+				         PolicyFlags ) == options::ZeroTerminatedString::yes;
+			}
 
 			/***
 			 * See options::IEEE754Precise
 			 */
-			static constexpr bool precise_ieee754 =
-			  json_details::get_bits_for<options::IEEE754Precise>( PolicyFlags ) ==
-			  options::IEEE754Precise::yes;
+			static DAW_CONSTEVAL bool precise_ieee754( ) {
+				return json_details::get_bits_for<options::IEEE754Precise>(
+				         PolicyFlags ) == options::IEEE754Precise::yes;
+			}
 
 			/***
 			 * See options::MinifiedDocument
 			 */
-			static constexpr bool minified_document =
-			  json_details::get_bits_for<options::MinifiedDocument>( PolicyFlags ) ==
-			  options::MinifiedDocument::yes;
+			static DAW_CONSTEVAL bool minified_document( ) {
+				return json_details::get_bits_for<options::MinifiedDocument>(
+				         PolicyFlags ) == options::MinifiedDocument::yes;
+			}
 
 			/***
 			 * See options::ExcludeSpecialEscapes
 			 */
-			static constexpr bool exclude_special_escapes =
-			  json_details::get_bits_for<options::ExcludeSpecialEscapes>(
-			    PolicyFlags ) == options::ExcludeSpecialEscapes::yes;
+			static DAW_CONSTEVAL bool exclude_special_escapes( ) {
+				return json_details::get_bits_for<options::ExcludeSpecialEscapes>(
+				         PolicyFlags ) == options::ExcludeSpecialEscapes::yes;
+			}
 
-			static constexpr bool allow_leading_zero_plus = true;
+			/// @brief Allow numbers with leading zeros and pluses when parsing
+			static DAW_CONSTEVAL bool allow_leading_zero_plus( ) {
+				return true;
+			}
 
 			using as_unchecked =
 			  BasicParsePolicy<json_details::set_bits(
@@ -302,7 +314,7 @@ namespace daw::json {
 				if( not first ) {
 					return true;
 				}
-				if constexpr( is_zero_terminated_string ) {
+				if constexpr( is_zero_terminated_string( ) ) {
 					return first >= last or *first == '\0';
 				} else {
 					return first >= last;
@@ -471,7 +483,7 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE inline constexpr void
 			move_next_member_or_end_checked( ) {
 				trim_left_checked( );
-				if constexpr( is_zero_terminated_string ) {
+				if constexpr( is_zero_terminated_string( ) ) {
 					if( *first == ',' ) {
 						++first;
 						trim_left( );

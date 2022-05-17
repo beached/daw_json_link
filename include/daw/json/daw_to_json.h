@@ -39,7 +39,7 @@ namespace daw::json {
 					} else {
 						return serialization_policy<typename OutputIterator::iterator_type,
 						                            json_details::serialization::set_bits(
-						                              OutputIterator::policy_flags,
+						                              OutputIterator::policy_flags( ),
 						                              PolicyFlags... )>( it.get( ) );
 					}
 				} else {
@@ -91,7 +91,7 @@ namespace daw::json {
 					} else {
 						return serialization_policy<typename OutputIterator::iterator_type,
 						                            json_details::serialization::set_bits(
-						                              OutputIterator::policy_flags,
+						                              OutputIterator::policy_flags( ),
 						                              PolicyFlags... )>( it.get( ) );
 					}
 				} else {
@@ -145,9 +145,8 @@ namespace daw::json {
 		[[maybe_unused, nodiscard]] constexpr Result
 		to_json_array( Container const &c,
 		               options::output_flags_t<PolicyFlags...> flags ) {
-			static_assert(
-			  traits::is_container_like_v<Container>,
-			  "Supplied container must support begin( )/end( )" );
+			static_assert( traits::is_container_like_v<Container>,
+			               "Supplied container must support begin( )/end( )" );
 			using iter_t = basic_appender<Result>;
 			Result result{ };
 

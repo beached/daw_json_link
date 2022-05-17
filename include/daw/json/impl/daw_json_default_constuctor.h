@@ -183,21 +183,20 @@ namespace daw::json {
 			using value_type = readable_value_type_t<T>;
 			using rtraits_t = readable_value_traits<T>;
 
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto operator( )( ) const
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
+			operator( )( construct_readable_empty_t ) const
 			  noexcept( is_readable_empty_nothrow_constructible_v<T> ) {
 				static_assert( is_readable_empty_constructible_v<T> );
 				return rtraits_t{ }( construct_readable_empty );
 			}
 
-			template<
-			  typename Arg, typename... Args,
-			  std::enable_if_t<is_readable_value_constructible_v<T, Arg, Args...>,
-			                   std::nullptr_t> = nullptr>
+			template<typename... Args,
+			         std::enable_if_t<is_readable_value_constructible_v<T, Args...>,
+			                          std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( Arg &&arg, Args &&...args ) const
-			  noexcept( is_readable_value_nothrow_constructible_v<T, Arg, Args...> ) {
-				return rtraits_t{ }( construct_readable_value, DAW_FWD( arg ),
-				                     DAW_FWD( args )... );
+			operator( )( Args &&...args ) const
+			  noexcept( is_readable_value_nothrow_constructible_v<T, Args...> ) {
+				return rtraits_t{ }( construct_readable_value, DAW_FWD( args )... );
 			}
 		};
 	} // namespace DAW_JSON_VER

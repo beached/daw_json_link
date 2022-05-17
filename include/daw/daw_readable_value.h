@@ -35,6 +35,17 @@ namespace daw {
 			return *val;
 		}
 
+		constexpr readable_type operator( )( construct_readable_value_t,
+		                                     readable_type const &opt ) const
+		  noexcept( std::is_nothrow_copy_constructible_v<readable_type> ) {
+			return opt;
+		}
+		constexpr readable_type operator( )( construct_readable_value_t,
+		                                     readable_type &&opt ) const
+		  noexcept( std::is_nothrow_move_constructible_v<readable_type> ) {
+			return opt;
+		}
+
 		template<
 		  typename... Args,
 		  std::enable_if_t<readable_impl::is_readable_value_type_constructible_v<
@@ -75,6 +86,12 @@ namespace daw {
 		static constexpr value_type const &read( readable_type const &val ) {
 			assert( has_value( val ) );
 			return *val;
+		}
+
+		constexpr readable_type operator( )( construct_readable_value_t,
+		                                     readable_type &&opt ) const
+		  noexcept( std::is_nothrow_move_constructible_v<readable_type> ) {
+			return opt;
 		}
 
 		template<
@@ -119,6 +136,17 @@ namespace daw {
 			return *val;
 		}
 
+		constexpr readable_type operator( )( construct_readable_value_t,
+		                                     readable_type const &opt ) const
+		  noexcept( std::is_nothrow_copy_constructible_v<readable_type> ) {
+			return opt;
+		}
+		constexpr readable_type operator( )( construct_readable_value_t,
+		                                     readable_type &&opt ) const
+		  noexcept( std::is_nothrow_move_constructible_v<readable_type> ) {
+			return opt;
+		}
+
 		template<
 		  typename... Args,
 		  std::enable_if_t<readable_impl::is_readable_value_type_constructible_v<
@@ -159,6 +187,11 @@ namespace daw {
 		static constexpr value_type const &read( readable_type const &val ) {
 			assert( has_value( val ) );
 			return *val;
+		}
+
+		constexpr readable_type operator( )( construct_readable_value_t,
+		                                     readable_type ptr ) const noexcept {
+			return ptr;
 		}
 
 		template<

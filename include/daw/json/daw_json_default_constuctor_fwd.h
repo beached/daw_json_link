@@ -71,12 +71,12 @@ namespace daw::json {
 		struct is_default_constructor
 		  : std::bool_constant<is_default_constructor_v<T, Ignore...>> {};
 
-		/***
-		 * Default constructor for nullable types.
-		 * Specializations must accept accept an operator( )( ) that signifies a
-		 * JSON null. Any other arguments only need to be valid to construct the
-		 * type.
-		 */
+		///
+		/// @brief Default constructor for nullable types.
+		/// Specializations must accept accept an operator( )( ) that signifies a
+		/// JSON null. Any other arguments only need to be valid to construct the
+		/// type.
+		///
 		template<typename T, typename = void>
 		struct nullable_constructor : default_constructor<T> {
 			/// used for types like string_view that have an empty state

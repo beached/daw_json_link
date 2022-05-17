@@ -148,15 +148,15 @@ namespace daw::json {
 						first = mem_skip_until_end_of_string<false>(
 						  ParseState::exec_tag, first, last, need_slow_path );
 					} else {
-						if constexpr( not ParseState::exclude_special_escapes ) {
+						if constexpr( not ParseState::exclude_special_escapes( ) ) {
 							if( CharT *const l = parse_state.last; l - first >= 8 ) {
 								skip_to_first8( first, l );
 							} else if( last - first >= 4 ) {
 								skip_to_first4( first, l );
 							}
 						}
-						if constexpr( ParseState::is_zero_terminated_string ) {
-							if constexpr( ParseState::exclude_special_escapes ) {
+						if constexpr( ParseState::is_zero_terminated_string( ) ) {
+							if constexpr( ParseState::exclude_special_escapes( ) ) {
 								while( *first != '\0' ) {
 									char c = *first;
 									daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
@@ -206,7 +206,7 @@ namespace daw::json {
 								}
 							}
 						} else {
-							if constexpr( ParseState::exclude_special_escapes ) {
+							if constexpr( ParseState::exclude_special_escapes( ) ) {
 								while( first < last ) {
 									char c = *first;
 									daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
@@ -257,7 +257,7 @@ namespace daw::json {
 							}
 						}
 					}
-					if constexpr( ParseState::is_zero_terminated_string ) {
+					if constexpr( ParseState::is_zero_terminated_string( ) ) {
 						daw_json_assert_weak( *first == '"', ErrorReason::InvalidString,
 						                      parse_state );
 					} else {

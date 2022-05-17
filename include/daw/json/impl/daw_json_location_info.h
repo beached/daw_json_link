@@ -178,7 +178,7 @@ namespace daw::json {
 #else
 				// DAW
 				constexpr bool do_full_name_match =
-				  ParseState::force_name_equal_check or
+				  ParseState::force_name_equal_check( ) or
 				  do_hashes_collide<JsonMembers...>( );
 				if constexpr( do_full_name_match ) {
 					return locations_info_t<sizeof...( JsonMembers ), CharT,

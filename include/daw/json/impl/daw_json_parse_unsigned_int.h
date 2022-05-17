@@ -150,7 +150,7 @@ namespace daw::json {
 					result += static_cast<uresult_t>( parse_8_digits( first ) );
 					first += 8;
 				}
-				if constexpr( ParseState::is_zero_terminated_string ) {
+				if constexpr( ParseState::is_zero_terminated_string( ) ) {
 					auto dig = parse_digit( *first );
 					while( dig < 10U ) {
 						result *= 10U;
@@ -226,7 +226,7 @@ namespace daw::json {
 					result += static_cast<uresult_t>( parse_8_digits( first ) );
 					first += 8;
 				}
-				if constexpr( ParseState::is_zero_terminated_string ) {
+				if constexpr( ParseState::is_zero_terminated_string( ) ) {
 					auto dig = parse_digit( *first );
 					while( dig < 10U ) {
 						result *= 10U;

@@ -115,7 +115,7 @@ namespace daw::json {
 				  daw::numeric_limits<std::uint64_t>::digits10 )>;
 				bool use_strtod = [&] {
 					if constexpr( std::is_floating_point_v<Result> and
-					              ParseState::precise_ieee754 ) {
+					              ParseState::precise_ieee754( ) ) {
 						return DAW_UNLIKELY(
 						  ( ( whole_last - whole_first ) +
 						    ( fract_first ? fract_last - fract_first : 0 ) ) >
@@ -156,7 +156,7 @@ namespace daw::json {
 				} else {
 					whole_exponent_available =
 					  max_exponent::value - whole_exponent_available;
-					if constexpr( ParseState::precise_ieee754 ) {
+					if constexpr( ParseState::precise_ieee754( ) ) {
 						use_strtod |= DAW_UNLIKELY( fract_exponent_available >
 						                            whole_exponent_available );
 					}
@@ -167,11 +167,11 @@ namespace daw::json {
 				}
 
 				unsigned_t significant_digits = 0;
-				parse_digits_until_last<( ParseState::is_zero_terminated_string or
+				parse_digits_until_last<( ParseState::is_zero_terminated_string( ) or
 				                          ParseState::is_unchecked_input )>(
 				  whole_first, whole_last, significant_digits );
 				if( fract_first ) {
-					parse_digits_until_last<( ParseState::is_zero_terminated_string or
+					parse_digits_until_last<( ParseState::is_zero_terminated_string( ) or
 					                          ParseState::is_unchecked_input )>(
 					  fract_first, fract_last, significant_digits );
 				}
@@ -197,7 +197,7 @@ namespace daw::json {
 					  [&] {
 						  unsigned_t exp_result = 0;
 						  // TODO use zstringopt
-						  if constexpr( ParseState::is_zero_terminated_string ) {
+						  if constexpr( ParseState::is_zero_terminated_string( ) ) {
 							  auto dig = parse_digit( *exp_first );
 							  while( dig < 10U ) {
 								  ++exp_first;
@@ -227,7 +227,7 @@ namespace daw::json {
 					  exp_sign );
 				}
 				if constexpr( std::is_floating_point_v<Result> and
-				              ParseState::precise_ieee754 ) {
+				              ParseState::precise_ieee754( ) ) {
 					use_strtod |= DAW_UNLIKELY( exponent > 22 );
 					use_strtod |= DAW_UNLIKELY( exponent < -22 );
 					use_strtod |=
@@ -283,22 +283,22 @@ namespace daw::json {
 
 				unsigned_t significant_digits = 0;
 				CharT *last_char =
-				  parse_digits_while_number<( ParseState::is_zero_terminated_string or
+				  parse_digits_while_number<( ParseState::is_zero_terminated_string( ) or
 				                              ParseState::is_unchecked_input )>(
 				    first, whole_last, significant_digits );
 				std::ptrdiff_t sig_digit_count = last_char - parse_state.first;
 				bool use_strtod =
-				  std::is_floating_point_v<Result> and ParseState::precise_ieee754 and
+				  std::is_floating_point_v<Result> and ParseState::precise_ieee754( ) and
 				  DAW_UNLIKELY( sig_digit_count > max_storage_digits::value );
 				signed_t exponent_p1 = [&] {
 					if( DAW_UNLIKELY( last_char >= whole_last ) ) {
 						if constexpr( std::is_floating_point_v<Result> and
-						              ParseState::precise_ieee754 ) {
+						              ParseState::precise_ieee754( ) ) {
 							use_strtod = true;
 						}
 						// We have sig digits we cannot parse because there isn't enough
 						// room in a std::uint64_t
-						CharT *ptr = skip_digits<( ParseState::is_zero_terminated_string or
+						CharT *ptr = skip_digits<( ParseState::is_zero_terminated_string( ) or
 						                           ParseState::is_unchecked_input )>(
 						  last_char, parse_state.last );
 						auto const diff = ptr - last_char;
@@ -313,14 +313,14 @@ namespace daw::json {
 				}( );
 
 				first = last_char;
-				if( ( ParseState::is_zero_terminated_string or
+				if( ( ParseState::is_zero_terminated_string( ) or
 				      ParseState::is_unchecked_input or
 				      DAW_LIKELY( first < parse_state.last ) ) and
 				    *first == '.' ) {
 					++first;
 					if( exponent_p1 != 0 ) {
 						if( first < parse_state.last ) {
-							first = skip_digits<( ParseState::is_zero_terminated_string or
+							first = skip_digits<( ParseState::is_zero_terminated_string( ) or
 							                      ParseState::is_unchecked_input )>(
 							  first, parse_state.last );
 						}
@@ -332,7 +332,7 @@ namespace daw::json {
 						                          ( first - parse_state.first ) ) );
 
 						last_char = parse_digits_while_number<(
-						  ParseState::is_zero_terminated_string or
+						  ParseState::is_zero_terminated_string( ) or
 						  ParseState::is_unchecked_input )>( first, fract_last,
 						                                     significant_digits );
 						sig_digit_count += last_char - first;
@@ -340,11 +340,11 @@ namespace daw::json {
 						first = last_char;
 						if( ( first >= fract_last ) & ( first < parse_state.last ) ) {
 							auto new_first =
-							  skip_digits<( ParseState::is_zero_terminated_string or
+							  skip_digits<( ParseState::is_zero_terminated_string( ) or
 							                ParseState::is_unchecked_input )>(
 							    first, parse_state.last );
 							if constexpr( std::is_floating_point_v<Result> and
-							              ParseState::precise_ieee754 ) {
+							              ParseState::precise_ieee754( ) ) {
 								use_strtod |= new_first > first;
 							}
 							first = new_first;
@@ -357,7 +357,7 @@ namespace daw::json {
 					    ( ( *first | 0x20 ) == 'e' ) ) {
 						++first;
 						signed_t const exp_sign = [&] {
-							daw_json_assert_weak( ( ParseState::is_zero_terminated_string or
+							daw_json_assert_weak( ( ParseState::is_zero_terminated_string( ) or
 							                        first < parse_state.last ),
 							                      ErrorReason::UnexpectedEndOfData,
 							                      parse_state.copy( first ) );
@@ -385,7 +385,7 @@ namespace daw::json {
 						                      parse_state );
 						unsigned_t exp_tmp = 0;
 						last_char = parse_digits_while_number<(
-						  ParseState::is_zero_terminated_string or
+						  ParseState::is_zero_terminated_string( ) or
 						  ParseState::is_unchecked_input )>( first, parse_state.last,
 						                                     exp_tmp );
 						first = last_char;
@@ -427,7 +427,7 @@ namespace daw::json {
 				parse_state.first = first;
 
 				if constexpr( std::is_floating_point_v<Result> and
-				              ParseState::precise_ieee754 ) {
+				              ParseState::precise_ieee754( ) ) {
 					use_strtod |= DAW_UNLIKELY( exponent > 22 );
 					use_strtod |= DAW_UNLIKELY( exponent < -22 );
 					use_strtod |=

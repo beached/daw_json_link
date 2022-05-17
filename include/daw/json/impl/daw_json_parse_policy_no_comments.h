@@ -31,7 +31,7 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_checked( ParseState &parse_state ) {
-				if constexpr( ParseState::minified_document ) {
+				if constexpr( ParseState::minified_document( ) ) {
 					return;
 				} else {
 					using CharT = typename ParseState::CharT;
@@ -42,7 +42,7 @@ namespace daw::json {
 					// only used when not zero terminated string and gcc9 warns
 					(void)last;
 
-					if constexpr( ParseState::is_zero_terminated_string ) {
+					if constexpr( ParseState::is_zero_terminated_string( ) ) {
 						// Ensure that zero terminator isn't included in skipable value
 						while( DAW_UNLIKELY(
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
@@ -65,7 +65,7 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_unchecked( ParseState &parse_state ) {
-				if constexpr( ParseState::minified_document ) {
+				if constexpr( ParseState::minified_document( ) ) {
 					return;
 				} else {
 					using CharT = typename ParseState::CharT;
@@ -112,7 +112,7 @@ namespace daw::json {
 					// blocks
 					(void)last;
 
-					if( ParseState::is_zero_terminated_string ) {
+					if( ParseState::is_zero_terminated_string( ) ) {
 						daw_json_assert_weak( first < last and *first != '\0',
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
@@ -157,7 +157,7 @@ namespace daw::json {
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}
-				if constexpr( ParseState::is_zero_terminated_string ) {
+				if constexpr( ParseState::is_zero_terminated_string( ) ) {
 					daw_json_assert( ptr_first < ptr_last,
 					                 ErrorReason::UnexpectedEndOfData, parse_state );
 					while( *ptr_first != 0 ) {
