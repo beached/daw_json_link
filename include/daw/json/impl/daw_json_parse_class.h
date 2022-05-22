@@ -70,10 +70,10 @@ namespace daw::json {
 
 				if( DAW_UNLIKELY( parse_state.front( ) == ']' ) ) {
 					if constexpr( is_json_nullable_v<json_member_t> ) {
-						using constructor_t = typename json_member_t::constructor_t;
-						return construct_value(
-						  template_args<json_result<json_member_t>, constructor_t>,
-						  parse_state );
+
+						auto loc = ParseState{ };
+						return parse_value<without_name<json_member_t>, true>(
+						  loc, ParseTag<json_member_t::expected_type>{ } );
 					} else {
 						daw_json_error( missing_member( "ordered_class_member" ),
 						                parse_state );

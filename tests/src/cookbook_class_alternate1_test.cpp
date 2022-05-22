@@ -31,10 +31,11 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( ) {
+	using namespace daw::json;
 	std::string_view const jsonA = R"({ "a": 42 } )";
 	std::string_view const jsonB = R"([ 42 ] )";
-	Thing a = daw::json::from_json<Thing>( jsonA );
-	Thing b = daw::json::from_json<daw::json::json_alt<Thing>>( jsonB );
+	Thing a = from_json<Thing>( jsonA );
+	Thing b = from_json<json_base::json_class<json_alt<Thing>>>( jsonB );
 	if( a.a != b.a ) {
 		std::cerr << "Error parsing\n";
 		std::terminate( );

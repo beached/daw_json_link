@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include "../../daw_allocator_construct.h"
 #include "daw_json_assert.h"
 #include "daw_json_enums.h"
 #include "daw_json_exec_modes.h"
@@ -63,24 +64,9 @@ namespace daw::json {
 				// Silence MSVC warning, used in other if constexpr case
 				(void)parse_state;
 				if constexpr( ParseState::has_allocator ) {
-					using alloc_t =
-					  typename ParseState::template allocator_type_as<Value>;
 					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
-					auto ctor = Constructor{ };
-					(void)ctor;
-					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
-						return Constructor{ }( DAW_FWD( args )..., DAW_MOVE( alloc ) );
-					} else if constexpr( std::is_invocable_v<Constructor,
-					                                         std::allocator_arg_t,
-					                                         alloc_t, Args...> ) {
-						return Constructor{ }( std::allocator_arg, DAW_MOVE( alloc ),
-						                       DAW_FWD( args )... );
-					} else {
-						static_assert(
-						  std::is_invocable_v<Constructor, Args...>,
-						  "Unable to construct value with the supplied arguments" );
-						return Constructor{ }( DAW_FWD( args )... );
-					}
+					return daw::try_alloc_construct<Value, Constructor>(
+					  DAW_MOVE( alloc ), DAW_FWD( args )... );
 				} else {
 					static_assert(
 					  std::is_invocable_v<Constructor, Args...>,
@@ -189,9 +175,15 @@ namespace daw::json {
 			inline constexpr bool is_submember_tagged_variant_v =
 			  daw::is_detected_v<is_submember_tagged_variant_t, T>;
 
-			template<typename JsonType>
-			static inline constexpr bool is_json_nullable_v =
-			  JsonType::expected_type == JsonParseTypes::Null;
+			template<typename T>
+			using is_json_nullable_test = typename T::i_am_a_json_nullable;
+
+			template<typename T>
+			inline constexpr bool is_json_nullable_v =
+			  daw::is_detected_v<is_json_nullable_test, T>;
+
+			template<typename T>
+			using json_nullable_member_type_t = typename T::member_type;
 
 			/***
 			 * Helpers to set options on json_ types
@@ -234,8 +226,7 @@ namespace daw::json {
 			/// @tparam Constructor Specify a Constructor type or use
 			/// the default nullable_constructor<T>
 			template<typename T, typename Constructor = nullable_constructor<T>,
-			         typename JsonMember = deduced_type,
-			         JsonNullable Nullable = JsonNullable::Nullable>
+			         typename JsonMember = deduced_type>
 			struct json_nullable;
 
 			template<typename T, typename Constructor = default_constructor<T>,
@@ -789,6 +780,16 @@ namespace daw::json {
 					static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
 					               "Detection failure" );
 					return daw::traits::identity<type>{ };
+				} else if constexpr( has_json_link_quick_map_v<T> ) {
+					static_assert( not std::is_same_v<T, void> );
+					using type = json_link_quick_map_t<T>;
+					using rcvref_type = remove_cvref_t<type>;
+					static_assert( not std::is_same_v<rcvref_type, void>,
+					               "Detection failure" );
+					static_assert( not is_nonesuch_v<rcvref_type>, "Detection failure" );
+					static_assert( not std::is_same_v<rcvref_type, void>,
+					               "Detection failure" );
+					return daw::traits::identity<type>{ };
 				} else if constexpr( json_details::is_a_json_type_v<T> ) {
 					static_assert( not std::is_same_v<T, void> );
 					using type =
@@ -798,16 +799,6 @@ namespace daw::json {
 					static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 					               "Detection failure" );
 					static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
-					               "Detection failure" );
-					return daw::traits::identity<type>{ };
-				} else if constexpr( has_json_link_quick_map_v<T> ) {
-					static_assert( not std::is_same_v<T, void> );
-					using type = json_link_quick_map_t<T>;
-					using rcvref_type = remove_cvref_t<type>;
-					static_assert( not std::is_same_v<rcvref_type, void>,
-					               "Detection failure" );
-					static_assert( not is_nonesuch_v<rcvref_type>, "Detection failure" );
-					static_assert( not std::is_same_v<rcvref_type, void>,
 					               "Detection failure" );
 					return daw::traits::identity<type>{ };
 				} else if constexpr( is_container_v<T> ) {
@@ -882,8 +873,28 @@ namespace daw::json {
 			using dependent_member_t = typename JsonMember::dependent_member;
 
 			template<typename JsonMember>
+			using nullable_dependent_member_t =
+			  typename JsonMember::member_type::dependent_member;
+
+			template<typename JsonMember, typename = void>
 			inline constexpr bool has_dependent_member_v =
 			  daw::is_detected_v<dependent_member_t, JsonMember>;
+
+			template<typename JsonMember>
+			inline constexpr bool has_dependent_member_v<
+			  JsonMember, std::enable_if_t<is_json_nullable_v<JsonMember>>> =
+			  daw::is_detected_v<nullable_dependent_member_t, JsonMember>;
+
+			template<typename Constructor>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
+			construct_nullable_empty( ) {
+				if constexpr( std::is_invocable_v<Constructor,
+				                                  construct_readable_empty_t> ) {
+					return Constructor{ }( construct_readable_empty );
+				} else {
+					return Constructor{ }( );
+				}
+			}
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

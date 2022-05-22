@@ -766,8 +766,9 @@ int main( int, char ** )
 	using namespace std::string_literals;
 	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
 	using namespace daw::json;
-	daw::expecting(
-	  not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b );
+	auto oo_result =
+	  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
+	daw::expecting( not oo_result.b );
 	daw::expecting( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
 	daw::expecting( parse_real_test<double>( "5", 5.0 ) );
 	daw::expecting( parse_real_test<double>( "5.5", 5.5 ) );
@@ -790,7 +791,6 @@ int main( int, char ** )
 		  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
 		daw::expecting( not v.b );
 	}
-
 #if( defined( __GNUC__ ) and __GNUC__ <= 9 ) or ( defined( _MSC_VER ) )
 #define CX
 #elif defined( DAW_JSON_NO_CONST_EXPR )

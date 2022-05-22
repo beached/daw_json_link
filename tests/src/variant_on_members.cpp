@@ -59,7 +59,9 @@ struct FooConstructor {
 		return Foo{ };
 	}
 
-	inline Foo operator( )( char const *ptr, std::size_t sz ) const {
+	inline std::variant<A, B> operator( )( char const *ptr,
+	                                       std::size_t sz ) const {
+		using result_t = std::variant<A, B>;
 		auto jv = daw::json::json_value( ptr, sz );
 		assert( jv.is_class( ) );
 		auto state = daw::json::json_value_state( jv );
@@ -67,10 +69,10 @@ struct FooConstructor {
 		auto const has_b = state.index_of( "b" ) < state.size( );
 		auto const has_c = state.index_of( "c" ) < state.size( );
 		if( has_a and has_b ) {
-			return Foo{ daw::json::from_json<A>( std::string_view( ptr, sz ) ) };
+			return result_t{ daw::json::from_json<A>( std::string_view( ptr, sz ) ) };
 		}
 		if( has_b and has_c ) {
-			return Foo{ daw::json::from_json<B>( std::string_view( ptr, sz ) ) };
+			return result_t{ daw::json::from_json<B>( std::string_view( ptr, sz ) ) };
 		}
 		throw std::runtime_error( "Unknown Foo subtype" );
 	}
@@ -82,7 +84,9 @@ namespace daw::json {
 		using constructor_t = FooConstructor;
 		static constexpr char const member[] = "member";
 		using type = json_member_list<
-		  json_raw_null<member, std::optional<Foo>, FooConstructor>>;
+		  json_nullable<member, std::optional<std::variant<A, B>>,
+		                nullable_constructor<std::optional<std::variant<A, B>>>,
+		                json_base::json_raw<std::variant<A, B>, FooConstructor>>>;
 
 		static inline auto to_json_data( Foo const &foo ) {
 			if( not foo.member ) {

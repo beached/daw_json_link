@@ -53,18 +53,16 @@ namespace daw::json {
 			 * If the string is known to have a trailing zero, allow optimization on
 			 * that
 			 */
-			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              options::ZeroTerminatedString::yes>;
+			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
+			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     options::TemporarilyMutateBuffer::yes,
-			                                     options::TemporarilyMutateBuffer::no>;
+			using ParseState = json_details::apply_mutable_policy<
+			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
+			  options::TemporarilyMutateBuffer::no>;
 			auto parse_state =
 			  ParseState( std::data( json_data ), daw::data_end( json_data ) );
 
@@ -120,18 +118,16 @@ namespace daw::json {
 			 * If the string is known to have a trailing zero, allow optimization on
 			 * that
 			 */
-			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              options::ZeroTerminatedString::yes>;
+			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
+			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     options::TemporarilyMutateBuffer::yes,
-			                                     options::TemporarilyMutateBuffer::no>;
+			using ParseState = json_details::apply_mutable_policy<
+			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
+			  options::TemporarilyMutateBuffer::no>;
 
 			auto parse_state = ParseState::with_allocator( f, l, a );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
@@ -186,24 +182,23 @@ namespace daw::json {
 			 * If the string is known to have a trailing zero, allow optimization on
 			 * that
 			 */
-			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              options::ZeroTerminatedString::yes>;
+			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
+			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     options::TemporarilyMutateBuffer::yes,
-			                                     options::TemporarilyMutateBuffer::no>;
+			using ParseState = json_details::apply_mutable_policy<
+			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
+			  options::TemporarilyMutateBuffer::no>;
 
 			auto [is_found, parse_state] = json_details::find_range<ParseState>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
-			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
+			if constexpr( json_details::is_json_nullable_v<JsonMember> ) {
 				if( not is_found ) {
-					return typename json_member::constructor_t{ }( );
+					return json_details::construct_nullable_empty<
+					  typename json_member::constructor_t>( );
 				}
 			} else {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
@@ -262,24 +257,23 @@ namespace daw::json {
 			 * If the string is known to have a trailing zero, allow optimization on
 			 * that
 			 */
-			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              options::ZeroTerminatedString::yes>;
+			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
+			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     options::TemporarilyMutateBuffer::yes,
-			                                     options::TemporarilyMutateBuffer::no>;
+			using ParseState = json_details::apply_mutable_policy<
+			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
+			  options::TemporarilyMutateBuffer::no>;
 
 			auto [is_found, parse_state] = json_details::find_range<ParseState>(
 			  json_data, { std::data( member_path ), std::size( member_path ) }, a );
-			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
+			if constexpr( json_details::is_json_nullable_v<json_member> ) {
 				if( not is_found ) {
-					return typename json_member::constructor_t{ }( );
+					return json_details::construct_nullable_empty<
+					  typename json_member::constructor_t>( );
 				}
 			} else {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
@@ -355,9 +349,10 @@ namespace daw::json {
 			auto json_data = value.get_state( );
 			auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
-			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
+			if constexpr( json_details::is_json_nullable_v<json_member> ) {
 				if( not is_found ) {
-					return typename json_member::constructor_t{ }( );
+					return json_details::construct_nullable_empty<
+					  typename json_member::constructor_t>( );
 				}
 			} else {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
@@ -410,18 +405,16 @@ namespace daw::json {
 			 * If the string is known to have a trailing zero, allow optimization on
 			 * that
 			 */
-			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              options::ZeroTerminatedString::yes>;
+			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
+			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     options::TemporarilyMutateBuffer::yes,
-			                                     options::TemporarilyMutateBuffer::no>;
+			using ParseState = json_details::apply_mutable_policy<
+			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
+			  options::TemporarilyMutateBuffer::no>;
 
 			auto parse_state =
 			  ParseState{ std::data( json_data ), daw::data_end( json_data ) };
@@ -494,25 +487,24 @@ namespace daw::json {
 			 * If the string is known to have a trailing zero, allow optimization on
 			 * that
 			 */
-			using policy_zstring_t =
-			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                              options::ZeroTerminatedString::yes>;
+			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
+			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
 			/***
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using ParseState =
-			  json_details::apply_mutable_policy<policy_zstring_t, String,
-			                                     options::TemporarilyMutateBuffer::yes,
-			                                     options::TemporarilyMutateBuffer::no>;
+			using ParseState = json_details::apply_mutable_policy<
+			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
+			  options::TemporarilyMutateBuffer::no>;
 
 			auto [is_found, parse_state] = json_details::find_range<ParseState>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
 
-			if constexpr( parser_t::expected_type == JsonParseTypes::Null ) {
+			if constexpr( json_details::is_json_nullable_v<parser_t> ) {
 				if( not is_found ) {
-					return typename parser_t::constructor_t{ }( );
+					return json_details::construct_nullable_empty<
+					  typename parser_t::constructor_t>( );
 				}
 			} else {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );

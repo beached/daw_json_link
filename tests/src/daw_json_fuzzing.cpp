@@ -67,9 +67,10 @@ public:
 			return true;
 		case daw::json::JsonBaseParseTypes::String: {
 			member_preamble( );
-			auto const unescaped =
-			  daw::json::from_json<std::string, ParsePolicy, true>(
-			    p.value.get_string_view( ) );
+			using parse_state_t = DAW_TYPEOF( p.value.get_state( ) );
+			auto sv = p.value.get_string_view( );
+			auto ps = parse_state_t( std::data( sv ), daw::data_end( sv ) );
+			auto const unescaped = daw::json::from_json<std::string, true>( ps );
 
 			daw::json::to_json( unescaped, out_it );
 			return true;
@@ -147,8 +148,9 @@ extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
 #ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
-		auto jv =
-		  daw::json::basic_json_value<daw::json::ConformancePolicy>( json_doc );
+		auto jv = daw::json::basic_json_value<
+		  daw::json::BasicParsePolicy<daw::json::ConformancePolicy.value>>(
+		  json_doc );
 		switch( jv.type( ) ) {
 		case daw::json::JsonBaseParseTypes::Number:
 			ofile << daw::json::from_json<double>( jv );

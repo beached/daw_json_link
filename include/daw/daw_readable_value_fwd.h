@@ -117,7 +117,6 @@ namespace daw {
 	 */
 	template<typename T>
 	constexpr bool readable_value_has_value( T const &opt ) {
-		static_assert( is_readable_value_v<T> );
 		return readable_value_traits<T>::has_value( opt );
 	}
 
@@ -127,7 +126,6 @@ namespace daw {
 	 */
 	template<typename T>
 	constexpr decltype( auto ) readable_value_read( T const &opt ) {
-		static_assert( is_readable_value_v<T> );
 		return readable_value_traits<T>::read( opt );
 	}
 

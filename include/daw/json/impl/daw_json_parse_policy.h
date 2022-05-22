@@ -328,6 +328,7 @@ namespace daw::json {
 
 			template<std::size_t N>
 			inline constexpr bool starts_with( char const ( &rhs )[N] ) const {
+				static_assert( N > 0 );
 				if( size( ) < ( N - 1 ) ) {
 					return false;
 				}
@@ -372,6 +373,7 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t size( ) const {
+				assert( last >= first );
 				return static_cast<std::size_t>( last - first );
 			}
 

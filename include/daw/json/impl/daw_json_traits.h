@@ -34,6 +34,11 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+			template<template<typename...> typename Trait, typename... Params>
+			struct ident_trait {
+				using type = Trait<Params...>;
+			};
+
 			template<typename T>
 			using has_op_bool_test =
 			  decltype( static_cast<bool>( std::declval<T>( ) ) );
@@ -225,6 +230,13 @@ namespace daw::json {
 			template<typename T>
 			using is_a_json_tagged_variant =
 			  std::bool_constant<is_a_json_tagged_variant_v<T>>;
+
+			template<typename T>
+			using json_alt_mapping_test = typename T::i_am_an_alternate_mapping;
+
+			template<typename T>
+			inline constexpr bool is_json_alt_mapping_v =
+			  is_detected_v<json_alt_mapping_test, T>;
 
 			template<typename T, bool, bool>
 			struct json_data_contract_constructor_impl {
@@ -443,10 +455,18 @@ namespace daw::json {
 			template<typename T>
 			using is_tuple = std::bool_constant<is_tuple_v<T>>;
 
+			template<typename T>
+			struct op_star_result {
+				using type = DAW_TYPEOF( *std::declval<T>( ) );
+			};
+			template<typename T>
+			using op_star_result_t = typename op_star_result<T>::type;
+
 			template<typename T, JsonNullable Nullable = JsonNullable::Nullable>
-			using unwrapped_t =
-			  typename std::conditional_t<is_nullable_json_value_v<Nullable>,
-			                              readable_value_type_t<T>, T>;
+			using unwrapped_t = typename std::conditional_t<
+			  is_nullable_json_value_v<Nullable>,
+			  traits::identity<readable_value_type_t<T>>,
+			  std::conditional_t<has_op_star_v<T>, op_star_result<T>, T>>::type;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -20,6 +20,7 @@ namespace daw::json {
 		 */
 		template<typename C, std::size_t Idx = 0>
 		struct json_alt {
+			using i_am_an_alternate_mapping = void;
 			using type = C;
 			static constexpr std::size_t index = Idx;
 		};
@@ -30,6 +31,8 @@ namespace daw::json {
 		 * @tparam I index of alternate mapping
 		 */
 		template<typename T, std::size_t I>
-		struct default_constructor<json_alt<T, I>> : default_constructor<T> {};
+		struct default_constructor<json_alt<T, I>>
+		  : default_constructor<
+		      typename json_details::json_deduced_type<T>::parse_to_t> {};
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

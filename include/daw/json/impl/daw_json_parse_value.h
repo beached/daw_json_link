@@ -296,33 +296,38 @@ namespace daw::json {
 						  parse_state );
 					}
 				};
+
+				using base_member_type = typename JsonMember::member_type;
+				static_assert( not std::is_same_v<base_member_type, JsonMember> );
 				if constexpr( KnownBounds ) {
 					// skip_value will leave a null parse_state
 					if( parse_state.is_null( ) ) {
 						return construct_empty( );
 					}
-					using base_member_type = typename JsonMember::member_type;
 					return construct_value(
-					  template_args<typename JsonMember::wrapped_type, constructor_t>,
-					  parse_state,
+					  template_args<base_member_type, constructor_t>, parse_state,
 					  parse_value<base_member_type, true>(
 					    parse_state, ParseTag<base_member_type::expected_type>{ } ) );
 				} else if constexpr( ParseState::is_unchecked_input ) {
-					if( not parse_state.has_more( ) ) {
+					if( not parse_state.has_more( ) or
+					    parse_state.is_at_token_after_value( ) ) {
 						return construct_empty( );
-					} else if( parse_state.front( ) == 'n' ) {
+					}
+					if( parse_state.front( ) == 'n' ) {
 						parse_state.remove_prefix( 4 );
 						parse_state.trim_left_unchecked( );
 						parse_state.remove_prefix( );
 						return construct_empty( );
 					}
-					using base_member_type = typename JsonMember::member_type;
 					return construct_value(
-					  template_args<typename JsonMember::wrapped_type, constructor_t>,
-					  parse_state,
+					  template_args<base_member_type, constructor_t>, parse_state,
 					  parse_value<base_member_type>(
 					    parse_state, ParseTag<base_member_type::expected_type>{ } ) );
 				} else {
+					if( not parse_state.has_more( ) or
+					    parse_state.is_at_token_after_value( ) ) {
+						return construct_empty( );
+					}
 					if( parse_state.starts_with( "null" ) ) {
 						parse_state.remove_prefix( 4 );
 						daw_json_assert_weak(
@@ -332,10 +337,8 @@ namespace daw::json {
 						parse_state.trim_left_checked( );
 						return construct_empty( );
 					}
-					using base_member_type = typename JsonMember::member_type;
 					return construct_value(
-					  template_args<typename JsonMember::wrapped_type, constructor_t>,
-					  parse_state,
+					  template_args<base_member_type, constructor_t>, parse_state,
 					  parse_value<base_member_type>(
 					    parse_state, ParseTag<base_member_type::expected_type>{ } ) );
 				}
@@ -627,7 +630,7 @@ namespace daw::json {
 			  maybe_unused]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Class> ) {
 
-				using element_t = typename JsonMember::parse_to_t;
+				using element_t = typename JsonMember::wrapped_type;
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 
@@ -657,6 +660,8 @@ namespace daw::json {
 							return json_data_contract_trait_t<element_t>::parse_to_class(
 							  parse_state, template_arg<JsonMember> );
 						} else {
+							auto m = traits::identity<element_t>{ };
+							(void)m;
 							auto result =
 							  json_data_contract_trait_t<element_t>::parse_to_class(
 							    parse_state, template_arg<JsonMember> );

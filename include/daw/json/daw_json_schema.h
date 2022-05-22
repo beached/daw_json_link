@@ -363,7 +363,7 @@ namespace daw::json {
 					out_it = utils::copy_to_iterator( out_it, R"(":)" );
 					out_it.output_space( );
 					out_it = to_json_schema<JsonMember>(
-					  ParseTag<JsonMember::base_expected_type>{ }, out_it );
+					  ParseTag<JsonMember::expected_type>{ }, out_it );
 					if constexpr( Idx + 1 < sizeof...( JsonMembers ) ) {
 						*out_it++ = ',';
 						out_it.next_member( );
@@ -453,7 +453,7 @@ namespace daw::json {
 					*out_it++ = ']';
 
 					static_assert(
-					  not( ( json_link_no_name<JsonMembers>::base_expected_type ==
+					  not( ( json_link_no_name<JsonMembers>::expected_type ==
 					         JsonParseTypes::VariantTagged ) or
 					       ... ),
 					  "A tagged variant is not supported in a tuple/ordered json "
@@ -480,7 +480,7 @@ namespace daw::json {
 					}
 					out_it.next_member( );
 					out_it = to_json_schema<JsonMember>(
-					  ParseTag<JsonMember::base_expected_type>{ }, out_it );
+					  ParseTag<JsonMember::expected_type>{ }, out_it );
 					return out_it;
 				}
 			};
@@ -540,7 +540,7 @@ namespace daw::json {
 							  typename pack_element::template element_t<index>>;
 
 							out_it = to_json_schema<JsonMember>(
-							  ParseTag<JsonMember::base_expected_type>{ }, out_it );
+							  ParseTag<JsonMember::expected_type>{ }, out_it );
 						};
 
 						daw::Empty expander[] = {
@@ -585,7 +585,7 @@ namespace daw::json {
 				out_it.output_space( );
 				using element_t = typename JsonMember::json_element_t;
 				out_it = to_json_schema<element_t>(
-				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				  ParseTag<element_t::expected_type>{ }, out_it );
 				if constexpr( not is_root ) {
 					out_it.del_indent( );
 				}
@@ -619,7 +619,7 @@ namespace daw::json {
 				out_it = utils::output_kv( out_it, R"("additionalProperties")", "" );
 				using element_t = typename JsonMember::json_element_t;
 				out_it = to_json_schema<element_t>(
-				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				  ParseTag<element_t::expected_type>{ }, out_it );
 				if constexpr( not is_root ) {
 					out_it.del_indent( );
 				}
@@ -645,7 +645,7 @@ namespace daw::json {
 				out_it.output_space( );
 				using element_t = typename JsonMember::json_class_t;
 				out_it = to_json_schema<element_t>(
-				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				  ParseTag<element_t::expected_type>{ }, out_it );
 				if constexpr( not is_root ) {
 					out_it.del_indent( );
 				}
@@ -672,7 +672,7 @@ namespace daw::json {
 					}
 					out_it.next_member( );
 					return to_json_schema<JsonElement>(
-					  ParseTag<JsonElement::base_expected_type>{ }, out_it );
+					  ParseTag<JsonElement::expected_type>{ }, out_it );
 				}
 
 				template<typename OutputIterator>
@@ -792,7 +792,7 @@ namespace daw::json {
 			out_it = utils::copy_to_iterator( out_it, R"(",)" );
 			using json_type = json_link_no_name<T>;
 			out_it = json_details::to_json_schema<json_type, true>(
-			  ParseTag<json_type::base_expected_type>{ }, out_it );
+			  ParseTag<json_type::expected_type>{ }, out_it );
 			out_it.del_indent( );
 			out_it.next_member( );
 			*out_it++ = '}';

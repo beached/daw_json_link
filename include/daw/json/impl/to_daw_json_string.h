@@ -649,23 +649,27 @@ namespace daw::json {
 			[[nodiscard]] inline constexpr OutputIterator
 			to_daw_json_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 			                    Optional const &value ) {
-				static_assert( is_readable_value_v<Optional>,
-				               "For _null mappings, it is expected that the data type "
-				               "has operator* and can be read from" );
 
-				if( not readable_value_has_value( value ) ) {
-					return utils::copy_to_iterator( it, "null" );
+				if constexpr( has_op_bool_v<Optional> ) {
+					if( not static_cast<bool>( value ) ) {
+						return utils::copy_to_iterator( it, "null" );
+					}
+				} else {
+					if( not readable_value_has_value( value ) ) {
+						return utils::copy_to_iterator( it, "null" );
+					}
 				}
 				using member_type = typename JsonMember::member_type;
 				using tag_type = ParseTag<member_type::expected_type>;
-				return to_daw_json_string<member_type>(
-				  tag_type{ }, it, readable_value_traits<Optional>::read( value ) );
-				/*
-				if constexpr( json_details::has_op_star_v<Optional> ) {
-				  return to_daw_json_string<member_type>( tag_type{ }, it, *value );
-				} else {
-				  return to_daw_json_string<member_type>( tag_type{ }, it, value );
-				}*/
+				return to_daw_json_string<member_type>( tag_type{ }, it, [&] {
+					if constexpr( is_readable_value_v<Optional> ) {
+						return readable_value_traits<Optional>::read( value );
+					} else if constexpr( json_details::has_op_star_v<Optional> ) {
+						return *value;
+					} else {
+						return value;
+					}
+				}( ) );
 			}
 
 			template<typename JsonMember, typename OutputIterator,
@@ -1357,8 +1361,8 @@ namespace daw::json {
 			template<typename>
 			struct missing_required_mapping_for {};
 
-			// This is only ever called in a constant expression. But will not compile
-			// if exceptions are disabled and it tries to throw
+			// This is only ever called in a constant expression. But will not
+			// compile if exceptions are disabled and it tries to throw
 			template<typename Name>
 			missing_required_mapping_for<Name> missing_required_mapping_error( ) {
 #ifdef DAW_USE_EXCEPTIONS
@@ -1405,7 +1409,7 @@ namespace daw::json {
 			DAW_ATTRIB_INLINE constexpr void
 			dependent_member_to_json_str( bool &, OutputIterator const &,
 			                              TpArgs const &, Value const &,
-			                              VisitedMembers const & ) {
+			                              VisitedMembers const & ) noexcept {
 
 				// This is empty so that the call is able to be put into a pack
 			}
@@ -1419,7 +1423,13 @@ namespace daw::json {
 			  bool &is_first,
 			  serialization_policy<OutputIterator, SerializationOptions> it,
 			  TpArgs const &args, Value const &v, VisitedMembers &visited_members ) {
-				using dependent_member = dependent_member_t<JsonMember>;
+				using base_member_t = typename std::conditional_t<
+				  is_json_nullable_v<JsonMember>,
+				  ident_trait<json_nullable_member_type_t, JsonMember>,
+				  traits::identity<JsonMember>>::type;
+
+				using dependent_member = dependent_member_t<base_member_t>;
+
 				using daw::get;
 				using std::get;
 				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
@@ -1450,9 +1460,9 @@ namespace daw::json {
 				*it++ = ':';
 				it.output_space( );
 
-				if constexpr( has_switcher_v<JsonMember> ) {
+				if constexpr( has_switcher_v<base_member_t> ) {
 					it = member_to_string( template_arg<dependent_member>, it,
-					                       typename JsonMember::switcher{ }( v ) );
+					                       typename base_member_t::switcher{ }( v ) );
 				} else {
 					constexpr auto idx = find_names_in_pack_v<dependent_member, NamePack>;
 					it = member_to_string( template_arg<dependent_member>, it,

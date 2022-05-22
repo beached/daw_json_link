@@ -804,20 +804,32 @@ namespace daw::json {
 			/// from T if not specified
 			/// @tparam Constructor Specify a Constructor type or use
 			/// the default nullable_constructor<T>
-			template<typename T, typename Constructor, typename JsonMember,
-			         JsonNullable Nullable>
+			template<typename T, typename Constructor, typename JsonMember>
 			struct json_nullable {
 				using i_am_a_json_type = void;
+				using i_am_a_json_nullable = void;
 				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = true;
-				static_assert( Nullable != JsonNullable::MustExist,
-				               "Must Exist is not valid." );
-				static constexpr JsonNullable nullable = Nullable;
+				static constexpr JsonNullable nullable = JsonNullable::Nullable;
 				using wrapped_type = T;
 				using parse_to_t = T;
-				using member_type = json_details::json_deduced_type<
-				  std::conditional_t<std::is_same_v<JsonMember, deduced_type>,
-				                     readable_value_type_t<T>, T>>;
+				using raw_member_type = typename std::conditional_t<
+				  not std::is_same_v<JsonMember, deduced_type>,
+				  traits::identity<JsonMember>,
+				  std::conditional_t<
+				    is_readable_value_v<T>,
+				    json_details::ident_trait<readable_value_type_t, T>,
+				    std::conditional<json_details::has_op_star_v<T>,
+				                     json_details::unwrapped_t<T>, T>>>::type;
+
+				using member_type = typename std::conditional_t<
+				  json_details::is_a_json_type_v<raw_member_type>,
+				  traits::identity<raw_member_type>,
+				  json_details::ident_trait<json_details::json_deduced_type,
+				                            raw_member_type>>::type;
+
+				static_assert( json_details::is_no_name_v<member_type>,
+				               "JsonMember template paramater must be noname type" );
 				using base_type = json_details::json_result<member_type>;
 				using constructor_t = Constructor;
 
@@ -1397,8 +1409,7 @@ namespace daw::json {
 				static_assert( json_details::is_a_json_type_v<SizeMember>,
 				               "The SizeMember type must have a name and be a "
 				               "member of the same object as this" );
-				static_assert( json_details::is_nullability_compatable_v<
-				                 JsonNullable::MustExist, SizeMember::nullable>,
+				static_assert( SizeMember::expected_type != JsonParseTypes::Null,
 				               "The SizeMember cannot be a nullable type" );
 				using dependent_member = SizeMember;
 
@@ -1926,7 +1937,8 @@ namespace daw::json {
 				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 				using wrapped_type = json_value;
-				using constructor_t = Constructor;
+				using constructor_t =
+				  json_details::json_class_constructor_t<T, Constructor>;
 
 				static_assert(
 				  std::is_invocable_v<Constructor, char const *, std::size_t>,
