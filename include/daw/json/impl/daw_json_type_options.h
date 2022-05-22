@@ -13,22 +13,6 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		/***
-		 * Control whether a type can be missing or null.
-		 * MustExist - members make it an error if their value is null or they are
-		 * missing
-		 * Nullable - members can have a value of null or be missing
-		 * NullVisible - members must exist but can have a value of null
-		 */
-		namespace json_details {
-			template<>
-			inline constexpr unsigned json_option_bits_width<JsonNullable> = 2;
-
-			template<>
-			inline constexpr auto default_json_option_value<JsonNullable> =
-			  JsonNullable::MustExist;
-		} // namespace json_details
-
 		/**
 		 * Allows having literals parse that are encoded as strings. It allows
 		 * one to have it be Never true, Maybe true or Always true.  This controls
@@ -100,9 +84,8 @@ namespace daw::json {
 
 		// json_number
 		using number_opts_t =
-		  json_details::JsonOptionList<JsonNullable, LiteralAsStringOpt,
-		                               JsonRangeCheck, JsonNumberErrors,
-		                               FPOutputFormat>;
+		  json_details::JsonOptionList<LiteralAsStringOpt, JsonRangeCheck,
+		                               JsonNumberErrors, FPOutputFormat>;
 
 		inline constexpr auto number_opts = number_opts_t{ };
 		inline constexpr json_details::json_options_t number_opts_def =
@@ -114,8 +97,7 @@ namespace daw::json {
 		}
 
 		// json_bool
-		using bool_opts_t =
-		  json_details::JsonOptionList<JsonNullable, LiteralAsStringOpt>;
+		using bool_opts_t = json_details::JsonOptionList<LiteralAsStringOpt>;
 
 		inline constexpr auto bool_opts = bool_opts_t{ };
 		inline constexpr json_details::json_options_t bool_opts_def =
@@ -156,8 +138,7 @@ namespace daw::json {
 
 		// json_string
 		using string_opts_t =
-		  json_details::JsonOptionList<JsonNullable, EightBitModes,
-		                               EmptyStringNull>;
+		  json_details::JsonOptionList<EightBitModes, EmptyStringNull>;
 
 		inline constexpr auto string_opts = string_opts_t{ };
 		inline constexpr json_details::json_options_t string_opts_def =
@@ -189,7 +170,7 @@ namespace daw::json {
 
 		// json_string_raw
 		using string_raw_opts_t =
-		  json_details::JsonOptionList<JsonNullable, EightBitModes, EmptyStringNull,
+		  json_details::JsonOptionList<EightBitModes, EmptyStringNull,
 		                               AllowEscapeCharacter>;
 
 		inline constexpr auto string_raw_opts = string_raw_opts_t{ };
@@ -203,7 +184,7 @@ namespace daw::json {
 		}
 
 		// json_class
-		using class_opts_t = json_details::JsonOptionList<JsonNullable>;
+		using class_opts_t = json_details::JsonOptionList<>;
 		inline constexpr auto class_opts = class_opts_t{ };
 		inline constexpr json_details::json_options_t class_opts_def =
 		  class_opts_t::default_option_flag;
@@ -214,7 +195,7 @@ namespace daw::json {
 		}
 
 		// json_tuple
-		using tuple_opts_t = json_details::JsonOptionList<JsonNullable>;
+		using tuple_opts_t = json_details::JsonOptionList<>;
 		inline constexpr auto tuple_opts = tuple_opts_t{ };
 		inline constexpr json_details::json_options_t tuple_opts_def =
 		  tuple_opts_t::default_option_flag;
@@ -246,8 +227,7 @@ namespace daw::json {
 		} // namespace json_details
 
 		// json_custom
-		using json_custom_opts_t =
-		  json_details::JsonOptionList<JsonNullable, JsonCustomTypes>;
+		using json_custom_opts_t = json_details::JsonOptionList<JsonCustomTypes>;
 
 		inline constexpr auto json_custom_opts = json_custom_opts_t{ };
 		inline constexpr json_details::json_options_t json_custom_opts_def =

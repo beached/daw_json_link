@@ -383,7 +383,7 @@ namespace daw::json {
 				template<typename JsonMember>
 				static constexpr OutputIterator
 				output_required_member( OutputIterator &out_it, bool &is_first ) {
-					if constexpr( JsonMember::nullable == JsonNullable::MustExist ) {
+					if constexpr( not is_json_nullable_v<JsonMember> ) {
 						if( not is_first ) {
 							*out_it++ = ',';
 						} else {

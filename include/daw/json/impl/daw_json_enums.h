@@ -80,38 +80,16 @@ namespace daw::json {
 			}
 		}
 
-		/***
-		 * Control whether a type can be missing or null.
-		 * MustExist - members make it an error if their value is null or they are
-		 * missing
-		 * Nullable - members can have a value of null or be missing
-		 * NullVisible - members must exist but can have a value of null
-		 */
-		enum class JsonNullable : unsigned { MustExist, Nullable, NullVisible };
-
-		/***
-		 * When not MustExist, the default Null type for unspecified _null json
-		 * types
-		 */
-		inline constexpr JsonNullable JsonNullDefault = JsonNullable::Nullable;
-
-		namespace json_details {
-			template<JsonNullable nullable>
-			inline constexpr bool is_nullable_json_value_v =
-			  nullable != JsonNullable::MustExist;
-
-			template<JsonNullable nullable>
-			using is_nullable_json_value =
-			  std::bool_constant<is_nullable_json_value_v<nullable>>;
-
-		} // namespace json_details
-
-		inline namespace details {
-			template<JsonParseTypes ParseType, JsonNullable Nullable>
-			inline constexpr JsonParseTypes get_parse_type_v =
-			  json_details::is_nullable_json_value_v<Nullable> ? JsonParseTypes::Null
-			                                                   : ParseType;
-		} // namespace details
+		///
+		/// @brief Control how json_nullable members are serialized
+		enum class JsonNullable : unsigned {
+			/// @brief Default null property.  When serializing member isn't
+			/// serialized
+			Nullable,
+			/// @brief Always serialize member and output null when value is not
+			/// engaged
+			NullVisible
+		};
 
 		/**
 		 * Tag lookup for parsing overload selection

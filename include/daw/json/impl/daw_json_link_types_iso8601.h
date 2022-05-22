@@ -8,41 +8,18 @@
 
 #pragma once
 
-#include "daw_json_enums.h"
-#include "daw_json_parse_digit.h"
-#include "daw_json_parse_iso8601_utils.h"
-#include "daw_json_serialize_impl.h"
 #include "version.h"
 
+#include "daw_json_parse_iso8601_utils.h"
+
 #include <daw/daw_string_view.h>
-#include <daw/daw_utility.h>
 
 #include <chrono>
 #include <ciso646>
-#include <optional>
-#include <string_view>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		template<JsonNullable>
 		struct construct_from_iso8601_timestamp {
-			using result_type =
-			  std::optional<std::chrono::time_point<std::chrono::system_clock,
-			                                        std::chrono::milliseconds>>;
-
-			[[maybe_unused, nodiscard]] inline constexpr result_type
-			operator( )( ) const {
-				return { };
-			}
-
-			[[maybe_unused, nodiscard]] inline constexpr result_type
-			operator( )( char const *ptr, std::size_t sz ) const {
-				return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
-			}
-		};
-
-		template<>
-		struct construct_from_iso8601_timestamp<JsonNullable::MustExist> {
 			using result_type = std::chrono::time_point<std::chrono::system_clock,
 			                                            std::chrono::milliseconds>;
 
@@ -51,6 +28,5 @@ namespace daw::json {
 				return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
 			}
 		};
-
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

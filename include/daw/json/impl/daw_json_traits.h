@@ -385,12 +385,6 @@ namespace daw::json {
 			  ( is_exact_class_mapping_v<T> or
 			    ParseState::use_exact_mappings_by_default );
 
-			template<JsonNullable ClassNullability, JsonNullable DependentNullability>
-			inline constexpr bool is_nullability_compatable_v =
-			  ( DependentNullability == JsonNullable::MustExist ) or
-			  ( ClassNullability == JsonNullable::Nullable or
-			    ClassNullability == JsonNullable::NullVisible );
-
 			template<typename T>
 			using element_type_t = typename T::element_type;
 
@@ -462,11 +456,8 @@ namespace daw::json {
 			template<typename T>
 			using op_star_result_t = typename op_star_result<T>::type;
 
-			template<typename T, JsonNullable Nullable = JsonNullable::Nullable>
-			using unwrapped_t = typename std::conditional_t<
-			  is_nullable_json_value_v<Nullable>,
-			  traits::identity<readable_value_type_t<T>>,
-			  std::conditional_t<has_op_star_v<T>, op_star_result<T>, T>>::type;
+			template<typename T>
+			using unwrapped_t = readable_value_type_t<T>;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

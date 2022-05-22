@@ -59,7 +59,7 @@ namespace daw::json {
 				using type = pack_list<Options...>;
 
 				static_assert(
-				  ( json_option_bits_width<Options> + ... ) <=
+				  ( json_option_bits_width<Options> + ... + 0 ) <=
 				    ( sizeof( json_options_t ) * CHAR_BIT ),
 				  "The size of json_options_t is not large enough "
 				  "to safely hold all the bits of state.  Use a larger size." );
@@ -100,7 +100,7 @@ namespace daw::json {
 				static constexpr json_options_t default_option_flag =
 				  ( set_bits_for<JsonOptions>(
 				      default_json_option_value<JsonOptions> ) |
-				    ... );
+				    ... | 0 );
 				/***
 				 * Create the parser options flag for BasicParseOption
 				 * @tparam Options Option types that satisfy the `is_option_flag`

@@ -79,7 +79,7 @@ std::size_t test( std::string_view json_data ) {
 	using JString =
 	  json_string_raw_no_name<std::string_view,
 	                          string_raw_opt(
-	                            JsonNullable::MustExist, EightBitModes::AllowFull,
+	                            EightBitModes::AllowFull,
 	                            AllowEscapeCharacter::NotBeforeDblQuote ),
 	                          daw::construct_a_t<std::string_view>>;
 
@@ -104,7 +104,8 @@ std::size_t test( std::string_view json_data ) {
 	                   } );
 	std::vector<std::string_view> values2 =
 	  from_json_array<JString, std::vector<std::string_view>>(
-	    json_data, options::parse_flags<options::CheckedParseMode::no, ExecMode> );
+	    json_data,
+	    options::parse_flags<options::CheckedParseMode::no, ExecMode> );
 
 	auto unchecked_tst = []( auto sv, auto ptr ) {
 		auto range = json_array_range<JString, ExecMode>( sv );
@@ -137,12 +138,15 @@ int main( int argc, char **argv )
 		auto const data = *daw::read_file( argv[1] );
 		return std::string( data.data( ), data.size( ) );
 	}( );
-	auto const h0 = test<daw::json::options::ExecModeTypes::compile_time>( json_string );
-	auto const h1 = test<daw::json::options::ExecModeTypes::runtime>( json_string );
+	auto const h0 =
+	  test<daw::json::options::ExecModeTypes::compile_time>( json_string );
+	auto const h1 =
+	  test<daw::json::options::ExecModeTypes::runtime>( json_string );
 	test_equal( h0, h1, "constexpr/runtime exec model hashes do not match" );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		auto const h2 = test<daw::json::options::ExecModeTypes::simd>( json_string );
+		auto const h2 =
+		  test<daw::json::options::ExecModeTypes::simd>( json_string );
 		test_equal( h0, h2, "constexpr/fast exec model hashes do not match" );
 	}
 }

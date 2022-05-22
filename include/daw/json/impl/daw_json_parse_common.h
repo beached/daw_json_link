@@ -226,7 +226,8 @@ namespace daw::json {
 			/// @tparam Constructor Specify a Constructor type or use
 			/// the default nullable_constructor<T>
 			template<typename T, typename Constructor = nullable_constructor<T>,
-			         typename JsonMember = deduced_type>
+			         typename JsonMember = deduced_type,
+			         JsonNullable NullableType = JsonNullable::Nullable>
 			struct json_nullable;
 
 			template<typename T, typename Constructor = default_constructor<T>,
@@ -313,7 +314,7 @@ namespace daw::json {
 			  json_bool<json_details::unwrapped_t<T>, Options,
 			            default_constructor<json_details::unwrapped_t<T>>>>;
 
-			template<typename T, typename Constructor>
+			template<typename T, typename Constructor = construct_from_iso8601_timestamp>
 			struct json_date;
 
 			template<typename T,

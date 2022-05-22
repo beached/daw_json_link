@@ -8,9 +8,11 @@
 
 #pragma once
 
-#include "impl/daw_json_link_types_fwd.h"
-#include "impl/daw_json_traits.h"
 #include "impl/version.h"
+
+#include "impl/daw_json_link_types_fwd.h"
+#include "impl/daw_json_serialize_impl.h"
+#include "impl/daw_json_traits.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_string_view.h>
@@ -447,7 +449,6 @@ namespace daw::json {
 		 * Constructor
 		 * @tparam LiteralAsString Could this number be embedded in a string
 		 * @tparam Constructor Callable used to construct result
-		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         json_details::json_options_t Options, typename Constructor>
@@ -485,7 +486,6 @@ namespace daw::json {
 		 * Constructor
 		 * @tparam LiteralAsString Could this number be embedded in a string
 		 * @tparam Constructor Callable used to construct result
-		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<typename T = double,
 		         json_details::json_options_t Options = number_opts_def,
@@ -630,7 +630,6 @@ namespace daw::json {
 		 * arguments
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 * arguments
-		 * @tparam Nullable Can the member be missing or have a null value
 		 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
 		 * data
 		 */
@@ -711,7 +710,6 @@ namespace daw::json {
 		 * @tparam EmptyStringNull if string is empty, call Constructor with no
 		 * arguments
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
-		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename String,
 		         json_details::json_options_t Options, typename Constructor>
@@ -740,8 +738,7 @@ namespace daw::json {
 		using json_string_null_no_name = json_base::json_nullable<
 		  T, Constructor,
 		  json_base::json_string<
-		    json_details::unwrapped_t<T>,
-		    json_details::string_opts_set<Options, JsonNullDefault>,
+		    json_details::unwrapped_t<T>, Options,
 		    default_constructor<json_details::unwrapped_t<T>>>>;
 
 		namespace json_base {
@@ -804,13 +801,14 @@ namespace daw::json {
 			/// from T if not specified
 			/// @tparam Constructor Specify a Constructor type or use
 			/// the default nullable_constructor<T>
-			template<typename T, typename Constructor, typename JsonMember>
+			template<typename T, typename Constructor, typename JsonMember,
+			         JsonNullable NullableType>
 			struct json_nullable {
 				using i_am_a_json_type = void;
 				using i_am_a_json_nullable = void;
 				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = true;
-				static constexpr JsonNullable nullable = JsonNullable::Nullable;
+				static constexpr JsonNullable nullable = NullableType;
 				using wrapped_type = T;
 				using parse_to_t = T;
 				using raw_member_type = typename std::conditional_t<
@@ -842,17 +840,17 @@ namespace daw::json {
 				  member_type::underlying_json_type;
 
 				template<JSONNAMETYPE NewName>
-				using with_name =
-				  daw::json::json_nullable<NewName, T, Constructor, JsonMember>;
+				using with_name = daw::json::json_nullable<NewName, T, Constructor,
+				                                           JsonMember, NullableType>;
 				using without_name = json_nullable;
 			};
 
 		} // namespace json_base
 
 		template<JSONNAMETYPE Name, typename T, typename Constructor,
-		         typename JsonMember>
+		         typename JsonMember, JsonNullable NullableType>
 		struct json_nullable
-		  : json_base::json_nullable<T, Constructor, JsonMember> {
+		  : json_base::json_nullable<T, Constructor, JsonMember, NullableType> {
 
 			static constexpr daw::string_view name = Name;
 #if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
@@ -861,9 +859,11 @@ namespace daw::json {
 			               "without a name argument" );
 #endif
 			template<JSONNAMETYPE NewName>
-			using with_name = json_nullable<NewName, T, Constructor, JsonMember>;
+			using with_name =
+			  json_nullable<NewName, T, Constructor, JsonMember, NullableType>;
 
-			using without_name = json_base::json_nullable<T, Constructor, JsonMember>;
+			using without_name =
+			  json_base::json_nullable<T, Constructor, JsonMember, NullableType>;
 		};
 
 		namespace json_base {
@@ -906,7 +906,6 @@ namespace daw::json {
 		 * daw::json::json_data_contract
 		 * @tparam Constructor A callable used to construct T.  The
 		 * default supports normal and aggregate construction
-		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T, typename Constructor,
 		         json_details::json_options_t Options>
@@ -994,8 +993,8 @@ namespace daw::json {
 
 				using json_elements = typename std::conditional_t<
 				  std::is_same_v<JsonElements, json_deduce_type>,
-				  json_details::determine_variant_element_types<JsonNullable::MustExist,
-				                                                Variant>,
+				  json_details::ident_trait<json_details::variant_alternatives_list,
+				                            Variant>,
 				  daw::traits::identity<JsonElements>>::type;
 				static_assert(
 				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
@@ -1070,8 +1069,7 @@ namespace daw::json {
 
 				using json_elements = typename std::conditional_t<
 				  std::is_same_v<JsonElements, json_deduce_type>,
-				  json_details::determine_variant_element_types<JsonNullable::MustExist,
-				                                                T>,
+				  json_details::variant_alternatives_list<T>,
 				  daw::traits::identity<JsonElements>>::type;
 				static_assert(
 				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
@@ -1346,7 +1344,6 @@ namespace daw::json {
 		 * @tparam Constructor A callable used to make Container,
 		 * default will use the Containers constructor.  Both normal and aggregate
 		 * are supported
-		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename JsonElement, typename Container,
 		         typename Constructor>
@@ -1534,7 +1531,6 @@ namespace daw::json {
 		 * basic types too
 		 *  @tparam Constructor A callable used to make Container, default will use
 		 * the Containers constructor.  Both normal and aggregate are supported
-		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType, typename Constructor>
@@ -1642,7 +1638,6 @@ namespace daw::json {
 		 * type isn't specified, the key name defaults to "key"
 		 *  @tparam Constructor A callable used to make Container, default will use
 		 * the Containers constructor.  Both normal and aggregate are supported
-		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType, typename Constructor>
@@ -1773,8 +1768,7 @@ namespace daw::json {
 
 				using json_elements = typename std::conditional_t<
 				  std::is_same_v<AlternativeMappings, json_deduce_type>,
-				  json_details::determine_variant_element_types<JsonNullable::MustExist,
-				                                                Variant>,
+				  json_details::variant_alternatives_list<Variant>,
 				  daw::traits::identity<AlternativeMappings>>::type;
 
 				static_assert(
@@ -1875,16 +1869,14 @@ namespace daw::json {
 		};
 
 		template<typename T, typename TagMember, typename Switcher,
-		         typename JsonElements = json_details::
-		           determine_variant_element_types<JsonNullable::MustExist, T>,
+		         typename JsonElements = json_details::variant_alternatives_list<T>,
 		         typename Constructor = default_constructor<T>>
 		using json_intrusive_variant_no_name =
 		  json_base::json_intrusive_variant<T, TagMember, Switcher, JsonElements,
 		                                    Constructor>;
 
 		template<typename T, typename TagMember, typename Switcher,
-		         typename JsonElements = json_details::
-		           determine_variant_element_types<JsonNullable::MustExist, T>,
+		         typename JsonElements = json_details::variant_alternatives_list<T>,
 		         typename Constructor = nullable_constructor<T>>
 		using json_intrusive_variant_null_no_name = json_base::json_nullable<
 		  T, Constructor,
@@ -1911,7 +1903,6 @@ namespace daw::json {
 		 * @tparam Name json member name
 		 * @tparam T type to hold raw JSON data, defaults to json_value
 		 * @tparam Constructor A callable used to construct T.
-		 * @tparam Nullable Does the value have to exist in the document or can it
 		 * have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T = json_value,
@@ -1928,8 +1919,6 @@ namespace daw::json {
 			 * T json_value allows for delaying the parsing of this member until later
 			 * @tparam T type to hold raw JSON data, defaults to json_value
 			 * @tparam Constructor A callable used to construct T.
-			 * @tparam Nullable Does the value have to exist in the document or can it
-			 * have a null value
 			 */
 			template<typename T, typename Constructor>
 			struct json_raw {
@@ -1970,8 +1959,6 @@ namespace daw::json {
 		 * @tparam Name json member name
 		 * @tparam T type to hold raw JSON data, defaults to json_value
 		 * @tparam Constructor A callable used to construct T.
-		 * @tparam Nullable Does the value have to exist in the document or can it
-		 * have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T, typename Constructor>
 		struct json_raw : json_base::json_raw<T, Constructor> {
@@ -2028,8 +2015,6 @@ namespace daw::json {
 		 * allows for delaying the parsing of this member until later
 		 * @tparam T type to hold raw JSON data, defaults to json_value
 		 * @tparam Constructor A callable used to construct T.
-		 * @tparam Nullable Does the value have to exist in the document or can it
-		 * have a null value
 		 */
 		template<typename T = json_value,
 		         typename Constructor = default_constructor<T>>

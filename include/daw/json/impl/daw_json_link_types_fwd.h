@@ -8,13 +8,15 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_enums.h"
 #include "daw_json_link_types_iso8601.h"
 #include "daw_json_parse_class.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
 #include "daw_json_traits.h"
-#include "version.h"
+#include "to_daw_json_string.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>
@@ -45,7 +47,8 @@ namespace daw::json {
 		/// the default nullable_constructor<T>
 		template<JSONNAMETYPE Name, typename T,
 		         typename Constructor = nullable_constructor<T>,
-		         typename JsonMember = deduced_type>
+		         typename JsonMember = deduced_type,
+		         JsonNullable NullableType = JsonNullable::Nullable>
 		struct json_nullable;
 
 		namespace json_details {
@@ -254,8 +257,8 @@ namespace daw::json {
 		         typename Constructor = nullable_constructor<T>>
 		using json_checked_number_null = json_details::make_nullable_t<
 		  Name, T, Constructor, json_base::json_number,
-		  json_details::number_opts_set<Options, JsonRangeCheck::CheckForNarrowing,
-		                                JsonNullDefault>>;
+		  json_details::number_opts_set<Options,
+		                                JsonRangeCheck::CheckForNarrowing>>;
 
 		/** Map a KV type json class { "Key StringRaw": ValueType, ... }
 		 *  to a c++ class.  Keys are Always string like and the destination
@@ -312,8 +315,7 @@ namespace daw::json {
 		template<JSONNAMETYPE Name,
 		         typename T = std::chrono::time_point<std::chrono::system_clock,
 		                                              std::chrono::milliseconds>,
-		         typename Constructor =
-		           construct_from_iso8601_timestamp<JsonNullable::MustExist>>
+		         typename Constructor = construct_from_iso8601_timestamp>
 		struct json_date;
 
 		/**
@@ -326,12 +328,10 @@ namespace daw::json {
 		template<JSONNAMETYPE Name,
 		         typename T = std::optional<std::chrono::time_point<
 		           std::chrono::system_clock, std::chrono::milliseconds>>,
-		         typename Constructor =
-		           construct_from_iso8601_timestamp<JsonNullDefault>>
-		using json_date_null = json_nullable<
-		  Name, T, Constructor,
-		  json_base::json_date<json_details::unwrapped_t<T>,
-		                       default_constructor<json_details::unwrapped_t<T>>>>;
+		         typename Constructor = nullable_constructor<T>>
+		using json_date_null =
+		  json_nullable<Name, T, Constructor,
+		                json_base::json_date<json_details::unwrapped_t<T>>>;
 
 		/***
 		 * A type to hold the types for parsing tagged variants.
@@ -572,32 +572,6 @@ namespace daw::json {
 
 				using types = std::tuple<json_deduced_type<Ts>...>;
 			};
-
-			template<JsonNullable, typename>
-			struct cannot_deduce_variant_element_types;
-
-			template<JsonNullable Nullable, typename Variant>
-			using determine_variant_element_types = std::conditional_t<
-			  std::disjunction_v<daw::not_trait<is_nullable_json_value<Nullable>>,
-			                     daw::not_trait<is_nullable_type<Variant>>>,
-			  variant_alternatives_list<Variant>,
-			  std::conditional_t<
-			    is_nullable_type_v<Variant>,
-			    variant_alternatives_list<detected_underlying_nullable_type<Variant>>,
-			    cannot_deduce_variant_element_types<Nullable, Variant>>>;
-
-			template<JsonNullable, typename>
-			struct cannot_deduce_tuple_types_list;
-
-			template<JsonNullable Nullable, typename Tuple>
-			using determine_tuple_element_types = std::conditional_t<
-			  std::disjunction_v<daw::not_trait<is_nullable_json_value<Nullable>>,
-			                     daw::not_trait<is_nullable_type<Tuple>>>,
-			  typename tuple_types_list<Tuple>::type,
-			  std::conditional_t<is_nullable_type_v<Tuple>,
-			                     typename tuple_types_list<
-			                       detected_underlying_nullable_type<Tuple>>::type,
-			                     cannot_deduce_tuple_types_list<Nullable, Tuple>>>;
 		} // namespace json_details
 
 		/***
