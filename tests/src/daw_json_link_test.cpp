@@ -404,8 +404,8 @@ namespace daw::json {
 	};
 } // namespace daw::json
 constexpr std::string_view optional_ordered1_data = "[1]";
-// DAW
-#if false and not defined( DAW_JSON_NO_CONST_EXPR )
+
+#if not defined( DAW_JSON_NO_CONST_EXPR )
 static_assert( static_cast<bool>(
   not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) );
 #endif
