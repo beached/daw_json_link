@@ -106,26 +106,13 @@ namespace daw::json {
 		json_name( char const ( & )[N] ) -> json_name<N>;
 
 #define JSONNAMETYPE ::daw::json::json_name
-		// Convenience for array members that are required to be unnamed
-		inline constexpr JSONNAMETYPE no_name{ "\a" };
-		inline constexpr daw::string_view no_name_sv = daw::string_view( no_name );
-
-		namespace json_details {
-			inline constexpr JSONNAMETYPE default_key_name{ "key" };
-			inline constexpr JSONNAMETYPE default_value_name{ "value" };
-		} // namespace json_details
+		inline constexpr JSONNAMETYPE default_key_name{ "key" };
+		inline constexpr JSONNAMETYPE default_value_name{ "value" };
 
 #else
 #define JSONNAMETYPE char const *
-		// Convenience for array members that are required to be unnamed
-		inline constexpr char const no_name[] = "\a";
-		inline constexpr daw::string_view no_name_sv = daw::string_view( no_name );
-		namespace json_details {
-
-			inline constexpr char const default_key_name[] = "key";
-			inline constexpr char const default_value_name[] = "value";
-
-		} // namespace json_details
+		inline constexpr char const default_key_name[] = "key";
+		inline constexpr char const default_value_name[] = "value";
 #endif
 		namespace json_details {
 			template<typename T>

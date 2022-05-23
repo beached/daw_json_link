@@ -45,7 +45,7 @@ namespace daw::json {
 		/// T if not specified
 		/// @tparam Constructor Specify a Constructor type or use
 		/// the default nullable_constructor<T>
-		template<JSONNAMETYPE Name, typename T, typename JsonMember = deduced_type,
+		template<JSONNAMETYPE Name, typename T, typename JsonMember = use_default,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		struct json_nullable;

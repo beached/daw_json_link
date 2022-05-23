@@ -771,7 +771,7 @@ namespace daw::json {
 				using wrapped_type = T;
 				using parse_to_t = T;
 				using raw_member_type = typename std::conditional_t<
-				  not std::is_same_v<JsonMember, deduced_type>,
+				  not std::is_same_v<JsonMember, use_default>,
 				  traits::identity<JsonMember>,
 				  std::conditional_t<
 				    is_readable_value_v<T>,
@@ -1480,8 +1480,7 @@ namespace daw::json {
 				using base_type = parse_to_t;
 
 				using json_key_t = json_details::copy_name_when_noname<
-				  json_details::json_deduced_type<JsonKeyType>,
-				  json_details::default_key_name>;
+				  json_details::json_deduced_type<JsonKeyType>, default_key_name>;
 
 				static_assert(
 				  not is_missing_data_contract_or_unknown_type_v<json_key_t>,
@@ -1489,8 +1488,7 @@ namespace daw::json {
 				static_assert( not json_details::is_no_name_v<json_key_t>,
 				               "Must supply a valid key member name" );
 				using json_value_t = json_details::copy_name_when_noname<
-				  json_details::json_deduced_type<JsonValueType>,
-				  json_details::default_value_name>;
+				  json_details::json_deduced_type<JsonValueType>, default_value_name>;
 
 				using json_class_t =
 				  json_class<tuple_json_mapping<json_key_t, json_value_t>>;
