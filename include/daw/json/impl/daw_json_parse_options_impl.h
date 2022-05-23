@@ -42,9 +42,6 @@ namespace daw::json {
 		} // namespace options
 
 		namespace json_details {
-			template<typename>
-			inline constexpr bool is_parse_policy_v = false;
-
 			template<>
 			inline constexpr unsigned json_option_bits_width<options::ExecModeTypes> =
 			  2;
@@ -177,18 +174,6 @@ namespace daw::json {
 			template<typename Policy>
 			inline constexpr unsigned policy_bits_start =
 			  basic_policy_bits_start<Policy, policy_list>;
-
-			template<typename Policy>
-			DAW_CONSTEVAL void set_bits_in( json_options_t &value, Policy e ) {
-				static_assert( is_option_flag<Policy>,
-				               "Only registered policy types are allowed" );
-				auto new_bits = static_cast<unsigned>( e );
-				constexpr unsigned mask = (1U << json_option_bits_width<Policy>)-1U;
-				new_bits &= mask;
-				new_bits <<= policy_bits_start<Policy>;
-				value &= ~mask;
-				value |= new_bits;
-			}
 
 			DAW_CONSTEVAL inline json_options_t set_bits( json_options_t value ) {
 				return value;

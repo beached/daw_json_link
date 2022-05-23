@@ -380,32 +380,8 @@ namespace daw::json {
 				return CommentPolicy::trim_left_unchecked( *this );
 			}
 
-			inline constexpr void move_to_end_of_literal( ) {
-				CharT *f = first;
-				CharT *const l = last;
-				if constexpr( is_unchecked_input ) {
-					while( ( static_cast<unsigned char>( *f ) > 0x20U ) &
-					       not CommentPolicy::is_literal_end( *f ) ) {
-						++f;
-					}
-				} else {
-					while( ( f < l ) and ( ( static_cast<unsigned char>( *f ) > 0x20 ) &
-					                       not CommentPolicy::is_literal_end( *f ) ) ) {
-						++f;
-					}
-				}
-				first = f;
-			}
-
 			[[nodiscard]] inline constexpr bool is_literal_end( ) const {
 				return CommentPolicy::is_literal_end( *first );
-			}
-
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool is_space_checked( ) const {
-				daw_json_assert_weak( has_more( ), ErrorReason::UnexpectedEndOfData,
-				                      *this );
-				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-				         1U ) <= 0x1FU;
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
@@ -525,12 +501,6 @@ namespace daw::json {
 				}
 			}
 		};
-
-		namespace json_details {
-			template<json_details::json_options_t PolicyFlags, typename Allocator>
-			inline constexpr bool
-			  is_parse_policy_v<BasicParsePolicy<PolicyFlags, Allocator>> = true;
-		}
 
 		namespace options {
 			/***
