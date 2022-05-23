@@ -59,42 +59,17 @@ namespace daw::json {
 			inline constexpr bool has_op_star_v =
 			  daw::is_detected_v<has_op_star_test, T>;
 
-			template<typename T>
-			using has_empty_member_test = decltype( std::declval<T>( ).empty( ) );
-
-			template<typename T>
-			inline constexpr bool has_empty_member_v =
-			  daw::is_detected_v<has_empty_member_test, T>;
-
-			/*
-			template<typename T>
-			inline constexpr auto has_value( T const &v )
-			  -> std::enable_if_t<is_readable_value_v<T>, bool> {
-
-			  return readable_value_traits<T>::has_value( v );
-			}
-
-			template<typename T>
-			inline constexpr auto has_value( T const &v )
-			  -> std::enable_if_t<not is_readable_value_v<T> and
-			has_empty_member_v<T>, bool> { return not v.empty( );
-			}*/
-
 			template<typename Constructor, typename... Args>
 			struct nullable_constructor_cannot_be_invoked;
 
 			template<typename Constructor, typename... Args>
 			struct constructor_cannot_be_invoked;
 
-			// clang-format off
 			template<typename Constructor, typename... Args>
-			using construction_result =
-					std::conditional_t<
-						std::is_invocable_v<Constructor, Args...>,
-						std::invoke_result<Constructor, Args...>,
-						traits::identity<constructor_cannot_be_invoked<Constructor, Args...>>
-			  >;
-			// clang-format on
+			using construction_result = std::conditional_t<
+			  std::is_invocable_v<Constructor, Args...>,
+			  std::invoke_result<Constructor, Args...>,
+			  traits::identity<constructor_cannot_be_invoked<Constructor, Args...>>>;
 		} // namespace json_details
 
 		namespace json_details {
@@ -124,19 +99,17 @@ namespace daw::json {
 		inline constexpr bool is_missing_data_contract_or_unknown_type_v<
 		  missing_json_data_contract_for_or_unknown_type<T>> = true;
 
-		/***
-		 * Mapping class for JSON data structures to C++.  It must be specialized in
-		 * order to parse to a user class
-		 * @tparam T Class to map
-		 */
+		/// @brief Mapping class for JSON data structures to C++.  It must be
+		/// specialized in order to parse to a user class
+		/// @tparam T Class to map
+		///
 		template<typename T, typename = void>
 		struct json_data_contract {
 			using type = missing_json_data_contract_for_or_unknown_type<T>;
 		};
 
-		/***
-		 * This trait gets us the mapping type from the contract.
-		 */
+		/// @brief This trait gets us the mapping type from the contract.
+		///
 		template<typename T>
 		using json_data_contract_trait_t = typename json_data_contract<T>::type;
 
@@ -181,24 +154,15 @@ namespace daw::json {
 		  daw::is_detected_v<json_details::force_aggregate_construction_test, T> or
 		  daw::is_detected_v<json_details::force_aggregate_construction_test2, T>;
 
-		namespace json_details {
-			template<typename T>
-			T uneval_func( );
-		}
-
 		template<typename... Ts>
 		inline constexpr bool is_empty_pack_v = sizeof...( Ts ) == 0;
 
-		template<typename... Ts>
-		using is_empty_pack = std::bool_constant<is_empty_pack_v<Ts...>>;
-
-		/***
-		 * Can use the fast, pseudo random string iterators.  They are
-		 * InputIterators with an operator- that allows for O(1) distance
-		 * calculations as we often know the length but cannot provide random
-		 * access.  For types that only use InputIterator operations and last -
-		 * first for distance calc
-		 */
+		/// @brief Can use the fast, pseudo random string iterators.  They are
+		/// InputIterators with an operator- that allows for O(1) distance
+		/// calculations as we often know the length but cannot provide random
+		/// access.  For types that only use InputIterator operations and last -
+		/// first for distance calc
+		///
 		template<typename>
 		inline constexpr bool can_single_allocation_string_v = false;
 
