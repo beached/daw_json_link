@@ -78,7 +78,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_number_null<member0, std::optional<int>>, json_string<member1>,
 		  json_bool_null<member2, std::unique_ptr<bool>,
-		                 bool_opt( LiteralAsStringOpt::Never ),
+		                 bool_opt( LiteralAsStringOpt::Never ), JsonNullable::Nullable,
 		                 daw::cookbook_optional_values1::UniquePtrConstructor>>;
 
 		static inline auto to_json_data(

@@ -85,8 +85,7 @@ namespace daw::json {
 		static constexpr char const member[] = "member";
 		using type = json_member_list<
 		  json_nullable<member, std::optional<std::variant<A, B>>,
-		                nullable_constructor<std::optional<std::variant<A, B>>>,
-		                json_base::json_raw<std::variant<A, B>, FooConstructor>>>;
+		                json_raw_no_name<std::variant<A, B>, FooConstructor>>>;
 
 		static inline auto to_json_data( Foo const &foo ) {
 			if( not foo.member ) {

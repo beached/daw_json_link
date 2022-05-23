@@ -16,20 +16,6 @@
 #include <tuple>
 #include <vector>
 
-template<typename T>
-struct opt_construct_a {
-	constexpr std::optional<T>
-	operator( )( daw::construct_readable_empty_t ) const {
-		return daw::construct_a<std::optional<T>>( );
-	}
-
-	template<typename... Args>
-	constexpr std::optional<T> operator( )( Args &&...args ) const {
-		return std::optional<T>(
-		  daw::construct_a<T>( std::forward<Args>( args )... ) );
-	}
-};
-
 namespace daw::twitter2 {
 	struct metadata_t {
 		std::string_view result_type;

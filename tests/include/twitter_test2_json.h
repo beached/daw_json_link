@@ -93,21 +93,18 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::entities_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
-		  json_class_null<"url", std::optional<daw::twitter2::url_t>,
-		                  opt_construct_a<daw::twitter2::url_t>>,
+		  json_class_null<"url", std::optional<daw::twitter2::url_t>>,
 		  json_class_null<"description",
-		                  std::optional<daw::twitter2::description_t>,
-		                  opt_construct_a<daw::twitter2::description_t>>>;
+		                  std::optional<daw::twitter2::description_t>>>;
 #else
 		static inline constexpr char const url[] = "url";
 		static inline constexpr char const description[] = "description";
 		using type = json_member_list<
-		  json_class_null<url, std::optional<daw::twitter2::url_t>,
-		                  opt_construct_a<daw::twitter2::url_t>>,
-		  json_class_null<description, std::optional<daw::twitter2::description_t>,
-		                  opt_construct_a<daw::twitter2::description_t>>>;
+		  json_class_null<url, std::optional<daw::twitter2::url_t>>,
+		  json_class_null<description,
+		                  std::optional<daw::twitter2::description_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::entities_t const &value ) {
@@ -180,9 +177,7 @@ namespace daw::json {
 		  json_string_raw<screen_name, std::string_view>,
 		  json_string_raw<location, std::string_view>,
 		  json_string_raw<description, std::string_view>,
-		  json_string_raw_null<url, std::optional<std::string_view>,
-		                       string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
+		  json_string_raw_null<url, std::optional<std::string_view>>,
 		  json_class<entities, daw::twitter2::entities_t>,
 		  json_bool<_jsonprotected>,
 		  json_custom_lit<followers_count, std::string_view>,
@@ -190,11 +185,8 @@ namespace daw::json {
 		  json_custom_lit<listed_count, std::string_view>,
 		  json_custom<created_at, std::string_view>,
 		  json_custom_lit<favourites_count, std::string_view>,
-		  json_custom_lit_null<utc_offset, std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_string_raw_null<time_zone, std::optional<std::string_view>,
-		                       string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
+		  json_custom_lit_null<utc_offset, std::optional<std::string_view>>,
+		  json_string_raw_null<time_zone, std::optional<std::string_view>>,
 		  json_bool<geo_enabled>, json_bool<verified>,
 		  json_custom_lit<statuses_count, std::string_view>,
 		  json_string_raw<lang, std::string_view>, json_bool<contributors_enabled>,
@@ -205,9 +197,7 @@ namespace daw::json {
 		  json_bool<profile_background_tile>,
 		  json_string_raw<profile_image_url, std::string_view>,
 		  json_string_raw<profile_image_url_https, std::string_view>,
-		  json_string_raw_null<profile_banner_url, std::optional<std::string_view>,
-		                       string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
+		  json_string_raw_null<profile_banner_url, std::optional<std::string_view>>,
 		  json_string_raw<profile_link_color, std::string_view>,
 		  json_string_raw<profile_sidebar_border_color, std::string_view>,
 		  json_string_raw<profile_sidebar_fill_color, std::string_view>,
@@ -287,22 +277,15 @@ namespace daw::json {
 		  json_string_raw<text, std::string_view>,
 		  json_string_raw<source, std::string_view>, json_bool<truncated>,
 		  json_custom_lit_null<in_reply_to_status_id,
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_status_id_str,
-		                       std::optional<std::string_view>, string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
-		  json_custom_lit_null<
-		    in_reply_to_user_id, std::optional<std::string_view>,
-		    opt_construct_a<std::string_view>,
-		    default_to_json_converter_t<std::optional<std::string_view>>,
-		    json_custom_opt( JsonCustomTypes::Literal )>,
+		                       std::optional<std::string_view>>,
+		  json_custom_lit_null<in_reply_to_user_id,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_user_id_str,
-		                       std::optional<std::string_view>, string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_screen_name,
-		                       std::optional<std::string_view>, string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
 		  json_class<user, daw::twitter2::user_t>,
 		  json_custom_lit<retweet_count, std::string_view>,
 		  json_custom_lit<favorite_count, std::string_view>,
@@ -507,19 +490,15 @@ namespace daw::json {
 		  json_string_raw<text, std::string_view>,
 		  json_string_raw<source, std::string_view>, json_bool<truncated>,
 		  json_custom_lit_null<in_reply_to_status_id,
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_status_id_str,
-		                       std::optional<std::string_view>, string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
-		  json_custom_lit_null<in_reply_to_user_id, std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
+		  json_custom_lit_null<in_reply_to_user_id,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_user_id_str,
-		                       std::optional<std::string_view>, string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_screen_name,
-		                       std::optional<std::string_view>, string_raw_opts_def,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
 		  json_class<user, daw::twitter2::user_t>,
 		  json_custom_lit<retweet_count, std::string_view>,
 		  json_custom_lit<favorite_count, std::string_view>,

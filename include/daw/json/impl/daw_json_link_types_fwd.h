@@ -45,24 +45,15 @@ namespace daw::json {
 		/// T if not specified
 		/// @tparam Constructor Specify a Constructor type or use
 		/// the default nullable_constructor<T>
-		template<JSONNAMETYPE Name, typename T, typename Constructor = use_default,
-		         typename JsonMember = deduced_type,
-		         JsonNullable NullableType = JsonNullable::Nullable>
+		template<JSONNAMETYPE Name, typename T, typename JsonMember = deduced_type,
+		         JsonNullable NullableType = JsonNullable::Nullable,
+		         typename Constructor = use_default>
 		struct json_nullable;
 
-		template<JSONNAMETYPE Name, typename T, typename Constructor,
-		         typename JsonMember, JsonNullable NullableType>
+		template<JSONNAMETYPE Name, typename T, typename JsonMember,
+		         JsonNullable NullableType, typename Constructor>
 		inline constexpr bool json_details::is_json_nullable_v<
-		  json_nullable<Name, T, Constructor, JsonMember, NullableType>> = true;
-
-		namespace json_details {
-			template<JSONNAMETYPE Name, typename T, typename Constructor,
-			         template<typename, json_options_t, typename> typename JsonMember,
-			         json_options_t Options>
-			using make_nullable_t = json_nullable<
-			  Name, T, Constructor,
-			  JsonMember<json_details::unwrapped_t<T>, Options, use_default>>;
-		}
+		  json_nullable<Name, T, JsonMember, NullableType, Constructor>> = true;
 
 		/**
 		 * Link to a JSON class
@@ -84,10 +75,13 @@ namespace daw::json {
 		 * @tparam Constructor A callable used to construct T.  The
 		 * default supports normal and aggregate construction
 		 */
-		template<JSONNAMETYPE Name, typename T, typename Constructor = use_default>
+		template<JSONNAMETYPE Name, typename T,
+		         JsonNullable NullableType = JsonNullable::Nullable,
+		         typename Constructor = use_default>
 		using json_class_null =
-		  json_nullable<Name, T, Constructor,
-		                json_base::json_class<json_details::unwrapped_t<T>>>;
+		  json_nullable<Name, T,
+		                json_base::json_class<json_details::unwrapped_t<T>>,
+		                NullableType, Constructor>;
 
 		/**
 		 * The member is a number
@@ -114,11 +108,11 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<double>,
 		         json_details::json_options_t Options = number_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
-		using json_number_null =
-		  json_details::make_nullable_t<Name, T, Constructor,
-		                                json_base::json_number, Options>;
-
+		using json_number_null = json_nullable<
+		  Name, T, json_base::json_number<json_details::unwrapped_t<T>, Options>,
+		  NullableType, Constructor>;
 		/**
 		 * The member is a range checked number
 		 * @tparam Name name of json member
@@ -158,11 +152,12 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<bool>,
 		         json_details::json_options_t Options = bool_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_bool_null =
-		  json_details::make_nullable_t<Name, T, Constructor, json_base::json_bool,
-		                                Options>;
-
+		  json_nullable<Name, T,
+		                json_base::json_bool<json_details::unwrapped_t<T>, Options>,
+		                NullableType, Constructor>;
 		/**
 		 * Member is an escaped string and requires unescaping and escaping of
 		 * string data
@@ -194,11 +189,11 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<std::string>,
 		         json_details::json_options_t Options = string_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
-		using json_string_null =
-		  json_details::make_nullable_t<Name, T, Constructor,
-		                                json_base::json_string, Options>;
-
+		using json_string_null = json_nullable<
+		  Name, T, json_base::json_string<json_details::unwrapped_t<T>, Options>,
+		  NullableType, Constructor>;
 		/**
 		 * Member is an escaped string and requires unescaping and escaping of
 		 * string data
@@ -235,11 +230,12 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<std::string>,
 		         json_details::json_options_t Options = string_raw_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
-		using json_string_raw_null =
-		  json_details::make_nullable_t<Name, T, Constructor,
-		                                json_base::json_string_raw, Options>;
-
+		using json_string_raw_null = json_nullable<
+		  Name, T,
+		  json_base::json_string_raw<json_details::unwrapped_t<T>, Options>,
+		  NullableType, Constructor>;
 		/**
 		 * The member is a nullable range checked number
 		 * @tparam Name name of json member
@@ -250,12 +246,14 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<double>,
 		         json_details::json_options_t Options = number_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
-		using json_checked_number_null = json_details::make_nullable_t<
-		  Name, T, Constructor, json_base::json_number,
-		  json_details::number_opts_set<Options,
-		                                JsonRangeCheck::CheckForNarrowing>>;
-
+		using json_checked_number_null = json_nullable<
+		  Name, T,
+		  json_base::json_number<json_details::unwrapped_t<T>,
+		                         json_details::number_opts_set<
+		                           Options, JsonRangeCheck::CheckForNarrowing>>,
+		  NullableType, Constructor>;
 		/** Map a KV type json class { "Key StringRaw": ValueType, ... }
 		 *  to a c++ class.  Keys are Always string like and the destination
 		 *  needs to be constructable with a pointer, size
@@ -292,11 +290,13 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename Container,
 		         typename JsonValueType = typename Container::mapped_type,
 		         typename JsonKeyType = typename Container::key_type,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_key_value_null = json_nullable<
-		  Name, Container, Constructor,
+		  Name, Container,
 		  json_base::json_key_value<json_details::unwrapped_t<Container>,
-		                            JsonValueType, JsonKeyType>>;
+		                            JsonValueType, JsonKeyType>,
+		  NullableType, Constructor>;
 
 		/**
 		 * Link to a JSON string representing a date
@@ -323,10 +323,11 @@ namespace daw::json {
 		template<JSONNAMETYPE Name,
 		         typename T = std::optional<std::chrono::time_point<
 		           std::chrono::system_clock, std::chrono::milliseconds>>,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_date_null =
-		  json_nullable<Name, T, Constructor,
-		                json_base::json_date<json_details::unwrapped_t<T>>>;
+		  json_nullable<Name, T, json_base::json_date<json_details::unwrapped_t<T>>,
+		                NullableType, Constructor>;
 
 		/***
 		 * A type to hold the types for parsing tagged variants.
@@ -366,13 +367,15 @@ namespace daw::json {
 		 * are supported
 		 */
 		template<JSONNAMETYPE Name, typename WrappedContainer,
-		         typename Constructor = use_default,
 		         typename JsonElement =
-		           typename json_details::unwrapped_t<WrappedContainer>::value_type>
-		using json_array_null = json_nullable<
-		  Name, WrappedContainer, Constructor,
-		  json_base::json_array<JsonElement,
-		                        json_details::unwrapped_t<WrappedContainer>>>;
+		           typename json_details::unwrapped_t<WrappedContainer>::value_type,
+		         JsonNullable NullableType = JsonNullable::Nullable,
+		         typename Constructor = use_default>
+		using json_array_null =
+		  json_nullable<Name, WrappedContainer,
+		                json_base::json_array<
+		                  JsonElement, json_details::unwrapped_t<WrappedContainer>>,
+		                NullableType, Constructor>;
 
 		/**
 		 * Map a KV type json array [ {"key": ValueOfKeyType, "value":
@@ -414,11 +417,13 @@ namespace daw::json {
 		           WrappedContainer>::mapped_type,
 		         typename JsonKeyType =
 		           typename json_details::unwrapped_t<WrappedContainer>::key_type,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_key_value_array_null = json_nullable<
-		  Name, WrappedContainer, Constructor,
+		  Name, WrappedContainer,
 		  json_base::json_key_value<json_details::unwrapped_t<WrappedContainer>,
-		                            JsonValueType, JsonKeyType>>;
+		                            JsonValueType, JsonKeyType>,
+		  NullableType, Constructor>;
 
 		/**
 		 * Allow parsing of a type that does not fit
@@ -454,11 +459,13 @@ namespace daw::json {
 		         typename ToJsonConverter =
 		           default_to_json_converter_t<json_details::unwrapped_t<WrappedT>>,
 		         json_details::json_options_t Options = json_custom_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_custom_null = json_nullable<
-		  Name, WrappedT, Constructor,
+		  Name, WrappedT,
 		  json_base::json_custom<json_details::unwrapped_t<WrappedT>,
-		                         FromJsonConverter, ToJsonConverter, Options>>;
+		                         FromJsonConverter, ToJsonConverter, Options>,
+		  NullableType, Constructor>;
 
 		/***
 		 * @brief Allow parsing of a type that is a JSON literal and does not fit
@@ -486,12 +493,14 @@ namespace daw::json {
 		         typename ToJsonConverter =
 		           default_to_json_converter_t<json_details::unwrapped_t<WrappedT>>,
 		         json_details::json_options_t Options = json_custom_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_custom_lit_null = json_nullable<
-		  Name, WrappedT, Constructor,
+		  Name, WrappedT,
 		  json_base::json_custom<
 		    json_details::unwrapped_t<WrappedT>, FromJsonConverter, ToJsonConverter,
-		    json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal>>>;
+		    json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal>>,
+		  NullableType, Constructor>;
 
 		namespace json_details {
 			template<JsonBaseParseTypes PT>
@@ -595,11 +604,13 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename WrappedVariant,
 		         typename JsonElements = use_default,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_variant_null =
-		  json_nullable<Name, WrappedVariant, Constructor,
+		  json_nullable<Name, WrappedVariant,
 		                json_base::json_variant<
-		                  json_details::unwrapped_t<WrappedVariant>, JsonElements>>;
+		                  json_details::unwrapped_t<WrappedVariant>, JsonElements>,
+		                NullableType, Constructor>;
 
 		/***
 		 * Link to a variant like data type that is discriminated via another
@@ -661,11 +672,13 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename WrappedVariant, typename TagMember,
 		         typename Switcher, typename JsonElements = use_default,
+		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_tagged_variant_null = json_nullable<
-		  Name, WrappedVariant, Constructor,
+		  Name, WrappedVariant,
 		  json_base::json_tagged_variant<json_details::unwrapped_t<WrappedVariant>,
-		                                 TagMember, Switcher, JsonElements>>;
+		                                 TagMember, Switcher, JsonElements>,
+		  NullableType, Constructor>;
 
 		template<typename... Ts>
 		struct json_tuple_types_list {
@@ -688,12 +701,14 @@ namespace daw::json {
 		struct json_tuple;
 
 		template<JSONNAMETYPE Name, typename WrappedTuple,
-		         typename Constructor = use_default,
-		         typename JsonTupleTypesList = use_default>
+		         typename JsonTupleTypesList = use_default,
+		         JsonNullable NullableType = JsonNullable::Nullable,
+		         typename Constructor = use_default>
 		using json_tuple_null = json_nullable<
-		  Name, WrappedTuple, Constructor,
+		  Name, WrappedTuple,
 		  json_base::json_tuple<json_details::unwrapped_t<WrappedTuple>,
-		                        JsonTupleTypesList>>;
+		                        JsonTupleTypesList>,
+		  NullableType, Constructor>;
 
 		namespace json_details {
 			template<typename T>
