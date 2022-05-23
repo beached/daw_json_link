@@ -38,9 +38,6 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-
-		struct json_deduce_type;
-
 		template<typename ParseState>
 		class basic_json_value;
 
@@ -242,7 +239,7 @@ namespace daw::json {
 			using json_class_null =
 			  json_nullable<T, Constructor, json_class<json_details::unwrapped_t<T>>>;
 
-			template<typename JsonElement, typename Container,
+			template<typename JsonElement, typename Container = use_default,
 			         typename Constructor = use_default>
 			struct json_array;
 
@@ -250,30 +247,14 @@ namespace daw::json {
 			         json_details::json_options_t Options>
 			struct json_custom;
 
-			template<typename Variant, typename JsonElements,
+			template<typename Variant, typename JsonElements = use_default,
 			         typename Constructor = use_default>
 			struct json_variant;
 
 			template<typename T, typename TagMember, typename Switcher,
-			         typename JsonElements, typename Constructor = use_default>
+			         typename JsonElements = use_default,
+			         typename Constructor = use_default>
 			struct json_tagged_variant;
-
-			/** Link to a nullable JSON array
-			 * @tparam Name name of JSON member to link to
-			 * @tparam Container type of C++ container being constructed(e.g.
-			 * vector<int>)
-			 * @tparam JsonElement Json type being parsed e.g. json_number,
-			 * json_string...
-			 * @tparam Constructor A callable used to make Container,
-			 * default will use the Containers constructor.  Both normal and aggregate
-			 * are supported
-			 */
-			template<typename WrappedContainer, typename Constructor = use_default,
-			         typename JsonElement = typename json_details::unwrapped_t<
-			           WrappedContainer>::value_type>
-			using json_array_null = json_nullable<
-			  WrappedContainer, Constructor,
-			  json_array<JsonElement, json_details::unwrapped_t<WrappedContainer>>>;
 
 			template<typename T,
 			         json_details::json_options_t Options = string_raw_opts_def,
@@ -335,12 +316,12 @@ namespace daw::json {
 			                json_key_value<json_details::unwrapped_t<Container>,
 			                               JsonValueType, JsonKeyType>>;
 
-			template<typename Tuple, typename JsonTupleTypesList = json_deduce_type,
+			template<typename Tuple, typename JsonTupleTypesList = use_default,
 			         typename Constructor = use_default>
 			struct json_tuple;
 
 			template<typename Tuple, typename Constructor = use_default,
-			         typename JsonTupleTypesList = json_deduce_type>
+			         typename JsonTupleTypesList = use_default>
 			using json_tuple_null = json_nullable<
 			  Tuple, Constructor,
 			  json_tuple<json_details::unwrapped_t<Tuple>, JsonTupleTypesList>>;
@@ -709,8 +690,8 @@ namespace daw::json {
 						if constexpr( is_null::value ) {
 							using b_t = typename mapped_type_t::base_type;
 							using v_t = typename b_t::value;
-							return json_link_quick_map_type<
-							  json_base::json_array_null<v_t, T>>{ };
+							return json_link_quick_map_type<json_base::json_nullable<
+							  T, use_default, json_base::json_array<v_t, T>>>{ };
 						} else {
 							using v_t = typename mapped_type_t::value;
 							return json_link_quick_map_type<json_base::json_array<v_t, T>>{ };

@@ -351,7 +351,7 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename JsonElement,
-		         typename Container = json_deduce_type,
+		         typename Container = use_default,
 		         typename Constructor = use_default>
 		struct json_array;
 
@@ -580,7 +580,7 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value	 *
 		 */
 		template<JSONNAMETYPE Name, typename Variant,
-		         typename JsonElements = json_deduce_type,
+		         typename JsonElements = use_default,
 		         typename Constructor = use_default>
 		struct json_variant;
 
@@ -594,7 +594,7 @@ namespace daw::json {
 		 * default supports normal and aggregate construction
 		 */
 		template<JSONNAMETYPE Name, typename WrappedVariant,
-		         typename JsonElements = json_deduce_type,
+		         typename JsonElements = use_default,
 		         typename Constructor = use_default>
 		using json_variant_null =
 		  json_nullable<Name, WrappedVariant, Constructor,
@@ -617,7 +617,7 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value	 *
 		 */
 		template<JSONNAMETYPE Name, typename T, typename TagMember,
-		         typename Switcher, typename JsonElements = json_deduce_type,
+		         typename Switcher, typename JsonElements = use_default,
 		         typename Constructor = use_default>
 		struct json_tagged_variant;
 
@@ -637,12 +637,12 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value	 *
 		 */
 		template<JSONNAMETYPE Name, typename Variant, typename TagMember,
-		         typename Switcher, typename JsonElements = json_deduce_type,
+		         typename Switcher, typename JsonElements = use_default,
 		         typename Constructor = use_default>
 		struct json_intrusive_variant;
 
 		template<JSONNAMETYPE Name, typename JsonElement, typename SizeMember,
-		         typename Container = json_deduce_type,
+		         typename Container = use_default,
 		         typename Constructor = use_default>
 		struct json_sized_array;
 
@@ -660,7 +660,7 @@ namespace daw::json {
 		 * default supports normal and aggregate construction
 		 */
 		template<JSONNAMETYPE Name, typename WrappedVariant, typename TagMember,
-		         typename Switcher, typename JsonElements = json_deduce_type,
+		         typename Switcher, typename JsonElements = use_default,
 		         typename Constructor = use_default>
 		using json_tagged_variant_null = json_nullable<
 		  Name, WrappedVariant, Constructor,
@@ -683,13 +683,13 @@ namespace daw::json {
 		/// @tparam Options
 		/// @tparam JsonTupleTypesList either deduced or a json_tuple_type_list
 		template<JSONNAMETYPE Name, typename Tuple,
-		         typename JsonTupleTypesList = json_deduce_type,
+		         typename JsonTupleTypesList = use_default,
 		         typename Constructor = use_default>
 		struct json_tuple;
 
 		template<JSONNAMETYPE Name, typename WrappedTuple,
 		         typename Constructor = use_default,
-		         typename JsonTupleTypesList = json_deduce_type>
+		         typename JsonTupleTypesList = use_default>
 		using json_tuple_null = json_nullable<
 		  Name, WrappedTuple, Constructor,
 		  json_base::json_tuple<json_details::unwrapped_t<WrappedTuple>,
