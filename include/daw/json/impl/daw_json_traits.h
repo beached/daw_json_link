@@ -385,6 +385,12 @@ namespace daw::json {
 
 			template<typename T>
 			using unwrapped_t = readable_value_type_t<T>;
+
+			template<typename T>
+			using mapped_type_t = typename T::mapped_type;
+
+			template<typename T>
+			using key_type_t = typename T::key_type;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

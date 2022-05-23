@@ -311,7 +311,8 @@ namespace daw::json {
 			  json_nullable<T, json_number<json_details::unwrapped_t<T>, Options>,
 			                NullableType, Constructor>;
 
-			template<typename Container, typename JsonValueType, typename JsonKeyType,
+			template<typename Container, typename JsonValueType = use_default,
+			         typename JsonKeyType = use_default,
 			         typename Constructor = use_default>
 			struct json_key_value;
 

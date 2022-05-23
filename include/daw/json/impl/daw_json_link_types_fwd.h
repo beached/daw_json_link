@@ -269,8 +269,8 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename Container,
-		         typename JsonValueType = typename Container::mapped_type,
-		         typename JsonKeyType = json_base::json_string<std::string>,
+		         typename JsonValueType = use_default,
+		         typename JsonKeyType = use_default,
 		         typename Constructor = use_default>
 		struct json_key_value;
 
@@ -288,8 +288,8 @@ namespace daw::json {
 		 * the Containers constructor.  Both normal and aggregate are supported
 		 */
 		template<JSONNAMETYPE Name, typename Container,
-		         typename JsonValueType = typename Container::mapped_type,
-		         typename JsonKeyType = typename Container::key_type,
+		         typename JsonValueType = use_default,
+		         typename JsonKeyType = use_default,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_key_value_null = json_nullable<
@@ -393,8 +393,8 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename Container,
-		         typename JsonValueType = typename Container::mapped_type,
-		         typename JsonKeyType = typename Container::key_type,
+		         typename JsonValueType = use_default,
+		         typename JsonKeyType = use_default,
 		         typename Constructor = use_default>
 		struct json_key_value_array;
 
@@ -413,10 +413,8 @@ namespace daw::json {
 		 * the Containers constructor.  Both normal and aggregate are supported
 		 */
 		template<JSONNAMETYPE Name, typename WrappedContainer,
-		         typename JsonValueType = typename json_details::unwrapped_t<
-		           WrappedContainer>::mapped_type,
-		         typename JsonKeyType =
-		           typename json_details::unwrapped_t<WrappedContainer>::key_type,
+		         typename JsonValueType = use_default,
+		         typename JsonKeyType = use_default,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_key_value_array_null = json_nullable<
@@ -439,8 +437,8 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T,
-		         typename FromJsonConverter = default_from_json_converter_t<T>,
-		         typename ToJsonConverter = default_to_json_converter_t<T>,
+		         typename FromJsonConverter = use_default,
+		         typename ToJsonConverter = use_default,
 		         json_details::json_options_t Options = json_custom_opts_def>
 		struct json_custom;
 
@@ -454,10 +452,8 @@ namespace daw::json {
 		 * @tparam JsonRawType JSON type value is encoded as literal/string
 		 */
 		template<JSONNAMETYPE Name, typename WrappedT,
-		         typename FromJsonConverter = default_from_json_converter_t<
-		           json_details::unwrapped_t<WrappedT>>,
-		         typename ToJsonConverter =
-		           default_to_json_converter_t<json_details::unwrapped_t<WrappedT>>,
+		         typename FromJsonConverter = use_default,
+		         typename ToJsonConverter = use_default,
 		         json_details::json_options_t Options = json_custom_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
@@ -471,8 +467,8 @@ namespace daw::json {
 		 * @brief Allow parsing of a type that is a JSON literal and does not fit
 		 */
 		template<JSONNAMETYPE Name, typename T,
-		         typename FromJsonConverter = default_from_json_converter_t<T>,
-		         typename ToJsonConverter = default_to_json_converter_t<T>,
+		         typename FromJsonConverter = use_default,
+		         typename ToJsonConverter = use_default,
 		         json_details::json_options_t Options = json_custom_opts_def>
 		using json_custom_lit = json_custom<
 		  Name, T, FromJsonConverter, ToJsonConverter,
@@ -488,10 +484,8 @@ namespace daw::json {
 		 * @tparam JsonRawType JSON type value is encoded as literal/string
 		 */
 		template<JSONNAMETYPE Name, typename WrappedT,
-		         typename FromJsonConverter = default_from_json_converter_t<
-		           json_details::unwrapped_t<WrappedT>>,
-		         typename ToJsonConverter =
-		           default_to_json_converter_t<json_details::unwrapped_t<WrappedT>>,
+		         typename FromJsonConverter = use_default,
+		         typename ToJsonConverter = use_default,
 		         json_details::json_options_t Options = json_custom_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>

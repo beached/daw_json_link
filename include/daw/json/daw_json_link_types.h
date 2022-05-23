@@ -1096,21 +1096,30 @@ namespace daw::json {
 			         json_details::json_options_t Options>
 			struct json_custom {
 				using i_am_a_json_type = void;
-				using to_converter_t = ToJsonConverter;
-				using from_converter_t = FromJsonConverter;
-				using constructor_t = FromJsonConverter;
+
+				using from_converter_t = typename std::conditional_t<
+				  std::is_same_v<use_default, FromJsonConverter>,
+				  json_details::ident_trait<default_from_json_converter_t, T>,
+				  traits::identity<FromJsonConverter>>::type;
+
+				using to_converter_t = typename std::conditional_t<
+				  std::is_same_v<use_default, ToJsonConverter>,
+				  json_details::ident_trait<default_to_json_converter_t, T>,
+				  traits::identity<ToJsonConverter>>::type;
+
+				using constructor_t = from_converter_t;
 				static constexpr bool must_be_class_member = false;
 
 				static_assert(
-				  std::is_invocable_v<FromJsonConverter, std::string_view>,
+				  std::is_invocable_v<from_converter_t, std::string_view>,
 				  "Constructor must support construction from std::string_view" );
 				using parse_to_t =
-				  std::invoke_result_t<FromJsonConverter, std::string_view>;
+				  std::invoke_result_t<from_converter_t, std::string_view>;
 				using base_type = parse_to_t;
 
 				static_assert(
-				  std::is_invocable_v<ToJsonConverter, parse_to_t> or
-				    std::is_invocable_r_v<char *, ToJsonConverter, char *, parse_to_t>,
+				  std::is_invocable_v<to_converter_t, parse_to_t> or
+				    std::is_invocable_r_v<char *, to_converter_t, char *, parse_to_t>,
 				  "ToConverter must be callable with T or T and and OutputIterator" );
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Custom;
@@ -1150,26 +1159,21 @@ namespace daw::json {
 			  json_base::json_custom<T, FromJsonConverter, ToJsonConverter, Options>;
 		};
 
-		template<typename T,
-		         typename FromJsonConverter = default_from_json_converter_t<T>,
-		         typename ToJsonConverter = default_to_json_converter_t<T>,
+		template<typename T, typename FromJsonConverter = use_default,
+		         typename ToJsonConverter = use_default,
 		         json_details::json_options_t Options = json_custom_opts_def>
 		using json_custom_no_name =
 		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter, Options>;
 
-		template<typename T,
-		         typename FromJsonConverter = default_from_json_converter_t<T>,
-		         typename ToJsonConverter = default_to_json_converter_t<T>,
+		template<typename T, typename FromJsonConverter = use_default,
+		         typename ToJsonConverter = use_default,
 		         json_details::json_options_t Options = json_custom_opts_def>
 		using json_custom_lit_no_name = json_base::json_custom<
 		  T, FromJsonConverter, ToJsonConverter,
 		  json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal>>;
 
-		template<typename T,
-		         typename FromJsonConverter =
-		           default_from_json_converter_t<json_details::unwrapped_t<T>>,
-		         typename ToJsonConverter =
-		           default_to_json_converter_t<json_details::unwrapped_t<T>>,
+		template<typename T, typename FromJsonConverter = use_default,
+		         typename ToJsonConverter = use_default,
 		         json_details::json_options_t Options = json_custom_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
@@ -1179,11 +1183,8 @@ namespace daw::json {
 		                         ToJsonConverter, Options>,
 		  NullableType, Constructor>;
 
-		template<typename T,
-		         typename FromJsonConverter =
-		           default_from_json_converter_t<json_details::unwrapped_t<T>>,
-		         typename ToJsonConverter =
-		           default_to_json_converter_t<json_details::unwrapped_t<T>>,
+		template<typename T, typename FromJsonConverter = use_default,
+		         typename ToJsonConverter = use_default,
 		         json_details::json_options_t Options = json_custom_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
@@ -1372,16 +1373,25 @@ namespace daw::json {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
 
+				using value_type_t = typename std::conditional_t<
+				  std::is_same_v<use_default, JsonValueType>,
+				  json_details::ident_trait<json_details::mapped_type_t, Container>,
+				  traits::identity<JsonValueType>>::type;
+
+				using key_type_t =
+				  std::conditional_t<std::is_same_v<use_default, JsonKeyType>,
+				                     json_string<std::string>, JsonKeyType>;
+
 				using constructor_t =
 				  std::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     default_constructor<Container>, Constructor>;
 
 				static_assert(
-				  json_details::has_unnamed_default_type_mapping_v<JsonValueType>,
+				  json_details::has_unnamed_default_type_mapping_v<value_type_t>,
 				  "Missing specialization of daw::json::json_data_contract for class "
 				  "mapping or specialization of daw::json::json_link_basic_type_map" );
 
-				using json_element_t = json_details::json_deduced_type<JsonValueType>;
+				using json_element_t = json_details::json_deduced_type<value_type_t>;
 
 				static_assert(
 				  not is_missing_data_contract_or_unknown_type_v<json_element_t>,
@@ -1390,11 +1400,11 @@ namespace daw::json {
 				static_assert( json_details::is_no_name_v<json_element_t>,
 				               "Value member name must be the default no_name" );
 				static_assert(
-				  json_details::has_unnamed_default_type_mapping_v<JsonKeyType>,
+				  json_details::has_unnamed_default_type_mapping_v<key_type_t>,
 				  "Missing specialization of daw::json::json_data_contract for class "
 				  "mapping or specialization of daw::json::json_link_basic_type_map" );
 
-				using json_key_t = json_details::json_deduced_type<JsonKeyType>;
+				using json_key_t = json_details::json_deduced_type<key_type_t>;
 
 				static_assert(
 				  not is_missing_data_contract_or_unknown_type_v<json_key_t>,
@@ -1463,11 +1473,22 @@ namespace daw::json {
 		  NullableType, Constructor>;
 
 		namespace json_base {
-			template<typename Container, typename JsonValueType, typename JsonKeyType,
+			template<typename Container, typename JsonValueType = use_default,
+			         typename JsonKeyType = use_default,
 			         typename Constructor = use_default>
 			struct json_key_value_array {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
+
+				using value_type_t = typename std::conditional_t<
+				  std::is_same_v<use_default, JsonValueType>,
+				  json_details::ident_trait<json_details::mapped_type_t, Container>,
+				  traits::identity<JsonValueType>>::type;
+
+				using key_type_t = typename std::conditional_t<
+				  std::is_same_v<use_default, JsonKeyType>,
+				  json_details::ident_trait<json_details::key_type_t, Container>,
+				  traits::identity<JsonKeyType>>::type;
 
 				using constructor_t =
 				  std::conditional_t<std::is_same_v<use_default, Constructor>,
@@ -1480,7 +1501,7 @@ namespace daw::json {
 				using base_type = parse_to_t;
 
 				using json_key_t = json_details::copy_name_when_noname<
-				  json_details::json_deduced_type<JsonKeyType>, default_key_name>;
+				  json_details::json_deduced_type<key_type_t>, default_key_name>;
 
 				static_assert(
 				  not is_missing_data_contract_or_unknown_type_v<json_key_t>,
@@ -1488,7 +1509,7 @@ namespace daw::json {
 				static_assert( not json_details::is_no_name_v<json_key_t>,
 				               "Must supply a valid key member name" );
 				using json_value_t = json_details::copy_name_when_noname<
-				  json_details::json_deduced_type<JsonValueType>, default_value_name>;
+				  json_details::json_deduced_type<value_type_t>, default_value_name>;
 
 				using json_class_t =
 				  json_class<tuple_json_mapping<json_key_t, json_value_t>>;
@@ -1512,20 +1533,19 @@ namespace daw::json {
 			};
 		} // namespace json_base
 
-		/**
-		 * Map a KV type json array [ {"key": ValueOfKeyType, "value":
-		 * ValueOfValueType},... ] to a c++ class. needs to be constructable with a
-		 * pointer, size
-		 *  @tparam Name name of JSON member to link to
-		 *  @tparam Container type to put values in
-		 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
-		 *  json_string, ... ).  If specific json member type isn't specified, the
-		 * member name defaults to "value"
-		 *  @tparam JsonKeyType type of key in kv pair.  If specific json member
-		 * type isn't specified, the key name defaults to "key"
-		 *  @tparam Constructor A callable used to make Container, default will use
-		 * the Containers constructor.  Both normal and aggregate are supported
-		 */
+		/// @brief Map a KV type json array [ {"key": ValueOfKeyType, "value":
+		/// ValueOfValueType},... ] to a c++ class. needs to be constructable with a
+		/// pointer, size
+		///  @tparam Name name of JSON member to link to
+		///  @tparam Container type to put values in
+		///  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
+		///  json_string, ... ).  If specific json member type isn't specified, the
+		/// member name defaults to "value"
+		///  @tparam JsonKeyType type of key in kv pair.  If specific json member
+		/// type isn't specified, the key name defaults to "key"
+		///  @tparam Constructor A callable used to make Container, default will use
+		/// the Containers constructor.  Both normal and aggregate are supported
+		///
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType, typename Constructor>
 		struct json_key_value_array
@@ -1539,19 +1559,15 @@ namespace daw::json {
 			                                  Constructor>;
 		};
 
-		template<typename Container,
-		         typename JsonValueType = typename Container::mapped_type,
-		         typename JsonKeyType = typename Container::key_type,
+		template<typename Container, typename JsonValueType = use_default,
+		         typename JsonKeyType = use_default,
 		         typename Constructor = use_default>
 		using json_key_value_array_no_name =
 		  json_base::json_key_value_array<Container, JsonValueType, JsonKeyType,
 		                                  Constructor>;
 
-		template<typename WrappedContainer,
-		         typename JsonValueType = typename json_details::unwrapped_t<
-		           WrappedContainer>::mapped_type,
-		         typename JsonKeyType =
-		           typename json_details::unwrapped_t<WrappedContainer>::key_type,
+		template<typename WrappedContainer, typename JsonValueType = use_default,
+		         typename JsonKeyType = use_default,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_key_value_array_null_no_name =
