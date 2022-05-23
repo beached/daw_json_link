@@ -1191,7 +1191,7 @@ namespace daw::json {
 							return parse_value<without_name<json_member_t>>(
 							  parse_state, ParseTag<json_member_t::expected_type>{ } );
 						} else {
-							auto result = parse_value<without_name<json_member_t>>(
+							auto result = parse_value<json_member_t>(
 							  parse_state, ParseTag<json_member_t::expected_type>{ } );
 							parse_state.move_next_member_or_end( );
 							return result;

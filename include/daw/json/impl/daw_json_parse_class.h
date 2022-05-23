@@ -72,14 +72,14 @@ namespace daw::json {
 					if constexpr( is_json_nullable_v<json_member_t> ) {
 
 						auto loc = ParseState{ };
-						return parse_value<without_name<json_member_t>, true>(
+						return parse_value<json_member_t, true>(
 						  loc, ParseTag<json_member_t::expected_type>{ } );
 					} else {
 						daw_json_error( missing_member( "ordered_class_member" ),
 						                parse_state );
 					}
 				}
-				return parse_value<without_name<json_member_t>>(
+				return parse_value<json_member_t>(
 				  parse_state, ParseTag<json_member_t::expected_type>{ } );
 			}
 

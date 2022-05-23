@@ -128,12 +128,15 @@ namespace daw::json {
 		} // namespace json_details
 #endif
 		namespace json_details {
-			template<typename JsonMember>
-			inline constexpr bool is_no_name_v = JsonMember::name == no_name_sv;
+			template<typename T>
+			using has_name_test = decltype( T::name );
 
-			template<typename JsonMember>
-			using is_no_name = std::bool_constant<is_no_name_v<JsonMember>>;
+			template<typename T>
+			inline constexpr bool is_no_name_v =
+			  not daw::is_detected_v<has_name_test, T>;
 
+			template<typename T>
+			using is_no_name = std::bool_constant<is_no_name_v<T>>;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

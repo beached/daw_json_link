@@ -29,7 +29,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 else ()
     option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
 endif ()
-option(DAW_JSON_NO_FAIL_ON_NO_NAME_NAME "Define: Ensure that no named mapping uses no_name as it's name.  Using it can slow down compilation" ON)
+
 option(DAW_JSON_FORCE_INT128 "Define: Force support for 128bit int" OFF)
 if (CMAKE_CXX_FLAGS MATCHES "-fno-exceptions")
     option(DAW_USE_EXCEPTIONS "Define: Throw exceptions when json errors occur or terminate" OFF)

@@ -207,7 +207,6 @@ namespace daw::json {
 		struct json_tuple_member {
 			using i_am_an_ordered_member = void;
 			using i_am_a_json_type = void;
-			static constexpr JSONNAMETYPE name = no_name;
 			static constexpr std::size_t member_index = Index;
 			static_assert(
 			  json_details::has_json_deduced_type_v<JsonMember>,
@@ -245,7 +244,8 @@ namespace daw::json {
 		struct json_tuple_member_list {
 			using i_am_a_json_member_list = daw::fwd_pack<JsonMembers...>;
 			using i_am_a_json_tuple_member_list = void;
-
+			static_assert( ( json_details::is_no_name_v<JsonMembers> and ... ),
+			               "Json Tuple class members are unnamed" );
 			/**
 			 * Serialize a C++ class to JSON data
 			 * @tparam OutputIterator An output iterator with a char value_type
@@ -398,7 +398,6 @@ namespace daw::json {
 			struct json_number {
 				using i_am_a_json_type = void;
 				using wrapped_type = T;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 
 				static_assert( daw::is_arithmetic_v<T>,
@@ -438,7 +437,6 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_number<NewName, T, Options, Constructor>;
-				using without_name = json_number;
 			};
 
 		} // namespace json_base
@@ -456,14 +454,7 @@ namespace daw::json {
 		struct json_number : json_base::json_number<T, Options, Constructor> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_number_no_name "
-			               "variant without a name argument" );
-#endif
 
-			template<JSONNAMETYPE NewName>
-			using with_name = json_number<NewName, T, Options, Constructor>;
 			using without_name = json_base::json_number<T, Options, Constructor>;
 		};
 
@@ -516,7 +507,6 @@ namespace daw::json {
 			         typename Constructor>
 			struct json_bool {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 
 				using constructor_t =
@@ -540,7 +530,6 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_bool<NewName, T, Options, Constructor>;
-				using without_name = json_bool;
 			};
 		} // namespace json_base
 
@@ -556,14 +545,7 @@ namespace daw::json {
 		struct json_bool : json_base::json_bool<T, Options, Constructor> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_bool_no_name variant "
-			               "without a name argument" );
-#endif
 
-			template<JSONNAMETYPE NewName>
-			using with_name = json_bool<NewName, T, Options, Constructor>;
 			using without_name = json_base::json_bool<T, Options, Constructor>;
 		};
 
@@ -585,7 +567,6 @@ namespace daw::json {
 			         typename Constructor>
 			struct json_string_raw {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 				using constructor_t =
 				  std::conditional_t<std::is_same_v<use_default, Constructor>,
@@ -612,11 +593,9 @@ namespace daw::json {
 				static constexpr AllowEscapeCharacter allow_escape_character =
 				  json_details::get_bits_for<AllowEscapeCharacter>( string_raw_opts,
 				                                                    Options );
-
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_string_raw<NewName, String, Options, Constructor>;
-				using without_name = json_string_raw;
 			};
 		} // namespace json_base
 
@@ -640,14 +619,7 @@ namespace daw::json {
 			using i_am_a_json_type = void;
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_string_raw_no_name "
-			               "variant without a name argument" );
-#endif
 
-			template<JSONNAMETYPE NewName>
-			using with_name = json_string_raw<NewName, String, Options, Constructor>;
 			using without_name =
 			  json_base::json_string_raw<String, Options, Constructor>;
 		};
@@ -670,7 +642,6 @@ namespace daw::json {
 			         typename Constructor>
 			struct json_string {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 
 				using constructor_t =
@@ -696,7 +667,6 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_string<NewName, String, Options, Constructor>;
-				using without_name = json_string;
 			};
 		} // namespace json_base
 
@@ -716,14 +686,6 @@ namespace daw::json {
 		         json_details::json_options_t Options, typename Constructor>
 		struct json_string : json_base::json_string<String, Options, Constructor> {
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_string_no_name "
-			               "variant of mapping type" );
-#endif
-
-			template<JSONNAMETYPE NewName>
-			using with_name = json_string<NewName, String, Options, Constructor>;
 
 			using without_name = json_base::json_string<String, Options, Constructor>;
 		};
@@ -744,7 +706,6 @@ namespace daw::json {
 			template<typename T, typename Constructor>
 			struct json_date {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				using constructor_t =
 				  std::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     construct_from_iso8601_timestamp, Constructor>;
@@ -761,7 +722,6 @@ namespace daw::json {
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_date<NewName, T, Constructor>;
-				using without_name = json_date;
 			};
 		} // namespace json_base
 
@@ -775,14 +735,6 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T, typename Constructor>
 		struct json_date : json_base::json_date<T, Constructor> {
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_date_no_name variant "
-			               "without a name argument" );
-#endif
-
-			template<JSONNAMETYPE NewName>
-			using with_name = json_date<NewName, T, Constructor>;
 
 			using without_name = json_base::json_date<T, Constructor>;
 		};
@@ -806,7 +758,6 @@ namespace daw::json {
 			struct json_nullable {
 				using i_am_a_json_type = void;
 				using i_am_a_json_nullable = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = true;
 				static constexpr JsonNullable nullable = NullableType;
 				using wrapped_type = T;
@@ -844,7 +795,6 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_nullable<NewName, T, Constructor,
 				                                           JsonMember, NullableType>;
-				using without_name = json_nullable;
 			};
 
 		} // namespace json_base
@@ -855,14 +805,6 @@ namespace daw::json {
 		  : json_base::json_nullable<T, Constructor, JsonMember, NullableType> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_class_no_name variant "
-			               "without a name argument" );
-#endif
-			template<JSONNAMETYPE NewName>
-			using with_name =
-			  json_nullable<NewName, T, Constructor, JsonMember, NullableType>;
 
 			using without_name =
 			  json_base::json_nullable<T, Constructor, JsonMember, NullableType>;
@@ -872,7 +814,6 @@ namespace daw::json {
 			template<typename T, typename Constructor>
 			struct json_class {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				using wrapped_type = T;
 				static constexpr bool must_be_class_member = false;
 				using constructor_t =
@@ -895,7 +836,6 @@ namespace daw::json {
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_class<NewName, T, Constructor>;
-				using without_name = json_class;
 			};
 		} // namespace json_base
 
@@ -911,13 +851,6 @@ namespace daw::json {
 		struct json_class : json_base::json_class<T, Constructor> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_class_no_name variant "
-			               "without a name argument" );
-#endif
-			template<JSONNAMETYPE NewName>
-			using with_name = json_class<NewName, T, Constructor>;
 
 			using without_name = json_base::json_class<T, Constructor>;
 		};
@@ -981,7 +914,6 @@ namespace daw::json {
 			template<typename Variant, typename JsonElements, typename Constructor>
 			struct json_variant {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 
 				using json_elements = typename std::conditional_t<
@@ -1007,7 +939,6 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_variant<NewName, Variant, JsonElements, Constructor>;
-				using without_name = json_variant;
 			};
 		} // namespace json_base
 
@@ -1025,14 +956,6 @@ namespace daw::json {
 		struct json_variant
 		  : json_base::json_variant<Variant, JsonElements, Constructor> {
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_variant_no_name "
-			               "variant without a name argument" );
-#endif
-			template<JSONNAMETYPE NewName>
-			using with_name =
-			  json_variant<NewName, Variant, JsonElements, Constructor>;
 
 			using without_name =
 			  json_base::json_variant<Variant, JsonElements, Constructor>;
@@ -1056,7 +979,6 @@ namespace daw::json {
 			struct json_tagged_variant {
 				using i_am_a_json_type = void;
 				using i_am_a_tagged_variant = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 
 				using json_elements = typename std::conditional_t<
@@ -1111,7 +1033,6 @@ namespace daw::json {
 				using with_name =
 				  daw::json::json_tagged_variant<NewName, T, TagMember, Switcher,
 				                                 JsonElements, Constructor>;
-				using without_name = json_tagged_variant;
 			};
 		} // namespace json_base
 
@@ -1136,16 +1057,6 @@ namespace daw::json {
 		                                   Constructor> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert(
-			  name != no_name,
-			  "For no_name mappings, use the json_tagged_variant_no_name variant "
-			  "without a name argument" );
-#endif
-
-			template<JSONNAMETYPE NewName>
-			using with_name = json_tagged_variant<NewName, T, TagMember, Switcher,
-			                                      JsonElements, Constructor>;
 
 			using without_name =
 			  json_base::json_tagged_variant<T, TagMember, Switcher, JsonElements,
@@ -1172,7 +1083,6 @@ namespace daw::json {
 			         json_details::json_options_t Options>
 			struct json_custom {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				using to_converter_t = ToJsonConverter;
 				using from_converter_t = FromJsonConverter;
 				using constructor_t = FromJsonConverter;
@@ -1204,7 +1114,6 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_custom<NewName, T, FromJsonConverter,
 				                                         ToJsonConverter, Options>;
-				using without_name = json_custom;
 			};
 		} // namespace json_base
 
@@ -1223,15 +1132,6 @@ namespace daw::json {
 		  : json_base::json_custom<T, FromJsonConverter, ToJsonConverter, Options> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_custom_no_name "
-			               "variant without a name argument" );
-#endif
-
-			template<JSONNAMETYPE NewName>
-			using with_name =
-			  json_custom<NewName, T, FromJsonConverter, ToJsonConverter, Options>;
 
 			using without_name =
 			  json_base::json_custom<T, FromJsonConverter, ToJsonConverter, Options>;
@@ -1281,7 +1181,6 @@ namespace daw::json {
 			template<typename JsonElement, typename Container, typename Constructor>
 			struct json_array {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 				static_assert(
 				  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
@@ -1292,6 +1191,8 @@ namespace daw::json {
 
 				static_assert( not std::is_same_v<json_element_t, void>,
 				               "Unknown JsonElement type." );
+				static_assert( json_details::is_no_name_v<json_element_t>,
+				               "Array elements must not have names" );
 				static_assert( json_details::is_a_json_type_v<json_element_t>,
 				               "Error determining element type" );
 				using container_t =
@@ -1313,7 +1214,7 @@ namespace daw::json {
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
 
-				static_assert( json_element_t::name == no_name_sv,
+				static_assert( json_details::is_no_name_v<json_element_t>,
 				               "All elements of json_array must be have no_name" );
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::Array;
@@ -1321,7 +1222,6 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_array<NewName, JsonElement, Container, Constructor>;
-				using without_name = json_array;
 			};
 		} // namespace json_base
 
@@ -1341,14 +1241,6 @@ namespace daw::json {
 		  : json_base::json_array<JsonElement, Container, Constructor> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_array_no_name variant "
-			               "without a name argument" );
-#endif
-			template<JSONNAMETYPE NewName>
-			using with_name =
-			  json_array<NewName, JsonElement, Container, Constructor>;
 
 			using without_name =
 			  json_base::json_array<JsonElement, Container, Constructor>;
@@ -1372,7 +1264,6 @@ namespace daw::json {
 			         typename Constructor = use_default>
 			struct json_sized_array {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = true;
 				static_assert(
 				  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
@@ -1412,8 +1303,8 @@ namespace daw::json {
 				static constexpr JsonParseTypes expected_type =
 				  JsonParseTypes::SizedArray;
 
-				static_assert( json_element_t::name == no_name_sv,
-				               "All elements of json_array must be have no_name" );
+				static_assert( json_details::is_no_name_v<json_element_t>,
+				               "All elements of json_array must be have	no_name" );
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::Array;
 
@@ -1421,7 +1312,6 @@ namespace daw::json {
 				using with_name =
 				  daw::json::json_sized_array<NewName, JsonElement, SizeMember,
 				                              Container, Constructor>;
-				using without_name = json_sized_array;
 			};
 		} // namespace json_base
 
@@ -1432,15 +1322,6 @@ namespace daw::json {
 		                                Constructor> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert(
-			  name != no_name,
-			  "For no_name mappings, use the json_sized_array_no_name variant "
-			  "without a name argument" );
-#endif
-			template<JSONNAMETYPE NewName>
-			using with_name = json_sized_array<NewName, SizeMember, JsonElement,
-			                                   Container, Constructor>;
 
 			using without_name = json_base::json_sized_array<JsonElement, SizeMember,
 			                                                 Container, Constructor>;
@@ -1465,7 +1346,6 @@ namespace daw::json {
 			         typename Constructor>
 			struct json_key_value {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 
 				using constructor_t =
@@ -1481,7 +1361,8 @@ namespace daw::json {
 
 				static_assert( not std::is_same_v<json_element_t, void>,
 				               "Unknown JsonValueType type." );
-				static_assert( json_element_t::name == no_name_sv,
+
+				static_assert( json_details::is_no_name_v<json_element_t>,
 				               "Value member name must be the default no_name" );
 				static_assert(
 				  json_details::has_unnamed_default_type_mapping_v<JsonKeyType>,
@@ -1506,7 +1387,6 @@ namespace daw::json {
 				using with_name =
 				  daw::json::json_key_value<NewName, Container, JsonValueType,
 				                            JsonKeyType, Constructor>;
-				using without_name = json_key_value;
 			};
 		} // namespace json_base
 
@@ -1530,15 +1410,7 @@ namespace daw::json {
 		                              Constructor> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_key_value_no_name "
-			               "variant without a name argument" );
-#endif
 
-			template<JSONNAMETYPE NewName>
-			using with_name = json_key_value<NewName, Container, JsonValueType,
-			                                 JsonKeyType, Constructor>;
 			using without_name = json_base::json_key_value<Container, JsonValueType,
 			                                               JsonKeyType, Constructor>;
 		};
@@ -1567,7 +1439,6 @@ namespace daw::json {
 			         typename Constructor = use_default>
 			struct json_key_value_array {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 
 				using constructor_t =
@@ -1586,8 +1457,7 @@ namespace daw::json {
 
 				static_assert( not std::is_same_v<json_key_t, void>,
 				               "Unknown JsonKeyType type." );
-				static_assert( daw::string_view( json_key_t::name ) !=
-				                 daw::string_view( no_name ),
+				static_assert( not json_details::is_no_name_v<json_key_t>,
 				               "Must supply a valid key member name" );
 				using json_value_t = json_details::copy_name_when_noname<
 				  json_details::json_deduced_type<JsonValueType>,
@@ -1598,11 +1468,9 @@ namespace daw::json {
 
 				static_assert( not std::is_same_v<json_value_t, void>,
 				               "Unknown JsonValueType type." );
-				static_assert( daw::string_view( json_value_t::name ) !=
-				                 daw::string_view( no_name ),
+				static_assert( not json_details::is_no_name_v<json_value_t>,
 				               "Must supply a valid value member name" );
-				static_assert( daw::string_view( json_key_t::name ) !=
-				                 daw::string_view( json_value_t::name ),
+				static_assert( json_key_t::name != json_value_t::name,
 				               "Key and Value member names cannot be the same" );
 				static constexpr JsonParseTypes expected_type =
 				  JsonParseTypes::KeyValueArray;
@@ -1613,7 +1481,6 @@ namespace daw::json {
 				using with_name =
 				  daw::json::json_key_value_array<NewName, Container, JsonValueType,
 				                                  JsonKeyType, Constructor>;
-				using without_name = json_key_value_array;
 			};
 		} // namespace json_base
 
@@ -1638,16 +1505,7 @@ namespace daw::json {
 		                                    Constructor> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert(
-			  name != no_name,
-			  "For no_name mappings, use the json_key_value_array_no_name variant "
-			  "without a name argument" );
-#endif
 
-			template<JSONNAMETYPE NewName>
-			using with_name = json_key_value_array<NewName, Container, JsonValueType,
-			                                       JsonKeyType, Constructor>;
 			using without_name =
 			  json_base::json_key_value_array<Container, JsonValueType, JsonKeyType,
 			                                  Constructor>;
@@ -1678,7 +1536,6 @@ namespace daw::json {
 			         typename Constructor>
 			struct json_tuple {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 
 				using wrapped_type = Tuple;
 				static constexpr bool must_be_class_member = false;
@@ -1707,7 +1564,6 @@ namespace daw::json {
 				using with_name =
 				  daw::json::json_tuple<NewName, Tuple, JsonTupleTypesList,
 				                        Constructor>;
-				using without_name = json_tuple;
 			};
 		} // namespace json_base
 
@@ -1716,15 +1572,6 @@ namespace daw::json {
 		struct json_tuple
 		  : json_base::json_tuple<Tuple, JsonTupleTypesList, Constructor> {
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_tuple_no_name "
-			               "variant without a name argument" );
-#endif
-
-			template<JSONNAMETYPE NewName>
-			using with_name =
-			  json_tuple<NewName, Tuple, JsonTupleTypesList, Constructor>;
 
 			using without_name =
 			  json_base::json_tuple<Tuple, JsonTupleTypesList, Constructor>;
@@ -1748,7 +1595,6 @@ namespace daw::json {
 			struct json_intrusive_variant {
 				using i_am_a_json_type = void;
 				using i_am_a_tagged_variant = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 
 				using json_elements = typename std::conditional_t<
@@ -1807,7 +1653,6 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_intrusive_variant<
 				  NewName, Variant, TagMember, Switcher, JsonElements, Constructor>;
-				using without_name = json_intrusive_variant;
 			};
 		} // namespace json_base
 		/***
@@ -1831,16 +1676,6 @@ namespace daw::json {
 		                                      Constructor> {
 
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert(
-			  name != no_name,
-			  "For no_name mappings, use the json_intrusive_variant_no_name variant "
-			  "without a name argument" );
-#endif
-
-			template<JSONNAMETYPE NewName>
-			using with_name = json_intrusive_variant<NewName, T, TagMember, Switcher,
-			                                         JsonElements, Constructor>;
 
 			using without_name =
 			  json_base::json_intrusive_variant<T, TagMember, Switcher, JsonElements,
@@ -1901,7 +1736,6 @@ namespace daw::json {
 			template<typename T, typename Constructor>
 			struct json_raw {
 				using i_am_a_json_type = void;
-				static constexpr daw::string_view name = no_name;
 				static constexpr bool must_be_class_member = false;
 				using wrapped_type = json_value;
 				using constructor_t =
@@ -1923,7 +1757,6 @@ namespace daw::json {
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_raw<NewName, T, Constructor>;
-				using without_name = json_raw;
 			};
 		} // namespace json_base
 
@@ -1941,14 +1774,6 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T, typename Constructor>
 		struct json_raw : json_base::json_raw<T, Constructor> {
 			static constexpr daw::string_view name = Name;
-#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
-			static_assert( name != no_name,
-			               "For no_name mappings, use the json_raw_no_name "
-			               "variant without a name argument" );
-#endif
-
-			template<JSONNAMETYPE NewName>
-			using with_name = json_raw<NewName, T, Constructor>;
 
 			using without_name = json_base::json_raw<T, Constructor>;
 		};
