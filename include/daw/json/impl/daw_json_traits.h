@@ -114,7 +114,15 @@ namespace daw::json {
 		 * specialization has not been done for a user class.
 		 */
 		template<typename>
-		struct missing_json_data_contract_for;
+		struct missing_json_data_contract_for_or_unknown_type;
+
+		template<typename T>
+		inline constexpr bool is_missing_data_contract_or_unknown_type_v =
+		  std::is_same_v<T, void>;
+
+		template<typename T>
+		inline constexpr bool is_missing_data_contract_or_unknown_type_v<
+		  missing_json_data_contract_for_or_unknown_type<T>> = true;
 
 		/***
 		 * Mapping class for JSON data structures to C++.  It must be specialized in
@@ -123,7 +131,7 @@ namespace daw::json {
 		 */
 		template<typename T, typename = void>
 		struct json_data_contract {
-			using type = missing_json_data_contract_for<T>;
+			using type = missing_json_data_contract_for_or_unknown_type<T>;
 		};
 
 		/***

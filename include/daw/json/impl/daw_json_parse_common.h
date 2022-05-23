@@ -143,7 +143,7 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool has_json_data_contract_trait_v =
-			  not std::is_same_v<missing_json_data_contract_for<T>,
+			  not std::is_same_v<missing_json_data_contract_for_or_unknown_type<T>,
 			                     json_data_contract_trait_t<T>>;
 
 			template<typename T>
@@ -785,7 +785,7 @@ namespace daw::json {
 					return daw::traits::identity<type>{ };
 				} else {
 					static_assert( is_readable_value_v<T> );
-					using type = missing_json_data_contract_for<T>;
+					using type = missing_json_data_contract_for_or_unknown_type<T>;
 					return daw::traits::identity<type>{ };
 				}
 			}
@@ -809,7 +809,7 @@ namespace daw::json {
 			template<typename T>
 			inline constexpr bool has_json_deduced_type_v =
 			  not std::is_same_v<json_deduced_type<T>,
-			                     missing_json_data_contract_for<T>>;
+			                     missing_json_data_contract_for_or_unknown_type<T>>;
 
 			template<typename T>
 			using has_json_deduced_type =

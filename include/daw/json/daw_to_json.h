@@ -119,7 +119,7 @@ namespace daw::json {
 
 				static_assert(
 				  not std::is_same_v<JsonMember,
-				                     missing_json_data_contract_for<JsonElement>>,
+				    missing_json_data_contract_for_or_unknown_type<JsonElement>>,
 				  "Unable to detect unnamed mapping" );
 				// static_assert( not std::is_same_v<JsonElement, JsonMember> );
 				out_it.next_member( );

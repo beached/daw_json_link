@@ -1189,7 +1189,7 @@ namespace daw::json {
 				using json_element_t = json_details::json_deduced_type<JsonElement>;
 				using json_element_parse_to_t = typename json_element_t::parse_to_t;
 
-				static_assert( not std::is_same_v<json_element_t, void>,
+				static_assert( not is_missing_data_contract_or_unknown_type_v<json_element_t>,
 				               "Unknown JsonElement type." );
 				static_assert( json_details::is_no_name_v<json_element_t>,
 				               "Array elements must not have names" );
@@ -1270,7 +1270,7 @@ namespace daw::json {
 				  "Missing specialization of daw::json::json_data_contract for class "
 				  "mapping or specialization of daw::json::json_link_basic_type_map" );
 				using json_element_t = json_details::json_deduced_type<JsonElement>;
-				static_assert( not std::is_same_v<json_element_t, void>,
+				static_assert( not is_missing_data_contract_or_unknown_type_v<json_element_t>,
 				               "Unknown JsonElement type." );
 				static_assert( json_details::is_a_json_type_v<json_element_t>,
 				               "Error determining element type" );
@@ -1359,7 +1359,7 @@ namespace daw::json {
 
 				using json_element_t = json_details::json_deduced_type<JsonValueType>;
 
-				static_assert( not std::is_same_v<json_element_t, void>,
+				static_assert( not is_missing_data_contract_or_unknown_type_v<json_element_t>,
 				               "Unknown JsonValueType type." );
 
 				static_assert( json_details::is_no_name_v<json_element_t>,
@@ -1371,7 +1371,7 @@ namespace daw::json {
 
 				using json_key_t = json_details::json_deduced_type<JsonKeyType>;
 
-				static_assert( not std::is_same_v<json_key_t, void>,
+				static_assert( not is_missing_data_contract_or_unknown_type_v<json_key_t>,
 				               "Unknown JsonKeyType type." );
 				static_assert( json_details::is_no_name_v<json_key_t>,
 				               "Key member name must be the default no_name" );
@@ -1455,7 +1455,7 @@ namespace daw::json {
 				  json_details::json_deduced_type<JsonKeyType>,
 				  json_details::default_key_name>;
 
-				static_assert( not std::is_same_v<json_key_t, void>,
+				static_assert( not is_missing_data_contract_or_unknown_type_v<json_key_t>,
 				               "Unknown JsonKeyType type." );
 				static_assert( not json_details::is_no_name_v<json_key_t>,
 				               "Must supply a valid key member name" );
@@ -1466,7 +1466,7 @@ namespace daw::json {
 				using json_class_t =
 				  json_class<tuple_json_mapping<json_key_t, json_value_t>>;
 
-				static_assert( not std::is_same_v<json_value_t, void>,
+				static_assert( not is_missing_data_contract_or_unknown_type_v<json_value_t>,
 				               "Unknown JsonValueType type." );
 				static_assert( not json_details::is_no_name_v<json_value_t>,
 				               "Must supply a valid value member name" );
