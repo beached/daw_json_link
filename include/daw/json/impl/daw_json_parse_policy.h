@@ -248,36 +248,10 @@ namespace daw::json {
 			using without_allocator_type =
 			  BasicParsePolicy<PolicyFlags, json_details::NoAllocator>;
 
-			[[nodiscard]] static inline constexpr without_allocator_type
-			without_allocator( BasicParsePolicy p ) {
-				auto result = without_allocator_type( p.first, p.last, p.class_first,
-				                                      p.class_last );
-				result.counter = p.counter;
-				return result;
-			}
-
-			[[nodiscard]] inline constexpr without_allocator_type
-			without_allocator( ) const {
-				auto result =
-				  without_allocator_type( first, last, class_first, class_last );
-				result.counter = counter;
-				return result;
-			}
-
 			template<typename Alloc>
 			[[nodiscard]] static inline constexpr with_allocator_type<Alloc>
 			with_allocator( iterator f, iterator l, Alloc &alloc ) {
 				return { f, l, f, l, alloc };
-			}
-
-			[[nodiscard]] static inline constexpr without_allocator_type
-			without_allocator( iterator f, iterator l ) {
-				return { f, l };
-			}
-
-			[[nodiscard]] static inline constexpr without_allocator_type
-			without_allocator( iterator f, iterator l, iterator cf, iterator cl ) {
-				return { f, l, cf, cl };
 			}
 
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
