@@ -417,13 +417,6 @@ namespace daw::json {
 
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( KnownBounds ) {
-					if constexpr( JsonMember::empty_is_null == EmptyStringNull::yes ) {
-						if( parse_state.empty( ) ) {
-							return construct_value(
-							  template_args<json_result<JsonMember>, constructor_t>,
-							  parse_state );
-						}
-					}
 					return construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
 					  std::data( parse_state ), std::size( parse_state ) );
@@ -431,13 +424,6 @@ namespace daw::json {
 					if constexpr( JsonMember::allow_escape_character ==
 					              AllowEscapeCharacter::Allow ) {
 						auto const str = skip_string( parse_state );
-						if constexpr( JsonMember::empty_is_null == EmptyStringNull::yes ) {
-							if( str.empty( ) ) {
-								return construct_value(
-								  template_args<json_result<JsonMember>, constructor_t>,
-								  parse_state );
-							}
-						}
 						return construct_value(
 						  template_args<json_result<JsonMember>, constructor_t>,
 						  parse_state, std::data( str ), std::size( str ) );
@@ -448,20 +434,9 @@ namespace daw::json {
 						parse_state.template move_to_next_of<'"'>( );
 						char const *const last = parse_state.first;
 						parse_state.remove_prefix( );
-						if constexpr( JsonMember::empty_is_null == EmptyStringNull::yes ) {
-							if( first == last ) {
-								return construct_value(
-								  template_args<json_result<JsonMember>, constructor_t>,
-								  parse_state );
-							}
-							return construct_value(
-							  template_args<json_result<JsonMember>, constructor_t>,
-							  parse_state, first, static_cast<std::size_t>( last - first ) );
-						} else {
-							return construct_value(
-							  template_args<json_result<JsonMember>, constructor_t>,
-							  parse_state, first, static_cast<std::size_t>( last - first ) );
-						}
+						return construct_value(
+						  template_args<json_result<JsonMember>, constructor_t>,
+						  parse_state, first, static_cast<std::size_t>( last - first ) );
 					}
 				}
 			}

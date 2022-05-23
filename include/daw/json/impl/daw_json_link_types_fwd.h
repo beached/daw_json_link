@@ -165,8 +165,6 @@ namespace daw::json {
 		 * @tparam String result type constructed by Constructor
 		 * @tparam Constructor a callable taking as arguments ( char const *,
 		 * std::size_t )
-		 * @tparam EmptyStringNull if string is empty, call Constructor with no
-		 * arguments
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
@@ -183,8 +181,6 @@ namespace daw::json {
 		 * @tparam Constructor a callable taking as arguments ( InputIterator,
 		 * InputIterator ).  If others are needed use the Constructor callable
 		 * convert
-		 * @tparam EmptyStringNull if string is empty, call Constructor with no
-		 * arguments
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<std::string>,
@@ -201,8 +197,6 @@ namespace daw::json {
 		 * @tparam String result type constructed by Constructor
 		 * @tparam Constructor a callable taking as arguments ( char const *,
 		 * std::size_t )
-		 * @tparam EmptyStringNull if string is empty, call Constructor with no
-		 * arguments
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 * arguments
 		 * @tparam Nullable Can the member be missing or have a null value
@@ -221,8 +215,6 @@ namespace daw::json {
 		 * @tparam T result type constructed by Constructor
 		 * @tparam Constructor a callable taking as arguments ( char const *,
 		 * std::size_t )
-		 * @tparam EmptyStringNull if string is empty, call Constructor with no
-		 * arguments
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 * arguments
 		 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the

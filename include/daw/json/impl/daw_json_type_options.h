@@ -108,20 +108,6 @@ namespace daw::json {
 			return bool_opts_t::options( options... );
 		}
 
-		/***
-		 * Treat empty string values as a null when parsing
-		 */
-		enum class EmptyStringNull : unsigned { no, yes }; // 1bit
-
-		namespace json_details {
-			template<>
-			inline constexpr unsigned json_option_bits_width<EmptyStringNull> = 1;
-
-			template<>
-			inline constexpr auto default_json_option_value<EmptyStringNull> =
-			  EmptyStringNull::no;
-		} // namespace json_details
-
 		enum class EightBitModes : unsigned {
 			DisallowHigh = false,
 			AllowFull = true
@@ -137,8 +123,7 @@ namespace daw::json {
 		} // namespace json_details
 
 		// json_string
-		using string_opts_t =
-		  json_details::JsonOptionList<EightBitModes, EmptyStringNull>;
+		using string_opts_t = json_details::JsonOptionList<EightBitModes>;
 
 		inline constexpr auto string_opts = string_opts_t{ };
 		inline constexpr json_details::json_options_t string_opts_def =
@@ -170,8 +155,7 @@ namespace daw::json {
 
 		// json_string_raw
 		using string_raw_opts_t =
-		  json_details::JsonOptionList<EightBitModes, EmptyStringNull,
-		                               AllowEscapeCharacter>;
+		  json_details::JsonOptionList<EightBitModes, AllowEscapeCharacter>;
 
 		inline constexpr auto string_raw_opts = string_raw_opts_t{ };
 		inline constexpr json_details::json_options_t string_raw_opts_def =
@@ -204,7 +188,7 @@ namespace daw::json {
 
 		template<typename... Options>
 		constexpr json_details::json_options_t tuple_opt( Options... options ) {
-			return tuple_opts_t::options( options... );
+		  return tuple_opts_t::options( options... );
 		}*/
 
 		/***

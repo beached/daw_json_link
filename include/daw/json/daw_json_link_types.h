@@ -588,9 +588,6 @@ namespace daw::json {
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::String;
 
-				static constexpr EmptyStringNull empty_is_null =
-				  json_details::get_bits_for<EmptyStringNull>( string_raw_opts,
-				                                               Options );
 				static constexpr EightBitModes eight_bit_mode =
 				  json_details::get_bits_for<EightBitModes>( string_raw_opts, Options );
 
@@ -609,8 +606,6 @@ namespace daw::json {
 		 * @tparam String result type constructed by Constructor
 		 * @tparam Constructor a callable taking as arguments ( char const *,
 		 * std::size_t )
-		 * @tparam EmptyStringNull if string is empty, call Constructor with no
-		 * arguments
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 * arguments
 		 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
@@ -661,8 +656,7 @@ namespace daw::json {
 
 				static constexpr JsonParseTypes expected_type =
 				  JsonParseTypes::StringEscaped;
-				static constexpr EmptyStringNull empty_is_null =
-				  json_details::get_bits_for<EmptyStringNull>( string_opts, Options );
+
 				static constexpr EightBitModes eight_bit_mode =
 				  json_details::get_bits_for<EightBitModes>( string_opts, Options );
 
@@ -683,8 +677,6 @@ namespace daw::json {
 		 * @tparam Constructor a callable taking as arguments ( InputIterator,
 		 * InputIterator ).  If others are needed use the Constructor callable
 		 * convert
-		 * @tparam EmptyStringNull if string is empty, call Constructor with no
-		 * arguments
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 */
 		template<JSONNAMETYPE Name, typename String,
