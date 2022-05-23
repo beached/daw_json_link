@@ -161,7 +161,6 @@ namespace daw::json {
 		                         IdentitySwitcher<Bar, Umm>>,
 		  json_tuple<mem_o,
 		             std::tuple<double, std::string, int, std::variant<Bar, Umm>>,
-		             json_deduce_type, tuple_opts_def,
 		             json_tuple_types_list<
 		               double, std::string, int,
 		               json_tagged_variant_no_name<
@@ -197,7 +196,6 @@ namespace daw::json {
 		  json_tuple<
 		    mem_o,
 		    std::tuple<double, std::string_view, int, std::variant<Bar, Umm>>,
-		    json_deduce_type, tuple_opts_def,
 		    json_tuple_types_list<
 		      double, std::string_view, int,
 		      json_tagged_variant_no_name<std::variant<Bar, Umm>,

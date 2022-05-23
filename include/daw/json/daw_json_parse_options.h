@@ -24,10 +24,14 @@ namespace daw::json {
 				/// default: compile_time
 				///
 				enum class ExecModeTypes : unsigned {
+					/// @brief Only use code paths that can run at compile time
 					compile_time,
-					runtime, /* testing */
-					simd     /* testing */
-				};         // 2bits
+					/// @brief *testing* Allow code paths that use non-compile time
+					/// methods
+					runtime,
+					/// @brief *testing* Allow code paths that use SIMD intrinsics
+					simd
+				}; // 2bits
 
 				///
 				/// @brief Input is a zero terminated string.  If this cannot be
@@ -36,7 +40,13 @@ namespace daw::json {
 				/// use the safer assumption that the buffer does not end in zero.
 				///
 				/// default: no
-				enum class ZeroTerminatedString : unsigned { no, yes }; // 1bit
+				enum class ZeroTerminatedString : unsigned {
+					/// @brief Bounds checking does not take advantage of assuming a
+					/// terminated string
+					no,
+					/// @brief The string passed to `from_json` is zero terminated
+					yes
+				}; // 1bit
 
 				///
 				/// @brief Allow comments in JSON.  The supported modes are none, C++
@@ -45,7 +55,14 @@ namespace daw::json {
 				///
 				/// default: none
 				///
-				enum class PolicyCommentTypes : unsigned { none, cpp, hash }; // 2bits
+				enum class PolicyCommentTypes : unsigned {
+					/// @brief Do not allow comments in JSON whitespace
+					none,
+					/// @brief Allow C++ style and C style comments in whitespace
+					cpp,
+					/// @brief Allow comments starting with a hash symbol #
+					hash
+				}; // 2bits
 
 				///
 				/// @brief Enable all structure, buffer, and type checking.  The default

@@ -134,16 +134,6 @@ namespace daw::json {
 				return true;
 			}
 
-			using as_unchecked =
-			  BasicParsePolicy<json_details::set_bits(
-			                     PolicyFlags, options::CheckedParseMode::no ),
-			                   Allocator>;
-
-			using as_checked =
-			  BasicParsePolicy<json_details::set_bits(
-			                     PolicyFlags, options::CheckedParseMode::yes ),
-			                   Allocator>;
-
 			static constexpr bool use_exact_mappings_by_default =
 			  json_details::get_bits_for<options::UseExactMappingsByDefault>(
 			    PolicyFlags ) == options::UseExactMappingsByDefault::yes;

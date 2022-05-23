@@ -156,8 +156,8 @@ namespace daw::json {
 		template<typename JsonElement,
 		         typename Container =
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
-		         typename Constructor = default_constructor<Container>,
-		         bool KnownBounds = false, typename String, auto... PolicyFlags>
+		         typename Constructor = use_default, bool KnownBounds = false,
+		         typename String, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr auto
 		from_json_array( String &&json_data, std::string_view member_path,
 		                 options::parse_flags_t<PolicyFlags...> =
@@ -180,8 +180,8 @@ namespace daw::json {
 		template<typename JsonElement,
 		         typename Container =
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
-		         typename Constructor = default_constructor<Container>,
-		         bool KnownBounds = false, typename String, auto... PolicyFlags>
+		         typename Constructor = use_default, bool KnownBounds = false,
+		         typename String, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr auto
 		from_json_array( String &&json_data,
 		                 options::parse_flags_t<PolicyFlags...> =

@@ -1,6 +1,6 @@
 # Optional Values
 
-null or optional values are supported by appending the type name with `_null`.  The requirement of the underlying type is that it will be default constructable for null values.
+null or optional values are supported by using the `json_nullable` mapping type or appending the type name with `_null` to use the convenience wrapper.  The requirement of the underlying type is that it will be default constructable for null values.
 
 Take the following JSON
 ```json

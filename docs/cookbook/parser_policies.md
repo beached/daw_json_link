@@ -1,67 +1,78 @@
 # Parser Options
 
-## Parser option presets
+## `ExecModeTypes`
 
-The default parser policy is validating and disallows comments.  The `Unchecked` variants will skip most error checks and can give a good performance boost; this is useful when you can trust and know the data will be free of malicious errors.
+There are 3 levels of execution modes; compile time, runtime, and simd. The default and currently supported mode is '
+compile_time'. The others are often not faster or as well tested.
 
-The predefined policies are:
-* `daw::json::NoCommentSkippingPolicyChecked` (default)
-* `daw::json::NoCommentSkippingPolicyUnchecked`
+### Values
 
-Hash comments, a `#` in whitespace until end of line is comment.
-* `daw::json::HashCommentSkippingPolicyChecked`
-* `daw::json::HashCommentSkippingPolicyUnchecked`
-```json
-{
-  "a": 234, # This is comment
-  "b": "This is not a comment"
-}
-```
-C++ comments, either a `//` in whitespace until end of line, or between `/*` and `*/` in whitespace, are commments.
-* `daw::json::CppCommentSkippingPolicyChecked`
-* `daw::json::CppCommentSkippingPolicyUnchecked`
-```json
-{
-  "a": 234, // This is comment
-  "b": "This is not a comment", /* but these
-       are part of the same comment */ "c": "value over here"
-}
-```
-To change the policy from the default one for parsing, the following types/methods have a template argument for the `PolicyType` or an equivalent.
+* `compile_time` - This option allows constexpr parsing. In the future the other modes maybe
+  faster and better supported. It may use builtins and runtime only methods when appropriate when detection of the
+  current evaluation mode is available (e.g `is_constant_evaluated`)
+* `runtime` - This mode includes `compile_time` methods along with using methods only available at runtime (
+  e.g `memchr`).
+* `simd` - This mode includes `runtime` methods along with some simd enhanced methods (e.g. in number parsing).
 
-* `daw::json::json_value` -> `daw::json::basic_json_value<PolicyType>`
-* `daw::json::json_pair` -> `daw::json::basic_json_pair<PolicyType>`
-* `daw::json::from_json<T>` -> `daw::json::from_json<T, PolicyType>`
-* `daw::json::from_json_array<ElementType>` -> `daw::json::from_json_array<ElementType, ContainerType, PolicyType>`
+### Default
 
-An example of parsing with C++ comments could be:
-```c++
-MyType value = daw::json::from_json<
-		MyType, 
-		daw::json::CppCommentSkippingPolicyChecked
-	>( json_string );
-```
+* `compile_time`
 
-## Individual parser options
+## `ZeroTerminatedString`
 
-`ExecModeTypes` - There are 3 paths here, with only `compile_time` being fully supported.  It is also the fastest generally
-  * `ExecModeTypes::compile_time` - This option provides constexpr parsing and is the normal path.  In the future the other modes maybe faster and better supported.  It may use builtins and runtime only methods when appropriate and one can detect if the current evaluaton is constexpr.
-  * `ExecModeTypes::runtime` - This mode includes baseline methods that cannot run during compiletime.  
-  * `ExecModeTypes::simd` - This mode will utilize SIMD enhanced methods for certain functions
+The string data passed to `from_json` is zero terminated. This allows some potential
+optimizations around bounds checking. If the type passed to `from_json` has a specialization
+of `daw::json::is_zero_terminated_string` it will be assumed to be zero terminated. By default, std::basic_string
+evaluates to being a zero terminated string.
 
-`ZeroTerminatedString` - The string data passed to `from_json` is zero terminated.  This allows some potential optimizations around bounds checking.  If the type passed to `from_json` has a specialization of `daw::json::is_zero_terminated_string` it will be assumed to be zero terminated.  By default std::basic_string evaluates to being a zero terminated string.
-  * `ZeroTerminatedString::no` - Default for non-specialized types of `daw::json::is_zero_terminated_string`
-  * `ZeroTerminatedString::yes` - The string passed to `from_json` is zero terminated
+### Values
 
-`PolicyCommentTypes` - Are comments in whitespace allowed(defaults to no) and, if so, what kind
-  * `PolicyCommentTypes::none` - Comments are not allowed.  This is conformant with JSON and the fastests
-  * `PolicyCommentTypes::cpp` - Allow C++ style comments, both `/* comment */` and `// comment until newline` are allowed in places where whitespaced is allowed/required
-  * `PolicyCommentTypes::hash` - Allow `# comment until newline` hash style line comments
+* `no` - Bounds checking does not take advantage of assuming a terminated string
+* `yes` - The string passed to `from_json` is zero terminated
 
-`CheckedParseMode` - Do a checked parse or not.  If the data is known to be trustworthy and generated correctly, one can disable checking of a parse and gain performance(measured 15% in some documents).
-  * `CheckedParseMode::yes` - Default and safest option.  Check for parse irregularities
-  * `CheckedParseMode::no` - Disable many parse time checks
+### Default
 
-`MinifiedDocument` - Assume the document in minified and there is no whitespace.  This may offer performance benefits(measured 5% in some minified documents).  This option is incompatable with comments.
-  * `MinifiedDocument::no` - Default and assumes there is whitespace in document.
-  * `MinifiedDcoument::yes` - Does not skip whitespce in documents.
+* `no` or the value of the `daw::json::is_zero_terminated_string` specialization for the String input type
+
+## `PolicyCommentTypes`
+
+Are comments in whitespace allowed(defaults to no) and, if so, what kind
+
+### Values
+
+* `none` - Comments are not allowed. This is conformant with JSON and the fastest
+* `cpp` - Allow C++ style comments, both `/* comment */` and `// comment until newline` are allowed in places where
+  whitespace is allowed/required
+* `hash` - Allow `# comment until newline` hash style line comments (e.g `# comment`)
+
+### Default
+
+* `none`
+
+## `CheckedParseMode`
+
+Do a checked parse or not. If the data is known to be trustworthy and generated correctly, one can
+disable checking of a parse and gain performance(measured 15% in some documents).
+
+### Values
+
+* `yes` - All checks are performed
+* `no` - Disable many parse time checks, assumes perfect input
+
+### Default
+
+* `yes`
+
+## `MinifiedDocument`
+
+Assume the document in minified and there is no whitespace. This may offer performance benefits(
+measured 5% in some minified documents). This option is incompatible with comments.
+
+### Values
+
+* `no` - Assumes there is whitespace in document.
+* `yes` - Does not skip whitespace in documents, assumes a minified document.
+
+### Default
+
+* `no`

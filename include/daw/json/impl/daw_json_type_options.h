@@ -184,6 +184,7 @@ namespace daw::json {
 		}
 
 		// json_class
+		/*
 		using class_opts_t = json_details::JsonOptionList<>;
 		inline constexpr auto class_opts = class_opts_t{ };
 		inline constexpr json_details::json_options_t class_opts_def =
@@ -191,10 +192,11 @@ namespace daw::json {
 
 		template<typename... Options>
 		constexpr json_details::json_options_t class_opt( Options... options ) {
-			return class_opts_t::options( options... );
-		}
+		  return class_opts_t::options( options... );
+		}*/
 
 		// json_tuple
+		/*
 		using tuple_opts_t = json_details::JsonOptionList<>;
 		inline constexpr auto tuple_opts = tuple_opts_t{ };
 		inline constexpr json_details::json_options_t tuple_opts_def =
@@ -203,7 +205,7 @@ namespace daw::json {
 		template<typename... Options>
 		constexpr json_details::json_options_t tuple_opt( Options... options ) {
 			return tuple_opts_t::options( options... );
-		}
+		}*/
 
 		/***
 		 * Custom JSON types can be Strings(default), unquoted Literals, or a mix

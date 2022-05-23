@@ -27,6 +27,11 @@
 #include <unordered_map>
 #include <utility>
 
+namespace daw {
+	/// @brief Used to flag that the default will be used.
+	struct use_default;
+} // namespace daw
+
 /***
  * Customization point traits
  *
@@ -231,13 +236,6 @@ namespace daw::json {
 			using is_a_json_tagged_variant =
 			  std::bool_constant<is_a_json_tagged_variant_v<T>>;
 
-			template<typename T>
-			using json_alt_mapping_test = typename T::i_am_an_alternate_mapping;
-
-			template<typename T>
-			inline constexpr bool is_json_alt_mapping_v =
-			  is_detected_v<json_alt_mapping_test, T>;
-
 			template<typename T, bool, bool>
 			struct json_data_contract_constructor_impl {
 				using type = default_constructor<T>;
@@ -268,8 +266,11 @@ namespace daw::json {
 			  typename json_data_contract<T>::constructor;
 
 			template<typename T, typename Default>
-			using json_class_constructor_t =
-			  daw::detected_or_t<Default, json_class_constructor_t_impl, T>;
+			using json_class_constructor_t = daw::detected_or_t<
+			  typename std::conditional_t<std::is_same_v<use_default, Default>,
+			                              ident_trait<default_constructor, T>,
+			                              traits::identity<Default>>::type,
+			  json_class_constructor_t_impl, T>;
 
 			namespace is_string_like_impl {
 				template<typename T>

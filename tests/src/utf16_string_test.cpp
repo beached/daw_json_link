@@ -53,7 +53,7 @@ using json_u16string =
   daw::json::json_custom_no_name<std::u16string, ToConverter, FromConverter>;
 
 int main( int, char ** ) {
-	std::string in_str = R"(["testing🎉", "🙈monkey"])";
+	std::string in_str = R"json(["testing🎉", "🙈monkey"])json";
 
 	puts( "Before" );
 	puts( in_str.c_str( ) );
