@@ -60,9 +60,6 @@ namespace daw::json {
 			  daw::is_detected_v<has_op_star_test, T>;
 
 			template<typename Constructor, typename... Args>
-			struct nullable_constructor_cannot_be_invoked;
-
-			template<typename Constructor, typename... Args>
 			struct constructor_cannot_be_invoked;
 
 			template<typename Constructor, typename... Args>
@@ -112,10 +109,6 @@ namespace daw::json {
 		///
 		template<typename T>
 		using json_data_contract_trait_t = typename json_data_contract<T>::type;
-
-		template<typename T>
-		using test_valid_json_data_contract_trait_t =
-		  typename json_data_contract_trait_t<T>::i_am_a_json_member_list;
 
 		namespace json_details {
 			template<typename T>
@@ -203,35 +196,6 @@ namespace daw::json {
 			template<typename T>
 			inline constexpr bool is_a_json_tagged_variant_v =
 			  daw::is_detected_v<is_a_json_tagged_variant_test, T>;
-
-			template<typename T>
-			using is_a_json_tagged_variant =
-			  std::bool_constant<is_a_json_tagged_variant_v<T>>;
-
-			template<typename T, bool, bool>
-			struct json_data_contract_constructor_impl {
-				using type = default_constructor<T>;
-			};
-
-			template<typename T>
-			using has_json_data_constract_constructor_test =
-			  decltype( decltype( std::declval<
-			                      json_data_contract_trait_t<T>> )::constructor );
-
-			template<typename T>
-			struct json_data_contract_constructor_impl<T, true, true> {
-				using type = typename json_data_contract_trait_t<T>::constructor;
-			};
-
-			template<typename T>
-			using json_data_contract_constructor =
-			  json_data_contract_constructor_impl<
-			    T, daw::is_detected_v<json_data_contract_trait_t, T>,
-			    daw::is_detected_v<has_json_data_constract_constructor_test, T>>;
-
-			template<typename T>
-			using json_data_contract_constructor_t =
-			  typename json_data_contract_constructor<T>::type;
 
 			template<typename T>
 			using json_class_constructor_t_impl =
@@ -418,16 +382,6 @@ namespace daw::json {
 			template<typename T>
 			inline constexpr bool is_tuple_v =
 			  daw::is_detected_v<json_details::tuple_test, T>;
-
-			template<typename T>
-			using is_tuple = std::bool_constant<is_tuple_v<T>>;
-
-			template<typename T>
-			struct op_star_result {
-				using type = DAW_TYPEOF( *std::declval<T>( ) );
-			};
-			template<typename T>
-			using op_star_result_t = typename op_star_result<T>::type;
 
 			template<typename T>
 			using unwrapped_t = readable_value_type_t<T>;
