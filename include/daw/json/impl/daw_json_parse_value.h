@@ -1163,7 +1163,7 @@ namespace daw::json {
 							auto const run_after_parse = daw::on_exit_success(
 							  [&] { parse_state.move_next_member_or_end( ); } );
 							(void)run_after_parse;
-							return parse_value<without_name<json_member_t>>(
+							return parse_value<json_member_t>(
 							  parse_state, ParseTag<json_member_t::expected_type>{ } );
 						} else {
 							auto result = parse_value<json_member_t>(
