@@ -30,16 +30,18 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 static_assert( DAW_NUM_RUNS > 0 );
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
+#ifdef DAW_USE_EXCEPTIONS
 	try {
+#endif
 		using namespace daw::json;
 #if defined( NDEBUG ) and not defined( DEBUG )
 		std::cout << "release run\n";
 #else
-		std::cout << "debug run\n";
+	std::cout << "debug run\n";
 #endif
 		if( argc < 4 ) {
 			std::cerr << "Must supply a filenames to open\n";
@@ -86,9 +88,8 @@ int main( int argc, char **argv )
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_twitter bench trusted", json_sv1.size( ),
 		  [&twitter_result]( auto f1 ) {
-			  twitter_result =
-			    daw::json::from_json<daw::twitter2::twitter_object_t,
-			                         NoCommentSkippingPolicyUnchecked>( f1 );
+			  twitter_result = daw::json::from_json<daw::twitter2::twitter_object_t>(
+			    f1, options::parse_flags<options::CheckedParseMode::no> );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( twitter_result );
@@ -120,9 +121,8 @@ int main( int argc, char **argv )
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_citm bench trusted", json_sv2.size( ),
 		  [&citm_result]( auto f2 ) {
-			  citm_result =
-			    daw::json::from_json<daw::citm::citm_object_t,
-			                         NoCommentSkippingPolicyUnchecked>( f2 );
+			  citm_result = daw::json::from_json<daw::citm::citm_object_t>(
+			    f2, options::parse_flags<options::CheckedParseMode::no> );
 		  },
 		  json_sv2 );
 		test_assert( citm_result, "Missing value" );
@@ -151,9 +151,9 @@ int main( int argc, char **argv )
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_canada bench trusted", json_sv3.size( ),
 		  [&canada_result]( auto f3 ) {
-			  canada_result = daw::json::from_json<daw::geojson::Polygon,
-			                                       NoCommentSkippingPolicyUnchecked>(
-			    f3, "features[0].geometry" );
+			  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+			    f3, "features[0].geometry",
+			    options::parse_flags<options::CheckedParseMode::no> );
 		  },
 		  json_sv3 );
 		daw::do_not_optimize( canada_result );
@@ -196,15 +196,15 @@ int main( int argc, char **argv )
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson bench trusted", sz,
 		  [&]( auto f1, auto f2, auto f3 ) {
-			  twitter_result =
-			    daw::json::from_json<daw::twitter2::twitter_object_t,
-			                         NoCommentSkippingPolicyUnchecked>( f1 );
-			  citm_result =
-			    daw::json::from_json<daw::citm::citm_object_t,
-			                         NoCommentSkippingPolicyUnchecked>( f2 );
-			  canada_result = daw::json::from_json<daw::geojson::Polygon,
-			                                       NoCommentSkippingPolicyUnchecked>(
-			    f3, "features[0].geometry" );
+			  twitter_result = daw::json::from_json<daw::twitter2::twitter_object_t>(
+			    f1, daw::json::options::parse_flags<options::CheckedParseMode::no> );
+
+			  citm_result = daw::json::from_json<daw::citm::citm_object_t>(
+			    f2, daw::json::options::parse_flags<options::CheckedParseMode::no> );
+
+			  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+			    f3, "features[0].geometry",
+			    daw::json::options::parse_flags<options::CheckedParseMode::no> );
 		  },
 		  json_sv1, json_sv2, json_sv3 );
 
@@ -225,12 +225,20 @@ int main( int argc, char **argv )
 		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
 		             "Incorrect value" );
 		test_assert( canada_result, "Missing value" );
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
+#endif
 }
-catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+#ifdef DAW_USE_EXCEPTIONS
+catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
 	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

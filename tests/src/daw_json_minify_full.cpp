@@ -73,8 +73,7 @@ public:
 		case daw::json::JsonBaseParseTypes::String: {
 			member_preamble( );
 			auto const unescaped =
-			  daw::json::from_json<std::string, ParsePolicy, true>(
-			    p.value.get_string_view( ) );
+			  daw::json::from_json<std::string, true>( p.value.get_string_view( ) );
 
 			daw::json::to_json( unescaped, out_it );
 			return true;
@@ -90,7 +89,7 @@ public:
 			return true;
 		case daw::json::JsonBaseParseTypes::None:
 		default: {
-			auto rng = p.value.get_range( );
+			auto rng = p.value.get_raw_state( );
 			auto sv = daw::string_view( rng.first, rng.size( ) ).pop_front( 10 );
 			std::cerr << "Unknown JSON value type near\n" << sv << "\n\n";
 			std::terminate( );
@@ -138,8 +137,10 @@ void minify( daw::Arguments const &args, std::string_view data,
 	bool const has_out_file = args.size( ) > 1 and args[1].name.empty( );
 	auto handler = JSONMinifyHandler( out_it );
 	if( auto pos = args.find_argument_position( "verbose" ); pos ) {
-		auto const time =
-		  daw::benchmark( [&] { daw::json::json_event_parser( data, handler ); } );
+		auto const time = daw::benchmark( [&] {
+			daw::json::json_event_parser( data, handler,
+			                              daw::json::ConformancePolicy );
+		} );
 		if( not has_out_file ) {
 			std::cout << '\n';
 		}
@@ -150,7 +151,7 @@ void minify( daw::Arguments const &args, std::string_view data,
 		               static_cast<double>( data.size( ) ) / time, 2 )
 		          << "/s\n";
 	} else {
-		daw::json::json_event_parser( data, handler );
+		daw::json::json_event_parser( data, handler, daw::json::ConformancePolicy );
 		if( not has_out_file ) {
 			std::cout << '\n';
 		}
@@ -172,23 +173,32 @@ int main( int argc, char **argv ) {
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( args[0].value );
 
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	try {
+#ifdef DAW_USE_EXCEPTIONS
+	try
 #endif
+	{
 		if( args.size( ) > 1 and args[1].name.empty( ) ) {
 			test_assert( data.size( ) > 0, "Invalid JSON document" );
-			auto ofile = std::ofstream( static_cast<std::string>( args[1].value ).c_str( ),
-			                            std::ios::trunc | std::ios::binary );
+			auto ofile =
+			  std::ofstream( static_cast<std::string>( args[1].value ).c_str( ),
+			                 std::ios::trunc | std::ios::binary );
 			test_assert( ofile, "Unable to output file" );
 			minify( args, data, std::ostreambuf_iterator<char>( ofile ) );
 		} else {
 			minify( args, data, std::ostreambuf_iterator<char>( std::cout ) );
 		}
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	} catch( daw::json::json_exception const &jex ) {
-		std::cerr << "Exception thrown by parser\n"
-		          << to_formatted_string( jex, data.data( ) ) << '\n';
+	}
+#ifdef DAW_USE_EXCEPTIONS
+	catch( daw::json::json_exception const &jex ) {
+		std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 		exit( 1 );
+	} catch( std::exception const &ex ) {
+		std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+		          << '\n';
+		exit( 1 );
+	} catch( ... ) {
+		std::cerr << "Unknown exception thrown during testing\n";
+		throw;
 	}
 #endif
 }

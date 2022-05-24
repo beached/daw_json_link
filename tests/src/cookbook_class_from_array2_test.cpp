@@ -14,7 +14,6 @@
 
 #include "daw/json/daw_json_link.h"
 
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -36,8 +35,8 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_class_from_array2::Point> {
 		using type =
-		  json_ordered_member_list<double,
-		                           ordered_json_member<5, json_number<no_name>>>;
+		  json_tuple_member_list<double,
+		                         json_tuple_member<5, json_link_no_name<double>>>;
 
 		static inline auto
 		to_json_data( daw::cookbook_class_from_array2::Point const &p ) {
@@ -47,7 +46,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -73,9 +72,16 @@ int main( int argc, char **argv )
 		puts( "not exact same\n" );
 	}
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

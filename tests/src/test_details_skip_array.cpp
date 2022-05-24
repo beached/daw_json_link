@@ -8,7 +8,6 @@
 
 #include "defines.h"
 
-#include <daw/json/impl/daw_json_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
 #include <daw/daw_benchmark.h>
@@ -133,7 +132,7 @@ bool test_embedded_arrays_broken_001( ) {
 	} while( false )
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -149,7 +148,16 @@ int main( int, char ** )
 	do_test( test_embedded_arrays( ) );
 	do_fail_test( test_embedded_arrays_broken_001( ) );
 }
-catch( json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+#ifdef DAW_USE_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

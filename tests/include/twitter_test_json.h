@@ -10,7 +10,7 @@
 
 #include "twitter_test.h"
 
-#include <daw/daw_hide.h>
+#include <daw/daw_attributes.h>
 #include <daw/json/daw_json_link_types.h>
 
 #include <chrono>
@@ -27,7 +27,6 @@ namespace daw::twitter {
 			daw_json_assert(
 			  sv.size( ) >= 26,
 			  daw::json::ErrorReason::InvalidTimestamp ); // Date format is always 26
-			                                              // characters long
 			// Skip Day of Week
 			sv.remove_prefix( 4 );
 			auto const mo = daw::json::datetime::parse_short_month( sv );
@@ -111,7 +110,7 @@ namespace daw::twitter {
 
 namespace daw::json {
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::metadata_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::metadata_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_string<"result_type">,
 		                              json_string<"iso_language_code">>;
@@ -130,7 +129,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::urls_element_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::urls_element_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_string<"url">, json_string<"expanded_url">,
@@ -153,7 +152,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::url_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::url_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_array<"urls", daw::twitter::urls_element_t>>;
@@ -169,7 +168,8 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::entities_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::entities_t> {
+		using ignore_unknown_members = void;
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_class_null<"url", std::optional<daw::twitter::url_t>>,
@@ -188,36 +188,9 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::user_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<
-		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"name">,
-		  json_string<"screen_name">, json_string<"location">,
-		  json_string<"description">, json_string_null<"url">,
-		  json_class<"entities", daw::twitter::entities_t>, json_bool<"protected">,
-		  json_number<"followers_count", int32_t>,
-		  json_number<"friends_count", int32_t>,
-		  json_number<"listed_count", int32_t>,
-		  json_custom<"created_at", daw::twitter::twitter_tp,
-		              daw::twitter::TimestampConverter,
-		              daw::twitter::TimestampConverter>,
-		  json_number<"favourites_count", int32_t>, json_bool<"geo_enabled">,
-		  json_bool<"verified">, json_number<"statuses_count", int32_t>,
-		  json_string<"lang">, json_bool<"contributors_enabled">,
-		  json_bool<"is_translator">, json_bool<"is_translation_enabled">,
-		  json_string<"profile_background_color">,
-		  json_string<"profile_background_image_url">,
-		  json_string<"profile_background_image_url_https">,
-		  json_bool<"profile_background_tile">, json_string<"profile_image_url">,
-		  json_string<"profile_image_url_https">,
-		  json_string_null<"profile_banner_url">, json_string<"profile_link_color">,
-		  json_string<"profile_sidebar_border_color">,
-		  json_string<"profile_sidebar_fill_color">,
-		  json_string<"profile_text_color">,
-		  json_bool<"profile_use_background_image">, json_bool<"default_profile">,
-		  json_bool<"default_profile_image">, json_bool<"following">,
-		  json_bool<"follow_request_sent">, json_bool<"notifications">>;
-#else
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::user_t> {
+		using ignore_unknown_members = void;
+
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const id_str[] = "id_str";
 		static inline constexpr char const name[] = "name";
@@ -296,7 +269,7 @@ namespace daw::json {
 		  json_bool<profile_use_background_image>, json_bool<default_profile>,
 		  json_bool<default_profile_image>, json_bool<following>,
 		  json_bool<follow_request_sent>, json_bool<notifications>>;
-#endif
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::user_t const &value ) {
 			return std::forward_as_tuple(
@@ -319,7 +292,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN
+	struct DAW_ATTRIB_HIDDEN
 	  json_data_contract<daw::twitter::hashtags_element_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
@@ -337,7 +310,8 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::tweet_object_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::tweet_object_t> {
+		using ignore_unknown_members = void;
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
@@ -417,7 +391,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN
+	struct DAW_ATTRIB_HIDDEN
 	  json_data_contract<daw::twitter::user_mentions_element_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
@@ -442,7 +416,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::size_item_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::size_item_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_number<"w", int64_t>, json_number<"h", int64_t>,
@@ -461,7 +435,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::sizes_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::sizes_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_class<"medium", daw::twitter::size_item_t>,
@@ -486,8 +460,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN
-	  json_data_contract<daw::twitter::media_element_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::media_element_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_number<"id", int64_t>, json_string<"id_str">,
@@ -525,7 +498,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN
+	struct DAW_ATTRIB_HIDDEN
 	  json_data_contract<daw::twitter::retweeted_status_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
@@ -606,8 +579,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN
-	  json_data_contract<daw::twitter::search_metadata_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::search_metadata_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_number<"completed_in">, json_number<"max_id", int64_t>,
@@ -641,8 +613,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN
-	  json_data_contract<daw::twitter::twitter_object_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::twitter_object_t> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_array<"statuses", daw::twitter::tweet_object_t>,

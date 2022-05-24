@@ -45,7 +45,7 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -84,9 +84,8 @@ int main( int argc, char **argv )
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
-		  twitter_result =
-		    daw::json::from_json<daw::twitter2::twitter_object_t,
-		                         daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
+		  twitter_result = daw::json::from_json<daw::twitter2::twitter_object_t>(
+		    f1, daw::json::options::parse_flags<options::CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_sv1 );
@@ -117,9 +116,16 @@ int main( int argc, char **argv )
 	/*test_assert( twitter_result == twitter_result2,
 	                 "Expected round trip to produce same result" );*/
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

@@ -49,9 +49,9 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	return true;
 }
 
-template<typename ExecTag>
+template<daw::json::options::ExecModeTypes ExecMode>
 void test( std::string_view json_sv1 ) {
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( );
 	//**************************
@@ -59,10 +59,8 @@ void test( std::string_view json_sv1 ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(checked)", sz,
 	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f1, "features[0].geometry" );
+		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+		    f1, "features[0].geometry", daw::json::options::parse_flags<ExecMode> );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -74,10 +72,10 @@ void test( std::string_view json_sv1 ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(unchecked)", sz,
 	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1, "features[0].geometry" );
+		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+		    f1, "features[0].geometry",
+		    daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+		                                    ExecMode> );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -86,7 +84,7 @@ void test( std::string_view json_sv1 ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -105,11 +103,11 @@ int main( int argc, char **argv )
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	test<daw::json::constexpr_exec_tag>( json_sv1 );
-	test<daw::json::runtime_exec_tag>( json_sv1 );
+	test<daw::json::options::ExecModeTypes::compile_time>( json_sv1 );
+	test<daw::json::options::ExecModeTypes::runtime>( json_sv1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag>( json_sv1 );
+		test<daw::json::options::ExecModeTypes::simd>( json_sv1 );
 	}
 
 	std::cout
@@ -141,7 +139,7 @@ int main( int argc, char **argv )
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "canada bench(to_json_string2)", sz,
 		  [&]( auto const &tr ) {
-			  auto out_it = str.data( );
+			  auto *out_it = str.data( );
 			  daw::json::to_json( tr, out_it );
 			  daw::do_not_optimize( str );
 		  },
@@ -153,10 +151,16 @@ int main( int argc, char **argv )
 	                 "Expected round trip to produce same result" );
 	                 */
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: "
-	          << to_formatted_string( jex, nullptr ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

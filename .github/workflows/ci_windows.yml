@@ -1,5 +1,4 @@
 name: Windows
-
 on:
   push:
     branches: [ release, develop ]
@@ -10,117 +9,69 @@ on:
       branches-ignore: develop
 
 jobs:
-  windows2019_msvc2019_x64_debug_17:
-    runs-on: [ windows-2019 ]
+  Windows2019:
+    permissions:
+      actions: none
+      checks: none
+      contents: none
+      deployments: none
+      issues: none
+      packages: none
+      pull-requests: none
+      repository-projects: none
+      security-events: none
+      statuses: none
+    defaults:
+      run:
+        shell: cmd
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: " -T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
+          - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+    runs-on: ${{ matrix.config.os }}
+    name: "${{ matrix.config.os }} ${{ matrix.config.toolset }} ${{ matrix.config.cpp_version }} ${{ matrix.config.arch }} ${{ matrix.config.build_type }}"
+    env:
+      DAW_BUILD_DIR: "build_${{ matrix.config.cpp_version }}_${{ matrix.config.arch }}_${{ matrix.config.build_type }}_${{ matrix.config.toolset }}"
     steps:
       - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps.cmd Debug 17
+      - uses: beached/msvc-dev-cmd@285e7c0b9b57a02c900951da93a77e656425d783
+        with:
+          arch: ${{ matrix.config.arch }}
+      - name: Setup Build Environment
+        run: md ${{ env.DAW_BUILD_DIR }}
+      - name: CMake Config
+        run: cmake.exe ${{ matrix.config.cmake_flags }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.config.cpp_version }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On -DDAW_WERROR=ON -B${{ env.DAW_BUILD_DIR }}/ .
       - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Debug
+        run: cmake.exe --build ${{ env.DAW_BUILD_DIR }}/ --target full --config ${{ matrix.config.build_type }}
       - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Debug
-      - name: InstallTest
-        run: .\ci_scripts\ci_windows_install_test.cmd Debug
-  windows2019_msvc2019_x64_release_17:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps.cmd Release 17
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Release
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Release
-  windows2019_msvc2019_x64_debug_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps.cmd Debug 20
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Debug
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Debug
-  windows2019_msvc2019_x64_release_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps.cmd Release 20
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Release
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Release
-  windows2019_msvc2019_x86_debug_17:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd Debug 17
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Debug
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Debug
-  windows2019_msvc2019_x86_release_17:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd Release 17
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Release
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Release
-  windows2019_msvc2019_x86_debug_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd Debug 20
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Debug
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Debug
-  windows2019_msvc2019_x86_release_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x86.cmd Release 20
-      - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd Release
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd Release
-  windows2019_clangcl_x64_debug_17:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd Debug 17
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd
-  windows2019_clangcl_x64_release_17:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd Release 17
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd
-  windows2019_clangcl_x64_debug_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd Debug 20
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd
-  wwindows2019_clangcl_x64_release_20:
-    runs-on: [ windows-2019 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd Release 20
-      - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd
+        run: ctest.exe -C ${{ matrix.config.build_type }} -j2 -VV --timeout 1200 --test-dir ${{ env.DAW_BUILD_DIR }}/
+      - name: Archive any crashes as an artifact
+        uses: actions/upload-artifact@v2
+        if: always( )
+        with:
+          name: crashes
+          path: |
+            crash-*
+            leak-*
+            timeout-*
+          if-no-files-found: ignore

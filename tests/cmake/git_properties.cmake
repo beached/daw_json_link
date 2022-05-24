@@ -12,9 +12,6 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../.git)
 	    set(BUILD_VERSION "unknown")
 			message( WARNING "GIT TAG: Could not find git tag" )
 	endif(GIT_FOUND)
-	target_compile_definitions( json_benchmark PRIVATE -DSOURCE_CONTROL_REVISION="${BUILD_VERSION}" )
-else( )
-	message( WARNING "GIT: Could not find git folder" )
 endif( )
 
 

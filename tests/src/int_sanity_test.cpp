@@ -28,11 +28,11 @@ std::vector<T> make_random_data( ) {
 	}
 	return result;
 }
-
-template<typename ExecTag, size_t N>
+using namespace daw::json::options;
+template<ExecModeTypes ExecMode, size_t N>
 void test( ) {
-	std::cout << "Using " << ExecTag::name
-	          << " exec model\n*********************************************\n";
+	std::cout << "Using " << to_string( ExecMode )
+	          << " exec model\n********************************************\n";
 	{
 		std::cout << "unsigned test\n";
 		using namespace daw::json;
@@ -42,8 +42,8 @@ void test( ) {
 
 		json_data += "                "; // Ensure SIMD has enough rooom to go full
 		std::vector<unsigned> const parsed_1 =
-		  from_json_array<json_number<no_name, unsigned>, std::vector<unsigned>,
-		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
+		  from_json_array<json_number_no_name<unsigned>, std::vector<unsigned>>(
+		    json_data, parse_flags<ExecMode> );
 		test_assert( parsed_1 == data, "Failure to parse unsigned" );
 	}
 
@@ -56,25 +56,34 @@ void test( ) {
 
 		json_data += "        "; // so that SSE has enough room to safely parse
 		std::vector<signed> const parsed_1 =
-		  from_json_array<json_number<no_name, signed>, std::vector<signed>,
-		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
+		  from_json_array<json_number_no_name<signed>, std::vector<signed>>(
+		    json_data, parse_flags<ExecMode> );
 		test_assert( parsed_1 == data, "Failure to parse signed" );
 	}
 }
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
-	test<daw::json::constexpr_exec_tag, 1000>( );
-	test<daw::json::runtime_exec_tag, 1000>( );
+	test<ExecModeTypes::compile_time, 1000>( );
+	test<ExecModeTypes::runtime, 1000>( );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag, 1000>( );
+		test<ExecModeTypes::simd, 1000>( );
 	}
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

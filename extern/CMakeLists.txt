@@ -8,25 +8,26 @@
 
 # This prevents tests running on dependencies
 option(DAW_ENABLE_TESTING "Build unit tests" OFF)
-set(DAW_ENABLE_TESTING OFF)
+if (DAW_ENABLE_TESTING)
+    set(DAW_ENABLE_TESTING OFF)
+endif ()
 
 include(FetchContent)
+# TODO: Enable in Release
+#set( FETCHCONTENT_UPDATES_DISCONNECTED ON)
+set(FETCHCONTENT_UPDATES_DISCONNECTED OFF)
 
-if (NOT TARGET daw::daw-header-libraries)
-    FetchContent_Declare(
-            daw_header_libraries
-            GIT_REPOSITORY https://github.com/beached/header_libraries.git
-            GIT_TAG v2.50.0
-    )
-    FetchContent_MakeAvailable(daw_header_libraries)
-endif ()
+FetchContent_Declare(
+        daw_header_libraries
+        GIT_REPOSITORY https://github.com/beached/header_libraries.git
+        GIT_TAG master
+)
 
-if (NOT TARGET daw::daw_utf_range)
-    FetchContent_Declare(
-            daw_utf_range
-            GIT_REPOSITORY https://github.com/beached/utf_range.git
-            GIT_TAG v2.2.2
-    )
-    FetchContent_MakeAvailable(daw_utf_range)
-endif ()
+FetchContent_Declare(
+        daw_utf_range
+        GIT_REPOSITORY https://github.com/beached/utf_range.git
+        GIT_TAG master
+)
+
+FetchContent_MakeAvailable(daw_header_libraries daw_utf_range)
 

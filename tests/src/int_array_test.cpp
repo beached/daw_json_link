@@ -12,6 +12,7 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
+#include <daw/daw_bounded_vector.h>
 #include <daw/daw_do_n.h>
 #include <daw/daw_random.h>
 #include <daw/iterator/daw_back_inserter.h>
@@ -113,9 +114,8 @@ void test_func( ) {
 		  "array of class with single intmax_t element: from_json_array",
 		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data =
-			    from_json_array<Number, std::vector<Number>,
-			                    NoCommentSkippingPolicyUnchecked>( sv );
+			  auto const data = from_json_array<Number, std::vector<Number>>(
+			    sv, options::parse_flags<options::CheckedParseMode::no> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -123,7 +123,7 @@ void test_func( ) {
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<Number, NoCommentSkippingPolicyUnchecked>;
+		  daw::json::json_array_iterator<Number, options::CheckedParseMode::no>;
 
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
@@ -146,9 +146,8 @@ void test_func( ) {
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "array of intmax_t: from_json_array", json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data =
-			    from_json_array<intmax_t, std::vector<intmax_t>,
-			                    NoCommentSkippingPolicyUnchecked>( sv );
+			  auto const data = from_json_array<intmax_t, std::vector<intmax_t>>(
+			    sv, options::parse_flags<options::CheckedParseMode::no> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -156,8 +155,7 @@ void test_func( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<intmax_t,
-		                                 NoCommentSkippingPolicyUnchecked>;
+		  daw::json::json_array_iterator<intmax_t, options::CheckedParseMode::no>;
 
 		auto data = std::vector<intmax_t>( );
 		data.resize( NUMVALUES );
@@ -275,7 +273,7 @@ void test_func( ) {
 		  "int parsing 1", json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<json_checked_number<no_name, intmax_t>>( sv );
+			    from_json_array<json_checked_number_no_name<intmax_t>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -283,7 +281,7 @@ void test_func( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<json_checked_number<no_name, intmax_t>>;
+		  daw::json::json_array_iterator<json_checked_number_no_name<intmax_t>>;
 
 		auto data = std::vector<intmax_t>( );
 		data.reserve( NUMVALUES );
@@ -320,8 +318,7 @@ void test_func( ) {
 	{
 		// Unsigned
 		using iterator_t =
-		  daw::json::json_array_iterator<uintmax_t,
-		                                 NoCommentSkippingPolicyUnchecked>;
+		  daw::json::json_array_iterator<uintmax_t, options::CheckedParseMode::no>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -349,8 +346,8 @@ void test_func( ) {
 			  "p5. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>,
-				    NoCommentSkippingPolicyUnchecked>( sv );
+				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>>(
+				    sv, options::parse_flags<options::CheckedParseMode::no> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -402,10 +399,10 @@ void test_func( ) {
 		}
 	}
 
-#ifdef DAW_ALLOW_SSE42
+#if true or defined( DAW_ALLOW_SSE42 )
 	{
 		// Unsigned SSE42
-		using uint_type = json_number<no_name, uintmax_t>;
+		using uint_type = json_number_no_name<uintmax_t>;
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
 		{
@@ -413,8 +410,9 @@ void test_func( ) {
 			  "p5. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>,
-				    SIMDNoCommentSkippingPolicyUnchecked<sse42_exec_tag>>( sv );
+				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>>(
+				    sv,
+				    options::parse_flags<options::CheckedParseMode::no, options::ExecModeTypes::simd> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -427,9 +425,9 @@ void test_func( ) {
 	std::cout << "Checked unsigned sse3\n";
 	{
 		// Unsigned SSE42
-		using uint_type = json_number<no_name, uintmax_t>;
-		using iterator_t = daw::json::json_array_iterator<
-		  uint_type, SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		using uint_type = json_number_no_name<uintmax_t>;
+		using iterator_t =
+		  daw::json::json_array_iterator<uint_type, options::ExecModeTypes::simd>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -449,7 +447,7 @@ void test_func( ) {
 	}
 	{
 		// Unsigned SSE42
-		using uint_type = json_number<no_name, uint32_t>;
+		using uint_type = json_number_no_name<uint32_t>;
 		auto const json_sv = make_int_array_data<NUMVALUES, uint32_t>( );
 
 		{
@@ -457,8 +455,8 @@ void test_func( ) {
 			  "p5. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>,
-				    SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>( sv );
+				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>>(
+				    sv, options::parse_flags<options::ExecModeTypes::simd> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -472,7 +470,7 @@ void test_func( ) {
 }
 
 int main( int argc, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -482,7 +480,16 @@ int main( int argc, char ** )
 		test_func<1'000ULL>( );
 	}
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

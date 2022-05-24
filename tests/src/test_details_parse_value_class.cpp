@@ -9,7 +9,6 @@
 #include "defines.h"
 
 #include <daw/json/daw_json_link.h>
-#include <daw/json/impl/daw_json_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
 #include <daw/daw_benchmark.h>
@@ -37,18 +36,14 @@
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
 
-namespace test_details_parse_value_class {
-	struct Empty {};
-} // namespace test_details_parse_value_class
-
 namespace daw::json {
 	template<>
-	struct json_data_contract<test_details_parse_value_class::Empty> {
+	struct json_data_contract<daw::Empty> {
 		using type = json_member_list<>;
 
 		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( Empty const & ) {
-			return std::tuple( );
+		to_json_data( daw::Empty const & ) {
+			return std::tuple<>( );
 		}
 	};
 } // namespace daw::json
@@ -60,9 +55,8 @@ bool empty_class_empty_json_class( ) {
 	std::string_view sv = "{}";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v =
-	  parse_value<json_class<no_name, test_details_parse_value_class::Empty>>(
-	    ParseTag<JsonParseTypes::Class>{ }, rng );
+	auto v = parse_value<json_class_no_name<daw::Empty>>(
+	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -74,9 +68,8 @@ bool empty_class_nonempty_json_class( ) {
 	std::string_view sv = R"({ "a": 12345, "b": {} })";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = daw::json::json_details::parse_value<daw::json::json_class<
-	  daw::json::no_name, test_details_parse_value_class::Empty>>(
-	  ParseTag<JsonParseTypes::Class>{ }, rng );
+	auto v = parse_value<json_class_no_name<daw::Empty>>(
+	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -90,8 +83,8 @@ bool missing_members_fail( ) {
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
-	auto v = parse_value<json_class<no_name, class_t>>(
-	  ParseTag<JsonParseTypes::Class>{ }, rng );
+	auto v = parse_value<json_class_no_name<class_t>>(
+	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -105,8 +98,8 @@ bool wrong_member_type_fail( ) {
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
-	auto v = parse_value<json_class<no_name, class_t>>(
-	  ParseTag<JsonParseTypes::Class>{ }, rng );
+	auto v = parse_value<json_class_no_name<class_t>>(
+	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -120,8 +113,8 @@ bool wrong_member_number_type_fail( ) {
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
-	auto v = parse_value<json_class<no_name, class_t>>(
-	  ParseTag<JsonParseTypes::Class>{ }, rng );
+	auto v = parse_value<json_class_no_name<class_t>>(
+	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -135,8 +128,8 @@ bool unexpected_eof_in_class1_fail( ) {
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0>>;
-	auto v = parse_value<json_class<no_name, class_t>>(
-	  ParseTag<JsonParseTypes::Class>{ }, rng );
+	auto v = parse_value<json_class_no_name<class_t>>(
+	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -152,27 +145,35 @@ bool wrong_member_stored_pos_fail( ) {
 	static constexpr char const member1[] = "member1";
 	using class_t =
 	  tuple_json_mapping<json_number<member0>, json_number<member1>>;
-	auto v = parse_value<json_class<no_name, class_t>>(
-	  ParseTag<JsonParseTypes::Class>{ }, rng );
+	auto v = parse_value<json_class_no_name<class_t>>(
+	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
-	/*
 	do_test( empty_class_empty_json_class( ) );
 	do_test( empty_class_nonempty_json_class( ) );
 	do_fail_test( missing_members_fail( ) );
 	do_fail_test( wrong_member_type_fail( ) );
 	do_fail_test( wrong_member_number_type_fail( ) );
 	do_fail_test( unexpected_eof_in_class1_fail( ) );
-	 */
 	do_fail_test( wrong_member_stored_pos_fail( ) );
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
-	exit( 1 );
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
+}
+#endif

@@ -15,7 +15,12 @@
 #include <iostream>
 #include <string_view>
 
-#if defined( DAW_JSON_NO_CONST_EXPR )
+/***
+ * If requested to disable or MSVC, there is a bug in MSVC in C++20 mode
+ */
+#if defined( DAW_JSON_NO_CONST_EXPR ) or                 \
+  ( defined( _MSC_VER ) and not defined( __clang__ ) and \
+    defined( DAW_CXX_STANDARD ) and DAW_CXX_STANDARD == 20 )
 #define DAW_CONSTEXPR
 #else
 #define DAW_CONSTEXPR constexpr

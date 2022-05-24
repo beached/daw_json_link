@@ -58,15 +58,15 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::GraphNode> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type =
-		  json_member_list<json_number<"id", size_t, LiteralAsStringOpt::Always>,
-		                   json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
+		using type = json_member_list<
+		  json_number<"id", size_t, options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
 #else
 		static constexpr char const id[] = "id";
 		static constexpr char const metadata[] = "metadata";
-		using type =
-		  json_member_list<json_number<id, size_t, LiteralAsStringOpt::Always>,
-		                   json_class<metadata, daw::cookbook_graphs1::Metadata>>;
+		using type = json_member_list<
+		  json_number<id, size_t, options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_class<metadata, daw::cookbook_graphs1::Metadata>>;
 #endif
 	};
 
@@ -74,14 +74,14 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_graphs1::GraphEdge> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
-		  json_number<"source", size_t, LiteralAsStringOpt::Always>,
-		  json_number<"target", size_t, LiteralAsStringOpt::Always>>;
+		  json_number<"source", size_t, options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_number<"target", size_t, options::number_opt( options::LiteralAsStringOpt::Always )>>;
 #else
 		static constexpr char const source[] = "source";
 		static constexpr char const target[] = "target";
-		using type =
-		  json_member_list<json_number<source, size_t, LiteralAsStringOpt::Always>,
-		                   json_number<target, size_t, LiteralAsStringOpt::Always>>;
+		using type = json_member_list<
+		  json_number<source, size_t, options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_number<target, size_t, options::number_opt( options::LiteralAsStringOpt::Always )>>;
 #endif
 	};
 } // namespace daw::json
@@ -94,7 +94,7 @@ struct Node {
 };
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -167,9 +167,16 @@ int main( int argc, char **argv )
 
 	return 0;
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

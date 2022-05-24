@@ -11,7 +11,6 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 
 #include <cstddef>
@@ -37,82 +36,97 @@ constexpr void clear( Container &c ) {
 	}
 }
 
-inline constexpr void test_assert( bool b, std::string_view msg ) {
-	if( not b ) {
+template<typename T>
+using can_ostream_test =
+  decltype( std::declval<std::ostream &>( ) << std::declval<T>( ) );
+
+template<typename T>
+inline constexpr bool can_ostream_v = daw::is_detected_v<can_ostream_test, T>;
+
+template<typename T, typename A>
+auto operator<<( std::ostream &os, std::vector<T, A> const &rhs )
+  -> std::enable_if_t<can_ostream_v<T>, std::ostream &> {
+	os << '[';
+	if( not rhs.empty( ) ) {
+		os << rhs.front( );
+		for( std::size_t n = 1; n < rhs.size( ); ++n ) {
+			os << ", " << rhs[n];
+		}
+	}
+	os << ']';
+	return os;
+}
+
+template<typename T, typename U>
+inline constexpr void test_equal( T const &lhs, U const &rhs,
+                                  std::string_view msg ) {
+	if( lhs != rhs ) {
 		std::cerr << msg << '\n';
+		if constexpr( can_ostream_v<T> ) {
+			std::cerr << "LHS: " << lhs << '\n';
+		}
+		if constexpr( can_ostream_v<U> ) {
+			std::cerr << "RHS: " << rhs << '\n';
+		}
 		exit( 1 );
 	}
 }
 
-template<typename ExecTag>
+template<daw::json::options::ExecModeTypes ExecMode>
 std::size_t test( std::string_view json_data ) {
-	std::cout << "Using " << ExecTag::name
-	          << " exec model\n*********************************************\n";
+	std::cout << "Using " << to_string( ExecMode ) << " exec model\n";
 	using namespace daw::json;
 	using JString =
-	  json_string_raw<no_name, std::string_view,
-	                  daw::construct_a_t<std::string_view>, JsonNullable::Never,
-	                  EightBitModes::AllowFull, JsonNullable::Never,
-	                  AllowEscapeCharacter::NotBeforeDblQuote>;
+	  json_string_raw_no_name<std::string_view,
+	                          options::string_raw_opt(
+	                            options::EightBitModes::AllowFull,
+	                            options::AllowEscapeCharacter::NoEscapedDblQuote ),
+	                          daw::construct_a_t<std::string_view>>;
 
 	std::vector<std::string_view> values =
-	  from_json_array<JString, std::vector<std::string_view>,
-	                  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-	    json_data );
-	daw::do_not_optimize( values );
+	  from_json_array<JString, std::vector<std::string_view>>(
+	    json_data, options::parse_flags<ExecMode> );
 	auto const v2 = values;
 	clear( values );
-	daw::do_not_optimize( values );
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "strings.json checked", json_data.size( ),
-	  []( auto sv, auto ptr ) {
-		  auto range = json_array_range<
-		    JString, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( sv );
-		  for( auto v : range ) {
-			  daw::do_not_optimize( v );
-			  *ptr++ = v;
-		  }
-	  },
-	  json_data, values.data( ) );
-	daw::do_not_optimize( values );
-	test_assert( v2 == values, "Expected them to parse the same" );
-	auto const h0 = std::accumulate(
-	  values.begin( ), values.end( ), 0ULL, []( auto old, auto current ) {
-		  return old +=
-		         std::hash<std::string>{ }( static_cast<std::string>( current ) );
-	  } );
-	daw::do_not_optimize( json_data );
+	auto checked_tst = []( auto sv, auto ptr ) {
+		auto range = json_array_range<JString, ExecMode>( sv );
+		for( auto v : range ) {
+			*ptr++ = v;
+		}
+	};
+	checked_tst( json_data, values.data( ) );
+	test_equal( v2, values, "Expected them to parse the same" );
+	auto const h0 =
+	  std::accumulate( values.begin( ), values.end( ), std::size_t{ 0 },
+	                   []( auto old, auto current ) {
+		                   return old += std::hash<std::string>{ }(
+		                            static_cast<std::string>( current ) );
+	                   } );
 	std::vector<std::string_view> values2 =
-	  from_json_array<JString, std::vector<std::string_view>,
-	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-	    json_data );
+	  from_json_array<JString, std::vector<std::string_view>>(
+	    json_data,
+	    options::parse_flags<options::CheckedParseMode::no, ExecMode> );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "strings.json unchecked", json_data.size( ),
-	  []( auto sv, auto ptr ) mutable {
-		  auto range = json_array_range<
-		    JString, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    sv );
-		  for( auto v : range ) {
-			  daw::do_not_optimize( v );
-			  *ptr++ = v;
-		  }
-	  },
-	  json_data, values2.data( ) );
-	daw::do_not_optimize( json_data );
-	daw::do_not_optimize( values2 );
-	auto const h1 = std::accumulate(
-	  values2.begin( ), values2.end( ), 0ULL, []( auto old, auto current ) {
-		  return old +=
-		         std::hash<std::string>{ }( static_cast<std::string>( current ) );
-	  } );
-	test_assert( values == values2, "Parses don't match" );
-	test_assert( h0 == h1, "Hashes don't match" );
+	auto unchecked_tst = []( auto sv, auto ptr ) {
+		auto range = json_array_range<JString, ExecMode>( sv );
+		for( auto v : range ) {
+			*ptr++ = v;
+		}
+	};
+	unchecked_tst( json_data, values2.data( ) );
+	auto const h1 =
+	  std::accumulate( values2.begin( ), values2.end( ), std::size_t{ 0 },
+	                   []( auto old, auto current ) {
+		                   return old += std::hash<std::string>{ }(
+		                            static_cast<std::string>( current ) );
+	                   } );
+	test_equal( values, values2, "Parses don't match" );
+	test_equal( h0, h1, "Hashes don't match" );
 	return h1;
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -124,16 +138,28 @@ int main( int argc, char **argv )
 		auto const data = *daw::read_file( argv[1] );
 		return std::string( data.data( ), data.size( ) );
 	}( );
-	auto const h0 = test<daw::json::constexpr_exec_tag>( json_string );
-	auto const h1 = test<daw::json::runtime_exec_tag>( json_string );
-	test_assert( h0 == h1, "constexpr/runtime exec model hashes do not match" );
+	auto const h0 =
+	  test<daw::json::options::ExecModeTypes::compile_time>( json_string );
+	auto const h1 =
+	  test<daw::json::options::ExecModeTypes::runtime>( json_string );
+	test_equal( h0, h1, "constexpr/runtime exec model hashes do not match" );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		auto const h2 = test<daw::json::simd_exec_tag>( json_string );
-		test_assert( h0 == h2, "constexpr/fast exec model hashes do not match" );
+		auto const h2 =
+		  test<daw::json::options::ExecModeTypes::simd>( json_string );
+		test_equal( h0, h2, "constexpr/fast exec model hashes do not match" );
 	}
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

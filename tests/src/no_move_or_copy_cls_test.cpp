@@ -32,13 +32,9 @@ struct B {
 namespace daw::json {
 	template<>
 	struct json_data_contract<A> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<json_number<"some_num", int>>;
-
-#else
+		using force_aggregate_construction = void;
 		static constexpr char const i[] = "some_num";
 		using type = json_member_list<json_number<i, int>>;
-#endif
 		static DAW_CONSTEXPR auto to_json_data( A const &v ) {
 			return std::forward_as_tuple( v.member );
 		}
@@ -46,6 +42,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<B> {
+		using force_aggregate_construction = void;
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<json_class<"a", A>>;
 
@@ -57,29 +54,37 @@ namespace daw::json {
 			return std::forward_as_tuple( v.a );
 		}
 	};
-
-	template<>
-	struct force_aggregate_construction<B> : std::true_type {};
 } // namespace daw::json
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
-	constexpr std::string_view json_data = R"({ "some_num": 1234 } )";
-	daw::expecting(
-	  daw::json::from_json<A, daw::json::SIMDNoCommentSkippingPolicyChecked<
-	                            daw::json::runtime_exec_tag>>( json_data )
-	    .member == 1234 );
+	std::string const json_data = R"({ "some_num": 1234 } )";
 
-	constexpr std::string_view json_data2 = R"({ "a": { "some_num": 1234 } } )";
-	daw::expecting(
-	  daw::json::from_json<B, daw::json::SIMDNoCommentSkippingPolicyChecked<
-	                            daw::json::runtime_exec_tag>>( json_data2 )
-	    .a.member == 1234 );
+	// Need runtime exec mode or constexpr with C++20 constexpr
+	// destructors/is_constant_evaluated to ensure that rvo path is taken
+	static constexpr auto policy_v =
+	  daw::json::options::parse_flags<daw::json::options::ExecModeTypes::runtime>;
+
+	daw::expecting( daw::json::from_json<A>( json_data, policy_v ).member ==
+	                1234 );
+
+	std::string const json_data2 = R"({ "a": { "some_num": 1234 } } )";
+	daw::expecting( daw::json::from_json<B>( json_data2, policy_v ).a.member ==
+	                1234 );
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

@@ -49,11 +49,11 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 }
 
 using AllocType = daw::fixed_allocator<char>;
-
-template<typename ExecTag>
+using namespace daw::json::options;
+template<ExecModeTypes ExecMode>
 void test( std::string_view json_sv1, AllocType &alloc ) {
 
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( );
 	//**************************
@@ -63,10 +63,8 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 	  [&]( auto f1 ) {
 		  canada_result.reset( );
 		  alloc.release( );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f1, "features[0].geometry", alloc );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f1, "features[0].geometry", alloc, parse_flags<ExecMode> );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -79,10 +77,9 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 	  [&]( auto f1 ) {
 		  canada_result.reset( );
 		  alloc.release( );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f1, "features[0].geometry", alloc );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f1, "features[0].geometry", alloc,
+		    parse_flags<ExecMode, CheckedParseMode::no> );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -91,11 +88,11 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
-	static auto alloc = AllocType( 10'000'000ULL );
+	auto alloc = AllocType( 10'000'000ULL );
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -111,11 +108,11 @@ int main( int argc, char **argv )
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	test<daw::json::constexpr_exec_tag>( json_sv1, alloc );
-	test<daw::json::runtime_exec_tag>( json_sv1, alloc );
+	test<ExecModeTypes::compile_time>( json_sv1, alloc );
+	test<ExecModeTypes::runtime>( json_sv1, alloc );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag>( json_sv1, alloc );
+		test<ExecModeTypes::simd>( json_sv1, alloc );
 	}
 
 	alloc.release( );
@@ -148,22 +145,23 @@ int main( int argc, char **argv )
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "canada bench(to_json_string2)", sz,
 		  [&]( auto const &tr ) {
-			  auto out_it = str.data( );
+			  auto *out_it = str.data( );
 			  daw::json::to_json( tr, out_it );
 			  daw::do_not_optimize( str );
 		  },
 		  canada_result );
 	}
-	// Removing for now as it will do a float compare and fail
-	/*
-	test_assert( canada_result == canada_result2,
-	                 "Expected round trip to produce same result" );
-	                 */
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: "
-	          << to_formatted_string( jex, nullptr ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

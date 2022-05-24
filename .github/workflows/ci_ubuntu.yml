@@ -10,70 +10,107 @@ on:
       branches-ignore: develop
 
 jobs:
-  ubuntu2004_clang12_debug_17:
-    runs-on: [ ubuntu-20.04 ]
+  CI_Tests:
+    permissions:
+      actions: none
+      checks: none
+      contents: none
+      deployments: none
+      issues: none
+      packages: none
+      pull-requests: none
+      repository-projects: none
+      security-events: none
+      statuses: none
+    strategy:
+      fail-fast: false
+      matrix:
+        cpp_version: [ 17, 20 ]
+        build_type: [ Debug, Release ]
+        os: [ ubuntu-20.04 ]
+        toolset: [ g++-9, g++-10, g++-11, clang++-8, clang++-9, clang++-10, clang++-11, clang++-12, clang++-13 ]
+        exclude:
+          - toolset: clang++-8
+            cpp_version: 20
+          - toolset: clang++-9
+            cpp_version: 20
+          - toolset: clang++-10
+            cpp_version: 20
+          - toolset: clang+=-11
+            cpp_version: 20
+          - toolset: g++-9
+            cpp_version: 20
+    runs-on: ${{ matrix.os }}
+    name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.build_type }}"
     steps:
       - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
+      - name: Setup APT and Base Dependencies
         run: |
+          sudo wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-13 main'
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-12 clang++-12
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Debug
-      - name: InstallTest
-        run: ./ci_scripts/ci_ubuntu_install_test.sh Debug
-  ubuntu2004_clang12_release_17:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
+          sudo apt install ninja-build libunwind-dev
+      - name: Get Clang Version
+        if: startsWith( matrix.toolset, 'clang' )
         run: |
-          sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-12 clang++-12
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Release
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Release
-  ubuntu2004_clang12_debug_20:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
+          echo "DAW_CLANG_VER=$(echo ${{matrix.toolset}} | cut -d- -f2)" >> $GITHUB_ENV
+      - name: Get Clang Environment
+        if: startsWith( matrix.toolset, 'clang' )
         run: |
-          sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-12 clang++-12
-      - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  ubuntu2004_clang12_release_20:
-    runs-on: [ ubuntu-20.04 ]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
-      - name: Download & Build Dependencies
+          echo "CC=$(echo clang-${{ env.DAW_CLANG_VER }})" >> $GITHUB_ENV
+          echo "CXX=$(echo clang++-${{ env.DAW_CLANG_VER }})" >> $GITHUB_ENV
+          echo "CXXFLAGS='-stdlib=libc++'" >> $GITHUB_ENV
+          echo "UBSAN_OPTIONS='halt_on_errors=1'" >> $GITHUB_ENV
+      - name: Install Clang Environment
+        if: startsWith( matrix.toolset, 'clang' )
         run: |
-          sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
+          sudo apt install ${{ env.CC }} libc++-${{ env.DAW_CLANG_VER }}-dev libc++abi-${{ env.DAW_CLANG_VER }}-dev
+      - name: Get GCC version
+        if: startsWith( matrix.toolset, 'g++' )
+        run: |
+          echo "DAW_GCC_VER=$(echo ${{matrix.toolset}} | cut -d- -f2)" >> $GITHUB_ENV
+      - name: Set GCC Environment
+        if: startsWith( matrix.toolset, 'g++' )
+        run: |
+          echo "CC=$(echo gcc-${{ env.DAW_GCC_VER }})" >> $GITHUB_ENV
+          echo "CXX=$(echo g++-${{ env.DAW_GCC_VER }})" >> $GITHUB_ENV
+      - name: Install GCC Environment
+        if: startsWith( matrix.toolset, 'g++' )
+        run: |
+          sudo apt install ${{ env.CC }} ${{ env.CXX }}
+      - name: Create Build
+        run: |
+          mkdir build
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 clang-12 clang++-12
+        run: cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DDAW_JSON_USE_SANITIZERS=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -Bbuild/ .
       - name: Build
-        run: ./ci_scripts/ci_ubuntu_build.sh Release
+        run: cmake --build build/ --target full -- -k 0
       - name: Test
-        run: ./ci_scripts/ci_ubuntu_test.sh Release
-
+        run: |
+          sudo service apport stop
+          ulimit -c unlimited
+          ulimit -c
+          sudo sysctl -w kernel.core_pattern=core.%e.%p
+          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --output-on-failure --test-dir build/
+      - name: Fuzzing
+        if: matrix.toolset == 'clang++-12'
+        run: |
+          ulimit -c unlimited
+          cmake --build build/ --target=daw_json_fuzzing
+          ./build/tests/daw_json_fuzzing -max_len=4000 -max_total_time=120
+      - name: Archive any crashes as an artifact
+        uses: actions/upload-artifact@v2
+        if: always( )
+        with:
+          name: crashes
+          path: |
+            crash-*
+            leak-*
+            timeout-*
+            build/core*
+            core*
+            /var/lib/systemd/coredump/*
+            /var/crash/*
+          if-no-files-found: ignore
