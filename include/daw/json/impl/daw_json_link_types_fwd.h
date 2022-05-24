@@ -50,10 +50,12 @@ namespace daw::json {
 		         typename Constructor = use_default>
 		struct json_nullable;
 
-		template<JSONNAMETYPE Name, typename T, typename JsonMember,
-		         JsonNullable NullableType, typename Constructor>
-		inline constexpr bool json_details::is_json_nullable_v<
-		  json_nullable<Name, T, JsonMember, NullableType, Constructor>> = true;
+		namespace json_details {
+			template<JSONNAMETYPE Name, typename T, typename JsonMember,
+			         JsonNullable NullableType, typename Constructor>
+			inline constexpr bool is_json_nullable_v<
+			  json_nullable<Name, T, JsonMember, NullableType, Constructor>> = true;
+		}
 
 		/**
 		 * Link to a JSON class
@@ -125,10 +127,11 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T = double,
 		         json_details::json_options_t Options = number_opts_def,
 		         typename Constructor = use_default>
-		using json_checked_number = json_number<
-		  Name, T,
-		  json_details::number_opts_set<Options, options::JsonRangeCheck::CheckForNarrowing>,
-		  Constructor>;
+		using json_checked_number =
+		  json_number<Name, T,
+		              json_details::number_opts_set<
+		                Options, options::JsonRangeCheck::CheckForNarrowing>,
+		              Constructor>;
 
 		/**
 		 * The member is a boolean
@@ -240,12 +243,13 @@ namespace daw::json {
 		         json_details::json_options_t Options = number_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
-		using json_checked_number_null = json_nullable<
-		  Name, T,
-		  json_base::json_number<json_details::unwrapped_t<T>,
-		                         json_details::number_opts_set<
-		                           Options, options::JsonRangeCheck::CheckForNarrowing>>,
-		  NullableType, Constructor>;
+		using json_checked_number_null =
+		  json_nullable<Name, T,
+		                json_base::json_number<
+		                  json_details::unwrapped_t<T>,
+		                  json_details::number_opts_set<
+		                    Options, options::JsonRangeCheck::CheckForNarrowing>>,
+		                NullableType, Constructor>;
 		/** Map a KV type json class { "Key StringRaw": ValueType, ... }
 		 *  to a c++ class.  Keys are Always string like and the destination
 		 *  needs to be constructable with a pointer, size
@@ -462,9 +466,10 @@ namespace daw::json {
 		         typename FromJsonConverter = use_default,
 		         typename ToJsonConverter = use_default,
 		         json_details::json_options_t Options = json_custom_opts_def>
-		using json_custom_lit = json_custom<
-		  Name, T, FromJsonConverter, ToJsonConverter,
-		  json_details::json_custom_opts_set<Options, options::JsonCustomTypes::Literal>>;
+		using json_custom_lit =
+		  json_custom<Name, T, FromJsonConverter, ToJsonConverter,
+		              json_details::json_custom_opts_set<
+		                Options, options::JsonCustomTypes::Literal>>;
 
 		/**
 		 * Allow parsing of a nullable type that is a JSON literal and does not fit
@@ -483,9 +488,10 @@ namespace daw::json {
 		         typename Constructor = use_default>
 		using json_custom_lit_null = json_nullable<
 		  Name, WrappedT,
-		  json_base::json_custom<
-		    json_details::unwrapped_t<WrappedT>, FromJsonConverter, ToJsonConverter,
-		    json_details::json_custom_opts_set<Options, options::JsonCustomTypes::Literal>>,
+		  json_base::json_custom<json_details::unwrapped_t<WrappedT>,
+		                         FromJsonConverter, ToJsonConverter,
+		                         json_details::json_custom_opts_set<
+		                           Options, options::JsonCustomTypes::Literal>>,
 		  NullableType, Constructor>;
 
 		namespace json_details {
@@ -680,7 +686,7 @@ namespace daw::json {
 		/// @tparam Constructor A callable used to construct Tuple. The default
 		/// supports normal and aggregate construction
 		/// @tparam Options
-		/// @tparam JsonTupleTypesList either deduced or a json_tuple_type_list
+		/// @tparam JsonTupleTypesList either deduced or a rjson_tuple_type_list
 		template<JSONNAMETYPE Name, typename Tuple,
 		         typename JsonTupleTypesList = use_default,
 		         typename Constructor = use_default>
