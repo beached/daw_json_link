@@ -78,9 +78,9 @@ std::size_t test( std::string_view json_data ) {
 	using namespace daw::json;
 	using JString =
 	  json_string_raw_no_name<std::string_view,
-	                          string_raw_opt(
-	                            EightBitModes::AllowFull,
-	                            AllowEscapeCharacter::NotBeforeDblQuote ),
+	                          options::string_raw_opt(
+	                            options::EightBitModes::AllowFull,
+	                            options::AllowEscapeCharacter::NoEscapedDblQuote ),
 	                          daw::construct_a_t<std::string_view>>;
 
 	std::vector<std::string_view> values =

@@ -75,7 +75,7 @@ namespace daw::json {
 				             4U ) ) == 0x3333'3333'3333'3333_u64 );
 			}
 
-			template<JsonRangeCheck RangeCheck, typename Unsigned,
+			template<options::JsonRangeCheck RangeCheck, typename Unsigned,
 			         typename MaxArithUnsigned>
 			using max_unsigned_t = std::conditional_t<
 			  daw::is_integral_v<Unsigned> or std::is_enum_v<Unsigned>,
@@ -121,7 +121,7 @@ namespace daw::json {
 			                 1234567890123456_u64,
 			               "16 digit parser does not work on this platform" );
 
-			template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
+			template<typename Unsigned, options::JsonRangeCheck RangeChecked, bool KnownBounds,
 			         typename ParseState,
 			         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr Unsigned
@@ -165,7 +165,7 @@ namespace daw::json {
 						++first;
 					}
 				}
-				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+				if constexpr( RangeChecked != options::JsonRangeCheck::Never ) {
 					auto const count = ( daw::numeric_limits<result_t>::digits10 + 1U ) -
 					                   std::size( parse_state );
 					daw_json_assert(
@@ -175,7 +175,7 @@ namespace daw::json {
 					  ErrorReason::NumberOutOfRange, parse_state );
 				}
 				parse_state.first = first;
-				if constexpr( RangeChecked == JsonRangeCheck::Never ) {
+				if constexpr( RangeChecked == options::JsonRangeCheck::Never ) {
 					return daw::construct_a<Unsigned>( static_cast<Unsigned>( result ) );
 				} else {
 					return daw::construct_a<Unsigned>(
@@ -184,7 +184,7 @@ namespace daw::json {
 			}
 
 			//**************************
-			template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
+			template<typename Unsigned, options::JsonRangeCheck RangeChecked, bool KnownBounds,
 			         typename ParseState,
 			         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr Unsigned
@@ -244,7 +244,7 @@ namespace daw::json {
 					}
 				}
 
-				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+				if constexpr( RangeChecked != options::JsonRangeCheck::Never ) {
 					auto const count = static_cast<std::ptrdiff_t>(
 					                     daw::numeric_limits<result_t>::digits10 + 1 ) -
 					                   ( first - orig_first );
@@ -253,7 +253,7 @@ namespace daw::json {
 				}
 
 				parse_state.first = first;
-				if constexpr( RangeChecked == JsonRangeCheck::Never ) {
+				if constexpr( RangeChecked == options::JsonRangeCheck::Never ) {
 					return daw::construct_a<Unsigned>(
 					  static_cast<Unsigned>( static_cast<result_t>( result ) ) );
 				} else {
@@ -325,7 +325,7 @@ namespace daw::json {
 			>> 4_u64 ) ) == 0x3333333333333333_u64 );
 			}
 
-			template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename
+			template<typename Unsigned, options::JsonRangeCheck RangeChecked, bool, typename
 			ParseState>
 			[[nodiscard]] static inline Unsigned
 			unsigned_parser( sse42_exec_tag , ParseState &parse_state ) {
@@ -357,7 +357,7 @@ namespace daw::json {
 			    ++first;
 			    dig = parse_digit( *first );
 			  }
-			  if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+			  if constexpr( RangeChecked != options::JsonRangeCheck::Never ) {
 			    auto const count =
 			      static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 )
 			- ( first - orig_first ); daw_json_assert( (count >= 0) & (result <=
@@ -367,7 +367,7 @@ namespace daw::json {
 			);
 			  }
 			  parse_state.first = first;
-			  if constexpr( RangeChecked == JsonRangeCheck::Never ) {
+			  if constexpr( RangeChecked == options::JsonRangeCheck::Never ) {
 			    return daw::construct_a<Unsigned>( static_cast<Unsigned>( result ) );
 			  } else {
 			    return daw::construct_a<Unsigned>( daw::narrow_cast<Unsigned>( result

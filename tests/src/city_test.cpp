@@ -47,8 +47,8 @@ namespace daw::json {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
 		  json_string<"country">, json_string<"name">,
-		  json_number<"lat", float, number_opt( LiteralAsStringOpt::Always )>,
-		  json_number<"lng", float, number_opt( LiteralAsStringOpt::Always )>>;
+		  json_number<"lat", float, options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_number<"lng", float, options::number_opt( options::LiteralAsStringOpt::Always )>>;
 #else
 		static constexpr char const country[] = "country";
 		static constexpr char const name[] = "name";
@@ -56,8 +56,8 @@ namespace daw::json {
 		static constexpr char const lng[] = "lng";
 		using type = json_member_list<
 		  json_string<country>, json_string<name>,
-		  json_number<lat, float, number_opt( LiteralAsStringOpt::Always )>,
-		  json_number<lng, float, number_opt( LiteralAsStringOpt::Always )>>;
+		  json_number<lat, float, options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_number<lng, float, options::number_opt( options::LiteralAsStringOpt::Always )>>;
 #endif
 
 		static inline auto to_json_data( City const &c ) {

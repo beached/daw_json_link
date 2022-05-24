@@ -52,15 +52,15 @@ namespace daw::json {
 			 * @tparam ParseState ParseState idiom
 			 * @param parse_state Current parsing state
 			 */
-			template<LiteralAsStringOpt literal_as_string, typename ParseState>
+			template<options::LiteralAsStringOpt literal_as_string, typename ParseState>
 			DAW_ATTRIB_INLINE constexpr void
 			skip_quote_when_literal_as_string( ParseState &parse_state ) {
-				if constexpr( literal_as_string == LiteralAsStringOpt::Always ) {
+				if constexpr( literal_as_string == options::LiteralAsStringOpt::Always ) {
 					daw_json_assert_weak( parse_state.is_quotes_checked( ),
 					                      ErrorReason::InvalidNumberUnexpectedQuoting,
 					                      parse_state );
 					parse_state.remove_prefix( );
-				} else if constexpr( literal_as_string == LiteralAsStringOpt::Maybe ) {
+				} else if constexpr( literal_as_string == options::LiteralAsStringOpt::Maybe ) {
 					daw_json_assert_weak( parse_state.has_more( ),
 					                      ErrorReason::UnexpectedEndOfData, parse_state );
 					if( parse_state.front( ) == '"' ) {
@@ -77,13 +77,13 @@ namespace daw::json {
 				using element_t = typename JsonMember::base_type;
 
 				if constexpr( JsonMember::literal_as_string !=
-				              LiteralAsStringOpt::Never ) {
+				              options::LiteralAsStringOpt::Never ) {
 					skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 					  parse_state );
 					if constexpr( JsonMember::allow_number_errors ==
-					                JsonNumberErrors::AllowInf or
+					                options::JsonNumberErrors::AllowInf or
 					              JsonMember::allow_number_errors ==
-					                JsonNumberErrors::AllowNanInf ) {
+					                options::JsonNumberErrors::AllowNanInf ) {
 						element_t sign = element_t( 1.0 );
 						if( parse_state.front( ) == '-' ) {
 							sign = element_t( -1.0 );
@@ -113,9 +113,9 @@ namespace daw::json {
 						}
 					}
 					if constexpr( JsonMember::allow_number_errors ==
-					                JsonNumberErrors::AllowNaN or
+					                options::JsonNumberErrors::AllowNaN or
 					              JsonMember::allow_number_errors ==
-					                JsonNumberErrors::AllowNanInf ) {
+					                options::JsonNumberErrors::AllowNanInf ) {
 						if( parse_state.starts_with( "NaN" ) ) {
 							parse_state.template move_to_next_of<'"'>( );
 							parse_state.remove_prefix( );
@@ -141,7 +141,7 @@ namespace daw::json {
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
 					  parse_real<element_t, false>( parse_state ) );
 					if constexpr( JsonMember::literal_as_string !=
-					              LiteralAsStringOpt::Never ) {
+					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
 					}
@@ -172,7 +172,7 @@ namespace daw::json {
 					  ErrorReason::InvalidNumberStart, parse_state );
 				} else {
 					if constexpr( JsonMember::literal_as_string !=
-					              LiteralAsStringOpt::Never ) {
+					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
 					} else if constexpr( not ParseState::is_zero_terminated_string( ) ) {
@@ -201,7 +201,7 @@ namespace daw::json {
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
 					  static_cast<element_t>( parsed_val ) );
 					if constexpr( JsonMember::literal_as_string !=
-					              LiteralAsStringOpt::Never ) {
+					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
 					}
@@ -228,7 +228,7 @@ namespace daw::json {
 
 				if constexpr( KnownBounds ) {
 					if constexpr( JsonMember::literal_as_string !=
-					              LiteralAsStringOpt::Never ) {
+					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
 					}
@@ -240,7 +240,7 @@ namespace daw::json {
 					    ParseState::exec_tag, parse_state ) );
 				} else {
 					if constexpr( JsonMember::literal_as_string !=
-					              LiteralAsStringOpt::Never ) {
+					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
 						if constexpr( not ParseState::is_zero_terminated_string( ) ) {
@@ -261,7 +261,7 @@ namespace daw::json {
 					  unsigned_parser<uint_type, JsonMember::range_check, KnownBounds>(
 					    ParseState::exec_tag, parse_state ) );
 					if constexpr( JsonMember::literal_as_string !=
-					              LiteralAsStringOpt::Never ) {
+					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
 						if constexpr( not ParseState::is_zero_terminated_string( ) ) {
@@ -370,7 +370,7 @@ namespace daw::json {
 				} else {
 					// Beginning quotes
 					if constexpr( JsonMember::literal_as_string !=
-					              LiteralAsStringOpt::Never ) {
+					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
 					}
@@ -394,7 +394,7 @@ namespace daw::json {
 					}
 					// Trailing quotes
 					if constexpr( JsonMember::literal_as_string !=
-					              LiteralAsStringOpt::Never ) {
+					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
 					}
@@ -422,7 +422,7 @@ namespace daw::json {
 					  std::data( parse_state ), std::size( parse_state ) );
 				} else {
 					if constexpr( JsonMember::allow_escape_character ==
-					              AllowEscapeCharacter::Allow ) {
+					              options::AllowEscapeCharacter::Allow ) {
 						auto const str = skip_string( parse_state );
 						return construct_value(
 						  template_args<json_result<JsonMember>, constructor_t>,
@@ -477,7 +477,7 @@ namespace daw::json {
 				if constexpr( can_parse_to_stdstring_fast_v<JsonMember> ) {
 					using AllowHighEightbits =
 					  std::bool_constant<JsonMember::eight_bit_mode !=
-					                     EightBitModes::DisallowHigh>;
+					                     options::EightBitModes::DisallowHigh>;
 					auto parse_state2 =
 					  KnownBounds ? parse_state : skip_string( parse_state );
 					// FIXME this needs std::string, fix
@@ -498,7 +498,7 @@ namespace daw::json {
 					  KnownBounds ? parse_state : skip_string( parse_state );
 					using AllowHighEightbits =
 					  std::bool_constant<JsonMember::eight_bit_mode !=
-					                     EightBitModes::DisallowHigh>;
+					                     options::EightBitModes::DisallowHigh>;
 					if( not AllowHighEightbits::value or
 					    needs_slow_path( parse_state2 ) ) {
 						// There are escapes in the string
@@ -534,18 +534,18 @@ namespace daw::json {
 
 				auto const str = [&] {
 					if constexpr( JsonMember::custom_json_type ==
-					              JsonCustomTypes::String ) {
+					              options::JsonCustomTypes::String ) {
 						if constexpr( KnownBounds ) {
 							return parse_state;
 						} else {
 							return skip_string( parse_state );
 						}
 					} else if constexpr( JsonMember::custom_json_type ==
-					                     JsonCustomTypes::Literal ) {
+					                     options::JsonCustomTypes::Literal ) {
 						return KnownBounds ? parse_state : skip_literal( parse_state );
 					} else {
 						static_assert( JsonMember::custom_json_type ==
-						               JsonCustomTypes::Any );
+						               options::JsonCustomTypes::Any );
 						// If we are a root object, parse_state will have the quotes and
 						// KnownBounds cannot be true This tells us that there is an array
 						// start '[' or a member name previous to current position

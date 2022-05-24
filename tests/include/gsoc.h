@@ -103,7 +103,7 @@ namespace daw::json {
 		using type = json_type_alias<json_key_value_no_name<
 		  daw::gsoc::gsoc_object_t, gsoc::gsoc_element_t,
 		  json_number_no_name<std::uint64_t,
-		                      number_opt( LiteralAsStringOpt::Always )>>>;
+		                      options::number_opt( options::LiteralAsStringOpt::Always )>>>;
 
 		static inline auto const &
 		to_json_data( daw::gsoc::gsoc_object_t const &v ) {

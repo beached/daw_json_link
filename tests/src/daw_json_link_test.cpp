@@ -81,8 +81,8 @@ DAW_CONSTEXPR bool parse_unsigned_test( char const ( &str )[N],
 	    daw::json::options::CheckedParseMode::no>;
 	auto tmp = policy_t( str, str + N );
 	return daw::json::json_details::unsigned_parser<
-	         Unsigned, daw::json::JsonRangeCheck::CheckForNarrowing, false>(
-	         daw::json::constexpr_exec_tag{ }, tmp ) == expected;
+	         Unsigned, daw::json::options::JsonRangeCheck::CheckForNarrowing,
+	         false>( daw::json::constexpr_exec_tag{ }, tmp ) == expected;
 }
 
 struct test_001_t {
@@ -878,8 +878,9 @@ int main( int, char ** )
 
 	using namespace daw::json;
 	using num_t =
-	  json_number_no_name<double, number_opt( LiteralAsStringOpt::Always,
-	                                          JsonNumberErrors::AllowNanInf )>;
+	  json_number_no_name<double,
+	                      options::number_opt( options::LiteralAsStringOpt::Always,
+	                                  options::JsonNumberErrors::AllowNanInf )>;
 	std::cout << "Inf double: "
 	          << "serialize: "
 	          << to_json<std::string, num_t>(
@@ -1193,7 +1194,28 @@ int main( int, char ** )
 	auto v1str = to_json( v1 );
 	(void)v1str;
 
-	std::cout << "JSON Link Version: " << json_link_version( ) << '\n';
+	std::cout << "FP Output formating of 123456789.23456789012345:\n";
+	constexpr double outfmt_dbl = 123456789.23456789012345;
+	std::cout
+	  << "auto: "
+	  << to_json<std::string, json_base::json_number<
+	                            double, options::number_opt( options::FPOutputFormat::Auto )>>(
+	       outfmt_dbl )
+	  << '\n';
+	std::cout
+	  << "decimal: "
+	  << to_json<std::string, json_base::json_number<
+	                            double, options::number_opt( options::FPOutputFormat::Decimal )>>(
+	       outfmt_dbl )
+	  << '\n';
+	std::cout << "scientific: "
+	          << to_json<std::string,
+	                     json_base::json_number<
+	                       double, options::number_opt( options::FPOutputFormat::Scientific )>>(
+	               outfmt_dbl )
+	          << '\n';
+
+	std::cout << "\n\nJSON Link Version: " << json_link_version( ) << '\n';
 	std::cout << "done";
 }
 #ifdef DAW_USE_EXCEPTIONS

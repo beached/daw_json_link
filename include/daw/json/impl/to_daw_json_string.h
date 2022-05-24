@@ -41,7 +41,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<FPOutputFormat fp_output_format, typename OutputIterator,
+			template<options::FPOutputFormat fp_output_format, typename OutputIterator,
 			         typename Real>
 			constexpr OutputIterator to_chars( Real const &value,
 			                                   OutputIterator out_it );
@@ -390,7 +390,7 @@ namespace daw::json {
 
 		namespace utils {
 			template<bool do_escape = false,
-			         EightBitModes EightBitMode = EightBitModes::AllowFull,
+			         options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
 			         typename OutputIterator, typename Container,
 			         std::enable_if_t<
 			           traits::is_container_like_v<daw::remove_cvref_t<Container>>,
@@ -398,7 +398,7 @@ namespace daw::json {
 			[[nodiscard]] constexpr OutputIterator
 			copy_to_iterator( OutputIterator it, Container const &container ) {
 				constexpr bool restrict_high =
-				  EightBitMode != EightBitModes::AllowFull or
+				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( OutputIterator::restricted_string_output ==
 				    options::RestrictedStringOutput::OnlyAllow7bitsStrings );
 				if constexpr( do_escape ) {
@@ -476,7 +476,7 @@ namespace daw::json {
 			}
 
 			template<bool do_escape = false,
-			         EightBitModes EightBitMode = EightBitModes::AllowFull,
+			         options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
 			         typename OutputIterator>
 			[[nodiscard]] constexpr OutputIterator
 			copy_to_iterator( OutputIterator it, char const *ptr ) {
@@ -484,7 +484,7 @@ namespace daw::json {
 					return it;
 				}
 				constexpr bool restrict_high =
-				  EightBitMode != EightBitModes::AllowFull or
+				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( OutputIterator::restricted_string_output ==
 				    options::RestrictedStringOutput::OnlyAllow7bitsStrings );
 
@@ -560,7 +560,7 @@ namespace daw::json {
 			}
 
 			template<bool do_escape = false,
-			         EightBitModes EightBitMode = EightBitModes::AllowFull,
+			         options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
 			         typename OutputIterator, typename ParseState>
 			[[nodiscard]] constexpr OutputIterator
 			copy_to_iterator( OutputIterator it,
@@ -582,7 +582,7 @@ namespace daw::json {
 			                    parse_to_t const &value ) {
 
 				if constexpr( JsonMember::literal_as_string ==
-				              LiteralAsStringOpt::Always ) {
+				              options::LiteralAsStringOpt::Always ) {
 					*it++ = '"';
 				}
 				if( value ) {
@@ -591,7 +591,7 @@ namespace daw::json {
 					it = utils::copy_to_iterator( it, "false" );
 				}
 				if constexpr( JsonMember::literal_as_string ==
-				              LiteralAsStringOpt::Always ) {
+				              options::LiteralAsStringOpt::Always ) {
 					*it++ = '"';
 				}
 				return it;
@@ -687,11 +687,11 @@ namespace daw::json {
 				                typename JsonMember::parse_to_t> ) {
 					if( daw::cxmath::is_nan( value ) ) {
 						if constexpr( JsonMember::literal_as_string ==
-						                LiteralAsStringOpt::Never or
+						                options::LiteralAsStringOpt::Never or
 						              JsonMember::allow_number_errors ==
-						                JsonNumberErrors::None or
+						                options::JsonNumberErrors::None or
 						              JsonMember::allow_number_errors ==
-						                JsonNumberErrors::AllowInf ) {
+						                options::JsonNumberErrors::AllowInf ) {
 							daw_json_error( ErrorReason::NumberIsNaN );
 						} else {
 							*it++ = '"';
@@ -701,11 +701,11 @@ namespace daw::json {
 						}
 					} else if( daw::cxmath::is_inf( value ) ) {
 						if constexpr( JsonMember::literal_as_string ==
-						                LiteralAsStringOpt::Never or
+						                options::LiteralAsStringOpt::Never or
 						              JsonMember::allow_number_errors ==
-						                JsonNumberErrors::None or
+						                options::JsonNumberErrors::None or
 						              JsonMember::allow_number_errors ==
-						                JsonNumberErrors::AllowNaN ) {
+						                options::JsonNumberErrors::AllowNaN ) {
 							daw_json_error( ErrorReason::NumberIsInf );
 						} else {
 							*it++ = '"';
@@ -720,7 +720,7 @@ namespace daw::json {
 				}
 
 				if constexpr( JsonMember::literal_as_string ==
-				              LiteralAsStringOpt::Always ) {
+				              options::LiteralAsStringOpt::Always ) {
 					*it++ = '"';
 				}
 				if constexpr( daw::is_floating_point_v<parse_to_t> ) {
@@ -741,7 +741,7 @@ namespace daw::json {
 					it = utils::copy_to_iterator( it, to_string( value ) );
 				}
 				if constexpr( JsonMember::literal_as_string ==
-				              LiteralAsStringOpt::Always ) {
+				              options::LiteralAsStringOpt::Always ) {
 					*it++ = '"';
 				}
 				return it;
@@ -781,7 +781,7 @@ namespace daw::json {
 				using under_type = base_int_type_t<parse_to_t>;
 
 				if constexpr( JsonMember::literal_as_string ==
-				              LiteralAsStringOpt::Always ) {
+				              options::LiteralAsStringOpt::Always ) {
 					*it++ = '"';
 				}
 				if constexpr( std::disjunction_v<std::is_enum<parse_to_t>,
@@ -800,7 +800,7 @@ namespace daw::json {
 						if( v == 0 ) {
 							*it++ = buff[0];
 							if constexpr( JsonMember::literal_as_string ==
-							              LiteralAsStringOpt::Always ) {
+							              options::LiteralAsStringOpt::Always ) {
 								*it++ = '"';
 							}
 							return it;
@@ -830,7 +830,7 @@ namespace daw::json {
 					it = utils::copy_to_iterator( it, to_string( value ) );
 				}
 				if constexpr( JsonMember::literal_as_string ==
-				              LiteralAsStringOpt::Always ) {
+				              options::LiteralAsStringOpt::Always ) {
 					*it++ = '"';
 				}
 				return it;
@@ -851,7 +851,7 @@ namespace daw::json {
 				using under_type = base_int_type_t<parse_to_t>;
 
 				if constexpr( JsonMember::literal_as_string ==
-				              LiteralAsStringOpt::Always ) {
+				              options::LiteralAsStringOpt::Always ) {
 					*it++ = '"';
 				}
 				if constexpr( std::disjunction_v<std::is_enum<parse_to_t>,
@@ -886,7 +886,7 @@ namespace daw::json {
 					it = utils::copy_to_iterator( it, to_string( value ) );
 				}
 				if constexpr( JsonMember::literal_as_string ==
-				              LiteralAsStringOpt::Always ) {
+				              options::LiteralAsStringOpt::Always ) {
 					*it++ = '"';
 				}
 				return it;
@@ -899,8 +899,8 @@ namespace daw::json {
 				struct number {
 					using parse_to_t = Integer;
 					using base_type = Integer;
-					static constexpr LiteralAsStringOpt literal_as_string =
-					  LiteralAsStringOpt::Never;
+					static constexpr options::LiteralAsStringOpt literal_as_string =
+					  options::LiteralAsStringOpt::Never;
 				};
 			} // namespace utils_details
 
@@ -933,7 +933,7 @@ namespace daw::json {
 				  "Value must be convertible to specialized type in "
 				  "json_data_contract" );
 
-				constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
+				constexpr options::EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 				*it++ = '"';
 				if( std::size( value ) > 0U ) {
 					it = utils::copy_to_iterator<false, eight_bit_mode>( it, value );
@@ -955,7 +955,7 @@ namespace daw::json {
 				 specified type in class contract" );
 				  */
 
-				constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
+				constexpr options::EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 				*it++ = '"';
 				it = utils::copy_to_iterator<true, eight_bit_mode>( it, value );
 				*it++ = '"';
@@ -1072,7 +1072,7 @@ namespace daw::json {
 				  "value must be convertible to specified type in class contract" );
 
 				if constexpr( JsonMember::custom_json_type !=
-				              JsonCustomTypes::Literal ) {
+				              options::JsonCustomTypes::Literal ) {
 					*it++ = '"';
 					if constexpr( std::is_invocable_r_v<
 					                OutputIterator, typename JsonMember::to_converter_t,
@@ -1459,7 +1459,7 @@ namespace daw::json {
 				it.next_member( );
 				is_first = false;
 				*it++ = '"';
-				it = utils::copy_to_iterator<false, EightBitModes::AllowFull>(
+				it = utils::copy_to_iterator<false, options::EightBitModes::AllowFull>(
 				  it, dependent_member::name );
 				*it++ = '"';
 				*it++ = ':';
@@ -1503,7 +1503,7 @@ namespace daw::json {
 				it.next_member( );
 				is_first = false;
 				*it++ = '"';
-				it = utils::copy_to_iterator<false, EightBitModes::AllowFull>(
+				it = utils::copy_to_iterator<false, options::EightBitModes::AllowFull>(
 				  it, JsonMember::name );
 				*it++ = '"';
 				*it++ = ':';
@@ -1550,7 +1550,7 @@ namespace daw::json {
 				}
 			}
 
-			template<FPOutputFormat fp_output_fmt, typename OutputIterator,
+			template<options::FPOutputFormat fp_output_fmt, typename OutputIterator,
 			         typename Real>
 			constexpr OutputIterator to_chars( Real const &value,
 			                                   OutputIterator out_it ) {
@@ -1579,11 +1579,12 @@ namespace daw::json {
 					*out_it++ = '0';
 					return out_it;
 				}
-				if constexpr( true and fp_output_fmt == FPOutputFormat::Scientific ) {
+				if constexpr( true and fp_output_fmt == options::FPOutputFormat::Scientific ) {
 					return daw::jkj::dragonbox::to_chars_detail::to_chars( dec, out_it,
 					                                                       digits );
-				} else /*if constexpr( fp_output_fmt != FPOutputFormat::Decimal )*/ {
-					if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
+				} else {
+					if( fp_output_fmt == options::FPOutputFormat::Auto and
+					    ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
 						return daw::jkj::dragonbox::to_chars_detail::to_chars( dec, out_it,
 						                                                       digits );
 					}

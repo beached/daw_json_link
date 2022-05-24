@@ -412,21 +412,21 @@ namespace daw::json {
 				static constexpr JsonParseTypes expected_type =
 				  json_details::number_parse_type_v<T>;
 
-				static constexpr LiteralAsStringOpt literal_as_string =
-				  json_details::get_bits_for<LiteralAsStringOpt>( number_opts,
+				static constexpr options::LiteralAsStringOpt literal_as_string =
+				  json_details::get_bits_for<options::LiteralAsStringOpt>( number_opts,
 				                                                  Options );
 
-				static constexpr JsonRangeCheck range_check =
-				  json_details::get_bits_for<JsonRangeCheck>( number_opts, Options );
+				static constexpr options::JsonRangeCheck range_check =
+				  json_details::get_bits_for<options::JsonRangeCheck>( number_opts, Options );
 
-				static constexpr FPOutputFormat fp_output_format =
-				  json_details::get_bits_for<FPOutputFormat>( number_opts, Options );
+				static constexpr options::FPOutputFormat fp_output_format =
+				  json_details::get_bits_for<options::FPOutputFormat>( number_opts, Options );
 
-				static constexpr JsonNumberErrors allow_number_errors =
-				  json_details::get_bits_for<JsonNumberErrors>( number_opts, Options );
+				static constexpr options::JsonNumberErrors allow_number_errors =
+				  json_details::get_bits_for<options::JsonNumberErrors>( number_opts, Options );
 
-				static_assert( allow_number_errors == JsonNumberErrors::None or
-				                 literal_as_string != LiteralAsStringOpt::Never,
+				static_assert( allow_number_errors == options::JsonNumberErrors::None or
+				                 literal_as_string != options::LiteralAsStringOpt::Never,
 				               "Cannot allow NaN/Inf/-Inf when numbers cannot be "
 				               "serialized/parsed as a string" );
 
@@ -482,7 +482,7 @@ namespace daw::json {
 		         typename Constructor = use_default>
 		using json_checked_number_no_name = json_base::json_number<
 		  T,
-		  json_details::number_opts_set<Options, JsonRangeCheck::CheckForNarrowing>,
+		  json_details::number_opts_set<Options, options::JsonRangeCheck::CheckForNarrowing>,
 		  Constructor>;
 
 		/**
@@ -501,7 +501,7 @@ namespace daw::json {
 		  T,
 		  json_base::json_number<json_details::unwrapped_t<T>,
 		                         json_details::number_opts_set<
-		                           Options, JsonRangeCheck::CheckForNarrowing>>,
+		                           Options, options::JsonRangeCheck::CheckForNarrowing>>,
 		  NullableType, Constructor>;
 
 		namespace json_base {
@@ -523,8 +523,8 @@ namespace daw::json {
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
 
-				static constexpr LiteralAsStringOpt literal_as_string =
-				  json_details::get_bits_for<LiteralAsStringOpt>( bool_opts, Options );
+				static constexpr options::LiteralAsStringOpt literal_as_string =
+				  json_details::get_bits_for<options::LiteralAsStringOpt>( bool_opts, Options );
 
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::Bool;
@@ -587,11 +587,11 @@ namespace daw::json {
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::String;
 
-				static constexpr EightBitModes eight_bit_mode =
-				  json_details::get_bits_for<EightBitModes>( string_raw_opts, Options );
+				static constexpr options::EightBitModes eight_bit_mode =
+				  json_details::get_bits_for<options::EightBitModes>( string_raw_opts, Options );
 
-				static constexpr AllowEscapeCharacter allow_escape_character =
-				  json_details::get_bits_for<AllowEscapeCharacter>( string_raw_opts,
+				static constexpr options::AllowEscapeCharacter allow_escape_character =
+				  json_details::get_bits_for<options::AllowEscapeCharacter>( string_raw_opts,
 				                                                    Options );
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -656,8 +656,8 @@ namespace daw::json {
 				static constexpr JsonParseTypes expected_type =
 				  JsonParseTypes::StringEscaped;
 
-				static constexpr EightBitModes eight_bit_mode =
-				  json_details::get_bits_for<EightBitModes>( string_opts, Options );
+				static constexpr options::EightBitModes eight_bit_mode =
+				  json_details::get_bits_for<options::EightBitModes>( string_opts, Options );
 
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::String;
@@ -1117,8 +1117,8 @@ namespace daw::json {
 				static constexpr JsonParseTypes base_expected_type =
 				  JsonParseTypes::Custom;
 
-				static constexpr JsonCustomTypes custom_json_type =
-				  json_details::get_bits_for<JsonCustomTypes>( json_custom_opts,
+				static constexpr options::JsonCustomTypes custom_json_type =
+				  json_details::get_bits_for<options::JsonCustomTypes>( json_custom_opts,
 				                                               Options );
 
 				static constexpr JsonBaseParseTypes underlying_json_type =
@@ -1161,7 +1161,7 @@ namespace daw::json {
 		         json_details::json_options_t Options = json_custom_opts_def>
 		using json_custom_lit_no_name = json_base::json_custom<
 		  T, FromJsonConverter, ToJsonConverter,
-		  json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal>>;
+		  json_details::json_custom_opts_set<Options, options::JsonCustomTypes::Literal>>;
 
 		template<typename T, typename FromJsonConverter = use_default,
 		         typename ToJsonConverter = use_default,
@@ -1183,7 +1183,7 @@ namespace daw::json {
 		  T,
 		  json_base::json_custom<
 		    json_details::unwrapped_t<T>, FromJsonConverter, ToJsonConverter,
-		    json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal>>,
+		    json_details::json_custom_opts_set<Options, options::JsonCustomTypes::Literal>>,
 		  NullableType, Constructor>;
 
 		namespace json_base {

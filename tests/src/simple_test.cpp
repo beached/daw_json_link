@@ -29,8 +29,8 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_string_raw<"country", std::string_view>,
 		  json_string_raw<"name", std::string_view>,
-		  json_number<"lat", float, number_opt( LiteralAsStringOpt::Always )>,
-		  json_number<"lng", float, number_opt( LiteralAsStringOpt::Always )>>;
+		  json_number<"lat", float, options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_number<"lng", float, options::number_opt( options::LiteralAsStringOpt::Always )>>;
 #else
 		static constexpr char const country[] = "country";
 		static constexpr char const name[] = "name";
@@ -39,8 +39,8 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_string_raw<country, std::string_view>,
 		  json_string_raw<name, std::string_view>,
-		  json_number<lat, float, number_opt( LiteralAsStringOpt::Always )>,
-		  json_number<lng, float, number_opt( LiteralAsStringOpt::Always )>>;
+		  json_number<lat, float, options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_number<lng, float, options::number_opt( options::LiteralAsStringOpt::Always )>>;
 #endif
 		static DAW_CONSTEXPR auto to_json_data( City const &c ) {
 			return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
