@@ -24,11 +24,17 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 
-		template<typename Value, typename JsonClass, typename OutputIterator,
+		template<typename JsonClass, typename Value, typename OutputIterator,
 		         auto... PolicyFlags>
 		[[maybe_unused]] constexpr OutputIterator
 		to_json( Value const &value, OutputIterator it,
 		         options::output_flags_t<PolicyFlags...> ) {
+			using json_class_t = typename std::conditional_t<
+			  std::is_same_v<use_default, JsonClass>,
+			  json_details::ident_trait<json_details::json_deduced_type, Value>,
+			  json_details::ident_trait<json_details::json_deduced_type,
+			                            JsonClass>>::type;
+
 			if constexpr( std::is_pointer_v<OutputIterator> ) {
 				daw_json_assert( it != nullptr, ErrorReason::NullOutputIterator );
 			}
@@ -48,14 +54,14 @@ namespace daw::json {
 					  it );
 				}
 			}( );
-			it =
-			  json_details::member_to_string( template_arg<JsonClass>, out_it, value )
-			    .get( );
+			it = json_details::member_to_string( template_arg<json_class_t>, out_it,
+			                                     value )
+			       .get( );
 
 			return it;
 		}
 
-		template<typename Result, typename Value, typename JsonClass,
+		template<typename Result, typename JsonClass, typename Value,
 		         auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result
 		to_json( Value const &value,
@@ -66,7 +72,7 @@ namespace daw::json {
 			}
 
 			using iter_t = std::back_insert_iterator<Result>;
-			(void)to_json<Value, JsonClass>( value, iter_t{ result }, flags );
+			(void)to_json<JsonClass>( value, iter_t{ result }, flags );
 			if constexpr( std::is_same_v<Result, std::string> ) {
 				result.shrink_to_fit( );
 			}
@@ -110,15 +116,15 @@ namespace daw::json {
 			while( first != last ) {
 				auto const &v = *first;
 				using v_type = DAW_TYPEOF( v );
-				constexpr bool is_auto_detect_v =
-				  std::is_same_v<JsonElement, json_details::auto_detect_array_element>;
-				using JsonMember =
-				  std::conditional_t<is_auto_detect_v,
-				                     json_details::json_deduced_type<v_type>,
-				                     JsonElement>;
+				using JsonMember = typename std::conditional_t<
+				  std::is_same_v<JsonElement, use_default>,
+				  json_details::ident_trait<json_details::json_deduced_type, v_type>,
+				  json_details::ident_trait<json_details::json_deduced_type,
+				                            JsonElement>>::type;
 
 				static_assert(
-				  not std::is_same_v<JsonMember,
+				  not std::is_same_v<
+				    JsonMember,
 				    missing_json_data_contract_for_or_unknown_type<JsonElement>>,
 				  "Unable to detect unnamed mapping" );
 				// static_assert( not std::is_same_v<JsonElement, JsonMember> );

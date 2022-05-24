@@ -882,27 +882,27 @@ int main( int, char ** )
 	                                          JsonNumberErrors::AllowNanInf )>;
 	std::cout << "Inf double: "
 	          << "serialize: "
-	          << to_json<std::string, double, num_t>(
+	          << to_json<std::string, num_t>(
 	               std::numeric_limits<double>::infinity( ) )
 	          << '\n';
 	std::cout << "parse: " << from_json<num_t>( R"("Infinity")" ) << '\n';
 	std::cout << "-Inf double: "
 	          << "serialize: "
-	          << to_json<std::string, double, num_t>(
+	          << to_json<std::string, num_t>(
 	               -std::numeric_limits<double>::infinity( ) )
 	          << '\n';
 	std::cout << "parse: " << from_json<num_t>( R"("-Infinity")" ) << '\n';
 
 	std::cout << "NaN double: "
 	          << "serialize: "
-	          << to_json<std::string, double, num_t>(
+	          << to_json<std::string, num_t>(
 	               std::numeric_limits<double>::quiet_NaN( ) )
 	          << '\n';
 	std::cout << "parse: " << from_json<num_t>( R"("NaN")" ) << '\n';
 
 	std::cout << "Negative 0: "
 	          << "serialize: "
-	          << to_json<std::string, double, num_t>( std::copysign( 0.0, -1.0 ) )
+	          << to_json<std::string, num_t>( std::copysign( 0.0, -1.0 ) )
 	          << '\n';
 
 	std::cout << "parse: " << from_json<double>( "-0.0" ) << '\n';

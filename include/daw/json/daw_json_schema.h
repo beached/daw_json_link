@@ -238,6 +238,11 @@ namespace daw::json {
 
 			template<typename JsonMember, bool is_root = false,
 			         typename OutputIterator>
+			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Null>,
+			                                         OutputIterator out_it );
+
+			template<typename JsonMember, bool is_root = false,
+			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Tuple>,
 			                                         OutputIterator out_it );
 
@@ -597,6 +602,14 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool is_root, typename OutputIterator>
+			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Null>,
+			                                         OutputIterator out_it ) {
+				using sub_member = typename JsonMember::member_type;
+				return to_json_schema<sub_member, is_root>(
+				  ParseTag<sub_member::expected_type>{ }, out_it );
+			}
+
+			template<typename JsonMember, bool is_root, typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::SizedArray>,
 			                OutputIterator out_it ) {
@@ -766,16 +779,27 @@ namespace daw::json {
 			}
 		} // namespace json_details
 
-		template<typename T, typename OutputIterator>
-		constexpr OutputIterator to_json_schema( OutputIterator it,
-		                                         std::string_view id,
-		                                         std::string_view title ) {
+		template<typename T, typename OutputIterator, auto... PolicyFlags>
+		constexpr OutputIterator to_json_schema(
+		  OutputIterator it, std::string_view id, std::string_view title,
+		  options::output_flags_t<PolicyFlags...> = options::output_flags<> ) {
 
-			using iter_t =
-			  std::conditional_t<is_serialization_policy_v<OutputIterator>,
-			                     OutputIterator,
-			                     serialization_policy<OutputIterator>>;
-			auto out_it = iter_t( it );
+			auto out_it = [&] {
+				if constexpr( is_serialization_policy_v<OutputIterator> ) {
+					if constexpr( sizeof...( PolicyFlags ) == 0 ) {
+						return it;
+					} else {
+						return serialization_policy<typename OutputIterator::iterator_type,
+						                            json_details::serialization::set_bits(
+						                              OutputIterator::policy_flags( ),
+						                              PolicyFlags... )>( it.get( ) );
+					}
+				} else {
+					return serialization_policy<
+					  OutputIterator, options::output_flags_t<PolicyFlags...>::value>(
+					  it );
+				}
+			}( );
 			*out_it++ = '{';
 			out_it.add_indent( );
 			out_it.next_member( );
@@ -796,20 +820,17 @@ namespace daw::json {
 			out_it.del_indent( );
 			out_it.next_member( );
 			*out_it++ = '}';
-			return out_it;
+			return out_it.get( );
 		}
 
-		template<typename T,
-		         typename SerializationPolicy = use_default_serialization_policy,
-		         typename Result = std::string>
-		Result to_json_schema( std::string_view id, std::string_view title ) {
+		template<typename T, typename Result = std::string, auto... PolicyFlags>
+		Result to_json_schema( std::string_view id, std::string_view title,
+		                       options::output_flags_t<PolicyFlags...> flags =
+		                         options::output_flags<> ) {
 			auto result = Result( );
 			using iter_t = std::back_insert_iterator<Result>;
-			using policy = std::conditional_t<
-			  std::is_same_v<SerializationPolicy, use_default_serialization_policy>,
-			  serialization_policy<iter_t>, SerializationPolicy>;
 
-			(void)to_json_schema<T>( policy( iter_t( result ) ), id, title );
+			(void)to_json_schema<T>( iter_t( result ), id, title, flags );
 			return result;
 		}
 	} // namespace DAW_JSON_VER

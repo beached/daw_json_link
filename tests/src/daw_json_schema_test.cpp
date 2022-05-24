@@ -210,14 +210,15 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( ) {
-
-	std::string result = daw::json::to_json_schema<Foo>( "", "Foo" );
+	using namespace daw::json::options;
+	std::string result = daw::json::to_json_schema<Foo>(
+	  "", "Foo", output_flags<SerializationFormat::Pretty> );
 	puts( result.c_str( ) );
 	puts( "----\n" );
-	std::string json_str1 = daw::json::to_json( Foo{ } );
+	std::string json_str1 =
+	  daw::json::to_json( Foo{ }, output_flags<SerializationFormat::Pretty> );
 	puts( json_str1.c_str( ) );
 	puts( "\n----\n\n" );
-	/*
 
 	auto foo2 = daw::json::from_json<Foo>( json_str1 );
 	(void)foo2;
@@ -227,5 +228,4 @@ int main( ) {
 	auto fooboo = daw::json::from_json<FooBoo>( json_str2 );
 	std::cout << "\n----------------------------------------\n"
 	          << daw::json::to_json( fooboo ) << '\n';
-	          */
 }

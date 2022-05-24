@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include "../daw_json_data_contract.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_iso8601_utils.h"
 #include "daw_json_serialize_options_impl.h"
@@ -1043,8 +1044,12 @@ namespace daw::json {
 				  "value must be convertible to specified type in class contract" );
 
 				if constexpr( has_json_to_json_data_v<parse_to_t> ) {
-					return json_data_contract_trait_t<parse_to_t>::serialize(
-					  it, json_data_contract<parse_to_t>::to_json_data( value ), value );
+					return json_data_contract_trait_t<typename JsonMember::wrapped_type>::
+					  serialize(
+					    it,
+					    json_data_contract<
+					      typename JsonMember::wrapped_type>::to_json_data( value ),
+					    value );
 				} else if constexpr( is_json_map_alias_v<parse_to_t> ) {
 					return json_data_contract_trait_t<parse_to_t>::serialize( it, value,
 					                                                          value );

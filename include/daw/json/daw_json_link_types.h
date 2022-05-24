@@ -920,9 +920,9 @@ namespace daw::json {
 
 				using json_elements = typename std::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,
-				  json_details::ident_trait<json_details::variant_alternatives_list,
-				                            Variant>,
-				  daw::traits::identity<JsonElements>>::type;
+				  json_details::variant_alternatives_list<Variant>,
+				  traits::identity<JsonElements>>::type;
+
 				static_assert(
 				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
@@ -1667,7 +1667,7 @@ namespace daw::json {
 				using tag_submember_class_wrapper = std::conditional_t<
 				  json_details::is_an_ordered_member_v<tag_submember>,
 				  json_tuple<std::tuple<typename tag_submember::parse_to_t>,
-				             use_default, json_tuple_types_list<tag_submember>>,
+				             json_tuple_types_list<tag_submember>>,
 				  json_details::json_deduced_type<tuple_json_mapping<tag_submember>>>;
 
 				using constructor_t =
@@ -1886,7 +1886,7 @@ namespace daw::json {
 		template<typename ParseState>
 		struct json_data_contract<basic_json_value<ParseState>> {
 			using type =
-			  json_type_alias<json_raw_no_name<basic_json_value<ParseState>>>;
+			  json_type_alias<json_base::json_raw<basic_json_value<ParseState>>>;
 		};
 
 	} // namespace DAW_JSON_VER

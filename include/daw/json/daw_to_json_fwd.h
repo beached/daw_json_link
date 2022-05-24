@@ -56,10 +56,8 @@ namespace daw::json {
 		 * @param value  value to serialize
 		 * @param out_it result to serialize to
 		 */
-		template<
-		  typename Value,
-		  typename JsonClass = typename json_details::json_deduced_type<Value>,
-		  typename OutputIterator, auto... PolicyFlags>
+		template<typename JsonClass = use_default, typename Value,
+		         typename OutputIterator, auto... PolicyFlags>
 		[[maybe_unused]] constexpr OutputIterator to_json(
 		  Value const &value, OutputIterator out_it,
 		  options::output_flags_t<PolicyFlags...> flags = options::output_flags<> );
@@ -74,10 +72,8 @@ namespace daw::json {
 		 * @param value  value to serialize
 		 * @return  JSON string data
 		 */
-		template<
-		  typename Result = std::string, typename Value,
-		  typename JsonClass = typename json_details::json_deduced_type<Value>,
-		  auto... PolicyFlags>
+		template<typename Result = std::string, typename JsonClass = use_default,
+		         typename Value, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result to_json(
 		  Value const &value,
 		  options::output_flags_t<PolicyFlags...> flags = options::output_flags<> );
@@ -99,8 +95,8 @@ namespace daw::json {
 		 * @param c Container containing data to serialize.
 		 * @return OutputIterator with final state of iterator
 		 */
-		template<typename JsonElement = json_details::auto_detect_array_element,
-		         typename Container, typename OutputIterator, auto... PolicyFlags>
+		template<typename JsonElement = use_default, typename Container,
+		         typename OutputIterator, auto... PolicyFlags>
 		[[maybe_unused]] constexpr OutputIterator to_json_array(
 		  Container const &c, OutputIterator out_it,
 		  options::output_flags_t<PolicyFlags...> flags = options::output_flags<> );
@@ -113,8 +109,7 @@ namespace daw::json {
 		 * @param c Container containing data to serialize.
 		 * @return A std::string containing the serialized elements of c
 		 */
-		template<typename Result = std::string,
-		         typename JsonElement = json_details::auto_detect_array_element,
+		template<typename Result = std::string, typename JsonElement = use_default,
 		         typename Container, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result to_json_array(
 		  Container const &c,

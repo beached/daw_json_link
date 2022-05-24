@@ -21,12 +21,20 @@ namespace daw::json {
 	struct json_data_contract<Thing> {
 		static constexpr char const a[] = "a";
 		using type = json_member_list<json_number<a, int>>;
+
+		static constexpr auto to_json_data( Thing const &thing ) {
+			return std::forward_as_tuple( thing.a );
+		}
 	};
 
 	template<>
 	struct json_data_contract<json_alt<Thing>> {
 		static constexpr char const a[] = "a";
 		using type = json_tuple_member_list<int>;
+
+		static constexpr auto to_json_data( Thing const &thing ) {
+			return std::forward_as_tuple( thing.a );
+		}
 	};
 } // namespace daw::json
 
@@ -38,6 +46,11 @@ int main( ) {
 	Thing b = from_json<json_base::json_class<json_alt<Thing>>>( jsonB );
 	if( a.a != b.a ) {
 		std::cerr << "Error parsing\n";
+		std::terminate( );
+	}
+	auto const js = to_json<std::string, json_alt<Thing>>( b );
+	if( js != "[42]" ) {
+		std::cerr << "Round-trip failure\n";
 		std::terminate( );
 	}
 }

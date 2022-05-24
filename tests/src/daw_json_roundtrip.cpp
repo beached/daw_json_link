@@ -49,7 +49,7 @@ public:
 	  : out_it( std::move( it ) ) {}
 
 	bool handle_on_number( double d ) {
-		out_it = daw::json::to_json<double>( d, out_it );
+		out_it = daw::json::to_json( d, out_it );
 		return true;
 	}
 

@@ -123,8 +123,6 @@ namespace daw::json {
 			}
 		};
 
-		struct use_default_serialization_policy;
-
 		template<typename, typename...>
 		inline constexpr bool is_serialization_policy_v = false;
 

@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include "../daw_json_data_contract.h"
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_name.h"
@@ -584,8 +585,14 @@ namespace daw::json {
 		basic_json_value( ParseState ) -> basic_json_value<ParseState>;
 
 		namespace json_details {
+			template<typename>
+			inline constexpr bool is_json_value = false;
+
+			template<typename ParseState>
+			inline constexpr bool is_json_value<basic_json_value<ParseState>> = true;
+
 			template<typename T>
 			inline constexpr bool is_string_view_like_v<basic_json_value<T>> = false;
-		}
-	} // namespace DAW_JSON_VER
+		} // namespace json_details
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json
