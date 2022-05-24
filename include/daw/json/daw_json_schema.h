@@ -779,6 +779,14 @@ namespace daw::json {
 			}
 		} // namespace json_details
 
+		/// @brief Generate a JSON Schema string based on the mappings for the type
+		/// specified
+		/// @tparam T Known or mapped type to generate JSON Schema for
+		/// @tparam OutputIterator An output iterator to write characters to
+		/// @tparam PolicyFlags Optional policy flags to control output
+		/// @param id JSON Schema identifier
+		/// @param title JSON Schema title
+		/// @return the Output iterator after writing JSON schema to it
 		template<typename T, typename OutputIterator, auto... PolicyFlags>
 		constexpr OutputIterator to_json_schema(
 		  OutputIterator it, std::string_view id, std::string_view title,
@@ -823,6 +831,15 @@ namespace daw::json {
 			return out_it.get( );
 		}
 
+		/// @brief Generate a JSON Schema string based on the mappings for the type
+		/// specified
+		/// @tparam T Known or mapped type to generate JSON Schema for
+		/// @tparam Result Result type, must support std::back_inserter
+		/// @tparam PolicyFlags Optional policy flags to control output
+		/// @param id JSON Schema identifier
+		/// @param title JSON Schema title
+		/// @return The result with JSON Schema written to it
+		///
 		template<typename T, typename Result = std::string, auto... PolicyFlags>
 		Result to_json_schema( std::string_view id, std::string_view title,
 		                       options::output_flags_t<PolicyFlags...> flags =

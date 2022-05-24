@@ -229,17 +229,16 @@ namespace daw::json {
 			                     json_deduced_type<JsonMember>>;
 		} // namespace json_details
 
-		/***
-		 * Allow extracting elements from a JSON array and constructing from it.
-		 * Members can be either normal C++ no_name members, or an ordered_member
-		 * with a position. All ordered members must have a value greater than the
-		 * previous.  The first element in the list, unless it is specified as an
-		 * ordered_member, is 0.  A non-ordered_member item will be 1 more than the
-		 * previous item in the list.  All items must have an index greater than the
-		 * previous. In Javascript these are also called tuples.
-		 * @tparam JsonMembers A list of json_TYPE mappings or a json_TYPE mapping
-		 * wrapped into a json_tuple_member
-		 */
+		/// @brief Allow extracting elements from a JSON array and constructing from
+		/// it. Members can be either normal C++ no_name members, or an
+		/// ordered_member with a position. All ordered members must have a value
+		/// greater than the previous.  The first element in the list, unless it is
+		/// specified as an ordered_member, is 0.  A non-ordered_member item will be
+		/// 1 more than the previous item in the list.  All items must have an index
+		/// greater than the previous. In Javascript these are also called tuples.
+		/// @tparam JsonMembers A list of json_TYPE mappings or a json_TYPE mapping
+		/// wrapped into a json_tuple_member
+		///
 		template<typename... JsonMembers>
 		struct json_tuple_member_list {
 			using i_am_a_json_member_list = daw::fwd_pack<JsonMembers...>;
