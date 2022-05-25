@@ -26,7 +26,13 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     add_compile_definitions(DAW_NO_CONSTEXPR_SCOPE_GUARD)
     # gcc has difficulty and takes too long to compile
 endif ()
-option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
+
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" OR ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
+else ()
+    option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
+endif ()
+
 
 option(DAW_JSON_FORCE_INT128 "Define: Force support for 128bit int" OFF)
 if (CMAKE_CXX_FLAGS MATCHES "-fno-exceptions")
