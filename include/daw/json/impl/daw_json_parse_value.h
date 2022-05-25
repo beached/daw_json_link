@@ -52,15 +52,18 @@ namespace daw::json {
 			 * @tparam ParseState ParseState idiom
 			 * @param parse_state Current parsing state
 			 */
-			template<options::LiteralAsStringOpt literal_as_string, typename ParseState>
+			template<options::LiteralAsStringOpt literal_as_string,
+			         typename ParseState>
 			DAW_ATTRIB_INLINE constexpr void
 			skip_quote_when_literal_as_string( ParseState &parse_state ) {
-				if constexpr( literal_as_string == options::LiteralAsStringOpt::Always ) {
+				if constexpr( literal_as_string ==
+				              options::LiteralAsStringOpt::Always ) {
 					daw_json_assert_weak( parse_state.is_quotes_checked( ),
 					                      ErrorReason::InvalidNumberUnexpectedQuoting,
 					                      parse_state );
 					parse_state.remove_prefix( );
-				} else if constexpr( literal_as_string == options::LiteralAsStringOpt::Maybe ) {
+				} else if constexpr( literal_as_string ==
+				                     options::LiteralAsStringOpt::Maybe ) {
 					daw_json_assert_weak( parse_state.has_more( ),
 					                      ErrorReason::UnexpectedEndOfData, parse_state );
 					if( parse_state.front( ) == '"' ) {
@@ -1025,7 +1028,7 @@ namespace daw::json {
 					}
 				}
 
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if false and defined( _MSC_VER ) and not defined( __clang__ )
 				template<typename ParseState>
 				struct position_info {
 					std::size_t index;
@@ -1100,7 +1103,7 @@ namespace daw::json {
 				using tuple_t = typename JsonMember::base_type;
 				using tuple_members = typename JsonMember::sub_member_list;
 
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if false and defined( _MSC_VER ) and not defined( __clang__ )
 				using position_info_t = pocm_details::position_info<ParseState>;
 				std::size_t parse_locations_last_index = 0U;
 				std::array<position_info_t, sizeof...( Is )> parse_locations{
@@ -1122,7 +1125,7 @@ namespace daw::json {
 					  std::tuple_element_t<index_t::value, tuple_members>;
 
 					using json_member_t = ordered_member_subtype_t<CurrentMember>;
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if false and defined( _MSC_VER ) and not defined( __clang__ )
 					ParseState parse_state2 =
 					  pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
 					    parse_state, ClassIdx, index_t::value, parse_locations );
@@ -1149,30 +1152,29 @@ namespace daw::json {
 						}
 					} else {
 #endif
-						if constexpr( is_an_ordered_member_v<CurrentMember> ) {
-							pocm_details::maybe_skip_members<
-							  is_json_nullable_v<json_member_t>>(
-							  parse_state, ClassIdx, CurrentMember::member_index );
-						} else {
-							daw_json_assert_weak( parse_state.has_more( ),
-							                      ErrorReason::UnexpectedEndOfData,
-							                      parse_state );
-						}
-						++ClassIdx;
-						if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
-							auto const run_after_parse = daw::on_exit_success(
-							  [&] { parse_state.move_next_member_or_end( ); } );
-							(void)run_after_parse;
-							return parse_value<json_member_t>(
-							  parse_state, ParseTag<json_member_t::expected_type>{ } );
-						} else {
-							auto result = parse_value<json_member_t>(
-							  parse_state, ParseTag<json_member_t::expected_type>{ } );
-							parse_state.move_next_member_or_end( );
-							return result;
-						}
-#if defined( _MSC_VER ) and not defined( __clang__ )
+					if constexpr( is_an_ordered_member_v<CurrentMember> ) {
+						pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
+						  parse_state, ClassIdx, CurrentMember::member_index );
+					} else {
+						daw_json_assert_weak( parse_state.has_more( ),
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
 					}
+					++ClassIdx;
+					if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
+						auto const run_after_parse = daw::on_exit_success(
+						  [&] { parse_state.move_next_member_or_end( ); } );
+						(void)run_after_parse;
+						return parse_value<json_member_t>(
+						  parse_state, ParseTag<json_member_t::expected_type>{ } );
+					} else {
+						auto result = parse_value<json_member_t>(
+						  parse_state, ParseTag<json_member_t::expected_type>{ } );
+						parse_state.move_next_member_or_end( );
+						return result;
+					}
+#if false and defined( _MSC_VER ) and not defined( __clang__ )
+				}
 #endif
 				};
 
