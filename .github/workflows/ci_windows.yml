@@ -30,12 +30,8 @@ jobs:
         config:
           - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-          - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-          - { cpp_version: 20, build_type: Release, arch: x64, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 17, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-          - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
-          - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2019, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 17, build_type: Debug, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
           - { cpp_version: 17, build_type: Release, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: "-T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
           - { cpp_version: 20, build_type: Debug, arch: x64, os: windows-2019, toolset: ClangCL, cmake_flags: " -T ClangCL -DCMAKE_C_COMPILER=clang-cl.exe -DCMAKE_CXX_COMPILER=clang-cl.exe" }
