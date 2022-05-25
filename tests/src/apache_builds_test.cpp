@@ -107,23 +107,21 @@ int main( int argc, char **argv )
 		std::cerr << "Must supply a path to apache_builds.json\n";
 		exit( 1 );
 	}
-	auto *fname = argv[1];
-	auto const json_data1 = *daw::read_file( fname );
+	auto const json_data1 = *daw::read_file( argv[1] );
 	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
-	auto const json_sv1 =
-	  std::string_view( json_data1.data( ), json_data1.size( ) );
 
 	std::cout << "Using " << daw::json::constexpr_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<options::ExecModeTypes::compile_time>( json_sv1 );
+	test<options::ExecModeTypes::compile_time>( json_data1 );
 	std::cout << "Using " << daw::json::runtime_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<options::ExecModeTypes::runtime>( json_sv1 );
+
+	test<options::ExecModeTypes::runtime>( json_data1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
 		std::cout << "Using " << daw::json::simd_exec_tag::name
 		          << " exec model\n*********************************************\n";
-		test<options::ExecModeTypes::simd>( json_sv1 );
+		test<options::ExecModeTypes::simd>( json_data1 );
 	}
 }
 #ifdef DAW_USE_EXCEPTIONS
