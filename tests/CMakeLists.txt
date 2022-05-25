@@ -740,7 +740,7 @@ add_test(NAME int_ptr_test COMMAND int_ptr_test WORKING_DIRECTORY "${CMAKE_SOURC
 add_dependencies(ci_tests int_ptr_test)
 add_dependencies(full int_ptr_test)
 
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT MSVC AND CLANG_VERSION_MAJOR VERSION_GREATER_EQUAL 13)
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13)
     # Only clang is supported for fuzzing
     add_executable(daw_json_fuzzing src/daw_json_fuzzing.cpp)
     target_link_libraries(daw_json_fuzzing PRIVATE json_test "-fsanitize=fuzzer,address")
