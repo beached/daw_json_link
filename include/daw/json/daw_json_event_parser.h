@@ -356,12 +356,9 @@ namespace daw::json {
 			}
 		};
 
-		struct use_default_json_event_parser_stack_policy;
-
 		template<typename ParseState = DefaultParsePolicy,
-		         typename StackContainerPolicy =
-		           use_default_json_event_parser_stack_policy,
-		         typename Handler, auto... ParseFlags>
+		         typename StackContainerPolicy = use_default, typename Handler,
+		         auto... ParseFlags>
 		inline constexpr void
 		json_event_parser( basic_json_value<ParseState> bjv, Handler &&handler,
 		                   options::parse_flags_t<ParseFlags...> =
@@ -375,9 +372,7 @@ namespace daw::json {
 			using stack_value_t = JsonEventParserStackValue<ParsePolicy>;
 
 			auto parent_stack = [] {
-				if constexpr( std::is_same_v<
-				                StackContainerPolicy,
-				                use_default_json_event_parser_stack_policy> ) {
+				if constexpr( std::is_same_v<StackContainerPolicy, use_default> ) {
 					return DefaultJsonEventParserStackPolicy<
 					  JsonEventParserStackValue<ParsePolicy>>{ };
 				} else {
