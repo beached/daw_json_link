@@ -42,7 +42,7 @@ jobs:
           CXX: ${{ matrix.toolset }}
         run: cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DDAW_ALLOW_SSE42=ON -DDAW_JSON_USE_SANITIZERS=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -Bbuild/ .
       - name: Build
-        run: cmake --build build/ --target full -- -k 0
+        run: cmake --build build/ --target ci_tests -- -k 0
       - name: Test
         run: |
           ulimit -c unlimited
