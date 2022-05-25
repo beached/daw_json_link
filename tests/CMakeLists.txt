@@ -144,7 +144,9 @@ add_dependencies(full nativejson_bench2)
 
 add_executable(nativejson_bench_basic src/nativejson_bench_basic.cpp)
 target_link_libraries(nativejson_bench_basic PRIVATE json_test)
-add_test(NAME nativejson_bench_basic COMMAND nativejson_bench_basic ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+if (DAW_JSON_FULL_TESTS)
+    add_test(NAME nativejson_bench_basic COMMAND nativejson_bench_basic ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+endif ()
 add_dependencies(full nativejson_bench_basic)
 
 add_executable(nativejson_bench_basic2 src/nativejson_bench_basic2.cpp)
