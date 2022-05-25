@@ -97,6 +97,7 @@ jobs:
       - name: Fuzzing
         if: matrix.toolset == 'clang++-13'
         run: |
+          echo "CXXFLAGS='-stdlib=libstdc++'" >> $GITHUB_ENV
           ulimit -c unlimited
           cmake --build build/ --target daw_json_fuzzing
           ./build/tests/daw_json_fuzzing -max_len=4000 -max_total_time=120

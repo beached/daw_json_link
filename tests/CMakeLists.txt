@@ -743,7 +743,7 @@ add_dependencies(full int_ptr_test)
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13)
     # Only clang is supported for fuzzing
     add_executable(daw_json_fuzzing src/daw_json_fuzzing.cpp)
-    target_link_libraries(daw_json_fuzzing PRIVATE json_test "-fsanitize=fuzzer,address")
+    target_link_libraries(daw_json_fuzzing PRIVATE json_test "-fsanitize=fuzzer,address,undefined")
     target_compile_options(daw_json_fuzzing PRIVATE -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined -O3 -g -march=native -fsanitize-coverage=trace-cmp)
 else ()
     message("Fuzzing support disabled for compiler: ${CMAKE_CXX_COMPILER_ID} is not supported.  Only Clang(excluding AppleClang)")
