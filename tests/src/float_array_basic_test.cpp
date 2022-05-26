@@ -31,7 +31,7 @@ static_assert( DAW_NUM_RUNS > 0 );
 struct Number {
 	float a{ };
 };
-#ifdef __cpp_nontype_template_parameter_class
+#ifdef DAW_JSON_CNTTP_JSON_NAME
 [[maybe_unused]] static DAW_CONSTEXPR auto
 json_data_contract_for( Number ) noexcept {
 	using namespace daw::json;

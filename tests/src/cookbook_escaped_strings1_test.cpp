@@ -32,7 +32,7 @@ namespace daw::cookbook_escaped_strings1 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_escaped_strings1::WebData> {
-#if defined( __cpp_nontype_template_parameter_class )
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_array<"uris", std::string>>;
 #else
 		static constexpr char const uris[] = "uris";

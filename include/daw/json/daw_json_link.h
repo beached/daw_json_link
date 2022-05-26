@@ -19,7 +19,7 @@
  * Construct a json_value from a string literal
  * @return A json_value representing the json document
  */
-constexpr daw::json::json_value operator"" _dawjson( char const *ptr,
+constexpr daw::json::json_value operator""_dawjson( char const *ptr,
                                                      std::size_t sz ) {
 	return daw::json::json_value( std::string_view( ptr, sz ) );
 }

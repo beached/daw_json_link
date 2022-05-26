@@ -26,7 +26,7 @@ struct Thing {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Thing> {
-#if defined( __cpp_nontype_template_parameter_class )
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_string<"name">, json_number<"type", int>,
 		                              json_delayed<"raw_json", std::string>>;
 #else

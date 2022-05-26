@@ -4,31 +4,31 @@ find_package(Boost COMPONENTS container)
 add_subdirectory(extern)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF CACHE STRING "Enable LTO")
 if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
-    message("CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON: LTO is enabled")
+    message(STATUS "CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON: LTO is enabled")
 endif ()
-message("CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
+message(STATUS "CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
 
 set(DAW_NUM_RUNS OFF CACHE STRING "Enable address and undefined behaviour sanitizers")
 if (DAW_NUM_RUNS)
-    message("DAW_NUM_RUNS=${DAW_NUM_RUNS}: Overriding number of test runs")
+    message(STATUS "DAW_NUM_RUNS=${DAW_NUM_RUNS}: Overriding number of test runs")
     add_definitions(-DDAW_NUM_RUNS=${DAW_NUM_RUNS})
 endif ()
 set(DAW_JSON_USE_SANITIZERS OFF CACHE STRING "Enable address and undefined behaviour sanitizers")
 if (DAW_JSON_USE_SANITIZERS)
-    message("DAW_JSON_USE_SANITIZERS=ON: compiler sanitizers enabled")
+    message(STATUS "DAW_JSON_USE_SANITIZERS=ON: compiler sanitizers enabled")
     add_definitions(-DDAW_JSON_NO_INT128)
 else ()
-    message("DAW_JSON_USE_SANITIZERS=OFF: compiler sanitizers disabled")
+    message(STATUS "DAW_JSON_USE_SANITIZERS=OFF: compiler sanitizers disabled")
 endif ()
 
 include(cmake/test_compiler_options.cmake)
 
 add_library(json_test INTERFACE)
-if( NOT DAW_USE_PACKAGE_MANAGEMENT ) 
-target_link_libraries(json_test INTERFACE daw::daw-json-link daw::daw-header-libraries daw::daw-utf-range ${COMPILER_SPECIFIC_LIBS})
-else( ) 
-target_link_libraries(json_test INTERFACE ${COMPILER_SPECIFIC_LIBS})
-endif( )
+if (NOT DAW_USE_PACKAGE_MANAGEMENT)
+    target_link_libraries(json_test INTERFACE daw::daw-json-link daw::daw-header-libraries daw::daw-utf-range ${COMPILER_SPECIFIC_LIBS})
+else ()
+    target_link_libraries(json_test INTERFACE ${COMPILER_SPECIFIC_LIBS})
+endif ()
 
 target_include_directories(json_test INTERFACE include/)
 
@@ -593,17 +593,20 @@ add_executable(daw_json_minify_full src/daw_json_minify_full.cpp)
 target_link_libraries(daw_json_minify_full json_test)
 add_dependencies(full daw_json_minify_full)
 
-
 add_executable(test_array_of_ordered src/test_array_of_ordered.cpp)
 target_link_libraries(test_array_of_ordered json_test)
 add_dependencies(full test_array_of_ordered)
 
+add_executable(variant_on_members src/variant_on_members.cpp)
+target_link_libraries(variant_on_members json_test)
+add_test(NAME variant_on_members_test COMMAND variant_on_members)
+add_dependencies(full variant_on_members)
 
 # **************************************************
 # JSON Benchmark
 # **************************************************
 
-message( "Git revision: ${SOURCE_CONTROL_REVISION}" )
+message(STATUS "Git revision: ${SOURCE_CONTROL_REVISION}")
 add_executable(json_benchmark src/json_benchmark.cpp)
 include(./cmake/git_properties.cmake)
 target_link_libraries(json_benchmark apache_builds_parser_cx_ch apache_builds_parser_rn_ch apache_builds_parser_si_ch apache_builds_parser_cx_unch apache_builds_parser_rn_unch apache_builds_parser_si_unch twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test json_test)

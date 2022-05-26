@@ -27,7 +27,7 @@ struct MyClass2 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<MyClass2> {
-#if defined( __cpp_nontype_template_parameter_class )
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_number<"member0", int>,
 		                   json_delayed<"member_later">, json_string<"member1">>;
@@ -60,7 +60,7 @@ struct MyDelayedClass {
 namespace daw::json {
 	template<>
 	struct json_data_contract<MyDelayedClass> {
-#if defined( __cpp_nontype_template_parameter_class )
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_number<"a", int>, json_bool<"b">>;
 #else
 		static constexpr char const a[] = "a";

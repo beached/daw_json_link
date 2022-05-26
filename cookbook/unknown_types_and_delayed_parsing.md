@@ -8,7 +8,7 @@ When the data structure is unknown or partially known it can be parsed as a `jso
 ``` 
 The above JSON describes an array of mixed types, string and number.
 
-To see a working example using this code, refer to [cookbook_unknown_types_and_delayed_parsing1_test.cpp](../tests/src/cookbook_unknown_types_and_delayed_parsing1_test.cpp). 
+To see a working example using this code, refer to [cookbook_unknown_types_and_delayed_parsing1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_unknown_types_and_delayed_parsing1_test.cpp). 
 
 Below is the C++ code to parse and use it.
 ```c++
@@ -38,7 +38,7 @@ It is possible to delay the parsing of json members until a later time.  The `js
 
 The above JSON class has 3 members, a number, a class to parse later, and a string.
 
-To see a working example using this code, refer to [cookbook_unknown_types_and_delayed_parsing2_test.cpp](../tests/src/cookbook_unknown_types_and_delayed_parsing2_test.cpp). 
+To see a working example using this code, refer to [cookbook_unknown_types_and_delayed_parsing2_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_unknown_types_and_delayed_parsing2_test.cpp). 
 
 Below is the C++ code to parse and use it.
 ```c++
@@ -94,7 +94,7 @@ MyDelayedClass delayed_val = cls2.member_layer.template parse<MyDelayedClass>( )
 Parsing to a raw JSON string can be done too.  the `json_delayed` mapping type allows for an optional type argument that specifies the destination/source type.  It requires that the 
 type be constructable from a char const * and a std::size_t.
 
-To see a working example using this code, refer to [cookbook_unknown_types_and_delayed_parsing3_test.cpp](../tests/src/cookbook_unknown_types_and_delayed_parsing3_test.cpp). 
+To see a working example using this code, refer to [cookbook_unknown_types_and_delayed_parsing3_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_unknown_types_and_delayed_parsing3_test.cpp). 
 
 ```c++
 struct Thing {

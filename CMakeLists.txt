@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project("daw-json-link"
-        VERSION "2.10.2"
+        VERSION "2.15.2"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
         LANGUAGES C CXX)
@@ -19,12 +19,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
-if( NOT DAW_USE_PACKAGE_MANAGEMENT ) 
-	add_subdirectory(extern)
-else( )	
-	find_package( daw-header-libraries REQUIRED )
-	find_package( daw-utf-range REQUIRED )
-endif( )
+if (NOT DAW_USE_PACKAGE_MANAGEMENT)
+    add_subdirectory(extern)
+else ()
+    find_package(daw-header-libraries REQUIRED)
+    find_package(daw-utf-range REQUIRED)
+endif ()
 
 option(DAW_ENABLE_TESTING "Build unit tests" OFF)
 
@@ -39,39 +39,39 @@ set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
 if (DAW_JSON_NO_CONST_EXPR)
-    message("DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
+    message(STATUS "DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
     add_definitions(-DDAW_JSON_NO_CONST_EXPR)
 else ()
-    message("DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
+    message(STATUS "DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
 endif ()
 
 set(DAW_JSON_FORCE_INT128 OFF CACHE STRING "Force support for 128bit int")
 if (DAW_JSON_FORCE_INT128)
     if (DAW_JSON_NO_INT128)
     else ()
-        message("Forcing support of int128")
+        message(STATUS "Forcing support of int128")
         add_definitions(-DDAW_HAS_INT128)
     endif ()
 endif ()
 
 set(DAW_USE_JSON_EXCEPTIONS ON CACHE STRING "Throw exceptions when json errors occur")
 if (DAW_USE_JSON_EXCEPTIONS)
-    message("DAW_USE_JSON_EXCEPTIONS=ON: Errors throw json_exception")
+    message(STATUS "DAW_USE_JSON_EXCEPTIONS=ON: Errors throw json_exception")
     add_definitions(-DDAW_USE_JSON_EXCEPTIONS=true)
 else ()
-    message("DAW_USE_JSON_EXCEPTIONS=OFF: Errors call std::terminate")
+    message(STATUS "DAW_USE_JSON_EXCEPTIONS=OFF: Errors call std::terminate")
     add_definitions(-DDAW_DONT_USE_JSON_EXCEPTIONS=true)
 endif ()
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     # G++ has difficulty and takes too long to compile
-    option(DAW_NO_FLATTEN "Disable function flattening optimization" ON )
-else( )
-    option(DAW_NO_FLATTEN "Disable function flattening optimization" OFF )
-endif()
+    option(DAW_NO_FLATTEN "Disable function flattening optimization" ON)
+else ()
+    option(DAW_NO_FLATTEN "Disable function flattening optimization" OFF)
+endif ()
 
 if (DAW_NO_FLATTEN)
-    message("DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
+    message(STATUS "DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
     add_definitions(-DDAW_NO_FLATTEN)
 endif ()
 
