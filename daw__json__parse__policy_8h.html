@@ -67,21 +67,26 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#define-members">Macros</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_parse_policy.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="daw__json__allocator__wrapper_8h_source.html">daw_json_allocator_wrapper.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__common_8h_source.html">daw_json_parse_common.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__parse__options__impl_8h_source.html">daw_json_parse_options_impl.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__policy__cpp__comments_8h_source.html">daw_json_parse_policy_cpp_comments.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__policy__hash__comments_8h_source.html">daw_json_parse_policy_hash_comments.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__policy__no__comments_8h_source.html">daw_json_parse_policy_no_comments.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__policy__policy__details_8h_source.html">daw_json_parse_policy_policy_details.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__string__util_8h_source.html">daw_json_string_util.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
 <code>#include &lt;daw/cpp_17.h&gt;</code><br />
-<code>#include &lt;daw/daw_hide.h&gt;</code><br />
+<code>#include &lt;daw/daw_attributes.h&gt;</code><br />
+<code>#include &lt;daw/daw_likely.h&gt;</code><br />
+<code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
@@ -90,51 +95,314 @@ $(function() {
 </div>
 <p><a href="daw__json__parse__policy_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacedaw_1_1json_1_1options"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1options.html">daw::json::options</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacedaw_1_1json_1_1options_1_1details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1options_1_1details.html">daw::json::options::details</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:ae63c0c0a57382a203e71bb2cb54b830a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ae63c0c0a57382a203e71bb2cb54b830a">daw::json::CppCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, CppCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:ae63c0c0a57382a203e71bb2cb54b830a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70d2b37b6a0e569316b717d0516c982d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a70d2b37b6a0e569316b717d0516c982d">daw::json::CppCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, CppCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:a70d2b37b6a0e569316b717d0516c982d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7963bb60c23ab5a8066f22069a4b498a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a7963bb60c23ab5a8066f22069a4b498a">daw::json::HashCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, HashCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:a7963bb60c23ab5a8066f22069a4b498a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b8c653bc0ba96408ff4fdca36c944e9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a6b8c653bc0ba96408ff4fdca36c944e9">daw::json::HashCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, HashCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:a6b8c653bc0ba96408ff4fdca36c944e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85be550e68e1a5ec5d98e5dfbfb88366"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a85be550e68e1a5ec5d98e5dfbfb88366">daw::json::NoCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, NoCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:a85be550e68e1a5ec5d98e5dfbfb88366"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acafd1e3616bdf578c04dc1a3853f0841"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#acafd1e3616bdf578c04dc1a3853f0841">daw::json::NoCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, NoCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:acafd1e3616bdf578c04dc1a3853f0841"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a622a1ce2bebfb8ef59398fa2ffbf29a2"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:a622a1ce2bebfb8ef59398fa2ffbf29a2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a622a1ce2bebfb8ef59398fa2ffbf29a2">daw::json::SIMDCppCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, CppCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:a622a1ce2bebfb8ef59398fa2ffbf29a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f78e05e135d25a68c212718aa6a89fc"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:a5f78e05e135d25a68c212718aa6a89fc"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a5f78e05e135d25a68c212718aa6a89fc">daw::json::SIMDCppCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, CppCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:a5f78e05e135d25a68c212718aa6a89fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f9be031cd8b4f6cc1ee05f32cc4b7f9"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:a0f9be031cd8b4f6cc1ee05f32cc4b7f9"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a0f9be031cd8b4f6cc1ee05f32cc4b7f9">daw::json::SIMDHashCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, HashCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:a0f9be031cd8b4f6cc1ee05f32cc4b7f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87de0c3ed631fc4dac59fd5e1f333744"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:a87de0c3ed631fc4dac59fd5e1f333744"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a87de0c3ed631fc4dac59fd5e1f333744">daw::json::SIMDHashCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, HashCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:a87de0c3ed631fc4dac59fd5e1f333744"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4590971fa17f536693fe7fd7f6dbd846"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:a4590971fa17f536693fe7fd7f6dbd846"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a4590971fa17f536693fe7fd7f6dbd846">daw::json::SIMDNoCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, NoCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:a4590971fa17f536693fe7fd7f6dbd846"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adba4d19f5a0fdbd773caad9a7fce6c44"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:adba4d19f5a0fdbd773caad9a7fce6c44"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#adba4d19f5a0fdbd773caad9a7fce6c44">daw::json::SIMDNoCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, NoCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:adba4d19f5a0fdbd773caad9a7fce6c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:af420c44ec0e0e64154e34df206734fa4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__parse__policy_8h.html#af420c44ec0e0e64154e34df206734fa4">DAW_JSON_CONFORMANCE_FLAGS</a></td></tr>
+<tr class="separator:af420c44ec0e0e64154e34df206734fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="af420c44ec0e0e64154e34df206734fa4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af420c44ec0e0e64154e34df206734fa4">&#9670;&nbsp;</a></span>DAW_JSON_CONFORMANCE_FLAGS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DAW_JSON_CONFORMANCE_FLAGS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  daw::json::options::AllowEscapedNames::yes,            \</div>
+<div class="line">    daw::json::options::MustVerifyEndOfDataIsValid::yes, \</div>
+<div class="line">    daw::json::options::IEEE754Precise::yes,             \</div>
+<div class="line">    daw::json::options::ExcludeSpecialEscapes::yes</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00554">554</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a815d023d7947eb5db8467d7075c8d147"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a815d023d7947eb5db8467d7075c8d147">&#9670;&nbsp;</a></span>class_first</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">iterator class_first { }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00166">166</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="aab51ec4007ce77048b09670f88817ff3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab51ec4007ce77048b09670f88817ff3">&#9670;&nbsp;</a></span>class_last</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">iterator class_last { }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00167">167</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="ac449e05964ab2319a33c1718c5ad485b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac449e05964ab2319a33c1718c5ad485b">&#9670;&nbsp;</a></span>counter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t counter = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00168">168</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="a5c160953bb75c008be41e695f39eca62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c160953bb75c008be41e695f39eca62">&#9670;&nbsp;</a></span>exec_tag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr exec_tag_t exec_tag = exec_tag_t{ }</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00091">91</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="a2f4c1276f2c8aa2206f6f829008aea16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f4c1276f2c8aa2206f6f829008aea16">&#9670;&nbsp;</a></span>expect_long_strings</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool expect_long_strings</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        json_details::get_bits_for&lt;options::ExpectLongNames&gt;( PolicyFlags ) ==</div>
+<div class="line">        options::ExpectLongNames::yes</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00154">154</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="a694f356ed5dcf52c0f99c31d5fbe45f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a694f356ed5dcf52c0f99c31d5fbe45f0">&#9670;&nbsp;</a></span>f</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CharT* f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00371">371</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="a1bc08e1283dc0dc0d9b332f2ff5fdf44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bc08e1283dc0dc0d9b332f2ff5fdf44">&#9670;&nbsp;</a></span>first</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">iterator first { }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00164">164</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="a8401ec63728e898ca0780973704f1ac2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8401ec63728e898ca0780973704f1ac2">&#9670;&nbsp;</a></span>is_unchecked_input</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool is_unchecked_input</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        json_details::get_bits_for&lt;options::CheckedParseMode&gt;( PolicyFlags ) ==</div>
+<div class="line">        options::CheckedParseMode::no</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00079">79</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="a2643a507a80c23dfe28354caeda43d5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2643a507a80c23dfe28354caeda43d5d">&#9670;&nbsp;</a></span>l</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CharT* l</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00372">372</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="aa88c45a5c6ffd7913103fa9dbc188fcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa88c45a5c6ffd7913103fa9dbc188fcb">&#9670;&nbsp;</a></span>last</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">iterator last { }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00165">165</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="aa5e94dd859b41c0ae707a5cdf99ee023"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5e94dd859b41c0ae707a5cdf99ee023">&#9670;&nbsp;</a></span>must_verify_end_of_data_is_valid</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool must_verify_end_of_data_is_valid</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        json_details::get_bits_for&lt;options::MustVerifyEndOfDataIsValid&gt;(</div>
+<div class="line">          PolicyFlags ) == options::MustVerifyEndOfDataIsValid::yes</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00150">150</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="a98401122e5ba4609eb59b108ba940844"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98401122e5ba4609eb59b108ba940844">&#9670;&nbsp;</a></span>use_exact_mappings_by_default</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool use_exact_mappings_by_default</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        json_details::get_bits_for&lt;options::UseExactMappingsByDefault&gt;(</div>
+<div class="line">          PolicyFlags ) == options::UseExactMappingsByDefault::yes</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00146">146</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
+<a id="a787a252724e9988367a7dcf071e9bd15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a787a252724e9988367a7dcf071e9bd15">&#9670;&nbsp;</a></span>value</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr json_details::json_options_t value</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">          parse_options( PolicyFlags... )</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00518">518</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

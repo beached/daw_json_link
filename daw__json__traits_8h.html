@@ -67,59 +67,36 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_traits.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;daw/daw_move.h&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
+<code>#include &quot;../../daw_readable_value.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__data__contract_8h_source.html">../daw_json_data_contract.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__default__constuctor_8h_source.html">daw_json_default_constuctor.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__enums_8h_source.html">daw_json_enums.h</a>&quot;</code><br />
+<code>#include &lt;daw/cpp_17.h&gt;</code><br />
+<code>#include &lt;daw/daw_fwd_pack_apply.h&gt;</code><br />
+<code>#include &lt;daw/daw_move.h&gt;</code><br />
+<code>#include &lt;daw/daw_scope_guard.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
+<code>#include &lt;array&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
-<code>#include &lt;type_traits&gt;</code><br />
 <code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 </div>
 <p><a href="daw__json__traits_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1can__single__allocation__string.html">daw::json::can_single_allocation_string&lt; typename &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1can__single__allocation__string_3_01std_1_1basic__string_3_01_char_00_01_chd8173b5ef36de0f19a0cee5d8bc88460.html">daw::json::can_single_allocation_string&lt; std::basic_string&lt; Char, CharTrait, Allocator &gt; &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1default__constructor.html">daw::json::default_constructor&lt; T &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1default__constructor_3_01std_1_1unordered__map_3_01_k_00_01_v_00_01_h_00_01_e_00_01_alloc_01_4_01_4.html">daw::json::default_constructor&lt; std::unordered_map&lt; K, V, H, E, Alloc &gt; &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1force__aggregate__construction.html">daw::json::force_aggregate_construction&lt; T &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1json__data__contract.html">daw::json::json_data_contract&lt; T &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1missing__json__data__contract__for.html">daw::json::missing_json_data_contract_for&lt; typename &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1nullable__constructor.html">daw::json::nullable_constructor&lt; T &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1nullable__constructor_3_01std_1_1optional_3_01_t_01_4_01_4.html">daw::json::nullable_constructor&lt; std::optional&lt; T &gt; &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1nullable__constructor_3_01std_1_1unique__ptr_3_01_t_00_01_deleter_01_4_01_4.html">daw::json::nullable_constructor&lt; std::unique_ptr&lt; T, Deleter &gt; &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a4625d6d62a2f9be4bddfc41449049531"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a4625d6d62a2f9be4bddfc41449049531"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a4625d6d62a2f9be4bddfc41449049531">daw::json::json_data_contract_trait_t</a> = typename <a class="el" href="structdaw_1_1json_1_1json__data__contract.html">daw::json::json_data_contract</a>&lt; T &gt;::type</td></tr>
-<tr class="separator:a4625d6d62a2f9be4bddfc41449049531"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

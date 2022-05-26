@@ -74,6 +74,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="daw__json__link_8h_source.html">daw_json_link.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="version_8h_source.html">impl/version.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
@@ -90,24 +91,24 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a8b5f0fadda1a1effd73f8c3dc61eb640"><td class="memTemplParams" colspan="2">template&lt;typename Container , std::enable_if_t&lt; daw::json::json_details::is_container_opted_into_json_iostreams_v&lt; Container &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
-<tr class="memitem:a8b5f0fadda1a1effd73f8c3dc61eb640"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__iostream_8h.html#a8b5f0fadda1a1effd73f8c3dc61eb640">operator&lt;&lt;</a> (std::ostream &amp;os, Container const &amp;c)</td></tr>
-<tr class="separator:a8b5f0fadda1a1effd73f8c3dc61eb640"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa63640f4dea34c72a07348dc007aba44"><td class="memTemplParams" colspan="2">template&lt;typename T , std::enable_if_t&lt; daw::json::json_details::is_opted_into_json_iostreams_v&lt; T &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
-<tr class="memitem:aa63640f4dea34c72a07348dc007aba44"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__iostream_8h.html#aa63640f4dea34c72a07348dc007aba44">operator&lt;&lt;</a> (std::ostream &amp;os, T const &amp;value)</td></tr>
-<tr class="separator:aa63640f4dea34c72a07348dc007aba44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a588967a7d0b23c5be6718b5ba5c02669"><td class="memTemplParams" colspan="2">template&lt;typename Container &gt; </td></tr>
+<tr class="memitem:a588967a7d0b23c5be6718b5ba5c02669"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__iostream_8h.html#a588967a7d0b23c5be6718b5ba5c02669">operator&lt;&lt;</a> (std::ostream &amp;os, Container const &amp;c) -&gt; std::enable_if_t&lt; daw::json::json_details::is_container_opted_into_json_iostreams_v&lt; Container &gt;, std::ostream &amp; &gt;</td></tr>
+<tr class="separator:a588967a7d0b23c5be6718b5ba5c02669"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a638b36a52c773408a091b04cd0b6bf4f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a638b36a52c773408a091b04cd0b6bf4f"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__iostream_8h.html#a638b36a52c773408a091b04cd0b6bf4f">operator&lt;&lt;</a> (std::ostream &amp;os, T const &amp;<a class="el" href="daw__json__value_8h.html#ab955357033cdb00c388232186711158a">value</a>) -&gt; std::enable_if_t&lt; daw::json::json_details::is_opted_into_json_iostreams_v&lt; T &gt;, std::ostream &amp; &gt;</td></tr>
+<tr class="separator:a638b36a52c773408a091b04cd0b6bf4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a8b5f0fadda1a1effd73f8c3dc61eb640"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b5f0fadda1a1effd73f8c3dc61eb640">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[1/2]</span></h2>
+<a id="a588967a7d0b23c5be6718b5ba5c02669"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a588967a7d0b23c5be6718b5ba5c02669">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container , std::enable_if_t&lt; daw::json::json_details::is_container_opted_into_json_iostreams_v&lt; Container &gt;, std::nullptr_t &gt;  = nullptr&gt; </div>
+template&lt;typename Container &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::ostream&amp; operator&lt;&lt; </td>
+          <td class="memname">auto operator&lt;&lt; </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
           <td class="paramname"><em>os</em>, </td>
@@ -121,25 +122,27 @@ template&lt;typename Container , std::enable_if_t&lt; daw::json::json_details::i
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> -&gt; std::enable_if_t&lt;
+  daw::json::json_details::is_container_opted_into_json_iostreams_v&lt;Container&gt;,
+  std::ostream &amp;&gt; </td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iostream_8h_source.html#l00051">51</a> of file <a class="el" href="daw__json__iostream_8h_source.html">daw_json_iostream.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iostream_8h_source.html#l00052">52</a> of file <a class="el" href="daw__json__iostream_8h_source.html">daw_json_iostream.h</a>.</p>
 
 </div>
 </div>
-<a id="aa63640f4dea34c72a07348dc007aba44"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa63640f4dea34c72a07348dc007aba44">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[2/2]</span></h2>
+<a id="a638b36a52c773408a091b04cd0b6bf4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a638b36a52c773408a091b04cd0b6bf4f">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , std::enable_if_t&lt; daw::json::json_details::is_opted_into_json_iostreams_v&lt; T &gt;, std::nullptr_t &gt;  = nullptr&gt; </div>
+template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::ostream&amp; operator&lt;&lt; </td>
+          <td class="memname">auto operator&lt;&lt; </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
           <td class="paramname"><em>os</em>, </td>
@@ -153,12 +156,13 @@ template&lt;typename T , std::enable_if_t&lt; daw::json::json_details::is_opted_
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> -&gt; std::enable_if_t&lt;
+  daw::json::json_details::is_opted_into_json_iostreams_v&lt;T&gt;, std::ostream &amp;&gt; </td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iostream_8h_source.html#l00041">41</a> of file <a class="el" href="daw__json__iostream_8h_source.html">daw_json_iostream.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iostream_8h_source.html#l00043">43</a> of file <a class="el" href="daw__json__iostream_8h_source.html">daw_json_iostream.h</a>.</p>
 
 </div>
 </div>

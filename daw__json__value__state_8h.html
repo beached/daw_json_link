@@ -67,18 +67,17 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_value_state.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="daw__json__arrow__proxy_8h_source.html">impl/daw_json_arrow_proxy.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__link__impl_8h_source.html">impl/daw_json_link_impl.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__parse__class_8h_source.html">impl/daw_json_parse_class.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__name_8h_source.html">impl/daw_json_parse_name.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__value_8h_source.html">impl/daw_json_value.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__murmur3_8h_source.html">impl/daw_murmur3.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="version_8h_source.html">impl/version.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_move.h&gt;</code><br />
 <code>#include &lt;daw/daw_uint_buffer.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
@@ -89,25 +88,62 @@ $(function() {
 </div>
 <p><a href="daw__json__value__state_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1basic__stateful__json__value.html">daw::json::basic_stateful_json_value&lt; Range &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1json__member__name.html">daw::json::json_member_name</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:ae5a50e358a9da9b3529e03f7203e32fd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ae5a50e358a9da9b3529e03f7203e32fd">daw::json::json_value_state</a> = basic_stateful_json_value&lt; NoCommentSkippingPolicyChecked &gt;</td></tr>
-<tr class="separator:ae5a50e358a9da9b3529e03f7203e32fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="aacbf560b6f2eafe9d7a6c3cf3ef10b89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacbf560b6f2eafe9d7a6c3cf3ef10b89">&#9670;&nbsp;</a></span>hash_value</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">daw::UInt32 hash_value</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__value__state_8h_source.html#l00033">33</a> of file <a class="el" href="daw__json__value__state_8h_source.html">daw_json_value_state.h</a>.</p>
+
+</div>
+</div>
+<a id="a1180325c6747813d7381a61e24b260a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1180325c6747813d7381a61e24b260a6">&#9670;&nbsp;</a></span>location</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">basic_json_value_iterator&lt;ParseState&gt; location</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__value__state_8h_source.html#l00034">34</a> of file <a class="el" href="daw__json__value__state_8h_source.html">daw_json_value_state.h</a>.</p>
+
+</div>
+</div>
+<a id="ab3e8e35b61048d1bd17908495de56f9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3e8e35b61048d1bd17908495de56f9b">&#9670;&nbsp;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">daw::string_view name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__value__state_8h_source.html#l00032">32</a> of file <a class="el" href="daw__json__value__state_8h_source.html">daw_json_value_state.h</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

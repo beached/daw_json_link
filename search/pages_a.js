@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['unknown_5ftypes_5fand_5fdelayed_5fparsing_892',['unknown_types_and_delayed_parsing',['../md_cookbook_unknown_types_and_delayed_parsing.html',1,'']]]
+  ['optional_20values_481',['Optional Values',['../md_docs_cookbook_optional_values.html',1,'']]],
+  ['output_20options_482',['Output Options',['../md_docs_cookbook_output_options.html',1,'']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['customjsontypes_823',['CustomJsonTypes',['../namespacedaw_1_1json.html#a36083c9f336bce20bf3f0df6ee32aa1a',1,'daw::json']]]
+  ['checkedparsemode_429',['CheckedParseMode',['../daw__json__parse__options_8h.html#a3a4a69ff334075638633359ba6637c22',1,'daw_json_parse_options.h']]]
 ];

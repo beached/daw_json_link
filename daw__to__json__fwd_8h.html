@@ -67,13 +67,14 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
 <div class="title">daw_to_json_fwd.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="daw__json__link__types__fwd_8h_source.html">impl/daw_json_link_types_fwd.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__serialize__policy_8h_source.html">impl/daw_json_serialize_policy.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="version_8h_source.html">impl/version.h</a>&quot;</code><br />
 </div>
 <p><a href="daw__to__json__fwd_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -83,22 +84,37 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:aff2ac5f24cb7bf8d29d7f38b853c5e8f"><td class="memTemplParams" colspan="2">template&lt;typename Result , typename Value , typename JsonClass &gt; </td></tr>
-<tr class="memitem:aff2ac5f24cb7bf8d29d7f38b853c5e8f"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#aff2ac5f24cb7bf8d29d7f38b853c5e8f">daw::json::to_json</a> (Value const &amp;value)</td></tr>
-<tr class="separator:aff2ac5f24cb7bf8d29d7f38b853c5e8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d8cb2164ad46796233e37e8d908313a"><td class="memTemplParams" colspan="2">template&lt;typename Value , typename JsonClass , typename OutputIterator &gt; </td></tr>
-<tr class="memitem:a4d8cb2164ad46796233e37e8d908313a"><td class="memTemplItemLeft" align="right" valign="top">constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a4d8cb2164ad46796233e37e8d908313a">daw::json::to_json</a> (Value const &amp;value, OutputIterator out_it)</td></tr>
-<tr class="separator:a4d8cb2164ad46796233e37e8d908313a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f8796e057e38ded833b6533b42ada92"><td class="memTemplParams" colspan="2">template&lt;typename Result , typename JsonElement , typename Container &gt; </td></tr>
-<tr class="memitem:a8f8796e057e38ded833b6533b42ada92"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a8f8796e057e38ded833b6533b42ada92">daw::json::to_json_array</a> (Container &amp;&amp;c)</td></tr>
-<tr class="separator:a8f8796e057e38ded833b6533b42ada92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d5f77276f9321eb8ac6c6bcb4e4ce37"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement , typename Container , typename OutputIterator &gt; </td></tr>
-<tr class="memitem:a0d5f77276f9321eb8ac6c6bcb4e4ce37"><td class="memTemplItemLeft" align="right" valign="top">constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a0d5f77276f9321eb8ac6c6bcb4e4ce37">daw::json::to_json_array</a> (Container const &amp;c, OutputIterator out_it)</td></tr>
-<tr class="separator:a0d5f77276f9321eb8ac6c6bcb4e4ce37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacedaw_1_1json_1_1options"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1options.html">daw::json::options</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a787a252724e9988367a7dcf071e9bd15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a787a252724e9988367a7dcf071e9bd15">&#9670;&nbsp;</a></span>value</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr json_details::json_options_t value</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">          json_details::serialization::set_bits(</div>
+<div class="line">            json_details::serialization::default_policy_flag, PolicyFlags... )</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__to__json__fwd_8h_source.html#l00031">31</a> of file <a class="el" href="daw__to__json__fwd_8h_source.html">daw_to_json_fwd.h</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

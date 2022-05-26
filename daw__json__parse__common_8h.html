@@ -67,65 +67,117 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_parse_common.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
+<code>#include &quot;../../daw_allocator_construct.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__enums_8h_source.html">daw_json_enums.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__exec__modes_8h_source.html">daw_json_exec_modes.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__name_8h_source.html">daw_json_name.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__parse__digit_8h_source.html">daw_json_parse_digit.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__parse__string__need__slow_8h_source.html">daw_json_parse_string_need_slow.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__parse__string__quote_8h_source.html">daw_json_parse_string_quote.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__option__bits_8h_source.html">daw_json_option_bits.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_arith_traits.h&gt;</code><br />
+<code>#include &lt;daw/daw_cpp_feature_check.h&gt;</code><br />
+<code>#include &lt;daw/daw_fwd_pack_apply.h&gt;</code><br />
 <code>#include &lt;daw/daw_move.h&gt;</code><br />
 <code>#include &lt;daw/daw_parser_helper_sv.h&gt;</code><br />
+<code>#include &lt;daw/daw_scope_guard.h&gt;</code><br />
 <code>#include &lt;daw/daw_string_view.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;iterator&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div>
 <p><a href="daw__json__parse__common_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_test_input_iterator_type.html">daw::json::TestInputIteratorType&lt; T &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1tuple__json__mapping.html">daw::json::tuple_json_mapping&lt; Members &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:a3280ece7a36714608b5f84386378dd9c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__parse__common_8h.html#a3280ece7a36714608b5f84386378dd9c">CPP20CONSTEXPR</a></td></tr>
-<tr class="separator:a3280ece7a36714608b5f84386378dd9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacedaw_1_1json_1_1json__base"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1json__base.html">daw::json::json_base</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a3280ece7a36714608b5f84386378dd9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3280ece7a36714608b5f84386378dd9c">&#9670;&nbsp;</a></span>CPP20CONSTEXPR</h2>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a65c117169125289bccf9472ef0e5410a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65c117169125289bccf9472ef0e5410a">&#9670;&nbsp;</a></span>is_null</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">#define CPP20CONSTEXPR</td>
+          <td class="memname">constexpr bool is_null = false</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__common_8h_source.html#l00034">34</a> of file <a class="el" href="daw__json__parse__common_8h_source.html">daw_json_parse_common.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__common_8h_source.html#l00400">400</a> of file <a class="el" href="daw__json__parse__common_8h_source.html">daw_json_parse_common.h</a>.</p>
+
+</div>
+</div>
+<a id="a8aca4624a7ee60c9edde8f8d9a262b69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8aca4624a7ee60c9edde8f8d9a262b69">&#9670;&nbsp;</a></span>parse_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__common_8h_source.html#l00401">401</a> of file <a class="el" href="daw__json__parse__common_8h_source.html">daw_json_parse_common.h</a>.</p>
+
+</div>
+</div>
+<a id="a80a7f638e36d8cdffa6d017951cd89ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80a7f638e36d8cdffa6d017951cd89ca">&#9670;&nbsp;</a></span>type_map_found</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool type_map_found = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__common_8h_source.html#l00403">403</a> of file <a class="el" href="daw__json__parse__common_8h_source.html">daw_json_parse_common.h</a>.</p>
 
 </div>
 </div>

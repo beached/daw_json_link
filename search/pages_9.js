@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['strings_891',['Strings',['../md_cookbook_strings.html',1,'']]]
+  ['numbers_480',['Numbers',['../md_docs_cookbook_numbers.html',1,'']]]
 ];

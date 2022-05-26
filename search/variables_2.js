@@ -1,8 +1,10 @@
 var searchData=
 [
-  ['can_5fconstexpr_708',['can_constexpr',['../structdaw_1_1json_1_1constexpr__exec__tag.html#a2a840d639f3521dbd9cf35e7d600cf3b',1,'daw::json::constexpr_exec_tag::can_constexpr()'],['../structdaw_1_1json_1_1runtime__exec__tag.html#a0e7ed332c6d16ce3cb06808ebf263b5c',1,'daw::json::runtime_exec_tag::can_constexpr()']]],
-  ['class_5ffirst_709',['class_first',['../structdaw_1_1json_1_1_basic_parse_policy.html#a82c1a7896a4f6ef51b4958e3fee643f1',1,'daw::json::BasicParsePolicy']]],
-  ['class_5flast_710',['class_last',['../structdaw_1_1json_1_1_basic_parse_policy.html#a70c7423706825dad5e1c5876b21e2689',1,'daw::json::BasicParsePolicy']]],
-  ['counter_711',['counter',['../structdaw_1_1json_1_1_basic_parse_policy.html#a2c49839885304d35d79ea9b34d88ef3b',1,'daw::json::BasicParsePolicy']]],
-  ['custom_5fjson_5ftype_712',['custom_json_type',['../structdaw_1_1json_1_1json__custom.html#a567d70bddf3d3ca2c48d055f8fb04b66',1,'daw::json::json_custom']]]
+  ['can_5fconstexpr_361',['can_constexpr',['../daw__json__exec__modes_8h.html#ad396865f701d5d913bc6abd6691bc205',1,'daw_json_exec_modes.h']]],
+  ['capacity_362',['capacity',['../daw__json__serialize__impl_8h.html#a2ad4516ba69b2c8146081fa535165c81',1,'daw_json_serialize_impl.h']]],
+  ['class_5ffirst_363',['class_first',['../daw__json__location__info_8h.html#a952a2be4b2c6cff569d6e2106163afbd',1,'class_first():&#160;daw_json_location_info.h'],['../daw__json__parse__policy_8h.html#a815d023d7947eb5db8467d7075c8d147',1,'class_first():&#160;daw_json_parse_policy.h']]],
+  ['class_5flast_364',['class_last',['../daw__json__location__info_8h.html#a41f0cd30e56a66ed6a92f8ad80712d33',1,'class_last():&#160;daw_json_location_info.h'],['../daw__json__parse__policy_8h.html#aab51ec4007ce77048b09670f88817ff3',1,'class_last():&#160;daw_json_parse_policy.h']]],
+  ['counter_365',['counter',['../daw__json__location__info_8h.html#ac449e05964ab2319a33c1718c5ad485b',1,'counter():&#160;daw_json_location_info.h'],['../daw__json__parse__policy_8h.html#ac449e05964ab2319a33c1718c5ad485b',1,'counter():&#160;daw_json_parse_policy.h']]],
+  ['current_366',['current',['../daw__json__parse__name_8h.html#a69f9ca62a19b436db09b41f7c91af67d',1,'daw_json_parse_name.h']]],
+  ['custom_5fjson_5ftype_367',['custom_json_type',['../daw__json__link__types_8h.html#a71d76baa52e7382048436c143095f351',1,'daw_json_link_types.h']]]
 ];
