@@ -84,22 +84,22 @@ jobs:
         run: |
           mkdir build
       - name: Build Dependencies
-        run: cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DDAW_JSON_USE_SANITIZERS=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -Bbuild/ .
+        run: cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -Bbuild/ .
       - name: Build
-        run: cmake --build build/ --target full -- -k 0
+        run: cmake --build build/ --target ci_tests -- -k 0
       - name: Test
         run: |
           sudo service apport stop
           ulimit -c unlimited
           ulimit -c
           sudo sysctl -w kernel.core_pattern=core.%e.%p
-          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --output-on-failure --test-dir build/
-      - name: Fuzzing
-        if: matrix.toolset == 'clang++-12'
-        run: |
-          ulimit -c unlimited
-          cmake --build build/ --target=daw_json_fuzzing
-          ./build/tests/daw_json_fuzzing -max_len=4000 -max_total_time=120
+#      - name: Fuzzing
+#        if: matrix.toolset == 'clang++-13'
+#        run: |
+#          echo "CXXFLAGS='-stdlib=libstdc++'" >> $GITHUB_ENV
+#          ulimit -c unlimited
+#          cmake --build build/ --target daw_json_fuzzing
+#          ./build/tests/daw_json_fuzzing -max_len=4000 -max_total_time=120
       - name: Archive any crashes as an artifact
         uses: actions/upload-artifact@v2
         if: always( )

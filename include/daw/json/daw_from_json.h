@@ -86,6 +86,24 @@ namespace daw::json {
 		 * @param json_data JSON string data
 		 * @tparam KnownBounds The bounds of the json_data are known to contain the
 		 * whole value
+		 * @return A reified JSONMember constructed from JSON data
+		 * @throws daw::json::json_exception
+		 */
+		template<typename JsonMember, bool KnownBounds, typename Result,
+		         typename String>
+		[[maybe_unused, nodiscard]] constexpr auto from_json( String &&json_data )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+			return from_json<JsonMember, KnownBounds, Result>(
+			  DAW_FWD( json_data ), options::parse_flags<> );
+		}
+
+		/**
+		 * Construct the JSONMember from the JSON document argument.
+		 * @tparam JsonMember any bool, arithmetic, string, string_view,
+		 * daw::json::json_data_contract
+		 * @param json_data JSON string data
+		 * @tparam KnownBounds The bounds of the json_data are known to contain the
+		 * whole value
 		 * @return A reified T constructed from JSON data
 		 * @throws daw::json::json_exception
 		 */
@@ -114,6 +132,7 @@ namespace daw::json {
 
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
+
 			/***
 			 * If the string is known to have a trailing zero, allow optimization on
 			 * that
@@ -141,6 +160,25 @@ namespace daw::json {
 				return json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 			}
+		}
+
+		/**
+		 * Construct the JSONMember from the JSON document argument.
+		 * @tparam JsonMember any bool, arithmetic, string, string_view,
+		 * daw::json::json_data_contract
+		 * @param json_data JSON string data
+		 * @tparam KnownBounds The bounds of the json_data are known to contain the
+		 * whole value
+		 * @return A reified T constructed from JSON data
+		 * @throws daw::json::json_exception
+		 */
+		template<typename JsonMember, bool KnownBounds, typename Result,
+		         typename String, typename Allocator>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json_alloc( String &&json_data, Allocator const &alloc )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+			return from_json_alloc<JsonMember, KnownBounds, Result>(
+			  DAW_FWD( json_data ), alloc, options::parse_flags<> );
 		}
 
 		/***
@@ -230,6 +268,27 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, bool KnownBounds, typename Result,
+		         typename String>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json( String &&json_data, std::string_view member_path )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+			return from_json<JsonMember, KnownBounds, Result>(
+			  DAW_FWD( json_data ), member_path, options::parse_flags<> );
+		}
+
+		/***
+		 * Parse a JSONMember from the json_data starting at member_path.
+		 * @tparam JsonMember The type of the item being parsed
+		 * @param json_data JSON string data
+		 * @param member_path A dot separated path of member names, default is the
+		 * root.  Array indices are specified with square brackets e.g. [5] is the
+		 * 6th item
+		 * @tparam KnownBounds The bounds of the json_data are known to contain the
+		 * whole value
+		 * @return A value reified from the JSON data member
+		 * @throws daw::json::json_exception
+		 */
+		template<typename JsonMember, bool KnownBounds, typename Result,
 		         typename String, typename Allocator, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr auto
 		from_json_alloc( String &&json_data, std::string_view member_path,
@@ -293,6 +352,29 @@ namespace daw::json {
 		}
 
 		/***
+		 * Parse a JSONMember from the json_data starting at member_path.
+		 * @tparam JsonMember The type of the item being parsed
+		 * @param json_data JSON string data
+		 * @param member_path A dot separated path of member names, default is the
+		 * root.  Array indices are specified with square brackets e.g. [5] is the
+		 * 6th item
+		 * @tparam KnownBounds The bounds of the json_data are known to contain the
+		 * whole value
+		 * @return A value reified from the JSON data member
+		 * @throws daw::json::json_exception
+		 */
+		template<typename JsonMember, bool KnownBounds, typename Result,
+		         typename String, typename Allocator>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json_alloc( String &&json_data, std::string_view member_path,
+		                 Allocator const &alloc )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+
+			return from_json_alloc<JsonMember, KnownBounds, Result>(
+			  DAW_FWD( json_data ), member_path, alloc, options::parse_flags<> );
+		}
+
+		/***
 		 * Parse a value from a json_value
 		 * @tparam JsonMember The type of the item being parsed
 		 * @param value JSON data, see basic_json_value
@@ -320,6 +402,24 @@ namespace daw::json {
 
 			return json_details::parse_value<json_member, KnownBounds>(
 			  parse_state, ParseTag<json_member::expected_type>{ } );
+		}
+
+		/***
+		 * Parse a value from a json_value
+		 * @tparam JsonMember The type of the item being parsed
+		 * @param value JSON data, see basic_json_value
+		 * @tparam KnownBounds The bounds of the json_data are known to contain the
+		 * whole value
+		 * @return A value reified from the JSON data member
+		 * @throws daw::json::json_exception
+		 */
+		template<typename JsonMember, bool KnownBounds, typename Result,
+		         typename ParseState>
+		[[maybe_unused, nodiscard]] inline constexpr Result
+		from_json( basic_json_value<ParseState> value ) {
+
+			return from_json<JsonMember, KnownBounds, Result>(
+			  DAW_MOVE( value ), options::parse_flags<> );
 		}
 
 		/***
@@ -357,8 +457,30 @@ namespace daw::json {
 			} else {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 			}
+
 			return json_details::parse_value<json_member, KnownBounds>(
 			  parse_state, ParseTag<json_member::expected_type>{ } );
+		}
+
+		/***
+		 * Parse a JSONMember from the json_data starting at member_path.
+		 * @param value JSON data, see basic_json_value
+		 * @param member_path A dot separated path of member names, default is the
+		 * root.  Array indices are specified with square brackets e.g. [5] is the
+		 * 6th item
+		 * @tparam JsonMember The type of the item being parsed
+		 * @tparam KnownBounds The bounds of the json_data are known to contain the
+		 * whole value
+		 * @return A value reified from the JSON data member
+		 * @throws daw::json::json_exception
+		 */
+		template<typename JsonMember, bool KnownBounds, typename Result,
+		         typename ParseState>
+		[[maybe_unused, nodiscard]] constexpr Result
+		from_json( basic_json_value<ParseState> value,
+		           std::string_view member_path ) {
+			return from_json<JsonMember, KnownBounds, Result>(
+			  DAW_MOVE( value ), member_path, options::parse_flags<> );
 		}
 
 		/*********************************************************/
@@ -440,6 +562,30 @@ namespace daw::json {
 				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
 			}
 		}
+
+		/**
+		 * Parse JSON data where the root item is an array
+		 * @tparam JsonElement The type of each element in array.  Must be one of
+		 * the above json_XXX classes.  This version is checked
+		 * @tparam Container Container to store values in
+		 * @tparam Constructor Callable to construct Container with no arguments
+		 * @param json_data JSON string data containing array
+		 * @tparam KnownBounds The bounds of the json_data are known to contain the
+		 * whole value
+		 * @return A Container containing parsed data from JSON string
+		 * @throws daw::json::json_exception
+		 */
+		template<typename JsonElement, typename Container, typename Constructor,
+		         bool KnownBounds, typename String>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json_array( String &&json_data )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
+		                      Container> {
+
+			return from_json_array<JsonElement, Container, Constructor, KnownBounds>(
+			  DAW_FWD( json_data ), options::parse_flags<> );
+		}
+
 		/**
 		 * Parse JSON data where the root item is an array
 		 * @tparam JsonElement The type of each element in array.  Must be one of
@@ -529,6 +675,32 @@ namespace daw::json {
 				return json_details::parse_value<parser_t, KnownBounds>(
 				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
 			}
+		}
+
+		/**
+		 * Parse JSON data where the root item is an array
+		 * @tparam JsonElement The type of each element in array.  Must be one of
+		 * the above json_XXX classes.  This version is checked
+		 * @tparam Container Container to store values in
+		 * @tparam Constructor Callable to construct Container with no arguments
+		 * @param json_data JSON string data containing array
+		 * @param member_path A dot separated path of member names to start parsing
+		 * from. Array indices are specified with square brackets e.g. [5] is the
+		 * 6th item
+		 * @tparam KnownBounds The bounds of the json_data are known to contain the
+		 * whole value
+		 * @return A Container containing parsed data from JSON string
+		 * @throws daw::json::json_exception
+		 */
+		template<typename JsonElement, typename Container, typename Constructor,
+		         bool KnownBounds, typename String>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json_array( String &&json_data, std::string_view member_path )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
+		                      Container> {
+
+			return from_json_array<JsonElement, Container, Constructor, KnownBounds>(
+			  DAW_FWD( json_data ), member_path, options::parse_flags<> );
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

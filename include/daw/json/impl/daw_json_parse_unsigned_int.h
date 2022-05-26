@@ -121,8 +121,8 @@ namespace daw::json {
 			                 1234567890123456_u64,
 			               "16 digit parser does not work on this platform" );
 
-			template<typename Unsigned, options::JsonRangeCheck RangeChecked, bool KnownBounds,
-			         typename ParseState,
+			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
+			         bool KnownBounds, typename ParseState,
 			         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr Unsigned
 			unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
@@ -184,8 +184,8 @@ namespace daw::json {
 			}
 
 			//**************************
-			template<typename Unsigned, options::JsonRangeCheck RangeChecked, bool KnownBounds,
-			         typename ParseState,
+			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
+			         bool KnownBounds, typename ParseState,
 			         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr Unsigned
 			unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {

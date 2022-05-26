@@ -25,6 +25,9 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     # gcc 11.20 has weird error "modification of '<anonymous>' is not a constant expression"
     add_compile_definitions(DAW_NO_CONSTEXPR_SCOPE_GUARD)
     # gcc has difficulty and takes too long to compile
+endif ()
+
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" OR ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
 else ()
     option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
@@ -91,8 +94,8 @@ if (DAW_JSON_USE_STDEXCEPT)
 endif ()
 
 if (DAW_NO_FLATTEN)
-    message("DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
-    add_definitions(-DDAW_NO_FLATTEN)
+    message("DAW_NO_FLATTEN=ON: Disabling function flattening and forced inline optimization")
+    add_definitions(-DDAW_NO_FLATTEN -DDAW_NO_FORCED_INLINE)
 endif ()
 
 if (DAW_JSON_NO_FAIL_ON_NO_NAME_NAME)

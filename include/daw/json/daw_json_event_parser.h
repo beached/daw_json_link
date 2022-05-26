@@ -356,16 +356,12 @@ namespace daw::json {
 			}
 		};
 
-		struct use_default_json_event_parser_stack_policy;
-
 		template<typename ParseState = DefaultParsePolicy,
-		         typename StackContainerPolicy =
-		           use_default_json_event_parser_stack_policy,
-		         typename Handler, auto... ParseFlags>
-		inline constexpr void
-		json_event_parser( basic_json_value<ParseState> bjv, Handler &&handler,
-		                   options::parse_flags_t<ParseFlags...> =
-		                     options::parse_flags<ParseFlags...> ) {
+		         typename StackContainerPolicy = use_default, typename Handler,
+		         auto... ParseFlags>
+		inline constexpr void json_event_parser(
+		  basic_json_value<ParseState> bjv, Handler &&handler,
+		  options::parse_flags_t<ParseFlags...> ) {
 
 			using ParsePolicy =
 			  typename ParseState::template SetPolicyOptions<ParseFlags...>;
@@ -375,9 +371,7 @@ namespace daw::json {
 			using stack_value_t = JsonEventParserStackValue<ParsePolicy>;
 
 			auto parent_stack = [] {
-				if constexpr( std::is_same_v<
-				                StackContainerPolicy,
-				                use_default_json_event_parser_stack_policy> ) {
+				if constexpr( std::is_same_v<StackContainerPolicy, use_default> ) {
 					return DefaultJsonEventParserStackPolicy<
 					  JsonEventParserStackValue<ParsePolicy>>{ };
 				} else {
@@ -444,6 +438,62 @@ namespace daw::json {
 				} break;
 				case JsonBaseParseTypes::Number: {
 					auto result = json_details::handle_on_number( handler, jv );
+					switch( result.value ) {
+					case json_parse_handler_result::Complete:
+						parent_stack.clear( );
+						return;
+					case json_parse_handler_result::SkipClassArray:
+						move_to_last( );
+						return;
+					case json_parse_handler_result::Continue:
+						break;
+					}
+					parent_stack.push_back(
+					  { StackParseStateType::Class,
+					    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
+				} break;
+				case JsonBaseParseTypes::Bool: {
+					auto result = json_details::handle_on_bool( handler, jv );
+					switch( result.value ) {
+					case json_parse_handler_result::Complete:
+						parent_stack.clear( );
+						return;
+					case json_parse_handler_result::SkipClassArray:
+						move_to_last( );
+						return;
+					case json_parse_handler_result::Continue:
+						break;
+					}
+				} break;
+				case JsonBaseParseTypes::String: {
+					auto result = json_details::handle_on_string( handler, jv );
+					switch( result.value ) {
+					case json_parse_handler_result::Complete:
+						parent_stack.clear( );
+						return;
+					case json_parse_handler_result::SkipClassArray:
+						move_to_last( );
+						return;
+					case json_parse_handler_result::Continue:
+						break;
+					}
+				} break;
+				case JsonBaseParseTypes::Null: {
+					auto result = json_details::handle_on_null( handler, jv );
+					switch( result.value ) {
+					case json_parse_handler_result::Complete:
+						parent_stack.clear( );
+						return;
+					case json_parse_handler_result::SkipClassArray:
+						move_to_last( );
+						return;
+					case json_parse_handler_result::Continue:
+						break;
+					}
+				} break;
+				case JsonBaseParseTypes::None:
+				default: {
+					auto result = json_details::handle_on_error( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
 						parent_stack.clear( );
@@ -557,6 +607,52 @@ namespace daw::json {
 				}
 			};
 
+			auto const process_range = [&]( stack_value_t v ) {
+				if( v.value.first != v.value.second ) {
+					auto jv = *v.value.first;
+					++v.value.first;
+					parent_stack.push_back( DAW_MOVE( v ) );
+					process_value( DAW_MOVE( jv ) );
+				} else {
+					switch( v.type ) {
+					case StackParseStateType::Class: {
+						daw_json_assert_weak(
+						  ( class_depth > 0 ) &
+						    ( v.value.first.get_raw_state( ).has_more( ) and
+						      v.value.first.get_raw_state( ).front( ) == '}' ),
+						  ErrorReason::InvalidEndOfValue );
+						--class_depth;
+						auto result = json_details::handle_on_class_end( handler );
+						switch( result.value ) {
+						case json_parse_handler_result::Complete:
+							parent_stack.clear( );
+							return;
+						case json_parse_handler_result::SkipClassArray:
+						case json_parse_handler_result::Continue:
+							break;
+						}
+					} break;
+					case StackParseStateType::Array: {
+						daw_json_assert_weak(
+						  ( array_depth > 0 ) &
+						    ( v.value.first.get_raw_state( ).has_more( ) and
+						      v.value.first.get_raw_state( ).front( ) == ']' ),
+						  ErrorReason::InvalidEndOfValue );
+						--array_depth;
+						auto result = json_details::handle_on_array_end( handler );
+						switch( result.value ) {
+						case json_parse_handler_result::Complete:
+							parent_stack.clear( );
+							return;
+						case json_parse_handler_result::SkipClassArray:
+						case json_parse_handler_result::Continue:
+							break;
+						}
+					} break;
+					}
+				}
+			};
+
 			process_value( json_value_t{ std::nullopt, DAW_MOVE( jvalue ) } );
 
 			while( not parent_stack.empty( ) ) {
@@ -568,15 +664,30 @@ namespace daw::json {
 			                 ErrorReason::InvalidEndOfValue );
 		}
 
+		template<typename ParseState = DefaultParsePolicy,
+		         typename StackContainerPolicy = use_default, typename Handler>
+		inline constexpr void json_event_parser(
+		  basic_json_value<ParseState> bjv, Handler &&handler ) {
+			json_event_parser( DAW_MOVE( bjv ), DAW_FWD( handler ), options::parse_flags<> );
+		}
+
 		template<typename ParsePolicy = DefaultParsePolicy, typename Handler,
 		         auto... ParseFlags>
 		inline void
 		json_event_parser( daw::string_view json_document, Handler &&handler,
-		                   options::parse_flags_t<ParseFlags...> pflags =
-		                     options::parse_flags<ParseFlags...> ) {
+		                   options::parse_flags_t<ParseFlags...> pflags ) {
 
 			return json_event_parser( basic_json_value<ParsePolicy>( json_document ),
 			                          DAW_FWD2( Handler, handler ), pflags );
 		}
+
+		template<typename ParsePolicy = DefaultParsePolicy, typename Handler>
+		inline void
+		json_event_parser( daw::string_view json_document, Handler &&handler ) {
+
+			return json_event_parser<ParsePolicy>( basic_json_value<ParsePolicy>( json_document ),
+			                          DAW_FWD2( Handler, handler ), options::parse_flags<> );
+		}
+
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_exec_modes.h"
 #include "version.h"
 
@@ -128,8 +130,7 @@ namespace daw::json {
 
 				while( last - first >= 16 ) {
 					auto const val0 = uload16_char_data( tag, first );
-					auto const key_positions =
-					  nsc_or( mem_find_eq<keys>( tag, val0 )... );
+					auto const key_positions = ( mem_find_eq<keys>( tag, val0 ) | ... );
 					if( key_positions != 0 ) {
 						return first + find_lsb_set( tag, key_positions );
 					}
@@ -138,7 +139,7 @@ namespace daw::json {
 				__m128i val1{ };
 				auto const max_pos = last - first;
 				memcpy( &val1, first, static_cast<std::size_t>( max_pos ) );
-				auto const key_positions = nsc_or( mem_find_eq<keys>( tag, val1 )... );
+				auto const key_positions = ( mem_find_eq<keys>( tag, val1 ) | ... );
 				if( key_positions != 0 ) {
 					auto const offset = find_lsb_set( tag, key_positions );
 					if( offset >= max_pos ) {
