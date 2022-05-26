@@ -27,7 +27,6 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-missing-braces 
 				-Wno-unneeded-internal-declaration 
 				-Wno-tautological-type-limit-compare 
-				-Wno-return-std-move-in-c++11 
 				-Wno-float-equal 
 				-Wno-unused-macros 
 				-Wno-global-constructors 
