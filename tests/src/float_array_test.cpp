@@ -71,6 +71,7 @@ Float rand_float( ) {
 template<size_t NUMVALUES>
 void test_func( ) {
 	using namespace daw::json;
+	using namespace daw::json::options;
 	std::string const json_data = [] {
 		std::string result = "[";
 
@@ -123,7 +124,7 @@ void test_func( ) {
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<json_class<no_name, Number>>;
+		  daw::json::json_array_iterator<json_class_no_name<Number>>;
 
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
@@ -155,7 +156,7 @@ void test_func( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<json_number<no_name, float>>;
+		  daw::json::json_array_iterator<json_number_no_name<float>>;
 
 		auto data = std::vector<float>( );
 		data.resize( NUMVALUES );
@@ -188,7 +189,7 @@ void test_func( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<json_class<no_name, Number>>;
+		  daw::json::json_array_iterator<json_class_no_name<Number>>;
 
 		auto data = std::vector<Number>( );
 		data.resize( NUMVALUES );
@@ -212,7 +213,7 @@ void test_func( ) {
 		  "float parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<json_checked_number<no_name, float>>( sv );
+			    from_json_array<json_checked_number_no_name<float>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -220,7 +221,7 @@ void test_func( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<json_checked_number<no_name, float>>;
+		  daw::json::json_array_iterator<json_checked_number_no_name<float>>;
 
 		auto data = std::vector<float>( );
 		data.resize( NUMVALUES );
@@ -292,19 +293,17 @@ void test_func( ) {
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data =
-			    from_json_array<Number2, std::vector<Number2>,
-			                    SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>(
-			      sv );
+			  auto const data = from_json_array<Number2, std::vector<Number2>>(
+			    sv, parse_flags<ExecModeTypes::simd> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
-		using iterator_t = daw::json::json_array_iterator<
-		  json_class<no_name, Number2>,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<json_class_no_name<Number2>,
+		                                 ExecModeTypes::simd>;
 
 		auto data = std::vector<Number2>( );
 		data.reserve( NUMVALUES );
@@ -330,18 +329,17 @@ void test_func( ) {
 		  "float  sse3parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<json_number<no_name, float>, std::vector<float>,
-			                    SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>(
-			      sv );
+			    from_json_array<json_number_no_name<float>, std::vector<float>>(
+			      sv, parse_flags<ExecModeTypes::simd> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t = daw::json::json_array_iterator<
-		  json_number<no_name, float>,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<json_number_no_name<float>,
+		                                 ExecModeTypes::simd>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -368,19 +366,17 @@ void test_func( ) {
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data =
-			    from_json_array<Number2, std::vector<Number2>,
-			                    SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>(
-			      sv );
+			  auto const data = from_json_array<Number2, std::vector<Number2>>(
+			    sv, parse_flags<ExecModeTypes::simd> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t = daw::json::json_array_iterator<
-		  json_class<no_name, Number2>,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<json_class_no_name<Number2>,
+		                                 ExecModeTypes::simd>;
 
 		auto data = std::vector<Number2>( );
 		data.reserve( NUMVALUES );
@@ -405,20 +401,18 @@ void test_func( ) {
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data =
-			    from_json_array<json_checked_number<no_name, float>,
-			                    std::vector<float>,
-			                    SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>(
-			      sv );
+			  auto const data = from_json_array<json_checked_number_no_name<float>,
+			                                    std::vector<float>>(
+			    sv, parse_flags<ExecModeTypes::simd> );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t = daw::json::json_array_iterator<
-		  json_checked_number<no_name, float>,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<json_checked_number_no_name<float>,
+		                                 ExecModeTypes::simd>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -453,9 +447,9 @@ void test_func( ) {
 
 	std::cout << "double sse3 parsing\n";
 	{
-		using iterator_t = daw::json::json_array_iterator<
-		  json_number<no_name, double>,
-		  SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
+		using iterator_t =
+		  daw::json::json_array_iterator<json_number_no_name<double>,
+		                                 ExecModeTypes::simd>;
 
 		std::string json_data3 = [] {
 			std::string result = "[";
@@ -486,7 +480,7 @@ void test_func( ) {
 }
 
 int main( int argc, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -496,9 +490,16 @@ int main( int argc, char ** )
 		test_func<1'000ULL>( );
 	}
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

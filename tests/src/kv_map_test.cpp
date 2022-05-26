@@ -57,7 +57,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -67,17 +67,26 @@ int main( int, char ** )
 				"key1": 1,
 				"key2": 2
 	}})";
-
 	kv_t kv_test = daw::json::from_json<kv_t>( json_data3 );
 	daw::do_not_optimize( kv_test );
 
-	DAW_CONSTEXPR kv2_t kv2_test = daw::json::from_json<kv2_t>( json_data3 );
+	DAW_CONSTEXPR
+	kv2_t kv2_test = daw::json::from_json<kv2_t>( json_data3 );
 	test_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
 	test_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
 	test_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
 	test_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

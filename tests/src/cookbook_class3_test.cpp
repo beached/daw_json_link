@@ -10,16 +10,16 @@
 
 #include "defines.h"
 
+#include "daw/json/daw_json_link.h"
+
+#include <daw/daw_read_file.h>
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <string>
 #include <unordered_map>
-
-#include <daw/daw_read_file.h>
-
-#include "daw/json/daw_json_link.h"
 
 namespace daw::cookbook_class3 {
 	struct MyClass1 {
@@ -83,7 +83,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -107,9 +107,16 @@ int main( int argc, char **argv )
 
 	test_assert( cls == cls2, "Unexpected round trip error" );
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

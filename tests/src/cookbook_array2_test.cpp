@@ -57,7 +57,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -69,20 +69,25 @@ int main( int argc, char **argv )
 
 	using namespace daw::json;
 
-	auto const ve = from_json_array<daw::cookbook_array2::MyClass4>(
-	  { data.data( ), data.size( ) } );
+	auto const ve = from_json_array<daw::cookbook_array2::MyClass4>( data );
 
 	test_assert( ve.size( ) == 2, "Expected 2 items" );
 	auto const str = to_json_array( ve );
 	puts( str.c_str( ) );
-	auto const ve2 = from_json_array<daw::cookbook_array2::MyClass4>(
-	  { str.data( ), str.size( ) } );
+	auto const ve2 = from_json_array<daw::cookbook_array2::MyClass4>( str );
 
 	test_assert( ve == ve2, "Roundtrip failed" );
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

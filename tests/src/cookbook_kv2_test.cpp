@@ -34,14 +34,12 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_kv2::MyKeyValue2> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type = json_member_list<
-		  json_key_value_array<"kv", std::unordered_map<intmax_t, std::string>,
-		                       json_string_raw<"value">, intmax_t>>;
+		  json_key_value_array<"kv", std::unordered_map<intmax_t, std::string>>>;
 #else
 		static constexpr char const kv[] = "kv";
 		static constexpr char const value[] = "value";
 		using type = json_member_list<
-		  json_key_value_array<kv, std::unordered_map<intmax_t, std::string>,
-		                       json_string_raw<value>, intmax_t>>;
+		  json_key_value_array<kv, std::unordered_map<intmax_t, std::string>>>;
 #endif
 		static inline auto to_json_data( daw::cookbook_kv2::MyKeyValue2 const &v ) {
 			return std::forward_as_tuple( v.kv );
@@ -50,7 +48,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -73,7 +71,16 @@ int main( int argc, char **argv )
 	  std::string_view( str.data( ), str.size( ) ) );
 	test_assert( kv == kv2, "Unexpected round trip error" );
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

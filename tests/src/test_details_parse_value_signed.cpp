@@ -9,7 +9,6 @@
 #include "defines.h"
 
 #include <daw/json/daw_json_link.h>
-#include <daw/json/impl/daw_json_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
 #include <daw/daw_benchmark.h>
@@ -22,10 +21,10 @@ bool test_zero_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number<no_name, signed>;
+	using my_number = json_number_no_name<signed>;
 	DAW_CONSTEXPR std::string_view sv = "0,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Signed>{ }, rng );
+	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Signed>{ } );
 	return not v;
 }
 
@@ -33,10 +32,10 @@ bool test_positive_zero_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number<no_name, signed>;
+	using my_number = json_number_no_name<signed>;
 	DAW_CONSTEXPR std::string_view sv = "+0,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Signed>{ }, rng );
+	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Signed>{ } );
 	return not v;
 }
 
@@ -44,10 +43,10 @@ bool test_negative_zero_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number<no_name, signed>;
+	using my_number = json_number_no_name<signed>;
 	DAW_CONSTEXPR std::string_view sv = "-0,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Signed>{ }, rng );
+	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Signed>{ } );
 	return not v;
 }
 
@@ -55,10 +54,10 @@ bool test_missing_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number<no_name, signed>;
+	using my_number = json_number_no_name<signed>;
 	DAW_CONSTEXPR std::string_view sv = " ,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Signed>{ }, rng );
+	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Signed>{ } );
 	daw::do_not_optimize( v );
 	return false;
 }
@@ -67,10 +66,10 @@ bool test_real_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number<no_name, signed>;
+	using my_number = json_number_no_name<signed>;
 	DAW_CONSTEXPR std::string_view sv = "1.23,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Signed>{ }, rng );
+	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Signed>{ } );
 	daw::do_not_optimize( v );
 	return false;
 }
@@ -95,17 +94,26 @@ bool test_real_untrusted( ) {
 	} while( false )
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
 	do_test( test_zero_untrusted( ) );
-	do_test( test_positive_zero_untrusted( ) );
+	do_fail_test( test_positive_zero_untrusted( ) );
 	do_test( test_negative_zero_untrusted( ) );
 	do_fail_test( test_missing_untrusted( ) );
 	do_fail_test( test_real_untrusted( ) );
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

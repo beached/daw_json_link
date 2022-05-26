@@ -42,13 +42,6 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::urls_element_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<
-		  json_string_raw<"url", std::string_view>,
-		  json_string_raw<"expanded_url", std::string_view>,
-		  json_string_raw<"display_url", std::string_view>,
-		  json_array<"indices", json_custom<no_name, std::string_view>>>;
-#else
 		static inline constexpr char const url[] = "url";
 		static inline constexpr char const expanded_url[] = "expanded_url";
 		static inline constexpr char const display_url[] = "display_url";
@@ -57,8 +50,8 @@ namespace daw::json {
 		  json_string_raw<url, std::string_view>,
 		  json_string_raw<expanded_url, std::string_view>,
 		  json_string_raw<display_url, std::string_view>,
-		  json_array<indices, json_custom<no_name, std::string_view>>>;
-#endif
+		  json_array<indices, json_custom_lit_no_name<std::string_view>>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::urls_element_t const &value ) {
 			return std::forward_as_tuple( value.url, value.expanded_url,
@@ -100,21 +93,18 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::entities_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
-		  json_class_null<"url", std::optional<daw::twitter2::url_t>,
-		                  opt_construct_a<daw::twitter2::url_t>>,
+		  json_class_null<"url", std::optional<daw::twitter2::url_t>>,
 		  json_class_null<"description",
-		                  std::optional<daw::twitter2::description_t>,
-		                  opt_construct_a<daw::twitter2::description_t>>>;
+		                  std::optional<daw::twitter2::description_t>>>;
 #else
 		static inline constexpr char const url[] = "url";
 		static inline constexpr char const description[] = "description";
 		using type = json_member_list<
-		  json_class_null<url, std::optional<daw::twitter2::url_t>,
-		                  opt_construct_a<daw::twitter2::url_t>>,
-		  json_class_null<description, std::optional<daw::twitter2::description_t>,
-		                  opt_construct_a<daw::twitter2::description_t>>>;
+		  json_class_null<url, std::optional<daw::twitter2::url_t>>,
+		  json_class_null<description,
+		                  std::optional<daw::twitter2::description_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::entities_t const &value ) {
@@ -124,48 +114,6 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::user_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<
-		  json_custom<"id", std::string_view>,
-		  json_string_raw<"id_str", std::string_view>,
-		  json_string_raw<"name", std::string_view>,
-		  json_string_raw<"screen_name", std::string_view>,
-		  json_string_raw<"location", std::string_view>,
-		  json_string_raw<"description", std::string_view>,
-		  json_string_raw_null<"url", std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_class<"entities", daw::twitter2::entities_t>, json_bool<"protected">,
-		  json_custom<"followers_count", std::string_view>,
-		  json_custom<"friends_count", std::string_view>,
-		  json_custom<"listed_count", std::string_view>,
-		  json_custom<"created_at", std::string_view>,
-		  json_custom<"favourites_count", std::string_view>,
-		  json_custom_null<"utc_offset", std::optional<std::string_view>,
-		                   opt_construct_a<std::string_view>>,
-		  json_string_raw_null<"time_zone", std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_bool<"geo_enabled">, json_bool<"verified">,
-		  json_custom<"statuses_count", std::string_view>,
-		  json_string_raw<"lang", std::string_view>,
-		  json_bool<"contributors_enabled">, json_bool<"is_translator">,
-		  json_bool<"is_translation_enabled">,
-		  json_string_raw<"profile_background_color", std::string_view>,
-		  json_string_raw<"profile_background_image_url", std::string_view>,
-		  json_string_raw<"profile_background_image_url_https", std::string_view>,
-		  json_bool<"profile_background_tile">,
-		  json_string_raw<"profile_image_url", std::string_view>,
-		  json_string_raw<"profile_image_url_https", std::string_view>,
-		  json_string_raw_null<"profile_banner_url",
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_string_raw<"profile_link_color", std::string_view>,
-		  json_string_raw<"profile_sidebar_border_color", std::string_view>,
-		  json_string_raw<"profile_sidebar_fill_color", std::string_view>,
-		  json_string_raw<"profile_text_color", std::string_view>,
-		  json_bool<"profile_use_background_image">, json_bool<"default_profile">,
-		  json_bool<"default_profile_image">, json_bool<"following">,
-		  json_bool<"follow_request_sent">, json_bool<"notifications">>;
-#else
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const id_str[] = "id_str";
 		static inline constexpr char const name[] = "name";
@@ -223,26 +171,24 @@ namespace daw::json {
 		  "follow_request_sent";
 		static inline constexpr char const notifications[] = "notifications";
 		using type = json_member_list<
-		  json_custom<id, std::string_view>,
+		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
 		  json_string_raw<name, std::string_view>,
 		  json_string_raw<screen_name, std::string_view>,
 		  json_string_raw<location, std::string_view>,
 		  json_string_raw<description, std::string_view>,
-		  json_string_raw_null<url, std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
+		  json_string_raw_null<url, std::optional<std::string_view>>,
 		  json_class<entities, daw::twitter2::entities_t>,
-		  json_bool<_jsonprotected>, json_custom<followers_count, std::string_view>,
-		  json_custom<friends_count, std::string_view>,
-		  json_custom<listed_count, std::string_view>,
+		  json_bool<_jsonprotected>,
+		  json_custom_lit<followers_count, std::string_view>,
+		  json_custom_lit<friends_count, std::string_view>,
+		  json_custom_lit<listed_count, std::string_view>,
 		  json_custom<created_at, std::string_view>,
-		  json_custom<favourites_count, std::string_view>,
-		  json_custom_null<utc_offset, std::optional<std::string_view>,
-		                   opt_construct_a<std::string_view>>,
-		  json_string_raw_null<time_zone, std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
+		  json_custom_lit<favourites_count, std::string_view>,
+		  json_custom_lit_null<utc_offset, std::optional<std::string_view>>,
+		  json_string_raw_null<time_zone, std::optional<std::string_view>>,
 		  json_bool<geo_enabled>, json_bool<verified>,
-		  json_custom<statuses_count, std::string_view>,
+		  json_custom_lit<statuses_count, std::string_view>,
 		  json_string_raw<lang, std::string_view>, json_bool<contributors_enabled>,
 		  json_bool<is_translator>, json_bool<is_translation_enabled>,
 		  json_string_raw<profile_background_color, std::string_view>,
@@ -251,8 +197,7 @@ namespace daw::json {
 		  json_bool<profile_background_tile>,
 		  json_string_raw<profile_image_url, std::string_view>,
 		  json_string_raw<profile_image_url_https, std::string_view>,
-		  json_string_raw_null<profile_banner_url, std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
+		  json_string_raw_null<profile_banner_url, std::optional<std::string_view>>,
 		  json_string_raw<profile_link_color, std::string_view>,
 		  json_string_raw<profile_sidebar_border_color, std::string_view>,
 		  json_string_raw<profile_sidebar_fill_color, std::string_view>,
@@ -260,7 +205,7 @@ namespace daw::json {
 		  json_bool<profile_use_background_image>, json_bool<default_profile>,
 		  json_bool<default_profile_image>, json_bool<following>,
 		  json_bool<follow_request_sent>, json_bool<notifications>>;
-#endif
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::user_t const &value ) {
 			return std::forward_as_tuple(
@@ -284,17 +229,12 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::hashtags_element_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<
-		  json_string_raw<"text", std::string_view>,
-		  json_array<"indices", json_custom<no_name, std::string_view>>>;
-#else
 		static inline constexpr char const text[] = "text";
 		static inline constexpr char const indices[] = "indices";
 		using type = json_member_list<
 		  json_string_raw<text, std::string_view>,
-		  json_array<indices, json_custom<no_name, std::string_view>>>;
-#endif
+		  json_array<indices, json_custom_lit_no_name<std::string_view>>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::hashtags_element_t const &value ) {
 			return std::forward_as_tuple( value.text, value.indices );
@@ -303,34 +243,6 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::tweet_object_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<
-		  json_class<"metadata", daw::twitter2::metadata_t>,
-		  json_custom<"created_at", std::string_view>,
-		  json_custom<"id", std::string_view>,
-		  json_string_raw<"id_str", std::string_view>,
-		  json_string_raw<"text", std::string_view>,
-		  json_string_raw<"source", std::string_view>, json_bool<"truncated">,
-		  json_custom_null<"in_reply_to_status_id", std::optional<std::string_view>,
-		                   opt_construct_a<std::string_view>>,
-		  json_string_raw_null<"in_reply_to_status_id_str",
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_custom_null<"in_reply_to_user_id", std::optional<std::string_view>,
-		                   opt_construct_a<std::string_view>>,
-		  json_string_raw_null<"in_reply_to_user_id_str",
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_string_raw_null<"in_reply_to_screen_name",
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_class<"user", daw::twitter2::user_t>,
-		  json_custom<"retweet_count", std::string_view>,
-		  json_custom<"favorite_count", std::string_view>,
-		  json_class<"entities", daw::twitter2::entities_t>, json_bool<"favorited">,
-		  json_bool<"retweeted">, json_bool_null<"possibly_sensitive">,
-		  json_string_raw<"lang", std::string_view>>;
-#else
 		static inline constexpr char const metadata[] = "metadata";
 		static inline constexpr char const created_at[] = "created_at";
 		static inline constexpr char const id[] = "id";
@@ -360,30 +272,27 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_class<metadata, daw::twitter2::metadata_t>,
 		  json_custom<created_at, std::string_view>,
-		  json_custom<id, std::string_view>,
+		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
 		  json_string_raw<text, std::string_view>,
 		  json_string_raw<source, std::string_view>, json_bool<truncated>,
-		  json_custom_null<in_reply_to_status_id, std::optional<std::string_view>,
-		                   opt_construct_a<std::string_view>>,
+		  json_custom_lit_null<in_reply_to_status_id,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_status_id_str,
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_custom_null<in_reply_to_user_id, std::optional<std::string_view>,
-		                   opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
+		  json_custom_lit_null<in_reply_to_user_id,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_user_id_str,
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_screen_name,
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
 		  json_class<user, daw::twitter2::user_t>,
-		  json_custom<retweet_count, std::string_view>,
-		  json_custom<favorite_count, std::string_view>,
+		  json_custom_lit<retweet_count, std::string_view>,
+		  json_custom_lit<favorite_count, std::string_view>,
 		  json_class<entities, daw::twitter2::entities_t>, json_bool<favorited>,
 		  json_bool<retweeted>, json_bool_null<possibly_sensitive>,
 		  json_string_raw<lang, std::string_view>>;
-#endif
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::tweet_object_t const &value ) {
 			return std::forward_as_tuple(
@@ -399,14 +308,6 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::user_mentions_element_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<
-		  json_string_raw<"screen_name", std::string_view>,
-		  json_string_raw<"name", std::string_view>,
-		  json_custom<"id", std::string_view>,
-		  json_string_raw<"id_str", std::string_view>,
-		  json_array<"indices", json_custom<no_name, std::string_view>>>;
-#else
 		static inline constexpr char const screen_name[] = "screen_name";
 		static inline constexpr char const name[] = "name";
 		static inline constexpr char const id[] = "id";
@@ -415,10 +316,10 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_string_raw<screen_name, std::string_view>,
 		  json_string_raw<name, std::string_view>,
-		  json_custom<id, std::string_view>,
+		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
-		  json_array<indices, json_custom<no_name, std::string_view>>>;
-#endif
+		  json_array<indices, json_custom_lit_no_name<std::string_view>>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::user_mentions_element_t const &value ) {
 			return std::forward_as_tuple( value.screen_name, value.name, value.id,
@@ -428,18 +329,13 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::medium_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<json_custom<"w", std::string_view>,
-		                              json_custom<"h", std::string_view>,
-		                              json_string_raw<"resize", std::string_view>>;
-#else
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_custom<w, std::string_view>,
-		                              json_custom<h, std::string_view>,
+		using type = json_member_list<json_custom_lit<w, std::string_view>,
+		                              json_custom_lit<h, std::string_view>,
 		                              json_string_raw<resize, std::string_view>>;
-#endif
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::medium_t const &value ) {
 			return std::forward_as_tuple( value.w, value.h, value.resize );
@@ -448,18 +344,13 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::small_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<json_custom<"w", std::string_view>,
-		                              json_custom<"h", std::string_view>,
-		                              json_string_raw<"resize", std::string_view>>;
-#else
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_custom<w, std::string_view>,
-		                              json_custom<h, std::string_view>,
+		using type = json_member_list<json_custom_lit<w, std::string_view>,
+		                              json_custom_lit<h, std::string_view>,
 		                              json_string_raw<resize, std::string_view>>;
-#endif
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::small_t const &value ) {
 			return std::forward_as_tuple( value.w, value.h, value.resize );
@@ -476,8 +367,8 @@ namespace daw::json {
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_custom<w, std::string_view>,
-		                              json_custom<h, std::string_view>,
+		using type = json_member_list<json_custom_lit<w, std::string_view>,
+		                              json_custom_lit<h, std::string_view>,
 		                              json_string_raw<resize, std::string_view>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
@@ -496,8 +387,8 @@ namespace daw::json {
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_custom<w, std::string_view>,
-		                              json_custom<h, std::string_view>,
+		using type = json_member_list<json_custom_lit<w, std::string_view>,
+		                              json_custom_lit<h, std::string_view>,
 		                              json_string_raw<resize, std::string_view>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
@@ -532,19 +423,6 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::media_element_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<
-		  json_custom<"id", std::string_view>,
-		  json_string_raw<"id_str", std::string_view>,
-		  json_array<"indices", json_custom<no_name, std::string_view>>,
-		  json_string_raw<"media_url", std::string_view>,
-		  json_string_raw<"media_url_https", std::string_view>,
-		  json_string_raw<"url", std::string_view>,
-		  json_string_raw<"display_url", std::string_view>,
-		  json_string_raw<"expanded_url", std::string_view, std::string_view>,
-		  json_string_raw<"type", std::string_view>,
-		  json_class<"sizes", daw::twitter2::sizes_t>>;
-#else
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const id_str[] = "id_str";
 		static inline constexpr char const indices[] = "indices";
@@ -556,9 +434,9 @@ namespace daw::json {
 		static inline constexpr char const _jsontype[] = "type";
 		static inline constexpr char const sizes[] = "sizes";
 		using type = json_member_list<
-		  json_custom<id, std::string_view>,
+		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
-		  json_array<indices, json_custom<no_name, std::string_view>>,
+		  json_array<indices, json_custom_lit_no_name<std::string_view>>,
 		  json_string_raw<media_url, std::string_view>,
 		  json_string_raw<media_url_https, std::string_view>,
 		  json_string_raw<url, std::string_view>,
@@ -566,7 +444,7 @@ namespace daw::json {
 		  json_string_raw<expanded_url, std::string_view>,
 		  json_string_raw<_jsontype, std::string_view>,
 		  json_class<sizes, daw::twitter2::sizes_t>>;
-#endif
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::media_element_t const &value ) {
 			return std::forward_as_tuple(
@@ -578,34 +456,6 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::retweeted_status_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<
-		  json_class<"metadata", daw::twitter2::metadata_t>,
-		  json_custom<"created_at", std::string_view>,
-		  json_custom<"id", std::string_view>,
-		  json_string_raw<"id_str", std::string_view>,
-		  json_string_raw<"text", std::string_view>,
-		  json_string_raw<"source", std::string_view>, json_bool<"truncated">,
-		  json_custom_null<"in_reply_to_status_id", std::optional<std::string_view>,
-		                   opt_construct_a<std::string_view>>,
-		  json_string_raw_null<"in_reply_to_status_id_str",
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_custom_null<"in_reply_to_user_id", std::optional<std::string_view>,
-		                   opt_construct_a<std::string_view>>,
-		  json_string_raw_null<"in_reply_to_user_id_str",
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_string_raw_null<"in_reply_to_screen_name",
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_class<"user", daw::twitter2::user_t>,
-		  json_custom<"retweet_count", std::string_view>,
-		  json_custom<"favorite_count", std::string_view>,
-		  json_class<"entities", daw::twitter2::entities_t>, json_bool<"favorited">,
-		  json_bool<"retweeted">, json_bool_null<"possibly_sensitive">,
-		  json_string_raw<"lang", std::string_view>>;
-#else
 		static inline constexpr char const metadata[] = "metadata";
 		static inline constexpr char const created_at[] = "created_at";
 		static inline constexpr char const id[] = "id";
@@ -635,30 +485,27 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_class<metadata, daw::twitter2::metadata_t>,
 		  json_custom<created_at, std::string_view>,
-		  json_custom<id, std::string_view>,
+		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
 		  json_string_raw<text, std::string_view>,
 		  json_string_raw<source, std::string_view>, json_bool<truncated>,
-		  json_custom_null<in_reply_to_status_id, std::optional<std::string_view>,
-		                   opt_construct_a<std::string_view>>,
+		  json_custom_lit_null<in_reply_to_status_id,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_status_id_str,
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
-		  json_custom_null<in_reply_to_user_id, std::optional<std::string_view>,
-		                   opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
+		  json_custom_lit_null<in_reply_to_user_id,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_user_id_str,
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
 		  json_string_raw_null<in_reply_to_screen_name,
-		                       std::optional<std::string_view>,
-		                       opt_construct_a<std::string_view>>,
+		                       std::optional<std::string_view>>,
 		  json_class<user, daw::twitter2::user_t>,
-		  json_custom<retweet_count, std::string_view>,
-		  json_custom<favorite_count, std::string_view>,
+		  json_custom_lit<retweet_count, std::string_view>,
+		  json_custom_lit<favorite_count, std::string_view>,
 		  json_class<entities, daw::twitter2::entities_t>, json_bool<favorited>,
 		  json_bool<retweeted>, json_bool_null<possibly_sensitive>,
 		  json_string_raw<lang, std::string_view>>;
-#endif
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::retweeted_status_t const &value ) {
 			return std::forward_as_tuple(
@@ -674,18 +521,6 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::search_metadata_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type =
-		  json_member_list<json_custom<"completed_in", std::string_view>,
-		                   json_custom<"max_id", std::string_view>,
-		                   json_string_raw<"max_id_str", std::string_view>,
-		                   json_string_raw<"next_results", std::string_view>,
-		                   json_string_raw<"query", std::string_view>,
-		                   json_string_raw<"refresh_url", std::string_view>,
-		                   json_custom<"count", std::string_view>,
-		                   json_custom<"since_id", std::string_view>,
-		                   json_string_raw<"since_id_str", std::string_view>>;
-#else
 		static inline constexpr char const completed_in[] = "completed_in";
 		static inline constexpr char const max_id[] = "max_id";
 		static inline constexpr char const max_id_str[] = "max_id_str";
@@ -696,16 +531,16 @@ namespace daw::json {
 		static inline constexpr char const since_id[] = "since_id";
 		static inline constexpr char const since_id_str[] = "since_id_str";
 		using type =
-		  json_member_list<json_custom<completed_in, std::string_view>,
-		                   json_custom<max_id, std::string_view>,
+		  json_member_list<json_custom_lit<completed_in, std::string_view>,
+		                   json_custom_lit<max_id, std::string_view>,
 		                   json_string_raw<max_id_str, std::string_view>,
 		                   json_string_raw<next_results, std::string_view>,
 		                   json_string_raw<query, std::string_view>,
 		                   json_string_raw<refresh_url, std::string_view>,
-		                   json_custom<count, std::string_view>,
-		                   json_custom<since_id, std::string_view>,
+		                   json_custom_lit<count, std::string_view>,
+		                   json_custom_lit<since_id, std::string_view>,
 		                   json_string_raw<since_id_str, std::string_view>>;
-#endif
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::search_metadata_t const &value ) {
 			return std::forward_as_tuple( value.completed_in, value.max_id,
@@ -717,17 +552,12 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::twitter2::twitter_object_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<
-		  json_array<"statuses", daw::twitter2::tweet_object_t>,
-		  json_class<"search_metadata", daw::twitter2::search_metadata_t>>;
-#else
 		static inline constexpr char const statuses[] = "statuses";
 		static inline constexpr char const search_metadata[] = "search_metadata";
 		using type = json_member_list<
 		  json_array<statuses, daw::twitter2::tweet_object_t>,
 		  json_class<search_metadata, daw::twitter2::search_metadata_t>>;
-#endif
+#
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::twitter_object_t const &value ) {
 			return std::forward_as_tuple( value.statuses, value.search_metadata );

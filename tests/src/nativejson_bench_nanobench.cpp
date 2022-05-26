@@ -11,7 +11,7 @@
 #include "twitter_test_json.h"
 
 #include <daw/daw_read_file.h>
-#include <daw/json/daw_from_json.h>
+#include <daw/json/daw_json_link.h>
 
 #include <cstdlib>
 #include <fmt/format.h>
@@ -21,18 +21,18 @@
 #include <string>
 #include <string_view>
 
-using constexpr_checked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>;
-using constexpr_unchecked_pol = daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-  daw::json::constexpr_exec_tag>;
-using runtime_checked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>;
+using namespace daw::json::options;
+using constexpr_checked_pol = parse_flags_t<ExecModeTypes::compile_time>;
+using constexpr_unchecked_pol =
+  parse_flags_t<ExecModeTypes::compile_time, CheckedParseMode::no>;
+
+using runtime_checked_pol = parse_flags_t<ExecModeTypes::runtime>;
 using runtime_unchecked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::runtime_exec_tag>;
-using simd_checked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
+  parse_flags_t<ExecModeTypes::runtime, CheckedParseMode::no>;
+
+using simd_checked_pol = parse_flags_t<ExecModeTypes::simd>;
 using simd_unchecked_pol =
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>;
+  parse_flags_t<ExecModeTypes::simd, CheckedParseMode::no>;
 
 using PPair = std::pair<std::string_view, std::string_view>;
 
@@ -42,13 +42,13 @@ struct parser_t {
 
 	bool operator( )( std::string_view jd ) const {
 		ankerl::nanobench::doNotOptimizeAway(
-		  daw::json::from_json<ParseObj, ParsePolicy>( jd ) );
+		  daw::json::from_json<ParseObj>( jd, ParsePolicy{ } ) );
 		return true;
 	}
 
 	bool operator( )( PPair const &jd ) const {
 		ankerl::nanobench::doNotOptimizeAway(
-		  daw::json::from_json<ParseObj, ParsePolicy>( jd.first, jd.second ) );
+		  daw::json::from_json<ParseObj>( jd.first, jd.second, ParsePolicy{ } ) );
 		return true;
 	}
 };

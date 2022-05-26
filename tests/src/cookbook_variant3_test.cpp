@@ -50,8 +50,8 @@ struct daw::json::json_data_contract<daw::cookbook_variant3::MyClass> {
 	  json_tagged_variant<
 	    "value", std::variant<std::string, int, bool>, json_number<"type", int>,
 	    daw::cookbook_variant3::MyClassSwitcher,
-	    json_tagged_variant_type_list<std::string, json_number<no_name, int>,
-	                                  json_bool<no_name>>>>;
+	    json_variant_type_list<std::string, json_number_no_name<int>,
+	                           json_bool_no_name<>>>>;
 #else
 	static constexpr char const type_mem[] = "type";
 	static constexpr char const name[] = "name";
@@ -61,8 +61,8 @@ struct daw::json::json_data_contract<daw::cookbook_variant3::MyClass> {
 	  json_tagged_variant<
 	    value, std::variant<std::string, int, bool>, json_number<type_mem, int>,
 	    daw::cookbook_variant3::MyClassSwitcher,
-	    json_tagged_variant_type_list<std::string, json_number<no_name, int>,
-	                                  json_bool<no_name>>>>;
+	    json_variant_type_list<std::string, json_number_no_name<int>,
+	                           json_bool_no_name<>>>>;
 #endif
 	static DAW_CONSTEXPR inline auto
 	to_json_data( daw::cookbook_variant3::MyClass const &v ) {
@@ -71,7 +71,7 @@ struct daw::json::json_data_contract<daw::cookbook_variant3::MyClass> {
 };
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -92,7 +92,16 @@ int main( int argc, char **argv )
 
 	test_assert( values1 == values2, "Error in round tripping" );
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

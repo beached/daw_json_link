@@ -14,7 +14,7 @@
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
-#include <daw/json/daw_from_json.h>
+#include <daw/json/daw_json_link.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -29,18 +29,30 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-template<typename ExecTag>
-void test( char **argv ) {
-	auto const json_data1 = *daw::read_file( argv[1] );
-	auto const json_data2 = *daw::read_file( argv[2] );
-	auto const json_data3 = *daw::read_file( argv[3] );
-	auto json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
-	auto json_sv2 = std::string_view( json_data2.data( ), json_data2.size( ) );
-	auto json_sv3 = std::string_view( json_data3.data( ), json_data3.size( ) );
+using namespace daw::json;
 
-	std::cout << "Using " << ExecTag::name
+// GCC-8 bug workaround
+template<options::ExecModeTypes ExecMode, bool expect_long_strings>
+inline constexpr auto unchecked_policy_v =
+  options::parse_flags<options::CheckedParseMode::no, ExecMode,
+                       ( expect_long_strings ? options::ExpectLongNames::yes
+                                             : options::ExpectLongNames::no )>;
+template<options::ExecModeTypes ExecMode, bool expect_long_strings>
+inline constexpr auto checked_policy_v =
+  options::parse_flags<ExecMode,
+                       ( expect_long_strings ? options::ExpectLongNames::yes
+                                             : options::ExpectLongNames::no )>;
+
+template<options::ExecModeTypes ExecMode>
+void test( char **argv ) {
+	auto const json_sv1 = *daw::read_file( argv[1] );
+	auto const json_sv2 = *daw::read_file( argv[2] );
+	auto const json_sv3 = *daw::read_file( argv[3] );
+
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
-	auto const sz = json_sv1.size( ) + json_sv2.size( ) + json_sv3.size( );
+	auto const sz =
+	  std::size( json_sv1 ) + std::size( json_sv2 ) + std::size( json_sv3 );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
@@ -49,20 +61,26 @@ void test( char **argv ) {
 	std::optional<daw::twitter::twitter_object_t> twitter_result{ };
 	std::optional<daw::citm::citm_object_t> citm_result{ };
 	std::optional<daw::geojson::Polygon> canada_result{ };
-	try {
+
+#ifdef DAW_USE_EXCEPTIONS
+	try
+#endif
+	{
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "nativejson_twitter bench", json_sv1.size( ),
-		  [&twitter_result]( auto f1 ) {
-			  twitter_result = daw::json::from_json<
-			    daw::twitter::twitter_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
+		  "nativejson_twitter bench", std::size( json_sv1 ),
+		  [&twitter_result]( auto const &f1 ) {
+			  twitter_result = from_json<daw::twitter::twitter_object_t>(
+			    f1, checked_policy_v<ExecMode, true> );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( twitter_result );
-	} catch( daw::json::json_exception const &jex ) {
+	}
+#ifdef DAW_USE_EXCEPTIONS
+	catch( json_exception const &jex ) {
 		std::cerr << "Error while testing twitter.json\n";
 		std::cerr << to_formatted_string( jex ) << '\n';
 	}
+#endif
 	test_assert( twitter_result, "Missing value -> twitter_result" );
 	test_assert( not twitter_result->statuses.empty( ),
 	             "Expected values: twitter_result is empty" );
@@ -75,12 +93,11 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_twitter bench trusted", json_sv1.size( ),
-	  [&twitter_result]( auto f1 ) {
+	  "nativejson_twitter bench trusted", std::size( json_sv1 ),
+	  [&twitter_result]( auto const &f1 ) {
 		  {
-			  twitter_result = daw::json::from_json<
-			    daw::twitter::twitter_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
+			  twitter_result = from_json<daw::twitter::twitter_object_t>(
+			    f1, checked_policy_v<ExecMode, true> );
 		  }
 	  },
 	  json_sv1 );
@@ -95,11 +112,10 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_citm bench", json_sv2.size( ),
-	  [&citm_result]( auto f2 ) {
-		  citm_result = daw::json::from_json<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2 );
+	  "nativejson_citm bench", std::size( json_sv2 ),
+	  [&citm_result]( auto const &f2 ) {
+		  citm_result = from_json<daw::citm::citm_object_t>(
+		    f2, checked_policy_v<ExecMode, true> );
 	  },
 	  json_sv2 );
 	daw::do_not_optimize( citm_result );
@@ -114,11 +130,10 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_citm bench trusted", json_sv2.size( ),
-	  [&citm_result]( auto f2 ) {
-		  citm_result = daw::json::from_json<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2 );
+	  "nativejson_citm bench trusted", std::size( json_sv2 ),
+	  [&citm_result]( auto const &f2 ) {
+		  citm_result = from_json<daw::citm::citm_object_t>(
+		    f2, checked_policy_v<ExecMode, true> );
 	  },
 	  json_sv2 );
 	test_assert( citm_result, "Missing value" );
@@ -132,12 +147,10 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_canada bench", json_sv3.size( ),
-	  [&canada_result]( auto f3 ) {
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+	  "nativejson_canada bench", std::size( json_sv3 ),
+	  [&canada_result]( auto const &f3 ) {
+		  canada_result = from_json<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -147,12 +160,10 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_canada bench trusted", json_sv3.size( ),
-	  [&canada_result]( auto f3 ) {
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+	  "nativejson_canada bench trusted", std::size( json_sv3 ),
+	  [&canada_result]( auto const &f3 ) {
+		  canada_result = from_json<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -163,17 +174,13 @@ void test( char **argv ) {
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench", sz,
-	  [&]( auto f1, auto f2, auto f3 ) {
-		  twitter_result = daw::json::from_json<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
-		  citm_result = daw::json::from_json<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2 );
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
+		  twitter_result = from_json<daw::twitter::twitter_object_t>(
+		    f1, checked_policy_v<ExecMode, true> );
+		  citm_result = from_json<daw::citm::citm_object_t>(
+		    f2, checked_policy_v<ExecMode, true> );
+		  canada_result = from_json<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -200,17 +207,13 @@ void test( char **argv ) {
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench trusted", sz,
-	  [&]( auto f1, auto f2, auto f3 ) {
-		  twitter_result = daw::json::from_json<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
-		  citm_result = daw::json::from_json<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2 );
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
+		  twitter_result = from_json<daw::twitter::twitter_object_t>(
+		    f1, unchecked_policy_v<ExecMode, true> );
+		  citm_result = from_json<daw::citm::citm_object_t>(
+		    f2, unchecked_policy_v<ExecMode, true> );
+		  canada_result = from_json<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", unchecked_policy_v<ExecMode, false> );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -234,36 +237,37 @@ void test( char **argv ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
-	try {
-		using namespace daw::json;
 #if defined( NDEBUG ) and not defined( DEBUG )
-		std::cout << "release run\n";
+	std::cout << "release run\n";
 #else
-		std::cout << "debug run\n";
+	std::cout << "debug run\n";
 #endif
-		if( argc < 4 ) {
-			std::cerr << "Must supply a filenames to open\n";
-			std::cerr << "twitter citm canada\n";
-			exit( 1 );
-		}
-		test<daw::json::constexpr_exec_tag>( argv );
-
-		if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-		                                 daw::json::runtime_exec_tag> ) {
-			test<daw::json::runtime_exec_tag>( argv );
-		}
-		test<daw::json::simd_exec_tag>( argv );
-
-	} catch( daw::json::json_exception const &je ) {
-		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
-		exit( EXIT_FAILURE );
+	if( argc < 4 ) {
+		std::cerr << "Must supply a filenames to open\n";
+		std::cerr << "twitter citm canada\n";
+		exit( 1 );
 	}
+	test<options::ExecModeTypes::compile_time>( argv );
+
+	if constexpr( not std::is_same_v<simd_exec_tag, runtime_exec_tag> ) {
+		test<options::ExecModeTypes::runtime>( argv );
+	}
+	test<options::ExecModeTypes::simd>( argv );
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

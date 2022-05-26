@@ -15,6 +15,9 @@
 
 #include <daw/json/daw_json_link.h>
 
+#ifdef DAW_USE_EXCEPTIONS
+#include <exception>
+#endif
 #include <iostream>
 #include <optional>
 #include <string_view>
@@ -57,8 +60,15 @@ struct daw::json::json_data_contract<tests::UriList> {
 
 namespace tests {
 	bool quotes_in_numbers( ) {
-		static DAW_CONSTEXPR std::string_view data =
-		  R"({"lat": "55.55", "lng": "12.34" })";
+		std::string_view const data = R"({"lat": "55.55", "lng": "12.34" })";
+		try {
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
+			(void)c;
+		} catch( daw::json::json_exception const & ) { return true; }
+		return false;
+	}
+	bool quotes_in_numbers_str( ) {
+		std::string data = R"({"lat": "55.55", "lng": "12.34" })";
 		try {
 			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
@@ -144,19 +154,41 @@ namespace tests {
 	}
 
 	bool invalid_strings2( ) {
+		std::string_view data =
+		  R"({"uris": [ "http://www.ex\u4"\"ample.com", "http://www.example.com/missing_quote ] })";
+		try {
+			auto const ul = daw::json::from_json<tests::UriList>( data );
+			(void)ul;
+		} catch( daw::json::json_exception const &jex ) {
+			if( jex.parse_location( ) ) {
+				auto const dist = jex.parse_location( ) - data.data( );
+				if( dist == 29 ) {
+					return true;
+				}
+			}
+			std::cerr << "Wrong exception: " << jex.reason( ) << '\n'
+			          << to_formatted_string( jex ) << '\n';
+		}
+		return false;
+	}
+	bool invalid_strings2_str( ) {
 		std::string data =
 		  R"({"uris": [ "http://www.ex\u4"\"ample.com", "http://www.example.com/missing_quote ] })";
 		try {
 			auto const ul = daw::json::from_json<tests::UriList>( data );
 			(void)ul;
 		} catch( daw::json::json_exception const &jex ) {
-			if( jex.parse_location( ) and
-			    ( jex.parse_location( ) - data.data( ) == 29 ) ) {
-				return true;
+			if( jex.parse_location( ) ) {
+				auto const pos = jex.parse_location( ) - std::data( data );
+				if( pos == 29 ) {
+					return true;
+				}
 			}
 			std::cerr << "Wrong exception: " << jex.reason( ) << '\n'
 			          << to_formatted_string( jex ) << '\n';
-		}
+			return false;
+		} catch( ... ) { return false; }
+		// Should never reach here
 		return false;
 	}
 
@@ -176,7 +208,7 @@ namespace tests {
 		try {
 			using namespace daw::json;
 			std::vector<intmax_t> numbers =
-			  from_json_array<json_checked_number<no_name, intmax_t>>( data );
+			  from_json_array<json_checked_number_no_name<intmax_t>>( data );
 			(void)numbers;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -187,7 +219,7 @@ namespace tests {
 		try {
 			using namespace daw::json;
 			std::vector<std::optional<int>> numbers =
-			  from_json_array<json_checked_number_null<no_name, std::optional<int>>>(
+			  from_json_array<json_checked_number_null_no_name<std::optional<int>>>(
 			    data );
 			(void)numbers;
 		} catch( daw::json::json_exception const & ) { return true; }
@@ -224,9 +256,8 @@ namespace tests {
 		return false;
 	}
 } // namespace tests
-static bool has_uncaught_except = false;
 
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 #define expect_fail( Bool, Reason )                                          \
 	do {                                                                       \
 		std::cout << "testing: "                                                 \
@@ -238,10 +269,10 @@ static bool has_uncaught_except = false;
 		} catch( std::exception const &ex ) {                                    \
 			std::cout << "Fail: " << ( Reason ) << "\nUnexpected std::exception\n" \
 			          << ex.what( ) << '\n';                                       \
-			has_uncaught_except = true;                                            \
+			last_uncaught_except = std::make_exception_ptr( ex );                  \
 		} catch( ... ) {                                                         \
 			std::cout << "Fail: " << ( Reason ) << "\nUnknown exception\n";        \
-			has_uncaught_except = true;                                            \
+			last_uncaught_except = std::current_exception( );                      \
 		}                                                                        \
 	} while( false )
 #else
@@ -254,14 +285,24 @@ static bool has_uncaught_except = false;
 	while( false )
 #endif
 
-int main( int, char ** ) {
+int main( int, char ** )
+#ifdef DAW_USE_EXCEPTIONS
+  try
+#endif
+{
+#ifdef DAW_USE_EXCEPTIONS
+	std::exception_ptr last_uncaught_except = nullptr;
+#endif
 	expect_fail( tests::quotes_in_numbers( ),
+	             "Failed to find unexpected quotes in numbers" );
+	expect_fail( tests::quotes_in_numbers_str( ),
 	             "Failed to find unexpected quotes in numbers" );
 	expect_fail( tests::bool_in_numbers( ),
 	             "Failed to find a bool when a number was expected" );
 	expect_fail( tests::invalid_numbers( ), "Failed to find an invalid number" );
 	expect_fail( tests::invalid_strings( ), "Failed to find missing quote" );
 	expect_fail( tests::invalid_strings2( ), "Failed to find missing quote" );
+	expect_fail( tests::invalid_strings2_str( ), "Failed to find missing quote" );
 
 	expect_fail( tests::missing_array_element( ),
 	             "Failed to catch an empty array element e.g(1,,2)" );
@@ -294,8 +335,21 @@ int main( int, char ** ) {
 	             "Incomplete false in array not caught" );
 
 	expect_fail( tests::bad_true( ), "bad true value not caught" );
-	if( has_uncaught_except ) {
-		return 1;
+#ifdef DAW_USE_EXCEPTIONS
+	if( last_uncaught_except ) {
+		std::rethrow_exception( last_uncaught_except );
 	}
+#endif
 	return 0;
 }
+#ifdef DAW_USE_EXCEPTIONS
+catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Uncaught exception reached the end scope of main\n"
+	          << std::flush;
+	throw;
+}
+#endif

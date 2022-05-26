@@ -18,7 +18,7 @@
 #include <streambuf>
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -33,7 +33,7 @@ int main( int argc, char **argv )
 	}( );
 
 	daw::twitter::twitter_object_t twitter_result;
-	for( std::size_t n = 0; n < 1000; ++n ) {
+	for( std::size_t n = 0; n < 1'000; ++n ) {
 		daw::do_not_optimize( json_data );
 		twitter_result =
 		  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
@@ -43,9 +43,16 @@ int main( int argc, char **argv )
 	test_assert( twitter_result.statuses.front( ).user.id == 1186275104,
 	             "Missing value" );
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

@@ -32,17 +32,24 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 static_assert( DAW_NUM_RUNS > 0 );
 
 using AllocType = daw::fixed_allocator<char>;
+using namespace daw::json::options;
 
-template<typename ExecTag>
+template<ExecModeTypes ExecMode>
 void test( char **argv, AllocType &alloc ) {
 	auto const json_data1 = *daw::read_file( argv[1] );
+	daw_json_assert( not json_data1.empty( ),
+	                 daw::json::ErrorReason::EmptyJSONDocument );
 	auto const json_data2 = *daw::read_file( argv[2] );
+	daw_json_assert( not json_data2.empty( ),
+	                 daw::json::ErrorReason::EmptyJSONDocument );
 	auto const json_data3 = *daw::read_file( argv[3] );
+	daw_json_assert( not json_data3.empty( ),
+	                 daw::json::ErrorReason::EmptyJSONDocument );
 	auto json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
 	auto json_sv2 = std::string_view( json_data2.data( ), json_data2.size( ) );
 	auto json_sv3 = std::string_view( json_data3.data( ), json_data3.size( ) );
 
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( ) + json_sv2.size( ) + json_sv3.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
@@ -53,23 +60,27 @@ void test( char **argv, AllocType &alloc ) {
 	std::optional<daw::twitter::twitter_object_t> twitter_result{ };
 	std::optional<daw::citm::citm_object_t> citm_result{ };
 	std::optional<daw::geojson::Polygon> canada_result{ };
+#ifdef DAW_USE_EXCEPTIONS
 	try {
+#endif
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_twitter bench", json_sv1.size( ),
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
 			  alloc.release( );
-			  twitter_result = daw::json::from_json_alloc<
-			    daw::twitter::twitter_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
+			  twitter_result =
+			    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+			      f1, alloc, parse_flags<ExecMode> );
 		  },
 		  json_sv1 );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Error while testing twitter.json\n";
 		std::cerr << to_formatted_string( jex ) << '\n';
 	}
+#endif
 	test_assert( twitter_result, "Missing value -> twitter_result" );
 	test_assert( not twitter_result->statuses.empty( ),
 	             "Expected values: twitter_result is empty" );
@@ -85,10 +96,9 @@ void test( char **argv, AllocType &alloc ) {
 		  {
 			  twitter_result.reset( );
 			  alloc.release( );
-			  twitter_result = daw::json::from_json_alloc<
-			    daw::twitter::twitter_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1,
-			                                                               alloc );
+			  twitter_result =
+			    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+			      f1, alloc, parse_flags<ExecMode, CheckedParseMode::no> );
 		  }
 	  },
 	  json_sv1 );
@@ -108,9 +118,8 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
 		  alloc.release( );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2, alloc );
+		  citm_result = daw::json::from_json_alloc<daw::citm::citm_object_t>(
+		    f2, alloc, parse_flags<ExecMode> );
 	  },
 	  json_sv2 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -129,9 +138,8 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
 		  alloc.release( );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2, alloc );
+		  citm_result = daw::json::from_json_alloc<daw::citm::citm_object_t>(
+		    f2, alloc, parse_flags<ExecMode, CheckedParseMode::no> );
 	  },
 	  json_sv2 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -150,10 +158,8 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
 		  alloc.release( );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3, "features[0].geometry", alloc );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", alloc, parse_flags<ExecMode> );
 	  },
 	  json_sv3 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -167,10 +173,9 @@ void test( char **argv, AllocType &alloc ) {
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
 		  alloc.release( );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3, "features[0].geometry", alloc );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", alloc,
+		    parse_flags<ExecMode, CheckedParseMode::no> );
 	  },
 	  json_sv3 );
 	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -187,16 +192,13 @@ void test( char **argv, AllocType &alloc ) {
 		  citm_result.reset( );
 		  canada_result.reset( );
 		  alloc.release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2, alloc );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3, "features[0].geometry", alloc );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1, alloc, parse_flags<ExecMode> );
+		  citm_result = daw::json::from_json_alloc<daw::citm::citm_object_t>(
+		    f2, alloc, parse_flags<ExecMode> );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", alloc, parse_flags<ExecMode> );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -225,16 +227,14 @@ void test( char **argv, AllocType &alloc ) {
 		  citm_result.reset( );
 		  canada_result.reset( );
 		  alloc.release( );
-		  twitter_result = daw::json::from_json_alloc<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1, alloc );
-		  citm_result = daw::json::from_json_alloc<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2, alloc );
-		  canada_result = daw::json::from_json_alloc<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3, "features[0].geometry", alloc );
+		  twitter_result =
+		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
+		      f1, alloc, parse_flags<ExecMode, CheckedParseMode::no> );
+		  citm_result = daw::json::from_json_alloc<daw::citm::citm_object_t>(
+		    f2, alloc, parse_flags<ExecMode, CheckedParseMode::no> );
+		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
+		    f3, "features[0].geometry", alloc,
+		    parse_flags<ExecMode, CheckedParseMode::no> );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -263,12 +263,12 @@ void test( char **argv, AllocType &alloc ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
-	static auto alloc = AllocType( 100'000'000ULL );
-#ifdef DAW_USE_JSON_EXCEPTIONS
+	auto alloc = AllocType( 5'000'000ULL );
+#ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
 		using namespace daw::json;
@@ -282,22 +282,29 @@ int main( int argc, char **argv )
 			std::cerr << "twitter citm canada\n";
 			exit( 1 );
 		}
-		test<daw::json::constexpr_exec_tag>( argv, alloc );
+		test<ExecModeTypes::compile_time>( argv, alloc );
 		if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 		                                 daw::json::runtime_exec_tag> ) {
-			test<daw::json::runtime_exec_tag>( argv, alloc );
+			test<ExecModeTypes::runtime>( argv, alloc );
 		}
-		test<daw::json::simd_exec_tag>( argv, alloc );
-#ifdef DAW_USE_JSON_EXCEPTIONS
+		test<ExecModeTypes::simd>( argv, alloc );
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
 #endif
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

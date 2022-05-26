@@ -44,10 +44,11 @@ namespace daw::cookbook_variant4 {
 	struct BasicConfig {
 		std::variant<VersionedConfigs...> data;
 
-		template<typename T,
-		         std::enable_if_t<std::disjunction_v<std::is_same<
-		                            daw::remove_cvref_t<T>, VersionedConfigs>...>,
-		                          std::nullptr_t> = nullptr>
+		template<
+		  typename T,
+		  std::enable_if_t<std::disjunction<std::is_same<
+		                     daw::remove_cvref_t<T>, VersionedConfigs>...>::value,
+		                   std::nullptr_t> = nullptr>
 		constexpr BasicConfig( T &&value )
 		  : data( std::forward<T>( value ) ) {}
 	};
@@ -128,7 +129,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -145,7 +146,16 @@ int main( int argc, char **argv )
 	std::string const json_str = daw::json::to_json_array( configs );
 	std::cout << json_str << '\n';
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

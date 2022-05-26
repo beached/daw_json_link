@@ -34,18 +34,19 @@ static_assert( DAW_NUM_RUNS > 0 );
 
 using AllocType = daw::fixed_allocator<daw::citm::citm_object_t>;
 
-template<typename ExecTag>
+using namespace daw::json::options;
+
+template<ExecModeTypes ExecMode>
 void test( std::string_view json_sv1, AllocType &alloc ) {
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( );
 	{
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "citm_catalog bench(checked)", sz,
 		  [&]( auto f1 ) {
-			  return daw::json::from_json_alloc<
-			    daw::citm::citm_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
+			  return daw::json::from_json_alloc<daw::citm::citm_object_t>(
+			    f1, alloc, parse_flags<ExecMode> );
 		  },
 		  json_sv1 );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -62,10 +63,8 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "citm_catalog bench(unchecked)", sz,
 		  [&]( auto f1 ) {
-			  return daw::json::from_json_alloc<
-			    daw::citm::citm_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1,
-			                                                               alloc );
+			  return daw::json::from_json_alloc<daw::citm::citm_object_t>(
+			    f1, alloc, parse_flags<ExecMode, CheckedParseMode::no> );
 		  },
 		  json_sv1 );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
@@ -80,7 +79,7 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -98,11 +97,11 @@ int main( int argc, char **argv )
 	auto const sz = json_sv1.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
-	test<daw::json::constexpr_exec_tag>( json_sv1, alloc );
-	test<daw::json::runtime_exec_tag>( json_sv1, alloc );
+	test<ExecModeTypes::compile_time>( json_sv1, alloc );
+	test<ExecModeTypes::runtime>( json_sv1, alloc );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag>( json_sv1, alloc );
+		test<ExecModeTypes::simd>( json_sv1, alloc );
 	}
 
 	alloc.release( );
@@ -128,9 +127,16 @@ int main( int argc, char **argv )
 	test_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif

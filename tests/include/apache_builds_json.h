@@ -20,18 +20,13 @@
 namespace daw::json {
 	template<>
 	struct json_data_contract<apache_builds::jobs_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<json_string_raw<"name", std::string_view>,
-		                              json_string_raw<"url", std::string_view>,
-		                              json_string_raw<"color", std::string_view>>;
-#else
 		static inline constexpr char const name[] = "name";
 		static inline constexpr char const url[] = "url";
 		static inline constexpr char const color[] = "color";
-		using type = json_member_list<json_string_raw<name, std::string_view>,
-		                              json_string_raw<url, std::string_view>,
-		                              json_string_raw<color, std::string_view>>;
-#endif
+		using type = json_member_list<json_link<name, std::string_view>,
+		                              json_link<url, std::string_view>,
+		                              json_link<color, std::string_view>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( apache_builds::jobs_t const &value ) {
 			return std::forward_as_tuple( value.name, value.url, value.color );
@@ -40,15 +35,12 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<apache_builds::views_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type = json_member_list<json_string_raw<"name", std::string_view>,
-		                              json_string_raw<"url", std::string_view>>;
-#else
 		static inline constexpr char const name[] = "name";
 		static inline constexpr char const url[] = "url";
-		using type = json_member_list<json_string_raw<name, std::string_view>,
-		                              json_string_raw<url, std::string_view>>;
-#endif
+		struct Foo {};
+		using type = json_member_list<json_link<name, std::string_view>,
+		                              json_link<url, std::string_view>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( apache_builds::views_t const &value ) {
 			return std::forward_as_tuple( value.name, value.url );
@@ -57,20 +49,6 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<apache_builds::apache_builds> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type =
-		  json_member_list<json_string_raw<"mode", std::string_view>,
-		                   json_string_raw<"nodeDescription", std::string_view>,
-		                   json_string_raw<"nodeName", std::string_view>,
-		                   json_number<"numExecutors", int64_t>,
-		                   json_string_raw<"description", std::string_view>,
-		                   json_array<"jobs", apache_builds::jobs_t>,
-		                   json_class<"primaryView", apache_builds::views_t>,
-		                   json_bool<"quietingDown">,
-		                   json_number<"slaveAgentPort", int64_t>,
-		                   json_bool<"useCrumbs">, json_bool<"useSecurity">,
-		                   json_array<"views", apache_builds::views_t>>;
-#else
 		static inline constexpr char const mode[] = "mode";
 		static inline constexpr char const nodeDescription[] = "nodeDescription";
 		static inline constexpr char const nodeName[] = "nodeName";
@@ -85,16 +63,16 @@ namespace daw::json {
 		static inline constexpr char const views[] = "views";
 
 		using type = json_member_list<
-		  json_string_raw<mode, std::string_view>,
-		  json_string_raw<nodeDescription, std::string_view>,
-		  json_string_raw<nodeName, std::string_view>,
-		  json_number<numExecutors, int64_t>,
-		  json_string_raw<description, std::string_view>,
-		  json_array<jobs, apache_builds::jobs_t>,
-		  json_class<primaryView, apache_builds::views_t>, json_bool<quietingDown>,
-		  json_number<slaveAgentPort, int64_t>, json_bool<useCrumbs>,
-		  json_bool<useSecurity>, json_array<views, apache_builds::views_t>>;
-#endif
+		  json_link<mode, std::string_view>,
+		  json_link<nodeDescription, std::string_view>,
+		  json_link<nodeName, std::string_view>, json_number<numExecutors, int64_t>,
+		  json_link<description, std::string_view>,
+		  json_link<jobs, std::vector<apache_builds::jobs_t>>,
+		  json_link<primaryView, apache_builds::views_t>,
+		  json_link<quietingDown, bool>, json_link<slaveAgentPort, int64_t>,
+		  json_link<useCrumbs, bool>, json_link<useSecurity, bool>,
+		  json_link<views, std::vector<apache_builds::views_t>>>;
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( apache_builds::apache_builds const &value ) {
 			return std::forward_as_tuple(

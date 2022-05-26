@@ -103,7 +103,7 @@ WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
 WARN_LOGFILE           =
-INPUT                  = include/daw/json cookbook docs
+INPUT                  = include/daw/json /docs/cookbook docs
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -191,23 +191,25 @@ HTML_EXTRA_FILES       =	docs/theme/img/closed-folder.png \
 													docs/theme/img/on_sync.png \
 													docs/theme/img/opened-folder.png \
 													docs/mainpage.md \
-													images/json_link_logo_128.png
-													cookbook/array.md \
-													cookbook/automated_code_generation.md \
-													cookbook/class.md \
-													cookbook/class_from_array.md \
-													cookbook/dates.md \
-													cookbook/enums.md \
-													cookbook/graphs.md \
-													cookbook/key_values.md \
-													cookbook/numbers.md \
-													cookbook/optional_values.md \
-													cookbook/parser_policies.md \
-													cookbook/parsing_individual_members.md \
-													cookbook/strings.md \
-													cookbook/unknown_types_and_delayed_parsing.md \
-													cookbook/variant.md \
-													cookbook/readme.md 
+													docs/images/json_link_logo_128.png \
+													docs/cookbook/class.md \
+													docs/cookbook/class_from_array.md \
+													docs/cookbook/parser_policies.md \
+													docs/cookbook/strings.md \
+													docs/cookbook/key_values.md \
+													docs/cookbook/variant.md \
+													docs/cookbook/dates.md \
+													docs/cookbook/array.md \
+													docs/cookbook/graphs.md \
+													docs/cookbook/unknown_types_and_raw_parsing.md \
+													docs/cookbook/readme.md \
+													docs/cookbook/mapping_deduction.md \
+													docs/cookbook/optional_values.md \
+													docs/cookbook/parsing_individual_members.md \
+													docs/cookbook/automated_code_generation.md \
+													docs/cookbook/enums.md \
+													docs/cookbook/inserting_extracting_raw_json.md \
+													docs/cookbook/numbers.md
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80

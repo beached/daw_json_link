@@ -30,24 +30,21 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-template<typename ExecTag>
+template<daw::json::options::ExecModeTypes ExecMode>
 void test( std::string_view json_sv1 ) {
-	std::cout << "Using " << ExecTag::name
+	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 
 	auto const sz = json_sv1.size( );
 	auto twitter_result = std::vector<daw::twitter::tweet>( );
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet,
-		  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+		using range_t = daw::json::json_array_range<daw::twitter::tweet, ExecMode>;
 		auto rng = range_t( json_sv1 );
 		twitter_result.insert( twitter_result.end( ), rng.begin( ), rng.end( ) );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet,
-		  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+		using range_t = daw::json::json_array_range<daw::twitter::tweet, ExecMode>;
+
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(checked)", sz,
 		  [&]( auto rng ) {
@@ -58,9 +55,7 @@ void test( std::string_view json_sv1 ) {
 		             "Exception while parsing: res.get_exception_message()" );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet,
-		  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+		using range_t = daw::json::json_array_range<daw::twitter::tweet, ExecMode>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(checked, nostore)", sz,
 		  [&]( auto rng ) {
@@ -71,9 +66,9 @@ void test( std::string_view json_sv1 ) {
 		  range_t( json_sv1 ) );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet,
-		  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
+		using range_t =
+		  daw::json::json_array_range<daw::twitter::tweet,
+		                              daw::json::options::CheckedParseMode::no, ExecMode>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(unchecked)", sz,
 		  [&]( auto rng ) {
@@ -84,9 +79,9 @@ void test( std::string_view json_sv1 ) {
 		             "Exception while parsing: res.get_exception_message()" );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet,
-		  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
+		using range_t =
+		  daw::json::json_array_range<daw::twitter::tweet,
+		                              daw::json::options::CheckedParseMode::no, ExecMode>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(unchecked, nostore)", sz,
 		  [&]( auto rng ) {
@@ -101,7 +96,7 @@ void test( std::string_view json_sv1 ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -121,14 +116,23 @@ int main( int argc, char **argv )
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	test<daw::json::constexpr_exec_tag>( json_sv1 );
-	test<daw::json::runtime_exec_tag>( json_sv1 );
+	test<options::ExecModeTypes::compile_time>( json_sv1 );
+	test<options::ExecModeTypes::runtime>( json_sv1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag>( json_sv1 );
+		test<options::ExecModeTypes::simd>( json_sv1 );
 	}
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

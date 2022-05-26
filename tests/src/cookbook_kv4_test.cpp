@@ -15,11 +15,13 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 #include <iostream>
+#include <map>
 #include <string>
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -32,15 +34,24 @@ int main( int argc, char **argv )
 	using namespace daw::json;
 	auto val = json_value( json_data );
 	std::multimap<std::string, std::string> kv =
-	  from_json<json_key_value<no_name, std::multimap<std::string, std::string>,
-	                           std::string>>( val );
+	  from_json<json_key_value_no_name<std::multimap<std::string, std::string>,
+	                                   std::string>>( val );
 	test_assert( kv.size( ) == 2, "Expected data to have 2 items" );
 	test_assert( kv.begin( )->first == std::prev( kv.end( ) )->first,
 	             "Unexpected value" );
 	test_assert( kv.begin( )->second != std::prev( kv.end( ) )->second,
 	             "Unexpected value" );
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

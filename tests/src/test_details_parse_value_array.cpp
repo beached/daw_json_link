@@ -9,7 +9,6 @@
 #include "defines.h"
 
 #include <daw/json/daw_json_link.h>
-#include <daw/json/impl/daw_json_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
 #include <daw/daw_benchmark.h>
@@ -24,8 +23,8 @@ bool empty_array_empty_json_array( ) {
 
 	DAW_CONSTEXPR std::string_view sv = "[]";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_array<no_name, int>>(
-	  ParseTag<JsonParseTypes::Array>{ }, rng );
+	auto v = parse_value<json_array_no_name<int>>(
+	  rng, ParseTag<JsonParseTypes::Array>{ } );
 	return v.empty( );
 }
 
@@ -36,8 +35,8 @@ bool int_array_json_string_array_fail( ) {
 	std::string_view sv = R"([ "this is strange" ])";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_array<no_name, int>>(
-	  ParseTag<JsonParseTypes::Array>{ }, rng );
+	auto v = parse_value<json_array_no_name<int>>(
+	  rng, ParseTag<JsonParseTypes::Array>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -75,8 +74,8 @@ bool array_with_closing_class_fail( ) {
 	std::string_view sv = R"([ {}}, ])";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_array<no_name, InlineClass<>>>(
-	  ParseTag<JsonParseTypes::Array>{ }, rng );
+	auto v = parse_value<json_array_no_name<InlineClass<>>>(
+	  rng, ParseTag<JsonParseTypes::Array>{ } );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -101,14 +100,23 @@ bool array_with_closing_class_fail( ) {
 	} while( false )
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
 	do_test( empty_array_empty_json_array( ) );
 	do_fail_test( int_array_json_string_array_fail( ) );
 }
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
+#endif

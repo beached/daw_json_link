@@ -31,7 +31,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 static_assert( DAW_NUM_RUNS > 0 );
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -51,18 +51,14 @@ int main( int argc, char **argv )
 	auto const sv_canada =
 	  std::string_view( mm_canada.data( ), mm_canada.size( ) );
 
-#ifdef NDEBUG
+#if defined( NDEBUG )
 	std::cout << "non-debug run\n";
 	for( std::size_t n = 0; n < DAW_NUM_RUNS; ++n ) {
 		[&]( auto f1, auto f2, auto f3 ) {
 			auto const j1 =
-			  daw::json::from_json<daw::twitter::twitter_object_t,
-			                       NoCommentSkippingPolicyChecked>( f1 );
-			auto const j2 =
-			  daw::json::from_json<daw::citm::citm_object_t,
-			                       NoCommentSkippingPolicyChecked>( f2 );
-			auto const j3 = daw::json::from_json<daw::geojson::Polygon,
-			                                     NoCommentSkippingPolicyChecked>(
+			  daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
+			auto const j2 = daw::json::from_json<daw::citm::citm_object_t>( f2 );
+			auto const j3 = daw::json::from_json<daw::geojson::Polygon>(
 			  f3, "features[0].geometry" );
 			daw::do_not_optimize( sv_twitter );
 			daw::do_not_optimize( sv_citm );
@@ -75,13 +71,9 @@ int main( int argc, char **argv )
 #else
 	for( size_t n = 0; n < 25; ++n ) {
 		auto const j1 =
-		  daw::json::from_json<daw::twitter::twitter_object_t,
-		                       NoCommentSkippingPolicyChecked>( sv_twitter );
-		auto const j2 =
-		  daw::json::from_json<daw::citm::citm_object_t,
-		                       NoCommentSkippingPolicyChecked>( sv_citm );
-		auto const j3 = daw::json::from_json<daw::geojson::Polygon,
-		                                     NoCommentSkippingPolicyChecked>(
+		  daw::json::from_json<daw::twitter::twitter_object_t>( sv_twitter );
+		auto const j2 = daw::json::from_json<daw::citm::citm_object_t>( sv_citm );
+		auto const j3 = daw::json::from_json<daw::geojson::Polygon>(
 		  sv_canada, "features[0].geometry" );
 		daw::do_not_optimize( sv_twitter );
 		daw::do_not_optimize( sv_citm );
@@ -92,9 +84,16 @@ int main( int argc, char **argv )
 	}
 #endif
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+	          << '\n';
+	exit( 1 );
+} catch( ... ) {
+	std::cerr << "Unknown exception thrown during testing\n";
+	throw;
 }
 #endif
