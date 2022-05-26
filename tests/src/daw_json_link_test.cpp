@@ -411,7 +411,9 @@ static_assert( static_cast<bool>(
 #endif
 
 #if not defined( DAW_JSON_NO_INT128 ) and defined( __SIZEOF_INT128__ ) and \
-  ( not defined( _MSC_VER ) )
+  ( not defined( _MSC_VER ) ) and                                          \
+  ( not defined( __clang__ ) and not defined( _LIBCPP_VERSION ) or         \
+    __clang_major__ > 9 )
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
@@ -799,7 +801,10 @@ int main( int, char ** )
 #define CX DAW_CONSTEXPR
 #endif
 
-#if not defined( DAW_JSON_NO_INT128 ) and defined( DAW_HAS_INT128 )
+#if not defined( DAW_JSON_NO_INT128 ) and defined( DAW_HAS_INT128 ) and \
+  ( not defined( _MSC_VER ) ) and                                       \
+  ( not defined( __clang__ ) and not defined( _LIBCPP_VERSION ) or      \
+    __clang_major__ > 9 )
 	test128( );
 #else
 	std::cout << "No 128bit int support detected\n";
@@ -878,9 +883,9 @@ int main( int, char ** )
 
 	using namespace daw::json;
 	using num_t =
-	  json_number_no_name<double,
-	                      options::number_opt( options::LiteralAsStringOpt::Always,
-	                                  options::JsonNumberErrors::AllowNanInf )>;
+	  json_number_no_name<double, options::number_opt(
+	                                options::LiteralAsStringOpt::Always,
+	                                options::JsonNumberErrors::AllowNanInf )>;
 	std::cout << "Inf double: "
 	          << "serialize: "
 	          << to_json<std::string, num_t>(
@@ -1198,22 +1203,25 @@ int main( int, char ** )
 	constexpr double outfmt_dbl = 123456789.23456789012345;
 	std::cout
 	  << "auto: "
-	  << to_json<std::string, json_base::json_number<
-	                            double, options::number_opt( options::FPOutputFormat::Auto )>>(
+	  << to_json<std::string,
+	             json_base::json_number<
+	               double, options::number_opt( options::FPOutputFormat::Auto )>>(
 	       outfmt_dbl )
 	  << '\n';
 	std::cout
 	  << "decimal: "
 	  << to_json<std::string, json_base::json_number<
-	                            double, options::number_opt( options::FPOutputFormat::Decimal )>>(
+	                            double, options::number_opt(
+	                                      options::FPOutputFormat::Decimal )>>(
 	       outfmt_dbl )
 	  << '\n';
-	std::cout << "scientific: "
-	          << to_json<std::string,
-	                     json_base::json_number<
-	                       double, options::number_opt( options::FPOutputFormat::Scientific )>>(
-	               outfmt_dbl )
-	          << '\n';
+	std::cout
+	  << "scientific: "
+	  << to_json<std::string, json_base::json_number<
+	                            double, options::number_opt(
+	                                      options::FPOutputFormat::Scientific )>>(
+	       outfmt_dbl )
+	  << '\n';
 
 	std::cout << "\n\nJSON Link Version: " << json_link_version( ) << '\n';
 	std::cout << "done";
