@@ -175,12 +175,11 @@ namespace daw::json {
 				m_locs.clear( );
 			}
 
-			/***
-			 * Create a basic_json_member for the named member
-			 * @pre name must be valid
-			 * @param key name of member
-			 * @return a new basic_json_member
-			 */
+			/// @brief Create a basic_json_member for the named member
+			/// @pre name must be valid
+			/// @param key name of member
+			/// @return a new basic_json_member
+			///
 			[[nodiscard]] constexpr basic_json_value<ParseState>
 			operator[]( std::string_view key ) {
 				std::size_t pos = move_to( json_member_name( key ) );
@@ -189,12 +188,11 @@ namespace daw::json {
 				return m_locs[pos].location->value;
 			}
 
-			/***
-			 * Create a basic_json_member for the named member
-			 * @pre name must be valid
-			 * @param member name of member
-			 * @return a new basic_json_member
-			 */
+			/// @brief Create a basic_json_member for the named member
+			/// @pre name must be valid
+			/// @param member name of member
+			/// @return a new basic_json_member
+			///
 			[[nodiscard]] constexpr basic_json_value<ParseState>
 			operator[]( json_member_name member ) {
 				std::size_t pos = move_to( member );
@@ -203,13 +201,11 @@ namespace daw::json {
 				return m_locs[pos].location->value;
 			}
 
-			/***
-			 * Create a basic_json_member for the named member
-			 * @pre name must be valid
-			 * @param key name of member
-			 * @return a new basic_json_member for the JSON data or an empty one if
-			 * the member does not exist
-			 */
+			/// @brief Create a basic_json_member for the named member
+			/// @pre name must be valid
+			/// @param key name of member
+			/// @return a new basic_json_member for the JSON data or an empty one if
+			/// the member does not exist
 			[[nodiscard]] constexpr basic_json_value<ParseState>
 			at( std::string_view key ) {
 				auto const k = std::string_view( std::data( key ), std::size( key ) );
@@ -220,12 +216,11 @@ namespace daw::json {
 				return { };
 			}
 
-			/***
-			 * Count the number of elements/members in the JSON class or array
-			 * This method is O(N) worst case and O(1) if the locations have already
-			 * been determined
-			 * @return number of members/elements
-			 */
+			/// @brief Count the number of elements/members in the JSON class or array
+			/// This method is O(N) worst case and O(1) if the locations have already
+			/// been determined
+			/// @return number of members/elements
+			///
 			[[nodiscard]] std::size_t size( ) {
 				JsonBaseParseTypes const current_type = m_value.type( );
 				switch( current_type ) {
@@ -242,24 +237,22 @@ namespace daw::json {
 				}
 			}
 
-			/***
-			 * Return the index of named member
-			 * This method is O(N) worst case and O(1) if the locations have already
-			 * @param key name of member
-			 * @return the position of the member or the count of members if not
-			 * present
-			 */
+			/// @brief Return the index of named member. This method is O(N) worst
+			/// case and O(1) if the locations have already
+			/// @param key name of member
+			/// @return the position of the member or the count of members if not
+			/// present
+			///
 			[[nodiscard]] std::size_t index_of( std::string_view key ) {
 				auto const k = json_member_name( key );
 				return move_to( k );
 			}
 
-			/***
-			 * Is the named member present
-			 * This method is O(N) worst case and O(1) if the locations have already
-			 * @param key name of member
-			 * @return true if the member is present
-			 */
+			/// @brief Is the named member present. This method is O(N) worst case and
+			/// O(1) if the locations have already
+			/// @param key name of member
+			/// @return true if the member is present
+			///
 			[[nodiscard]] constexpr bool contains( std::string_view key ) {
 				auto const k = std::string_view( std::data( key ), std::size( key ) );
 				return move_to( k ) < std::size( m_locs );
