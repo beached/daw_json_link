@@ -359,10 +359,9 @@ namespace daw::json {
 		template<typename ParseState = DefaultParsePolicy,
 		         typename StackContainerPolicy = use_default, typename Handler,
 		         auto... ParseFlags>
-		inline constexpr void json_event_parser(
-		  basic_json_value<ParseState> bjv, Handler &&handler,
-		  options::parse_flags_t<ParseFlags...> ) {
-
+		inline constexpr void
+		json_event_parser( basic_json_value<ParseState> bjv, Handler &&handler,
+		                   options::parse_flags_t<ParseFlags...> ) {
 			using ParsePolicy =
 			  typename ParseState::template SetPolicyOptions<ParseFlags...>;
 			auto jvalue = basic_json_value<ParsePolicy>( bjv );
@@ -564,7 +563,7 @@ namespace daw::json {
 			auto const process_range = [&]( stack_value_t v ) {
 				if( v.value.first != v.value.second ) {
 					auto jv = *v.value.first;
-					v.value.first++;
+					++v.value.first;
 					parent_stack.push_back( DAW_MOVE( v ) );
 					process_value( DAW_MOVE( jv ) );
 				} else {
@@ -666,9 +665,10 @@ namespace daw::json {
 
 		template<typename ParseState = DefaultParsePolicy,
 		         typename StackContainerPolicy = use_default, typename Handler>
-		inline constexpr void json_event_parser(
-		  basic_json_value<ParseState> bjv, Handler &&handler ) {
-			json_event_parser( DAW_MOVE( bjv ), DAW_FWD( handler ), options::parse_flags<> );
+		inline constexpr void json_event_parser( basic_json_value<ParseState> bjv,
+		                                         Handler &&handler ) {
+			json_event_parser( DAW_MOVE( bjv ), DAW_FWD( handler ),
+			                   options::parse_flags<> );
 		}
 
 		template<typename ParsePolicy = DefaultParsePolicy, typename Handler,
@@ -682,11 +682,12 @@ namespace daw::json {
 		}
 
 		template<typename ParsePolicy = DefaultParsePolicy, typename Handler>
-		inline void
-		json_event_parser( daw::string_view json_document, Handler &&handler ) {
+		inline void json_event_parser( daw::string_view json_document,
+		                               Handler &&handler ) {
 
-			return json_event_parser<ParsePolicy>( basic_json_value<ParsePolicy>( json_document ),
-			                          DAW_FWD2( Handler, handler ), options::parse_flags<> );
+			return json_event_parser<ParsePolicy>(
+			  basic_json_value<ParsePolicy>( json_document ),
+			  DAW_FWD2( Handler, handler ), options::parse_flags<> );
 		}
 
 	} // namespace DAW_JSON_VER
