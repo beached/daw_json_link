@@ -28,7 +28,6 @@ namespace daw::cookbook_optional_values1 {
 	 * This is used for nullables who's member is a unique_ptr.
 	 * @tparam T Type of value stored in unique_ptr
 	 */
-
 	struct MyOptionalStuff1 {
 		std::optional<int> member0{ };
 		std::string member1{ };

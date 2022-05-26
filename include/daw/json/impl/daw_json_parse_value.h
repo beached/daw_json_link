@@ -1028,7 +1028,7 @@ namespace daw::json {
 					}
 				}
 
-#if  defined( _MSC_VER ) and not defined( __clang__ )
+#if defined( _MSC_VER ) and not defined( __clang__ )
 				template<typename ParseState>
 				struct position_info {
 					std::size_t index;

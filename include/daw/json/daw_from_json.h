@@ -132,6 +132,7 @@ namespace daw::json {
 
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
+
 			/***
 			 * If the string is known to have a trailing zero, allow optimization on
 			 * that
@@ -456,6 +457,7 @@ namespace daw::json {
 			} else {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 			}
+
 			return json_details::parse_value<json_member, KnownBounds>(
 			  parse_state, ParseTag<json_member::expected_type>{ } );
 		}
@@ -700,6 +702,5 @@ namespace daw::json {
 			return from_json_array<JsonElement, Container, Constructor, KnownBounds>(
 			  DAW_FWD( json_data ), member_path, options::parse_flags<> );
 		}
-
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

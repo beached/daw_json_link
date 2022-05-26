@@ -585,6 +585,7 @@ add_test(NAME test_stateful_json_value_test COMMAND test_stateful_json_value ./t
 add_dependencies(ci_tests test_stateful_json_value)
 add_dependencies(full test_stateful_json_value)
 
+
 add_executable(test_details_parse_real src/test_details_parse_real.cpp)
 target_link_libraries(test_details_parse_real PRIVATE json_test)
 add_test(test_details_parse_real_test test_details_parse_real)

@@ -33,7 +33,6 @@ else ()
     option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
 endif ()
 
-
 option(DAW_JSON_FORCE_INT128 "Define: Force support for 128bit int" OFF)
 if (CMAKE_CXX_FLAGS MATCHES "-fno-exceptions")
     option(DAW_USE_EXCEPTIONS "Define: Throw exceptions when json errors occur or terminate" OFF)

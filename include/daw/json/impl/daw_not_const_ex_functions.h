@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include "daw_json_exec_modes.h"
+#include "version.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>

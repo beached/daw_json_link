@@ -93,7 +93,6 @@ jobs:
           ulimit -c unlimited
           ulimit -c
           sudo sysctl -w kernel.core_pattern=core.%e.%p
-          ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --output-on-failure --test-dir build/
 #      - name: Fuzzing
 #        if: matrix.toolset == 'clang++-13'
 #        run: |

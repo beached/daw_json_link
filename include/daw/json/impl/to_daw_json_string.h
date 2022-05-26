@@ -396,6 +396,7 @@ namespace daw::json {
 			  std::enable_if_t<
 			    traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			    std::nullptr_t> = nullptr>
+
 			[[nodiscard]] constexpr OutputIterator
 			copy_to_iterator( OutputIterator it, Container const &container ) {
 				constexpr bool restrict_high =
@@ -564,7 +565,7 @@ namespace daw::json {
 			template<
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
-			  typename OutputIterator, typename ParseState>
+			  typename OutputIterator, typename ParseState>         
 			[[nodiscard]] constexpr OutputIterator
 			copy_to_iterator( OutputIterator it,
 			                  basic_json_value<ParseState> const &jv ) {
