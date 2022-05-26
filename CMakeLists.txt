@@ -27,8 +27,14 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     # gcc has difficulty and takes too long to compile
 endif ()
 
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" OR ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
     option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
+elseif( DEFINED( CMAKE_BUILD_TYPE ) )
+	if( ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
+	else( )
+    option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
+	endif( )
 else ()
     option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
 endif ()
@@ -49,6 +55,8 @@ if (DAW_JSON_VER_OVERRIDE)
     message("DAW_JSON_VER_OVERRIDE is set to '${DAW_JSON_VER_OVERRIDE}', overriding inline namespace for API version")
     add_compile_definitions(DAW_JSON_VER_OVERRIDE=${DAW_JSON_VER_OVERRIDE})
 endif ()
+
+include(GNUInstallDirs)
 
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(json_link_INSTALL_CMAKEDIR
@@ -71,7 +79,6 @@ if (DAW_JSON_PARSER_DIAGNOSTICS)
     add_compile_definitions(DAW_JSON_PARSER_DIAGNOSTICS)
 endif ()
 
-include(GNUInstallDirs)
 if (DAW_JSON_FORCE_INT128)
     if (DAW_JSON_NO_INT128)
     else ()
