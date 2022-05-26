@@ -16,7 +16,7 @@ if (NOT TARGET daw::daw-header-libraries)
     FetchContent_Declare(
             daw_header_libraries
             GIT_REPOSITORY https://github.com/beached/header_libraries.git
-            GIT_TAG v2.50.0
+            GIT_TAG v2.53.2
     )
     FetchContent_MakeAvailable(daw_header_libraries)
 endif ()
