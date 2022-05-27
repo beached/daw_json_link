@@ -97,6 +97,7 @@ add_dependencies(full float_array_test)
 add_executable(simple_test src/simple_test.cpp)
 target_link_libraries(simple_test PRIVATE json_test)
 add_test(NAME simple_test COMMAND simple_test ./cities.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(ci_tests simple_test)
 add_dependencies(full simple_test)
 
 add_executable(coords_test src/coords_test.cpp)
