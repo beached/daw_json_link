@@ -127,18 +127,18 @@ $(function() {
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                    NullableType, Constructor&gt;;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">template</span>&lt;<a class="code" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, <span class="keyword">typename</span> T = double,</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;             json_details::json_options_t Options = number_opts_def,</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;             json_options_t Options = number_opts_def,</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">struct </span>json_number;</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keyword">template</span>&lt;JSONNAMETYPE Name, <span class="keyword">typename</span> T = std::optional&lt;<span class="keywordtype">double</span>&gt;,</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;             json_details::json_options_t Options = number_opts_def,</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;             json_options_t Options = number_opts_def,</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;             JsonNullable NullableType = JsonNullable::Nullable,</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keyword">using</span> json_number_null = json_nullable&lt;</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      Name, T, json_base::json_number&lt;json_details::unwrapped_t&lt;T&gt;, Options&gt;,</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      NullableType, Constructor&gt;;</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keyword">template</span>&lt;<a class="code" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, <span class="keyword">typename</span> T = double,</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;             json_details::json_options_t Options = number_opts_def,</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;             json_options_t Options = number_opts_def,</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keyword">using</span> json_checked_number =</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      json_number&lt;Name, T,</div>
@@ -147,12 +147,12 @@ $(function() {
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;                  Constructor&gt;;</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160; </div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <span class="keyword">template</span>&lt;<a class="code" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, <span class="keyword">typename</span> T = bool,</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;             json_details::json_options_t Options = bool_opts_def,</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;             json_options_t Options = bool_opts_def,</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <span class="keyword">struct </span>json_bool;</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160; </div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="keyword">template</span>&lt;JSONNAMETYPE Name, <span class="keyword">typename</span> T = std::optional&lt;<span class="keywordtype">bool</span>&gt;,</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;             json_details::json_options_t Options = <span class="keywordtype">bool</span>_opts_def,</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;             json_options_t Options = <span class="keywordtype">bool</span>_opts_def,</div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;             JsonNullable NullableType = JsonNullable::Nullable,</div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    <span class="keyword">using</span> json_bool_null =</div>
@@ -160,24 +160,24 @@ $(function() {
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;                    json_base::json_bool&lt;json_details::unwrapped_t&lt;T&gt;, Options&gt;,</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;                    NullableType, Constructor&gt;;</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="keyword">template</span>&lt;<a class="code" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, <span class="keyword">typename</span> String = std::string,</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;             json_details::json_options_t Options = string_opts_def,</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;             json_options_t Options = string_opts_def,</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keyword">struct </span>json_string;</div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160; </div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keyword">template</span>&lt;JSONNAMETYPE Name, <span class="keyword">typename</span> T = std::optional&lt;std::<span class="keywordtype">string</span>&gt;,</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;             json_details::json_options_t Options = <span class="keywordtype">string</span>_opts_def,</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;             json_options_t Options = <span class="keywordtype">string</span>_opts_def,</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;             JsonNullable NullableType = JsonNullable::Nullable,</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="keyword">using</span> json_string_null = json_nullable&lt;</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      Name, T, json_base::json_string&lt;json_details::unwrapped_t&lt;T&gt;, Options&gt;,</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      NullableType, Constructor&gt;;</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <span class="keyword">template</span>&lt;<a class="code" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, <span class="keyword">typename</span> String = std::string,</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;             json_details::json_options_t Options = string_raw_opts_def,</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;             json_options_t Options = string_raw_opts_def,</div>
 <div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    <span class="keyword">struct </span>json_string_raw;</div>
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160; </div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <span class="keyword">template</span>&lt;JSONNAMETYPE Name, <span class="keyword">typename</span> T = std::optional&lt;std::<span class="keywordtype">string</span>&gt;,</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;             json_details::json_options_t Options = <span class="keywordtype">string</span>_raw_opts_def,</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;             json_options_t Options = <span class="keywordtype">string</span>_raw_opts_def,</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;             JsonNullable NullableType = JsonNullable::Nullable,</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="keyword">using</span> json_string_raw_null = json_nullable&lt;</div>
@@ -185,7 +185,7 @@ $(function() {
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;      json_base::json_string_raw&lt;json_details::unwrapped_t&lt;T&gt;, Options&gt;,</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;      NullableType, Constructor&gt;;</div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keyword">template</span>&lt;JSONNAMETYPE Name, <span class="keyword">typename</span> T = std::optional&lt;<span class="keywordtype">double</span>&gt;,</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;             json_details::json_options_t Options = number_opts_def,</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;             json_options_t Options = number_opts_def,</div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;             JsonNullable NullableType = JsonNullable::Nullable,</div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <span class="keyword">using</span> json_checked_number_null =</div>
@@ -274,13 +274,13 @@ $(function() {
 <div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    <span class="keyword">template</span>&lt;<a class="code" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, <span class="keyword">typename</span> T,</div>
 <div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;             <span class="keyword">typename</span> FromJsonConverter = use_default,</div>
 <div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;             <span class="keyword">typename</span> ToJsonConverter = use_default,</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;             json_details::json_options_t Options = json_custom_opts_def&gt;</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;             json_options_t Options = json_custom_opts_def&gt;</div>
 <div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;    <span class="keyword">struct </span>json_custom;</div>
 <div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160; </div>
 <div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;    <span class="keyword">template</span>&lt;<a class="code" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, <span class="keyword">typename</span> WrappedT,</div>
 <div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;             <span class="keyword">typename</span> FromJsonConverter = use_default,</div>
 <div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;             <span class="keyword">typename</span> ToJsonConverter = use_default,</div>
-<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;             json_details::json_options_t Options = json_custom_opts_def,</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;             json_options_t Options = json_custom_opts_def,</div>
 <div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;             JsonNullable NullableType = JsonNullable::Nullable,</div>
 <div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;    <span class="keyword">using</span> json_custom_null = json_nullable&lt;</div>
@@ -295,7 +295,7 @@ $(function() {
 <div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    <span class="keyword">template</span>&lt;<a class="code" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, <span class="keyword">typename</span> T,</div>
 <div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;             <span class="keyword">typename</span> FromJsonConverter = use_default,</div>
 <div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;             <span class="keyword">typename</span> ToJsonConverter = use_default,</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;             json_details::json_options_t Options = json_custom_opts_def&gt;</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;             json_options_t Options = json_custom_opts_def&gt;</div>
 <div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;    <span class="keyword">using</span> json_custom_lit =</div>
 <div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;      json_custom&lt;Name, T, FromJsonConverter, ToJsonConverter,</div>
 <div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;                  json_details::json_custom_opts_set&lt;</div>
@@ -304,7 +304,7 @@ $(function() {
 <div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;    <span class="keyword">template</span>&lt;<a class="code" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, <span class="keyword">typename</span> WrappedT,</div>
 <div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;             <span class="keyword">typename</span> FromJsonConverter = use_default,</div>
 <div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;             <span class="keyword">typename</span> ToJsonConverter = use_default,</div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;             json_details::json_options_t Options = json_custom_opts_def,</div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;             json_options_t Options = json_custom_opts_def,</div>
 <div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;             JsonNullable NullableType = JsonNullable::Nullable,</div>
 <div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;             <span class="keyword">typename</span> Constructor = use_default&gt;</div>
 <div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;    <span class="keyword">using</span> json_custom_lit_null = json_nullable&lt;</div>
@@ -535,8 +535,8 @@ $(function() {
 <div class="ttc" id="adaw__json__traits_8h_html"><div class="ttname"><a href="daw__json__traits_8h.html">daw_json_traits.h</a></div></div>
 <div class="ttc" id="ato__daw__json__string_8h_html"><div class="ttname"><a href="to__daw__json__string_8h.html">to_daw_json_string.h</a></div></div>
 <div class="ttc" id="adaw__json__enums_8h_html"><div class="ttname"><a href="daw__json__enums_8h.html">daw_json_enums.h</a></div></div>
-<div class="ttc" id="adaw__json__event__parser_8h_html_a32f1e0329a2cea27fc6478b5d4de3609"><div class="ttname"><a href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a></div><div class="ttdeci">StackParseStateType type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00322">daw_json_event_parser.h:322</a></div></div>
-<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value_8h_source.html#l00082">daw_json_value.h:82</a></div></div>
+<div class="ttc" id="adaw__json__event__parser_8h_html_a32f1e0329a2cea27fc6478b5d4de3609"><div class="ttname"><a href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a></div><div class="ttdeci">StackParseStateType type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00316">daw_json_event_parser.h:316</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value_8h_source.html#l00095">daw_json_value.h:95</a></div></div>
 <div class="ttc" id="adaw__json__parse__name_8h_html"><div class="ttname"><a href="daw__json__parse__name_8h.html">daw_json_parse_name.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00016">version.h:16</a></div></div>
 <div class="ttc" id="adaw__json__link__types__iso8601_8h_html"><div class="ttname"><a href="daw__json__link__types__iso8601_8h.html">daw_json_link_types_iso8601.h</a></div></div>

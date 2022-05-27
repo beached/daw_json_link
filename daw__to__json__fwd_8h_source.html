@@ -97,17 +97,17 @@ $(function() {
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;          ( json_details::is_output_option_v&lt;decltype( PolicyFlags )&gt; and ... ),</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;          <span class="stringliteral">&quot;Only valid output flags can be used.  See cookbook &quot;</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;          <span class="stringliteral">&quot;output_options.md&quot;</span> );</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keyword">static</span> constexpr json_details::json_options_t <a class="code" href="daw__to__json__fwd_8h.html#a787a252724e9988367a7dcf071e9bd15">value</a> =</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keyword">static</span> constexpr json_options_t <a class="code" href="daw__to__json__fwd_8h.html#a552a4c74733998af9da40139592b9927">value</a> =</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;          json_details::serialization::set_bits(</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            json_details::serialization::default_policy_flag, PolicyFlags... );</div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="daw__to__json__fwd_8h.html#a787a252724e9988367a7dcf071e9bd15">   31</a></span>&#160;      };</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="daw__to__json__fwd_8h.html#a552a4c74733998af9da40139592b9927">   31</a></span>&#160;      };</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">      /***</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">       * @brief Specify output policy flags in to_json calls.  See cookbook item</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">       * output_options.md</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">       */</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      <span class="keyword">struct </span>output_flags_t&lt;&gt; {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keyword">static</span> constexpr json_details::json_options_t <a class="code" href="daw__to__json__fwd_8h.html#a787a252724e9988367a7dcf071e9bd15">value</a> =</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keyword">static</span> constexpr json_options_t <a class="code" href="daw__to__json__fwd_8h.html#a552a4c74733998af9da40139592b9927">value</a> =</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;          json_details::serialization::default_policy_flag;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      };</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
@@ -123,13 +123,13 @@ $(function() {
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonClass = use_default, <span class="keyword">typename</span> Value,</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;             <span class="keyword">typename</span> OutputIterator, <span class="keyword">auto</span>... PolicyFlags&gt;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    [[maybe_unused]] constexpr OutputIterator to_json(</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      Value <span class="keyword">const</span> &amp;<a class="code" href="daw__to__json__fwd_8h.html#a787a252724e9988367a7dcf071e9bd15">value</a>, OutputIterator out_it,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      Value <span class="keyword">const</span> &amp;<a class="code" href="daw__to__json__fwd_8h.html#a552a4c74733998af9da40139592b9927">value</a>, OutputIterator out_it,</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      options::output_flags_t&lt;PolicyFlags...&gt; flags = options::output_flags&lt;&gt; );</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result = std::string, <span class="keyword">typename</span> JsonClass = use_default,</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;             <span class="keyword">typename</span> Value, <span class="keyword">auto</span>... PolicyFlags&gt;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    [[maybe_unused, nodiscard]] constexpr Result to_json(</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      Value <span class="keyword">const</span> &amp;<a class="code" href="daw__to__json__fwd_8h.html#a787a252724e9988367a7dcf071e9bd15">value</a>,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      Value <span class="keyword">const</span> &amp;<a class="code" href="daw__to__json__fwd_8h.html#a552a4c74733998af9da40139592b9927">value</a>,</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;      options::output_flags_t&lt;PolicyFlags...&gt; flags = options::output_flags&lt;&gt; );</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
@@ -158,8 +158,8 @@ $(function() {
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="adaw__json__link__types__fwd_8h_html"><div class="ttname"><a href="daw__json__link__types__fwd_8h.html">daw_json_link_types_fwd.h</a></div></div>
 <div class="ttc" id="adaw__json__serialize__policy_8h_html"><div class="ttname"><a href="daw__json__serialize__policy_8h.html">daw_json_serialize_policy.h</a></div></div>
+<div class="ttc" id="adaw__to__json__fwd_8h_html_a552a4c74733998af9da40139592b9927"><div class="ttname"><a href="daw__to__json__fwd_8h.html#a552a4c74733998af9da40139592b9927">value</a></div><div class="ttdeci">static constexpr json_options_t value</div><div class="ttdef"><b>Definition:</b> <a href="daw__to__json__fwd_8h_source.html#l00031">daw_to_json_fwd.h:31</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00016">version.h:16</a></div></div>
-<div class="ttc" id="adaw__to__json__fwd_8h_html_a787a252724e9988367a7dcf071e9bd15"><div class="ttname"><a href="daw__to__json__fwd_8h.html#a787a252724e9988367a7dcf071e9bd15">value</a></div><div class="ttdeci">static constexpr json_details::json_options_t value</div><div class="ttdef"><b>Definition:</b> <a href="daw__to__json__fwd_8h_source.html#l00031">daw_to_json_fwd.h:31</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
