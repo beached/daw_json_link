@@ -19,8 +19,8 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		using json_options_t = std::uint32_t;
 		namespace json_details {
-			using json_options_t = std::uint32_t;
 
 			template<typename>
 			inline constexpr unsigned json_option_bits_width = 0;

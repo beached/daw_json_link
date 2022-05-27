@@ -28,7 +28,7 @@ bool test_zero_untrusted( ) {
 
 	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = "0,";
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
 	return not v;
 }
@@ -39,7 +39,7 @@ bool test_missing_untrusted( ) {
 
 	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = " ,";
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
 	daw::do_not_optimize( v );
 	return false;
@@ -51,7 +51,7 @@ bool test_negative_untrusted( ) {
 
 	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = "-1,";
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
 	daw::do_not_optimize( v );
 	return false;
@@ -63,7 +63,7 @@ bool test_real_untrusted( ) {
 
 	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = "1.23,";
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
 	daw::do_not_optimize( v );
 	return false;

@@ -21,7 +21,7 @@ using namespace daw::json::json_details;
 bool test_empty_quoted( ) {
 	DAW_CONSTEXPR std::string_view sv = "{}";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	return std::string_view( v.first, v.size( ) ) == sv;
 }
@@ -29,7 +29,7 @@ bool test_empty_quoted( ) {
 bool test_extra_slash( ) {
 	DAW_CONSTEXPR std::string_view sv = "{\\}";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	daw::do_not_optimize( v );
 	return false;
@@ -38,7 +38,7 @@ bool test_extra_slash( ) {
 bool test_end_of_stream( ) {
 	DAW_CONSTEXPR std::string_view sv = "{";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	daw::do_not_optimize( v );
 	return false;
@@ -47,7 +47,7 @@ bool test_end_of_stream( ) {
 bool test_trailing_comma( ) {
 	DAW_CONSTEXPR std::string_view sv = R"({ "a": 1, "b": 2, "c": 3,})";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	return std::string_view( v.first, v.size( ) ) == sv;
 }
@@ -55,7 +55,7 @@ bool test_trailing_comma( ) {
 bool test_strings( ) {
 	DAW_CONSTEXPR std::string_view sv = R"({ "a": "1", "b": "2", "c": "3"})";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	return std::string_view( v.first, v.size( ) ) == sv;
 }
@@ -63,7 +63,7 @@ bool test_strings( ) {
 bool test_bad_strings_001( ) {
 	DAW_CONSTEXPR std::string_view sv = R"({ "a": "1", "b": "2", "c": "3})";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	daw::do_not_optimize( v );
 	return false;
@@ -73,7 +73,7 @@ bool test_bad_strings_002( ) {
 	DAW_CONSTEXPR std::string_view sv = R"({ "a": "1", "b": "2", "c: "3"})";
 	// DAW_CONSTEXPR std::string_view sv = "[\"1\",\"2\",\"3\",\"4\\\"]";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	daw::do_not_optimize( v );
 	return false;
@@ -82,7 +82,7 @@ bool test_bad_strings_002( ) {
 bool test_bad_strings_003( ) {
 	DAW_CONSTEXPR std::string_view sv = R"({ "a": "1", "b": "2", "c": "3\"})";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	daw::do_not_optimize( v );
 	return false;
@@ -91,7 +91,7 @@ bool test_bad_strings_003( ) {
 bool test_classes_001( ) {
 	DAW_CONSTEXPR std::string_view sv = R"({"a":{},"b":{},"c":{}})";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	return std::string_view( v.first, v.size( ) ) == sv;
 }
@@ -102,7 +102,7 @@ bool test_classes_002( ) {
 	  """},"e":{"a":""},"f":{"a":"
 	  """}})";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	return std::string_view( v.first, v.size( ) ) == sv;
 }
@@ -127,7 +127,7 @@ bool test_embedded_class( ) {
 	}
 })";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	return std::string_view( v.first, v.size( ) ) == sv;
 }
@@ -137,7 +137,7 @@ bool test_embedded_class_broken_001( ) {
 	  "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{ },\"b\":{ "
 	  "}},\"b\":{}}}}}}";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	daw::do_not_optimize( v );
 	return false;
@@ -146,7 +146,7 @@ bool test_embedded_class_broken_001( ) {
 bool test_class_close_mid_array_without_open( ) {
 	DAW_CONSTEXPR std::string_view sv = "{ [ } ] }";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
 	daw::do_not_optimize( v );
 	return false;

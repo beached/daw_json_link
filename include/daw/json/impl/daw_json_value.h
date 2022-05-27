@@ -14,6 +14,7 @@
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_name.h"
+#include "daw_json_parse_policy.h"
 #include "daw_json_skip.h"
 #include "daw_json_traits.h"
 
@@ -28,27 +29,32 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		/***
-		 * A container for arbitrary JSON values
-		 * @tparam ParseState see IteratorRange
-		 */
-		template<typename ParseState>
+		/// @brief A container for arbitrary JSON values
+		/// @tparam ParseState see IteratorRange
+		template<json_options_t PolicyFlags =
+		           json_details::default_policy_flag,
+		         typename Allocator = json_details::NoAllocator>
 		class basic_json_value;
 
-		/***
-		 * A name/value pair of string_view/json_value
-		 * @tparam ParseState see IteratorRange
-		 */
-		template<typename ParseState>
+		/// @brief A name/value pair of string_view/json_value
+		/// @tparam ParseState see IteratorRange
+		template<json_options_t PolicyFlags =
+		           json_details::default_policy_flag,
+		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_pair {
+			using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
+
 			std::optional<std::string_view> name;
-			basic_json_value<ParseState> value;
+			basic_json_value<PolicyFlags, Allocator> value;
 		};
 
-		template<std::size_t Idx, typename ParseState>
+		template<std::size_t Idx, json_options_t PolicyFlags,
+		         typename Allocator>
 		constexpr decltype( auto )
-		get( basic_json_pair<ParseState> const &parse_state ) {
-			static_assert( Idx < 2 );
+		get( basic_json_pair<PolicyFlags, Allocator> const &parse_state ) {
+			static_assert(
+			  Idx < 2,
+			  "Invalid index. Valid values are 0 for name, and 1 for value" );
 			if constexpr( Idx == 0 ) {
 				return parse_state.name;
 			} else {
@@ -56,9 +62,13 @@ namespace daw::json {
 			}
 		}
 
-		template<std::size_t Idx, typename ParseState>
-		constexpr decltype( auto ) get( basic_json_pair<ParseState> &parse_state ) {
-			static_assert( Idx < 2 );
+		template<std::size_t Idx, json_options_t PolicyFlags,
+		         typename Allocator>
+		constexpr decltype( auto )
+		get( basic_json_pair<PolicyFlags, Allocator> &parse_state ) {
+			static_assert(
+			  Idx < 2,
+			  "Invalid index. Valid values are 0 for name, and 1 for value" );
 			if constexpr( Idx == 0 ) {
 				return parse_state.name;
 			} else {
@@ -66,10 +76,13 @@ namespace daw::json {
 			}
 		}
 
-		template<std::size_t Idx, typename ParseState>
+		template<std::size_t Idx, json_options_t PolicyFlags,
+		         typename Allocator>
 		constexpr decltype( auto )
-		get( basic_json_pair<ParseState> &&parse_state ) {
-			static_assert( Idx < 2 );
+		get( basic_json_pair<PolicyFlags, Allocator> &&parse_state ) {
+			static_assert(
+			  Idx < 2,
+			  "Invalid index. Valid values are 0 for name, and 1 for value" );
 			if constexpr( Idx == 0 ) {
 				return DAW_MOVE( parse_state.name );
 			} else {
@@ -80,20 +93,23 @@ namespace daw::json {
 } // namespace daw::json
 
 namespace std {
-	template<typename ParseState>
-	class tuple_element<0, daw::json::basic_json_pair<ParseState>> {
+	template<daw::json::json_options_t PolicyFlags,
+	         typename Allocator>
+	class tuple_element<0, daw::json::basic_json_pair<PolicyFlags, Allocator>> {
 	public:
 		using type = std::optional<std::string_view>;
 	};
 
-	template<typename ParseState>
-	class tuple_element<1, daw::json::basic_json_pair<ParseState>> {
+	template<daw::json::json_options_t PolicyFlags,
+	         typename Allocator>
+	class tuple_element<1, daw::json::basic_json_pair<PolicyFlags, Allocator>> {
 	public:
-		using type = daw::json::basic_json_value<ParseState>;
+		using type = daw::json::basic_json_value<PolicyFlags, Allocator>;
 	};
 
-	template<typename ParseState>
-	class tuple_size<daw::json::basic_json_pair<ParseState>>
+	template<daw::json::json_options_t PolicyFlags,
+	         typename Allocator>
+	class tuple_size<daw::json::basic_json_pair<PolicyFlags, Allocator>>
 	  : public std::integral_constant<std::size_t, 2> {};
 } // namespace std
 
@@ -103,25 +119,29 @@ namespace daw::json {
 		 * Iterator for iterating over arbitrary JSON members and array elements
 		 * @tparam ParseState see IteratorRange
 		 */
-		template<typename ParseState>
+		template<json_options_t PolicyFlags =
+		           json_details::default_policy_flag,
+		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_value_iterator {
 			using key_type = std::string_view;
-			using mapped_type = basic_json_value<ParseState>;
+			using mapped_type = basic_json_value<PolicyFlags, Allocator>;
 
-			using json_pair = basic_json_pair<ParseState>;
-			using value_type = basic_json_pair<ParseState>;
+			using json_pair = basic_json_pair<PolicyFlags, Allocator>;
+			using value_type = basic_json_pair<PolicyFlags, Allocator>;
 			using reference = value_type;
 			using pointer = json_details::arrow_proxy<value_type>;
 			using difference_type = std::ptrdiff_t;
 			using iterator_category = std::forward_iterator_tag;
 
 		private:
+			using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
 			ParseState m_state{ };
 
-			explicit constexpr basic_json_value_iterator( ParseState parse_state )
+			explicit constexpr basic_json_value_iterator(
+			  BasicParsePolicy<PolicyFlags, Allocator> const &parse_state )
 			  : m_state( parse_state ) {}
 
-			friend class basic_json_value<ParseState>;
+			friend class basic_json_value<PolicyFlags, Allocator>;
 
 		public:
 			constexpr basic_json_value_iterator( ) = default;
@@ -144,7 +164,8 @@ namespace daw::json {
 			 * @return A basic_json_value representing the currently referenced
 			 * element in the range
 			 */
-			[[nodiscard]] constexpr basic_json_value<ParseState> value( ) const {
+			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
+			value( ) const {
 				if( is_array( ) ) {
 					return ParseState( m_state );
 				}
@@ -157,7 +178,8 @@ namespace daw::json {
 			 * Get the name/value pair of the currently referenced element
 			 * @return a json_pair with the name, if any, and json_value
 			 */
-			[[nodiscard]] constexpr basic_json_pair<ParseState> operator*( ) {
+			[[nodiscard]] constexpr basic_json_pair<PolicyFlags, Allocator>
+			operator*( ) {
 				if( is_array( ) ) {
 					return {
 					  { },
@@ -254,15 +276,14 @@ namespace daw::json {
 				daw_json_error( ErrorReason::ExpectedTokenNotFound, m_state );
 			}
 
-			/***
-			 * Can we increment more
-			 * @return True if safe to increment more
-			 */
+			/// @brief Can we increment more
+			/// @return True if safe to increment more
 			[[nodiscard]] constexpr explicit operator bool( ) const {
 				return good( );
 			}
 
-			[[nodiscard]] constexpr ParseState const &get_raw_state( ) const {
+			[[nodiscard]] constexpr BasicParsePolicy<PolicyFlags, Allocator> const &
+			get_raw_state( ) const {
 				return m_state;
 			}
 
@@ -271,8 +292,9 @@ namespace daw::json {
 			 * @param rhs iterator to compare for equivalence with
 			 * @return true if both are equivalent
 			 */
+			template<json_options_t P, typename A>
 			[[nodiscard]] constexpr bool
-			operator==( basic_json_value_iterator<ParseState> const &rhs ) const {
+			operator==( basic_json_value_iterator<P, A> const &rhs ) const {
 				if( good( ) ) {
 					if( rhs.good( ) ) {
 						return m_state.first == rhs.m_state.first;
@@ -287,16 +309,19 @@ namespace daw::json {
 			 * @param rhs iterator to compare for equivalence with
 			 * @return true if the rhs is not equivalent
 			 */
+			template<json_options_t P, typename A>
 			[[nodiscard]] constexpr bool
-			operator!=( basic_json_value_iterator<ParseState> const &rhs ) const {
+			operator!=( basic_json_value_iterator<P, A> const &rhs ) const {
 				return not operator==( rhs );
 			}
 		};
 
-		template<typename ParseState>
+		template<json_options_t PolicyFlags =
+		           json_details::default_policy_flag,
+		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_value_iterator_range {
-			using iterator = basic_json_value_iterator<ParseState>;
-			using CharT = typename ParseState::CharT;
+			using iterator = basic_json_value_iterator<PolicyFlags, Allocator>;
+			using CharT = typename BasicParsePolicy<PolicyFlags, Allocator>::CharT;
 			iterator first;
 			iterator last;
 
@@ -307,89 +332,76 @@ namespace daw::json {
 				return last;
 			}
 		};
-		template<typename ParseState>
-		basic_json_value_iterator_range( basic_json_value_iterator<ParseState>,
-		                                 basic_json_value_iterator<ParseState> )
-		  -> basic_json_value_iterator_range<ParseState>;
 
-		/***
-		 * A container for arbitrary JSON values
-		 * @tparam ParseState see IteratorRange
-		 */
-		template<typename ParseState>
+		template<json_options_t PolicyFlags, typename Allocator>
+		basic_json_value_iterator_range(
+		  basic_json_value_iterator<PolicyFlags, Allocator>,
+		  basic_json_value_iterator<PolicyFlags, Allocator> )
+		  -> basic_json_value_iterator_range<PolicyFlags, Allocator>;
+
+		/// @brief A container for arbitrary JSON values
+		/// @tparam ParseState see IteratorRange
+		template<json_options_t PolicyFlags, typename Allocator>
 		class basic_json_value {
-			ParseState m_parse_state{ };
+			using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
+			BasicParsePolicy<PolicyFlags, Allocator> m_parse_state{ };
 
 		public:
 			using CharT = typename ParseState::CharT;
-			using iterator = basic_json_value_iterator<ParseState>;
-			using value_type = basic_json_pair<ParseState>;
+			using iterator = basic_json_value_iterator<PolicyFlags, Allocator>;
+			using value_type = basic_json_pair<PolicyFlags, Allocator>;
 			using size_type = std::size_t;
 			using difference_type = std::ptrdiff_t;
 
-			/***
-			 * Construct from IteratorRange
-			 * @param parse_state string data where start is the start of our value
-			 */
-			explicit inline constexpr basic_json_value( ParseState parse_state )
+			/// @brief Construct from IteratorRange
+			/// @param parse_state string data where start is the start of our value
+			template<json_options_t P, typename A>
+			explicit inline constexpr basic_json_value(
+			  BasicParsePolicy<P, A> parse_state )
 			  : m_parse_state( DAW_MOVE( parse_state ) ) {
-				// Ensure we are at the actual value
+				// Ensure we are at the actual value.
 				m_parse_state.trim_left( );
 			}
 
-			/***
-			 * Construct from string_view
-			 */
+			/// @brief Construct from string_view
 			explicit inline constexpr basic_json_value( daw::string_view sv )
 			  : m_parse_state( std::data( sv ), daw::data_end( sv ) ) {}
 
-			/***
-			 * Construct from CharT *, std::size_t
-			 */
+			/// @brief Construct from CharT *, std::size_t
 			explicit inline constexpr basic_json_value( CharT *first, std::size_t sz )
 			  : m_parse_state( first, first + static_cast<std::ptrdiff_t>( sz ) ) {}
 
-			/***
-			 * Construct from CharT *, CharT *
-			 */
+			/// @brief Construct from CharT *, CharT *
 			explicit inline constexpr basic_json_value( CharT *first, CharT *last )
 			  : m_parse_state( first, last ) {}
 
-			/***
-			 * Get a copy of the underlying parse state
-			 * @return IteratorRange containing values JSON data
-			 */
+			/// @brief Get a copy of the underlying parse state
+			/// @return IteratorRange containing values JSON data
 			[[nodiscard]] inline constexpr ParseState get_raw_state( ) const {
 				return m_parse_state;
 			}
 
-			/***
-			 * Get the first member/item
-			 * @pre type of value is class or array
-			 * @return basic_json_value_iterator to the first item/member
-			 */
+			/// @brief Get the first member/item
+			/// @pre type of value is class or array
+			/// @return basic_json_value_iterator to the first item/member
 			[[nodiscard]] inline constexpr iterator begin( ) const {
-				ParseState parse_state =
+				auto parse_state =
 				  ParseState( m_parse_state.first, m_parse_state.last );
 				parse_state.remove_prefix( );
 				parse_state.trim_left( );
-				return basic_json_value_iterator<ParseState>( parse_state );
+				return iterator( parse_state );
 			}
 
-			/***
-			 * End of range over class/arrays members/items
-			 * @return default constructed basic_json_value_iterator
-			 */
+			/// @brief End of range over class/arrays members/items
+			/// @return default constructed basic_json_value_iterator
 			[[nodiscard]] inline constexpr iterator end( ) const {
-				return basic_json_value_iterator<ParseState>( );
+				return iterator( );
 			}
 
-			/***
-			 * Get the type of JSON value
-			 * @return a JSONBaseParseTypes enum value with the type of this JSON
-			 * value
-			 */
-			[[nodiscard]] JsonBaseParseTypes type( ) const {
+			/// @brief Get the type of JSON value
+			/// @return a JSONBaseParseTypes enum value with the type of this JSON
+			/// value
+			[[nodiscard]] JsonBaseParseTypes type( ) const noexcept {
 				if( not m_parse_state.has_more( ) ) {
 					return JsonBaseParseTypes::None;
 				}
@@ -438,20 +450,9 @@ namespace daw::json {
 				return JsonBaseParseTypes::None;
 			}
 
-			/***
-			 * Get the JSON data
-			 * @return the JSON data as a std::string_view
-			 */
-			[[nodiscard]] constexpr std::string_view get_string_view( ) const {
-				auto parse_state = m_parse_state;
-				auto result = json_details::skip_value( parse_state );
-				if( is_string( ) ) {
-					--result.first;
-					++result.last;
-				}
-				return { std::data( result ), std::size( result ) };
-			}
-
+			/// @brief Construct a string range of the current value.  Strings start
+			/// inside the quotes
+			/// @return the JSON data as a ParseState
 			[[nodiscard]] constexpr ParseState get_state( ) const {
 				auto parse_state = m_parse_state;
 				auto result = json_details::skip_value( parse_state );
@@ -462,137 +463,100 @@ namespace daw::json {
 				return result;
 			}
 
-			/***
-			 * Get a copy of the JSON data
-			 * @return the JSON data as a std::string
-			 */
-			template<typename Allocator = std::allocator<char>,
+			/// @brief Construct a string range of the current value.  Strings start
+			/// inside the quotes
+			/// @return the JSON data as a std::string_view
+			[[nodiscard]] constexpr std::string_view get_string_view( ) const {
+				auto result = get_state( );
+				return { std::data( result ), std::size( result ) };
+			}
+
+			/// @brief Construct a string range of the current value.  Strings start
+			/// inside the quotes
+			/// @return the JSON data as a std::string
+			template<typename Alloc = std::allocator<char>,
 			         typename Traits = std::char_traits<char>>
-			[[nodiscard]] std::basic_string<char, Traits, Allocator>
-			get_string( Allocator const &alloc = std::allocator<char>( ) ) const {
-				auto parse_state = m_parse_state;
-				auto result = json_details::skip_value( parse_state );
-				if( is_string( ) ) {
-					--result.first;
-					++result.last;
-				}
+			[[nodiscard]] std::basic_string<char, Traits, Alloc>
+			get_string( Alloc const &alloc = Alloc( ) ) const {
+				auto result = get_state( );
 				return { std::data( result ), std::size( result ), alloc };
 			}
 
-			/***
-			 * Is the JSON value a null literal
-			 * @return true if the value is a null literal
-			 */
-			[[nodiscard]] constexpr bool is_null( ) const {
-				return ( m_parse_state.starts_with( "null" ) );
+			/// @brief Is the JSON value a null literal
+			/// @return true if the value is a null literal
+			[[nodiscard]] constexpr bool is_null( ) const noexcept {
+				return type( ) == JsonBaseParseTypes::Null;
 			}
 
-			/***
-			 * Is the JSON value a class
-			 * @return true if the value is a class
-			 */
-			[[nodiscard]] constexpr bool is_class( ) const {
-				return m_parse_state.is_opening_brace_checked( );
+			/// @brief Is the JSON value a class
+			/// @return true if the value is a class
+			[[nodiscard]] constexpr bool is_class( ) const noexcept {
+				return type( ) == JsonBaseParseTypes::Class;
 			}
 
-			/***
-			 * Is the JSON value a array
-			 * @return true if the value is a array
-			 */
-			[[nodiscard]] constexpr bool is_array( ) const {
-				return m_parse_state.is_opening_bracket_checked( );
+			/// @brief Is the JSON value a array
+			/// @return true if the value is a array
+			[[nodiscard]] constexpr bool is_array( ) const noexcept {
+				return type( ) == JsonBaseParseTypes::Array;
 			}
 
-			/***
-			 * Is the JSON value a number literal
-			 * @return true if the value is a number literal
-			 */
-			[[nodiscard]] constexpr bool is_number( ) const {
-				if( not m_parse_state.has_more( ) ) {
-					return false;
-				}
-				switch( m_parse_state.front( ) ) {
-				case '0':
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
-				case '+':
-				case '-':
-					return true;
-				}
-				return false;
+			/// @brief Is the JSON value a number literal
+			/// @return true if the value is a number literal
+			[[nodiscard]] constexpr bool is_number( ) const noexcept {
+				return type( ) == JsonBaseParseTypes::Number;
 			}
 
-			/***
-			 * Is the JSON value a string
-			 * @return true if the value is a string
-			 */
-			[[nodiscard]] inline constexpr bool is_string( ) const {
-				return m_parse_state.is_quotes_checked( );
+			/// @brief Is the JSON value a string
+			/// @return true if the value is a string
+			[[nodiscard]] inline constexpr bool is_string( ) const noexcept {
+				return type( ) == JsonBaseParseTypes::String;
 			}
 
-			/***
-			 * Is the JSON value a boolean
-			 * @return true if the value is a boolean
-			 */
-			[[nodiscard]] constexpr bool is_bool( ) const {
-				if( not m_parse_state.has_more( ) ) {
-					return false;
-				}
-				switch( m_parse_state.front( ) ) {
-				case 't':
-					if constexpr( not ParseState::is_unchecked_input ) {
-						return m_parse_state == "true";
-					} else {
-						return true;
-					}
-				case 'f':
-					if constexpr( not ParseState::is_unchecked_input ) {
-						return m_parse_state == "false";
-					} else {
-						return true;
-					}
-				}
-				return false;
+			/// @brief Is the JSON value a boolean
+			/// @return true if the value is a boolean
+			[[nodiscard]] constexpr bool is_bool( ) const noexcept {
+				return type( ) == JsonBaseParseTypes::Bool;
 			}
 
-			/***
-			 * Is the JSON data unrecognizable.  JSON members will start with one of
-			 * ",[,{,0,1,2,3,4,5,6,7,8,9,-,t,f, or n and this does not
-			 * @return true if the parser is unsure what the data is
-			 */
-			[[nodiscard]] inline constexpr bool is_unknown( ) const {
+			/// @brief Is the JSON data unrecognizable. JSON members will start with
+			/// one of ",[,{,0,1,2,3,4,5,6,7,8,9,-,t,f, or n
+			/// @return true if the parser is unsure what the data is
+			[[nodiscard]] inline constexpr bool is_unknown( ) const noexcept {
 				return type( ) == JsonBaseParseTypes::None;
 			}
 
-			template<typename NewParseState>
-			explicit inline constexpr
-			operator basic_json_value<NewParseState>( ) const {
+			template<json_options_t P, typename A>
+			constexpr operator basic_json_value<P, A>( ) const noexcept {
 				auto new_range =
-				  NewParseState( m_parse_state.first, m_parse_state.last );
+				  BasicParsePolicy<P, A>( m_parse_state.first, m_parse_state.last );
 				new_range.class_first = m_parse_state.class_first;
 				new_range.class_last = m_parse_state.class_last;
-				return basic_json_value<NewParseState>( DAW_MOVE( new_range ) );
+				return basic_json_value<P, A>( DAW_MOVE( new_range ) );
 			}
 		};
-		template<typename ParseState>
-		basic_json_value( ParseState ) -> basic_json_value<ParseState>;
+
+		template<json_options_t PolicyFlags, typename Allocator>
+		basic_json_value( BasicParsePolicy<PolicyFlags, Allocator> )
+		  -> basic_json_value<PolicyFlags, Allocator>;
+
+		basic_json_value( daw::string_view ) -> basic_json_value<>;
+
+		basic_json_value( char const *first, std::size_t sz ) -> basic_json_value<>;
+
+		basic_json_value( char const *first, char const *last )
+		  -> basic_json_value<>;
 
 		namespace json_details {
 			template<typename>
 			inline constexpr bool is_json_value = false;
 
-			template<typename ParseState>
-			inline constexpr bool is_json_value<basic_json_value<ParseState>> = true;
+			template<json_options_t PolicyFlags, typename Allocator>
+			inline constexpr bool
+			  is_json_value<basic_json_value<PolicyFlags, Allocator>> = true;
 
-			template<typename T>
-			inline constexpr bool is_string_view_like_v<basic_json_value<T>> = false;
+			template<json_options_t PolicyFlags, typename Allocator>
+			inline constexpr bool
+			  is_string_view_like_v<basic_json_value<PolicyFlags, Allocator>> = false;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -118,12 +118,12 @@ namespace daw::json {
 		  options::JsonNumberErrors, options::FPOutputFormat>;
 
 		inline constexpr auto number_opts = number_opts_t{ };
-		inline constexpr json_details::json_options_t number_opts_def =
+		inline constexpr json_options_t number_opts_def =
 		  number_opts_t::default_option_flag;
 
 		namespace options {
 			template<typename... Options>
-			constexpr json_details::json_options_t number_opt( Options... options ) {
+			constexpr json_options_t number_opt( Options... options ) {
 				return number_opts_t::options( options... );
 			}
 		} // namespace options
@@ -133,12 +133,12 @@ namespace daw::json {
 		  json_details::JsonOptionList<options::LiteralAsStringOpt>;
 
 		inline constexpr auto bool_opts = bool_opts_t{ };
-		inline constexpr json_details::json_options_t bool_opts_def =
+		inline constexpr json_options_t bool_opts_def =
 		  bool_opts_t::default_option_flag;
 
 		namespace options {
 			template<typename... Options>
-			constexpr json_details::json_options_t bool_opt( Options... options ) {
+			constexpr json_options_t bool_opt( Options... options ) {
 				return bool_opts_t::options( options... );
 			}
 		} // namespace options
@@ -172,12 +172,12 @@ namespace daw::json {
 		using string_opts_t = json_details::JsonOptionList<options::EightBitModes>;
 
 		inline constexpr auto string_opts = string_opts_t{ };
-		inline constexpr json_details::json_options_t string_opts_def =
+		inline constexpr json_options_t string_opts_def =
 		  string_opts_t::default_option_flag;
 
 		namespace options {
 			template<typename... Options>
-			constexpr json_details::json_options_t string_opt( Options... options ) {
+			constexpr json_options_t string_opt( Options... options ) {
 				return string_opts_t::options( options... );
 			}
 		} // namespace options
@@ -213,12 +213,12 @@ namespace daw::json {
 		                               options::AllowEscapeCharacter>;
 
 		inline constexpr auto string_raw_opts = string_raw_opts_t{ };
-		inline constexpr json_details::json_options_t string_raw_opts_def =
+		inline constexpr json_options_t string_raw_opts_def =
 		  string_raw_opts_t::default_option_flag;
 
 		namespace options {
 			template<typename... Options>
-			constexpr json_details::json_options_t
+			constexpr json_options_t
 			string_raw_opt( Options... options ) {
 				return string_raw_opts_t::options( options... );
 			}
@@ -259,12 +259,12 @@ namespace daw::json {
 		  json_details::JsonOptionList<options::JsonCustomTypes>;
 
 		inline constexpr auto json_custom_opts = json_custom_opts_t{ };
-		inline constexpr json_details::json_options_t json_custom_opts_def =
+		inline constexpr json_options_t json_custom_opts_def =
 		  json_custom_opts_t::default_option_flag;
 
 		namespace options {
 			template<typename... Options>
-			constexpr json_details::json_options_t
+			constexpr json_options_t
 			json_custom_opt( Options... options ) {
 				return json_custom_opts_t::options( options... );
 			}

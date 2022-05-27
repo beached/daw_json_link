@@ -25,7 +25,7 @@ namespace daw::json {
 				  ( json_details::is_output_option_v<decltype( PolicyFlags )> and ... ),
 				  "Only valid output flags can be used.  See cookbook "
 				  "output_options.md" );
-				static constexpr json_details::json_options_t value =
+				static constexpr json_options_t value =
 				  json_details::serialization::set_bits(
 				    json_details::serialization::default_policy_flag, PolicyFlags... );
 			};
@@ -35,7 +35,7 @@ namespace daw::json {
 			 */
 			template<>
 			struct output_flags_t<> {
-				static constexpr json_details::json_options_t value =
+				static constexpr json_options_t value =
 				  json_details::serialization::default_policy_flag;
 			};
 

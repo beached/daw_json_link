@@ -384,17 +384,18 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, bool KnownBounds, typename Result,
-		         typename ParseState, auto... PolicyFlags>
+		         json_options_t P, typename Allocator,
+		         auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] inline constexpr Result
-		from_json( basic_json_value<ParseState> value,
+		from_json( basic_json_value<P, Allocator> value,
 		           options::parse_flags_t<PolicyFlags...> ) {
 			using json_member = json_details::json_deduced_type<JsonMember>;
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			using ParsePolicy =
-			  typename ParseState::template SetPolicyOptions<PolicyFlags...>;
+			using ParsePolicy = typename BasicParsePolicy<
+			  P, Allocator>::template SetPolicyOptions<PolicyFlags...>;
 
 			auto const json_data = value.get_string_view( );
 			auto parse_state =
@@ -414,9 +415,9 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, bool KnownBounds, typename Result,
-		         typename ParseState>
+		         json_options_t PolicyFlags, typename Allocator>
 		[[maybe_unused, nodiscard]] inline constexpr Result
-		from_json( basic_json_value<ParseState> value ) {
+		from_json( basic_json_value<PolicyFlags, Allocator> value ) {
 
 			return from_json<JsonMember, KnownBounds, Result>(
 			  DAW_MOVE( value ), options::parse_flags<> );
@@ -435,9 +436,11 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, bool KnownBounds, typename Result,
-		         typename ParseState, auto... PolicyFlags>
+		         json_options_t P, typename Allocator,
+		         auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result
-		from_json( basic_json_value<ParseState> value, std::string_view member_path,
+		from_json( basic_json_value<P, Allocator> value,
+		           std::string_view member_path,
 		           options::parse_flags_t<PolicyFlags...> ) {
 			using json_member = json_details::json_deduced_type<JsonMember>;
 			static_assert(
@@ -475,9 +478,9 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, bool KnownBounds, typename Result,
-		         typename ParseState>
+		         json_options_t PolicyFlags, typename Allocator>
 		[[maybe_unused, nodiscard]] constexpr Result
-		from_json( basic_json_value<ParseState> value,
+		from_json( basic_json_value<PolicyFlags> value,
 		           std::string_view member_path ) {
 			return from_json<JsonMember, KnownBounds, Result>(
 			  DAW_MOVE( value ), member_path, options::parse_flags<> );

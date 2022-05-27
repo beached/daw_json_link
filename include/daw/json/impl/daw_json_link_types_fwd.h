@@ -96,7 +96,7 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T = double,
-		         json_details::json_options_t Options = number_opts_def,
+		         json_options_t Options = number_opts_def,
 		         typename Constructor = use_default>
 		struct json_number;
 		/**
@@ -109,7 +109,7 @@ namespace daw::json {
 		 * @tparam RangeCheck Check if the value will fit in the result
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<double>,
-		         json_details::json_options_t Options = number_opts_def,
+		         json_options_t Options = number_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_number_null = json_nullable<
@@ -125,7 +125,7 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T = double,
-		         json_details::json_options_t Options = number_opts_def,
+		         json_options_t Options = number_opts_def,
 		         typename Constructor = use_default>
 		using json_checked_number =
 		  json_number<Name, T,
@@ -142,7 +142,7 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T = bool,
-		         json_details::json_options_t Options = bool_opts_def,
+		         json_options_t Options = bool_opts_def,
 		         typename Constructor = use_default>
 		struct json_bool;
 
@@ -154,7 +154,7 @@ namespace daw::json {
 		 * @tparam Constructor Callable used to construct result
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<bool>,
-		         json_details::json_options_t Options = bool_opts_def,
+		         json_options_t Options = bool_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_bool_null =
@@ -172,7 +172,7 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename String = std::string,
-		         json_details::json_options_t Options = string_opts_def,
+		         json_options_t Options = string_opts_def,
 		         typename Constructor = use_default>
 		struct json_string;
 
@@ -187,7 +187,7 @@ namespace daw::json {
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<std::string>,
-		         json_details::json_options_t Options = string_opts_def,
+		         json_options_t Options = string_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_string_null = json_nullable<
@@ -207,7 +207,7 @@ namespace daw::json {
 		 * data
 		 */
 		template<JSONNAMETYPE Name, typename String = std::string,
-		         json_details::json_options_t Options = string_raw_opts_def,
+		         json_options_t Options = string_raw_opts_def,
 		         typename Constructor = use_default>
 		struct json_string_raw;
 
@@ -224,7 +224,7 @@ namespace daw::json {
 		 * data
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<std::string>,
-		         json_details::json_options_t Options = string_raw_opts_def,
+		         json_options_t Options = string_raw_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_string_raw_null = json_nullable<
@@ -240,7 +240,7 @@ namespace daw::json {
 		 * @tparam Constructor Callable used to construct result
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<double>,
-		         json_details::json_options_t Options = number_opts_def,
+		         json_options_t Options = number_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_checked_number_null =
@@ -435,7 +435,7 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = use_default,
 		         typename ToJsonConverter = use_default,
-		         json_details::json_options_t Options = json_custom_opts_def>
+		         json_options_t Options = json_custom_opts_def>
 		struct json_custom;
 
 		/**
@@ -450,7 +450,7 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename WrappedT,
 		         typename FromJsonConverter = use_default,
 		         typename ToJsonConverter = use_default,
-		         json_details::json_options_t Options = json_custom_opts_def,
+		         json_options_t Options = json_custom_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_custom_null = json_nullable<
@@ -465,7 +465,7 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = use_default,
 		         typename ToJsonConverter = use_default,
-		         json_details::json_options_t Options = json_custom_opts_def>
+		         json_options_t Options = json_custom_opts_def>
 		using json_custom_lit =
 		  json_custom<Name, T, FromJsonConverter, ToJsonConverter,
 		              json_details::json_custom_opts_set<
@@ -483,7 +483,7 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename WrappedT,
 		         typename FromJsonConverter = use_default,
 		         typename ToJsonConverter = use_default,
-		         json_details::json_options_t Options = json_custom_opts_def,
+		         json_options_t Options = json_custom_opts_def,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_custom_lit_null = json_nullable<

@@ -18,7 +18,7 @@
 bool test_empty( ) {
 	DAW_CONSTEXPR std::string_view sv = "";
 	auto rng =
-	  daw::json::DefaultParsePolicy( std::data( sv ), daw::data_end( sv ) );
+	  daw::json::BasicParsePolicy( std::data( sv ), daw::data_end( sv ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	return v.empty( );
@@ -27,7 +27,7 @@ bool test_empty( ) {
 bool test_quoted_number( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "1234")";
 	auto rng =
-	  daw::json::DefaultParsePolicy( std::data( sv ) + 1, daw::data_end( sv ) );
+	  daw::json::BasicParsePolicy( std::data( sv ) + 1, daw::data_end( sv ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	return std::string_view( v.first, v.size( ) ) == "1234";
@@ -37,7 +37,7 @@ bool test_empty_quoted( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "")";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
-	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
+	  daw::json::BasicParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	return v.empty( );
@@ -47,7 +47,7 @@ bool test_embedded_quotes( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "\"  \\ ")";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
-	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
+	  daw::json::BasicParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	DAW_CONSTEXPR std::string_view ans = R"(\"  \\ )";
@@ -58,7 +58,7 @@ bool test_missing_quotes_001( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( ")";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
-	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
+	  daw::json::BasicParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	(void)v;
@@ -69,7 +69,7 @@ bool test_missing_quotes_002( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "\")";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
-	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
+	  daw::json::BasicParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	(void)v;
@@ -80,7 +80,7 @@ bool test_missing_quotes_003( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "\"]})";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
-	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
+	  daw::json::BasicParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	(void)v;

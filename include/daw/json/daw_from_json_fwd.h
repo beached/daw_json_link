@@ -180,9 +180,9 @@ namespace daw::json {
 		 */
 		template<typename JsonMember, bool KnownBounds = false,
 		         typename Result = json_details::from_json_result_t<JsonMember>,
-		         typename ParseState, auto... PolicyFlags>
+		         json_options_t P, typename A, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] inline constexpr Result
-		from_json( basic_json_value<ParseState> value,
+		from_json( basic_json_value<P, A> value,
 		           options::parse_flags_t<PolicyFlags...> );
 
 		/***
@@ -196,9 +196,9 @@ namespace daw::json {
 		 */
 		template<typename JsonMember, bool KnownBounds = false,
 		         typename Result = json_details::from_json_result_t<JsonMember>,
-		         typename ParseState>
+		         json_options_t P, typename A>
 		[[maybe_unused, nodiscard]] inline constexpr Result
-		from_json( basic_json_value<ParseState> value );
+		from_json( basic_json_value<P, A> value );
 
 		/***
 		 * Parse a JSONMember from the json_data starting at member_path.
@@ -214,9 +214,9 @@ namespace daw::json {
 		 */
 		template<typename JsonMember, bool KnownBounds = false,
 		         typename Result = json_details::from_json_result_t<JsonMember>,
-		         typename ParseState, auto... PolicyFlags>
+		         json_options_t P, typename A, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result
-		from_json( basic_json_value<ParseState> value, std::string_view member_path,
+		from_json( basic_json_value<P, A> value, std::string_view member_path,
 		           options::parse_flags_t<PolicyFlags...> );
 
 		/***
@@ -232,10 +232,9 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, bool KnownBounds, typename Result,
-		         typename ParseState>
+		         json_options_t P, typename A>
 		[[maybe_unused, nodiscard]] constexpr Result
-		from_json( basic_json_value<ParseState> value,
-		           std::string_view member_path );
+		from_json( basic_json_value<P, A> value, std::string_view member_path );
 
 		/**
 		 * Parse JSON data where the root item is an array
