@@ -360,11 +360,11 @@ namespace daw::json {
 			using ParseState =
 			  typename BasicParsePolicy<P,
 			                            A>::template SetPolicyOptions<ParseFlags...>;
-			static constexpr auto PolicyFlags = ParseState::policy_flags( );
-			auto jvalue = basic_json_value<PolicyFlags, A>( bjv );
-			using iterator = basic_json_value_iterator<PolicyFlags, A>;
-			using json_value_t = basic_json_pair<PolicyFlags, A>;
-			using stack_value_t = JsonEventParserStackValue<PolicyFlags, A>;
+			constexpr auto PolicyFlags = daw::constant<ParseState::policy_flags( )>;
+			auto jvalue = basic_json_value<PolicyFlags::value, A>( bjv );
+			using iterator = basic_json_value_iterator<PolicyFlags::value, A>;
+			using json_value_t = basic_json_pair<PolicyFlags::value, A>;
+			using stack_value_t = JsonEventParserStackValue<PolicyFlags::value, A>;
 
 			auto parent_stack = [] {
 				if constexpr( std::is_same_v<StackContainerPolicy, use_default> ) {
