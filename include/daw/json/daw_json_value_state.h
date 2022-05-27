@@ -16,6 +16,7 @@
 #include "impl/version.h"
 
 #include <daw/daw_move.h>
+#include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
 
 #include <ciso646>
@@ -27,14 +28,20 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename ParseState>
-			struct basic_stateful_json_value_state {
+			template<json_options_t PolicyFlags =
+			           json_details::default_policy_flag,
+			         typename Allocator = json_details::NoAllocator>
+			class basic_stateful_json_value_state {
+				using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
+
+			public:
 				daw::string_view name;
 				daw::UInt32 hash_value;
-				basic_json_value_iterator<ParseState> location;
+				basic_json_value_iterator<PolicyFlags, Allocator> location;
 
 				explicit constexpr basic_stateful_json_value_state(
-				  daw::string_view Name, basic_json_value_iterator<ParseState> val )
+				  daw::string_view Name,
+				  basic_json_value_iterator<PolicyFlags, Allocator> val )
 				  : name( Name )
 				  , hash_value(
 				      daw::name_hash<ParseState::expect_long_strings>( Name ) )
@@ -68,10 +75,15 @@ namespace daw::json {
 		 * costs once
 		 * @tparam ParseState see IteratorRange
 		 */
-		template<typename ParseState>
+		template<json_options_t PolicyFlags =
+		           json_details::default_policy_flag,
+		         typename Allocator = json_details::NoAllocator>
 		class basic_stateful_json_value {
-			basic_json_value<ParseState> m_value;
-			std::vector<json_details::basic_stateful_json_value_state<ParseState>>
+			using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
+
+			basic_json_value<PolicyFlags, Allocator> m_value;
+			std::vector<
+			  json_details::basic_stateful_json_value_state<PolicyFlags, Allocator>>
 			  m_locs{ };
 
 			/***
@@ -148,7 +160,8 @@ namespace daw::json {
 			}
 
 		public:
-			constexpr basic_stateful_json_value( basic_json_value<ParseState> val )
+			constexpr basic_stateful_json_value(
+			  basic_json_value<PolicyFlags, Allocator> val )
 			  : m_value( DAW_MOVE( val ) ) {
 
 				daw_json_assert_weak( ( [&] {
@@ -161,16 +174,17 @@ namespace daw::json {
 			}
 
 			constexpr basic_stateful_json_value( )
-			  : basic_stateful_json_value( basic_json_value<ParseState>( "{}" ) ) {}
-
-			constexpr basic_stateful_json_value( std::string_view json_data )
 			  : basic_stateful_json_value(
-			      basic_json_value<ParseState>( json_data ) ) {}
+			      basic_json_value<PolicyFlags, Allocator>( "{}" ) ) {}
+
+			constexpr basic_stateful_json_value( daw::string_view json_data )
+			  : basic_stateful_json_value(
+			      basic_json_value<PolicyFlags, Allocator>( json_data ) ) {}
 			/**
 			 * Reuse state storage for another basic_json_value
 			 * @param val Value to contain state for
 			 */
-			constexpr void reset( basic_json_value<ParseState> val ) {
+			constexpr void reset( basic_json_value<PolicyFlags, Allocator> val ) {
 				m_value = DAW_MOVE( val );
 				m_locs.clear( );
 			}
@@ -180,7 +194,7 @@ namespace daw::json {
 			/// @param key name of member
 			/// @return a new basic_json_member
 			///
-			[[nodiscard]] constexpr basic_json_value<ParseState>
+			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
 			operator[]( std::string_view key ) {
 				std::size_t pos = move_to( json_member_name( key ) );
 				daw_json_assert_weak( pos < std::size( m_locs ),
@@ -193,7 +207,7 @@ namespace daw::json {
 			/// @param member name of member
 			/// @return a new basic_json_member
 			///
-			[[nodiscard]] constexpr basic_json_value<ParseState>
+			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
 			operator[]( json_member_name member ) {
 				std::size_t pos = move_to( member );
 				daw_json_assert_weak( pos < std::size( m_locs ),
@@ -206,7 +220,7 @@ namespace daw::json {
 			/// @param key name of member
 			/// @return a new basic_json_member for the JSON data or an empty one if
 			/// the member does not exist
-			[[nodiscard]] constexpr basic_json_value<ParseState>
+			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
 			at( std::string_view key ) {
 				auto const k = std::string_view( std::data( key ), std::size( key ) );
 				std::size_t pos = move_to( k );
@@ -308,7 +322,7 @@ namespace daw::json {
 			 */
 			template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
 			                                            std::nullptr_t> = nullptr>
-			[[nodiscard]] constexpr basic_json_value<ParseState>
+			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
 			operator[]( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {
 					if( index < 0 ) {
@@ -335,7 +349,8 @@ namespace daw::json {
 			 */
 			template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
 			                                            std::nullptr_t> = nullptr>
-			[[nodiscard]] constexpr std::optional<basic_json_value<ParseState>>
+			[[nodiscard]] constexpr std::optional<
+			  basic_json_value<PolicyFlags, Allocator>>
 			at( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {
 					if( index < 0 ) {
@@ -358,12 +373,21 @@ namespace daw::json {
 			/***
 			 * @return A copy of the underlying basic_json_value
 			 */
-			[[nodiscard]] constexpr basic_json_value<ParseState>
+			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
 			get_json_value( ) const {
 				return m_value;
 			}
 		};
 
-		using json_value_state = basic_stateful_json_value<BasicParsePolicy<>>;
+		basic_stateful_json_value( ) -> basic_stateful_json_value<>;
+
+		template<json_options_t PolicyFlags, typename Allocator>
+		basic_stateful_json_value( basic_json_value<PolicyFlags, Allocator> )
+		  -> basic_stateful_json_value<PolicyFlags, Allocator>;
+
+		basic_stateful_json_value( daw::string_view )
+		  -> basic_stateful_json_value<>;
+
+		using json_value_state = basic_stateful_json_value<>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

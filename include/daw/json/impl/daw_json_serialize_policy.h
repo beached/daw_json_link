@@ -28,7 +28,7 @@ namespace daw::json {
 		 * @return A json_options_t that encodes the options for the parser
 		 */
 		template<typename... Policies>
-		constexpr json_details::json_options_t
+		constexpr json_options_t
 		serialize_options( Policies... policies ) {
 			static_assert( ( json_details::is_option_flag<Policies> and ... ),
 			               "Only registered policy types are allowed" );
@@ -41,13 +41,13 @@ namespace daw::json {
 		}
 
 		template<typename OutputIterator,
-		         json_details::json_options_t PolicyFlags =
+		         json_options_t PolicyFlags =
 		           json_details::serialization::default_policy_flag>
 		struct serialization_policy
 		  : json_details::iterator_wrapper<OutputIterator> {
 			using i_am_a_serialization_policy = void;
 
-			static constexpr json_details::json_options_t policy_flags( ) {
+			static constexpr json_options_t policy_flags( ) {
 				return PolicyFlags;
 			}
 
@@ -126,7 +126,7 @@ namespace daw::json {
 		template<typename, typename...>
 		inline constexpr bool is_serialization_policy_v = false;
 
-		template<typename OutputIterator, json_details::json_options_t PolicyFlags>
+		template<typename OutputIterator, json_options_t PolicyFlags>
 		inline constexpr bool is_serialization_policy_v<
 		  serialization_policy<OutputIterator, PolicyFlags>> = true;
 	} // namespace DAW_JSON_VER

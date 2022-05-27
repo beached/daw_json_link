@@ -34,8 +34,8 @@ coordinate_t calc( std::string_view text ) {
 	double z = 0.0;
 	int len = 0;
 
-	auto jv = basic_json_value<BasicParsePolicy<>>( text );
-	auto state = basic_stateful_json_value<BasicParsePolicy<>>( jv );
+	auto jv = basic_json_value( text );
+	auto state = basic_stateful_json_value( jv );
 	jv = state["coordinates"];
 	for( auto c : jv ) {
 		state.reset( c.value );

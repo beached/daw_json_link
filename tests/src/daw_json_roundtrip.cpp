@@ -53,8 +53,9 @@ public:
 		return true;
 	}
 
-	template<typename ParseState>
-	bool handle_on_string( daw::json::basic_json_value<ParseState> jv ) {
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	bool
+	handle_on_string( daw::json::basic_json_value<PolicyFlags, Allocator> jv ) {
 		auto const r = daw::json::from_json<std::string>( jv );
 		out_it = daw::json::to_json( r, out_it );
 		return true;
@@ -74,8 +75,8 @@ public:
 		return true;
 	}
 
-	template<typename ParsePolicy>
-	bool handle_on_value( daw::json::basic_json_pair<ParsePolicy> p ) {
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	bool handle_on_value( daw::json::basic_json_pair<PolicyFlags, Allocator> p ) {
 		if( member_count_stack.empty( ) ) {
 			member_count_stack.emplace_back( p.value.is_class( ) );
 		}
@@ -93,8 +94,9 @@ public:
 		return true;
 	}
 
-	template<typename ParsePolicy>
-	bool handle_on_array_start( daw::json::basic_json_value<ParsePolicy> ) {
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	bool
+	handle_on_array_start( daw::json::basic_json_value<PolicyFlags, Allocator> ) {
 		member_count_stack.emplace_back( false );
 		write_chr( '[' );
 		return true;
@@ -106,8 +108,9 @@ public:
 		return true;
 	}
 
-	template<typename ParsePolicy>
-	bool handle_on_class_start( daw::json::basic_json_value<ParsePolicy> ) {
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	bool
+	handle_on_class_start( daw::json::basic_json_value<PolicyFlags, Allocator> ) {
 		member_count_stack.emplace_back( true );
 		write_chr( '{' );
 		return true;

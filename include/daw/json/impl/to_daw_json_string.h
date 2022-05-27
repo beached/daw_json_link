@@ -565,10 +565,9 @@ namespace daw::json {
 			template<
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
-			  typename OutputIterator, typename ParseState>         
+			  typename OutputIterator, json_options_t P, typename A>
 			[[nodiscard]] constexpr OutputIterator
-			copy_to_iterator( OutputIterator it,
-			                  basic_json_value<ParseState> const &jv ) {
+			copy_to_iterator( OutputIterator it, basic_json_value<P, A> const &jv ) {
 				if( jv.is_null( ) ) {
 					return copy_to_iterator<do_escape, EightBitMode>( it, "null" );
 				} else {

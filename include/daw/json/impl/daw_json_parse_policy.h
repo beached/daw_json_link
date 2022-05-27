@@ -32,22 +32,22 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		/***
-		 * Handles the bounds and policy items for parsing execution and comments.
-		 * @tparam PolicyFlags set via parse_options method to change compile time
-		 * parser options
-		 * @tparam Allocator An optional Allocator to allow for passing to objects
-		 * created while parsing if they support the Allocator protocol of either
-		 * the Allocator argument being last or with a first argument of
-		 * std::allocator_arg_t followed by the allocator.`Thing( args..., alloc )`
-		 * or `Thing( std::allocator_arg, alloc, args... )`
-		 */
-		template<json_details::json_options_t PolicyFlags =
+		/// @brief Handles the bounds and policy items for parsing execution and
+		/// comments.
+		/// @tparam PolicyFlags set via parse_options method to change compile time
+		/// parser options
+		/// @tparam Allocator An optional Allocator to allow for passing to objects
+		/// created while parsing if they support the Allocator protocol of either
+		/// the Allocator argument being last or with a first argument of
+		/// std::allocator_arg_t followed by the allocator.`Thing( args..., alloc )`
+		/// or `Thing( std::allocator_arg, alloc, args... )`
+		///
+		template<json_options_t PolicyFlags =
 		           json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 
-			static DAW_CONSTEVAL json_details::json_options_t policy_flags( ) {
+			static DAW_CONSTEVAL json_options_t policy_flags( ) {
 				return PolicyFlags;
 			}
 
@@ -157,7 +157,6 @@ namespace daw::json {
 			iterator class_first{ };
 			iterator class_last{ };
 			std::size_t counter = 0;
-			using ParseState = BasicParsePolicy;
 
 			template<auto... PolicyOptions>
 			using SetPolicyOptions = BasicParsePolicy<
@@ -472,20 +471,20 @@ namespace daw::json {
 			}
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr BasicParsePolicy
 			skip_bracketed_item_checked( ) {
 				return CommentPolicy::template skip_bracketed_item_checked<
 				  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
 			}
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr BasicParsePolicy
 			skip_bracketed_item_unchecked( ) {
 				return CommentPolicy::template skip_bracketed_item_unchecked<
 				  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
 			}
 
-			[[nodiscard]] inline constexpr ParseState skip_class( ) {
+			[[nodiscard]] inline constexpr BasicParsePolicy skip_class( ) {
 				if constexpr( is_unchecked_input ) {
 					return skip_bracketed_item_unchecked<'{', '}', '[', ']'>( );
 				} else {
@@ -493,7 +492,7 @@ namespace daw::json {
 				}
 			}
 
-			[[nodiscard]] inline constexpr ParseState skip_array( ) {
+			[[nodiscard]] inline constexpr BasicParsePolicy skip_array( ) {
 				if constexpr( is_unchecked_input ) {
 					return skip_bracketed_item_unchecked<'[', ']', '{', '}'>( );
 				} else {
@@ -501,6 +500,22 @@ namespace daw::json {
 				}
 			}
 		};
+
+		BasicParsePolicy( ) -> BasicParsePolicy<>;
+
+		BasicParsePolicy( char const *, char const * ) -> BasicParsePolicy<>;
+
+		template<typename Allocator>
+		BasicParsePolicy( char const *, char const *, Allocator const & )
+		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
+
+		BasicParsePolicy( char const *, char const *, char const *, char const * )
+		  -> BasicParsePolicy<>;
+
+		template<typename Allocator>
+		BasicParsePolicy( char const *, char const *, char const *, char const *,
+		                  Allocator const & )
+		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
 
 		namespace options {
 			/***
@@ -512,12 +527,12 @@ namespace daw::json {
 				static_assert(
 				  ( json_details::is_option_flag<decltype( PolicyFlags )> and ... ),
 				  "Only registered policy types are allowed" );
-				static constexpr json_details::json_options_t value =
+				static constexpr json_options_t value =
 				  parse_options( PolicyFlags... );
 			};
 			template<>
 			struct parse_flags_t<> {
-				static constexpr json_details::json_options_t value =
+				static constexpr json_options_t value =
 				  json_details::default_policy_flag;
 			};
 
@@ -549,8 +564,6 @@ namespace daw::json {
 			  parse_flags = details::make_parse_flags<PolicyFlags...>( );
 		} // namespace options
 
-		using DefaultParsePolicy = BasicParsePolicy<>;
-
 #define DAW_JSON_CONFORMANCE_FLAGS                       \
 	daw::json::options::AllowEscapedNames::yes,            \
 	  daw::json::options::MustVerifyEndOfDataIsValid::yes, \
@@ -559,5 +572,6 @@ namespace daw::json {
 
 		inline constexpr auto ConformancePolicy =
 		  options::parse_flags<DAW_JSON_CONFORMANCE_FLAGS>;
+
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

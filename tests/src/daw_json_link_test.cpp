@@ -63,7 +63,7 @@ namespace daw::json {
 template<typename Real, bool Trusted = false>
 DAW_CONSTEXPR Real parse_real( std::string_view str ) {
 	auto rng =
-	  daw::json::DefaultParsePolicy( str.data( ), str.data( ) + str.size( ) );
+	  daw::json::BasicParsePolicy( str.data( ), str.data( ) + str.size( ) );
 	return daw::json::json_details::parse_real<Real, false>( rng );
 }
 
@@ -76,9 +76,8 @@ DAW_CONSTEXPR bool parse_real_test( std::string_view str, Real expected ) {
 template<typename Unsigned, bool Trusted = false, size_t N>
 DAW_CONSTEXPR bool parse_unsigned_test( char const ( &str )[N],
                                         Unsigned expected ) {
-	using policy_t =
-	  typename daw::json::DefaultParsePolicy::template SetPolicyOptions<
-	    daw::json::options::CheckedParseMode::no>;
+	using policy_t = daw::json::BasicParsePolicy<daw::json::parse_options(
+	  daw::json::options::CheckedParseMode::no )>;
 	auto tmp = policy_t( str, str + N );
 	return daw::json::json_details::unsigned_parser<
 	         Unsigned, daw::json::options::JsonRangeCheck::CheckForNarrowing,
@@ -509,7 +508,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 	double lib_parse_dbl = [&] {
 		if constexpr( KnownBounds ) {
 			auto rng =
-			  daw::json::DefaultParsePolicy( num.data( ), num.data( ) + num.size( ) );
+			  daw::json::BasicParsePolicy( num.data( ), num.data( ) + num.size( ) );
 			rng = daw::json::json_details::skip_number( rng );
 			using json_member = daw::json::json_details::json_deduced_type<double>;
 			return daw::json::json_details::parse_value<json_member, KnownBounds>(
@@ -547,8 +546,8 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 
 		lib_parse_dbl = [&] {
 			if constexpr( KnownBounds ) {
-				auto rng = daw::json::DefaultParsePolicy( num.data( ),
-				                                          num.data( ) + num.size( ) );
+				auto rng =
+				  daw::json::BasicParsePolicy( num.data( ), num.data( ) + num.size( ) );
 				rng = daw::json::json_details::skip_number( rng );
 				using json_member = daw::json::json_details::json_deduced_type<double>;
 				return daw::json::json_details::parse_value<json_member, KnownBounds>(

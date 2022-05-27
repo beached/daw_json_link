@@ -54,7 +54,7 @@ bool empty_class_empty_json_class( ) {
 
 	std::string_view sv = "{}";
 	daw::do_not_optimize( sv );
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_class_no_name<daw::Empty>>(
 	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
@@ -67,7 +67,7 @@ bool empty_class_nonempty_json_class( ) {
 
 	std::string_view sv = R"({ "a": 12345, "b": {} })";
 	daw::do_not_optimize( sv );
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_class_no_name<daw::Empty>>(
 	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
@@ -80,7 +80,7 @@ bool missing_members_fail( ) {
 
 	std::string_view sv = "{}";
 	daw::do_not_optimize( sv );
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class_no_name<class_t>>(
@@ -95,7 +95,7 @@ bool wrong_member_type_fail( ) {
 
 	std::string_view sv = R"({ "member0": "this isn't a number" })";
 	daw::do_not_optimize( sv );
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class_no_name<class_t>>(
@@ -110,7 +110,7 @@ bool wrong_member_number_type_fail( ) {
 
 	std::string_view sv = R"({ "member0": -123 })";
 	daw::do_not_optimize( sv );
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class_no_name<class_t>>(
@@ -125,7 +125,7 @@ bool unexpected_eof_in_class1_fail( ) {
 
 	std::string_view sv = R"({ "member0": 123 )";
 	daw::do_not_optimize( sv );
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = tuple_json_mapping<json_number<member0>>;
 	auto v = parse_value<json_class_no_name<class_t>>(
@@ -140,7 +140,7 @@ bool wrong_member_stored_pos_fail( ) {
 
 	std::string_view sv = R"({ "member1": 1, "member0": 2,)";
 	daw::do_not_optimize( sv );
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	static constexpr char const member1[] = "member1";
 	using class_t =

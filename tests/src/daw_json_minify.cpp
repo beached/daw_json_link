@@ -48,8 +48,8 @@ public:
 	explicit JSONMinifyHandler( OutputIterator it )
 	  : out_it( std::move( it ) ) {}
 
-	template<typename ParsePolicy>
-	bool handle_on_value( daw::json::basic_json_pair<ParsePolicy> p ) {
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	bool handle_on_value( daw::json::basic_json_pair<PolicyFlags, Allocator> p ) {
 		daw::json::JsonBaseParseTypes const v_type = p.value.type( );
 		if( member_count_stack.empty( ) ) {
 			member_count_stack.emplace_back( p.value.is_class( ) );
@@ -73,8 +73,9 @@ public:
 		return true;
 	}
 
-	template<typename ParsePolicy>
-	bool handle_on_array_start( daw::json::basic_json_value<ParsePolicy> ) {
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	bool
+	handle_on_array_start( daw::json::basic_json_value<PolicyFlags, Allocator> ) {
 		member_count_stack.emplace_back( false );
 		write_chr( '[' );
 		return true;
@@ -86,8 +87,9 @@ public:
 		return true;
 	}
 
-	template<typename ParsePolicy>
-	bool handle_on_class_start( daw::json::basic_json_value<ParsePolicy> ) {
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	bool
+	handle_on_class_start( daw::json::basic_json_value<PolicyFlags, Allocator> ) {
 		member_count_stack.emplace_back( true );
 		write_chr( '{' );
 		return true;
