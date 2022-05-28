@@ -42,8 +42,7 @@ namespace daw::json {
 		/// std::allocator_arg_t followed by the allocator.`Thing( args..., alloc )`
 		/// or `Thing( std::allocator_arg, alloc, args... )`
 		///
-		template<json_options_t PolicyFlags =
-		           json_details::default_policy_flag,
+		template<json_options_t PolicyFlags = json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 
@@ -186,7 +185,7 @@ namespace daw::json {
 			  , class_last( cl ) {}
 
 			inline constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
-			                                   iterator cl, Allocator &alloc )
+			                                   iterator cl, Allocator const &alloc )
 			  : json_details::AllocatorWrapper<Allocator>( alloc )
 			  , first( f )
 			  , last( l )
@@ -212,13 +211,21 @@ namespace daw::json {
 				return result;
 			}
 
+			constexpr decltype( auto ) get_allocator( ) const {
+				if constexpr( std::is_same_v<Allocator, json_details::NoAllocator> ) {
+					return json_details::NoAllocator{ };
+				} else {
+					return json_details::AllocatorWrapper<Allocator>::get_allocator( );
+				}
+			}
+
 			template<typename Alloc>
 			using with_allocator_type = BasicParsePolicy<PolicyFlags, Alloc>;
 
 			template<typename Alloc>
 			[[nodiscard]] static inline constexpr with_allocator_type<Alloc>
 			with_allocator( iterator f, iterator l, iterator cf, iterator cl,
-			                Alloc &alloc ) {
+			                Alloc const &alloc ) {
 				return with_allocator_type<Alloc>{ f, l, cf, cl, alloc };
 			}
 
@@ -237,7 +244,7 @@ namespace daw::json {
 
 			template<typename Alloc>
 			[[nodiscard]] inline constexpr with_allocator_type<Alloc>
-			with_allocator( Alloc &alloc ) const {
+			with_allocator( Alloc const &alloc ) const {
 				auto result =
 				  with_allocator( first, last, class_first, class_last, alloc );
 				result.counter = counter;
@@ -527,8 +534,7 @@ namespace daw::json {
 				static_assert(
 				  ( json_details::is_option_flag<decltype( PolicyFlags )> and ... ),
 				  "Only registered policy types are allowed" );
-				static constexpr json_options_t value =
-				  parse_options( PolicyFlags... );
+				static constexpr json_options_t value = parse_options( PolicyFlags... );
 			};
 			template<>
 			struct parse_flags_t<> {

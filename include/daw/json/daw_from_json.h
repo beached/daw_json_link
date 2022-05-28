@@ -231,17 +231,19 @@ namespace daw::json {
 			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
 			  options::TemporarilyMutateBuffer::no>;
 
-			auto [is_found, parse_state] = json_details::find_range<ParseState>(
-			  json_data, { std::data( member_path ), std::size( member_path ) } );
+			auto jv = basic_json_value( ParseState( std::data( json_data ),
+			                                        daw::data_end( json_data ) ) )
+			            .find_member( member_path );
+
 			if constexpr( json_details::is_json_nullable_v<JsonMember> ) {
-				if( not is_found ) {
+				if( not jv ) {
 					return json_details::construct_nullable_empty<
 					  typename json_member::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
+				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
 			}
-
+			auto parse_state = jv.get_raw_state( );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
@@ -327,17 +329,20 @@ namespace daw::json {
 			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
 			  options::TemporarilyMutateBuffer::no>;
 
-			auto [is_found, parse_state] = json_details::find_range<ParseState>(
-			  json_data, { std::data( member_path ), std::size( member_path ) }, a );
+			auto jv = basic_json_value( ParseState( std::data( json_data ),
+			                                        daw::data_end( json_data ) )
+			                              .with_allocator( alloc ) )
+			            .find_member( member_path );
+
 			if constexpr( json_details::is_json_nullable_v<json_member> ) {
-				if( not is_found ) {
+				if( not jv ) {
 					return json_details::construct_nullable_empty<
 					  typename json_member::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
+				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
 			}
-
+			auto parse_state = jv.get_raw_state( );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
@@ -384,8 +389,7 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, bool KnownBounds, typename Result,
-		         json_options_t P, typename Allocator,
-		         auto... PolicyFlags>
+		         json_options_t P, typename Allocator, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] inline constexpr Result
 		from_json( basic_json_value<P, Allocator> value,
 		           options::parse_flags_t<PolicyFlags...> ) {
@@ -436,8 +440,7 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, bool KnownBounds, typename Result,
-		         json_options_t P, typename Allocator,
-		         auto... PolicyFlags>
+		         json_options_t P, typename Allocator, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result
 		from_json( basic_json_value<P, Allocator> value,
 		           std::string_view member_path,
@@ -450,17 +453,20 @@ namespace daw::json {
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
 			auto json_data = value.get_state( );
-			auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
-			  json_data, { std::data( member_path ), std::size( member_path ) } );
+
+			auto jv = basic_json_value( ParsePolicy( std::data( json_data ),
+			                                         daw::data_end( json_data ) ) )
+			            .find_member( member_path );
+
 			if constexpr( json_details::is_json_nullable_v<json_member> ) {
-				if( not is_found ) {
+				if( not jv ) {
 					return json_details::construct_nullable_empty<
 					  typename json_member::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
+				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
 			}
-
+			auto parse_state = jv.get_raw_state( );
 			return json_details::parse_value<json_member, KnownBounds>(
 			  parse_state, ParseTag<json_member::expected_type>{ } );
 		}
@@ -647,17 +653,19 @@ namespace daw::json {
 			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
 			  options::TemporarilyMutateBuffer::no>;
 
-			auto [is_found, parse_state] = json_details::find_range<ParseState>(
-			  json_data, { std::data( member_path ), std::size( member_path ) } );
+			auto jv = basic_json_value( ParseState( std::data( json_data ),
+			                                        daw::data_end( json_data ) ) )
+			            .find_member( member_path );
 
 			if constexpr( json_details::is_json_nullable_v<parser_t> ) {
-				if( not is_found ) {
+				if( not jv ) {
 					return json_details::construct_nullable_empty<
 					  typename parser_t::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
+				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
 			}
+			auto parse_state = jv.get_raw_state( );
 			parse_state.trim_left_unchecked( );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 			// Work around MSVC ICE

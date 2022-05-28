@@ -19,6 +19,7 @@
 #include "daw_json_traits.h"
 #include "daw_json_value_fwd.h"
 
+#include <daw/daw_algorithm.h>
 #include <daw/daw_move.h>
 #include <daw/daw_utility.h>
 
@@ -131,7 +132,7 @@ namespace daw::json {
 			friend class basic_json_value<PolicyFlags, Allocator>;
 
 		public:
-			constexpr basic_json_value_iterator( ) = default;
+			basic_json_value_iterator( ) = default;
 
 			/***
 			 * Name of member
@@ -158,7 +159,9 @@ namespace daw::json {
 				}
 				auto parse_state = m_state;
 				(void)json_details::parse_name( parse_state );
-				return ParseState( parse_state.first, parse_state.last );
+				return ParseState( parse_state.first, parse_state.last,
+				                   parse_state.first, parse_state.last,
+				                   parse_state.get_allocator( ) );
 			}
 
 			/***
@@ -168,15 +171,17 @@ namespace daw::json {
 			[[nodiscard]] constexpr basic_json_pair<PolicyFlags, Allocator>
 			operator*( ) {
 				if( is_array( ) ) {
-					return {
-					  { },
-					  basic_json_value( ParseState( m_state.first, m_state.last ) ) };
+					return { { },
+					         basic_json_value( ParseState( m_state.first, m_state.last,
+					                                       m_state.first, m_state.last,
+					                                       m_state.get_allocator( ) ) ) };
 				}
 				auto parse_state = m_state;
 				auto name = json_details::parse_name( parse_state );
 				return { std::string_view( std::data( name ), std::size( name ) ),
-				         basic_json_value(
-				           ParseState( parse_state.first, parse_state.last ) ) };
+				         basic_json_value( ParseState(
+				           parse_state.first, parse_state.last, parse_state.first,
+				           parse_state.last, parse_state.get_allocator( ) ) ) };
 			}
 
 			/***
@@ -373,8 +378,9 @@ namespace daw::json {
 			/// @pre type of value is class or array
 			/// @return basic_json_value_iterator to the first item/member
 			[[nodiscard]] inline constexpr iterator begin( ) const {
-				auto parse_state =
-				  ParseState( m_parse_state.first, m_parse_state.last );
+				auto parse_state = ParseState( m_parse_state.first, m_parse_state.last,
+				                               m_parse_state.first, m_parse_state.last,
+				                               m_parse_state.get_allocator( ) );
 				parse_state.remove_prefix( );
 				parse_state.trim_left( );
 				return iterator( parse_state );
@@ -388,11 +394,14 @@ namespace daw::json {
 
 			[[nodiscard]] constexpr basic_json_value
 			find_class_member( daw::string_view name ) const {
-				assert( type( ) == JsonBaseParseTypes::Class );
-				auto pos = std::find_if( begin( ), end( ), [name]( auto const &jp ) {
-					assert( jp.name );
-					return *jp.name == name;
-				} );
+				if( type( ) != JsonBaseParseTypes::Class ) {
+					return basic_json_value{ };
+				}
+				auto pos =
+				  daw::algorithm::find_if( begin( ), end( ), [name]( auto const &jp ) {
+					  assert( jp.name );
+					  return *jp.name == name;
+				  } );
 				if( pos == end( ) ) {
 					return basic_json_value( );
 				}
@@ -401,23 +410,35 @@ namespace daw::json {
 
 			[[nodiscard]] constexpr basic_json_value
 			find_member( daw::string_view name ) const {
-				char last_char = 0;
 				auto jv = *this;
-				while( not name.empty( ) ) {
-					auto member = name.pop_front_until( [&]( char c ) {
-						if( last_char == '\\' ) {
-							last_char = 0;
-							return false;
+				while( not name.empty( ) and jv ) {
+					char last_char = 0;
+					auto member = [&] {
+						if( name.front( ) == '[' ) {
+							return name.pop_front_until( ']' );
 						}
-						if( c == '.' or c == ']' ) {
-							return true;
-						}
-						return false;
-					} );
+						return name.pop_front_until(
+						  [&]( char c ) {
+							  if( last_char == '\\' ) {
+								  last_char = 0;
+								  return false;
+							  }
+							  last_char = c;
+							  if( c == '.' or c == '[' ) {
+								  return true;
+							  }
+							  return false;
+						  },
+						  nodiscard );
+					}( );
+					if( not name.empty( ) and name.front( ) == '.' ) {
+						name.remove_prefix( );
+					}
 					if( member.front( ) == '[' ) {
 						member.remove_prefix( );
 						auto index_ps = BasicParsePolicy<PolicyFlags, Allocator>(
-						  std::data( member ), daw::data_end( member ) );
+						  std::data( member ), daw::data_end( member ), nullptr, nullptr,
+						  m_parse_state.get_allocator( ) );
 						auto const index = json_details::parse_value<
 						  json_details::json_deduced_type<std::size_t>, true>(
 						  index_ps, ParseTag<JsonParseTypes::Unsigned>{ } );
@@ -474,7 +495,7 @@ namespace daw::json {
 			/// @brief Get the type of JSON value
 			/// @return a JSONBaseParseTypes enum value with the type of this JSON
 			/// value
-			[[nodiscard]] JsonBaseParseTypes type( ) const noexcept {
+			[[nodiscard]] constexpr JsonBaseParseTypes type( ) const noexcept {
 				if( not m_parse_state.has_more( ) ) {
 					return JsonBaseParseTypes::None;
 				}

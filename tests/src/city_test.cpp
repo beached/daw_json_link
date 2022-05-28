@@ -195,6 +195,10 @@ int main( int argc, char **argv )
 	std::cout
 	  << daw::json::json_value( json_data )["[1].name"].as<std::string_view>( )
 	  << '\n';
+	std::cout << "Third element name\n";
+	std::cout
+	  << daw::json::json_value( json_data )[2]["name"].as<std::string_view>( )
+	  << '\n';
 	std::cout << "-------------------------------------------------\n";
 	auto mid_lat = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "Calculate Middle Latitude", json_data.size( ),

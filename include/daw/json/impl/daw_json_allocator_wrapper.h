@@ -23,14 +23,18 @@ namespace daw::json {
 			template<typename Alloc, bool /*is_empty*/>
 			class AllocatorWrapperBase {
 				using allocator_t = std::remove_reference_t<Alloc>;
-				allocator_t *allocator_ptr;
+				std::optional<allocator_t const *> allocator_ptr;
 
 			public:
-				explicit AllocatorWrapperBase( allocator_t &alloc ) noexcept
+				explicit AllocatorWrapperBase( ) = default;
+				explicit constexpr AllocatorWrapperBase(
+				  allocator_t const &alloc ) noexcept
 				  : allocator_ptr( &alloc ) {}
 
-				allocator_t &get_allocator( ) const {
-					return *allocator_ptr;
+				constexpr allocator_t const &get_allocator( ) const {
+					daw_json_assert( allocator_ptr.has_value( ),
+					                 ErrorReason::UnexpectedNull );
+					return **allocator_ptr;
 				}
 			};
 
@@ -40,10 +44,11 @@ namespace daw::json {
 				static constexpr allocator_t allocator{ };
 
 			public:
-				constexpr AllocatorWrapperBase( ) = default;
-				explicit constexpr AllocatorWrapperBase( allocator_t & ) noexcept {}
+				AllocatorWrapperBase( ) = default;
+				explicit constexpr AllocatorWrapperBase(
+				  allocator_t const & ) noexcept {}
 
-				allocator_t &get_allocator( ) const {
+				constexpr allocator_t const &get_allocator( ) const {
 					return allocator;
 				}
 			};
@@ -53,7 +58,12 @@ namespace daw::json {
 			  : AllocatorWrapperBase<Alloc, std::is_empty_v<Alloc>> {
 				using allocator_type = std::remove_reference_t<Alloc>;
 
-				explicit AllocatorWrapper( allocator_type &alloc ) noexcept
+				using AllocatorWrapperBase<Alloc,
+				                           std::is_empty_v<Alloc>>::get_allocator;
+
+				explicit AllocatorWrapper( ) = default;
+				explicit constexpr AllocatorWrapper(
+				  allocator_type const &alloc ) noexcept
 				  : AllocatorWrapperBase<allocator_type,
 				                         std::is_empty_v<allocator_type>>( alloc ) {}
 
@@ -79,7 +89,7 @@ namespace daw::json {
 				  allocator_type>::template rebind_alloc<T>;
 
 				template<typename T>
-				auto get_allocator_for( template_param<T> ) const {
+				constexpr auto get_allocator_for( template_param<T> ) const {
 					return static_cast<allocator_type_as<T>>( this->get_allocator( ) );
 				}
 			};
@@ -89,6 +99,8 @@ namespace daw::json {
 			class AllocatorWrapper<NoAllocator> {
 			public:
 				constexpr AllocatorWrapper( ) noexcept = default;
+				constexpr AllocatorWrapper( NoAllocator const & ) noexcept {}
+
 				static constexpr bool has_allocator = false;
 
 				using allocator_type = std::allocator<char>;
