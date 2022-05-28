@@ -418,7 +418,7 @@ namespace daw::json {
 							return name.pop_front_until( ']' );
 						}
 						return name.pop_front_until(
-						  [&]( char c ) {
+						  [&last_char]( char c ) {
 							  if( last_char == '\\' ) {
 								  last_char = 0;
 								  return false;

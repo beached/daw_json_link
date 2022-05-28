@@ -113,6 +113,10 @@ namespace daw::json {
 				get_allocator_for( template_param<T> ) const {
 					return std::allocator<T>( );
 				}
+
+				[[nodiscard]] constexpr NoAllocator get_allocator( ) const {
+					return { };
+				}
 			};
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER

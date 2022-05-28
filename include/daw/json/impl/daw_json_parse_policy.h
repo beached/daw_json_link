@@ -212,11 +212,7 @@ namespace daw::json {
 			}
 
 			constexpr decltype( auto ) get_allocator( ) const {
-				if constexpr( std::is_same_v<Allocator, json_details::NoAllocator> ) {
-					return json_details::NoAllocator{ };
-				} else {
-					return json_details::AllocatorWrapper<Allocator>::get_allocator( );
-				}
+				return json_details::AllocatorWrapper<Allocator>::get_allocator( );
 			}
 
 			template<typename Alloc>
@@ -227,6 +223,12 @@ namespace daw::json {
 			with_allocator( iterator f, iterator l, iterator cf, iterator cl,
 			                Alloc const &alloc ) {
 				return with_allocator_type<Alloc>{ f, l, cf, cl, alloc };
+			}
+
+			[[nodiscard]] static inline constexpr BasicParsePolicy
+			with_allocator( iterator f, iterator l, iterator cf, iterator cl,
+			                json_details::NoAllocator const & ) {
+				return BasicParsePolicy( f, l, cf, cl );
 			}
 
 			template<typename Alloc>
@@ -251,13 +253,25 @@ namespace daw::json {
 				return result;
 			}
 
+			[[nodiscard]] inline constexpr auto
+			with_allocator( json_details::NoAllocator const & ) const {
+				return *this;
+			}
+
 			using without_allocator_type =
 			  BasicParsePolicy<PolicyFlags, json_details::NoAllocator>;
 
 			template<typename Alloc>
 			[[nodiscard]] static inline constexpr with_allocator_type<Alloc>
-			with_allocator( iterator f, iterator l, Alloc &alloc ) {
+			with_allocator( iterator f, iterator l, Alloc const &alloc ) {
 				return { f, l, f, l, alloc };
+			}
+
+			template<typename Alloc>
+			[[nodiscard]] static inline constexpr BasicParsePolicy
+			with_allocator( iterator f, iterator l,
+			                json_details::NoAllocator const & ) {
+				return { f, l, f, l };
 			}
 
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
