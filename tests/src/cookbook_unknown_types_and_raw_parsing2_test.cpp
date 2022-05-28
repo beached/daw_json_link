@@ -94,8 +94,7 @@ int main( int argc, char **argv )
 	}
 	auto data = *daw::read_file( argv[1] );
 
-	auto const val = daw::json::from_json<MyClass2>(
-	  std::string_view( data.data( ), data.size( ) ) );
+	auto const val = daw::json::from_json<MyClass2>( data );
 
 	auto const delayed_val =
 	  daw::json::from_json<MyDelayedClass>( val.member_later );
