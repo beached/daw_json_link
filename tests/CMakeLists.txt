@@ -10,7 +10,17 @@ find_package(Boost 1.72.0 COMPONENTS container system)
 
 add_subdirectory(extern)
 
-option(DAW_JSON_NO_CONST_EXPR "Define: Ensure guaranteed copy elision in array/class types" OFF)
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+    if (CLANG_VERSION_MAJOR VERSION_LESS 13)
+        # Constexpr causes some ICE'ing on clang prior to v11
+        option(DAW_JSON_NO_CONST_EXPR "Define: Ensure guaranteed copy elision in array/class types" ON)
+    else ()
+        option(DAW_JSON_NO_CONST_EXPR "Define: Ensure guaranteed copy elision in array/class types" OFF)
+    endif ()
+else ()
+    option(DAW_JSON_NO_CONST_EXPR "Define: Ensure guaranteed copy elision in array/class types" OFF)
+endif ()
+
 set(DAW_NUM_RUNS OFF CACHE STRING "Define: Change the number of runs of some tests")
 option(CMAKE_INTERPROCEDURAL_OPTIMIZATION "Enable LTO" OFF)
 option(DAW_JSON_USE_SANITIZERS "Enable address and undefined behaviour sanitizers" OFF)

@@ -42,8 +42,7 @@ namespace daw::json {
 		/// std::allocator_arg_t followed by the allocator.`Thing( args..., alloc )`
 		/// or `Thing( std::allocator_arg, alloc, args... )`
 		///
-		template<json_options_t PolicyFlags =
-		           json_details::default_policy_flag,
+		template<json_options_t PolicyFlags = json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 
@@ -186,7 +185,7 @@ namespace daw::json {
 			  , class_last( cl ) {}
 
 			inline constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
-			                                   iterator cl, Allocator &alloc )
+			                                   iterator cl, Allocator const &alloc )
 			  : json_details::AllocatorWrapper<Allocator>( alloc )
 			  , first( f )
 			  , last( l )
@@ -212,14 +211,24 @@ namespace daw::json {
 				return result;
 			}
 
+			constexpr decltype( auto ) get_allocator( ) const {
+				return json_details::AllocatorWrapper<Allocator>::get_allocator( );
+			}
+
 			template<typename Alloc>
 			using with_allocator_type = BasicParsePolicy<PolicyFlags, Alloc>;
 
 			template<typename Alloc>
 			[[nodiscard]] static inline constexpr with_allocator_type<Alloc>
 			with_allocator( iterator f, iterator l, iterator cf, iterator cl,
-			                Alloc &alloc ) {
+			                Alloc const &alloc ) {
 				return with_allocator_type<Alloc>{ f, l, cf, cl, alloc };
+			}
+
+			[[nodiscard]] static inline constexpr BasicParsePolicy
+			with_allocator( iterator f, iterator l, iterator cf, iterator cl,
+			                json_details::NoAllocator const & ) {
+				return BasicParsePolicy( f, l, cf, cl );
 			}
 
 			template<typename Alloc>
@@ -237,11 +246,16 @@ namespace daw::json {
 
 			template<typename Alloc>
 			[[nodiscard]] inline constexpr with_allocator_type<Alloc>
-			with_allocator( Alloc &alloc ) const {
+			with_allocator( Alloc const &alloc ) const {
 				auto result =
 				  with_allocator( first, last, class_first, class_last, alloc );
 				result.counter = counter;
 				return result;
+			}
+
+			[[nodiscard]] inline constexpr auto
+			with_allocator( json_details::NoAllocator const & ) const {
+				return *this;
 			}
 
 			using without_allocator_type =
@@ -249,8 +263,15 @@ namespace daw::json {
 
 			template<typename Alloc>
 			[[nodiscard]] static inline constexpr with_allocator_type<Alloc>
-			with_allocator( iterator f, iterator l, Alloc &alloc ) {
+			with_allocator( iterator f, iterator l, Alloc const &alloc ) {
 				return { f, l, f, l, alloc };
+			}
+
+			template<typename Alloc>
+			[[nodiscard]] static inline constexpr BasicParsePolicy
+			with_allocator( iterator f, iterator l,
+			                json_details::NoAllocator const & ) {
+				return { f, l, f, l };
 			}
 
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
@@ -527,8 +548,7 @@ namespace daw::json {
 				static_assert(
 				  ( json_details::is_option_flag<decltype( PolicyFlags )> and ... ),
 				  "Only registered policy types are allowed" );
-				static constexpr json_options_t value =
-				  parse_options( PolicyFlags... );
+				static constexpr json_options_t value = parse_options( PolicyFlags... );
 			};
 			template<>
 			struct parse_flags_t<> {

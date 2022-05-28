@@ -231,17 +231,19 @@ namespace daw::json {
 			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
 			  options::TemporarilyMutateBuffer::no>;
 
-			auto [is_found, parse_state] = json_details::find_range<ParseState>(
-			  json_data, { std::data( member_path ), std::size( member_path ) } );
+			auto jv = basic_json_value(
+			  ParseState( std::data( json_data ), daw::data_end( json_data ) ) );
+			jv = jv.find_member( member_path );
+
 			if constexpr( json_details::is_json_nullable_v<JsonMember> ) {
-				if( not is_found ) {
+				if( not jv ) {
 					return json_details::construct_nullable_empty<
 					  typename json_member::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
+				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
 			}
-
+			auto parse_state = jv.get_raw_state( );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
@@ -327,17 +329,22 @@ namespace daw::json {
 			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
 			  options::TemporarilyMutateBuffer::no>;
 
-			auto [is_found, parse_state] = json_details::find_range<ParseState>(
-			  json_data, { std::data( member_path ), std::size( member_path ) }, a );
+			auto first = std::data( json_data );
+			auto last = daw::data_end( json_data );
+
+			auto jv = basic_json_value(
+			  ParseState( first, last, first, last ).with_allocator( alloc ) );
+			jv = jv.find_member( member_path );
+
 			if constexpr( json_details::is_json_nullable_v<json_member> ) {
-				if( not is_found ) {
+				if( not jv ) {
 					return json_details::construct_nullable_empty<
 					  typename json_member::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
+				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
 			}
-
+			auto parse_state = jv.get_raw_state( );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
@@ -355,11 +362,11 @@ namespace daw::json {
 		 * Parse a JSONMember from the json_data starting at member_path.
 		 * @tparam JsonMember The type of the item being parsed
 		 * @param json_data JSON string data
-		 * @param member_path A dot separated path of member names, default is the
-		 * root.  Array indices are specified with square brackets e.g. [5] is the
-		 * 6th item
-		 * @tparam KnownBounds The bounds of the json_data are known to contain the
-		 * whole value
+		 * @param member_path A dot separated path of member names, default is
+		 * the root.  Array indices are specified with square brackets e.g. [5]
+		 * is the 6th item
+		 * @tparam KnownBounds The bounds of the json_data are known to contain
+		 * the whole value
 		 * @return A value reified from the JSON data member
 		 * @throws daw::json::json_exception
 		 */
@@ -378,14 +385,13 @@ namespace daw::json {
 		 * Parse a value from a json_value
 		 * @tparam JsonMember The type of the item being parsed
 		 * @param value JSON data, see basic_json_value
-		 * @tparam KnownBounds The bounds of the json_data are known to contain the
-		 * whole value
+		 * @tparam KnownBounds The bounds of the json_data are known to contain
+		 * the whole value
 		 * @return A value reified from the JSON data member
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, bool KnownBounds, typename Result,
-		         json_options_t P, typename Allocator,
-		         auto... PolicyFlags>
+		         json_options_t P, typename Allocator, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] inline constexpr Result
 		from_json( basic_json_value<P, Allocator> value,
 		           options::parse_flags_t<PolicyFlags...> ) {
@@ -409,8 +415,8 @@ namespace daw::json {
 		 * Parse a value from a json_value
 		 * @tparam JsonMember The type of the item being parsed
 		 * @param value JSON data, see basic_json_value
-		 * @tparam KnownBounds The bounds of the json_data are known to contain the
-		 * whole value
+		 * @tparam KnownBounds The bounds of the json_data are known to contain
+		 * the whole value
 		 * @return A value reified from the JSON data member
 		 * @throws daw::json::json_exception
 		 */
@@ -430,14 +436,13 @@ namespace daw::json {
 		 * root.  Array indices are specified with square brackets e.g. [5] is the
 		 * 6th item
 		 * @tparam JsonMember The type of the item being parsed
-		 * @tparam KnownBounds The bounds of the json_data are known to contain the
-		 * whole value
+		 * @tparam KnownBounds The bounds of the json_data are known to contain
+		 * the whole value
 		 * @return A value reified from the JSON data member
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, bool KnownBounds, typename Result,
-		         json_options_t P, typename Allocator,
-		         auto... PolicyFlags>
+		         json_options_t P, typename Allocator, auto... PolicyFlags>
 		[[maybe_unused, nodiscard]] constexpr Result
 		from_json( basic_json_value<P, Allocator> value,
 		           std::string_view member_path,
@@ -450,17 +455,20 @@ namespace daw::json {
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
 			auto json_data = value.get_state( );
-			auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
-			  json_data, { std::data( member_path ), std::size( member_path ) } );
+
+			auto jv = basic_json_value(
+			  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) ) );
+			jv = jv.find_member( member_path );
+
 			if constexpr( json_details::is_json_nullable_v<json_member> ) {
-				if( not is_found ) {
+				if( not jv ) {
 					return json_details::construct_nullable_empty<
 					  typename json_member::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
+				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
 			}
-
+			auto parse_state = jv.get_raw_state( );
 			return json_details::parse_value<json_member, KnownBounds>(
 			  parse_state, ParseTag<json_member::expected_type>{ } );
 		}
@@ -472,8 +480,8 @@ namespace daw::json {
 		 * root.  Array indices are specified with square brackets e.g. [5] is the
 		 * 6th item
 		 * @tparam JsonMember The type of the item being parsed
-		 * @tparam KnownBounds The bounds of the json_data are known to contain the
-		 * whole value
+		 * @tparam KnownBounds The bounds of the json_data are known to contain
+		 * the whole value
 		 * @return A value reified from the JSON data member
 		 * @throws daw::json::json_exception
 		 */
@@ -495,8 +503,8 @@ namespace daw::json {
 		 * @tparam Container Container to store values in
 		 * @tparam Constructor Callable to construct Container with no arguments
 		 * @param json_data JSON string data containing array
-		 * @tparam KnownBounds The bounds of the json_data are known to contain the
-		 * whole value
+		 * @tparam KnownBounds The bounds of the json_data are known to contain
+		 * the whole value
 		 * @return A Container containing parsed data from JSON string
 		 * @throws daw::json::json_exception
 		 */
@@ -573,8 +581,8 @@ namespace daw::json {
 		 * @tparam Container Container to store values in
 		 * @tparam Constructor Callable to construct Container with no arguments
 		 * @param json_data JSON string data containing array
-		 * @tparam KnownBounds The bounds of the json_data are known to contain the
-		 * whole value
+		 * @tparam KnownBounds The bounds of the json_data are known to contain
+		 * the whole value
 		 * @return A Container containing parsed data from JSON string
 		 * @throws daw::json::json_exception
 		 */
@@ -596,11 +604,11 @@ namespace daw::json {
 		 * @tparam Container Container to store values in
 		 * @tparam Constructor Callable to construct Container with no arguments
 		 * @param json_data JSON string data containing array
-		 * @param member_path A dot separated path of member names to start parsing
-		 * from. Array indices are specified with square brackets e.g. [5] is the
-		 * 6th item
-		 * @tparam KnownBounds The bounds of the json_data are known to contain the
-		 * whole value
+		 * @param member_path A dot separated path of member names to start
+		 * parsing from. Array indices are specified with square brackets e.g. [5]
+		 * is the 6th item
+		 * @tparam KnownBounds The bounds of the json_data are known to contain
+		 * the whole value
 		 * @return A Container containing parsed data from JSON string
 		 * @throws daw::json::json_exception
 		 */
@@ -647,17 +655,19 @@ namespace daw::json {
 			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
 			  options::TemporarilyMutateBuffer::no>;
 
-			auto [is_found, parse_state] = json_details::find_range<ParseState>(
-			  json_data, { std::data( member_path ), std::size( member_path ) } );
+			auto jv = basic_json_value(
+			  ParseState( std::data( json_data ), daw::data_end( json_data ) ) );
+			jv = jv.find_member( member_path );
 
 			if constexpr( json_details::is_json_nullable_v<parser_t> ) {
-				if( not is_found ) {
+				if( not jv ) {
 					return json_details::construct_nullable_empty<
 					  typename parser_t::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
+				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
 			}
+			auto parse_state = jv.get_raw_state( );
 			parse_state.trim_left_unchecked( );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 			// Work around MSVC ICE
@@ -687,11 +697,11 @@ namespace daw::json {
 		 * @tparam Container Container to store values in
 		 * @tparam Constructor Callable to construct Container with no arguments
 		 * @param json_data JSON string data containing array
-		 * @param member_path A dot separated path of member names to start parsing
-		 * from. Array indices are specified with square brackets e.g. [5] is the
-		 * 6th item
-		 * @tparam KnownBounds The bounds of the json_data are known to contain the
-		 * whole value
+		 * @param member_path A dot separated path of member names to start
+		 * parsing from. Array indices are specified with square brackets e.g. [5]
+		 * is the 6th item
+		 * @tparam KnownBounds The bounds of the json_data are known to contain
+		 * the whole value
 		 * @return A Container containing parsed data from JSON string
 		 * @throws daw::json::json_exception
 		 */
