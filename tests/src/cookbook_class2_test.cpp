@@ -95,8 +95,7 @@ int main( int argc, char **argv )
 	}
 	auto data = *daw::read_file( argv[1] );
 
-	auto const cls = daw::json::from_json<daw::cookbook_class2::MyClass2>(
-	  std::string_view( data.data( ), data.size( ) ) );
+	auto const cls = daw::json::from_json<daw::cookbook_class2::MyClass2>( data );
 
 	test_assert( cls.a.member_0 == "this is a test", "Unexpected value" );
 	test_assert( cls.a.member_1 == 314159, "Unexpected value" );
@@ -105,8 +104,7 @@ int main( int argc, char **argv )
 	auto const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
-	auto const cls2 = daw::json::from_json<daw::cookbook_class2::MyClass2>(
-	  std::string_view( str.data( ), str.size( ) ) );
+	auto const cls2 = daw::json::from_json<daw::cookbook_class2::MyClass2>( str );
 
 	test_assert( cls == cls2, "Unexpected round trip error" );
 }

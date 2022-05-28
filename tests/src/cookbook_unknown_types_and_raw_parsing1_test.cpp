@@ -31,8 +31,7 @@ int main( int argc, char **argv )
 	}
 	auto data = *daw::read_file( argv[1] );
 
-	auto val =
-	  daw::json::json_value( std::string_view( data.data( ), data.size( ) ) );
+	auto val = daw::json::json_value( data );
 	for( auto member : val ) {
 		if( member.name ) {
 			std::cout << *member.name << " is a ";

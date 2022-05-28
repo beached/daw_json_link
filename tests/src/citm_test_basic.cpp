@@ -34,11 +34,12 @@ int main( int argc, char **argv )
 		exit( 1 );
 	}
 	using namespace daw::json;
-	auto const json_data1 = *daw::read_file( argv[1] );
-	auto const json_sv1 =
-	  std::string_view( json_data1.data( ), json_data1.size( ) );
+	auto const json_data1 = daw::read_file( argv[1] );
+	if( not json_data1 ) {
+		std::cerr << "Could find valid JSON in file '" << argv[1] << "'\n";
+	}
 
-	auto citm_result = daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
+	auto citm_result = daw::json::from_json<daw::citm::citm_object_t>( *json_data1 );
 	daw::do_not_optimize( citm_result );
 	test_assert( not citm_result.areaNames.empty( ), "Expected values" );
 	test_assert( citm_result.areaNames.count( 205706005 ) == 1,
