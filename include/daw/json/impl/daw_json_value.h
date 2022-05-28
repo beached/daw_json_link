@@ -339,6 +339,8 @@ namespace daw::json {
 			using size_type = std::size_t;
 			using difference_type = std::ptrdiff_t;
 
+			basic_json_value( ) = default;
+
 			/// @brief Construct from IteratorRange
 			/// @param parse_state string data where start is the start of our value
 			template<json_options_t P, typename A>
@@ -392,7 +394,7 @@ namespace daw::json {
 					return *jp.name == name;
 				} );
 				if( pos == end( ) ) {
-					return basic_json_value( "" );
+					return basic_json_value( );
 				}
 				return ( *pos ).value;
 			}
@@ -419,7 +421,7 @@ namespace daw::json {
 						auto const index = json_details::parse_value<
 						  json_details::json_deduced_type<std::size_t>, true>(
 						  index_ps, ParseTag<JsonParseTypes::Unsigned>{ } );
-						jv = jv.find_array_element( index );
+						jv = jv.find_element( index );
 						if( not name.empty( ) and name.front( ) == '.' ) {
 							name.remove_prefix( );
 						}
@@ -440,13 +442,12 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] constexpr basic_json_value
-			operator[]( daw::string_view name ) const {
-				return find_member( name );
+			operator[]( daw::string_view json_path ) const {
+				return find_member( json_path );
 			}
 
 			[[nodiscard]] constexpr basic_json_value
-			find_array_element( std::size_t index ) const {
-				assert( type( ) == JsonBaseParseTypes::Array );
+			find_element( std::size_t index ) const {
 				auto first = begin( );
 				auto const last = end( );
 				while( nsc_and( index > 0, first != last ) ) {
@@ -456,12 +457,18 @@ namespace daw::json {
 				if( index == 0 ) {
 					return ( *first ).value;
 				}
-				return basic_json_value( "" );
+				return basic_json_value( );
+			}
+
+			[[nodiscard]] constexpr basic_json_value
+			find_array_element( std::size_t index ) const {
+				assert( type( ) == JsonBaseParseTypes::Array );
+				return find_element( index );
 			}
 
 			[[nodiscard]] constexpr basic_json_value
 			operator[]( std::size_t index ) const {
-				return find_array_element( index );
+				return find_element( index );
 			}
 
 			/// @brief Get the type of JSON value
