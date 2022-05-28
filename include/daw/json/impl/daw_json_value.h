@@ -436,12 +436,13 @@ namespace daw::json {
 					}
 					if( member.front( ) == '[' ) {
 						member.remove_prefix( );
-						auto index_ps = BasicParsePolicy<PolicyFlags, Allocator>(
-						  std::data( member ), daw::data_end( member ), nullptr, nullptr,
-						  m_parse_state.get_allocator( ) );
-						auto const index = json_details::parse_value<
-						  json_details::json_deduced_type<std::size_t>, true>(
-						  index_ps, ParseTag<JsonParseTypes::Unsigned>{ } );
+						auto index_ps = BasicParsePolicy<PolicyFlags>(
+						                  std::data( member ), daw::data_end( member ) )
+						                  .with_allocator( m_parse_state.get_allocator( ) );
+						auto const index = json_details::unsigned_parser<
+						  std::size_t, options::JsonRangeCheck::Never, true>(
+						  constexpr_exec_tag{ }, index_ps );
+
 						jv = jv.find_element( index );
 						if( not name.empty( ) and name.front( ) == '.' ) {
 							name.remove_prefix( );

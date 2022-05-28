@@ -181,14 +181,30 @@ int main( int argc, char **argv )
 	std::cout << "Chitungwiza was " << ( has_chitungwiza2 ? "" : "not" )
 	          << " found at " << daw::json::to_json( *has_chitungwiza2 ) << '\n';
 
+	std::cout << "-------------------------------------------------\n";
 	std::cout << ( *iterator_t( json_data ) ).name << '\n';
 
 	auto const city_ary = daw::json::from_json_array<City>( json_data );
 
 	auto const city_ary_str = daw::json::to_json_array( city_ary );
-	auto sv = std::string_view( city_ary_str );
-	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 )
-	          << '\n';
+	auto sv_city_ary = std::string_view( city_ary_str );
+	std::cout << sv_city_ary.substr( 0, 100 ) << "...	"
+	          << sv_city_ary.substr( sv_city_ary.size( ) - 100 ) << '\n';
+	std::cout << "-------------------------------------------------\n";
+	auto has_chitungwiza3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "Find Chitungwiza3(last item)", json_data.size( ),
+	  []( auto &&sv ) -> std::optional<City> {
+		  for( auto jp : daw::json::json_value( sv ) ) {
+			  if( jp.value[1].get_string_view( ) == "Chitungwiza" ) {
+				  return daw::json::from_json<City>( jp.value );
+			  }
+		  }
+		  return std::nullopt;
+	  },
+	  json_data );
+
+	std::cout << "Chitungwiza was " << ( has_chitungwiza3 ? "" : "not" )
+	          << " found at " << daw::json::to_json( *has_chitungwiza3 ) << '\n';
 
 	std::cout << "-------------------------------------------------\n";
 	std::cout << "Second element name\n";

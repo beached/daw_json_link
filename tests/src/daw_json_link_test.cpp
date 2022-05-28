@@ -239,21 +239,23 @@ DAW_CONSTEXPR char const test_001_t_json_data[] =
 	  })";
 
 DAW_CONSTEXPR bool test_004( ) {
-	return daw::json::from_json<int>(
-	         test_001_t_json_data, "i",
-	         daw::json::options::parse_flags<
-	           daw::json::options::CheckedParseMode::no> ) == 55;
+	auto result = daw::json::from_json<int>(
+	  test_001_t_json_data, "i",
+	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
+
+	return result == 55;
 }
 
 DAW_CONSTEXPR bool test_005( ) {
-	return daw::json::from_json<int>(
-	         test_001_t_json_data, "i",
-	         daw::json::options::parse_flags<
-	           daw::json::options::CheckedParseMode::no> ) == 55;
+	auto result = daw::json::from_json<int>(
+	  test_001_t_json_data, "i",
+	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
+	return result == 55;
 }
 
 DAW_CONSTEXPR bool test_006( ) {
-	return daw::json::from_json<int>( test_001_t_json_data, "y[2]" ) == 3;
+	auto result = daw::json::from_json<int>( test_001_t_json_data, "y[2]" );
+	return result == 3;
 }
 
 #if not defined( DAW_JSON_NO_CONST_EXPR ) and                              \
@@ -756,8 +758,13 @@ int main( int, char ** )
 #endif
 {
 	constexpr daw::string_view foo2_json = R"json( { "m1": {}, "m2": 42  } )json";
-	constexpr auto foo1_val = daw::json::from_json<Foo1>( foo2_json, "m1" );
+	DAW_CONSTEXPR auto foo1_val = daw::json::from_json<Foo1>( foo2_json, "m1" );
+#if not defined( DAW_JSON_NO_CONST_EXPR )
 	static_assert( std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1> );
+#else
+	assert( (std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1>));
+#endif
+
 	auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
 	if( not foo2_val.m1 ) {
 		std::terminate( );

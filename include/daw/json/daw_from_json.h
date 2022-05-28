@@ -332,8 +332,8 @@ namespace daw::json {
 			auto first = std::data( json_data );
 			auto last = daw::data_end( json_data );
 
-			auto jv =
-			  basic_json_value( ParseState( first, last, first, last, alloc ) );
+			auto jv = basic_json_value(
+			  ParseState( first, last, first, last ).with_allocator( alloc ) );
 			jv = jv.find_member( member_path );
 
 			if constexpr( json_details::is_json_nullable_v<json_member> ) {
