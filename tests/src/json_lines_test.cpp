@@ -35,7 +35,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<json_alt<Element>> {
-		using type = json_ordered_member_list<int, bool>;
+		using type = json_tuple_member_list<int, bool>;
 
 		static constexpr auto to_json_data( Element const &e ) {
 			return std::forward_as_tuple( e.a, e.b );
