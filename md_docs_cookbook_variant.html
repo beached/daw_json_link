@@ -87,10 +87,10 @@ $(function() {
 <p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_variant1_test.cpp">cookbook_variant1_test.cpp</a></p>
 <p>The following C++ can provide a mapping. It, also, highlights that the types bool, integers, floating point, std:: string, and previously mapped types can be default mapped to elements that do not require a name. Such as variant, array, and some key_value's.</p>
 <div class="fragment"><div class="line">{c++}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md110"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md113"></a>
 Important note:</h1>
 <p>The elements in the <code>json_variant_type_list</code> must have matching types in the variant alternatives. (e.g. std::string -&gt; json_string, bool -&gt; json_bool )</p>
-<h1><a class="anchor" id="autotoc_md111"></a>
+<h1><a class="anchor" id="autotoc_md114"></a>
 Tagged Variants</h1>
 <p>It is common to have a tag discriminator in JSON data. The <code>json_tagged_variant</code> member type allows using another parsed member to return an index in a member list to parse. This allows any number of types to be inside the variant.</p>
 <p>Below is a JSON array, containing a variant element where the <code>"type"</code> member determines the type of the <code>"value"</code> member. In many JSON documents, the discriminator will be a string.</p>
@@ -138,7 +138,7 @@ Tagged Variants</h1>
 <p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_variant3_test.cpp">cookbook_variant3_test.cpp</a></p>
 <div class="fragment"><div class="line">{c++}</div>
 </div><!-- fragment --><p>As you can see, the json_variant_type_list can use terse type names for some, or the full names.</p>
-<h1><a class="anchor" id="autotoc_md112"></a>
+<h1><a class="anchor" id="autotoc_md115"></a>
 Submember as tag for tagged_variant</h1>
 <p>There are cases where a classes structure is determined by one of it's submembers. This comes up with file versioning.</p>
 <p>In our example we have two versions of a config file. The tag member <code>"version"</code> determines the layout of the other members in the example.</p>
