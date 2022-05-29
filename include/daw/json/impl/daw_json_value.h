@@ -124,13 +124,11 @@ namespace daw::json {
 			using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
 			ParseState m_state{ };
 
+		public:
 			explicit constexpr basic_json_value_iterator(
 			  BasicParsePolicy<PolicyFlags, Allocator> const &parse_state )
 			  : m_state( parse_state ) {}
 
-			friend class basic_json_value<PolicyFlags, Allocator>;
-
-		public:
 			basic_json_value_iterator( ) = default;
 
 			/// @brief Name of member
@@ -400,8 +398,8 @@ namespace daw::json {
 						if( json_path.front( ) == '[' ) {
 							return json_path.pop_front_until( ']' );
 						}
-						return json_path.pop_front_until(
-						  escaped_any_of_t<char, '.', '['>{ }, nodiscard );
+						return json_path.pop_front_until( escaped_any_of<'.', '['>{ },
+						                                  nodiscard );
 					}( );
 					if( not json_path.empty( ) and json_path.front( ) == '.' ) {
 						json_path.remove_prefix( );
@@ -600,12 +598,14 @@ namespace daw::json {
 			}
 
 			/// @brief Is the JSON data unrecognizable. JSON members will start with
-			/// one of ",[,{,0,1,2,3,4,5,6,7,8,9,-,t,f, or n
+			/// one of ",[,{,0,1,2,3,4,5,6,7,8,9,-,t,f, or n.  This is generally an
+			/// error
 			/// @return true if the parser is unsure what the data is
 			[[nodiscard]] inline constexpr bool is_unknown( ) const noexcept {
 				return type( ) == JsonBaseParseTypes::None;
 			}
 
+			/// @brief Copy state to another type of basic_json_value types.
 			template<json_options_t P, typename A>
 			[[nodiscard]] constexpr
 			operator basic_json_value<P, A>( ) const noexcept {
@@ -616,6 +616,7 @@ namespace daw::json {
 				return basic_json_value<P, A>( DAW_MOVE( new_range ) );
 			}
 
+			/// @brief Check if state is known or not in error
 			[[nodiscard]] explicit constexpr operator bool( ) const noexcept {
 				return type( ) != JsonBaseParseTypes::None;
 			}

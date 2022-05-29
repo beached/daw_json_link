@@ -205,7 +205,6 @@ int main( int argc, char **argv )
 
 	std::cout << "Chitungwiza was " << ( has_chitungwiza3 ? "" : "not" )
 	          << " found at " << daw::json::to_json( *has_chitungwiza3 ) << '\n';
-
 	std::cout << "-------------------------------------------------\n";
 	std::cout << "Second element name\n";
 	std::cout

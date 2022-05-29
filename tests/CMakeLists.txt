@@ -830,6 +830,13 @@ add_test(NAME variant_on_members_test COMMAND variant_on_members)
 add_dependencies(ci_tests variant_on_members)
 add_dependencies(full variant_on_members)
 
+add_executable(json_lines_test src/json_lines_test.cpp)
+target_link_libraries(json_lines_test json_test)
+add_test(NAME json_lines_test_test COMMAND json_lines_test)
+add_dependencies(ci_tests json_lines_test)
+add_dependencies(full json_lines_test)
+
+
 # **************************************************
 # JSON Benchmark
 # **************************************************
