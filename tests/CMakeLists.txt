@@ -65,13 +65,13 @@ target_include_directories(json_test INTERFACE include/)
 add_custom_target(full)
 add_custom_target(ci_tests)
 
-add_executable(daw_json_link_test src/daw_json_link_test.cpp)
-target_link_libraries(daw_json_link_test PRIVATE json_test)
-if (DAW_USE_EXCEPTIONS)
-    # test will fail without exceptions as it aborts
+if (DAW_JSON_FULL_TESTS)
+    add_executable(daw_json_link_test src/daw_json_link_test.cpp)
     add_test(NAME daw_json_link_test COMMAND daw_json_link_test)
-    add_dependencies(ci_tests daw_json_link_test)
+else ()
+    add_executable(daw_json_link_test EXCLUDE_FROM_ALL src/daw_json_link_test.cpp)
 endif ()
+target_link_libraries(daw_json_link_test PRIVATE json_test)
 add_dependencies(full daw_json_link_test)
 
 if (DAW_JSON_FULL_TESTS)
@@ -829,6 +829,13 @@ target_link_libraries(variant_on_members json_test)
 add_test(NAME variant_on_members_test COMMAND variant_on_members)
 add_dependencies(ci_tests variant_on_members)
 add_dependencies(full variant_on_members)
+
+add_executable(json_lines_test src/json_lines_test.cpp)
+target_link_libraries(json_lines_test json_test)
+add_test(NAME json_lines_test_test COMMAND json_lines_test)
+add_dependencies(ci_tests json_lines_test)
+add_dependencies(full json_lines_test)
+
 
 # **************************************************
 # JSON Benchmark

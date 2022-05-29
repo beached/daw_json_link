@@ -759,6 +759,7 @@ int main( int, char ** )
 {
 	constexpr daw::string_view foo2_json = R"json( { "m1": {}, "m2": 42  } )json";
 	DAW_CONSTEXPR auto foo1_val = daw::json::from_json<Foo1>( foo2_json, "m1" );
+	(void)foo1_val;
 #if not defined( DAW_JSON_NO_CONST_EXPR )
 	static_assert( std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1> );
 #else

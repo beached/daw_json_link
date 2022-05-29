@@ -108,21 +108,24 @@ int main( int argc, char **argv )
 	}
 	auto fname = argv[1];
 	auto const json_data1 = *daw::read_file( fname );
-	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
+	test_assert( json_data1.size( ) > 2, "Minimum json data size is 2 '{}'" );
 	auto const json_sv1 =
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 
 	std::cout << "Using " << daw::json::constexpr_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<options::PolicyCommentTypes::hash, options::ExecModeTypes::compile_time>( json_sv1 );
+	test<options::PolicyCommentTypes::hash, options::ExecModeTypes::compile_time>(
+	  json_sv1 );
 	std::cout << "Using " << daw::json::runtime_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<options::PolicyCommentTypes::hash, options::ExecModeTypes::runtime>( json_sv1 );
+	test<options::PolicyCommentTypes::hash, options::ExecModeTypes::runtime>(
+	  json_sv1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
 		std::cout << "Using " << daw::json::simd_exec_tag::name
 		          << " exec model\n*********************************************\n";
-		test<options::PolicyCommentTypes::hash, options::ExecModeTypes::simd>( json_sv1 );
+		test<options::PolicyCommentTypes::hash, options::ExecModeTypes::simd>(
+		  json_sv1 );
 	}
 }
 #ifdef DAW_USE_EXCEPTIONS
