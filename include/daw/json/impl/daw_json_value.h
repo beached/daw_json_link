@@ -125,11 +125,23 @@ namespace daw::json {
 			ParseState m_state{ };
 
 		public:
+			explicit basic_json_value_iterator( ) = default;
+
 			explicit constexpr basic_json_value_iterator(
 			  BasicParsePolicy<PolicyFlags, Allocator> const &parse_state )
 			  : m_state( parse_state ) {}
 
-			basic_json_value_iterator( ) = default;
+			explicit basic_json_value_iterator( daw::string_view json_doc )
+			  : m_state( std::data( json_doc ), daw::data_end( json_doc ) ) {}
+
+			explicit basic_json_value_iterator( daw::string_view json_doc,
+			                                    Allocator const &alloc )
+			  : m_state( std::data( json_doc ), daw::data_end( json_doc ),
+			             std::data( json_doc ), daw::data_end( json_doc ), alloc ) {}
+
+			explicit basic_json_value_iterator(
+			  basic_json_value<PolicyFlags, Allocator> const &jv )
+			  : m_state( jv.get_raw_state( ) ) {}
 
 			/// @brief Name of member
 			/// @return The name, if any, of the current member
@@ -283,7 +295,26 @@ namespace daw::json {
 			}
 		};
 
-		/// @brief a rudimentary range object for holding basic_json_value_iterator
+		template<json_options_t PolicyFlags, typename Allocator>
+		basic_json_value_iterator(
+		  BasicParsePolicy<PolicyFlags, Allocator> const & )
+		  -> basic_json_value_iterator<PolicyFlags, Allocator>;
+
+		basic_json_value_iterator( daw::string_view )
+		  -> basic_json_value_iterator<>;
+
+		template<typename Allocator>
+		basic_json_value_iterator( daw::string_view, Allocator const & )
+		  -> basic_json_value_iterator<daw::json::json_details::default_policy_flag,
+		                               Allocator>;
+
+		template<json_options_t PolicyFlags, typename Allocator>
+		basic_json_value_iterator(
+		  basic_json_value<PolicyFlags, Allocator> const & )
+		  -> basic_json_value_iterator<PolicyFlags, Allocator>;
+
+		/// @brief a rudimentary range object for holding
+		/// basic_json_value_iterator
 		template<json_options_t PolicyFlags = json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_value_iterator_range {
@@ -389,7 +420,8 @@ namespace daw::json {
 				return ( *pos ).value;
 			}
 
-			/// @brief find a class member/array element as specified by the json_path
+			/// @brief find a class member/array element as specified by the
+			/// json_path
 			[[nodiscard]] constexpr basic_json_value
 			find_member( daw::string_view json_path ) const {
 				auto jv = *this;
