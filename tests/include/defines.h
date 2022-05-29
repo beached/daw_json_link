@@ -26,11 +26,18 @@
 #define DAW_CONSTEXPR constexpr
 #endif
 
+#define ensure( Bool )                                 \
+	if( not( Bool ) ) {                                  \
+		std::cerr << "Error in assertion: " #Bool << '\n'; \
+		std::terminate( );                                 \
+	}                                                    \
+	while( false )
+
 template<typename Bool>
 inline constexpr void test_assert( Bool &&b, std::string_view msg ) {
 	if( not b ) {
 		std::cerr << msg << '\n';
-		exit( 1 );
+		std::terminate( );
 	}
 }
 

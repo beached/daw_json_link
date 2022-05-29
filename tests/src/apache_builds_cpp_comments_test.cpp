@@ -110,7 +110,7 @@ int main( int argc, char **argv )
 	}
 	auto fname = argv[1];
 	auto const json_data1 = *daw::read_file( fname );
-	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
+	test_assert( json_data1.size( ) > 2, "Minimum json data size is 2 '{}'" );
 
 	std::cout << "Using " << daw::json::constexpr_exec_tag::name
 	          << " exec model\n*********************************************\n";

@@ -6,12 +6,15 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/daw_json_lines_iterator.h>
 #include <daw/json/daw_json_link.h>
 
 #include <string>
 #include <tuple>
 #include <vector>
+
 
 struct Element {
 	int a;
@@ -49,11 +52,11 @@ int main( ) {
 	auto lines_range = daw::json::json_lines_range<Element>( json_lines );
 	auto elements =
 	  std::vector<Element>( lines_range.begin( ), lines_range.end( ) );
-	assert( elements.size( ) == 2 );
-	assert( elements[0].a == 1 );
-	assert( not elements[0].b );
-	assert( elements[1].a == 2 );
-	assert( elements[1].b );
+	ensure( elements.size( ) == 2 );
+	ensure( elements[0].a == 1 );
+	ensure( not elements[0].b );
+	ensure( elements[1].a == 2 );
+	ensure( elements[1].b );
 
 	auto json_lines_result = std::string( );
 	auto it = std::back_inserter( json_lines_result );
@@ -65,11 +68,11 @@ int main( ) {
 	auto lines_range2 = daw::json::json_lines_range<Element>( json_lines_result );
 	auto elements2 =
 	  std::vector<Element>( lines_range2.begin( ), lines_range2.end( ) );
-	assert( elements2.size( ) == 2 );
-	assert( elements2[0].a == 1 );
-	assert( not elements2[0].b );
-	assert( elements2[1].a == 2 );
-	assert( elements2[1].b );
+	ensure( elements2.size( ) == 2 );
+	ensure( elements2[0].a == 1 );
+	ensure( not elements2[0].b );
+	ensure( elements2[1].a == 2 );
+	ensure( elements2[1].b );
 
 	// Use a tuple to parse
 	constexpr daw::string_view json_lines2 = R"json(
@@ -81,31 +84,31 @@ int main( ) {
 
 	auto first = tp_iter_t( json_lines2 );
 	auto last = tp_iter_t( );
-	assert( first != last );
+	ensure( first != last );
 	auto [a0, b0] = *first;
-	assert( a0 == 1 );
-	assert( not b0 );
+	ensure( a0 == 1 );
+	ensure( not b0 );
 	++first;
-	assert( first != last );
+	ensure( first != last );
 	auto [a1, b1] = *first;
-	assert( a1 == 2 );
-	assert( b1 );
+	ensure( a1 == 2 );
+	ensure( b1 );
 	++first;
-	assert( first == last );
+	ensure( first == last );
 	first = tp_iter_t( json_lines2 );
 	auto elements3 = std::vector<std::tuple<int, bool>>( first, last );
-	assert( elements3.size( ) == 2 );
-	assert( std::get<0>( elements3[0] ) == 1 );
-	assert( not std::get<1>( elements3[0] ) );
-	assert( std::get<0>( elements3[1] ) == 2 );
-	assert( std::get<1>( elements3[1] ) );
+	ensure( elements3.size( ) == 2 );
+	ensure( std::get<0>( elements3[0] ) == 1 );
+	ensure( not std::get<1>( elements3[0] ) );
+	ensure( std::get<0>( elements3[1] ) == 2 );
+	ensure( std::get<1>( elements3[1] ) );
 
 	auto tp_range =
 	  daw::json::json_lines_range<daw::json::json_alt<Element>>( json_lines2 );
 	auto elements4 = std::vector<Element>( tp_range.begin( ), tp_range.end( ) );
-	assert( elements4.size( ) == 2 );
-	assert( elements4[0].a == 1 );
-	assert( not elements4[0].b );
-	assert( elements4[1].a == 2 );
-	assert( elements4[1].b );
+	ensure( elements4.size( ) == 2 );
+	ensure( elements4[0].a == 1 );
+	ensure( not elements4[0].b );
+	ensure( elements4[1].a == 2 );
+	ensure( elements4[1].b );
 }
