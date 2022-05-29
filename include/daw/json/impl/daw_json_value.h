@@ -104,10 +104,9 @@ namespace std {
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		/***
-		 * Iterator for iterating over arbitrary JSON members and array elements
-		 * @tparam ParseState see IteratorRange
-		 */
+		/// @brief Iterator for iterating over arbitrary JSON members and array
+		/// elements
+		/// @tparam ParseState see IteratorRange
 		template<json_options_t PolicyFlags = json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_value_iterator {
@@ -134,10 +133,8 @@ namespace daw::json {
 		public:
 			basic_json_value_iterator( ) = default;
 
-			/***
-			 * Name of member
-			 * @return The name, if any, of the current member
-			 */
+			/// @brief Name of member
+			/// @return The name, if any, of the current member
 			[[nodiscard]] constexpr std::optional<std::string_view> name( ) const {
 				if( is_array( ) ) {
 					return { };
@@ -147,11 +144,9 @@ namespace daw::json {
 				return std::string_view( std::data( result ), std::size( result ) );
 			}
 
-			/***
-			 * Get the value currently being referenced
-			 * @return A basic_json_value representing the currently referenced
-			 * element in the range
-			 */
+			/// @brief Get the value currently being referenced
+			/// @return A basic_json_value representing the currently referenced
+			/// element in the range
 			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
 			value( ) const {
 				if( is_array( ) ) {
@@ -164,10 +159,8 @@ namespace daw::json {
 				                   parse_state.get_allocator( ) );
 			}
 
-			/***
-			 * Get the name/value pair of the currently referenced element
-			 * @return a json_pair with the name, if any, and json_value
-			 */
+			/// @brief Get the name/value pair of the currently referenced element
+			/// @return a json_pair with the name, if any, and json_value
 			[[nodiscard]] constexpr basic_json_pair<PolicyFlags, Allocator>
 			operator*( ) {
 				if( is_array( ) ) {
@@ -184,20 +177,16 @@ namespace daw::json {
 				           parse_state.last, parse_state.get_allocator( ) ) ) };
 			}
 
-			/***
-			 * Return an arrow_proxy object containing the result of operator*
-			 * Should not use this method unless you must(std algorithms), it is here
-			 * for Iterator compatibility
-			 * @return arrow_proxy object containing the result of operator*
-			 */
+			/// @brief Return an arrow_proxy object containing the result of operator*
+			/// Should not use this method unless you must(std algorithms), it is here
+			/// for Iterator compatibility
+			/// @return arrow_proxy object containing the result of operator*
 			[[nodiscard]] constexpr pointer operator->( ) {
 				return { operator*( ) };
 			}
 
-			/***
-			 * Move the parser to the next value
-			 * @return A reference to the iterator
-			 */
+			/// @brief Move the parser to the next value
+			/// @return A reference to the iterator
 			constexpr basic_json_value_iterator &operator++( ) {
 				if( good( ) ) {
 					if( is_class( ) ) {
@@ -209,35 +198,25 @@ namespace daw::json {
 				return *this;
 			}
 
-			///
 			/// @brief Move parser to next value
-			///
 			inline constexpr void operator++( int ) & {
-				// auto result = *this;
 				operator++( );
-				// return result;
 			}
 
-			/***
-			 * Is the value this iterator iterates over an array
-			 * @return true if the value is an array
-			 */
+			/// @brief Is the value this iterator iterates over an array
+			/// @return true if the value is an array
 			[[nodiscard]] constexpr bool is_array( ) const {
 				return *m_state.class_first == '[';
 			}
 
-			/***
-			 * Is the value this iterator iterates over an class
-			 * @return true if the value is an class
-			 */
+			/// @brief Is the value this iterator iterates over an class
+			/// @return true if the value is an class
 			[[nodiscard]] constexpr bool is_class( ) const {
 				return *m_state.class_first == '{';
 			}
 
-			/***
-			 * Can we increment more
-			 * @return True if safe to increment more
-			 */
+			/// @brief Can we increment more
+			/// @return True if safe to increment more
 			[[nodiscard]] constexpr bool good( ) const {
 				if( not m_state.has_more( ) or m_state.is_null( ) ) {
 					return false;
@@ -274,16 +253,16 @@ namespace daw::json {
 				return good( );
 			}
 
+			/// Get access to the internal state.  Should not be used as part of
+			/// public API
 			[[nodiscard]] constexpr BasicParsePolicy<PolicyFlags, Allocator> const &
 			get_raw_state( ) const {
 				return m_state;
 			}
 
-			/***
-			 * Check for equivalence with rhs iterator
-			 * @param rhs iterator to compare for equivalence with
-			 * @return true if both are equivalent
-			 */
+			/// @brief Check for equivalence with rhs iterator
+			/// @param rhs iterator to compare for equivalence with
+			/// @return true if both are equivalent
 			template<json_options_t P, typename A>
 			[[nodiscard]] constexpr bool
 			operator==( basic_json_value_iterator<P, A> const &rhs ) const {
@@ -296,11 +275,9 @@ namespace daw::json {
 				return not rhs.good( );
 			}
 
-			/***
-			 * Check if rhs is not equivalent to self
-			 * @param rhs iterator to compare for equivalence with
-			 * @return true if the rhs is not equivalent
-			 */
+			/// @brief Check if rhs is not equivalent to self
+			/// @param rhs iterator to compare for equivalence with
+			/// @return true if the rhs is not equivalent
 			template<json_options_t P, typename A>
 			[[nodiscard]] constexpr bool
 			operator!=( basic_json_value_iterator<P, A> const &rhs ) const {
@@ -308,6 +285,7 @@ namespace daw::json {
 			}
 		};
 
+		/// @brief a rudimentary range object for holding basic_json_value_iterator
 		template<json_options_t PolicyFlags = json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_value_iterator_range {
@@ -330,7 +308,8 @@ namespace daw::json {
 		  basic_json_value_iterator<PolicyFlags, Allocator> )
 		  -> basic_json_value_iterator_range<PolicyFlags, Allocator>;
 
-		/// @brief A container for arbitrary JSON values
+		/// @brief A non-owning container for arbitrary JSON values that allows
+		/// movement/iteration through
 		/// @tparam ParseState see IteratorRange
 		template<json_options_t PolicyFlags, typename Allocator>
 		class basic_json_value {
@@ -392,6 +371,10 @@ namespace daw::json {
 				return iterator( );
 			}
 
+			/// @brief Query the current class for a named member.
+			/// @param name Name of member to find
+			/// @return The first member with matching name or an empty
+			/// basic_json_value
 			[[nodiscard]] constexpr basic_json_value
 			find_class_member( daw::string_view name ) const {
 				if( type( ) != JsonBaseParseTypes::Class ) {
@@ -408,31 +391,20 @@ namespace daw::json {
 				return ( *pos ).value;
 			}
 
+			/// @brief find a class member/array element as specified by the json_path
 			[[nodiscard]] constexpr basic_json_value
-			find_member( daw::string_view name ) const {
+			find_member( daw::string_view json_path ) const {
 				auto jv = *this;
-				while( not name.empty( ) and jv ) {
-					char last_char = 0;
+				while( not json_path.empty( ) and jv ) {
 					auto member = [&] {
-						if( name.front( ) == '[' ) {
-							return name.pop_front_until( ']' );
+						if( json_path.front( ) == '[' ) {
+							return json_path.pop_front_until( ']' );
 						}
-						return name.pop_front_until(
-						  [&last_char]( char c ) {
-							  if( last_char == '\\' ) {
-								  last_char = 0;
-								  return false;
-							  }
-							  last_char = c;
-							  if( c == '.' or c == '[' ) {
-								  return true;
-							  }
-							  return false;
-						  },
-						  nodiscard );
+						return json_path.pop_front_until(
+						  escaped_any_of_t<char, '.', '['>{ }, nodiscard );
 					}( );
-					if( not name.empty( ) and name.front( ) == '.' ) {
-						name.remove_prefix( );
+					if( not json_path.empty( ) and json_path.front( ) == '.' ) {
+						json_path.remove_prefix( );
 					}
 					if( member.front( ) == '[' ) {
 						member.remove_prefix( );
@@ -444,8 +416,8 @@ namespace daw::json {
 						  constexpr_exec_tag{ }, index_ps );
 
 						jv = jv.find_element( index );
-						if( not name.empty( ) and name.front( ) == '.' ) {
-							name.remove_prefix( );
+						if( not json_path.empty( ) and json_path.front( ) == '.' ) {
+							json_path.remove_prefix( );
 						}
 						continue;
 					}
@@ -454,20 +426,28 @@ namespace daw::json {
 				return jv;
 			}
 
+			/// @brief Parse the current json member as a Result.  The Result type
+			/// must be supported or mapped via a json_data_contract
 			template<typename Result>
-			[[nodiscard]] constexpr auto
-			as( template_param<Result> = template_arg<Result> ) const {
+			[[nodiscard]] constexpr auto as( ) const {
 				using result_t = json_details::json_deduced_type<Result>;
 				auto state = m_parse_state;
 				return json_details::parse_value<result_t>(
 				  state, ParseTag<result_t::expected_type>{ } );
 			}
 
+			/// @brief Query the current class for a named member.
+			/// @param name Name of member to find
+			/// @return The first member with matching name or an empty
+			/// basic_json_value
 			[[nodiscard]] constexpr basic_json_value
 			operator[]( daw::string_view json_path ) const {
 				return find_member( json_path );
 			}
 
+			/// @brief Find the nth element/submember of the current json array or
+			/// class.
+			/// @return The specified member/element or an empty basic_json_value
 			[[nodiscard]] constexpr basic_json_value
 			find_element( std::size_t index ) const {
 				auto first = begin( );
@@ -482,12 +462,17 @@ namespace daw::json {
 				return basic_json_value( );
 			}
 
+			/// @brief Find the nth element of the current json array
+			/// @return The specified element or an empty basic_json_value
 			[[nodiscard]] constexpr basic_json_value
 			find_array_element( std::size_t index ) const {
 				assert( type( ) == JsonBaseParseTypes::Array );
 				return find_element( index );
 			}
 
+			/// @brief Find the nth element/submember of the current json array or
+			/// class.
+			/// @return The specified member/element or an empty basic_json_value
 			[[nodiscard]] constexpr basic_json_value
 			operator[]( std::size_t index ) const {
 				return find_element( index );
