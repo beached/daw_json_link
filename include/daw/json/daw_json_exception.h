@@ -23,7 +23,7 @@
 #include <string>
 #include <string_view>
 
-#if defined( DAW_JSON_INHERIT_STDEXCEPTION )
+#if not defined( DAW_JSON_NO_INHERIT_STDEXCEPTION )
 #include <exception>
 #endif
 
@@ -211,7 +211,7 @@ namespace daw::json {
 		 * a json_exception. Not all actionable information is available through the
 		 * std::exception interface
 		 */
-#if defined( DAW_JSON_USE_STDEXCEPT )
+#if not defined( DAW_JSON_NO_INHERIT_STDEXCEPTION )
 #define DAW_JSON_STDEXCEPTION_FLAG true
 #define DAW_JSON_EXCEPTION_PARENT <true> : std::exception
 #define DAW_JSON_EXCEPTION_CONSTEXPR inline
