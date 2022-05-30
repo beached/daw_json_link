@@ -23,7 +23,7 @@
 #include <string>
 #include <string_view>
 
-#if defined( DAW_JSON_INHERIT_STDEXCEPTION )
+#if not defined( DAW_JSON_NO_INHERIT_STDEXCEPTION )
 #include <exception>
 #endif
 
@@ -207,30 +207,12 @@ namespace daw::json {
 		}
 
 		/***
-		 * This allows a codebase to catch( std::exception const & ) and still catch
-		 * a json_exception. Not all actionable information is available through the
-		 * std::exception interface
-		 */
-#if defined( DAW_JSON_USE_STDEXCEPT )
-#define DAW_JSON_STDEXCEPTION_FLAG true
-#define DAW_JSON_EXCEPTION_PARENT <true> : std::exception
-#define DAW_JSON_EXCEPTION_CONSTEXPR inline
-#else
-#define DAW_JSON_STDEXCEPTION_FLAG false
-#define DAW_JSON_EXCEPTION_PARENT <false>
-#define DAW_JSON_EXCEPTION_CONSTEXPR constexpr
-#endif
-		/***
 		 * When a parser error occurs this is thrown.  It will provide the local
 		 * reason for the error and some information about the location in the
 		 * parser if available.  Using the bool flag to ensure that the exception
 		 * type matches the compiler define and has a different name
 		 */
-		template<bool /*uses std::exception*/>
-		class json_exception_impl;
-
-		template<>
-		class json_exception_impl DAW_JSON_EXCEPTION_PARENT {
+		class json_exception : public std::exception {
 			ErrorReason m_reason = ErrorReason::Unknown;
 			union data_t {
 				char const *pointer;
@@ -244,47 +226,44 @@ namespace daw::json {
 			char const *m_parse_loc = nullptr;
 
 		public:
-			DAW_JSON_EXCEPTION_CONSTEXPR json_exception_impl( ) = default;
+			json_exception( ) = default;
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( ErrorReason reason )
+			DAW_ATTRIB_NOINLINE explicit inline json_exception( ErrorReason reason )
 			  : m_reason( reason ) {}
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( json_details::missing_member mm )
+			DAW_ATTRIB_NOINLINE explicit inline json_exception(
+			  json_details::missing_member mm )
 			  : m_reason( ErrorReason::MemberNotFound )
 			  , m_data( mm.member_name ) {}
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( json_details::missing_token mt )
+			DAW_ATTRIB_NOINLINE explicit inline json_exception(
+			  json_details::missing_token mt )
 			  : m_reason( ErrorReason::ExpectedTokenNotFound )
 			  , m_data( mt.token ) {}
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( json_details::missing_member mm,
-			                     std::string_view location )
+			DAW_ATTRIB_NOINLINE explicit inline json_exception(
+			  json_details::missing_member mm, std::string_view location )
 			  : m_reason( ErrorReason::MemberNotFound )
 			  , m_data( mm.member_name )
 			  , m_parse_loc( std::data( location ) ) {}
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( json_details::missing_token mt,
-			                     char const *location )
+			DAW_ATTRIB_NOINLINE explicit inline json_exception(
+			  json_details::missing_token mt, char const *location )
 			  : m_reason( ErrorReason::ExpectedTokenNotFound )
 			  , m_data( mt.token )
 			  , m_parse_loc( location ) {}
 
-			explicit DAW_JSON_EXCEPTION_CONSTEXPR
-			json_exception_impl( ErrorReason reason, char const *location )
+			DAW_ATTRIB_NOINLINE explicit inline json_exception( ErrorReason reason,
+			                                                    char const *location )
 			  : m_reason( reason )
 			  , m_parse_loc( location ) {}
 
-			[[nodiscard]] DAW_JSON_EXCEPTION_CONSTEXPR ErrorReason
+			DAW_ATTRIB_NOINLINE [[nodiscard]] inline ErrorReason
 			reason_type( ) const {
 				return m_reason;
 			}
 
-			[[nodiscard]] inline std::string reason( ) const {
+			DAW_ATTRIB_NOINLINE [[nodiscard]] inline std::string reason( ) const {
 #if defined( __clang__ )
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch-enum"
@@ -307,24 +286,20 @@ namespace daw::json {
 #endif
 			}
 
-			[[nodiscard]] constexpr char const *parse_location( ) const {
+			DAW_ATTRIB_NOINLINE [[nodiscard]] constexpr char const *
+			parse_location( ) const {
 				return m_parse_loc;
 			}
-#if defined( DAW_JSON_USE_STDEXCEPT )
 			inline char const *what( ) const noexcept override {
 				// reason_message returns a string_view to a literal
 				return reason_message( m_reason ).data( );
 			}
-			json_exception_impl( json_exception_impl const & ) = default;
-			json_exception_impl( json_exception_impl && ) noexcept = default;
-			json_exception_impl &operator=( json_exception_impl const & ) = default;
-			json_exception_impl &
-			operator=( json_exception_impl && ) noexcept = default;
-			inline ~json_exception_impl( ) override = default;
-#endif
+			json_exception( json_exception const & ) = default;
+			json_exception( json_exception && ) noexcept = default;
+			json_exception &operator=( json_exception const & ) = default;
+			json_exception &operator=( json_exception && ) noexcept = default;
+			~json_exception( ) override = default;
 		};
-
-		using json_exception = json_exception_impl<DAW_JSON_STDEXCEPTION_FLAG>;
 
 		/***
 		 * Helper to provide output formatted information about json_exception
@@ -365,12 +340,3 @@ namespace daw::json {
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
-#if defined( DAW_JSON_EXCEPTION_PARENT )
-#undef DAW_JSON_EXCEPTION_PARENT
-#endif
-#if defined( DAW_JSON_EXCEPTION_CONSTEXPR )
-#undef DAW_JSON_EXCEPTION_CONSTEXPR
-#endif
-#if defined( DAW_JSON_STDEXCEPTION_FLAG )
-#undef DAW_JSON_STDEXCEPTION_FLAG
-#endif

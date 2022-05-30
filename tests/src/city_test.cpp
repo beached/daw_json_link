@@ -5,10 +5,11 @@
 //
 // Official repository: https://github.com/beached/daw_json_link
 //
-// This file highlights some of the ways of working with JSON array documents as
-// they can be reified into a container or iterated over.  When using the
-// iterator/range interface we can use the std algorithms to do things like
-// count/accumulate them
+
+/// @brief This file highlights some of the ways of working with JSON array
+/// documents as they can be reified into a container or iterated over.  When
+/// using the iterator/range interface we can use the std algorithms to do
+/// things like count/accumulate them
 
 #include "defines.h"
 
