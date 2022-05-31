@@ -251,29 +251,31 @@ namespace daw::json {
 		/// pieces.
 		template<typename JsonElement = json_value, auto... ParsePolicies>
 		auto partition_jsonl_document( std::size_t num_partitions,
-		                         daw::string_view jsonl_doc ) {
+		                               daw::string_view jsonl_doc ) {
 			using result_t =
 			  std::vector<json_lines_range<JsonElement, ParsePolicies...>>;
-			auto approx_segsize = jsonl_doc.size( ) / num_partitions;
-			if( num_partitions < 2 or approx_segsize < 2 ) {
+			if( num_partitions <= 1 ) {
 				return result_t{
 				  json_lines_range<JsonElement, ParsePolicies...>( jsonl_doc ) };
 			}
+			auto approx_segsize = jsonl_doc.size( ) / num_partitions;
 			auto result = result_t{ };
 			char const *const last = daw::data_end( jsonl_doc );
 			while( not jsonl_doc.empty( ) ) {
 				char const *tmp = std::data( jsonl_doc ) + approx_segsize;
+				if( tmp >= last ) {
+					result.emplace_back( jsonl_doc );
+					break;
+				}
 				while( tmp < last and * tmp != '\n' ) {
 					++tmp;
 				}
 				if( tmp < last ) {
 					++tmp;
-				} else if( tmp > last ) {
-					tmp = last;
 				}
 				auto sz = static_cast<std::size_t>( tmp - std::data( jsonl_doc ) );
 				auto doc = jsonl_doc.pop_front( sz );
-				doc.trim( );
+				doc.trim_suffix( );
 				if( not doc.empty( ) ) {
 					result.emplace_back( doc );
 				}
