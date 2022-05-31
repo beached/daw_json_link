@@ -836,6 +836,9 @@ add_test(NAME json_lines_test_test COMMAND json_lines_test)
 add_dependencies(ci_tests json_lines_test)
 add_dependencies(full json_lines_test)
 
+add_executable(json_lines_bench_test src/json_lines_bench_test.cpp)
+target_link_libraries(json_lines_bench_test json_test)
+add_dependencies(full json_lines_bench_test)
 
 # **************************************************
 # JSON Benchmark

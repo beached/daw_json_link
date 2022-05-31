@@ -392,8 +392,7 @@ namespace daw::json {
 		 **************************************************/
 
 		namespace json_base {
-			template<typename T, json_options_t Options,
-			         typename Constructor>
+			template<typename T, json_options_t Options, typename Constructor>
 			struct json_number {
 				using i_am_a_json_type = void;
 				using wrapped_type = T;
@@ -452,8 +451,8 @@ namespace daw::json {
 		 * @tparam LiteralAsString Could this number be embedded in a string
 		 * @tparam Constructor Callable used to construct result
 		 */
-		template<JSONNAMETYPE Name, typename T,
-		         json_options_t Options, typename Constructor>
+		template<JSONNAMETYPE Name, typename T, json_options_t Options,
+		         typename Constructor>
 		struct json_number : json_base::json_number<T, Options, Constructor> {
 
 			static constexpr daw::string_view name = Name;
@@ -461,8 +460,7 @@ namespace daw::json {
 			using without_name = json_base::json_number<T, Options, Constructor>;
 		};
 
-		template<typename T = double,
-		         json_options_t Options = number_opts_def,
+		template<typename T = double, json_options_t Options = number_opts_def,
 		         typename Constructor = use_default>
 		using json_number_no_name = json_base::json_number<T, Options, Constructor>;
 
@@ -481,8 +479,7 @@ namespace daw::json {
 		 * @tparam LiteralAsString Could this number be embedded in a string
 		 * @tparam Constructor Callable used to construct result
 		 */
-		template<typename T = double,
-		         json_options_t Options = number_opts_def,
+		template<typename T = double, json_options_t Options = number_opts_def,
 		         typename Constructor = use_default>
 		using json_checked_number_no_name = json_base::json_number<
 		  T,
@@ -511,8 +508,7 @@ namespace daw::json {
 		  NullableType, Constructor>;
 
 		namespace json_base {
-			template<typename T, json_options_t Options,
-			         typename Constructor>
+			template<typename T, json_options_t Options, typename Constructor>
 			struct json_bool {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
@@ -549,8 +545,8 @@ namespace daw::json {
 		 * @tparam LiteralAsString Could this number be embedded in a string
 		 * @tparam Constructor Callable used to construct result
 		 */
-		template<JSONNAMETYPE Name, typename T,
-		         json_options_t Options, typename Constructor>
+		template<JSONNAMETYPE Name, typename T, json_options_t Options,
+		         typename Constructor>
 		struct json_bool : json_base::json_bool<T, Options, Constructor> {
 
 			static constexpr daw::string_view name = Name;
@@ -558,8 +554,7 @@ namespace daw::json {
 			using without_name = json_base::json_bool<T, Options, Constructor>;
 		};
 
-		template<typename T = bool,
-		         json_options_t Options = bool_opts_def,
+		template<typename T = bool, json_options_t Options = bool_opts_def,
 		         typename Constructor = use_default>
 		using json_bool_no_name = json_base::json_bool<T, Options, Constructor>;
 
@@ -573,8 +568,7 @@ namespace daw::json {
 
 		namespace json_base {
 			/// String - A raw string as is.  Escapes are left in.
-			template<typename String, json_options_t Options,
-			         typename Constructor>
+			template<typename String, json_options_t Options, typename Constructor>
 			struct json_string_raw {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
@@ -618,8 +612,8 @@ namespace daw::json {
 		 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
 		 * data
 		 */
-		template<JSONNAMETYPE Name, typename String,
-		         json_options_t Options, typename Constructor>
+		template<JSONNAMETYPE Name, typename String, json_options_t Options,
+		         typename Constructor>
 		struct json_string_raw
 		  : json_base::json_string_raw<String, Options, Constructor> {
 			using i_am_a_json_type = void;
@@ -645,8 +639,7 @@ namespace daw::json {
 		  NullableType, Constructor>;
 
 		namespace json_base {
-			template<typename String, json_options_t Options,
-			         typename Constructor>
+			template<typename String, json_options_t Options, typename Constructor>
 			struct json_string {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
@@ -687,16 +680,15 @@ namespace daw::json {
 		 * convert
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 */
-		template<JSONNAMETYPE Name, typename String,
-		         json_options_t Options, typename Constructor>
+		template<JSONNAMETYPE Name, typename String, json_options_t Options,
+		         typename Constructor>
 		struct json_string : json_base::json_string<String, Options, Constructor> {
 			static constexpr daw::string_view name = Name;
 
 			using without_name = json_base::json_string<String, Options, Constructor>;
 		};
 
-		template<typename T = std::string,
-		         json_options_t Options = string_opts_def,
+		template<typename T = std::string, json_options_t Options = string_opts_def,
 		         typename Constructor = use_default>
 		using json_string_no_name = json_base::json_string<T, Options, Constructor>;
 
@@ -1139,15 +1131,13 @@ namespace daw::json {
 			};
 		} // namespace json_base
 
-		/**
-		 * Allow parsing of a nullable type that does not fit
-		 * @tparam Name Name of JSON member to link to
-		 * @tparam T type of value being constructed
-		 * @tparam FromJsonConverter Callable that accepts a std::string_view of the
-		 * range to parse
-		 * @tparam ToJsonConverter Returns a string from the value
-		 * @tparam JsonRawType JSON type value is encoded as literal/string
-		 */
+		/// @brief Allow parsing of a type that does not fit
+		/// @tparam Name Name of JSON member to link to
+		/// @tparam T type of value being constructed
+		/// @tparam FromJsonConverter Callable that accepts a std::string_view of
+		/// the range to parse
+		/// @tparam ToJsonConverter Returns a string from the value
+		/// @tparam JsonRawType JSON type value is encoded as literal/string
 		template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
 		         typename ToJsonConverter, json_options_t Options>
 		struct json_custom
@@ -1748,11 +1738,6 @@ namespace daw::json {
 		  json_base::json_intrusive_variant<json_details::unwrapped_t<T>, TagMember,
 		                                    Switcher, JsonElements>,
 		  NullableType, Constructor>;
-
-		/***
-		 * An untyped JSON value
-		 */
-		using json_value = basic_json_value<>;
 
 		/***
 		 * A name/value pair of string_view/json_value.  This is used for iterating

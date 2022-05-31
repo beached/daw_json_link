@@ -61,7 +61,7 @@ namespace daw::json {
 		/// @brief Iterator for iterating over JSON array's
 		/// @tparam JsonElement type under underlying element in array. If
 		/// heterogeneous, a basic_json_value_iterator may be more appropriate
-		template<typename JsonElement, auto... PolicyFlags>
+		template<typename JsonElement = json_value, auto... PolicyFlags>
 		class json_lines_iterator {
 			using ParsePolicy = BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>;
@@ -213,7 +213,7 @@ namespace daw::json {
 		 * @tparam JsonElement Type of each element in array
 		 * @tparam ParsePolicy parsing policy type
 		 */
-		template<typename JsonElement, auto... PolicyFlags>
+		template<typename JsonElement = json_value, auto... PolicyFlags>
 		struct json_lines_range {
 			using ParsePolicy = BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>;
@@ -246,5 +246,41 @@ namespace daw::json {
 				return m_first == m_last;
 			}
 		};
+
+		/// @brief parition the document into num_partitions, non overlapping
+		/// pieces.
+		template<typename JsonElement = json_value, auto... ParsePolicies>
+		auto partition_jsonl_document( std::size_t num_partitions,
+		                               daw::string_view jsonl_doc ) {
+			using result_t =
+			  std::vector<json_lines_range<JsonElement, ParsePolicies...>>;
+			if( num_partitions <= 1 ) {
+				return result_t{
+				  json_lines_range<JsonElement, ParsePolicies...>( jsonl_doc ) };
+			}
+			auto approx_segsize = jsonl_doc.size( ) / num_partitions;
+			auto result = result_t{ };
+			char const *const last = daw::data_end( jsonl_doc );
+			while( not jsonl_doc.empty( ) ) {
+				char const *tmp = std::data( jsonl_doc ) + approx_segsize;
+				if( tmp >= last ) {
+					result.emplace_back( jsonl_doc );
+					break;
+				}
+				while( tmp < last and * tmp != '\n' ) {
+					++tmp;
+				}
+				if( tmp < last ) {
+					++tmp;
+				}
+				auto sz = static_cast<std::size_t>( tmp - std::data( jsonl_doc ) );
+				auto doc = jsonl_doc.pop_front( sz );
+				doc.trim_suffix( );
+				if( not doc.empty( ) ) {
+					result.emplace_back( doc );
+				}
+			}
+			return result;
+		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
