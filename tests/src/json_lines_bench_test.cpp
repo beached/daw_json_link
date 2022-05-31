@@ -18,7 +18,10 @@
 #include <daw/json/daw_json_link.h>
 
 #include <cstdlib>
+#include <future>
 #include <iostream>
+#include <numeric>
+#include <thread>
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
@@ -46,57 +49,105 @@ int main( int argc, char **argv ) {
 		std::cerr << "Must supply a jsonl filename to open\n";
 		exit( EXIT_FAILURE );
 	}
-	auto json_doc = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "json_lines typed checked", json_doc.size( ),
-	  []( daw::string_view jd ) {
-		  std::size_t count = 0;
-		  auto tp_range =
-		    daw::json::json_lines_range<daw::json::json_raw_no_name<>>( jd );
-		  for( auto jv : tp_range ) {
-			  count += jv["body"].get_string_view( ).size( );
-		  }
-		  daw::do_not_optimize( count );
-	  },
-	  json_doc );
+	auto jsonl_doc = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "json_lines typed unchecked", json_doc.size( ),
+	  "json_lines typed checked", jsonl_doc.size( ),
 	  []( daw::string_view jd ) {
-		  std::size_t count = 0;
-		  auto tp_range =
-		    daw::json::json_lines_range<daw::json::json_raw_no_name<>,
-		                                daw::json::options::CheckedParseMode::no>(
-		      jd );
-		  for( auto jv : tp_range ) {
-			  count += jv["body"].get_string_view( ).size( );
-		  }
-		  daw::do_not_optimize( count );
+	    std::size_t count = 0;
+	    auto tp_range =
+	      daw::json::json_lines_range<daw::json::json_raw_no_name<>>( jd );
+	    for( auto jv : tp_range ) {
+	      count += jv["body"].get_string_view( ).size( );
+	    }
+	    daw::do_not_optimize( count );
 	  },
-	  json_doc );
+	  jsonl_doc );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "json_lines checked", json_doc.size( ),
+	  "json_lines typed unchecked", jsonl_doc.size( ),
 	  []( daw::string_view jd ) {
-		  std::size_t count = 0;
-		  auto tp_range = daw::json::json_lines_range<jsonl_entry>( jd );
-		  for( jsonl_entry entry : tp_range ) {
-			  count += entry.body.size( );
-		  }
-		  daw::do_not_optimize( count );
+	    std::size_t count = 0;
+	    auto tp_range =
+	      daw::json::json_lines_range<daw::json::json_raw_no_name<>,
+	                                  daw::json::options::CheckedParseMode::no>(
+	        jd );
+	    for( auto jv : tp_range ) {
+	      count += jv["body"].get_string_view( ).size( );
+	    }
+	    daw::do_not_optimize( count );
 	  },
-	  json_doc );
+	  jsonl_doc );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "json_lines unchecked", json_doc.size( ),
+	  "json_lines checked", jsonl_doc.size( ),
 	  []( daw::string_view jd ) {
-		  std::size_t count = 0;
-		  auto tp_range = daw::json::json_lines_range<
-		    jsonl_entry, daw::json::options::CheckedParseMode::no>( jd );
-		  for( jsonl_entry entry : tp_range ) {
-			  count += entry.body.size( );
+	    std::size_t count = 0;
+	    auto tp_range = daw::json::json_lines_range<jsonl_entry>( jd );
+	    for( jsonl_entry entry : tp_range ) {
+	      count += entry.body.size( );
+	    }
+	    daw::do_not_optimize( count );
+	  },
+	  jsonl_doc );
+
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "json_lines unchecked", jsonl_doc.size( ),
+	  []( daw::string_view jd ) {
+	    std::size_t count = 0;
+	    auto tp_range = daw::json::json_lines_range<
+	      jsonl_entry, daw::json::options::CheckedParseMode::no>( jd );
+	    for( jsonl_entry entry : tp_range ) {
+	      count += entry.body.size( );
+	    }
+	    daw::do_not_optimize( count );
+	  },
+	  jsonl_doc );
+
+	auto const chkpartitions = daw::json::partition_jsonl_document<jsonl_entry>(
+	  std::thread::hardware_concurrency( ), jsonl_doc );
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "json_lines typed threaded checked", jsonl_doc.size( ),
+	  []( auto const &parts ) {
+		  auto results = std::vector<std::future<std::size_t>>( );
+		  for( auto const &part : parts ) {
+			  results.push_back( std::async( std::launch::async, [&] {
+				  std::size_t count = 0;
+				  auto tp_range = part;
+				  for( jsonl_entry entry : tp_range ) {
+					  count += entry.body.size( );
+				  }
+				  return count;
+			  } ) );
 		  }
+		  std::size_t count = std::accumulate(
+		    std::begin( results ), std::end( results ), std::size_t{ 0 },
+		    []( auto lhs, auto &rhs ) { return lhs + rhs.get( ); } );
 		  daw::do_not_optimize( count );
 	  },
-	  json_doc );
+	  chkpartitions );
+	auto const unchkpartitions = daw::json::partition_jsonl_document<
+	  jsonl_entry, daw::json::options::CheckedParseMode::no>(
+	  std::thread::hardware_concurrency( ), jsonl_doc );
+
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "json_lines typed threaded unchecked", jsonl_doc.size( ),
+	  []( auto const &parts ) {
+		  auto results = std::vector<std::future<std::size_t>>( );
+		  for( auto const &part : parts ) {
+			  results.push_back( std::async( std::launch::async, [&] {
+				  std::size_t count = 0;
+				  auto tp_range = part;
+				  for( jsonl_entry entry : tp_range ) {
+					  count += entry.body.size( );
+				  }
+				  return count;
+			  } ) );
+		  }
+		  std::size_t count = std::accumulate(
+		    std::begin( results ), std::end( results ), std::size_t{ 0 },
+		    []( auto lhs, auto &rhs ) { return lhs + rhs.get( ); } );
+		  daw::do_not_optimize( count );
+	  },
+	  unchkpartitions );
 }
