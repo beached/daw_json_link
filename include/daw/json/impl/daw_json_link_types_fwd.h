@@ -16,6 +16,7 @@
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
 #include "daw_json_traits.h"
+#include "daw_json_value_fwd.h"
 #include "to_daw_json_string.h"
 
 #include <daw/cpp_17.h>

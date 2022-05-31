@@ -19,5 +19,8 @@ namespace daw::json {
 		template<json_options_t PolicyFlags = json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		class basic_json_value;
+
+		/// @brief An untyped JSON value
+		using json_value = basic_json_value<>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

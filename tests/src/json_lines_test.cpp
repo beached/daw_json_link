@@ -11,10 +11,10 @@
 #include <daw/json/daw_json_lines_iterator.h>
 #include <daw/json/daw_json_link.h>
 
+#include <iterator>
 #include <string>
 #include <tuple>
 #include <vector>
-
 
 struct Element {
 	int a;
@@ -111,4 +111,10 @@ int main( ) {
 	ensure( not elements4[0].b );
 	ensure( elements4[1].a == 2 );
 	ensure( elements4[1].b );
+
+	auto tp_range2 =
+	  daw::json::json_lines_range<daw::json::json_raw_no_name<>>( json_lines2 );
+	for( auto jv : tp_range2 ) {
+		ensure( jv.is_array( ) );
+	}
 }

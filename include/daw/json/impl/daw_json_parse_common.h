@@ -18,6 +18,7 @@
 #include "daw_json_option_bits.h"
 #include "daw_json_traits.h"
 #include "daw_json_type_options.h"
+#include "daw_json_value_fwd.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cpp_feature_check.h>
@@ -242,8 +243,9 @@ namespace daw::json {
 			         typename Constructor = use_default>
 			struct json_array;
 
-			template<typename T, typename FromJsonConverter, typename ToJsonConverter,
-			         json_options_t Options>
+			template<typename T, typename FromJsonConverter = use_default,
+			         typename ToJsonConverter = use_default,
+			         json_options_t Options = json_custom_opts_def>
 			struct json_custom;
 
 			template<typename Variant, typename JsonElements = use_default,
@@ -255,26 +257,22 @@ namespace daw::json {
 			         typename Constructor = use_default>
 			struct json_tagged_variant;
 
-			template<typename T,
-			         json_options_t Options = string_raw_opts_def,
+			template<typename T, json_options_t Options = string_raw_opts_def,
 			         typename Constructor = use_default>
 			struct json_string_raw;
 
-			template<typename T,
-			         json_options_t Options = string_raw_opts_def,
+			template<typename T, json_options_t Options = string_raw_opts_def,
 			         JsonNullable NullableType = JsonNullable::Nullable,
 			         typename Constructor = use_default>
 			using json_string_raw_null =
 			  json_nullable<T, json_string_raw<json_details::unwrapped_t<T>, Options>,
 			                NullableType, Constructor>;
 
-			template<typename T,
-			         json_options_t Options = string_opts_def,
+			template<typename T, json_options_t Options = string_opts_def,
 			         typename Constructor = use_default>
 			struct json_string;
 
-			template<typename T,
-			         json_options_t Options = string_opts_def,
+			template<typename T, json_options_t Options = string_opts_def,
 			         JsonNullable NullableType = JsonNullable::Nullable,
 			         typename Constructor = use_default>
 			using json_string_null =
@@ -295,13 +293,11 @@ namespace daw::json {
 			template<typename T, typename Constructor = use_default>
 			struct json_date;
 
-			template<typename T,
-			         json_options_t Options = number_opts_def,
+			template<typename T, json_options_t Options = number_opts_def,
 			         typename Constructor = use_default>
 			struct json_number;
 
-			template<typename T,
-			         json_options_t Options = number_opts_def,
+			template<typename T, json_options_t Options = number_opts_def,
 			         JsonNullable NullableType = JsonNullable::Nullable,
 			         typename Constructor = use_default>
 			using json_number_null =
