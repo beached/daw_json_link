@@ -50,7 +50,7 @@ int main( int argc, char **argv ) {
 		exit( EXIT_FAILURE );
 	}
 	auto jsonl_doc = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
-/*
+
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "json_lines typed checked", jsonl_doc.size( ),
 	  []( daw::string_view jd ) {
@@ -103,7 +103,7 @@ int main( int argc, char **argv ) {
 	    daw::do_not_optimize( count );
 	  },
 	  jsonl_doc );
-*/
+
 	auto const chkpartitions = daw::json::partition_jsonl_document<jsonl_entry>(
 	  std::thread::hardware_concurrency( ), jsonl_doc );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
