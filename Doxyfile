@@ -143,9 +143,9 @@ REFERENCES_LINK_SOURCE = YES
 SOURCE_TOOLTIPS        = YES
 USE_HTAGS              = NO
 VERBATIM_HEADERS       = YES
-CLANG_ASSISTED_PARSING = NO
+CLANG_ASSISTED_PARSING = YES
 CLANG_ADD_INC_PATHS    = YES
-CLANG_OPTIONS          =
+CLANG_OPTIONS          = -std=c++17 -isystem build/_deps/daw_header_libraries-src/include/ -isystem build/_deps/daw_utf_range-src/include/
 CLANG_DATABASE_PATH    =
 ALPHABETICAL_INDEX     = YES
 IGNORE_PREFIX          =

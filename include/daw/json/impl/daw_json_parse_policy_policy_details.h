@@ -10,6 +10,8 @@
 
 #include "version.h"
 
+#include "daw_json_assert.h"
+
 #include <daw/daw_attributes.h>
 
 namespace daw::json {
