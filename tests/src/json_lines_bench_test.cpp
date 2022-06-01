@@ -97,7 +97,7 @@ int main( int argc, char **argv ) {
 	ensure( typed_check_count == real_count );
 
 	auto typed_uncheck_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "json_lines unchecked", jsonl_doc.size( ),
+	  "json_lines typed unchecked", jsonl_doc.size( ),
 	  []( daw::string_view jd ) {
 		  std::size_t count = 0;
 		  auto tp_range = daw::json::json_lines_range<
@@ -114,7 +114,7 @@ int main( int argc, char **argv ) {
 	auto const chkpartitions = daw::json::partition_jsonl_document<jsonl_entry>(
 	  std::thread::hardware_concurrency( ), jsonl_doc );
 
-	auto typed_checked_threaded_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS*10>(
+	auto typed_checked_threaded_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS * 10>(
 	  "json_lines typed threaded checked", jsonl_doc.size( ),
 	  []( auto const &parts ) {
 		  auto results = std::vector<std::future<std::size_t>>( );
@@ -141,26 +141,27 @@ int main( int argc, char **argv ) {
 	  jsonl_entry, daw::json::options::CheckedParseMode::no>(
 	  std::thread::hardware_concurrency( ), jsonl_doc );
 
-	auto typed_unchecked_threaded_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS*10>(
-	  "json_lines typed threaded unchecked", jsonl_doc.size( ),
-	  []( auto const &parts ) {
-		  auto results = std::vector<std::future<std::size_t>>( );
-		  for( auto const &part : parts ) {
-			  results.push_back( std::async( std::launch::async, [&] {
-				  std::size_t count = 0;
-				  auto tp_range = part;
-				  for( jsonl_entry entry : tp_range ) {
-					  count += entry.body.size( );
-				  }
-				  return count;
-			  } ) );
-		  }
-		  std::size_t count = std::accumulate(
-		    std::begin( results ), std::end( results ), std::size_t{ 0 },
-		    []( auto lhs, auto &rhs ) { return lhs + rhs.get( ); } );
-		  daw::do_not_optimize( count );
-		  return count;
-	  },
-	  unchkpartitions );
+	auto typed_unchecked_threaded_count =
+	  *daw::bench_n_test_mbs<DAW_NUM_RUNS * 10>(
+	    "json_lines typed threaded unchecked", jsonl_doc.size( ),
+	    []( auto const &parts ) {
+		    auto results = std::vector<std::future<std::size_t>>( );
+		    for( auto const &part : parts ) {
+			    results.push_back( std::async( std::launch::async, [&] {
+				    std::size_t count = 0;
+				    auto tp_range = part;
+				    for( jsonl_entry entry : tp_range ) {
+					    count += entry.body.size( );
+				    }
+				    return count;
+			    } ) );
+		    }
+		    std::size_t count = std::accumulate(
+		      std::begin( results ), std::end( results ), std::size_t{ 0 },
+		      []( auto lhs, auto &rhs ) { return lhs + rhs.get( ); } );
+		    daw::do_not_optimize( count );
+		    return count;
+	    },
+	    unchkpartitions );
 	ensure( typed_unchecked_threaded_count == real_count );
 }
