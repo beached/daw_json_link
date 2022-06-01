@@ -114,7 +114,7 @@ int main( int argc, char **argv ) {
 	auto const chkpartitions = daw::json::partition_jsonl_document<jsonl_entry>(
 	  std::thread::hardware_concurrency( ), jsonl_doc );
 
-	auto typed_checked_threaded_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	auto typed_checked_threaded_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS*10>(
 	  "json_lines typed threaded checked", jsonl_doc.size( ),
 	  []( auto const &parts ) {
 		  auto results = std::vector<std::future<std::size_t>>( );
@@ -141,7 +141,7 @@ int main( int argc, char **argv ) {
 	  jsonl_entry, daw::json::options::CheckedParseMode::no>(
 	  std::thread::hardware_concurrency( ), jsonl_doc );
 
-	auto typed_unchecked_threaded_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	auto typed_unchecked_threaded_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS*10>(
 	  "json_lines typed threaded unchecked", jsonl_doc.size( ),
 	  []( auto const &parts ) {
 		  auto results = std::vector<std::future<std::size_t>>( );
