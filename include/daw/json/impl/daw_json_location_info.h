@@ -8,17 +8,25 @@
 
 #pragma once
 
-#include "daw_murmur3.h"
 #include "version.h"
 
+#include "daw_json_assert.h"
+#include "daw_murmur3.h"
+
+#include <daw/daw_algorithm.h>
 #include <daw/daw_consteval.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_logic.h>
 #include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
+#include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
+#include <daw/daw_utility.h>
 
 #include <ciso646>
 #include <cstddef>
+#include <iterator>
+#include <utility>
 
 #if defined( DAW_JSON_PARSER_DIAGNOSTICS )
 #include <cmath>
