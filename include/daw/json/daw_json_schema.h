@@ -11,6 +11,7 @@
 #include <daw/daw_utility.h>
 
 #include "daw_json_link_types.h"
+#include "daw_to_json_fwd.h"
 #include "impl/daw_json_serialize_policy.h"
 #include "impl/to_daw_json_string.h"
 
