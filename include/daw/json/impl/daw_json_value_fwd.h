@@ -10,6 +10,7 @@
 
 #include "daw_json_allocator_wrapper.h"
 #include "daw_json_option_bits.h"
+#include "daw_json_parse_options_impl.h"
 #include "daw_json_parse_policy.h"
 
 namespace daw::json {

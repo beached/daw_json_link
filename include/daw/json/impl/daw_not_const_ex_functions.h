@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include "daw_json_assert.h"
 #include "daw_json_exec_modes.h"
 
 #include <daw/daw_attributes.h>
