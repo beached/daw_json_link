@@ -78,91 +78,95 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Official repository: https://github.com/beached/daw_json_link</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">pragma</span> <span class="preprocessor">once</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">daw</span><span class="preprocessor">/</span><span class="preprocessor">daw_cxmath</span><span class="preprocessor">.</span><span class="preprocessor">h</span><span class="preprocessor">&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">daw</span><span class="preprocessor">/</span><span class="preprocessor">daw_uint_buffer</span><span class="preprocessor">.</span><span class="preprocessor">h</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;daw/daw_cxmath.h&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;daw/daw_uint_buffer.h&gt;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">array</span><span class="preprocessor">&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">cstddef</span><span class="preprocessor">&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">cstdint</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace</span> daw::json {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace</span> DAW_JSON_VER {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">namespace</span> json_details {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> is_digit = []( <span class="keywordtype">char</span> c ) -&gt; daw::UInt8 {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast</span>&lt;<span class="keywordtype">unsigned</span>&gt;( <span class="keyword">static_cast</span>&lt;<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>&gt;( c ) ) -</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                     <span class="keyword">static_cast</span>&lt;<span class="keywordtype">unsigned</span>&gt;(</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                       <span class="keyword">static_cast</span>&lt;<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>&gt;( <span class="stringliteral">&#39;0&#39;</span> ) ) &lt;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keyword">auto</span> is_digit = []( <span class="keywordtype">char</span> c ) -&gt; daw::UInt8 {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( c ) ) -</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                     <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                       <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( <span class="charliteral">&#39;0&#39;</span> ) ) &lt;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                   10U</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                 ? daw::UInt8{ 0 }</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                 : daw::UInt8{ 0xFFU };</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      };</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Predicate&gt;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> std::int32_t</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      count_4digits( <span class="keywordtype">char</span> <span class="keyword">const</span> *first, Predicate pred ) {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr std::int32_t</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      count_4digits( <span class="keywordtype">char</span> <span class="keyword">const</span> *<a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>, Predicate pred ) {</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        std::array&lt;daw::UInt8, 4&gt; <span class="keyword">const</span> buff{</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;          pred( first[3] ), pred( first[2] ), pred( first[2] ),</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;          pred( first[1] ) };</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;          pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[3] ), pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[2] ), pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[2] ),</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;          pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[1] ) };</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keyword">auto</span> <span class="keyword">const</span> v = DAW_BIT_CAST( std::uint32_t, buff );</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keywordflow">if</span>( v != 0 ) {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;          <span class="keyword">auto</span> result = daw::cxmath::count_leading_zeroes( v );</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;          result /= 8;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast</span>&lt;std::int32_t&gt;( result );</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( result );</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        }</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">return</span> -1;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      }</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Predicate&gt;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <span class="keyword">constexpr</span> std::int32_t</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      count_8digits( <span class="keywordtype">char</span> <span class="keyword">const</span> *first, Predicate pred ) {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr std::int32_t</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      count_8digits( <span class="keywordtype">char</span> <span class="keyword">const</span> *<a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>, Predicate pred ) {</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        std::array&lt;daw::UInt8, 8&gt; <span class="keyword">const</span> buff{</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;          pred( first[7] ), pred( first[6] ), pred( first[5] ),</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;          pred( first[4] ), pred( first[3] ), pred( first[2] ),</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;          pred( first[1] ), pred( first[0] ) };</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;          pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[7] ), pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[6] ), pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[5] ),</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;          pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[4] ), pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[3] ), pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[2] ),</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;          pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[1] ), pred( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>[0] ) };</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keyword">auto</span> <span class="keyword">const</span> v = DAW_BIT_CAST( std::uint64_t, buff );</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordflow">if</span>( v != 0 ) {</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;          <span class="keyword">auto</span> result = daw::cxmath::count_leading_zeroes( v );</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;          result /= 8;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast</span>&lt;std::int32_t&gt;( result );</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( result );</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        }</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">return</span> -1;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      }</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      DAW_ATTRIB_FLATTEN <span class="keyword">inline</span> <span class="keyword">constexpr</span> CharT *count_digits( CharT *first,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                                               CharT *last ) {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">while</span>( DAW_LIKELY( last - first &gt;= 8 ) ) {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> v = count_8digits( first, is_digit );</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      DAW_ATTRIB_FLATTEN <span class="keyword">inline</span> constexpr CharT *count_digits( CharT *<a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                                               CharT *<a class="code" href="daw__json__location__info_8h.html#a37e1e1f76fc8b76400ea9c6595c760ab">last</a> ) {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">while</span>( DAW_LIKELY( <a class="code" href="daw__json__location__info_8h.html#a37e1e1f76fc8b76400ea9c6595c760ab">last</a> - <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a> &gt;= 8 ) ) {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> v = count_8digits( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>, is_digit );</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;          <span class="keywordflow">if</span>( v &gt;= 0 ) {</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            <span class="keywordflow">return</span> first + v;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a> + v;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;          }</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;          first += 8;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;          <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a> += 8;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        }</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keywordflow">while</span>( last - first &gt;= 4 ) {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> v = count_4digits( first, is_digit );</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keywordflow">while</span>( <a class="code" href="daw__json__location__info_8h.html#a37e1e1f76fc8b76400ea9c6595c760ab">last</a> - <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a> &gt;= 4 ) {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> v = count_4digits( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>, is_digit );</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;          <span class="keywordflow">if</span>( v &gt;= 0 ) {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="keywordflow">return</span> first + v;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a> + v;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;          }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;          first += 4;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;          <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a> += 4;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        }</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">while</span>( first != last ) {</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;          <span class="keywordflow">if</span>( <span class="keyword">static_cast</span>&lt;<span class="keywordtype">unsigned</span>&gt;( *first ) -</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                <span class="keyword">static_cast</span>&lt;<span class="keywordtype">unsigned</span>&gt;( <span class="keyword">static_cast</span>&lt;<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>&gt;( <span class="stringliteral">&#39;0&#39;</span> ) ) &gt;=</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">while</span>( <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a> != <a class="code" href="daw__json__location__info_8h.html#a37e1e1f76fc8b76400ea9c6595c760ab">last</a> ) {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;          <span class="keywordflow">if</span>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( *<a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a> ) -</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( <span class="charliteral">&#39;0&#39;</span> ) ) &gt;=</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;              10U ) {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            <span class="keywordflow">return</span> first;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;          }</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;          ++first;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;          ++<a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        }</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordflow">return</span> first;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a>;</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      }</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    } <span class="comment">// namespace json_details</span></div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__from__json_8h_source.html#l00023">daw_from_json.h:23</a></div></div>
+<div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00016">version.h:16</a></div></div>
+<div class="ttc" id="adaw__json__location__info_8h_html_a37e1e1f76fc8b76400ea9c6595c760ab"><div class="ttname"><a href="daw__json__location__info_8h.html#a37e1e1f76fc8b76400ea9c6595c760ab">last</a></div><div class="ttdeci">CharT * last</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__location__info_8h_source.html#l00043">daw_json_location_info.h:43</a></div></div>
+<div class="ttc" id="adaw__json__location__info_8h_html_a7008aeb23a3652d34ec0f124443616c5"><div class="ttname"><a href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a></div><div class="ttdeci">CharT * first</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__location__info_8h_source.html#l00042">daw_json_location_info.h:42</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

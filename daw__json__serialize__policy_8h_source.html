@@ -78,34 +78,34 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Official repository: https://github.com/beached/daw_json_link</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">pragma</span> <span class="preprocessor">once</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <a class="code" href="daw__json__option__bits_8h.html">&quot;daw_json_option_bits.h&quot;</a></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <a class="code" href="daw__json__parse__options__impl_8h.html">&quot;daw_json_parse_options_impl.h&quot;</a></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <a class="code" href="daw__json__serialize__options__impl_8h.html">&quot;daw_json_serialize_options_impl.h&quot;</a></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <a class="code" href="daw__json__serialize__policy__details_8h.html">&quot;daw_json_serialize_policy_details.h&quot;</a></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <a class="code" href="version_8h.html">&quot;version.h&quot;</a></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">daw</span><span class="preprocessor">/</span><span class="preprocessor">daw_move</span><span class="preprocessor">.</span><span class="preprocessor">h</span><span class="preprocessor">&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">cstddef</span><span class="preprocessor">&gt;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">iterator</span><span class="preprocessor">&gt;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace</span> daw::json {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace</span> <a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="comment">/***</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">     * Create the parser options flag for BasicParsePolicy</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">     * @tparam Policies Policy types that satisfy the `is_policy_flag` trait.</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">     * @param policies A list of parser options to change from the defaults.</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">     * @return A json_options_t that encodes the options for the parser</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Policies&gt;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">constexpr</span> json_options_t</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    serialize_options( Policies... policies ) {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      <span class="keyword">static_assert</span>( ( json_details::is_option_flag&lt;Policies&gt; <span class="keyword">and</span> ... ),</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">version.h</a>&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__option__bits_8h.html">daw_json_option_bits.h</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__parse__options__impl_8h.html">daw_json_parse_options_impl.h</a>&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__serialize__options__impl_8h.html">daw_json_serialize_options_impl.h</a>&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__serialize__policy__details_8h.html">daw_json_serialize_policy_details.h</a>&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;daw/daw_move.h&gt;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;iterator&gt;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">     * Create the parser options flag for BasicParsePolicy</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">     * @tparam Policies Policy types that satisfy the `is_policy_flag` trait.</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">     * @param policies A list of parser options to change from the defaults.</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">     * @return A json_options_t that encodes the options for the parser</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Policies&gt;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    constexpr json_options_t serialize_options( Policies... policies ) {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      static_assert( ( json_details::is_option_flag&lt;Policies&gt; and ... ),</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                     <span class="stringliteral">&quot;Only registered policy types are allowed&quot;</span> );</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      <span class="keyword">auto</span> result = json_details::serialization::default_policy_flag;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( <span class="keyword">sizeof</span>...( Policies ) &gt; 0 ) {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="keywordflow">if</span> constexpr( <span class="keyword">sizeof</span>...( Policies ) &gt; 0 ) {</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        result |=</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;          ( json_details::serialization::set_bits_for( policies ) | ... );</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      }</div>
@@ -115,101 +115,113 @@ $(function() {
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> OutputIterator,</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;             json_options_t PolicyFlags =</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;               json_details::serialization::default_policy_flag&gt;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">struct</span> serialization_policy</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">struct </span>serialization_policy</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      : json_details::iterator_wrapper&lt;OutputIterator&gt; {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keyword">using</span> i_am_a_serialization_policy = <span class="keywordtype">void</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keyword">using</span> i_am_a_serialization_policy = void;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="keyword">static</span> <span class="keyword">constexpr</span> json_options_t policy_flags( ) {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="keyword">static</span> constexpr json_options_t policy_flags( ) {</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordflow">return</span> PolicyFlags;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      }</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      <span class="keyword">using</span> json_details::iterator_wrapper&lt;OutputIterator&gt;::get;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keyword">using</span> iterator_type = OutputIterator;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a531df2c08579d6a1c4badca0f867e2e0">   57</a></span>&#160;      <a class="code" href="namespacestd.html">std</a>::size_t indentation_level = 0;</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a531df2c08579d6a1c4badca0f867e2e0">   57</a></span>&#160;      std::size_t <a class="code" href="daw__json__serialize__policy_8h.html#a531df2c08579d6a1c4badca0f867e2e0">indentation_level</a> = 0;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Flags&gt;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      <span class="keyword">constexpr</span> serialization_policy( OutputIterator it )</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        : json_details::iterator_wrapper&lt;OutputIterator&gt;{ DAW_MOVE( it ) } {}</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      constexpr serialization_policy( OutputIterator <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a> )</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        : json_details::iterator_wrapper&lt;OutputIterator&gt;{ DAW_MOVE( <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a> ) } {}</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a76e66fa39c0c116ff66f2d83151575db">   64</a></span>&#160;      <span class="keyword">static</span> <span class="keyword">constexpr</span> options::<a class="code" href="daw__json__serialize__options_8h.html#af920403e44d5a28925dc9cce3b641f66">SerializationFormat</a> serialization_format =</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a76e66fa39c0c116ff66f2d83151575db">   64</a></span>&#160;      <span class="keyword">static</span> constexpr <a class="code" href="daw__json__serialize__options_8h.html#af920403e44d5a28925dc9cce3b641f66">options::SerializationFormat</a> <a class="code" href="daw__json__serialize__policy_8h.html#a76e66fa39c0c116ff66f2d83151575db">serialization_format</a> =</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        json_details::serialization::get_bits_for&lt;options::SerializationFormat&gt;(</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;          PolicyFlags );</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a9b79916c39598f4754e9c40f6f89fd2d">   68</a></span>&#160;      <span class="keyword">static</span> <span class="keyword">constexpr</span> options::<a class="code" href="daw__json__serialize__options_8h.html#ab5bf7bbafb0678db22c8aba2504f0076">IndentationType</a> indentation_type =</div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a9b79916c39598f4754e9c40f6f89fd2d">   68</a></span>&#160;      <span class="keyword">static</span> constexpr <a class="code" href="daw__json__serialize__options_8h.html#ab5bf7bbafb0678db22c8aba2504f0076">options::IndentationType</a> <a class="code" href="daw__json__serialize__policy_8h.html#a9b79916c39598f4754e9c40f6f89fd2d">indentation_type</a> =</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        json_details::serialization::get_bits_for&lt;options::IndentationType&gt;(</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;          PolicyFlags );</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keyword">static</span> <span class="keyword">constexpr</span> options::<a class="code" href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">RestrictedStringOutput</a></div>
-<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#aa789effa17bbd38aec810f05b708a117">   73</a></span>&#160;        restricted_string_output = json_details::serialization::get_bits_for&lt;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;          options::RestrictedStringOutput&gt;( PolicyFlags );</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keyword">static</span> constexpr <a class="code" href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">options::RestrictedStringOutput</a></div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#aa789effa17bbd38aec810f05b708a117">   73</a></span>&#160;        <a class="code" href="daw__json__serialize__policy_8h.html#aa789effa17bbd38aec810f05b708a117">restricted_string_output</a> = json_details::serialization::get_bits_for&lt;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;          <a class="code" href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">options::RestrictedStringOutput</a>&gt;( PolicyFlags );</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a9836f3fc9ed50a4e4ca25801383a907b">   76</a></span>&#160;      <span class="keyword">static</span> <span class="keyword">constexpr</span> options::<a class="code" href="daw__json__serialize__options_8h.html#a2a6758418e34490f352e65be20ba0727">NewLineDelimiter</a> newline_delimiter =</div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a9836f3fc9ed50a4e4ca25801383a907b">   76</a></span>&#160;      <span class="keyword">static</span> constexpr <a class="code" href="daw__json__serialize__options_8h.html#a2a6758418e34490f352e65be20ba0727">options::NewLineDelimiter</a> <a class="code" href="daw__json__serialize__policy_8h.html#a9836f3fc9ed50a4e4ca25801383a907b">newline_delimiter</a> =</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        json_details::serialization::get_bits_for&lt;options::NewLineDelimiter&gt;(</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;          PolicyFlags );</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a6e9b389a2995ad32c9780bb6359b2fac">   80</a></span>&#160;      <span class="keyword">static</span> <span class="keyword">constexpr</span> options::<a class="code" href="daw__json__serialize__options_8h.html#a540f9f5ff0e23b938ec4d17dc95d4c29">OutputTrailingComma</a> output_trailing_comma =</div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a6e9b389a2995ad32c9780bb6359b2fac">   80</a></span>&#160;      <span class="keyword">static</span> constexpr <a class="code" href="daw__json__serialize__options_8h.html#a540f9f5ff0e23b938ec4d17dc95d4c29">options::OutputTrailingComma</a> <a class="code" href="daw__json__serialize__policy_8h.html#a6e9b389a2995ad32c9780bb6359b2fac">output_trailing_comma</a> =</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        json_details::serialization::get_bits_for&lt;options::OutputTrailingComma&gt;(</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;          PolicyFlags );</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> add_indent( ) {</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        ++indentation_level;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">void</span> add_indent( ) {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        ++<a class="code" href="daw__json__serialize__policy_8h.html#a531df2c08579d6a1c4badca0f867e2e0">indentation_level</a>;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      }</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> del_indent( ) {</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        --indentation_level;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">void</span> del_indent( ) {</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        --<a class="code" href="daw__json__serialize__policy_8h.html#a531df2c08579d6a1c4badca0f867e2e0">indentation_level</a>;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      }</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> output_indent( ) {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keyword">constexpr</span> std::string_view ident =</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;          json_details::serialization::generate_indent&lt;serialization_format,</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                                                       indentation_type&gt;;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <span class="keywordflow">for</span>( <a class="code" href="namespacestd.html">std</a>::size_t n = 0; n &lt; indentation_level; ++n ) {</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">void</span> output_indent( ) {</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        constexpr std::string_view ident =</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;          json_details::serialization::generate_indent&lt;<a class="code" href="daw__json__serialize__policy_8h.html#a76e66fa39c0c116ff66f2d83151575db">serialization_format</a>,</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                                                       <a class="code" href="daw__json__serialize__policy_8h.html#a9b79916c39598f4754e9c40f6f89fd2d">indentation_type</a>&gt;;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <span class="keywordflow">for</span>( std::size_t n = 0; n &lt; <a class="code" href="daw__json__serialize__policy_8h.html#a531df2c08579d6a1c4badca0f867e2e0">indentation_level</a>; ++n ) {</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;          daw::algorithm::copy( std::data( ident ), daw::data_end( ident ),</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                                <span class="keyword">this</span>-&gt;raw_it( ) );</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                                this-&gt;raw_it( ) );</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        }</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      }</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> output_newline( ) {</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( serialization_format !=</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                      options::<a class="code" href="daw__json__serialize__options_8h.html#af920403e44d5a28925dc9cce3b641f66">SerializationFormat</a>::Minified ) {</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( newline_delimiter == options::<a class="code" href="daw__json__serialize__options_8h.html#a2a6758418e34490f352e65be20ba0727">NewLineDelimiter</a>::n ) {</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;            *( *<span class="keyword">this</span> )++ = <span class="stringliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">void</span> output_newline( ) {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="keywordflow">if</span> constexpr( <a class="code" href="daw__json__serialize__policy_8h.html#a76e66fa39c0c116ff66f2d83151575db">serialization_format</a> !=</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                      options::SerializationFormat::Minified ) {</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;          <span class="keywordflow">if</span> constexpr( <a class="code" href="daw__json__serialize__policy_8h.html#a9836f3fc9ed50a4e4ca25801383a907b">newline_delimiter</a> == options::NewLineDelimiter::n ) {</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;            *( *this )++ = <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;            *( *<span class="keyword">this</span> )++ = <span class="stringliteral">&#39;\r&#39;</span>;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;            *( *<span class="keyword">this</span> )++ = <span class="stringliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;            *( *this )++ = <span class="charliteral">&#39;\r&#39;</span>;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;            *( *this )++ = <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;          }</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;        }</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;      }</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> next_member( ) {</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">void</span> next_member( ) {</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        output_newline( );</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        output_indent( );</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      }</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> output_space( ) {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( serialization_format !=</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                      options::<a class="code" href="daw__json__serialize__options_8h.html#af920403e44d5a28925dc9cce3b641f66">SerializationFormat</a>::Minified ) {</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;          *( *<span class="keyword">this</span> )++ = <span class="stringliteral">&#39; &#39;</span>;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">void</span> output_space( ) {</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordflow">if</span> constexpr( <a class="code" href="daw__json__serialize__policy_8h.html#a76e66fa39c0c116ff66f2d83151575db">serialization_format</a> !=</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                      options::SerializationFormat::Minified ) {</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;          *( *this )++ = <span class="charliteral">&#39; &#39;</span>;</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        }</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      }</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    };</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>, <span class="keyword">typename</span>...&gt;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_serialization_policy_v = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_serialization_policy_v = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; </div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> OutputIterator, json_options_t PolicyFlags&gt;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_serialization_policy_v&lt;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_serialization_policy_v&lt;</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      serialization_policy&lt;OutputIterator, PolicyFlags&gt;&gt; = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
+<div class="ttc" id="adaw__json__serialize__policy__details_8h_html"><div class="ttname"><a href="daw__json__serialize__policy__details_8h.html">daw_json_serialize_policy_details.h</a></div></div>
 <div class="ttc" id="adaw__json__serialize__options_8h_html_ab5bf7bbafb0678db22c8aba2504f0076"><div class="ttname"><a href="daw__json__serialize__options_8h.html#ab5bf7bbafb0678db22c8aba2504f0076">IndentationType</a></div><div class="ttdeci">IndentationType</div><div class="ttdoc">When Pretty mode is enabled, choose the indentation type.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00037">daw_json_serialize_options.h:37</a></div></div>
+<div class="ttc" id="adaw__json__default__constuctor_8h_html_ac431630602ea95459f51fee16fcd02ab"><div class="ttname"><a href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a></div><div class="ttdeci">Iterator &amp; it</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__default__constuctor_8h_source.html#l00055">daw_json_default_constuctor.h:55</a></div></div>
+<div class="ttc" id="adaw__json__serialize__policy_8h_html_a9b79916c39598f4754e9c40f6f89fd2d"><div class="ttname"><a href="daw__json__serialize__policy_8h.html#a9b79916c39598f4754e9c40f6f89fd2d">indentation_type</a></div><div class="ttdeci">static constexpr options::IndentationType indentation_type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__policy_8h_source.html#l00068">daw_json_serialize_policy.h:68</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__from__json_8h_source.html#l00023">daw_from_json.h:23</a></div></div>
+<div class="ttc" id="adaw__json__serialize__policy_8h_html_a6e9b389a2995ad32c9780bb6359b2fac"><div class="ttname"><a href="daw__json__serialize__policy_8h.html#a6e9b389a2995ad32c9780bb6359b2fac">output_trailing_comma</a></div><div class="ttdeci">static constexpr options::OutputTrailingComma output_trailing_comma</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__policy_8h_source.html#l00080">daw_json_serialize_policy.h:80</a></div></div>
+<div class="ttc" id="adaw__json__serialize__policy_8h_html_a76e66fa39c0c116ff66f2d83151575db"><div class="ttname"><a href="daw__json__serialize__policy_8h.html#a76e66fa39c0c116ff66f2d83151575db">serialization_format</a></div><div class="ttdeci">static constexpr options::SerializationFormat serialization_format</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__policy_8h_source.html#l00064">daw_json_serialize_policy.h:64</a></div></div>
+<div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
+<div class="ttc" id="adaw__json__serialize__policy_8h_html_a531df2c08579d6a1c4badca0f867e2e0"><div class="ttname"><a href="daw__json__serialize__policy_8h.html#a531df2c08579d6a1c4badca0f867e2e0">indentation_level</a></div><div class="ttdeci">std::size_t indentation_level</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__policy_8h_source.html#l00057">daw_json_serialize_policy.h:57</a></div></div>
+<div class="ttc" id="adaw__json__serialize__policy_8h_html_a9836f3fc9ed50a4e4ca25801383a907b"><div class="ttname"><a href="daw__json__serialize__policy_8h.html#a9836f3fc9ed50a4e4ca25801383a907b">newline_delimiter</a></div><div class="ttdeci">static constexpr options::NewLineDelimiter newline_delimiter</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__policy_8h_source.html#l00076">daw_json_serialize_policy.h:76</a></div></div>
 <div class="ttc" id="adaw__json__serialize__options_8h_html_a2a6758418e34490f352e65be20ba0727"><div class="ttname"><a href="daw__json__serialize__options_8h.html#a2a6758418e34490f352e65be20ba0727">NewLineDelimiter</a></div><div class="ttdeci">NewLineDelimiter</div><div class="ttdoc">When Pretty mode is enabled, set how newlines are expressed.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00076">daw_json_serialize_options.h:76</a></div></div>
+<div class="ttc" id="adaw__json__option__bits_8h_html"><div class="ttname"><a href="daw__json__option__bits_8h.html">daw_json_option_bits.h</a></div></div>
+<div class="ttc" id="adaw__json__serialize__policy_8h_html_aa789effa17bbd38aec810f05b708a117"><div class="ttname"><a href="daw__json__serialize__policy_8h.html#aa789effa17bbd38aec810f05b708a117">restricted_string_output</a></div><div class="ttdeci">static constexpr options::RestrictedStringOutput restricted_string_output</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__policy_8h_source.html#l00073">daw_json_serialize_policy.h:73</a></div></div>
 <div class="ttc" id="adaw__json__serialize__options_8h_html_a540f9f5ff0e23b938ec4d17dc95d4c29"><div class="ttname"><a href="daw__json__serialize__options_8h.html#a540f9f5ff0e23b938ec4d17dc95d4c29">OutputTrailingComma</a></div><div class="ttdeci">OutputTrailingComma</div><div class="ttdoc">When outputting arrays, follow final item with a comma.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00082">daw_json_serialize_options.h:82</a></div></div>
 <div class="ttc" id="adaw__json__serialize__options_8h_html_a4838acd0ff52b3a42a0d932b3df47f7d"><div class="ttname"><a href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">RestrictedStringOutput</a></div><div class="ttdeci">RestrictedStringOutput</div><div class="ttdoc">Allow for restricting the output of strings to 7bits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00061">daw_json_serialize_options.h:61</a></div></div>
-<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value_8h_source.html#l00087">daw_json_value.h:87</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00016">version.h:16</a></div></div>
+<div class="ttc" id="adaw__json__serialize__options__impl_8h_html"><div class="ttname"><a href="daw__json__serialize__options__impl_8h.html">daw_json_serialize_options_impl.h</a></div></div>
+<div class="ttc" id="adaw__json__parse__options__impl_8h_html"><div class="ttname"><a href="daw__json__parse__options__impl_8h.html">daw_json_parse_options_impl.h</a></div></div>
 <div class="ttc" id="adaw__json__serialize__options_8h_html_af920403e44d5a28925dc9cce3b641f66"><div class="ttname"><a href="daw__json__serialize__options_8h.html#af920403e44d5a28925dc9cce3b641f66">SerializationFormat</a></div><div class="ttdeci">SerializationFormat</div><div class="ttdoc">Choose whether to produce minified or pretty output.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00025">daw_json_serialize_options.h:25</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
