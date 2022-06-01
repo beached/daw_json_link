@@ -78,83 +78,83 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Official repository: https://github.com/beached/daw_json_link</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">pragma</span> <span class="preprocessor">once</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">impl/version.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&quot;impl/version.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__link__types__fwd_8h.html">impl/daw_json_link_types_fwd.h</a>&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__parse__class_8h.html">impl/daw_json_parse_class.h</a>&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&quot;impl/daw_json_link_types_fwd.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&quot;impl/daw_json_parse_class.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;daw/daw_cxmath.h&gt;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;daw/daw_move.h&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;daw/daw_scope_guard.h&gt;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;daw/daw_string_view.h&gt;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;daw/daw_traits.h&gt;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;daw/daw_utility.h&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">daw</span><span class="preprocessor">/</span><span class="preprocessor">daw_cxmath</span><span class="preprocessor">.</span><span class="preprocessor">h</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">daw</span><span class="preprocessor">/</span><span class="preprocessor">daw_move</span><span class="preprocessor">.</span><span class="preprocessor">h</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">daw</span><span class="preprocessor">/</span><span class="preprocessor">daw_scope_guard</span><span class="preprocessor">.</span><span class="preprocessor">h</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">daw</span><span class="preprocessor">/</span><span class="preprocessor">daw_string_view</span><span class="preprocessor">.</span><span class="preprocessor">h</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">daw</span><span class="preprocessor">/</span><span class="preprocessor">daw_traits</span><span class="preprocessor">.</span><span class="preprocessor">h</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">daw</span><span class="preprocessor">/</span><span class="preprocessor">daw_utility</span><span class="preprocessor">.</span><span class="preprocessor">h</span><span class="preprocessor">&gt;</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;array&gt;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;cstddef&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;cstdlib&gt;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;iterator&gt;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;limits&gt;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">array</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">cstddef</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">cstdlib</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">iterator</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">limits</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">string</span><span class="preprocessor">&gt;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">type_traits</span><span class="preprocessor">&gt;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">namespace </span>json_array_iterator_details {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">namespace</span> daw::json {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace</span> <a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">namespace</span> json_array_iterator_details {</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> CharT, <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      <span class="keyword">struct </span>op_star_cleanup {</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">   36</a></span>&#160;        CharT *&amp;<a class="code" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">m_can_skip</a>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">   37</a></span>&#160;        ParseState &amp;<a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      <span class="keyword">struct</span> op_star_cleanup {</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">   36</a></span>&#160;        CharT *&amp;m_can_skip;</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">   37</a></span>&#160;        ParseState &amp;tmp;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        DAW_ATTRIB_INLINE</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        DAW_SG_CXDTOR ~op_star_cleanup( ) noexcept(</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;          not <a class="code" href="daw__json__assert_8h.html#a236cef0d7e6c40781c19e4ebcd63aa5b">use_daw_json_exceptions_v</a> ) {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        DAW_SG_CXDTOR ~op_star_cleanup( ) <span class="keyword">noexcept</span>(</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;          <span class="keyword">not</span> use_daw_json_exceptions_v ) {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">if</span> <span class="preprocessor">defined</span><span class="preprocessor">(</span> <span class="preprocessor">DAW_HAS_CONSTEXPR_SCOPE_GUARD</span> <span class="preprocessor">)</span></div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;          <span class="keywordflow">if</span>( DAW_IS_CONSTANT_EVALUATED( ) ) {</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            <a class="code" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">m_can_skip</a> = <a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a>.first;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            m_can_skip = tmp.first;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">endif</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">if</span> <span class="preprocessor">not</span> <span class="preprocessor">defined</span><span class="preprocessor">(</span> DAW_JSON_DONT_USE_EXCEPTIONS <span class="preprocessor">)</span></div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordflow">if</span>( std::uncaught_exceptions( ) == 0 ) {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;              <a class="code" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">m_can_skip</a> = <a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a>.first;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">endif</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;              m_can_skip = tmp.first;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">if</span> <span class="preprocessor">not</span> <span class="preprocessor">defined</span><span class="preprocessor">(</span> DAW_JSON_DONT_USE_EXCEPTIONS <span class="preprocessor">)</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">endif</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">if</span> <span class="preprocessor">defined</span><span class="preprocessor">(</span> <span class="preprocessor">DAW_HAS_CONSTEXPR_SCOPE_GUARD</span> <span class="preprocessor">)</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;          }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">endif</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        }</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      };</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    } <span class="comment">// namespace json_array_iterator_details</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="comment">/***</span></div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">     * Iterator for iterating over JSON array&#39;s</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">     * @tparam JsonElement type under underlying element in array. If</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">     * heterogeneous, a basic_json_value_iterator may be more appropriate</span></div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">     * @tparam ParsePolicy Parsing policy type</span></div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonElement, <span class="keyword">auto</span>... PolicyFlags&gt;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keyword">class </span>json_array_iterator {</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keyword">class</span> json_array_iterator {</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="keyword">using</span> ParseState = BasicParsePolicy&lt;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        options::details::make_parse_flags&lt;PolicyFlags...&gt;( ).<a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a>&gt;;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        options::details::make_parse_flags&lt;PolicyFlags...&gt;( ).value&gt;;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      <span class="keyword">using</span> CharT = <span class="keyword">typename</span> ParseState::CharT;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keyword">static</span> <span class="keyword">inline</span> constexpr ParseState</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">constexpr</span> ParseState</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      get_range( daw::string_view data, daw::string_view member_path ) {</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keyword">auto</span> [is_found, result] = json_details::find_range&lt;ParseState&gt;(</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;          DAW_FWD( data ),</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;          { std::data( member_path ), std::size( member_path ) } );</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( is_found, ErrorReason::JSONPathNotFound );</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( result.front( ) == <span class="charliteral">&#39;[&#39;</span>, ErrorReason::InvalidArrayStart,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( result.front( ) == <span class="stringliteral">&#39;[&#39;</span>, ErrorReason::InvalidArrayStart,</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                         result );</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">return</span> result;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;      }</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      <span class="keyword">using</span> element_type = json_details::json_deduced_type&lt;JsonElement&gt;;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      static_assert( not std::is_same_v&lt;element_type, void&gt;,</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      <span class="keyword">static_assert</span>( <span class="keyword">not</span> std::is_same_v&lt;element_type, <span class="keywordtype">void</span>&gt;,</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                     <span class="stringliteral">&quot;Unknown JsonElement type.&quot;</span> );</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      <span class="keyword">using</span> value_type = <span class="keyword">typename</span> element_type::parse_to_t;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      <span class="keyword">using</span> reference = value_type;</div>
@@ -165,17 +165,17 @@ $(function() {
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      ParseState m_state = ParseState( );</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment">      /***</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;      <span class="comment">/***</span></div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">       * This lets us fastpath and just skip n characters as we have already</span></div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">       * parsed them</span></div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">       */</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      <span class="keyword">mutable</span> CharT *<a class="code" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">m_can_skip</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      <span class="keyword">mutable</span> CharT *m_can_skip = <span class="keywordtype">nullptr</span>;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      json_array_iterator( ) = <span class="keywordflow">default</span>;</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keyword">explicit</span> json_array_iterator( daw::string_view jd )</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        : m_state( ParseState( <a class="code" href="namespacestd.html">std</a>::data( jd ), <a class="code" href="namespacedaw.html">daw</a>::data_end( jd ) ) ) {</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">explicit</span> json_array_iterator( daw::string_view jd )</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        : m_state( ParseState( std::data( jd ), daw::data_end( jd ) ) ) {</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        m_state.trim_left( );</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( m_state.is_opening_bracket_checked( ),</div>
@@ -185,7 +185,7 @@ $(function() {
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        m_state.trim_left( );</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      }</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keyword">explicit</span> json_array_iterator(</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">explicit</span> json_array_iterator(</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        daw::string_view jd, daw::string_view start_path )</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        : m_state( get_range( jd, start_path ) ) {</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; </div>
@@ -197,94 +197,116 @@ $(function() {
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        m_state.trim_left( );</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      }</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr value_type operator*( )<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( m_state.has_more( ) and m_state.front( ) != <span class="charliteral">&#39;]&#39;</span>,</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      <span class="comment">/// @brief Parse the current element</span></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;      <span class="comment">/// @pre good( ) returns true</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;      <span class="comment">/// @return The parsed result of ParseElement</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> <span class="keyword">constexpr</span> value_type operator*( ) <span class="keyword">const</span> {</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( m_state.has_more( ) <span class="keyword">and</span> m_state.front( ) != <span class="stringliteral">&#39;]&#39;</span>,</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                              ErrorReason::UnexpectedEndOfData, m_state );</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        <span class="keyword">auto</span> <a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a> = m_state;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        <span class="keyword">auto</span> tmp = m_state;</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160; </div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        <span class="keywordflow">if</span> constexpr( json_details::use_direct_construction_v&lt;ParseState,</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( json_details::use_direct_construction_v&lt;ParseState,</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;                                                              JsonElement&gt; ) {</div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> run_after_parse =</div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;            json_array_iterator_details::op_star_cleanup&lt;CharT, ParseState&gt;{</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;              <a class="code" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">m_can_skip</a>, <a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a> };</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;          (void)run_after_parse;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;              m_can_skip, tmp };</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;          (<span class="keywordtype">void</span>)run_after_parse;</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;          <span class="keywordflow">return</span> json_details::parse_value&lt;element_type&gt;(</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;            <a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a>, ParseTag&lt;element_type::expected_type&gt;{ } );</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;            tmp, ParseTag&lt;element_type::expected_type&gt;{ } );</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;          <span class="keyword">auto</span> result = json_details::parse_value&lt;element_type&gt;(</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;            <a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a>, ParseTag&lt;element_type::expected_type&gt;{ } );</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;            tmp, ParseTag&lt;element_type::expected_type&gt;{ } );</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160; </div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;          <a class="code" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">m_can_skip</a> = <a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a>.first;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;          m_can_skip = tmp.first;</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;          <span class="keywordflow">return</span> result;</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        }</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;      }</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> pointer operator-&gt;( )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;      <span class="comment">/// @brief A dereferencable value proxy holding the result of operator*</span></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      <span class="comment">/// This is for compatibility with the Iterator concepts and should be</span></div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      <span class="comment">/// avoided</span></div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      <span class="comment">/// @pre good( ) returns true</span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      <span class="comment">/// @return an arrow_proxy of the operator* result</span></div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> pointer operator-&gt;( ) <span class="keyword">const</span> {</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        <span class="keywordflow">return</span> pointer{ operator*( ) };</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;      }</div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160; </div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="comment">      /***</span></div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;      <span class="comment">/***</span></div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="comment">       * Move the parse state to the next element</span></div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="comment">       * @return iterator after moving</span></div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="comment">       */</span></div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;      <span class="keyword">inline</span> constexpr json_array_iterator &amp;operator++( ) {</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( m_state.has_more( ) and m_state.front( ) != <span class="charliteral">&#39;]&#39;</span>,</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> json_array_iterator &amp;operator++( ) {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( m_state.has_more( ) <span class="keyword">and</span> m_state.front( ) != <span class="stringliteral">&#39;]&#39;</span>,</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;                              ErrorReason::UnexpectedEndOfData, m_state );</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">if</span>( <a class="code" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">m_can_skip</a> ) {</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;          m_state.first = <a class="code" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">m_can_skip</a>;</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;          <a class="code" href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">m_can_skip</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">if</span>( m_can_skip ) {</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;          m_state.first = m_can_skip;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;          m_can_skip = <span class="keywordtype">nullptr</span>;</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;          (void)json_details::skip_known_value&lt;element_type&gt;( m_state );</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;          (<span class="keywordtype">void</span>)json_details::skip_known_value&lt;element_type&gt;( m_state );</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;        }</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        m_state.move_next_member_or_end( );</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;      }</div>
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160; </div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">void</span> operator++( <span class="keywordtype">int</span> ) &amp; {</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;        (void)<span class="keyword">operator</span>++( );</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;      <span class="comment">///</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;      <span class="comment">/// @brief Move the parse state to the next element</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      <span class="comment">///</span></div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> operator++( <span class="keywordtype">int</span> ) &amp; {</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;        (<span class="keywordtype">void</span>)operator++( );</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;      }</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160; </div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment">      /***</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;      <span class="comment">/***</span></div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment">       * Is it ok to dereference iterator</span></div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment">       * @return true when there is parse data available</span></div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment">       */</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> good( )<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        <span class="keywordflow">return</span> not m_state.is_null( ) and m_state.has_more( ) and</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;               m_state.front( ) != <span class="charliteral">&#39;]&#39;</span>;</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> good( ) <span class="keyword">const</span> {</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">not</span> m_state.is_null( ) <span class="keyword">and</span> m_state.has_more( ) <span class="keyword">and</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;               m_state.front( ) != <span class="stringliteral">&#39;]&#39;</span>;</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      }</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160; </div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;      [[nodiscard]] <span class="keyword">explicit</span> <span class="keyword">inline</span> constexpr <span class="keyword">operator</span> bool( )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      <span class="comment">/// @brief Are we good( )</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;      <span class="comment">/// @return result of good( )</span></div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;      [[nodiscard]] <span class="keyword">explicit</span> <span class="keyword">inline</span> <span class="keyword">constexpr</span> operator <span class="keywordtype">bool</span>( ) <span class="keyword">const</span> {</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        <span class="keywordflow">return</span> good( );</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      }</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160; </div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      operator==( json_array_iterator <span class="keyword">const</span> &amp;rhs )<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        <span class="keywordflow">if</span>( not( *<span class="keyword">this</span> ) ) {</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;          <span class="keywordflow">return</span> not rhs;</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      <span class="comment">/// @brief Compare rhs for equivalence</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      <span class="comment">/// @param rhs Another json_array_iterator</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      <span class="comment">/// @return true when equivalent to rhs</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      operator==( json_array_iterator <span class="keyword">const</span> &amp;rhs ) <span class="keyword">const</span> {</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        <span class="keywordflow">if</span>( <span class="keyword">not</span>( *<span class="keyword">this</span> ) ) {</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">not</span> rhs;</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;        }</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        <span class="keywordflow">if</span>( not rhs ) {</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        <span class="keywordflow">if</span>( <span class="keyword">not</span> rhs ) {</div>
 <div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;        }</div>
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;        <span class="keywordflow">return</span> ( m_state.first == rhs.m_state.first );</div>
 <div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;      }</div>
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160; </div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;      operator!=( json_array_iterator <span class="keyword">const</span> &amp;rhs )<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="keywordflow">if</span>( not( *<span class="keyword">this</span> ) ) {</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span><span class="keyword">&gt;</span>( rhs );</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;      <span class="comment">/// @brief Check if the other iterator is not equivalent</span></div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;      <span class="comment">/// @param rhs another json_array_iterator</span></div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;      <span class="comment">/// @return true when rhs is not equivalent</span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;      operator!=( json_array_iterator <span class="keyword">const</span> &amp;rhs ) <span class="keyword">const</span> {</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="keywordflow">if</span>( <span class="keyword">not</span>( *<span class="keyword">this</span> ) ) {</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast</span>&lt;<span class="keywordtype">bool</span>&gt;( rhs );</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        }</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        <span class="keywordflow">if</span>( not rhs ) {</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        <span class="keywordflow">if</span>( <span class="keyword">not</span> rhs ) {</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        }</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        <span class="keywordflow">return</span> m_state.first != rhs.m_state.first;</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;      }</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    };</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160; </div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="comment">/// @brief A range of json_array_iterators</span></div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="comment">/// @tparam JsonElement Type of each element in array</span></div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <span class="comment">/// @tparam ParsePolicy parsing policy type</span></div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonElement, <span class="keyword">auto</span>... PolicyFlags&gt;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    <span class="keyword">struct </span>json_array_range {</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    <span class="keyword">struct</span> json_array_range {</div>
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;      <span class="keyword">using</span> ParsePolicy = BasicParsePolicy&lt;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        options::details::make_parse_flags&lt;PolicyFlags...&gt;( ).<a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a>&gt;;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        options::details::make_parse_flags&lt;PolicyFlags...&gt;( ).value&gt;;</div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;      <span class="keyword">using</span> iterator = json_array_iterator&lt;JsonElement, PolicyFlags...&gt;;</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      <span class="keyword">using</span> CharT = <span class="keyword">typename</span> ParsePolicy::CharT;</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
@@ -295,22 +317,26 @@ $(function() {
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;      json_array_range( ) = <span class="keywordflow">default</span>;</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160; </div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;      constexpr <span class="keyword">explicit</span> json_array_range( daw::string_view jd )</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;      <span class="keyword">constexpr</span> <span class="keyword">explicit</span> json_array_range( daw::string_view jd )</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        : m_first( jd ) {}</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160; </div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;      constexpr <span class="keyword">explicit</span> json_array_range( daw::string_view jd,</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;      <span class="keyword">constexpr</span> <span class="keyword">explicit</span> json_array_range( daw::string_view jd,</div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;                                           daw::string_view start_path )</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        : m_first( jd, start_path ) {}</div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160; </div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr iterator begin( ) {</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;      <span class="comment">/// @return first item in range</span></div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> <span class="keyword">constexpr</span> iterator begin( ) {</div>
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="keywordflow">return</span> m_first;</div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;      }</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160; </div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr iterator end( ) {</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;      <span class="comment">/// @return one past last item in range</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> <span class="keyword">constexpr</span> iterator end( ) {</div>
 <div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        <span class="keywordflow">return</span> m_last;</div>
 <div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;      }</div>
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160; </div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> empty( )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;      <span class="comment">/// @brief Are there any elements in range</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;      <span class="comment">/// @return true when begin( ) == end( )</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> empty( ) <span class="keyword">const</span> {</div>
 <div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="keywordflow">return</span> m_first == m_last;</div>
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;      }</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    };</div>
@@ -318,18 +344,8 @@ $(function() {
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="adaw__json__assert_8h_html_a7eec2e453676338364b2bb153a5fce45"><div class="ttname"><a href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a></div><div class="ttdeci">#define daw_json_assert(Bool,...)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00179">daw_json_assert.h:179</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a236cef0d7e6c40781c19e4ebcd63aa5b"><div class="ttname"><a href="daw__json__assert_8h.html#a236cef0d7e6c40781c19e4ebcd63aa5b">use_daw_json_exceptions_v</a></div><div class="ttdeci">constexpr bool use_daw_json_exceptions_v</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00032">daw_json_assert.h:32</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__from__json_8h_source.html#l00022">daw_from_json.h:22</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00190">daw_json_assert.h:190</a></div></div>
-<div class="ttc" id="adaw__json__event__parser_8h_html_af3874c625cee7edbb7e82023085f86c7"><div class="ttname"><a href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a></div><div class="ttdeci">json_parse_handler_result value</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00030">daw_json_event_parser.h:30</a></div></div>
-<div class="ttc" id="adaw__json__parse__class_8h_html"><div class="ttname"><a href="daw__json__parse__class_8h.html">daw_json_parse_class.h</a></div></div>
-<div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
-<div class="ttc" id="adaw__json__iterator_8h_html_a5b388d038d57112ea72830fdb5451d81"><div class="ttname"><a href="daw__json__iterator_8h.html#a5b388d038d57112ea72830fdb5451d81">m_can_skip</a></div><div class="ttdeci">CharT *&amp; m_can_skip</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__iterator_8h_source.html#l00036">daw_json_iterator.h:36</a></div></div>
-<div class="ttc" id="adaw__json__link__types__fwd_8h_html"><div class="ttname"><a href="daw__json__link__types__fwd_8h.html">daw_json_link_types_fwd.h</a></div></div>
-<div class="ttc" id="anamespacedaw_html"><div class="ttname"><a href="namespacedaw.html">daw</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__from__json_8h_source.html#l00022">daw_from_json.h:22</a></div></div>
-<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value_8h_source.html#l00087">daw_json_value.h:87</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00016">version.h:16</a></div></div>
-<div class="ttc" id="adaw__json__iterator_8h_html_aa1eb234e2b6ef9bd927ad384b04357ac"><div class="ttname"><a href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a></div><div class="ttdeci">ParseState &amp; tmp</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__iterator_8h_source.html#l00037">daw_json_iterator.h:37</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

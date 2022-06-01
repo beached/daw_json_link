@@ -78,22 +78,35 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Official repository: https://github.com/beached/daw_json_link</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">pragma</span> <span class="preprocessor">once</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">impl/version.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&quot;impl/version.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">namespace </span>options {</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1options_1_1serialize__options.html">   19</a></span>&#160;      <span class="keyword">inline</span> <span class="keyword">namespace </span>serialize_options {</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="daw__json__serialize__options_8h.html#af920403e44d5a28925dc9cce3b641f66">   25</a></span>&#160;        <span class="keyword">enum class</span> <a class="code" href="daw__json__serialize__options_8h.html#af920403e44d5a28925dc9cce3b641f66">SerializationFormat</a> : unsigned {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace</span> daw::json {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace</span> <a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">namespace</span> options {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;      <span class="comment">///</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;      <span class="comment">/// @brief Serialization options used in to_json</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;      <span class="comment">///</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1options_1_1serialize__options.html">   19</a></span>&#160;      <span class="keyword">inline</span> <span class="keyword">namespace</span> <a class="code" href="namespacedaw_1_1json_1_1options_1_1serialize__options.html">serialize_options</a> {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <span class="comment">/// @brief Choose whether to produce minified or pretty output</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        <span class="comment">/// default: Minified</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="daw__json__serialize__options_8h.html#af920403e44d5a28925dc9cce3b641f66">   25</a></span>&#160;        <span class="keyword">enum</span> <span class="keyword">class</span> <a class="code" href="daw__json__serialize__options_8h.html#af920403e44d5a28925dc9cce3b641f66">SerializationFormat</a> : <span class="keywordtype">unsigned</span> {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;          <span class="comment">/* Output JSON without whitespace surrounding members and values */</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;          Minified,</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;          <span class="comment">/* Output JSON with indentation and newlines */</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;          Pretty</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        }; <span class="comment">// 1bit</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="daw__json__serialize__options_8h.html#ab5bf7bbafb0678db22c8aba2504f0076">   37</a></span>&#160;        <span class="keyword">enum class</span> <a class="code" href="daw__json__serialize__options_8h.html#ab5bf7bbafb0678db22c8aba2504f0076">IndentationType</a> : unsigned {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="comment">///@brief When Pretty mode is enabled, choose the indentation type.</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <span class="comment">/// default: Space2</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="daw__json__serialize__options_8h.html#ab5bf7bbafb0678db22c8aba2504f0076">   37</a></span>&#160;        <span class="keyword">enum</span> <span class="keyword">class</span> <a class="code" href="daw__json__serialize__options_8h.html#ab5bf7bbafb0678db22c8aba2504f0076">IndentationType</a> : <span class="keywordtype">unsigned</span> {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;          <span class="comment">/* Use tabs for indentation */</span></div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;          Tab,</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;          <span class="comment">/* Use 1 space for indentation */</span></div>
@@ -112,7 +125,12 @@ $(function() {
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;          Space10,</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        };</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">   61</a></span>&#160;        <span class="keyword">enum class</span> <a class="code" href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">RestrictedStringOutput</a> : unsigned {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="comment">/// @brief Allow for restricting the output of strings to 7bits</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="comment">/// default: None</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">   61</a></span>&#160;        <span class="keyword">enum</span> <span class="keyword">class</span> <a class="code" href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">RestrictedStringOutput</a> : <span class="keywordtype">unsigned</span> {</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;          <span class="comment">/* Do not impose any extra restrictions on string output during</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">             serialization */</span></div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;          None,</div>
@@ -122,17 +140,25 @@ $(function() {
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;          OnlyAllow7bitsStrings</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        };</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="daw__json__serialize__options_8h.html#a2a6758418e34490f352e65be20ba0727">   76</a></span>&#160;        <span class="keyword">enum class</span> <a class="code" href="daw__json__serialize__options_8h.html#a2a6758418e34490f352e65be20ba0727">NewLineDelimiter</a> : unsigned { n, rn };</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="comment">/// @brief When Pretty mode is enabled, set how newlines are expressed</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="comment">/// default: n</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="daw__json__serialize__options_8h.html#a2a6758418e34490f352e65be20ba0727">   76</a></span>&#160;        <span class="keyword">enum</span> <span class="keyword">class</span> <a class="code" href="daw__json__serialize__options_8h.html#a2a6758418e34490f352e65be20ba0727">NewLineDelimiter</a> : <span class="keywordtype">unsigned</span> { n, rn };</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="daw__json__serialize__options_8h.html#a540f9f5ff0e23b938ec4d17dc95d4c29">   82</a></span>&#160;        <span class="keyword">enum class</span> <a class="code" href="daw__json__serialize__options_8h.html#a540f9f5ff0e23b938ec4d17dc95d4c29">OutputTrailingComma</a> : unsigned { No, Yes };</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="comment">/// @brief When outputting arrays, follow final item with a comma</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="comment">/// default: No</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="comment">///</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="daw__json__serialize__options_8h.html#a540f9f5ff0e23b938ec4d17dc95d4c29">   82</a></span>&#160;        <span class="keyword">enum</span> <span class="keyword">class</span> <a class="code" href="daw__json__serialize__options_8h.html#a540f9f5ff0e23b938ec4d17dc95d4c29">OutputTrailingComma</a> : <span class="keywordtype">unsigned</span> { No, Yes };</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;      } <span class="comment">// namespace serialize_options</span></div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    }   <span class="comment">// namespace options</span></div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  }     <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
+<div class="ttc" id="anamespacedaw_1_1json_1_1options_1_1serialize__options_html"><div class="ttname"><a href="namespacedaw_1_1json_1_1options_1_1serialize__options.html">daw::json::options::serialize_options</a></div><div class="ttdoc">Serialization options used in to_json.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00019">daw_json_serialize_options.h:19</a></div></div>
 <div class="ttc" id="adaw__json__serialize__options_8h_html_ab5bf7bbafb0678db22c8aba2504f0076"><div class="ttname"><a href="daw__json__serialize__options_8h.html#ab5bf7bbafb0678db22c8aba2504f0076">IndentationType</a></div><div class="ttdeci">IndentationType</div><div class="ttdoc">When Pretty mode is enabled, choose the indentation type.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00037">daw_json_serialize_options.h:37</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__from__json_8h_source.html#l00022">daw_from_json.h:22</a></div></div>
-<div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="adaw__json__serialize__options_8h_html_a2a6758418e34490f352e65be20ba0727"><div class="ttname"><a href="daw__json__serialize__options_8h.html#a2a6758418e34490f352e65be20ba0727">NewLineDelimiter</a></div><div class="ttdeci">NewLineDelimiter</div><div class="ttdoc">When Pretty mode is enabled, set how newlines are expressed.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00076">daw_json_serialize_options.h:76</a></div></div>
 <div class="ttc" id="adaw__json__serialize__options_8h_html_a540f9f5ff0e23b938ec4d17dc95d4c29"><div class="ttname"><a href="daw__json__serialize__options_8h.html#a540f9f5ff0e23b938ec4d17dc95d4c29">OutputTrailingComma</a></div><div class="ttdeci">OutputTrailingComma</div><div class="ttdoc">When outputting arrays, follow final item with a comma.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00082">daw_json_serialize_options.h:82</a></div></div>
 <div class="ttc" id="adaw__json__serialize__options_8h_html_a4838acd0ff52b3a42a0d932b3df47f7d"><div class="ttname"><a href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">RestrictedStringOutput</a></div><div class="ttdeci">RestrictedStringOutput</div><div class="ttdoc">Allow for restricting the output of strings to 7bits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00061">daw_json_serialize_options.h:61</a></div></div>

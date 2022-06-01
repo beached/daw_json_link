@@ -78,41 +78,44 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Official repository: https://github.com/beached/daw_json_link</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">pragma</span> <span class="preprocessor">once</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#</span><span class="preprocessor">include</span> <span class="preprocessor">&lt;</span><span class="preprocessor">type_traits</span><span class="preprocessor">&gt;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace</span> daw::json {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace</span> DAW_JSON_VER {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="comment">/***</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">     * This class is used as a way to indicate that a json_data_contract</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">     * specialization has not been done for a user class.</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">struct </span>missing_json_data_contract_for_or_unknown_type;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">struct</span> missing_json_data_contract_for_or_unknown_type;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_missing_data_contract_or_unknown_type_v =</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      std::is_same_v&lt;T, void&gt;;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_missing_data_contract_or_unknown_type_v =</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      std::is_same_v&lt;T, <span class="keywordtype">void</span>&gt;;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_missing_data_contract_or_unknown_type_v&lt;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_missing_data_contract_or_unknown_type_v&lt;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      missing_json_data_contract_for_or_unknown_type&lt;T&gt;&gt; = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="comment">/// @brief Mapping class for JSON data structures to C++.  It must be</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="comment">/// specialized in order to parse to a user class</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="comment">/// @tparam T Class to map</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="comment">///</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">struct </span>json_data_contract {</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="keyword">using</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> = missing_json_data_contract_for_or_unknown_type&lt;T&gt;;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">struct</span> json_data_contract {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="keyword">using</span> type = missing_json_data_contract_for_or_unknown_type&lt;T&gt;;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    };</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="comment">/// @brief This trait gets us the mapping type from the contract.</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="comment">///</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">using</span> json_data_contract_trait_t = <span class="keyword">typename</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">json_data_contract&lt;T&gt;::type</a>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">using</span> json_data_contract_trait_t = <span class="keyword">typename</span> json_data_contract&lt;T&gt;::type;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__from__json_8h_source.html#l00022">daw_from_json.h:22</a></div></div>
-<div class="ttc" id="adaw__json__event__parser_8h_html_a32f1e0329a2cea27fc6478b5d4de3609"><div class="ttname"><a href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a></div><div class="ttdeci">StackParseStateType type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00316">daw_json_event_parser.h:316</a></div></div>
-<div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00016">version.h:16</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
