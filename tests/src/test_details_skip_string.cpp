@@ -173,14 +173,22 @@ int main( int, char ** )
 	do_test( test_quoted_number( ) );
 	do_test( test_empty_quoted( ) );
 	do_test( test_embedded_quotes( ) );
-	do_test( test_escaped_quote_001<daw::json::options::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_002<daw::json::options::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_003<daw::json::options::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_004<daw::json::options::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_001<daw::json::options::ExecModeTypes::runtime>( ) );
-	do_test( test_escaped_quote_002<daw::json::options::ExecModeTypes::runtime>( ) );
-	do_test( test_escaped_quote_003<daw::json::options::ExecModeTypes::runtime>( ) );
-	do_test( test_escaped_quote_004<daw::json::options::ExecModeTypes::runtime>( ) );
+	do_test( test_escaped_quote_001<
+	         daw::json::options::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_002<
+	         daw::json::options::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_003<
+	         daw::json::options::ExecModeTypes::compile_time>( ) );
+	do_test( test_escaped_quote_004<
+	         daw::json::options::ExecModeTypes::compile_time>( ) );
+	do_test(
+	  test_escaped_quote_001<daw::json::options::ExecModeTypes::runtime>( ) );
+	do_test(
+	  test_escaped_quote_002<daw::json::options::ExecModeTypes::runtime>( ) );
+	do_test(
+	  test_escaped_quote_003<daw::json::options::ExecModeTypes::runtime>( ) );
+	do_test(
+	  test_escaped_quote_004<daw::json::options::ExecModeTypes::runtime>( ) );
 #if defined( DAW_ALLOW_SSE42 )
 	do_test( test_escaped_quote_001<daw::json::options::ExecModeTypes::simd>( ) );
 	do_test( test_escaped_quote_002<daw::json::options::ExecModeTypes::simd>( ) );

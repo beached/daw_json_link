@@ -359,7 +359,9 @@ namespace daw::json {
 					}
 					return ptr;
 				} else {
-					constexpr auto eq = []( char l, char r ) { return l == r; };
+					constexpr auto eq = []( char l, char r ) {
+						return l == r;
+					};
 					while( is_unchecked_input or first < last ) {
 						char const c = *first;
 						if( nsc_or( eq( c, keys )... ) ) {

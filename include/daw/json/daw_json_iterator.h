@@ -253,12 +253,12 @@ namespace daw::json {
 			  : m_first( jd, start_path ) {}
 
 			/// @return first item in range
-			[[nodiscard]] inline constexpr iterator begin( ) {
+			[[nodiscard]] inline constexpr iterator begin( ) const {
 				return m_first;
 			}
 
 			/// @return one past last item in range
-			[[nodiscard]] inline constexpr iterator end( ) {
+			[[nodiscard]] inline constexpr iterator end( ) const {
 				return m_last;
 			}
 

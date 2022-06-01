@@ -411,8 +411,8 @@ void test_func( ) {
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
 				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>>(
-				    sv,
-				    options::parse_flags<options::CheckedParseMode::no, options::ExecModeTypes::simd> );
+				    sv, options::parse_flags<options::CheckedParseMode::no,
+				                             options::ExecModeTypes::simd> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );

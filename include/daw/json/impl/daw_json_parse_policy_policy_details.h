@@ -19,7 +19,9 @@ namespace daw::json {
 		namespace parse_policy_details {
 			template<char... keys>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool in( char c ) {
-				auto const eq = [c]( char k ) { return c == k; };
+				auto const eq = [c]( char k ) {
+					return c == k;
+				};
 				return nsc_or( eq( keys )... );
 			}
 

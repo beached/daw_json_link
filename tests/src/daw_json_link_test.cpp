@@ -30,8 +30,10 @@
 #include <tuple>
 #include <vector>
 
-#define AS_CONSTEXPR( ... )                \
-	[&]( ) constexpr { return __VA_ARGS__; } \
+#define AS_CONSTEXPR( ... ) \
+	[&]( ) constexpr {        \
+		return __VA_ARGS__;     \
+	}                         \
 	( )
 
 /***

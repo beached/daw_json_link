@@ -54,11 +54,11 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_dates3::MyClass3> {
 #if defined( DAW_JSON_CNTTP_JSON_NAME )
-		using type =
-		  json_member_list<json_string<"title">, json_number<"id", unsigned>,
-		                   json_number<"dateAdded", int64_t,
-		                               options::number_opt( options::LiteralAsStringOpt::Always )>,
-		                   json_number<"lastModified", int64_t>>;
+		using type = json_member_list<
+		  json_string<"title">, json_number<"id", unsigned>,
+		  json_number<"dateAdded", int64_t,
+		              options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_number<"lastModified", int64_t>>;
 #else
 		static constexpr char const title[] = "title";
 		static constexpr char const id[] = "id";
@@ -66,7 +66,8 @@ namespace daw::json {
 		static constexpr char const lastModified[] = "lastModified";
 		using type = json_member_list<
 		  json_string<title>, json_number<id, unsigned>,
-		  json_number<dateAdded, int64_t, options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_number<dateAdded, int64_t,
+		              options::number_opt( options::LiteralAsStringOpt::Always )>,
 		  json_number<lastModified, int64_t>>;
 #endif
 		static inline auto to_json_data( daw::cookbook_dates3::MyClass3 const &v ) {

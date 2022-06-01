@@ -92,7 +92,10 @@ namespace daw::json {
 				return std::tuple<std::optional<std::string>>{ };
 			}
 			return std::tuple<std::optional<std::string>>{ std::visit(
-			  []( auto const &value ) { return to_json( value ); }, *foo.member ) };
+			  []( auto const &value ) {
+				  return to_json( value );
+			  },
+			  *foo.member ) };
 		}
 	};
 } // namespace daw::json

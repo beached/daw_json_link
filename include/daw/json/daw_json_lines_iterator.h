@@ -215,12 +215,12 @@ namespace daw::json {
 			  : m_first( json_lines_doc ) {}
 
 			/// @return first item in range
-			[[nodiscard]] inline constexpr iterator begin( ) {
+			[[nodiscard]] inline constexpr iterator begin( ) const {
 				return m_first;
 			}
 
 			/// @return one past last item in range
-			[[nodiscard]] inline constexpr iterator end( ) {
+			[[nodiscard]] inline constexpr iterator end( ) const {
 				return m_last;
 			}
 
@@ -253,7 +253,7 @@ namespace daw::json {
 					result.emplace_back( jsonl_doc );
 					break;
 				}
-				while( tmp < last and * tmp != '\n' ) {
+				while( tmp < last and *tmp != '\n' ) {
 					++tmp;
 				}
 				if( tmp < last ) {

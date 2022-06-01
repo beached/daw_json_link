@@ -67,10 +67,10 @@ auto test( std::string_view json_data ) {
 		         std::hash<std::string>{ }( static_cast<std::string>( current ) );
 	  } );
 	daw::do_not_optimize( json_data );
-	std::vector<std::string> values2 =
-	  from_json_array<std::string, std::vector<std::string>>(
-	    json_data,
-	    options::parse_flags<daw::json::options::CheckedParseMode::no, ExecMode> );
+	std::vector<std::string> values2 = from_json_array<std::string,
+	                                                   std::vector<std::string>>(
+	  json_data,
+	  options::parse_flags<daw::json::options::CheckedParseMode::no, ExecMode> );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "strings.json unchecked", json_data.size( ),
@@ -109,12 +109,15 @@ int main( int argc, char **argv )
 		auto const data = *daw::read_file( argv[1] );
 		return std::string( data.data( ), data.size( ) );
 	}( );
-	auto const h0 = test<daw::json::options::ExecModeTypes::compile_time>( json_string );
-	auto const h1 = test<daw::json::options::ExecModeTypes::runtime>( json_string );
+	auto const h0 =
+	  test<daw::json::options::ExecModeTypes::compile_time>( json_string );
+	auto const h1 =
+	  test<daw::json::options::ExecModeTypes::runtime>( json_string );
 	test_assert( h0 == h1, "constexpr/runtime exec model hashes do not match" );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		auto const h2 = test<daw::json::options::ExecModeTypes::simd>( json_string );
+		auto const h2 =
+		  test<daw::json::options::ExecModeTypes::simd>( json_string );
 		test_assert( h0 == h2, "constexpr/fast exec model hashes do not match" );
 	}
 }

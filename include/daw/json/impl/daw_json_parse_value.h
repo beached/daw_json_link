@@ -1135,8 +1135,9 @@ namespace daw::json {
 						if( parse_state2.first == parse_state.first ) {
 							if constexpr( use_direct_construction_v<ParseState,
 							                                        JsonMember> ) {
-								auto const run_after_parse = daw::on_exit_success(
-								  [&] { parse_state.move_next_member_or_end( ); } );
+								auto const run_after_parse = daw::on_exit_success( [&] {
+									parse_state.move_next_member_or_end( );
+								} );
 								(void)run_after_parse;
 								return parse_value<json_member_t>(
 								  parse_state, ParseTag<json_member_t::expected_type>{ } );
@@ -1164,8 +1165,9 @@ namespace daw::json {
 						}
 						++ClassIdx;
 						if constexpr( use_direct_construction_v<ParseState, JsonMember> ) {
-							auto const run_after_parse = daw::on_exit_success(
-							  [&] { parse_state.move_next_member_or_end( ); } );
+							auto const run_after_parse = daw::on_exit_success( [&] {
+								parse_state.move_next_member_or_end( );
+							} );
 							(void)run_after_parse;
 							return parse_value<json_member_t>(
 							  parse_state, ParseTag<json_member_t::expected_type>{ } );

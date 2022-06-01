@@ -39,7 +39,8 @@ int main( int argc, char **argv )
 		std::cerr << "Could find valid JSON in file '" << argv[1] << "'\n";
 	}
 
-	auto citm_result = daw::json::from_json<daw::citm::citm_object_t>( *json_data1 );
+	auto citm_result =
+	  daw::json::from_json<daw::citm::citm_object_t>( *json_data1 );
 	daw::do_not_optimize( citm_result );
 	test_assert( not citm_result.areaNames.empty( ), "Expected values" );
 	test_assert( citm_result.areaNames.count( 205706005 ) == 1,
