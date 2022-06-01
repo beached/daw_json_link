@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include "daw_json_assert.h"
+#include "daw_json_exec_modes.h"
 #include "daw_json_parse_digit.h"
 #include "daw_json_parse_unsigned_int.h"
 #include "daw_json_type_options.h"

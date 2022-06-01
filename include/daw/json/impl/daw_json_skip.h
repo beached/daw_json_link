@@ -12,6 +12,7 @@
 
 #include "../daw_json_exception.h"
 #include "daw_json_assert.h"
+#include "daw_json_enums.h"
 #include "daw_json_parse_digit.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_json_parse_string_quote.h"

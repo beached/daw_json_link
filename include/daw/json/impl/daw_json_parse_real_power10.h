@@ -8,8 +8,18 @@
 
 #pragma once
 
+#include "daw_json_exec_modes.h"
+
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
+
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
