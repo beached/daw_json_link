@@ -68,7 +68,8 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] constexpr ParseState skip_true( ParseState &parse_state ) {
+			[[nodiscard]] inline constexpr ParseState
+			skip_true( ParseState &parse_state ) {
 				auto result = parse_state;
 				if constexpr( ( ParseState::is_zero_terminated_string( ) or
 				                ParseState::is_unchecked_input ) ) {
@@ -89,7 +90,8 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] constexpr ParseState skip_false( ParseState &parse_state ) {
+			[[nodiscard]] inline constexpr ParseState
+			skip_false( ParseState &parse_state ) {
 				auto result = parse_state;
 				if constexpr( ( ParseState::is_zero_terminated_string( ) or
 				                ParseState::is_unchecked_input ) ) {
@@ -110,7 +112,8 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] constexpr ParseState skip_null( ParseState &parse_state ) {
+			[[nodiscard]] inline constexpr ParseState
+			skip_null( ParseState &parse_state ) {
 				if constexpr( ( ParseState::is_zero_terminated_string( ) or
 				                ParseState::is_unchecked_input ) ) {
 					parse_state.remove_prefix( 4 );
@@ -301,8 +304,7 @@ namespace daw::json {
 			 * the member should be if that can increase performance
 			 */
 			template<typename ParseState>
-			[[nodiscard]] inline constexpr ParseState
-			skip_value( ParseState &parse_state ) {
+			[[nodiscard]] constexpr ParseState skip_value( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 
@@ -333,10 +335,11 @@ namespace daw::json {
 				case '8':
 				case '9':
 					return skip_number( parse_state );
-				case '\0':
-					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
 				}
 				if constexpr( ParseState::is_unchecked_input ) {
+					if( DAW_UNLIKELY( parse_state.front( ) == '\0' ) ) {
+						daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
+					}
 					DAW_UNREACHABLE( );
 				} else {
 					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );

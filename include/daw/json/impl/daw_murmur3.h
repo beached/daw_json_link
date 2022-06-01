@@ -67,10 +67,9 @@ namespace daw {
 		return hash;
 	}
 
-	template<bool expect_long_strings, typename StringView>
-	[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto name_hash( StringView key )
-	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
-	                      UInt32> {
+	template<bool expect_long_strings>
+	[[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32
+	name_hash( daw::string_view key ) {
 		if( auto const Sz = std::size( key );
 		    DAW_LIKELY( Sz <= sizeof( UInt32 ) ) ) {
 			auto result = 0_u32;

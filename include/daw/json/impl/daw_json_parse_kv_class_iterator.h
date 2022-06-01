@@ -14,6 +14,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
+#include "daw_json_traits.h"
 
 #include <daw/daw_move.h>
 

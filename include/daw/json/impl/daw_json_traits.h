@@ -365,6 +365,16 @@ namespace daw::json {
 
 			template<typename T>
 			using key_type_t = typename T::key_type;
+
+#if defined( _MSC_VER ) and not defined( __clang__ )
+			// Lying to MSVC about being a random iterator causes issues I have not
+			// found yet
+			template<bool>
+			inline constexpr bool can_random_v = false;
+#else
+			template<bool IsKnown>
+			inline constexpr bool can_random_v = IsKnown;
+#endif
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

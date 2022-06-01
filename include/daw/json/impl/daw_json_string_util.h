@@ -92,6 +92,11 @@ namespace daw::json {
 					return __builtin_char_memchr(
 					  first, '"', static_cast<std::size_t>( last - first ) );
 				} else
+#elif DAW_HAS_BUILTIN( __builtin_memchr )
+				if constexpr( expect_long ) {
+					return __builtin_memchr( first, '"',
+					                         static_cast<std::size_t>( last - first ) );
+				} else
 #else
 #if defined( DAW_IS_CONSTANT_EVALUATED )
 				bool is_cxeval =
