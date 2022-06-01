@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_fp_fallback.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_policy_policy_details.h"
@@ -15,7 +17,6 @@
 #include "daw_json_parse_unsigned_int.h"
 #include "daw_json_skip.h"
 #include "daw_json_type_options.h"
-#include "version.h"
 
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>

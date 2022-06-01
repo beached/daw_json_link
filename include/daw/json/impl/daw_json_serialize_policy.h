@@ -8,11 +8,12 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_option_bits.h"
 #include "daw_json_parse_options_impl.h"
 #include "daw_json_serialize_options_impl.h"
 #include "daw_json_serialize_policy_details.h"
-#include "version.h"
 
 #include <daw/daw_move.h>
 
@@ -28,8 +29,7 @@ namespace daw::json {
 		 * @return A json_options_t that encodes the options for the parser
 		 */
 		template<typename... Policies>
-		constexpr json_options_t
-		serialize_options( Policies... policies ) {
+		constexpr json_options_t serialize_options( Policies... policies ) {
 			static_assert( ( json_details::is_option_flag<Policies> and ... ),
 			               "Only registered policy types are allowed" );
 			auto result = json_details::serialization::default_policy_flag;

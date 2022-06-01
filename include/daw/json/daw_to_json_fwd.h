@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include "impl/version.h"
+
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/daw_json_serialize_policy.h"
-#include "impl/version.h"
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

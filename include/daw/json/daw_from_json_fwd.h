@@ -8,10 +8,11 @@
 
 #pragma once
 
+#include "impl/version.h"
+
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/daw_json_parse_policy.h"
 #include "impl/daw_json_traits.h"
-#include "impl/version.h"
 
 #include <ciso646>
 #include <string_view>

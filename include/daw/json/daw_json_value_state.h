@@ -8,12 +8,13 @@
 
 #pragma once
 
+#include "impl/version.h"
+
 #include "impl/daw_json_arrow_proxy.h"
 #include "impl/daw_json_parse_class.h"
 #include "impl/daw_json_parse_name.h"
 #include "impl/daw_json_value.h"
 #include "impl/daw_murmur3.h"
-#include "impl/version.h"
 
 #include <daw/daw_move.h>
 #include <daw/daw_string_view.h>
@@ -28,8 +29,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<json_options_t PolicyFlags =
-			           json_details::default_policy_flag,
+			template<json_options_t PolicyFlags = json_details::default_policy_flag,
 			         typename Allocator = json_details::NoAllocator>
 			class basic_stateful_json_value_state {
 				using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
@@ -75,8 +75,7 @@ namespace daw::json {
 		 * costs once
 		 * @tparam ParseState see IteratorRange
 		 */
-		template<json_options_t PolicyFlags =
-		           json_details::default_policy_flag,
+		template<json_options_t PolicyFlags = json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		class basic_stateful_json_value {
 			using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
@@ -379,14 +378,13 @@ namespace daw::json {
 			}
 		};
 
-		basic_stateful_json_value( ) -> basic_stateful_json_value<>;
+		basic_stateful_json_value( )->basic_stateful_json_value<>;
 
 		template<json_options_t PolicyFlags, typename Allocator>
 		basic_stateful_json_value( basic_json_value<PolicyFlags, Allocator> )
 		  -> basic_stateful_json_value<PolicyFlags, Allocator>;
 
-		basic_stateful_json_value( daw::string_view )
-		  -> basic_stateful_json_value<>;
+		basic_stateful_json_value( daw::string_view )->basic_stateful_json_value<>;
 
 		using json_value_state = basic_stateful_json_value<>;
 	} // namespace DAW_JSON_VER

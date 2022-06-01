@@ -218,8 +218,7 @@ namespace daw::json {
 
 		namespace options {
 			template<typename... Options>
-			constexpr json_options_t
-			string_raw_opt( Options... options ) {
+			constexpr json_options_t string_raw_opt( Options... options ) {
 				return string_raw_opts_t::options( options... );
 			}
 		} // namespace options
@@ -264,8 +263,7 @@ namespace daw::json {
 
 		namespace options {
 			template<typename... Options>
-			constexpr json_options_t
-			json_custom_opt( Options... options ) {
+			constexpr json_options_t json_custom_opt( Options... options ) {
 				return json_custom_opts_t::options( options... );
 			}
 		} // namespace options

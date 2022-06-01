@@ -8,11 +8,12 @@
 
 #pragma once
 
+#include "impl/version.h"
+
 #include "daw_to_json_fwd.h"
 #include "impl/daw_json_container_appender.h"
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/to_daw_json_string.h"
-#include "impl/version.h"
 
 #include <daw/daw_traits.h>
 

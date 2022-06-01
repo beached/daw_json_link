@@ -18,6 +18,7 @@
 #pragma once
 
 #include "../../json/impl/version.h"
+
 #include "dragonbox_to_decimal.h"
 
 #include <daw/daw_algorithm.h>
