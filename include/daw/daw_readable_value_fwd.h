@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <daw/cpp_17.h>
+
 #include <cstddef>
 #include <type_traits>
 #include <utility>

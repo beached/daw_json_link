@@ -15,6 +15,7 @@
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_move.h>
+#include <daw/daw_traits.h>
 
 #include <memory>
 #include <type_traits>
@@ -47,12 +48,11 @@ namespace daw::json {
 				return T( DAW_FWD( args )... );
 			}
 
-			template<
-			  typename... Args,
-			  std::enable_if_t<(sizeof...( Args ) > 0 and
-			                    not std::is_constructible_v<T, Args...>)and traits::
-			                     is_list_constructible_v<T, Args...>,
-			                   std::nullptr_t> = nullptr>
+			template<typename... Args,
+			         std::enable_if_t<(sizeof...( Args ) > 0 and
+			                           not std::is_constructible_v<T, Args...> and
+			                           traits::is_list_constructible_v<T, Args...>),
+			                          std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
 			operator( )( Args &&...args ) const
 			  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
