@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_assert.h"
 #include "daw_not_const_ex_functions.h"
-#include "version.h"
 
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>

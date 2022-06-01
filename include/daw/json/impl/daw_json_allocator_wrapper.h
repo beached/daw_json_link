@@ -10,11 +10,14 @@
 
 #include "version.h"
 
+#include "daw_json_assert.h"
+
 #include <daw/cpp_17.h>
 #include <daw/daw_traits.h>
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 namespace daw::json {
@@ -44,7 +47,7 @@ namespace daw::json {
 				static constexpr allocator_t allocator{ };
 
 			public:
-				AllocatorWrapperBase( ) = default;
+				explicit AllocatorWrapperBase( ) = default;
 				explicit constexpr AllocatorWrapperBase(
 				  allocator_t const & ) noexcept {}
 
@@ -98,7 +101,7 @@ namespace daw::json {
 			template<>
 			class AllocatorWrapper<NoAllocator> {
 			public:
-				constexpr AllocatorWrapper( ) noexcept = default;
+				explicit AllocatorWrapper( ) = default;
 				constexpr AllocatorWrapper( NoAllocator const & ) noexcept {}
 
 				static constexpr bool has_allocator = false;

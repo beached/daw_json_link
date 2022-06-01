@@ -2,13 +2,12 @@ DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "DAW JSON Link"
 PROJECT_NUMBER         =
 PROJECT_BRIEF          =
-CLANG_ASSISTED_PARSING = YES
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = $(DOXYGEN_OUTPUT_DIRECTORY)
 CREATE_SUBDIRS         = NO
+#CREATE_SUBDIRS_LEVEL   = 8
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
-OUTPUT_TEXT_DIRECTION  = None
 BRIEF_MEMBER_DESC      = YES
 REPEAT_BRIEF           = YES
 ABBREVIATE_BRIEF       = "The $name class" \
@@ -36,7 +35,7 @@ PYTHON_DOCSTRING       = YES
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 2
-ALIASES                = 
+ALIASES                =
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
@@ -66,6 +65,7 @@ EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = YES
 EXTRACT_LOCAL_METHODS  = NO
 EXTRACT_ANON_NSPACES   = NO
+RESOLVE_UNNAMED_PARAMS = YES
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = NO
 HIDE_FRIEND_COMPOUNDS  = NO
@@ -74,6 +74,7 @@ INTERNAL_DOCS          = NO
 CASE_SENSE_NAMES       = NO
 HIDE_SCOPE_NAMES       = NO
 HIDE_COMPOUND_REFERENCE= NO
+#SHOW_HEADERFILE        = YES
 SHOW_INCLUDE_FILES     = YES
 SHOW_GROUPED_MEMB_INC  = NO
 FORCE_LOCAL_INCLUDES   = NO
@@ -100,64 +101,30 @@ QUIET                  = NO
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
+#WARN_IF_INCOMPLETE_DOC = YES
 WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
+#WARN_LINE_FORMAT       = "at line $line of file $file"
 WARN_LOGFILE           =
-INPUT                  = include/daw/json /docs/cookbook docs
+INPUT                  = include/daw/json \
+                         docs/cookbook \
+                         docs
 INPUT_ENCODING         = UTF-8
-FILE_PATTERNS          = *.c \
-                         *.cc \
-                         *.cxx \
-                         *.cpp \
-                         *.c++ \
-                         *.java \
-                         *.ii \
-                         *.ixx \
-                         *.ipp \
-                         *.i++ \
-                         *.inl \
-                         *.idl \
-                         *.ddl \
-                         *.odl \
-                         *.h \
-                         *.hh \
-                         *.hxx \
-                         *.hpp \
-                         *.h++ \
-                         *.cs \
-                         *.d \
-                         *.php \
-                         *.php4 \
-                         *.php5 \
-                         *.phtml \
-                         *.inc \
-                         *.m \
-                         *.markdown \
-                         *.md \
-                         *.mm \
-                         *.dox \
-                         *.doc \
-                         *.txt \
-                         *.py \
-                         *.pyw \
-                         *.f90 \
-                         *.f95 \
-                         *.f03 \
-                         *.f08 \
-                         *.f18 \
-                         *.f \
-                         *.for \
-                         *.vhd \
-                         *.vhdl \
-                         *.ucf \
-                         *.qsf \
-                         *.ice
+FILE_PATTERNS          = *.h \
+                         *.md
 RECURSIVE              = YES
-EXCLUDE                = 
+EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
-EXCLUDE_SYMBOLS        = *::json_details *::murmur3_details *::utils_details *::*_details *::*_detail *::*_impl *::impl *::fp_utils
+EXCLUDE_SYMBOLS        = *::json_details \
+                         *::murmur3_details \
+                         *::utils_details \
+                         *::*_details \
+                         *::*_detail \
+                         *::*_impl \
+                         *::impl \
+                         *::fp_utils
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
@@ -176,8 +143,11 @@ REFERENCES_LINK_SOURCE = YES
 SOURCE_TOOLTIPS        = YES
 USE_HTAGS              = NO
 VERBATIM_HEADERS       = YES
+CLANG_ASSISTED_PARSING = NO
+CLANG_ADD_INC_PATHS    = YES
+CLANG_OPTIONS          = -std=c++17 -Wno-pragma-once-outside-header -I include
+CLANG_DATABASE_PATH    =
 ALPHABETICAL_INDEX     = YES
-COLS_IN_ALPHA_INDEX    = 5
 IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
@@ -186,31 +156,31 @@ HTML_HEADER            =
 HTML_FOOTER            =
 HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = docs/theme/doxygen-style.css
-HTML_EXTRA_FILES       =	docs/theme/img/closed-folder.png \
-													docs/theme/img/document.png \
-													docs/theme/img/off_sync.png \
-													docs/theme/img/on_sync.png \
-													docs/theme/img/opened-folder.png \
-													docs/mainpage.md \
-													docs/images/json_link_logo_128.png \
-													docs/cookbook/class.md \
-													docs/cookbook/class_from_array.md \
-													docs/cookbook/parser_policies.md \
-													docs/cookbook/strings.md \
-													docs/cookbook/key_values.md \
-													docs/cookbook/variant.md \
-													docs/cookbook/dates.md \
-													docs/cookbook/array.md \
-													docs/cookbook/graphs.md \
-													docs/cookbook/unknown_types_and_raw_parsing.md \
-													docs/cookbook/readme.md \
-													docs/cookbook/mapping_deduction.md \
-													docs/cookbook/optional_values.md \
-													docs/cookbook/parsing_individual_members.md \
-													docs/cookbook/automated_code_generation.md \
-													docs/cookbook/enums.md \
-													docs/cookbook/inserting_extracting_raw_json.md \
-													docs/cookbook/numbers.md
+HTML_EXTRA_FILES       = docs/theme/img/closed-folder.png \
+                         docs/theme/img/document.png \
+                         docs/theme/img/off_sync.png \
+                         docs/theme/img/on_sync.png \
+                         docs/theme/img/opened-folder.png \
+                         docs/mainpage.md \
+                         docs/images/json_link_logo_128.png \
+                         docs/cookbook/class.md \
+                         docs/cookbook/class_from_array.md \
+                         docs/cookbook/parser_policies.md \
+                         docs/cookbook/strings.md \
+                         docs/cookbook/key_values.md \
+                         docs/cookbook/variant.md \
+                         docs/cookbook/dates.md \
+                         docs/cookbook/array.md \
+                         docs/cookbook/graphs.md \
+                         docs/cookbook/unknown_types_and_raw_parsing.md \
+                         docs/cookbook/readme.md \
+                         docs/cookbook/mapping_deduction.md \
+                         docs/cookbook/optional_values.md \
+                         docs/cookbook/parsing_individual_members.md \
+                         docs/cookbook/automated_code_generation.md \
+                         docs/cookbook/enums.md \
+                         docs/cookbook/inserting_extracting_raw_json.md \
+                         docs/cookbook/numbers.md
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
@@ -220,6 +190,7 @@ HTML_DYNAMIC_SECTIONS  = NO
 HTML_INDEX_NUM_ENTRIES = 100
 GENERATE_DOCSET        = NO
 DOCSET_FEEDNAME        = "Doxygen generated docs"
+#DOCSET_FEEDURL         =
 DOCSET_BUNDLE_ID       = org.doxygen.Project
 DOCSET_PUBLISHER_ID    = org.doxygen.Publisher
 DOCSET_PUBLISHER_NAME  = Publisher
@@ -242,14 +213,17 @@ GENERATE_ECLIPSEHELP   = NO
 ECLIPSE_DOC_ID         = org.doxygen.Project
 DISABLE_INDEX          = NO
 GENERATE_TREEVIEW      = NO
+#FULL_SIDEBAR           = NO
 ENUM_VALUES_PER_LINE   = 4
 TREEVIEW_WIDTH         = 250
 EXT_LINKS_IN_WINDOW    = NO
+#OBFUSCATE_EMAILS       = YES
 HTML_FORMULA_FORMAT    = png
 FORMULA_FONTSIZE       = 10
 FORMULA_TRANSPARENT    = YES
 FORMULA_MACROFILE      =
 USE_MATHJAX            = NO
+#MATHJAX_VERSION        = MathJax_2
 MATHJAX_FORMAT         = HTML-CSS
 MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@2
 MATHJAX_EXTENSIONS     =
@@ -277,7 +251,6 @@ PDF_HYPERLINKS         = YES
 USE_PDFLATEX           = YES
 LATEX_BATCHMODE        = NO
 LATEX_HIDE_INDICES     = NO
-LATEX_SOURCE_CODE      = NO
 LATEX_BIB_STYLE        = plain
 LATEX_TIMESTAMP        = NO
 LATEX_EMOJI_DIRECTORY  =
@@ -287,7 +260,6 @@ COMPACT_RTF            = NO
 RTF_HYPERLINKS         = NO
 RTF_STYLESHEET_FILE    =
 RTF_EXTENSIONS_FILE    =
-RTF_SOURCE_CODE        = NO
 GENERATE_MAN           = NO
 MAN_OUTPUT             = man
 MAN_EXTENSION          = .3
@@ -299,7 +271,6 @@ XML_PROGRAMLISTING     = YES
 XML_NS_MEMB_FILE_SCOPE = NO
 GENERATE_DOCBOOK       = NO
 DOCBOOK_OUTPUT         = docbook
-DOCBOOK_PROGRAMLISTING = NO
 GENERATE_AUTOGEN_DEF   = NO
 GENERATE_PERLMOD       = NO
 PERLMOD_LATEX          = NO
@@ -311,15 +282,19 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = "DAW_ATTRIB_FLATTEN=" "DAW_ATTRIB_FLATINLINE=" "DAW_JSON_VER=" "DAW_JSON_INLINE_NS="
-EXPAND_AS_DEFINED      = DAW_JSON_INLINE JSONNAMETYPE DAW_JSON_VER
-SKIP_FUNCTION_MACROS   = YES 
+PREDEFINED             = DAW_ATTRIB_FLATTEN= \
+                         DAW_ATTRIB_FLATINLINE= \
+                         DAW_JSON_VER= \
+                         DAW_JSON_INLINE_NS=
+EXPAND_AS_DEFINED      = DAW_JSON_INLINE \
+                         JSONNAMETYPE \
+                         DAW_JSON_VER
+SKIP_FUNCTION_MACROS   = YES
 TAGFILES               =
 GENERATE_TAGFILE       =
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 EXTERNAL_PAGES         = YES
-CLASS_DIAGRAMS         = YES
 DIA_PATH               =
 HIDE_UNDOC_RELATIONS   = YES
 HAVE_DOT               = NO
@@ -332,6 +307,8 @@ COLLABORATION_GRAPH    = YES
 GROUP_GRAPHS           = YES
 UML_LOOK               = NO
 UML_LIMIT_NUM_FIELDS   = 10
+DOT_UML_DETAILS        = NO
+DOT_WRAP_THRESHOLD     = 17
 TEMPLATE_RELATIONS     = NO
 INCLUDE_GRAPH          = YES
 INCLUDED_BY_GRAPH      = YES
@@ -339,6 +316,7 @@ CALL_GRAPH             = NO
 CALLER_GRAPH           = NO
 GRAPHICAL_HIERARCHY    = YES
 DIRECTORY_GRAPH        = YES
+#DIR_GRAPH_MAX_DEPTH    = 1
 DOT_IMAGE_FORMAT       = png
 INTERACTIVE_SVG        = NO
 DOT_PATH               =

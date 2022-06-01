@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_allocator_wrapper.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
@@ -18,7 +20,6 @@
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_json_string_util.h"
 
-#include "version.h"
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_likely.h>
@@ -522,16 +523,16 @@ namespace daw::json {
 			}
 		};
 
-		BasicParsePolicy( ) -> BasicParsePolicy<>;
+		BasicParsePolicy( )->BasicParsePolicy<>;
 
-		BasicParsePolicy( char const *, char const * ) -> BasicParsePolicy<>;
+		BasicParsePolicy( char const *, char const * )->BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, Allocator const & )
 		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
 
 		BasicParsePolicy( char const *, char const *, char const *, char const * )
-		  -> BasicParsePolicy<>;
+		  ->BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, char const *, char const *,

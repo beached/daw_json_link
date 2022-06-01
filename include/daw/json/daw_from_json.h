@@ -8,11 +8,12 @@
 
 #pragma once
 
+#include "impl/version.h"
+
 #include "daw_from_json_fwd.h"
 #include "impl/daw_json_parse_class.h"
 #include "impl/daw_json_parse_value.h"
 #include "impl/daw_json_value.h"
-#include "impl/version.h"
 
 #include <daw/daw_traits.h>
 

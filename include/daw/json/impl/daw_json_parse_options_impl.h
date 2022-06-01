@@ -253,8 +253,7 @@ namespace daw::json {
 		 * @return A json_options_t that encodes the options for the parser
 		 */
 		template<typename... Policies>
-		DAW_CONSTEVAL json_options_t
-		parse_options( Policies... policies ) {
+		DAW_CONSTEVAL json_options_t parse_options( Policies... policies ) {
 			static_assert( ( json_details::is_option_flag<Policies> and ... ),
 			               "Only registered policy types are allowed" );
 			auto result = json_details::default_policy_flag;

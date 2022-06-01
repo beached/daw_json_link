@@ -124,21 +124,17 @@ namespace daw::json {
 				}
 			}
 
-			/***
-			 * A dereferencable value proxy holding the result of operator*
-			 * This is for compatibility with the Iterator concepts and should be
-			 * avoided
-			 * @pre good( ) returns true
-			 * @return an arrow_proxy of the operator* result
-			 */
+			/// @brief A dereferencable value proxy holding the result of operator* .
+			/// This is for compatibility with the Iterator concepts and should be
+			/// avoided
+			/// @pre good( ) returns true
+			/// @return an arrow_proxy of the operator* result
 			[[nodiscard]] inline pointer operator->( ) const {
 				return pointer{ operator*( ) };
 			}
 
-			/***
-			 * Move the parse state to the next element
-			 * @return iterator after moving
-			 */
+			/// @brief Move the parse state to the next element
+			/// @return iterator after moving
 			inline constexpr json_lines_iterator &operator++( ) {
 				daw_json_assert_weak( m_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, m_state );
@@ -152,34 +148,26 @@ namespace daw::json {
 				return *this;
 			}
 
-			///
 			/// @brief Move the parse state to the next element
-			///
 			inline constexpr void operator++( int ) & {
 				(void)operator++( );
 			}
 
-			/***
-			 * Is it ok to dereference iterator
-			 * @return true when there is parse data available
-			 */
+			/// @brief Is it ok to dereference iterator
+			/// @return true when there is parse data available
 			[[nodiscard]] inline constexpr bool good( ) const {
 				return not m_state.is_null( ) and m_state.has_more( );
 			}
 
-			/***
-			 * Are we good( )
-			 * @return result of good( )
-			 */
+			/// @brief Are we good( )
+			/// @return result of good( )
 			[[nodiscard]] explicit inline constexpr operator bool( ) const {
 				return good( );
 			}
 
-			/***
-			 * Compare rhs for equivalence
-			 * @param rhs Another json_lines_iterator
-			 * @return true when equivalent to rhs
-			 */
+			/// @brief Compare rhs for equivalence
+			/// @param rhs Another json_lines_iterator
+			/// @return true when equivalent to rhs
 			[[nodiscard]] inline constexpr bool
 			operator==( json_lines_iterator const &rhs ) const {
 				if( not( *this ) ) {
@@ -191,11 +179,9 @@ namespace daw::json {
 				return ( m_state.first == rhs.m_state.first );
 			}
 
-			/***
-			 * Check if the other iterator is not equivalent
-			 * @param rhs another json_lines_iterator
-			 * @return true when rhs is not equivalent
-			 */
+			/// @brief Check if the other iterator is not equivalent
+			/// @param rhs another json_lines_iterator
+			/// @return true when rhs is not equivalent
 			[[nodiscard]] inline constexpr bool
 			operator!=( json_lines_iterator const &rhs ) const {
 				if( not( *this ) ) {
@@ -208,11 +194,9 @@ namespace daw::json {
 			}
 		};
 
-		/***
-		 * A range of json_lines_iterators
-		 * @tparam JsonElement Type of each element in array
-		 * @tparam ParsePolicy parsing policy type
-		 */
+		/// @brief A range of json_lines_iterators
+		/// @tparam JsonElement Type of each element in array
+		/// @tparam ParsePolicy parsing policy type
 		template<typename JsonElement = json_value, auto... PolicyFlags>
 		struct json_lines_range {
 			using ParsePolicy = BasicParsePolicy<
@@ -247,11 +231,13 @@ namespace daw::json {
 			}
 		};
 
-		/// @brief parition the document into num_partitions, non overlapping
-		/// pieces.
+		/// @brief parition the jsonl/nbjson document into num_partition non
+		/// overlapping sub-ranges. This can be used to parallelize json lines
+		/// parsing
 		template<typename JsonElement = json_value, auto... ParsePolicies>
-		auto partition_jsonl_document( std::size_t num_partitions,
-		                               daw::string_view jsonl_doc ) {
+		std::vector<json_lines_range<JsonElement, ParsePolicies...>>
+		partition_jsonl_document( std::size_t num_partitions,
+		                          daw::string_view jsonl_doc ) {
 			using result_t =
 			  std::vector<json_lines_range<JsonElement, ParsePolicies...>>;
 			if( num_partitions <= 1 ) {

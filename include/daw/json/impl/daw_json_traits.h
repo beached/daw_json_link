@@ -14,6 +14,7 @@
 #include "../daw_json_data_contract.h"
 #include "daw_json_default_constuctor.h"
 #include "daw_json_enums.h"
+#include "daw_json_name.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_fwd_pack_apply.h>

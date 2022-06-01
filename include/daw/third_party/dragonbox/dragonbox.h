@@ -40,6 +40,7 @@
 #pragma once
 
 #include "../../json/impl/version.h"
+
 #include "dragonbox_to_chars.h"
 
 #include <daw/daw_algorithm.h>
