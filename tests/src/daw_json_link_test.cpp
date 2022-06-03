@@ -19,6 +19,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <climits>
 #include <cstdint>
 #include <deque>
 #include <iostream>
@@ -30,10 +31,8 @@
 #include <tuple>
 #include <vector>
 
-#define AS_CONSTEXPR( ... ) \
-	[&]( ) constexpr {        \
-		return __VA_ARGS__;     \
-	}                         \
+#define AS_CONSTEXPR( ... )                \
+	[&]( ) constexpr { return __VA_ARGS__; } \
 	( )
 
 /***
@@ -1049,7 +1048,9 @@ int main( int, char ** )
 	test_dblparse( "1e-10000", true );
 	test_dblparse<false, true>( "0.9868011474609375", true );
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
+#if defined( LDBL_MAX )
 	std::cout << "result: " << from_json<long double>( "1e-10000" ) << '\n';
+#endif
 	test_dblparse( "1e-214748364", true );
 	test_dblparse( "0.89", true );
 	test_dblparse( "10070988951557009.8178168006534510403e-302", true );
@@ -1079,8 +1080,10 @@ int main( int, char ** )
 	  true );
 	test_dblparse( "0.9868011474609375", true );
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
+#if defined( LDBL_MAX )
 	std::cout << "result: " << from_json<long double>( "0.9868011474609375" )
 	          << '\n';
+#endif
 	std::cout << "Default FP Parse\n";
 	std::cout << "Unknown Bounds\n";
 	test_lots_of_doubles<false, false>( );
@@ -1091,6 +1094,8 @@ int main( int, char ** )
 	test_lots_of_doubles<false, true>( );
 	std::cout << "Known Bounds\n";
 	test_lots_of_doubles<true, true>( );
+
+#if defined( LDBL_MAX )
 	if constexpr( sizeof( double ) < sizeof( long double ) ) {
 		std::cout << "long double test\n";
 		std::cout << std::setprecision(
@@ -1120,6 +1125,7 @@ int main( int, char ** )
 		double d2 = 0.89;
 		std::cout << to_json( d2 ) << '\n';
 	}
+#endif
 	test_show_lots_of_doubles( );
 	test_optional_array( );
 	test_key_value( );
