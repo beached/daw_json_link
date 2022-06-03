@@ -426,9 +426,19 @@ $(function() {
 <div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160; </div>
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;      <span class="keyword">using</span> key_type_t = <span class="keyword">typename</span> T::key_type;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160; </div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;<span class="preprocessor">#if defined( _MSC_VER ) and not defined( __clang__ )</span></div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;      <span class="comment">// Lying to MSVC about being a random iterator causes issues I have not</span></div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;      <span class="comment">// found yet</span></div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span>&gt;</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> can_random_v = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> IsKnown&gt;</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> can_random_v = IsKnown;</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="adaw__json__default__constuctor_8h_html"><div class="ttname"><a href="daw__json__default__constuctor_8h.html">daw_json_default_constuctor.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__from__json_8h_source.html#l00023">daw_from_json.h:23</a></div></div>

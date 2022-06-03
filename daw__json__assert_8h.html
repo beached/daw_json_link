@@ -101,10 +101,12 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a7eec2e453676338364b2bb153a5fce45"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>(Bool, ...)</td></tr>
-<tr class="separator:a7eec2e453676338364b2bb153a5fce45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a728389a742b837d2170f62d34d78ddf4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(Bool, ...)</td></tr>
+<tr class="memdesc:a728389a742b837d2170f62d34d78ddf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.  <a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">More...</a><br /></td></tr>
 <tr class="separator:a728389a742b837d2170f62d34d78ddf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa08d5b456f511ea5d387f849f8764643"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>(Bool, ...)</td></tr>
+<tr class="memdesc:aa08d5b456f511ea5d387f849f8764643"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure that Bool is true. If false pass rest of args to daw_json_error.  <a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">More...</a><br /></td></tr>
+<tr class="separator:aa08d5b456f511ea5d387f849f8764643"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -112,41 +114,6 @@ Variables</h2></td></tr>
 <tr class="separator:a236cef0d7e6c40781c19e4ebcd63aa5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a7eec2e453676338364b2bb153a5fce45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7eec2e453676338364b2bb153a5fce45">&#9670;&nbsp;</a></span>daw_json_assert</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define daw_json_assert</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">Bool, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">do</span> {                                  \</div>
-<div class="line">    if( DAW_UNLIKELY( not( Bool ) ) ) { \</div>
-<div class="line">      daw_json_error( __VA_ARGS__ );    \</div>
-<div class="line">    }                                   \</div>
-<div class="line">  } <span class="keywordflow">while</span>( <span class="keyword">false</span> )</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00180">180</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
-
-</div>
-</div>
 <a id="a728389a742b837d2170f62d34d78ddf4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a728389a742b837d2170f62d34d78ddf4">&#9670;&nbsp;</a></span>daw_json_assert_weak</h2>
 
@@ -180,7 +147,46 @@ Variables</h2></td></tr>
 <div class="line">    }                                                    \</div>
 <div class="line">  } <span class="keywordflow">while</span>( <span class="keyword">false</span> )</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00191">191</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+<p>Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error. </p>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00208">208</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+
+</div>
+</div>
+<a id="aa08d5b456f511ea5d387f849f8764643"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa08d5b456f511ea5d387f849f8764643">&#9670;&nbsp;</a></span>daw_json_ensure</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define daw_json_ensure</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Bool, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">do</span> {                                  \</div>
+<div class="line">    if( DAW_UNLIKELY( not( Bool ) ) ) { \</div>
+<div class="line">      daw_json_error( __VA_ARGS__ );    \</div>
+<div class="line">    }                                   \</div>
+<div class="line">  } <span class="keywordflow">while</span>( <span class="keyword">false</span> )</div>
+</div><!-- fragment -->
+<p>Ensure that Bool is true. If false pass rest of args to daw_json_error. </p>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00199">199</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
 
 </div>
 </div>
@@ -205,7 +211,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00033">33</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00037">37</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
 
 </div>
 </div>

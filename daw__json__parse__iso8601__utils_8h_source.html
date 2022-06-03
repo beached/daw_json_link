@@ -133,7 +133,7 @@ $(function() {
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        constexpr Result</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        parse_number( daw::basic_string_view&lt;char, Bounds&gt; sv ) {</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;          static_assert( daw::numeric_limits&lt;Result&gt;::digits10 &gt;= 4 );</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( not sv.empty( ), ErrorReason::InvalidNumber );</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( not sv.empty( ), ErrorReason::InvalidNumber );</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;          Result result = 0;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;          Result sign = 1;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;          <span class="keywordflow">if</span>( sv.front( ) == <span class="charliteral">&#39;-&#39;</span> ) {</div>
@@ -146,7 +146,7 @@ $(function() {
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;          }</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;          <span class="keywordflow">while</span>( not sv.empty( ) ) {</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            <span class="keyword">auto</span> <span class="keyword">const</span> dig = json_details::parse_digit( sv.pop_front( ) );</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( dig &lt; 10U, ErrorReason::InvalidNumber );</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;            <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( dig &lt; 10U, ErrorReason::InvalidNumber );</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            result *= 10;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            result += <span class="keyword">static_cast&lt;</span>Result<span class="keyword">&gt;</span>( dig );</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;          }</div>
@@ -315,7 +315,7 @@ $(function() {
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        <span class="comment">// TODO: verify or parse timezone</span></div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        time_parts hms = parse_iso_8601_time( time_str );</div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        <span class="keywordflow">if</span>( not( ts.empty( ) or ts.front( ) == <span class="charliteral">&#39;Z&#39;</span> ) ) {</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( std::size( ts ) == 5 or std::size( ts ) == 6,</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( std::size( ts ) == 5 or std::size( ts ) == 6,</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;                           ErrorReason::InvalidTimestamp );</div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;          <span class="comment">// The format will be (+|-)hh[:]mm</span></div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;          <span class="keywordtype">bool</span> <span class="keyword">const</span> sign = ts.front( ) == <span class="charliteral">&#39;+&#39;</span>;</div>
@@ -463,7 +463,7 @@ $(function() {
 <div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160; </div>
 <div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;      <span class="keyword">namespace </span>datetime_details {</div>
 <div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        constexpr std::uint_least32_t month2num( std::string_view ts ) {</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( std::size( ts ) &gt;= 3,</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( std::size( ts ) &gt;= 3,</div>
 <div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;                           ErrorReason::InvalidTimestamp );</div>
 <div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> b0 = <span class="keyword">static_cast&lt;</span>std::uint_least32_t<span class="keyword">&gt;</span>(</div>
 <div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;            <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( ts[0] ) );</div>
@@ -510,10 +510,10 @@ $(function() {
 <div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="adaw__json__assert_8h_html_a7eec2e453676338364b2bb153a5fce45"><div class="ttname"><a href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a></div><div class="ttdeci">#define daw_json_assert(Bool,...)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00180">daw_json_assert.h:180</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__from__json_8h_source.html#l00023">daw_from_json.h:23</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="adaw__json__parse__iso8601__utils_8h_html_a28ec20c177457dd7a9cd7d4d87d8c56c"><div class="ttname"><a href="daw__json__parse__iso8601__utils_8h.html#a28ec20c177457dd7a9cd7d4d87d8c56c">millisecond</a></div><div class="ttdeci">uint_least32_t millisecond</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__iso8601__utils_8h_source.html#l00192">daw_json_parse_iso8601_utils.h:192</a></div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00199">daw_json_assert.h:199</a></div></div>
 <div class="ttc" id="adaw__json__parse__iso8601__utils_8h_html_aa9ab0a2ad1249e5c3463b9ae18d3db49"><div class="ttname"><a href="daw__json__parse__iso8601__utils_8h.html#aa9ab0a2ad1249e5c3463b9ae18d3db49">minute</a></div><div class="ttdeci">uint_least32_t minute</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__iso8601__utils_8h_source.html#l00190">daw_json_parse_iso8601_utils.h:190</a></div></div>
 <div class="ttc" id="adaw__json__parse__digit_8h_html"><div class="ttname"><a href="daw__json__parse__digit_8h.html">daw_json_parse_digit.h</a></div></div>
 <div class="ttc" id="adaw__json__parse__iso8601__utils_8h_html_ad4f40f3475c68d569ae530184160d450"><div class="ttname"><a href="daw__json__parse__iso8601__utils_8h.html#ad4f40f3475c68d569ae530184160d450">year</a></div><div class="ttdeci">int_least32_t year</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__iso8601__utils_8h_source.html#l00164">daw_json_parse_iso8601_utils.h:164</a></div></div>
