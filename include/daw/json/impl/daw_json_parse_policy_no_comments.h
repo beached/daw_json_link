@@ -159,7 +159,7 @@ namespace daw::json {
 					++ptr_first;
 				}
 				if constexpr( ParseState::is_zero_terminated_string( ) ) {
-					daw_json_assert( ptr_first < ptr_last,
+					daw_json_ensure( ptr_first < ptr_last,
 					                 ErrorReason::UnexpectedEndOfData, parse_state );
 					while( *ptr_first != 0 ) {
 						switch( *ptr_first ) {
@@ -190,7 +190,7 @@ namespace daw::json {
 									c = *ptr_first;
 								}
 							}
-							daw_json_assert( ( *ptr_first != '\0' ) & ( *ptr_first == '"' ),
+							daw_json_ensure( ( *ptr_first != '\0' ) & ( *ptr_first == '"' ),
 							                 ErrorReason::UnexpectedEndOfData, parse_state );
 							break;
 						case ',':
@@ -206,7 +206,7 @@ namespace daw::json {
 							--prime_bracket_count;
 							if( prime_bracket_count == 0 ) {
 								++ptr_first;
-								daw_json_assert( second_bracket_count == 0,
+								daw_json_ensure( second_bracket_count == 0,
 								                 ErrorReason::InvalidBracketing, parse_state );
 								result.last = ptr_first;
 								result.counter = cnt;
@@ -251,7 +251,7 @@ namespace daw::json {
 									++ptr_first;
 								}
 							}
-							daw_json_assert( ptr_first < ptr_last and *ptr_first == '"',
+							daw_json_ensure( ptr_first < ptr_last and *ptr_first == '"',
 							                 ErrorReason::UnexpectedEndOfData, parse_state );
 							break;
 						case ',':
@@ -267,7 +267,7 @@ namespace daw::json {
 							--prime_bracket_count;
 							if( prime_bracket_count == 0 ) {
 								++ptr_first;
-								daw_json_assert( second_bracket_count == 0,
+								daw_json_ensure( second_bracket_count == 0,
 								                 ErrorReason::InvalidBracketing, parse_state );
 								result.last = ptr_first;
 								result.counter = cnt;
@@ -285,7 +285,7 @@ namespace daw::json {
 						++ptr_first;
 					}
 				}
-				daw_json_assert( ( prime_bracket_count == 0 ) &
+				daw_json_ensure( ( prime_bracket_count == 0 ) &
 				                   ( second_bracket_count == 0 ),
 				                 ErrorReason::InvalidBracketing, parse_state );
 				// We include the close primary bracket in the range so that subsequent

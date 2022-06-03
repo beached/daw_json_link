@@ -113,12 +113,12 @@ namespace daw::json {
 				value_type names[MemberCount];
 
 				constexpr const_reference operator[]( std::size_t idx ) const {
-					daw_json_assert( idx < MemberCount, ErrorReason::NumberOutOfRange );
+					daw_json_ensure( idx < MemberCount, ErrorReason::NumberOutOfRange );
 					return names[idx];
 				}
 
 				constexpr reference operator[]( std::size_t idx ) {
-					daw_json_assert( idx < MemberCount, ErrorReason::NumberOutOfRange );
+					daw_json_ensure( idx < MemberCount, ErrorReason::NumberOutOfRange );
 					return names[idx];
 				}
 

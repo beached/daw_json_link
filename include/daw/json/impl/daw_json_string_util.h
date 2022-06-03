@@ -92,6 +92,11 @@ namespace daw::json {
 					return __builtin_char_memchr(
 					  first, '"', static_cast<std::size_t>( last - first ) );
 				} else
+#elif DAW_HAS_BUILTIN( __builtin_memchr )
+				if constexpr( expect_long ) {
+					return __builtin_memchr( first, '"',
+					                         static_cast<std::size_t>( last - first ) );
+				} else
 #else
 #if defined( DAW_IS_CONSTANT_EVALUATED )
 				bool is_cxeval =
@@ -129,7 +134,7 @@ namespace daw::json {
 					constexpr char const needles[]{ chars..., '\0' };
 					CharT *res = __builtin_strpbrk( first, needles );
 #if not defined( NDEBUG )
-					daw_json_assert( res != nullptr, ErrorReason::UnexpectedEndOfData );
+					daw_json_ensure( res != nullptr, ErrorReason::UnexpectedEndOfData );
 #endif
 					return res;
 				} else
@@ -146,7 +151,7 @@ namespace daw::json {
 						constexpr char const needles[]{ chars..., '\0' };
 						CharT *res = std::strpbrk( first, needles );
 #if not defined( NDEBUG )
-						daw_json_assert( res != nullptr, ErrorReason::UnexpectedEndOfData );
+						daw_json_ensure( res != nullptr, ErrorReason::UnexpectedEndOfData );
 #endif
 						return res;
 					}

@@ -74,8 +74,8 @@ void test( std::string_view json_sv1 ) {
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
 		    f1, "features[0].geometry",
-		    daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
-		                                    ExecMode> );
+		    daw::json::options::parse_flags<
+		      daw::json::options::CheckedParseMode::no, ExecMode> );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );

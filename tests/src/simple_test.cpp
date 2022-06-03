@@ -29,8 +29,10 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_string_raw<"country", std::string_view>,
 		  json_string_raw<"name", std::string_view>,
-		  json_number<"lat", float, options::number_opt( options::LiteralAsStringOpt::Always )>,
-		  json_number<"lng", float, options::number_opt( options::LiteralAsStringOpt::Always )>>;
+		  json_number<"lat", float,
+		              options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_number<"lng", float,
+		              options::number_opt( options::LiteralAsStringOpt::Always )>>;
 #else
 		static constexpr char const country[] = "country";
 		static constexpr char const name[] = "name";
@@ -39,8 +41,10 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_string_raw<country, std::string_view>,
 		  json_string_raw<name, std::string_view>,
-		  json_number<lat, float, options::number_opt( options::LiteralAsStringOpt::Always )>,
-		  json_number<lng, float, options::number_opt( options::LiteralAsStringOpt::Always )>>;
+		  json_number<lat, float,
+		              options::number_opt( options::LiteralAsStringOpt::Always )>,
+		  json_number<lng, float,
+		              options::number_opt( options::LiteralAsStringOpt::Always )>>;
 #endif
 		static DAW_CONSTEXPR auto to_json_data( City const &c ) {
 			return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
@@ -79,8 +83,9 @@ int main( int argc, char **argv )
 	using iterator_t = daw::json::json_array_iterator<City>;
 
 	auto const pos =
-	  std::find_if( iterator_t( json_sv ), iterator_t( ),
-	                []( City &&city ) { return city.name == "Chitungwiza"; } );
+	  std::find_if( iterator_t( json_sv ), iterator_t( ), []( City &&city ) {
+		  return city.name == "Chitungwiza";
+	  } );
 	if( pos == iterator_t( ) ) {
 		std::cout << "Not found\n";
 		return 0;

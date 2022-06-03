@@ -19,6 +19,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <climits>
 #include <cstdint>
 #include <deque>
 #include <iostream>
@@ -135,7 +136,7 @@ std::string to_string( blah_t e ) noexcept {
 	case blah_t::c:
 		return "c";
 	}
-	std::terminate( );
+	DAW_UNREACHABLE( );
 }
 
 DAW_CONSTEXPR blah_t from_string( daw::tag_t<blah_t>,
@@ -149,7 +150,7 @@ DAW_CONSTEXPR blah_t from_string( daw::tag_t<blah_t>,
 	case 'c':
 		return blah_t::c;
 	default:
-		std::terminate( );
+		DAW_UNREACHABLE( );
 	}
 }
 
@@ -650,7 +651,7 @@ bool test_optional_array( ) {
 	std::string_view const json_data = "[null,5]";
 	using namespace daw::json;
 	auto result = from_json_array<std::optional<int>>( json_data );
-	daw_json_assert( result.size( ) == 2 and not result[0] and result[1] == 5,
+	daw_json_ensure( result.size( ) == 2 and not result[0] and result[1] == 5,
 	                 ErrorReason::Unknown );
 	std::string str{ };
 	to_json_array<json_number_null_no_name<std::optional<int>>>(
@@ -664,7 +665,7 @@ bool test_key_value( ) {
 	std::string_view const json_data = R"({"a":0,"b":1})";
 	using namespace daw::json;
 	auto const result = from_json<std::map<std::string, int>>( json_data );
-	daw_json_assert( result.size( ) == 2 and result.at( "a" ) == 0 and
+	daw_json_ensure( result.size( ) == 2 and result.at( "a" ) == 0 and
 	                   result.at( "b" ) == 1,
 	                 ErrorReason::Unknown );
 	std::string str{ };
@@ -703,7 +704,7 @@ constexpr bool cxdbl_tostr1( ) {
 	auto buff_end = to_json( dbl_half, buffer );
 	auto buff_sv =
 	  std::string_view( buffer, static_cast<std::size_t>( buff_end - buffer ) );
-	daw_json_assert( buff_sv == "0.5", ErrorReason::InvalidString );
+	daw_json_ensure( buff_sv == "0.5", ErrorReason::InvalidString );
 	(void)from_json<double>( buff_sv );
 	return true;
 }
@@ -716,7 +717,7 @@ constexpr bool cxdbl_tostr2( ) {
 	auto buff_end = to_json( dbl_half, buffer );
 	auto buff_sv =
 	  std::string_view( buffer, static_cast<std::size_t>( buff_end - buffer ) );
-	daw_json_assert( buff_sv == "1024.5", ErrorReason::InvalidString );
+	daw_json_ensure( buff_sv == "1024.5", ErrorReason::InvalidString );
 	(void)from_json<double>( buff_sv );
 	return true;
 }
@@ -767,9 +768,7 @@ int main( int, char ** )
 #endif
 
 	auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
-	if( not foo2_val.m1 ) {
-		std::terminate( );
-	}
+	ensure( foo2_val.m1 );
 	auto const foo2_str = daw::json::to_json( foo2_val );
 	(void)foo2_str;
 	using namespace std::string_literals;
@@ -1047,7 +1046,9 @@ int main( int, char ** )
 	test_dblparse( "1e-10000", true );
 	test_dblparse<false, true>( "0.9868011474609375", true );
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
+#if defined( LDBL_MAX )
 	std::cout << "result: " << from_json<long double>( "1e-10000" ) << '\n';
+#endif
 	test_dblparse( "1e-214748364", true );
 	test_dblparse( "0.89", true );
 	test_dblparse( "10070988951557009.8178168006534510403e-302", true );
@@ -1077,8 +1078,10 @@ int main( int, char ** )
 	  true );
 	test_dblparse( "0.9868011474609375", true );
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
+#if defined( LDBL_MAX )
 	std::cout << "result: " << from_json<long double>( "0.9868011474609375" )
 	          << '\n';
+#endif
 	std::cout << "Default FP Parse\n";
 	std::cout << "Unknown Bounds\n";
 	test_lots_of_doubles<false, false>( );
@@ -1089,6 +1092,8 @@ int main( int, char ** )
 	test_lots_of_doubles<false, true>( );
 	std::cout << "Known Bounds\n";
 	test_lots_of_doubles<true, true>( );
+
+#if defined( LDBL_MAX )
 	if constexpr( sizeof( double ) < sizeof( long double ) ) {
 		std::cout << "long double test\n";
 		std::cout << std::setprecision(
@@ -1118,6 +1123,7 @@ int main( int, char ** )
 		double d2 = 0.89;
 		std::cout << to_json( d2 ) << '\n';
 	}
+#endif
 	test_show_lots_of_doubles( );
 	test_optional_array( );
 	test_key_value( );
@@ -1154,7 +1160,7 @@ int main( int, char ** )
 #endif
 		return false;
 	};
-	daw_json_assert( test_bad_float( ), ErrorReason::Unknown );
+	daw_json_ensure( test_bad_float( ), ErrorReason::Unknown );
 
 	auto const test_empty_map = []( ) -> bool {
 #ifdef DAW_USE_EXCEPTIONS
@@ -1174,7 +1180,7 @@ int main( int, char ** )
 		}
 #endif
 	};
-	daw_json_assert( test_empty_map( ), ErrorReason::Unknown );
+	daw_json_ensure( test_empty_map( ), ErrorReason::Unknown );
 
 	auto const test_leading_zero = []( auto i ) {
 		using test_t = daw::remove_cvref_t<decltype( i )>;
@@ -1188,9 +1194,9 @@ int main( int, char ** )
 #endif
 		return false;
 	};
-	daw_json_assert( test_leading_zero( 0.0 ), ErrorReason::Unknown );
-	daw_json_assert( test_leading_zero( 0 ), ErrorReason::Unknown );
-	daw_json_assert( test_leading_zero( 0U ), ErrorReason::Unknown );
+	daw_json_ensure( test_leading_zero( 0.0 ), ErrorReason::Unknown );
+	daw_json_ensure( test_leading_zero( 0 ), ErrorReason::Unknown );
+	daw_json_ensure( test_leading_zero( 0U ), ErrorReason::Unknown );
 
 	static_assert(
 	  from_json<json_key_value_no_name<

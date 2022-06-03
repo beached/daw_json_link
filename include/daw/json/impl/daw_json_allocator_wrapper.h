@@ -35,7 +35,7 @@ namespace daw::json {
 				  : allocator_ptr( &alloc ) {}
 
 				constexpr allocator_t const &get_allocator( ) const {
-					daw_json_assert( allocator_ptr.has_value( ),
+					daw_json_ensure( allocator_ptr.has_value( ),
 					                 ErrorReason::UnexpectedNull );
 					return **allocator_ptr;
 				}

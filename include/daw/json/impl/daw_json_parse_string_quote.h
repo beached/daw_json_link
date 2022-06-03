@@ -160,10 +160,10 @@ namespace daw::json {
 							if constexpr( ParseState::exclude_special_escapes( ) ) {
 								while( *first != '\0' ) {
 									char c = *first;
-									daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
+									daw_json_ensure( static_cast<unsigned char>( c ) >= 0x20U,
 									                 ErrorReason::InvalidString, parse_state );
 									if( c == '\\' ) {
-										daw_json_assert( last - first > 1,
+										daw_json_ensure( last - first > 1,
 										                 ErrorReason::InvalidString, parse_state );
 										if( need_slow_path < 0 ) {
 											need_slow_path = first - parse_state.first;
@@ -210,10 +210,10 @@ namespace daw::json {
 							if constexpr( ParseState::exclude_special_escapes( ) ) {
 								while( first < last ) {
 									char c = *first;
-									daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
+									daw_json_ensure( static_cast<unsigned char>( c ) >= 0x20U,
 									                 ErrorReason::InvalidString, parse_state );
 									if( c == '\\' ) {
-										daw_json_assert( last - first > 1,
+										daw_json_ensure( last - first > 1,
 										                 ErrorReason::InvalidString, parse_state );
 										if( need_slow_path < 0 ) {
 											need_slow_path = first - parse_state.first;

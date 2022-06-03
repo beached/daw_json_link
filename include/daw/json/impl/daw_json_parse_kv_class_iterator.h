@@ -14,6 +14,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
+#include "daw_json_traits.h"
 
 #include <daw/daw_move.h>
 
@@ -125,7 +126,7 @@ namespace daw::json {
 #ifndef NDEBUG
 						if constexpr( IsKnown ) {
 							if( base::parse_state ) {
-								daw_json_assert( base::parse_state->counter > 0,
+								daw_json_ensure( base::parse_state->counter > 0,
 								                 ErrorReason::AttemptToAccessPastEndOfValue,
 								                 *base::parse_state );
 								base::parse_state->counter--;
@@ -143,7 +144,7 @@ namespace daw::json {
 #ifndef NDEBUG
 					if constexpr( IsKnown ) {
 						if( base::parse_state ) {
-							daw_json_assert( base::parse_state->counter > 0,
+							daw_json_ensure( base::parse_state->counter > 0,
 							                 ErrorReason::AttemptToAccessPastEndOfValue,
 							                 *base::parse_state );
 							base::parse_state->counter--;

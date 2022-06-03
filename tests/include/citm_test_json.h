@@ -138,17 +138,20 @@ namespace daw::json {
 		                 std::unordered_map<std::int64_t, std::string_view>,
 		                 json_link_no_name<std::string_view>,
 		                 json_number_no_name<
-		                   std::int64_t, options::number_opt( options::LiteralAsStringOpt::Always )>>,
+		                   std::int64_t, options::number_opt(
+		                                   options::LiteralAsStringOpt::Always )>>,
 		  json_key_value<"audienceSubCategoryNames",
 		                 std::unordered_map<std::int64_t, std::string_view>,
 		                 json_string_raw_no_name<std::string_view>,
 		                 json_number_no_name<
-		                   std::int64_t, options::number_opt( options::LiteralAsStringOpt::Always )>>,
+		                   std::int64_t, options::number_opt(
+		                                   options::LiteralAsStringOpt::Always )>>,
 		  json_key_value<
 		    "events", std::unordered_map<std::int64_t, daw::citm::events_value_t>,
 		    json_class_no_name<daw::citm::events_value_t>,
 		    json_number_no_name<std::int64_t,
-		                        options::number_opt( options::LiteralAsStringOpt::Always )>>,
+		                        options::number_opt(
+		                          options::LiteralAsStringOpt::Always )>>,
 		  json_array<"performances", daw::citm::performances_element_t>,
 		  json_key_value<"seatCategoryNames",
 		                 std::unordered_map<std::string_view, std::string_view>,
@@ -182,17 +185,20 @@ namespace daw::json {
 		                 std::unordered_map<std::int64_t, std::string_view>,
 		                 std::string_view,
 		                 json_number_no_name<
-		                   std::int64_t, options::number_opt( options::LiteralAsStringOpt::Always )>>,
+		                   std::int64_t, options::number_opt(
+		                                   options::LiteralAsStringOpt::Always )>>,
 		  json_key_value<audienceSubCategoryNames,
 		                 std::unordered_map<std::int64_t, std::string_view>,
 		                 std::string_view,
 		                 json_number_no_name<
-		                   std::int64_t, options::number_opt( options::LiteralAsStringOpt::Always )>>,
+		                   std::int64_t, options::number_opt(
+		                                   options::LiteralAsStringOpt::Always )>>,
 		  json_key_value<
 		    events, std::unordered_map<std::int64_t, daw::citm::events_value_t>,
 		    daw::citm::events_value_t,
 		    json_number_no_name<std::int64_t,
-		                        options::number_opt( options::LiteralAsStringOpt::Always )>>,
+		                        options::number_opt(
+		                          options::LiteralAsStringOpt::Always )>>,
 		  json_array<performances, daw::citm::performances_element_t>,
 		  json_key_value<seatCategoryNames,
 		                 std::unordered_map<std::string_view, std::string_view>,

@@ -11,8 +11,8 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
 #include <daw/daw_parse_args.h>
+#include <daw/daw_read_file.h>
 
 #include <cstdlib>
 #include <fstream>
@@ -149,7 +149,8 @@ int main( int argc, char **argv ) {
 		          << " json_in.json [json_out.json] [--verbose]\n";
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::filesystem::memory_mapped_file_t<>( args[0].value );
+	auto data =
+	  daw::read_file( args[0].value, daw::terminate_on_read_file_error );
 
 #ifdef DAW_USE_EXCEPTIONS
 	try

@@ -15,7 +15,6 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_memory_mapped_file.h>
 #include <daw/daw_read_file.h>
 
 #include <cstdint>
@@ -67,8 +66,8 @@ int main( int, char ** )
 	    exit( 1 );
 	  }
 	*/
-	auto const json_data = *daw::read_file( "/tmp/1.json" );
-	// auto json_data = daw::filesystem::memory_mapped_file_t<>( "/tmp/1.json" );
+	auto const json_data =
+	  daw::read_file( "/tmp/1.json", daw::terminate_on_read_file_error );
 
 	using range_t =
 	  daw::json::json_array_range<coordinate_t, options::CheckedParseMode::no>;

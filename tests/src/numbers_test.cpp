@@ -46,9 +46,8 @@ void test( std::string_view data ) {
 	  },
 	  range_t( data ) );
 	daw::do_not_optimize( results );
-	using range2_t =
-	  daw::json::json_array_range<double, daw::json::options::CheckedParseMode::no,
-	                              ExecMode>;
+	using range2_t = daw::json::json_array_range<
+	  double, daw::json::options::CheckedParseMode::no, ExecMode>;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "numbers bench (unchecked)", data.size( ),
 	  [&]( auto rng ) {

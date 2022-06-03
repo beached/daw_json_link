@@ -27,8 +27,7 @@ bool test_number_in_class( ) {
 
 bool test_number( ) {
 	DAW_CONSTEXPR std::string_view sv = "12345,";
-	auto rng =
-	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_number( rng );
 	return std::string_view( v.first, v.size( ) ) == "12345";
@@ -36,8 +35,7 @@ bool test_number( ) {
 
 bool test_number_space( ) {
 	DAW_CONSTEXPR std::string_view sv = "12345         ,";
-	auto rng =
-	  daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_number( rng );
 	return std::string_view( v.first, v.size( ) ) == "12345";

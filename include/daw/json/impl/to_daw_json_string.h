@@ -329,7 +329,7 @@ namespace daw::json {
 			template<typename Char>
 			constexpr char to_nibble_char( Char c ) {
 				auto const u = static_cast<unsigned>( static_cast<unsigned char>( c ) );
-				daw_json_assert( u < 16, ErrorReason::InvalidUTFEscape );
+				daw_json_ensure( u < 16, ErrorReason::InvalidUTFEscape );
 				if( u < 10 ) {
 					return static_cast<char>( u + static_cast<unsigned char>( '0' ) );
 				} else {
@@ -467,7 +467,7 @@ namespace daw::json {
 				} else {
 					for( auto c : container ) {
 						if constexpr( restrict_high ) {
-							daw_json_assert( ( static_cast<unsigned char>( c ) >= 0x20U and
+							daw_json_ensure( ( static_cast<unsigned char>( c ) >= 0x20U and
 							                   static_cast<unsigned char>( c ) <= 0x7FU ),
 							                 ErrorReason::InvalidStringHighASCII );
 						}
@@ -552,7 +552,7 @@ namespace daw::json {
 				} else {
 					while( *ptr != '\0' ) {
 						if constexpr( restrict_high ) {
-							daw_json_assert( ( static_cast<unsigned>( *ptr ) >= 0x20U and
+							daw_json_ensure( ( static_cast<unsigned>( *ptr ) >= 0x20U and
 							                   static_cast<unsigned>( *ptr ) <= 0x7FU ),
 							                 ErrorReason::InvalidStringHighASCII );
 						}
@@ -864,7 +864,7 @@ namespace daw::json {
 					if( DAW_UNLIKELY( v == 0 ) ) {
 						*it++ = '0';
 					} else {
-						daw_json_assert( v > 0, ErrorReason::NumberOutOfRange );
+						daw_json_ensure( v > 0, ErrorReason::NumberOutOfRange );
 						char buff[daw::numeric_limits<under_type>::digits10 + 1]{ };
 						char *ptr = buff;
 						while( v >= 10 ) {

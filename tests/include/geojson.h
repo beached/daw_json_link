@@ -49,4 +49,3 @@ namespace daw::geojson {
 		std::vector<Feature> features;
 	}; // FeatureCollection
 } // namespace daw::geojson
-

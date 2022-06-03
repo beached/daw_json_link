@@ -8,8 +8,8 @@
 #include "daw/json/daw_json_event_parser.h"
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_memory_mapped_file.h>
 #include <daw/daw_parse_args.h>
+#include <daw/daw_read_file.h>
 
 #include <cstdlib>
 #include <fstream>
@@ -189,6 +189,7 @@ int main( int argc, char **argv ) {
 		std::cerr << argv[0] << " json_in.json\n";
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::filesystem::memory_mapped_file_t<std::uint8_t>( argv[1] );
-	return LLVMFuzzerTestOneInput( data.data( ), data.size( ) );
+	auto data = daw::read_file( argv[1], daw::terminate_on_read_file_error );
+	return LLVMFuzzerTestOneInput(
+	  reinterpret_cast<std::uint8_t const *>( data.data( ) ), data.size( ) );
 }

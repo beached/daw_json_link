@@ -51,25 +51,26 @@
 ## Intro 
 ###### [Top](#content)
 
-The DAW JSON Link library is a declarative mapping library between C++ and JSON. This allows for:
-  * Direct parsing of JSON to mapped data structures
-  * Less code to convert JSON to C++ data structures
-  * Earlier error reporting
-  * Lower memory requirement, parser requires a small amount of stack above that of mapped data structures
+The DAW JSON Link library is a high performance, no allocation, C++ JSON Library:
+  * Direct parsing of JSON to your mapped data structures
+  * Less code to convert JSON to C++ data structures in a composable mannow
+  * Earlier error reporting of unexpected data and errors
+  * Lower memory requirement, parser requires a small amount of stack but does not allocate itself.
   * Optimization based on data types
-  * Does not require intrusion into data structures.  This allows the usage of third party types.
+  * Does not require owning the mapped types
 
 The library supports other parsing modes that can be mixed too.
+  * Direct parsing into data structures
   * A lazy(PULL) JSON dom parser that allows for exploration of the document and selective parsing
   * A SAX(PUSH) event based parser for tasks like minimization
   * For large JSON array documents, one can use the `json_array_iterator` or `json_array_range` types. 
 
 Some other notable features are:
-  * Support for JSON tuple and variant/tagged variant like mappings.
+  * Support for JSON tuple(heterogenous arrays) and variant/tagged variant like mappings.
   * Automatic mapping of Containers, including the Map based Associative Structures
   * Able to parse to/from other numeric types like `boost::multiprecision::cpp_int` or GNU BigNum/Rational `mpq_t`
   * Optional Comment support
-  * trailing comma support
+  * Trailing comma support
 
 The library is using the [BSL](LICENSE) license
 

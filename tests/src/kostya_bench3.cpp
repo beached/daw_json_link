@@ -11,7 +11,7 @@
 #include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
 
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <iostream>
 #include <sstream>
@@ -51,11 +51,6 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-std::string read_file( std::string const &filename ) {
-	auto mmf = daw::filesystem::memory_mapped_file_t<char>( filename );
-	return std::string( mmf.data( ), mmf.data( ) + mmf.size( ) );
-}
-
 coordinate_t calc( std::string const &text ) {
 	double x = 0.0;
 	double y = 0.0;
@@ -85,7 +80,8 @@ int main( ) {
 		exit( EXIT_FAILURE );
 	}
 
-	std::string const text = read_file( "/tmp/1.json" );
+	std::string const text =
+	  daw::read_file( "/tmp/1.json", daw::terminate_on_read_file_error );
 
 	std::cout << calc( text ) << '\n';
 }

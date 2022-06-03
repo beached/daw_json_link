@@ -91,7 +91,8 @@ bool test_bad_real_untrusted2( ) {
 	using namespace daw::json::json_details;
 
 	using my_number =
-	  json_number_no_name<double, options::number_opt( options::LiteralAsStringOpt::Always )>;
+	  json_number_no_name<double, options::number_opt(
+	                                options::LiteralAsStringOpt::Always )>;
 	DAW_CONSTEXPR std::string_view sv = R"("1.0fsdf3",)";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Real>{ } );

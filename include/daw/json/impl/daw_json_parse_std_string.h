@@ -39,7 +39,7 @@ namespace daw::json {
 				auto const n0 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				auto const n1 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				if constexpr( is_unchecked_input ) {
-					daw_json_assert( n0 < 16 and n1 < 16, ErrorReason::InvalidUTFEscape );
+					daw_json_ensure( n0 < 16 and n1 < 16, ErrorReason::InvalidUTFEscape );
 				}
 				return to_uint16( ( n0 << 4U ) | n1 );
 			}

@@ -61,8 +61,8 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 
 	std::vector<unicode_data> const unicode_test_from_escaped =
 	  daw::json::from_json_array<unicode_data, std::vector<unicode_data>>(
-	    json_str_escaped,
-	    daw::json::options::parse_flags<daw::json::options::ExecModeTypes::simd> );
+	    json_str_escaped, daw::json::options::parse_flags<
+	                        daw::json::options::ExecModeTypes::simd> );
 
 	test_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
 	             "Expected same size" );
@@ -104,9 +104,8 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 		  .get( );
 	}
 	{
-		using range_t =
-		  daw::json::json_array_range<unicode_data, daw::json::options::CheckedParseMode::no,
-		                              ExecMode>;
+		using range_t = daw::json::json_array_range<
+		  unicode_data, daw::json::options::CheckedParseMode::no, ExecMode>;
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "full unicode bench(unchecked)", json_str.size( ),
 		  []( auto rng ) {

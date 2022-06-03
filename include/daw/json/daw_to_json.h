@@ -37,7 +37,7 @@ namespace daw::json {
 			                            JsonClass>>::type;
 
 			if constexpr( std::is_pointer_v<OutputIterator> ) {
-				daw_json_assert( it != nullptr, ErrorReason::NullOutputIterator );
+				daw_json_ensure( it != nullptr, ErrorReason::NullOutputIterator );
 			}
 			auto out_it = [&] {
 				if constexpr( is_serialization_policy_v<OutputIterator> ) {
@@ -89,7 +89,7 @@ namespace daw::json {
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			  "Supplied container must support begin( )/end( )" );
 			if constexpr( std::is_pointer_v<OutputIterator> ) {
-				daw_json_assert( it != nullptr, ErrorReason::NullOutputIterator );
+				daw_json_ensure( it != nullptr, ErrorReason::NullOutputIterator );
 			}
 			auto out_it = [&] {
 				if constexpr( is_serialization_policy_v<OutputIterator> ) {

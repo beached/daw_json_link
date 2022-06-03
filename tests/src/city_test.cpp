@@ -132,8 +132,9 @@ int main( int argc, char **argv )
 	  "Find Toronto", json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
-		    std::find_if( iterator_t( sv ), iterator_t( ),
-		                  []( City &&city ) { return city.name == "Toronto"; } );
+		    std::find_if( iterator_t( sv ), iterator_t( ), []( City &&city ) {
+			    return city.name == "Toronto";
+		    } );
 		  if( pos != iterator_t( ) ) {
 			  return *pos;
 		  }
@@ -238,8 +239,9 @@ int main( int argc, char **argv )
 	  []( auto const &jstr ) -> float {
 		  std::vector<float> lats{ };
 		  daw::algorithm::transform( iterator_t( jstr ), iterator_t( ),
-		                             daw::back_inserter( lats ),
-		                             []( auto &&l ) { return l.lat; } );
+		                             daw::back_inserter( lats ), []( auto &&l ) {
+			                             return l.lat;
+		                             } );
 
 		  auto result = daw::algorithm::accumulate( std::cbegin( lats ),
 		                                            std::cend( lats ), 0.0f );

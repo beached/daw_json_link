@@ -172,7 +172,7 @@ namespace daw::json {
 				if constexpr( RangeChecked != options::JsonRangeCheck::Never ) {
 					auto const count = ( daw::numeric_limits<result_t>::digits10 + 1U ) -
 					                   std::size( parse_state );
-					daw_json_assert(
+					daw_json_ensure(
 					  ( ( result <= static_cast<uresult_t>(
 					                  ( daw::numeric_limits<result_t>::max )( ) ) ) &
 					    ( count >= 0 ) ),
@@ -252,7 +252,7 @@ namespace daw::json {
 					auto const count = static_cast<std::ptrdiff_t>(
 					                     daw::numeric_limits<result_t>::digits10 + 1 ) -
 					                   ( first - orig_first );
-					daw_json_assert( count >= 0, ErrorReason::NumberOutOfRange,
+					daw_json_ensure( count >= 0, ErrorReason::NumberOutOfRange,
 					                 parse_state );
 				}
 
@@ -364,7 +364,7 @@ namespace daw::json {
 			  if constexpr( RangeChecked != options::JsonRangeCheck::Never ) {
 			    auto const count =
 			      static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 )
-			- ( first - orig_first ); daw_json_assert( (count >= 0) & (result <=
+			- ( first - orig_first ); daw_json_ensure( (count >= 0) & (result <=
 			static_cast<result_t>( (daw::numeric_limits<Unsigned>::max)( ) )),
 			                                   ErrorReason::NumberOutOfRange,
 			parse_state

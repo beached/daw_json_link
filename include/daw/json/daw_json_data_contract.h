@@ -20,8 +20,11 @@ namespace daw::json {
 		struct missing_json_data_contract_for_or_unknown_type;
 
 		template<typename T>
-		inline constexpr bool is_missing_data_contract_or_unknown_type_v =
-		  std::is_same_v<T, void>;
+		inline constexpr bool is_missing_data_contract_or_unknown_type_v = false;
+
+		template<>
+		inline constexpr bool is_missing_data_contract_or_unknown_type_v<void> =
+		  true;
 
 		template<typename T>
 		inline constexpr bool is_missing_data_contract_or_unknown_type_v<

@@ -44,12 +44,12 @@ int main( ) {
 		"c": [{"a": 1.1, "b": 2.2}, {"c": 3.3, "d": 4.4}]})"s;
 
 	auto foo_val = daw::json::from_json<Foo>( json_data );
-	daw_json_assert( foo_val.a == 5, daw::json::ErrorReason::InvalidNumber );
+	daw_json_ensure( foo_val.a == 5, daw::json::ErrorReason::InvalidNumber );
 	auto json_data2 = daw::json::to_json( foo_val );
 	auto foo_val2 = daw::json::from_json<Foo>( json_data2 );
-	daw_json_assert( foo_val.a == foo_val2.a,
+	daw_json_ensure( foo_val.a == foo_val2.a,
 	                 daw::json::ErrorReason::InvalidNumber );
-	daw_json_assert( foo_val.b == foo_val2.b,
+	daw_json_ensure( foo_val.b == foo_val2.b,
 	                 daw::json::ErrorReason::InvalidString );
-	daw_json_assert( foo_val.c == foo_val2.c, daw::json::ErrorReason::Unknown );
+	daw_json_ensure( foo_val.c == foo_val2.c, daw::json::ErrorReason::Unknown );
 }

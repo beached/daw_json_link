@@ -556,7 +556,7 @@ namespace daw::json {
 				parent_stack.pop_back( );
 				process_range( v );
 			}
-			daw_json_assert( class_depth == 0 and array_depth == 0,
+			daw_json_ensure( class_depth == 0 and array_depth == 0,
 			                 ErrorReason::InvalidEndOfValue );
 		}
 

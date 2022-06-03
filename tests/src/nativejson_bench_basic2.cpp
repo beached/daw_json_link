@@ -60,12 +60,15 @@ int main( int argc, char **argv )
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  j1 = daw::json::from_json<daw::twitter2::twitter_object_t>(
-		    f1, daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
+		    f1, daw::json::options::parse_flags<
+		          daw::json::options::CheckedParseMode::no> );
 		  j2 = daw::json::from_json<daw::citm::citm_object_t>(
-		    f2, daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
+		    f2, daw::json::options::parse_flags<
+		          daw::json::options::CheckedParseMode::no> );
 		  j3 = daw::json::from_json<daw::geojson::Polygon>(
 		    f3, "features[0].geometry",
-		    daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
+		    daw::json::options::parse_flags<
+		      daw::json::options::CheckedParseMode::no> );
 		  daw::do_not_optimize( sv_twitter );
 		  daw::do_not_optimize( sv_citm );
 		  daw::do_not_optimize( sv_canada );
@@ -77,14 +80,15 @@ int main( int argc, char **argv )
 #else
 	for( size_t n = 0; n < DAW_NUM_RUNS; ++n ) {
 		j1 = daw::json::from_json<daw::twitter2::twitter_object_t>(
-		  sv_twitter,
-		  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
+		  sv_twitter, daw::json::options::parse_flags<
+		                daw::json::options::CheckedParseMode::no> );
 		j2 = daw::json::from_json<daw::citm::citm_object_t>(
-		  sv_citm,
-		  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
+		  sv_citm, daw::json::options::parse_flags<
+		             daw::json::options::CheckedParseMode::no> );
 		j3 = daw::json::from_json<daw::geojson::Polygon>(
 		  sv_canada, "features[0].geometry",
-		  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
+		  daw::json::options::parse_flags<
+		    daw::json::options::CheckedParseMode::no> );
 		daw::do_not_optimize( sv_twitter );
 		daw::do_not_optimize( sv_citm );
 		daw::do_not_optimize( sv_canada );

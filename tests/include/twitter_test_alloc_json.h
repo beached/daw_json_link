@@ -30,7 +30,7 @@
 namespace daw::twitter {
 	struct TimestampConverter {
 		constexpr twitter_tp operator( )( std::string_view sv ) const {
-			daw_json_assert(
+			daw_json_ensure(
 			  sv.size( ) >= 26,
 			  daw::json::ErrorReason::InvalidTimestamp ); // Date format is always 26
 			                                              // characters long
