@@ -6,6 +6,7 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include <daw/daw_exception.h>
 #include <daw/json/daw_json_link.h>
 #include <daw/json/daw_json_value_state.h>
 
@@ -74,7 +75,7 @@ struct FooConstructor {
 		if( has_b and has_c ) {
 			return result_t{ daw::json::from_json<B>( std::string_view( ptr, sz ) ) };
 		}
-		throw std::runtime_error( "Unknown Foo subtype" );
+		daw::exception::daw_throw<std::runtime_error>( "Unknown Foo subtype" );
 	}
 };
 
@@ -118,7 +119,10 @@ int main( ) {
 ]
 )json";
 
+#if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
+  defined( _CPPUNWIND )
 	try {
+#endif
 		auto foo_ary = daw::json::from_json_array<Foo>( json_data );
 		assert( foo_ary.size( ) == 2 );
 		assert( foo_ary[0].member );
@@ -134,6 +138,8 @@ int main( ) {
 		assert( ( b.c == std::vector{ 1, 2, 3, 4 } ) );
 		std::cout << "Serialized to: \n"
 		          << daw::json::to_json_array( foo_ary ) << "\n";
+#if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
+  defined( _CPPUNWIND )
 	} catch( daw::json::json_exception const &jex ) {
 		std::cerr << "JSON Exception while parsing: " << jex.reason( ) << '\n';
 		exit( EXIT_FAILURE );
@@ -141,4 +147,5 @@ int main( ) {
 		std::cerr << "Exception while parsing: " << ex.what( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
+#endif
 }

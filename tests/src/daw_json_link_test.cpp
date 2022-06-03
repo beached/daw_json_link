@@ -136,7 +136,7 @@ std::string to_string( blah_t e ) noexcept {
 	case blah_t::c:
 		return "c";
 	}
-	std::terminate( );
+	DAW_UNREACHABLE( );
 }
 
 DAW_CONSTEXPR blah_t from_string( daw::tag_t<blah_t>,
@@ -150,7 +150,7 @@ DAW_CONSTEXPR blah_t from_string( daw::tag_t<blah_t>,
 	case 'c':
 		return blah_t::c;
 	default:
-		std::terminate( );
+		DAW_UNREACHABLE( );
 	}
 }
 
@@ -768,9 +768,7 @@ int main( int, char ** )
 #endif
 
 	auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
-	if( not foo2_val.m1 ) {
-		std::terminate( );
-	}
+	ensure( foo2_val.m1 );
 	auto const foo2_str = daw::json::to_json( foo2_val );
 	(void)foo2_str;
 	using namespace std::string_literals;
