@@ -97,9 +97,9 @@ int main( int argc, char **argv )
 			  daw::do_not_optimize( str );
 		  },
 		  *gsoc_result );
-		daw_json_assert( out_ptr != nullptr, ErrorReason::NullOutputIterator );
-		daw_json_assert( out_ptr - str.data( ) > 0, ErrorReason::NumberOutOfRange );
-		daw_json_assert( static_cast<std::size_t>( out_ptr - str.data( ) ) <=
+		daw_json_ensure( out_ptr != nullptr, ErrorReason::NullOutputIterator );
+		daw_json_ensure( out_ptr - str.data( ) > 0, ErrorReason::NumberOutOfRange );
+		daw_json_ensure( static_cast<std::size_t>( out_ptr - str.data( ) ) <=
 		                   str.size( ),
 		                 ErrorReason::NumberOutOfRange );
 	}

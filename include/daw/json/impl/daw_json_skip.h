@@ -58,7 +58,7 @@ namespace daw::json {
 				if( parse_state.empty( ) ) {
 					return parse_state;
 				}
-				daw_json_assert( parse_state.front( ) == '"',
+				daw_json_ensure( parse_state.front( ) == '"',
 				                 ErrorReason::InvalidString, parse_state );
 				parse_state.remove_prefix( );
 
@@ -76,7 +76,7 @@ namespace daw::json {
 					parse_state.remove_prefix( 4 );
 				} else {
 					parse_state.remove_prefix( );
-					daw_json_assert( parse_state.starts_with( "rue" ),
+					daw_json_ensure( parse_state.starts_with( "rue" ),
 					                 ErrorReason::InvalidTrue, parse_state );
 					parse_state.remove_prefix( 3 );
 				}
@@ -98,7 +98,7 @@ namespace daw::json {
 					parse_state.remove_prefix( 5 );
 				} else {
 					parse_state.remove_prefix( );
-					daw_json_assert( parse_state.starts_with( "alse" ),
+					daw_json_ensure( parse_state.starts_with( "alse" ),
 					                 ErrorReason::InvalidFalse, parse_state );
 					parse_state.remove_prefix( 4 );
 				}
@@ -119,7 +119,7 @@ namespace daw::json {
 					parse_state.remove_prefix( 4 );
 				} else {
 					parse_state.remove_prefix( );
-					daw_json_assert( parse_state.starts_with( "ull" ),
+					daw_json_ensure( parse_state.starts_with( "ull" ),
 					                 ErrorReason::InvalidNull, parse_state );
 					parse_state.remove_prefix( 3 );
 				}
@@ -231,7 +231,7 @@ namespace daw::json {
 						daw_json_error( ErrorReason::InvalidNumberStart, parse_state );
 					case '0':
 						if( last - first > 1 ) {
-							daw_json_assert(
+							daw_json_ensure(
 							  not parse_policy_details::is_number( *std::next( first ) ),
 							  ErrorReason::InvalidNumberStart, parse_state );
 						}
@@ -261,7 +261,7 @@ namespace daw::json {
 				CharT *exp = nullptr;
 				if constexpr( not( ParseState::is_zero_terminated_string( ) or
 				                   ParseState::is_unchecked_input ) ) {
-					daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData,
+					daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData,
 					                 parse_state );
 				}
 				unsigned dig = parse_digit( *first );

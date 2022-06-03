@@ -45,9 +45,24 @@ inline constexpr auto checked_policy_v =
 
 template<options::ExecModeTypes ExecMode>
 void test( char **argv ) {
-	auto const json_sv1 = *daw::read_file( argv[1] );
-	auto const json_sv2 = *daw::read_file( argv[2] );
-	auto const json_sv3 = *daw::read_file( argv[3] );
+	auto const json_opt1 = daw::read_file( argv[1] );
+	if( not json_opt1 or json_opt1->empty( ) ) {
+		std::cerr << "Could not open " << argv[1] << " or it is empty\n";
+		std::terminate( );
+	}
+	auto const json_sv1 = *json_opt1;
+	auto const json_opt2 = daw::read_file( argv[2] );
+	if( not json_opt2 or json_opt2->empty( ) ) {
+		std::cerr << "Could not open " << argv[2] << " or it is empty\n";
+		std::terminate( );
+	}
+	auto const json_sv2 = *json_opt2;
+	auto const json_opt3 = daw::read_file( argv[3] );
+	if( not json_opt3 or json_opt3->empty( ) ) {
+		std::cerr << "Could not open " << argv[3] << " or it is empty\n";
+		std::terminate( );
+	}
+	auto const json_sv3 = *json_opt3;
 
 	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";

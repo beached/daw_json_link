@@ -57,7 +57,7 @@ namespace daw::json {
 						return;
 					case '0':
 						if( parse_state.size( ) > 1 ) {
-							daw_json_assert( is_number( *( parse_state.first + 1 ) ),
+							daw_json_ensure( is_number( *( parse_state.first + 1 ) ),
 							                 ErrorReason::InvalidNumberStart, parse_state );
 						}
 						return;
@@ -75,7 +75,7 @@ namespace daw::json {
 			template<typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr int
 			validate_signed_first( ParseState &parse_state ) {
-				daw_json_assert( parse_state.has_more( ),
+				daw_json_ensure( parse_state.has_more( ),
 				                 ErrorReason::UnexpectedEndOfData, parse_state );
 				switch( parse_state.front( ) ) {
 				case '-':
@@ -87,7 +87,7 @@ namespace daw::json {
 						  static_cast<unsigned char>( *( parse_state.first + 1 ) ) );
 						auto const tst = dig - static_cast<unsigned char>( '0' );
 						// Cannot be a digit
-						daw_json_assert( tst >= 10U, ErrorReason::InvalidNumberStart,
+						daw_json_ensure( tst >= 10U, ErrorReason::InvalidNumberStart,
 						                 parse_state );
 					}
 					break;

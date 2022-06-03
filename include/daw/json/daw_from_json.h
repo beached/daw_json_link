@@ -38,9 +38,9 @@ namespace daw::json {
 		from_json( String &&json_data, options::parse_flags_t<PolicyFlags...> )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
-			daw_json_assert( std::data( json_data ) != nullptr,
+			daw_json_ensure( std::data( json_data ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
-			daw_json_assert( std::size( json_data ) != 0,
+			daw_json_ensure( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
 
 			static_assert(
@@ -71,7 +71,7 @@ namespace daw::json {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
@@ -115,9 +115,9 @@ namespace daw::json {
 		                 options::parse_flags_t<PolicyFlags...> )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
-			daw_json_assert( std::size( json_data ) != 0,
+			daw_json_ensure( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
-			daw_json_assert( std::data( json_data ) != nullptr,
+			daw_json_ensure( std::data( json_data ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
 
 			using json_member = json_details::json_deduced_type<JsonMember>;
@@ -154,7 +154,7 @@ namespace daw::json {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
@@ -201,11 +201,11 @@ namespace daw::json {
 		           options::parse_flags_t<PolicyFlags...> )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
-			daw_json_assert( std::size( json_data ) != 0,
+			daw_json_ensure( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
-			daw_json_assert( std::data( json_data ) != nullptr,
+			daw_json_ensure( std::data( json_data ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
-			daw_json_assert( std::data( member_path ) != nullptr,
+			daw_json_ensure( std::data( member_path ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
 
 			using json_member = json_details::json_deduced_type<JsonMember>;
@@ -242,14 +242,14 @@ namespace daw::json {
 					  typename json_member::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
+				daw_json_ensure( jv, ErrorReason::JSONPathNotFound );
 			}
 			auto parse_state = jv.get_raw_state( );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
@@ -299,11 +299,11 @@ namespace daw::json {
 		                 options::parse_flags_t<PolicyFlags...> )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
-			daw_json_assert( std::size( json_data ) != 0,
+			daw_json_ensure( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
-			daw_json_assert( std::data( json_data ) != nullptr,
+			daw_json_ensure( std::data( json_data ) != nullptr,
 			                 ErrorReason::EmptyJSONDocument );
-			daw_json_assert( std::data( member_path ) != nullptr,
+			daw_json_ensure( std::data( member_path ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
 
 			using json_member = json_details::json_deduced_type<JsonMember>;
@@ -343,14 +343,14 @@ namespace daw::json {
 					  typename json_member::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
+				daw_json_ensure( jv, ErrorReason::JSONPathNotFound );
 			}
 			auto parse_state = jv.get_raw_state( );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
@@ -467,7 +467,7 @@ namespace daw::json {
 					  typename json_member::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
+				daw_json_ensure( jv, ErrorReason::JSONPathNotFound );
 			}
 			auto parse_state = jv.get_raw_state( );
 			return json_details::parse_value<json_member, KnownBounds>(
@@ -517,9 +517,9 @@ namespace daw::json {
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
 		                      Container> {
 
-			daw_json_assert( std::size( json_data ) != 0,
+			daw_json_ensure( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
-			daw_json_assert( std::data( json_data ) != nullptr,
+			daw_json_ensure( std::data( json_data ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
@@ -556,7 +556,7 @@ namespace daw::json {
 			parse_state.trim_left_unchecked( );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 			// Work around MSVC ICE
-			daw_json_assert( parse_state.is_opening_bracket_checked( ),
+			daw_json_ensure( parse_state.is_opening_bracket_checked( ),
 			                 ErrorReason::InvalidArrayStart, parse_state );
 #else
 			daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
@@ -566,7 +566,7 @@ namespace daw::json {
 				auto result = json_details::parse_value<parser_t, KnownBounds>(
 				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
@@ -621,11 +621,11 @@ namespace daw::json {
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
 		                      Container> {
 
-			daw_json_assert( std::size( json_data ) != 0,
+			daw_json_ensure( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
-			daw_json_assert( std::data( json_data ) != nullptr,
+			daw_json_ensure( std::data( json_data ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
-			daw_json_assert( std::data( member_path ) != nullptr,
+			daw_json_ensure( std::data( member_path ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
@@ -666,13 +666,13 @@ namespace daw::json {
 					  typename parser_t::constructor_t>( );
 				}
 			} else {
-				daw_json_assert( jv, ErrorReason::JSONPathNotFound );
+				daw_json_ensure( jv, ErrorReason::JSONPathNotFound );
 			}
 			auto parse_state = jv.get_raw_state( );
 			parse_state.trim_left_unchecked( );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 			// Work around MSVC ICE
-			daw_json_assert( parse_state.is_opening_bracket_checked( ),
+			daw_json_ensure( parse_state.is_opening_bracket_checked( ),
 			                 ErrorReason::InvalidArrayStart, parse_state );
 #else
 			daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
@@ -682,7 +682,7 @@ namespace daw::json {
 				auto result = json_details::parse_value<parser_t, KnownBounds>(
 				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
 				parse_state.trim_left( );
-				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {

@@ -154,7 +154,7 @@ namespace daw {
 			assert( m_data->buffer_start and m_data->ptr );
 			// Ensure aligned.  Underlying ptr could be shared so must be done
 #ifndef NDEBUG
-			daw_json_assert( ( ( used( ) + n ) < m_data->capacity ),
+			daw_json_ensure( ( ( used( ) + n ) < m_data->capacity ),
 			                 daw::json::ErrorReason::Unknown );
 #endif
 			m_data->ptr += static_cast<std::ptrdiff_t>(

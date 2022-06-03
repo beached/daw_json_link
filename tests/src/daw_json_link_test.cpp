@@ -652,7 +652,7 @@ bool test_optional_array( ) {
 	std::string_view const json_data = "[null,5]";
 	using namespace daw::json;
 	auto result = from_json_array<std::optional<int>>( json_data );
-	daw_json_assert( result.size( ) == 2 and not result[0] and result[1] == 5,
+	daw_json_ensure( result.size( ) == 2 and not result[0] and result[1] == 5,
 	                 ErrorReason::Unknown );
 	std::string str{ };
 	to_json_array<json_number_null_no_name<std::optional<int>>>(
@@ -666,7 +666,7 @@ bool test_key_value( ) {
 	std::string_view const json_data = R"({"a":0,"b":1})";
 	using namespace daw::json;
 	auto const result = from_json<std::map<std::string, int>>( json_data );
-	daw_json_assert( result.size( ) == 2 and result.at( "a" ) == 0 and
+	daw_json_ensure( result.size( ) == 2 and result.at( "a" ) == 0 and
 	                   result.at( "b" ) == 1,
 	                 ErrorReason::Unknown );
 	std::string str{ };
@@ -705,7 +705,7 @@ constexpr bool cxdbl_tostr1( ) {
 	auto buff_end = to_json( dbl_half, buffer );
 	auto buff_sv =
 	  std::string_view( buffer, static_cast<std::size_t>( buff_end - buffer ) );
-	daw_json_assert( buff_sv == "0.5", ErrorReason::InvalidString );
+	daw_json_ensure( buff_sv == "0.5", ErrorReason::InvalidString );
 	(void)from_json<double>( buff_sv );
 	return true;
 }
@@ -718,7 +718,7 @@ constexpr bool cxdbl_tostr2( ) {
 	auto buff_end = to_json( dbl_half, buffer );
 	auto buff_sv =
 	  std::string_view( buffer, static_cast<std::size_t>( buff_end - buffer ) );
-	daw_json_assert( buff_sv == "1024.5", ErrorReason::InvalidString );
+	daw_json_ensure( buff_sv == "1024.5", ErrorReason::InvalidString );
 	(void)from_json<double>( buff_sv );
 	return true;
 }
@@ -1156,7 +1156,7 @@ int main( int, char ** )
 #endif
 		return false;
 	};
-	daw_json_assert( test_bad_float( ), ErrorReason::Unknown );
+	daw_json_ensure( test_bad_float( ), ErrorReason::Unknown );
 
 	auto const test_empty_map = []( ) -> bool {
 #ifdef DAW_USE_EXCEPTIONS
@@ -1176,7 +1176,7 @@ int main( int, char ** )
 		}
 #endif
 	};
-	daw_json_assert( test_empty_map( ), ErrorReason::Unknown );
+	daw_json_ensure( test_empty_map( ), ErrorReason::Unknown );
 
 	auto const test_leading_zero = []( auto i ) {
 		using test_t = daw::remove_cvref_t<decltype( i )>;
@@ -1190,9 +1190,9 @@ int main( int, char ** )
 #endif
 		return false;
 	};
-	daw_json_assert( test_leading_zero( 0.0 ), ErrorReason::Unknown );
-	daw_json_assert( test_leading_zero( 0 ), ErrorReason::Unknown );
-	daw_json_assert( test_leading_zero( 0U ), ErrorReason::Unknown );
+	daw_json_ensure( test_leading_zero( 0.0 ), ErrorReason::Unknown );
+	daw_json_ensure( test_leading_zero( 0 ), ErrorReason::Unknown );
+	daw_json_ensure( test_leading_zero( 0U ), ErrorReason::Unknown );
 
 	static_assert(
 	  from_json<json_key_value_no_name<

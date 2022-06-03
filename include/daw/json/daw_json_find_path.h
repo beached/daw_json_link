@@ -287,9 +287,9 @@ namespace daw::json {
 
 		[[nodiscard]] constexpr std::size_t
 		find_line_number_of( char const *doc_pos, char const *doc_start ) {
-			daw_json_assert( doc_pos != nullptr and doc_start != nullptr,
+			daw_json_ensure( doc_pos != nullptr and doc_start != nullptr,
 			                 ErrorReason::UnexpectedEndOfData );
-			daw_json_assert( std::less<>{ }( doc_start, doc_pos ),
+			daw_json_ensure( std::less<>{ }( doc_start, doc_pos ),
 			                 ErrorReason::UnexpectedEndOfData );
 
 			return daw::algorithm::accumulate( doc_start, doc_pos, std::size_t{ },
@@ -308,16 +308,16 @@ namespace daw::json {
 
 		[[nodiscard]] constexpr std::size_t
 		find_column_number_of( char const *doc_pos, char const *doc_start ) {
-			daw_json_assert( doc_pos != nullptr and doc_start != nullptr,
+			daw_json_ensure( doc_pos != nullptr and doc_start != nullptr,
 			                 ErrorReason::UnexpectedEndOfData );
-			daw_json_assert( std::less<>{ }( doc_start, doc_pos ),
+			daw_json_ensure( std::less<>{ }( doc_start, doc_pos ),
 			                 ErrorReason::UnexpectedEndOfData );
 
 			auto first = daw::reverse_iterator<char const *>( doc_pos );
 			auto last = daw::reverse_iterator<char const *>( doc_start );
 			auto pos =
 			  std::distance( first, daw::algorithm::find( first, last, '\n' ) );
-			daw_json_assert( pos >= 0, ErrorReason::Unknown );
+			daw_json_ensure( pos >= 0, ErrorReason::Unknown );
 			return static_cast<std::size_t>( pos );
 		}
 

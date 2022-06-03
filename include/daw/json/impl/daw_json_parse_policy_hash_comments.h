@@ -147,7 +147,7 @@ namespace daw::json {
 								++ptr_first;
 							}
 						}
-						daw_json_assert( ptr_first < ptr_last,
+						daw_json_ensure( ptr_first < ptr_last,
 						                 ErrorReason::UnexpectedEndOfData, parse_state );
 						break;
 					case ',':
@@ -161,7 +161,7 @@ namespace daw::json {
 					case PrimRight:
 						--prime_bracket_count;
 						if( prime_bracket_count == 0 ) {
-							daw_json_assert( second_bracket_count == 0,
+							daw_json_ensure( second_bracket_count == 0,
 							                 ErrorReason::InvalidBracketing, parse_state );
 							++ptr_first;
 							// We include the close primary bracket in the range so that
@@ -190,7 +190,7 @@ namespace daw::json {
 					}
 					++ptr_first;
 				}
-				daw_json_assert( ( prime_bracket_count == 0 ) &
+				daw_json_ensure( ( prime_bracket_count == 0 ) &
 				                   ( second_bracket_count == 0 ),
 				                 ErrorReason::InvalidBracketing, parse_state );
 				// We include the close primary bracket in the range so that subsequent

@@ -27,6 +27,10 @@
 #include <string>
 #include <string_view>
 
+#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
+#include <iostream>
+#endif
+
 #if defined( DAW_USE_EXCEPTIONS )
 inline constexpr bool use_daw_json_exceptions_v = true;
 #else
@@ -36,8 +40,7 @@ inline constexpr bool use_daw_json_exceptions_v = false;
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE void
-		daw_json_error( ErrorReason reason ) {
+		[[noreturn]] DAW_ATTRIB_NOINLINE void daw_json_error( ErrorReason reason ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				throw json_exception( reason );
@@ -45,6 +48,9 @@ namespace daw::json {
 #endif
 				(void)ShouldThrow;
 				(void)reason;
+#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
+				std::cerr << "Error: " << json_exception( reason ).reason( ) << '\n';
+#endif
 				std::terminate( );
 #ifdef DAW_USE_EXCEPTIONS
 			}
@@ -52,7 +58,7 @@ namespace daw::json {
 		}
 
 		template<bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void
+		[[noreturn]] DAW_ATTRIB_NOINLINE void
 		daw_json_error( ErrorReason reason, ParseState const &location ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
@@ -68,6 +74,9 @@ namespace daw::json {
 				(void)ShouldThrow;
 				(void)reason;
 				(void)location;
+#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
+				std::cerr << "Error: " << json_exception( reason ).reason( ) << '\n';
+#endif
 				std::terminate( );
 #ifdef DAW_USE_EXCEPTIONS
 			}
@@ -75,7 +84,7 @@ namespace daw::json {
 		}
 
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void
+		[[noreturn]] DAW_ATTRIB_NOINLINE void
 		daw_json_error( json_details::missing_member reason ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
@@ -84,6 +93,9 @@ namespace daw::json {
 #endif
 				(void)ShouldThrow;
 				(void)reason;
+#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
+				std::cerr << "Error: " << json_exception( reason ).reason( ) << '\n';
+#endif
 				std::terminate( );
 #ifdef DAW_USE_EXCEPTIONS
 			}
@@ -91,7 +103,7 @@ namespace daw::json {
 		}
 
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void
+		[[noreturn]] DAW_ATTRIB_NOINLINE void
 		daw_json_error( json_details::missing_token reason ) {
 #ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
@@ -100,6 +112,9 @@ namespace daw::json {
 #endif
 				(void)ShouldThrow;
 				(void)reason;
+#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
+				std::cerr << "Error: " << json_exception( reason ).reason( ) << '\n';
+#endif
 				std::terminate( );
 #ifdef DAW_USE_EXCEPTIONS
 			}
@@ -107,7 +122,7 @@ namespace daw::json {
 		}
 
 		template<bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void
+		[[noreturn]] DAW_ATTRIB_NOINLINE void
 		daw_json_error( json_details::missing_member reason,
 		                ParseState const &location ) {
 #ifdef DAW_USE_EXCEPTIONS
@@ -140,6 +155,9 @@ namespace daw::json {
 				(void)ShouldThrow;
 				(void)reason;
 				(void)location;
+#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
+				std::cerr << "Error: " << json_exception( reason ).reason( ) << '\n';
+#endif
 				std::terminate( );
 #ifdef DAW_USE_EXCEPTIONS
 			}
@@ -147,7 +165,7 @@ namespace daw::json {
 		}
 
 		template<bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState>
-		[[maybe_unused, noreturn]] DAW_ATTRIB_NOINLINE static void
+		[[noreturn]] DAW_ATTRIB_NOINLINE void
 		daw_json_error( json_details::missing_token reason,
 		                ParseState const &location ) {
 #ifdef DAW_USE_EXCEPTIONS
@@ -165,6 +183,9 @@ namespace daw::json {
 				(void)ShouldThrow;
 				(void)reason;
 				(void)location;
+#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
+				std::cerr << "Error: " << json_exception( reason ).reason( ) << '\n';
+#endif
 				std::terminate( );
 #ifdef DAW_USE_EXCEPTIONS
 			}
@@ -173,21 +194,17 @@ namespace daw::json {
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
 
-/***
- * Ensure that Bool is true
- * If false pass rest of args to daw_json_error
- */
-#define daw_json_assert( Bool, ... )    \
+/// @brief Ensure that Bool is true. If false pass rest of args to
+/// daw_json_error
+#define daw_json_ensure( Bool, ... )    \
 	do {                                  \
 		if( DAW_UNLIKELY( not( Bool ) ) ) { \
 			daw_json_error( __VA_ARGS__ );    \
 		}                                   \
 	} while( false )
 
-/***
- * Ensure that Bool is true when in Checked Input mode
- * If false pass rest of args to daw_json_error
- */
+/// @brief Assert that Bool is true when in Checked Input mode If false pass
+/// rest of args to daw_json_error
 #define daw_json_assert_weak( Bool, ... )                \
 	do {                                                   \
 		if constexpr( not ParseState::is_unchecked_input ) { \

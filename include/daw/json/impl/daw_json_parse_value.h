@@ -739,7 +739,7 @@ namespace daw::json {
 				  ParseState( parse_state.class_first, parse_state.last ),
 				  size_member::name );
 
-				daw_json_assert( is_found, ErrorReason::TagMemberNotFound,
+				daw_json_ensure( is_found, ErrorReason::TagMemberNotFound,
 				                 parse_state );
 				auto const sz = parse_value<size_member>(
 				  parse_state2, ParseTag<size_member::expected_type>{ } );
@@ -748,7 +748,7 @@ namespace daw::json {
 					// We have the requested size and the actual size.  Let's see if they
 					// match
 					auto cnt = static_cast<std::ptrdiff_t>( parse_state.counter );
-					daw_json_assert( sz >= 0 and ( cnt < 0 or parse_state.counter == sz ),
+					daw_json_ensure( sz >= 0 and ( cnt < 0 or parse_state.counter == sz ),
 					                 ErrorReason::NumberOutOfRange, parse_state );
 				}
 				parse_state.trim_left( );
@@ -840,7 +840,7 @@ namespace daw::json {
 						return parse_value<JsonMember>(
 						  parse_state, ParseTag<JsonMember::expected_type>{ } );
 					} else {
-						return { parse_value<JsonMember>(
+						return Result{ parse_value<JsonMember>(
 						  parse_state, ParseTag<JsonMember::expected_type>{ } ) };
 					}
 				}
@@ -1026,7 +1026,7 @@ namespace daw::json {
 						return desired->state;
 					}
 #if not defined( NDEBUG )
-					daw_json_assert( desired != daw::data_end( parse_locations ),
+					daw_json_ensure( desired != daw::data_end( parse_locations ),
 					                 ErrorReason::UnexpectedEndOfData, parse_state );
 #endif
 					using skip_check_end =

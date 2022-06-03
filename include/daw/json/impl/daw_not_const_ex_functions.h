@@ -389,7 +389,7 @@ namespace daw::json {
 			mem_skip_until_end_of_string( ExecTag const &tag, CharT *first,
 			                              CharT *const last ) {
 				if constexpr( not is_unchecked_input ) {
-					daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData );
+					daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData );
 				}
 				first = mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first,
 				                                                            last );
@@ -419,7 +419,7 @@ namespace daw::json {
 			                              std::ptrdiff_t &first_escape ) {
 				CharT *const first_first = first;
 				if constexpr( not is_unchecked_input ) {
-					daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData );
+					daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData );
 				}
 				first = mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first,
 				                                                            last );

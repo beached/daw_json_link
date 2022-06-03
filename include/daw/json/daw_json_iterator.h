@@ -74,8 +74,8 @@ namespace daw::json {
 				auto [is_found, result] = json_details::find_range<ParseState>(
 				  DAW_FWD( data ),
 				  { std::data( member_path ), std::size( member_path ) } );
-				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
-				daw_json_assert( result.front( ) == '[', ErrorReason::InvalidArrayStart,
+				daw_json_ensure( is_found, ErrorReason::JSONPathNotFound );
+				daw_json_ensure( result.front( ) == '[', ErrorReason::InvalidArrayStart,
 				                 result );
 				return result;
 			}

@@ -37,13 +37,13 @@ using namespace daw::json::options;
 template<ExecModeTypes ExecMode>
 void test( char **argv, AllocType &alloc ) {
 	auto const json_data1 = *daw::read_file( argv[1] );
-	daw_json_assert( not json_data1.empty( ),
+	daw_json_ensure( not json_data1.empty( ),
 	                 daw::json::ErrorReason::EmptyJSONDocument );
 	auto const json_data2 = *daw::read_file( argv[2] );
-	daw_json_assert( not json_data2.empty( ),
+	daw_json_ensure( not json_data2.empty( ),
 	                 daw::json::ErrorReason::EmptyJSONDocument );
 	auto const json_data3 = *daw::read_file( argv[3] );
-	daw_json_assert( not json_data3.empty( ),
+	daw_json_ensure( not json_data3.empty( ),
 	                 daw::json::ErrorReason::EmptyJSONDocument );
 	auto json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
 	auto json_sv2 = std::string_view( json_data2.data( ), json_data2.size( ) );

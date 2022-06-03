@@ -134,7 +134,7 @@ namespace daw::json {
 					constexpr char const needles[]{ chars..., '\0' };
 					CharT *res = __builtin_strpbrk( first, needles );
 #if not defined( NDEBUG )
-					daw_json_assert( res != nullptr, ErrorReason::UnexpectedEndOfData );
+					daw_json_ensure( res != nullptr, ErrorReason::UnexpectedEndOfData );
 #endif
 					return res;
 				} else
@@ -151,7 +151,7 @@ namespace daw::json {
 						constexpr char const needles[]{ chars..., '\0' };
 						CharT *res = std::strpbrk( first, needles );
 #if not defined( NDEBUG )
-						daw_json_assert( res != nullptr, ErrorReason::UnexpectedEndOfData );
+						daw_json_ensure( res != nullptr, ErrorReason::UnexpectedEndOfData );
 #endif
 						return res;
 					}

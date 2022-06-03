@@ -34,7 +34,7 @@ namespace daw::json {
 					}
 					return std::numeric_limits<Real>::infinity( );
 				}
-				daw_json_assert( fc_res.ec == std::errc( ),
+				daw_json_ensure( fc_res.ec == std::errc( ),
 				                 ErrorReason::InvalidNumber );
 				return result;
 #else

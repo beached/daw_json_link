@@ -126,7 +126,7 @@ namespace daw::json {
 #ifndef NDEBUG
 						if constexpr( IsKnown ) {
 							if( base::parse_state ) {
-								daw_json_assert( base::parse_state->counter > 0,
+								daw_json_ensure( base::parse_state->counter > 0,
 								                 ErrorReason::AttemptToAccessPastEndOfValue,
 								                 *base::parse_state );
 								base::parse_state->counter--;
@@ -144,7 +144,7 @@ namespace daw::json {
 #ifndef NDEBUG
 					if constexpr( IsKnown ) {
 						if( base::parse_state ) {
-							daw_json_assert( base::parse_state->counter > 0,
+							daw_json_ensure( base::parse_state->counter > 0,
 							                 ErrorReason::AttemptToAccessPastEndOfValue,
 							                 *base::parse_state );
 							base::parse_state->counter--;

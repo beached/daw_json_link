@@ -352,7 +352,7 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr char front_checked( ) const {
-				daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData,
+				daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData,
 				                 *this );
 				return *first;
 			}
