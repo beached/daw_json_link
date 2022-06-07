@@ -158,8 +158,7 @@ namespace daw::json {
 				out_it.output_newline( );
 			}
 			out_it.put( ']' );
-			it = out_it.get( );
-			return DAW_FWD( it );
+			return out_it.get( );
 		}
 
 		template<typename Result, typename JsonElement, typename Container,

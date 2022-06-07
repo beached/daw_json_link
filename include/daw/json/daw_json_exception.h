@@ -18,14 +18,11 @@
 #include <ciso646>
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 #include <memory>
 #include <numeric>
 #include <string>
 #include <string_view>
-
-#if not defined( DAW_JSON_NO_INHERIT_STDEXCEPTION )
-#include <exception>
-#endif
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
