@@ -7,7 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # 1.71 has MP issues, seting to 1.72 hoping that fixes them.  At the least it prevents compiling on Ubuntu 20.04
 find_package(Boost 1.72.0 COMPONENTS container system)
-
+find_package(Threads)
 add_subdirectory(extern)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
@@ -27,27 +27,27 @@ option(DAW_JSON_USE_SANITIZERS "Enable address and undefined behaviour sanitizer
 option(DAW_JSON_FULL_TESTS "Enable tests for benchmarks" OFF)
 
 if (DAW_JSON_NO_CONST_EXPR)
-    message( STATUS "DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
+    message(STATUS "DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
     add_definitions(-DDAW_JSON_NO_CONST_EXPR)
 else ()
-    message( STATUS "DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
+    message(STATUS "DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
 endif ()
 
 if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
-    message( STATUS "CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON: LTO is enabled")
+    message(STATUS "CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON: LTO is enabled")
 endif ()
-message( STATUS "CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
+message(STATUS "CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
 
 if (DAW_NUM_RUNS)
-    message( STATUS "DAW_NUM_RUNS=${DAW_NUM_RUNS}: Overriding number of test runs")
+    message(STATUS "DAW_NUM_RUNS=${DAW_NUM_RUNS}: Overriding number of test runs")
     add_definitions(-DDAW_NUM_RUNS=${DAW_NUM_RUNS})
 endif ()
 
 if (DAW_JSON_USE_SANITIZERS)
-    message( STATUS "DAW_JSON_USE_SANITIZERS=ON: compiler sanitizers enabled")
+    message(STATUS "DAW_JSON_USE_SANITIZERS=ON: compiler sanitizers enabled")
     add_definitions(-DDAW_JSON_NO_INT128)
 else ()
-    message( STATUS "DAW_JSON_USE_SANITIZERS=OFF: compiler sanitizers disabled")
+    message(STATUS "DAW_JSON_USE_SANITIZERS=OFF: compiler sanitizers disabled")
 endif ()
 
 include(cmake/test_compiler_options.cmake)
@@ -785,7 +785,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT MSVC AND CMAKE_CXX_COMPILE
     target_link_libraries(daw_json_fuzzing PRIVATE json_test "-fsanitize=fuzzer,address,undefined")
     target_compile_options(daw_json_fuzzing PRIVATE -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined -O3 -g -march=native -fsanitize-coverage=trace-cmp)
 else ()
-    message( STATUS "Fuzzing support disabled for compiler: ${CMAKE_CXX_COMPILER_ID} is not supported.  Only Clang(excluding AppleClang)")
+    message(STATUS "Fuzzing support disabled for compiler: ${CMAKE_CXX_COMPILER_ID} is not supported.  Only Clang(excluding AppleClang)")
 endif ()
 
 add_executable(daw_json_fuzzing_replay src/daw_json_fuzzing_replay.cpp)
@@ -836,17 +836,18 @@ add_test(NAME json_lines_test_test COMMAND json_lines_test)
 add_dependencies(ci_tests json_lines_test)
 add_dependencies(full json_lines_test)
 
-add_executable(json_lines_bench_test src/json_lines_bench_test.cpp)
-target_link_libraries(json_lines_bench_test json_test)
-add_dependencies(full json_lines_bench_test)
-
+if (Threads_FOUND)
+    add_executable(json_lines_bench_test src/json_lines_bench_test.cpp)
+    target_link_libraries(json_lines_bench_test json_test ${CMAKE_THREAD_LIBS_INIT})
+    add_dependencies(full json_lines_bench_test)
+endif ()
 # **************************************************
 # JSON Benchmark
 # **************************************************
 
 include(./cmake/git_properties.cmake)
 if (GIT_FOUND)
-    message( STATUS "Git revision: ${SOURCE_CONTROL_REVISION}")
+    message(STATUS "Git revision: ${SOURCE_CONTROL_REVISION}")
     add_executable(json_benchmark src/json_benchmark.cpp)
     target_compile_definitions(json_benchmark PRIVATE -DSOURCE_CONTROL_REVISION="${BUILD_VERSION}")
     target_link_libraries(json_benchmark PRIVATE json_test)

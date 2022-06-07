@@ -1235,8 +1235,19 @@ int main( int, char ** )
 	       outfmt_dbl )
 	  << '\n';
 
+#if defined( __cpp_char8_t )
+#if __cpp_lib_char8_t >= 201907L
+	std::cout << "u8string\n";
+	<< to_json<std::u8string, json_base::json_number<
+	                            double, options::number_opt(
+	                                      options::FPOutputFormat::Decimal )>>(
+	     outfmt_dbl )
+	<< '\n';
+#endif
+#endif
+
 	std::cout << "\n\nJSON Link Version: " << json_link_version( ) << '\n';
-	std::cout << "done";
+	std::cout << "done\n\n";
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

@@ -24,14 +24,18 @@ namespace daw {
 	namespace writeable_output_details {
 		template<typename T>
 		constexpr T *copy_to_buffer( T *buff, daw::string_view source ) {
+#if defined( DAW_IS_CONSTANT_EVALUATED )
 			if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+#endif
 				daw::algorithm::transform_n( source.data( ), buff, source.size( ),
 				                             []( auto c ) {
 					                             return static_cast<T>( c );
 				                             } );
+#if defined( DAW_IS_CONSTANT_EVALUATED )
 			} else {
 				memcpy( buff, source.data( ), source.size( ) );
 			}
+#endif
 			return buff + source.size( );
 		}
 	} // namespace writeable_output_details
