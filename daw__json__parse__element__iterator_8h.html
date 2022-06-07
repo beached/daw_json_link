@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DAW JSON Link: to_daw_json_string.h File Reference</title>
+<title>DAW JSON Link: daw_json_parse_element_iterator.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,37 +69,18 @@ $(function() {
   <div class="summary">
 <a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
-<div class="title">to_daw_json_string.h File Reference</div>  </div>
+<div class="title">daw_json_parse_element_iterator.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__data__contract_8h_source.html">../daw_json_data_contract.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__arrow__proxy_8h_source.html">daw_json_arrow_proxy.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__serialize__options__impl_8h_source.html">daw_json_serialize_options_impl.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__serialize__policy_8h_source.html">daw_json_serialize_policy.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__value_8h_source.html">daw_json_value.h</a>&quot;</code><br />
-<code>#include &lt;daw/daw_algorithm.h&gt;</code><br />
-<code>#include &lt;daw/daw_arith_traits.h&gt;</code><br />
-<code>#include &lt;daw/daw_cpp_feature_check.h&gt;</code><br />
-<code>#include &lt;daw/daw_cxmath.h&gt;</code><br />
-<code>#include &lt;daw/daw_likely.h&gt;</code><br />
-<code>#include &lt;daw/daw_move.h&gt;</code><br />
-<code>#include &lt;daw/daw_traits.h&gt;</code><br />
-<code>#include &lt;daw/daw_utility.h&gt;</code><br />
-<code>#include &lt;daw/daw_visit.h&gt;</code><br />
-<code>#include &lt;daw/utf8/unchecked.h&gt;</code><br />
-<code>#include &lt;array&gt;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__parse__value__fwd_8h_source.html">daw_json_parse_value_fwd.h</a>&quot;</code><br />
+<code>#include &lt;daw/daw_attributes.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
-<code>#include &lt;daw/third_party/dragonbox/dragonbox.h&gt;</code><br />
-<code>#include &lt;optional&gt;</code><br />
-<code>#include &lt;sstream&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
-<code>#include &lt;tuple&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
-<code>#include &lt;variant&gt;</code><br />
 </div>
-<p><a href="to__daw__json__string_8h_source.html">Go to the source code of this file.</a></p>
+<p><a href="daw__json__parse__element__iterator_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -107,12 +88,10 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json_1_1utils"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1utils.html">daw::json::utils</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Variable Documentation</h2>
-<a id="a1bfdfb702a29645524b77ee27567d946"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1bfdfb702a29645524b77ee27567d946">&#9670;&nbsp;</a></span>literal_as_string</h2>
+<a id="ad9a01d61b868b3469677d382d82d65bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9a01d61b868b3469677d382d82d65bc">&#9670;&nbsp;</a></span>has_counter</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -121,7 +100,7 @@ Namespaces</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="daw__json__type__options_8h.html#a2b9f6c9602a7f14f1b6fb1b8bf62df69">options::LiteralAsStringOpt</a> literal_as_string</td>
+          <td class="memname">constexpr bool has_counter = false</td>
         </tr>
       </table>
   </td>
@@ -130,10 +109,24 @@ Namespaces</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">            options::LiteralAsStringOpt::Never</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="to__daw__json__string_8h_source.html#l00868">868</a> of file <a class="el" href="to__daw__json__string_8h_source.html">to_daw_json_string.h</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__element__iterator_8h_source.html#l00029">29</a> of file <a class="el" href="daw__json__parse__element__iterator_8h_source.html">daw_json_parse_element_iterator.h</a>.</p>
+
+</div>
+</div>
+<a id="a496d9220f915d8a4a9d997e59825988b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a496d9220f915d8a4a9d997e59825988b">&#9670;&nbsp;</a></span>parse_state</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ParseState* parse_state = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__element__iterator_8h_source.html#l00031">31</a> of file <a class="el" href="daw__json__parse__element__iterator_8h_source.html">daw_json_parse_element_iterator.h</a>.</p>
 
 </div>
 </div>
