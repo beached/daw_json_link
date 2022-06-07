@@ -93,7 +93,7 @@ namespace daw::json {
 			  serialization_policy<OutputIterator, SerializationOptions> it,
 			  Tuple const &args, Value const &value, std::index_sequence<Is...> ) {
 
-				*it++ = '{';
+				it.put( '{' );
 				it.add_indent( );
 
 				using visit_size = daw::constant<(
@@ -136,11 +136,11 @@ namespace daw::json {
 				if constexpr( sizeof...( Is ) > 0 ) {
 					if constexpr( it.output_trailing_comma ==
 					              options::OutputTrailingComma::Yes ) {
-						*it++ = ',';
+						it.put( ',' );
 					}
 					it.next_member( );
 				}
-				*it++ = '}';
+				it.put( '}' );
 				return it;
 			}
 
@@ -153,7 +153,7 @@ namespace daw::json {
 			  serialization_policy<OutputIterator, SerializerOptions> it,
 			  Tuple const &args, Value const &value, std::index_sequence<Is...> ) {
 
-				*it++ = '[';
+				it.put( '[' );
 				it.add_indent( );
 				it.next_member( );
 				size_t array_idx = 0;
@@ -171,11 +171,11 @@ namespace daw::json {
 				if constexpr( sizeof...( Is ) != 0 ) {
 					if constexpr( it.output_trailing_comma ==
 					              options::OutputTrailingComma::Yes ) {
-						*it++ = ',';
+						it.put( ',' );
 					}
 					it.next_member( );
 				}
-				*it++ = ']';
+				it.put( ']' );
 				return it;
 			}
 		} // namespace json_details

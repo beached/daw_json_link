@@ -70,13 +70,12 @@ int main( int argc, char **argv )
 	str.reserve( 4U * 1024U * 1024U );
 	{
 		auto const gsoc_result2 = from_json<daw::gsoc::gsoc_object_t>( json_data1 );
-		auto out_it = std::back_inserter( str );
 		str.reserve( json_data1.size( ) );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "gsoc bench(to_json_string)", sz,
 		  [&]( auto const &value ) {
 			  str.clear( );
-			  to_json( value, out_it );
+			  (void)to_json( value, str );
 			  daw::do_not_optimize( str );
 		  },
 		  gsoc_result2 );

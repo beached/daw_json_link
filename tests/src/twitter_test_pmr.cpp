@@ -295,12 +295,11 @@ int main( int argc, char **argv )
 		  daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
 		    json_data, boost::container::pmr::polymorphic_allocator<
 		                 daw::twitter::twitter_object_t>( alloc ) );
-		auto out_it = std::back_inserter( str );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter bench(to_json_string)", sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
-			  daw::json::to_json( tr, out_it );
+			  daw::json::to_json( tr, str );
 			  daw::do_not_optimize( str );
 		  },
 		  twitter_result );

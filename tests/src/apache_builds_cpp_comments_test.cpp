@@ -75,12 +75,11 @@ void test( std::string_view json_sv1 ) {
 	  json_sv1 );
 
 	std::string str{ };
-	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "apache_builds bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
-		  daw::json::to_json( tr, out_it );
+		  daw::json::to_json( tr, str );
 		  daw::do_not_optimize( str );
 	  },
 	  apache_builds_result );

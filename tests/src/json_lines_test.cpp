@@ -59,10 +59,9 @@ int main( ) {
 	ensure( elements[1].b );
 
 	auto json_lines_result = std::string( );
-	auto it = std::back_inserter( json_lines_result );
 	for( auto const &e : elements ) {
-		(void)daw::json::to_json( e, it );
-		*it = '\n';
+		(void)daw::json::to_json( e, json_lines_result );
+		json_lines_result += '\n';
 	}
 
 	auto lines_range2 = daw::json::json_lines_range<Element>( json_lines_result );

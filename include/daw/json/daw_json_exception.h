@@ -91,6 +91,7 @@ namespace daw::json {
 			JSONPathNotFound,
 			InvalidJSONPath,
 			NullOutputIterator,
+			OutputError,
 			MissingMemberName,
 			InvalidMemberName,
 			ExpectedArrayOrClassStart,
@@ -173,6 +174,8 @@ namespace daw::json {
 				return "Invalid JSON Path specified"sv;
 			case ErrorReason::NullOutputIterator:
 				return "Null pointer specified for output"sv;
+			case ErrorReason::OutputError:
+				return "General error while performing output"sv;
 			case ErrorReason::MissingMemberNameOrEndOfClass:
 				return "Missing member name or end of class"sv;
 			case ErrorReason::MissingMemberName:

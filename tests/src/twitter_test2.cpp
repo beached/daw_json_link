@@ -97,12 +97,11 @@ int main( int argc, char **argv )
 
 	std::string str = std::string( );
 	str.reserve( json_sv1.size( ) );
-	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter_catalog bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
-		  daw::json::to_json( tr.value( ), out_it );
+		  daw::json::to_json( tr.value( ), str );
 		  daw::do_not_optimize( str );
 	  },
 	  twitter_result );
