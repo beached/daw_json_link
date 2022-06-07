@@ -744,16 +744,18 @@ namespace daw::json {
 				using to_strings::to_string;
 				using under_type = base_int_type_t<parse_to_t>;
 
-				if constexpr( JsonMember::literal_as_string ==
-				              options::LiteralAsStringOpt::Always ) {
-					it.put( '"' );
-				}
 				if constexpr( std::disjunction_v<std::is_enum<parse_to_t>,
 				                                 daw::is_integral<parse_to_t>> ) {
 					auto v = static_cast<under_type>( value );
 
-					char buff[daw::numeric_limits<under_type>::digits10 + 2]{ };
+					char buff[daw::numeric_limits<under_type>::digits10 + 10]{ };
+					char *num_start = buff;
 					char *ptr = buff;
+					if constexpr( JsonMember::literal_as_string ==
+					              options::LiteralAsStringOpt::Always ) {
+						*ptr++ = '"';
+						++num_start;
+					}
 					if( v < 0 ) {
 						it.put( '-' );
 						// Do 1 round here just in case we are
@@ -762,12 +764,11 @@ namespace daw::json {
 						*ptr++ = static_cast<char>( '0' - static_cast<char>( v % 10 ) );
 						v /= -10;
 						if( v == 0 ) {
-							it.write( daw::string_view(
-							  buff, static_cast<std::size_t>( ptr - buff ) ) );
 							if constexpr( JsonMember::literal_as_string ==
 							              options::LiteralAsStringOpt::Always ) {
-								it.put( '"' );
+								*ptr++ = '"';
 							}
+							it.copy_buffer( buff, ptr );
 							return it;
 						}
 					}
@@ -784,17 +785,26 @@ namespace daw::json {
 					if( v > 0 ) {
 						*ptr++ = static_cast<char>( '0' + static_cast<char>( v ) );
 					}
-					daw::algorithm::reverse( buff, ptr );
+					daw::algorithm::reverse( num_start, ptr );
+					if constexpr( JsonMember::literal_as_string ==
+					              options::LiteralAsStringOpt::Always ) {
+						*ptr++ = '"';
+					}
 					it.copy_buffer( buff, ptr );
+					return it;
 				} else {
+					if constexpr( JsonMember::literal_as_string ==
+					              options::LiteralAsStringOpt::Always ) {
+						it.put( '"' );
+					}
 					// Fallback to ADL
 					it = utils::copy_to_iterator( it, to_string( value ) );
+					if constexpr( JsonMember::literal_as_string ==
+					              options::LiteralAsStringOpt::Always ) {
+						it.put( '"' );
+					}
+					return it;
 				}
-				if constexpr( JsonMember::literal_as_string ==
-				              options::LiteralAsStringOpt::Always ) {
-					it.put( '"' );
-				}
-				return it;
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
