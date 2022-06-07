@@ -53,10 +53,10 @@ namespace daw {
 			daw_json_ensure( ptr, daw::json::ErrorReason::OutputError );
 			constexpr auto writer = []( T *&p, auto sv ) {
 				if( sv.empty( ) ) {
-					return true;
+					return 0;
 				}
 				p = writeable_output_details::copy_to_buffer( p, sv );
-				return true;
+				return 0;
 			};
 			(void)( writer( ptr, svs ) | ... );
 		}
@@ -77,12 +77,12 @@ namespace daw {
 			static_assert( sizeof...( StringViews ) > 0 );
 			constexpr auto writer = []( std::ostream &o, auto sv ) {
 				if( sv.empty( ) ) {
-					return true;
+					return 0;
 				}
 				o.write( sv.data( ), static_cast<std::streamsize>( sv.size( ) ) );
 				daw_json_ensure( static_cast<bool>( o ),
 				                 daw::json::ErrorReason::OutputError );
-				return true;
+				return 0;
 			};
 			(void)( writer( os, svs ) | ... );
 		}
@@ -103,12 +103,12 @@ namespace daw {
 			static_assert( sizeof...( StringViews ) > 0 );
 			constexpr auto writer = []( std::FILE *f, auto sv ) {
 				if( sv.empty( ) ) {
-					return true;
+					return 0;
 				}
 				auto ret = std::fwrite( sv.data( ), 1, sv.size( ), f );
 				daw_json_ensure( ret == sv.size( ),
 				                 daw::json::ErrorReason::OutputError );
-				return true;
+				return 0;
 			};
 			(void)( writer( fp, svs ) | ... );
 		}
@@ -133,11 +133,11 @@ namespace daw {
 			                 daw::json::ErrorReason::OutputError );
 			constexpr auto writer = []( daw::span<T> &s, auto sv ) {
 				if( sv.empty( ) ) {
-					return true;
+					return 0;
 				}
 				(void)writeable_output_details::copy_to_buffer( s.data( ), sv );
 				s.remove_prefix( sv.size( ) );
-				return true;
+				return 0;
 			};
 			(void)( writer( out, svs ) | ... );
 		}
@@ -166,10 +166,10 @@ namespace daw {
 
 			constexpr auto writer = []( T *&p, auto sv ) {
 				if( sv.empty( ) ) {
-					return true;
+					return 0;
 				}
 				p = writeable_output_details::copy_to_buffer( p, sv );
-				return true;
+				return 0;
 			};
 			auto *ptr = out.data( ) + start_pos;
 			(void)( writer( ptr, svs ) | ... );
@@ -207,7 +207,7 @@ namespace daw {
 					*i = c;
 					++i;
 				}
-				return true;
+				return 0;
 			};
 			(void)( writer( it, svs ) | ... );
 		}

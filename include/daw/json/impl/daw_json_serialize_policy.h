@@ -132,7 +132,8 @@ namespace daw::json {
 			constexpr void write( ContiguousCharRanges &&...chrs ) {
 				static_assert( sizeof...( ContiguousCharRanges ) > 0 );
 				writable_output_trait<WritableType>::write(
-				  *m_writable, daw::string_view( chrs )... );
+				  *m_writable,
+				  daw::string_view( std::data( chrs ), std::size( chrs ) )... );
 			}
 
 			constexpr void copy_buffer( char const *first, char const *last ) {
