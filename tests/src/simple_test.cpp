@@ -11,6 +11,8 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_read_file.h>
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -52,16 +54,6 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-std::string get_json_data( std::string file_name ) {
-	auto in_file = std::ifstream( std::data( file_name ) );
-	if( !in_file ) {
-		std::cerr << "Could not open input file\n";
-		exit( 1 );
-	}
-	return std::string( std::istreambuf_iterator<char>( in_file ),
-	                    std::istreambuf_iterator<char>( ) );
-}
-
 int main( int argc, char **argv )
 #ifdef DAW_USE_EXCEPTIONS
   try
@@ -73,7 +65,7 @@ int main( int argc, char **argv )
 		std::cerr << "Must supply a filename to open\n";
 		exit( 1 );
 	}
-	auto json_data = get_json_data( argv[1] );
+	auto json_data = daw::read_file( argv[1], daw::terminate_on_read_file_error );
 	auto sz = json_data.size( );
 	json_data.append( 60ULL,
 	                  ' ' ); // Account for max digits in float if in bad form

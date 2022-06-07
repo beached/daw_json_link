@@ -654,8 +654,7 @@ bool test_optional_array( ) {
 	daw_json_ensure( result.size( ) == 2 and not result[0] and result[1] == 5,
 	                 ErrorReason::Unknown );
 	std::string str{ };
-	to_json_array<json_number_null_no_name<std::optional<int>>>(
-	  result, std::back_inserter( str ) );
+	to_json_array<json_number_null_no_name<std::optional<int>>>( result, str );
 	auto result2 =
 	  from_json_array<json_number_null_no_name<std::optional<int>>>( str );
 	return result == result2;
@@ -669,7 +668,7 @@ bool test_key_value( ) {
 	                   result.at( "b" ) == 1,
 	                 ErrorReason::Unknown );
 	std::string str{ };
-	to_json( result, std::back_inserter( str ) );
+	(void)to_json( result, str );
 	auto result2 = from_json<std::map<std::string, int>>( str );
 	return result == result2;
 }
@@ -701,7 +700,7 @@ constexpr bool cxdbl_tostr1( ) {
 	using namespace daw::json;
 	constexpr auto dbl_half = from_json<double>( "0.5" );
 	char buffer[128]{ };
-	auto buff_end = to_json( dbl_half, buffer );
+	auto buff_end = to_json( dbl_half, daw::span( buffer ) ).data( );
 	auto buff_sv =
 	  std::string_view( buffer, static_cast<std::size_t>( buff_end - buffer ) );
 	daw_json_ensure( buff_sv == "0.5", ErrorReason::InvalidString );
@@ -714,7 +713,7 @@ constexpr bool cxdbl_tostr2( ) {
 	using namespace daw::json;
 	constexpr auto dbl_half = from_json<double>( "1024.5" );
 	char buffer[128]{ };
-	auto buff_end = to_json( dbl_half, buffer );
+	auto buff_end = to_json( dbl_half, daw::span( buffer ) ).data( );
 	auto buff_sv =
 	  std::string_view( buffer, static_cast<std::size_t>( buff_end - buffer ) );
 	daw_json_ensure( buff_sv == "1024.5", ErrorReason::InvalidString );
@@ -1236,8 +1235,19 @@ int main( int, char ** )
 	       outfmt_dbl )
 	  << '\n';
 
+#if defined( __cpp_char8_t )
+#if __cpp_lib_char8_t >= 201907L
+	std::cout << "u8string\n";
+	<< to_json<std::u8string, json_base::json_number<
+	                            double, options::number_opt(
+	                                      options::FPOutputFormat::Decimal )>>(
+	     outfmt_dbl )
+	<< '\n';
+#endif
+#endif
+
 	std::cout << "\n\nJSON Link Version: " << json_link_version( ) << '\n';
-	std::cout << "done";
+	std::cout << "done\n\n";
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

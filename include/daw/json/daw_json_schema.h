@@ -18,25 +18,22 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace utils {
-			template<typename OutputIterator>
-			inline constexpr OutputIterator output_kv( OutputIterator it,
-			                                           std::string_view key,
-			                                           std::string_view value ) {
-				it = copy_to_iterator( it, key );
-				*it++ = ':';
-				it.output_space( );
-				it = copy_to_iterator( it, value );
+			template<typename WriteableType>
+			inline constexpr WriteableType output_kv( WriteableType it,
+			                                          std::string_view key,
+			                                          std::string_view value ) {
+				it.write( key, ":", it.space, value );
 				return it;
 			}
 		} // namespace utils
 		namespace json_details {
 			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Bool>,
-			                                         OutputIterator out_it ) {
+			         typename WriteableType>
+			constexpr WriteableType to_json_schema( ParseTag<JsonParseTypes::Bool>,
+			                                        WriteableType out_it ) {
 
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 					out_it.next_member( );
 				}
@@ -46,21 +43,21 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
 			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Custom>,
-			                                         OutputIterator out_it ) {
+			         typename WriteableType>
+			constexpr WriteableType to_json_schema( ParseTag<JsonParseTypes::Custom>,
+			                                        WriteableType out_it ) {
 				// TODO allow a trait to describe the valid literal types or if it
 				// matches one of the other predefined types
 				static_assert( JsonMember::custom_json_type ==
 				               options::JsonCustomTypes::String );
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 					out_it.next_member( );
 				}
@@ -70,23 +67,23 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
 			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Date>,
-			                                         OutputIterator out_it ) {
+			         typename WriteableType>
+			constexpr WriteableType to_json_schema( ParseTag<JsonParseTypes::Date>,
+			                                        WriteableType out_it ) {
 
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 					out_it.next_member( );
 				}
 				out_it = utils::output_kv( out_it, R"("type")", R"("string")" );
-				*out_it++ = ',';
+				out_it.put( ',' );
 				out_it.next_member( );
 				out_it = utils::output_kv( out_it, R"("format")", R"("date-time")" );
 				if constexpr( not is_root ) {
@@ -94,18 +91,18 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
 			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Real>,
-			                                         OutputIterator out_it ) {
+			         typename WriteableType>
+			constexpr WriteableType to_json_schema( ParseTag<JsonParseTypes::Real>,
+			                                        WriteableType out_it ) {
 
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 					out_it.next_member( );
 				}
@@ -115,18 +112,18 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
 			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Signed>,
-			                                         OutputIterator out_it ) {
+			         typename WriteableType>
+			constexpr WriteableType to_json_schema( ParseTag<JsonParseTypes::Signed>,
+			                                        WriteableType out_it ) {
 
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 					out_it.next_member( );
 				}
@@ -136,19 +133,18 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::StringEscaped>,
-			                OutputIterator out_it ) {
+			                WritableType out_it ) {
 
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 					out_it.next_member( );
 				}
@@ -158,19 +154,18 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::StringRaw>,
-			                OutputIterator out_it ) {
+			                WritableType out_it ) {
 
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 					out_it.next_member( );
 				}
@@ -180,23 +175,21 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator
-			to_json_schema( ParseTag<JsonParseTypes::Unsigned>,
-			                OutputIterator out_it ) {
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Unsigned>,
+			                                       WritableType out_it ) {
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 					out_it.next_member( );
 				}
 				out_it = utils::output_kv( out_it, R"("type")", R"("integer")" );
-				*out_it++ = ',';
+				out_it.put( ',' );
 				out_it.next_member( );
 				out_it = utils::output_kv( out_it, R"("minimum")", "0" );
 				if constexpr( not is_root ) {
@@ -204,7 +197,7 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
@@ -213,85 +206,73 @@ namespace daw::json {
 			 * Output the schema of a json_class and it's members
 			 * @tparam JsonMember A json_class type
 			 * @tparam is_root Is this the root item in the schema.
-			 * @tparam OutputIterator An iterator type that allows for assigning to
+			 * @tparam WritableType An iterator type that allows for assigning to
 			 * the result of operator* and pre/post-fix incrementing
-			 * @param out_it Current OutputIterator
+			 * @param out_it Current WritableType
 			 * @return the last value of out_it
 			 */
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Class>,
-			                                         OutputIterator out_it );
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Class>,
+			                                       WritableType out_it );
 
 			/***
 			 * Output the schema of a json_array and it's element type
 			 * @tparam JsonMember A json_array type
 			 * @tparam is_root Is this the root item in the schema.
-			 * @tparam OutputIterator An iterator type that allows for assigning to
+			 * @tparam WritableType An iterator type that allows for assigning to
 			 * the result of operator and pre/post-fix incrementing
-			 * @param out_it Current OutputIterator
+			 * @param out_it Current WritableType
 			 * @return the last value of out_it
 			 */
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Array>,
-			                                         OutputIterator out_it );
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Array>,
+			                                       WritableType out_it );
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Null>,
-			                                         OutputIterator out_it );
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Null>,
+			                                       WritableType out_it );
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Tuple>,
-			                                         OutputIterator out_it );
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Tuple>,
+			                                       WritableType out_it );
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::SizedArray>,
-			                OutputIterator out_it );
+			                WritableType out_it );
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator
-			to_json_schema( ParseTag<JsonParseTypes::KeyValue>,
-			                OutputIterator out_it );
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::KeyValue>,
+			                                       WritableType out_it );
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::KeyValueArray>,
-			                OutputIterator out_it );
+			                WritableType out_it );
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator
-			to_json_schema( ParseTag<JsonParseTypes::Variant>,
-			                OutputIterator out_it );
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Variant>,
+			                                       WritableType out_it );
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::VariantTagged>,
-			                OutputIterator out_it );
+			                WritableType out_it );
 
-			template<typename JsonMember, bool is_root = false,
-			         typename OutputIterator>
-			constexpr OutputIterator
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::VariantIntrusive>,
-			                OutputIterator out_it );
+			                WritableType out_it );
 
 			template<typename, typename>
 			struct json_class_processor;
 
 			/// Specialization for processing json_class types that have a
 			/// json_member_list of members.  This is for regular JSON objects
-			/// \tparam OutputIterator Type that fulfills OutputIterator concept
+			/// \tparam WritableType Type that fulfills WritableType concept
 			/// \tparam JsonMembers The member mappings for this class
-			template<typename OutputIterator, typename... JsonMembers>
-			struct json_class_processor<OutputIterator,
+			template<typename WritableType, typename... JsonMembers>
+			struct json_class_processor<WritableType,
 			                            json_member_list<JsonMembers...>> {
 
 				static constexpr std::size_t size = sizeof...( JsonMembers );
@@ -300,9 +281,9 @@ namespace daw::json {
 				/// \param out_it The output iterator to write string data to
 				/// \result The output iterator object after processing
 				/// \pre out_it != nullptr if it is a pointer
-				static constexpr OutputIterator process( OutputIterator out_it ) {
+				static constexpr WritableType process( WritableType out_it ) {
 					out_it = utils::output_kv( out_it, R"("type")", R"("object")" );
-					*out_it++ = ',';
+					out_it.put( ',' );
 					out_it.next_member( );
 					out_it = utils::output_kv( out_it, R"("properties")", "{" );
 					if constexpr( sizeof...( JsonMembers ) > 0 ) {
@@ -313,8 +294,8 @@ namespace daw::json {
 						out_it.del_indent( );
 						out_it.next_member( );
 					}
-					*out_it++ = '}';
-					*out_it++ = ',';
+					out_it.put( '}' );
+					out_it.put( ',' );
 					out_it.next_member( );
 					out_it = utils::output_kv( out_it, R"("required")", "[" );
 					if constexpr( not is_empty_pack_v<JsonMembers...> ) {
@@ -323,14 +304,14 @@ namespace daw::json {
 						out_it.del_indent( );
 						out_it.next_member( );
 					}
-					*out_it++ = ']';
+					out_it.put( ']' );
 					if constexpr( ( has_dependent_member_v<JsonMembers> or ... ) ) {
-						*out_it++ = ',';
+						out_it.put( ',' );
 						out_it.next_member( );
 						out_it = utils::output_kv( out_it, R"("dependencies")", "{" );
 						out_it.add_indent( );
 						bool is_first = true;
-						out_it = static_cast<OutputIterator>(
+						out_it = static_cast<WritableType>(
 						  ( output_dependency<
 						      json_link_no_name<json_link_no_name<JsonMembers>>>(
 						      out_it, is_first ),
@@ -340,7 +321,7 @@ namespace daw::json {
 							// If we have at least 1 dependent member, is_first will be false
 							out_it.next_member( );
 						}
-						*out_it++ = '}';
+						out_it.put( '}' );
 					}
 					return out_it;
 				}
@@ -356,83 +337,73 @@ namespace daw::json {
 				/// \param seen
 				/// \return
 				template<typename JsonMember, std::size_t Idx>
-				static constexpr OutputIterator
-				output_member_type( OutputIterator &out_it, bool *seen ) {
+				static constexpr WritableType output_member_type( WritableType &out_it,
+				                                                  bool *seen ) {
 					if( seen[Idx] ) {
 						return out_it;
 					} else {
 						seen[Idx] = true;
 					}
 
-					*out_it++ = '"';
-					out_it = utils::copy_to_iterator( out_it, JsonMember::name );
-					out_it = utils::copy_to_iterator( out_it, R"(":)" );
-					out_it.output_space( );
+					out_it.write( "\"", JsonMember::name, "\":", out_it.space );
 					out_it = to_json_schema<JsonMember>(
 					  ParseTag<JsonMember::expected_type>{ }, out_it );
 					if constexpr( Idx + 1 < sizeof...( JsonMembers ) ) {
-						*out_it++ = ',';
+						out_it.put( ',' );
 						out_it.next_member( );
 					}
 					return out_it;
 				}
 
 				template<std::size_t... Is>
-				static constexpr OutputIterator
-				output_member_types( OutputIterator &out_it,
+				static constexpr WritableType
+				output_member_types( WritableType &out_it,
 				                     std::index_sequence<Is...> ) {
 					bool seen[sizeof...( JsonMembers )]{ };
-					return static_cast<OutputIterator>(
+					return static_cast<WritableType>(
 					  ( output_member_type<JsonMembers, Is>( out_it, seen ), ... ) );
 				}
 
 				template<typename JsonMember>
-				static constexpr OutputIterator
-				output_required_member( OutputIterator &out_it, bool &is_first ) {
+				static constexpr WritableType
+				output_required_member( WritableType &out_it, bool &is_first ) {
 					if constexpr( not is_json_nullable_v<JsonMember> ) {
 						if( not is_first ) {
-							*out_it++ = ',';
+							out_it.put( ',' );
 						} else {
 							is_first = false;
 						}
 						out_it.next_member( );
-						*out_it++ = '"';
+						out_it.put( '"' );
 						out_it = utils::copy_to_iterator( out_it, JsonMember::name );
-						*out_it++ = '"';
+						out_it.put( '"' );
 					}
 					return out_it;
 				}
 
 				template<typename JsonMember>
-				static constexpr OutputIterator
-				output_dependency( OutputIterator &out_it, bool &is_first ) {
+				static constexpr WritableType output_dependency( WritableType &out_it,
+				                                                 bool &is_first ) {
 					if constexpr( has_dependent_member_v<JsonMember> ) {
 						if( not is_first ) {
-							*out_it++ = ',';
+							out_it.put( ',' );
 						} else {
 							is_first = false;
 						}
 						out_it.next_member( );
-						*out_it++ = '"';
-						out_it = utils::copy_to_iterator( out_it, JsonMember::name );
-						out_it = utils::copy_to_iterator( out_it, R"(":)" );
-						out_it.output_space( );
-						*out_it++ = '[';
+						out_it.write( "\"", JsonMember::name, "\":", out_it.space, "[" );
 						out_it.add_indent( );
 						out_it.next_member( );
-						*out_it++ = '"';
-						out_it = utils::copy_to_iterator(
-						  out_it, dependent_member_t<JsonMember>::name );
-						*out_it++ = '"';
+						out_it.write( "\"", dependent_member_t<JsonMember>::name, "\"" );
 						out_it.del_indent( );
 						out_it.next_member( );
-						*out_it++ = ']';
+						out_it.put( ']' );
 					}
 					return out_it;
 				}
 
-				static constexpr OutputIterator
-				output_required_members( OutputIterator &out_it ) {
+				static constexpr WritableType
+				output_required_members( WritableType &out_it ) {
 					bool is_first = true;
 					return ( output_required_member<json_link_no_name<JsonMembers>>(
 					           out_it, is_first ),
@@ -440,12 +411,12 @@ namespace daw::json {
 				}
 			};
 
-			template<typename OutputIterator, typename... JsonMembers>
-			struct json_class_processor<OutputIterator,
+			template<typename WritableType, typename... JsonMembers>
+			struct json_class_processor<WritableType,
 			                            json_tuple_member_list<JsonMembers...>> {
 
 				static constexpr std::size_t size = sizeof...( JsonMembers );
-				static constexpr OutputIterator process( OutputIterator out_it ) {
+				static constexpr WritableType process( WritableType out_it ) {
 
 					out_it = utils::output_kv( out_it, R"("type")", R"("array",)" );
 					out_it.next_member( );
@@ -456,7 +427,7 @@ namespace daw::json {
 						out_it.del_indent( );
 						out_it.next_member( );
 					}
-					*out_it++ = ']';
+					out_it.put( ']' );
 
 					static_assert(
 					  not( ( json_link_no_name<JsonMembers>::expected_type ==
@@ -467,20 +438,20 @@ namespace daw::json {
 					return out_it;
 				}
 
-				static constexpr OutputIterator
-				output_member_types( OutputIterator &out_it ) {
+				static constexpr WritableType
+				output_member_types( WritableType &out_it ) {
 					bool is_first = true;
-					return static_cast<OutputIterator>(
+					return static_cast<WritableType>(
 					  ( output_member_type<json_link_no_name<JsonMembers>>( out_it,
 					                                                        is_first ),
 					    ... ) );
 				}
 
 				template<typename JsonMember>
-				static constexpr OutputIterator
-				output_member_type( OutputIterator &out_it, bool &is_first ) {
+				static constexpr WritableType output_member_type( WritableType &out_it,
+				                                                  bool &is_first ) {
 					if( not is_first ) {
-						*out_it++ = ',';
+						out_it.put( ',' );
 					} else {
 						is_first = false;
 					}
@@ -491,15 +462,15 @@ namespace daw::json {
 				}
 			};
 
-			template<typename JsonMember, bool is_root, typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Class>,
-			                                         OutputIterator out_it ) {
+			template<typename JsonMember, bool is_root, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Class>,
+			                                       WritableType out_it ) {
 				using json_class_processor_t = json_class_processor<
-				  OutputIterator,
+				  WritableType,
 				  json_data_contract_trait_t<typename JsonMember::base_type>>;
 
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 				}
 				if constexpr( json_class_processor_t::size > 0 ) {
@@ -511,19 +482,19 @@ namespace daw::json {
 				}
 				if constexpr( not is_root ) {
 					out_it.next_member( );
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
 			namespace json_details {
-				template<typename Tuple, bool is_root, typename OutputIterator,
+				template<typename Tuple, bool is_root, typename WritableType,
 				         std::size_t... Is>
-				constexpr OutputIterator
-				to_json_tuple_schema( OutputIterator out_it,
+				constexpr WritableType
+				to_json_tuple_schema( WritableType out_it,
 				                      std::index_sequence<Is...> ) {
 					if constexpr( not is_root ) {
-						*out_it++ = '{';
+						out_it.put( '{' );
 						out_it.add_indent( );
 					}
 					out_it.next_member( );
@@ -535,7 +506,7 @@ namespace daw::json {
 						bool is_first = true;
 						auto const process_member = [&]( auto Idx ) {
 							if( not is_first ) {
-								*out_it++ = ',';
+								out_it.put( ',' );
 							} else {
 								is_first = false;
 							}
@@ -556,39 +527,38 @@ namespace daw::json {
 						out_it.del_indent( );
 						out_it.next_member( );
 					}
-					*out_it++ = ']';
+					out_it.put( ']' );
 					if constexpr( not is_root ) {
 						out_it.del_indent( );
 					}
 					out_it.next_member( );
 					if constexpr( not is_root ) {
-						*out_it++ = '}';
+						out_it.put( '}' );
 					}
 					return out_it;
 				}
 			} // namespace json_details
 
-			template<typename JsonMember, bool is_root, typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Tuple>,
-			                                         OutputIterator out_it ) {
+			template<typename JsonMember, bool is_root, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Tuple>,
+			                                       WritableType out_it ) {
 				using tuple_t = typename JsonMember::sub_member_list;
 				return json_details::to_json_tuple_schema<tuple_t, is_root>(
 				  out_it,
 				  std::make_index_sequence<tuple_elements_pack<tuple_t>::size>{ } );
 			}
 
-			template<typename JsonMember, bool is_root, typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Array>,
-			                                         OutputIterator out_it ) {
+			template<typename JsonMember, bool is_root, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Array>,
+			                                       WritableType out_it ) {
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 				}
 				out_it.next_member( );
 				out_it = utils::output_kv( out_it, R"("type")", R"("array",)" );
 				out_it.next_member( );
-				out_it = utils::copy_to_iterator( out_it, R"("items":)" );
-				out_it.output_space( );
+				out_it.write( "\"items\":", out_it.space );
 				using element_t = typename JsonMember::json_element_t;
 				out_it = to_json_schema<element_t>(
 				  ParseTag<element_t::expected_type>{ }, out_it );
@@ -597,38 +567,37 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root, typename OutputIterator>
-			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Null>,
-			                                         OutputIterator out_it ) {
+			template<typename JsonMember, bool is_root, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Null>,
+			                                       WritableType out_it ) {
 				using sub_member = typename JsonMember::member_type;
 				return to_json_schema<sub_member, is_root>(
 				  ParseTag<sub_member::expected_type>{ }, out_it );
 			}
 
-			template<typename JsonMember, bool is_root, typename OutputIterator>
-			constexpr OutputIterator
+			template<typename JsonMember, bool is_root, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::SizedArray>,
-			                OutputIterator out_it ) {
+			                WritableType out_it ) {
 				return to_json_schema<JsonMember, is_root>(
 				  ParseTag<JsonParseTypes::Array>{ }, out_it );
 			}
 
-			template<typename JsonMember, bool is_root, typename OutputIterator>
-			constexpr OutputIterator
-			to_json_schema( ParseTag<JsonParseTypes::KeyValue>,
-			                OutputIterator out_it ) {
+			template<typename JsonMember, bool is_root, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::KeyValue>,
+			                                       WritableType out_it ) {
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 				}
 				out_it.next_member( );
 				out_it = utils::output_kv( out_it, R"("type")", R"("object")" );
-				*out_it++ = ',';
+				out_it.put( ',' );
 				out_it.next_member( );
 				out_it = utils::output_kv( out_it, R"("additionalProperties")", "" );
 				using element_t = typename JsonMember::json_element_t;
@@ -639,24 +608,23 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root, typename OutputIterator>
-			constexpr OutputIterator
+			template<typename JsonMember, bool is_root, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::KeyValueArray>,
-			                OutputIterator out_it ) {
+			                WritableType out_it ) {
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 				}
 				out_it.next_member( );
 				out_it = utils::output_kv( out_it, R"("type")", R"("array",)" );
 				out_it.next_member( );
-				out_it = utils::copy_to_iterator( out_it, R"("items":)" );
-				out_it.output_space( );
+				out_it.write( "\"items\":", out_it.space );
 				using element_t = typename JsonMember::json_class_t;
 				out_it = to_json_schema<element_t>(
 				  ParseTag<element_t::expected_type>{ }, out_it );
@@ -665,7 +633,7 @@ namespace daw::json {
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
@@ -676,11 +644,11 @@ namespace daw::json {
 			template<typename... JsonElements>
 			struct variant_element_types<json_variant_type_list<JsonElements...>> {
 
-				template<typename JsonElement, typename OutputIterator>
-				static constexpr OutputIterator output_element( OutputIterator out_it,
-				                                                bool &is_first ) {
+				template<typename JsonElement, typename WritableType>
+				static constexpr WritableType output_element( WritableType out_it,
+				                                              bool &is_first ) {
 					if( not is_first ) {
-						*out_it++ = ',';
+						out_it.put( ',' );
 					} else {
 						is_first = false;
 					}
@@ -689,21 +657,19 @@ namespace daw::json {
 					  ParseTag<JsonElement::expected_type>{ }, out_it );
 				}
 
-				template<typename OutputIterator>
-				static constexpr OutputIterator
-				output_elements( OutputIterator out_it ) {
+				template<typename WritableType>
+				static constexpr WritableType output_elements( WritableType out_it ) {
 					bool is_first = true;
-					return static_cast<OutputIterator>(
+					return static_cast<WritableType>(
 					  ( output_element<JsonElements>( out_it, is_first ), ... ) );
 				}
 			};
 
-			template<typename JsonMember, bool is_root, typename OutputIterator>
-			constexpr OutputIterator
-			to_json_schema( ParseTag<JsonParseTypes::Variant>,
-			                OutputIterator out_it ) {
+			template<typename JsonMember, bool is_root, typename WritableType>
+			constexpr WritableType to_json_schema( ParseTag<JsonParseTypes::Variant>,
+			                                       WritableType out_it ) {
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 				}
 				out_it.next_member( );
@@ -715,25 +681,25 @@ namespace daw::json {
 					out_it.del_indent( );
 					out_it.next_member( );
 				}
-				*out_it++ = ']';
+				out_it.put( ']' );
 				if constexpr( not is_root ) {
 					out_it.del_indent( );
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root, typename OutputIterator>
-			constexpr OutputIterator
+			template<typename JsonMember, bool is_root, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::VariantTagged>,
-			                OutputIterator out_it ) {
+			                WritableType out_it ) {
 				static_assert( not is_root,
 				               "Attempt to have a tagged variant as root object.  This "
 				               "is unsupported" );
-				*out_it++ = '{';
+				out_it.put( '{' );
 				out_it.add_indent( );
 				out_it.next_member( );
 				out_it = utils::output_kv( out_it, R"("oneOf")", "[" );
@@ -744,19 +710,19 @@ namespace daw::json {
 					out_it.del_indent( );
 					out_it.next_member( );
 				}
-				*out_it++ = ']';
+				out_it.put( ']' );
 				out_it.del_indent( );
 				out_it.next_member( );
-				*out_it++ = '}';
+				out_it.put( '}' );
 				return out_it;
 			}
 
-			template<typename JsonMember, bool is_root, typename OutputIterator>
-			constexpr OutputIterator
+			template<typename JsonMember, bool is_root, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::VariantIntrusive>,
-			                OutputIterator out_it ) {
+			                WritableType out_it ) {
 				if constexpr( not is_root ) {
-					*out_it++ = '{';
+					out_it.put( '{' );
 					out_it.add_indent( );
 				}
 				out_it.next_member( );
@@ -768,13 +734,13 @@ namespace daw::json {
 					out_it.del_indent( );
 					out_it.next_member( );
 				}
-				*out_it++ = ']';
+				out_it.put( ']' );
 				if constexpr( not is_root ) {
 					out_it.del_indent( );
 				}
 				out_it.next_member( );
 				if constexpr( not is_root ) {
-					*out_it++ = '}';
+					out_it.put( '}' );
 				}
 				return out_it;
 			}
@@ -783,33 +749,32 @@ namespace daw::json {
 		/// @brief Generate a JSON Schema string based on the mappings for the type
 		/// specified
 		/// @tparam T Known or mapped type to generate JSON Schema for
-		/// @tparam OutputIterator An output iterator to write characters to
+		/// @tparam WritableType An output iterator to write characters to
 		/// @tparam PolicyFlags Optional policy flags to control output
 		/// @param id JSON Schema identifier
 		/// @param title JSON Schema title
 		/// @return the Output iterator after writing JSON schema to it
-		template<typename T, typename OutputIterator, auto... PolicyFlags>
-		constexpr OutputIterator to_json_schema(
-		  OutputIterator it, std::string_view id, std::string_view title,
+		template<typename T, typename WritableType, auto... PolicyFlags>
+		constexpr WritableType to_json_schema(
+		  WritableType it, std::string_view id, std::string_view title,
 		  options::output_flags_t<PolicyFlags...> = options::output_flags<> ) {
 
 			auto out_it = [&] {
-				if constexpr( is_serialization_policy_v<OutputIterator> ) {
+				if constexpr( is_serialization_policy_v<WritableType> ) {
 					if constexpr( sizeof...( PolicyFlags ) == 0 ) {
 						return it;
 					} else {
-						return serialization_policy<typename OutputIterator::iterator_type,
+						return serialization_policy<typename WritableType::iterator_type,
 						                            json_details::serialization::set_bits(
-						                              OutputIterator::policy_flags( ),
+						                              WritableType::policy_flags( ),
 						                              PolicyFlags... )>( it.get( ) );
 					}
 				} else {
 					return serialization_policy<
-					  OutputIterator, options::output_flags_t<PolicyFlags...>::value>(
-					  it );
+					  WritableType, options::output_flags_t<PolicyFlags...>::value>( it );
 				}
 			}( );
-			*out_it++ = '{';
+			out_it.put( '{' );
 			out_it.add_indent( );
 			out_it.next_member( );
 			out_it = utils::output_kv(
@@ -828,7 +793,7 @@ namespace daw::json {
 			  ParseTag<json_type::expected_type>{ }, out_it );
 			out_it.del_indent( );
 			out_it.next_member( );
-			*out_it++ = '}';
+			out_it.put( '}' );
 			return out_it.get( );
 		}
 

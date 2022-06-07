@@ -183,8 +183,8 @@ int main( int argc, char **argv )
 	std::cout << "Chitungwiza was " << ( has_chitungwiza2 ? "" : "not" )
 	          << " found at " << daw::json::to_json( *has_chitungwiza2 ) << '\n';
 
-	std::cout << "-------------------------------------------------\n";
 	std::cout << ( *iterator_t( json_data ) ).name << '\n';
+	std::cout << "-------------------------------------------------\n";
 
 	auto const city_ary = daw::json::from_json_array<City>( json_data );
 

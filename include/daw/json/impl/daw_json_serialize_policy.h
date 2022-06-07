@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include "../../daw_writable_output.h"
 #include "daw_json_option_bits.h"
 #include "daw_json_parse_options_impl.h"
 #include "daw_json_serialize_options_impl.h"
@@ -19,6 +20,7 @@
 
 #include <cstddef>
 #include <iterator>
+#include <memory>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -40,26 +42,31 @@ namespace daw::json {
 			return result;
 		}
 
-		template<typename OutputIterator,
+		template<typename WritableType,
 		         json_options_t PolicyFlags =
 		           json_details::serialization::default_policy_flag>
-		struct serialization_policy
-		  : json_details::iterator_wrapper<OutputIterator> {
+		struct serialization_policy {
+			static_assert(
+			  is_writable_output_type_v<WritableType>,
+			  "Output type does not have a writeable_output_trait specialization" );
 			using i_am_a_serialization_policy = void;
+			WritableType *m_writable;
 
 			static constexpr json_options_t policy_flags( ) {
 				return PolicyFlags;
 			}
 
-			using json_details::iterator_wrapper<OutputIterator>::get;
-			using iterator_type = OutputIterator;
-
 			std::size_t indentation_level = 0;
 
-			template<typename... Flags>
+			constexpr WritableType const &get( ) const {
+				return *m_writable;
+			}
 
-			constexpr serialization_policy( OutputIterator it )
-			  : json_details::iterator_wrapper<OutputIterator>{ DAW_MOVE( it ) } {}
+			constexpr WritableType &get( ) {
+				return *m_writable;
+			}
+			constexpr serialization_policy( WritableType &writable )
+			  : m_writable( std::addressof( writable ) ) {}
 
 			static constexpr options::SerializationFormat serialization_format =
 			  json_details::serialization::get_bits_for<options::SerializationFormat>(
@@ -90,12 +97,13 @@ namespace daw::json {
 			}
 
 			inline constexpr void output_indent( ) {
-				constexpr std::string_view ident =
+				constexpr std::string_view indent =
 				  json_details::serialization::generate_indent<serialization_format,
 				                                               indentation_type>;
-				for( std::size_t n = 0; n < indentation_level; ++n ) {
-					daw::algorithm::copy( std::data( ident ), daw::data_end( ident ),
-					                      this->raw_it( ) );
+				if( not indent.empty( ) ) {
+					for( std::size_t n = 0; n < indentation_level; ++n ) {
+						write( indent );
+					}
 				}
 			}
 
@@ -103,23 +111,54 @@ namespace daw::json {
 				if constexpr( serialization_format !=
 				              options::SerializationFormat::Minified ) {
 					if constexpr( newline_delimiter == options::NewLineDelimiter::n ) {
-						*( *this )++ = '\n';
+						put( '\n' );
 					} else {
-						*( *this )++ = '\r';
-						*( *this )++ = '\n';
+						write( "\r\n" );
 					}
 				}
 			}
+
+			static constexpr daw::string_view space =
+			  serialization_format != options::SerializationFormat::Minified
+			    ? " "
+			    : nullptr;
+
 			inline constexpr void next_member( ) {
 				output_newline( );
 				output_indent( );
 			}
 
-			inline constexpr void output_space( ) {
-				if constexpr( serialization_format !=
-				              options::SerializationFormat::Minified ) {
-					*( *this )++ = ' ';
-				}
+			template<typename... ContiguousCharRanges>
+			constexpr void write( ContiguousCharRanges &&...chrs ) {
+				static_assert( sizeof...( ContiguousCharRanges ) > 0 );
+				writable_output_trait<WritableType>::write(
+				  *m_writable, daw::string_view( chrs )... );
+			}
+
+			constexpr void copy_buffer( char const *first, char const *last ) {
+				write(
+				  daw::string_view( first, static_cast<std::size_t>( last - first ) ) );
+			}
+
+			constexpr void put( char c ) {
+				writable_output_trait<WritableType>::put( *m_writable, c );
+			}
+
+			constexpr serialization_policy &operator=( char c ) {
+				put( c );
+				return *this;
+			}
+
+			constexpr serialization_policy &operator*( ) {
+				return *this;
+			}
+
+			constexpr serialization_policy &operator++( ) {
+				return *this;
+			}
+
+			constexpr serialization_policy operator++( int ) & {
+				return *this;
 			}
 		};
 

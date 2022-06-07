@@ -103,14 +103,13 @@ int main( int argc, char **argv )
 	  daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
 
 	std::string str{ };
-	auto out_it = std::back_inserter( str );
 	str.reserve( json_sv1.size( ) );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "citm bench(to_json_string)", sz,
 
 	  [&]( daw::citm::citm_object_t const &tr ) {
 		  str.clear( );
-		  daw::json::to_json( tr, out_it );
+		  daw::json::to_json( tr, str );
 		  daw::do_not_optimize( str );
 	  },
 	  citm_result );
