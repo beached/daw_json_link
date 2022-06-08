@@ -63,7 +63,7 @@ int main( int, char ** ) {
 
 	assert( ary.size( ) == 2 );
 
-	auto out_str = daw::json::to_json_array<std::string, json_u16string>( ary );
+	auto out_str = daw::json::to_json_array<json_u16string>( ary );
 
 	puts( "After" );
 	puts( out_str.c_str( ) );

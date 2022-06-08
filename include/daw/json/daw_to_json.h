@@ -31,7 +31,7 @@ namespace daw::json {
 		         std::enable_if_t<
 		           is_writable_output_type_v<daw::remove_cvref_t<WritableType>>,
 		           std::nullptr_t>>
-		[[maybe_unused]] constexpr daw::rvalue_to_value_t<WritableType>
+		constexpr daw::rvalue_to_value_t<WritableType>
 		to_json( Value const &value, WritableType &&it,
 		         options::output_flags_t<PolicyFlags...> ) {
 			using json_class_t = typename std::conditional_t<
@@ -66,24 +66,14 @@ namespace daw::json {
 			  .get( );
 		}
 
-		template<typename Result, typename JsonClass, typename Value,
-		         auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr Result
-		to_json( Value const &value,
-		         options::output_flags_t<PolicyFlags...> flags ) {
-			static_assert(
-			  is_writable_output_type_v<Result>,
-			  "Result type must has a specialization of writable_output_trait" );
-
-			Result r{ };
-			if constexpr( std::is_same_v<Result, std::string> ) {
-				r.reserve( 4096 );
-			}
-			(void)to_json<JsonClass>( value, r, flags );
-			if constexpr( std::is_same_v<Result, std::string> ) {
-				r.shrink_to_fit( );
-			}
-			return r;
+		template<typename JsonClass, typename Value, auto... PolicyFlags>
+		inline std::string to_json( Value const &value,
+		                            options::output_flags_t<PolicyFlags...> flgs ) {
+			std::string result{ };
+			result.reserve( 4096 );
+			(void)to_json( value, result, flgs );
+			result.shrink_to_fit( );
+			return result;
 		}
 
 		template<typename JsonElement, typename Container, typename WritableType,
@@ -91,7 +81,7 @@ namespace daw::json {
 		         std::enable_if_t<
 		           is_writable_output_type_v<daw::remove_cvref_t<WritableType>>,
 		           std::nullptr_t>>
-		[[maybe_unused]] constexpr daw::rvalue_to_value_t<WritableType>
+		constexpr daw::rvalue_to_value_t<WritableType>
 		to_json_array( Container const &c, WritableType &&it,
 		               options::output_flags_t<PolicyFlags...> ) {
 			static_assert(
@@ -161,26 +151,16 @@ namespace daw::json {
 			return out_it.get( );
 		}
 
-		template<typename Result, typename JsonElement, typename Container,
-		         auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr Result
+		template<typename JsonElement, typename Container, auto... PolicyFlags>
+		inline std::string
 		to_json_array( Container const &c,
-		               options::output_flags_t<PolicyFlags...> flags ) {
-			static_assert( traits::is_container_like_v<Container>,
-			               "Supplied container must support begin( )/end( )" );
-			static_assert(
-			  is_writable_output_type_v<Result>,
-			  "Result type must has a specialization of writable_output_trait" );
-
-			Result r{ };
-			if constexpr( std::is_same_v<Result, std::string> ) {
-				r.reserve( 4096 );
-			}
-			(void)to_json_array<JsonElement>( c, r, flags );
-			if constexpr( std::is_same_v<Result, std::string> ) {
-				r.shrink_to_fit( );
-			}
-			return r;
+		               options::output_flags_t<PolicyFlags...> flgs ) {
+			static_assert( not std::is_same_v<std::string, JsonElement> );
+			std::string result{ };
+			result.reserve( 4096 );
+			(void)to_json_array( c, result, flgs );
+			result.shrink_to_fit( );
+			return result;
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

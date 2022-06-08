@@ -14,7 +14,6 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_character_traits.h>
 #include <daw/daw_span.h>
-#include <daw/daw_traits.h>
 
 #include <cstdio>
 #include <iostream>

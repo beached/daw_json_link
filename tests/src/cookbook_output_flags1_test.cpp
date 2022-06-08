@@ -33,8 +33,10 @@ namespace daw::json {
 int main( ) {
 	using namespace daw::json::options;
 	auto const v = OutputFlags1{ "Hello", { 1, 2, 3 } };
-	puts( daw::json::to_json( v ).c_str( ) );
-	puts( daw::json::to_json( v, output_flags<SerializationFormat::Pretty> )
+	daw::json::to_json( v, stdout );
+	puts( "\n" );
+	puts( daw::json::to_json( v, std::string{ },
+	                          output_flags<SerializationFormat::Pretty> )
 	        .c_str( ) );
 	auto const v2 = OutputFlags1{ "😍😍 JSON is awesome", { 42 } };
 	auto v2_json = daw::json::to_json(

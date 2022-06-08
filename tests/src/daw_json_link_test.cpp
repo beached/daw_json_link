@@ -890,27 +890,23 @@ int main( int, char ** )
 	                                options::JsonNumberErrors::AllowNanInf )>;
 	std::cout << "Inf double: "
 	          << "serialize: "
-	          << to_json<std::string, num_t>(
-	               std::numeric_limits<double>::infinity( ) )
+	          << to_json<num_t>( std::numeric_limits<double>::infinity( ) )
 	          << '\n';
 	std::cout << "parse: " << from_json<num_t>( R"("Infinity")" ) << '\n';
 	std::cout << "-Inf double: "
 	          << "serialize: "
-	          << to_json<std::string, num_t>(
-	               -std::numeric_limits<double>::infinity( ) )
+	          << to_json<num_t>( -std::numeric_limits<double>::infinity( ) )
 	          << '\n';
 	std::cout << "parse: " << from_json<num_t>( R"("-Infinity")" ) << '\n';
 
 	std::cout << "NaN double: "
 	          << "serialize: "
-	          << to_json<std::string, num_t>(
-	               std::numeric_limits<double>::quiet_NaN( ) )
+	          << to_json<num_t>( std::numeric_limits<double>::quiet_NaN( ) )
 	          << '\n';
 	std::cout << "parse: " << from_json<num_t>( R"("NaN")" ) << '\n';
 
 	std::cout << "Negative 0: "
-	          << "serialize: "
-	          << to_json<std::string, num_t>( std::copysign( 0.0, -1.0 ) )
+	          << "serialize: " << to_json<num_t>( std::copysign( 0.0, -1.0 ) )
 	          << '\n';
 
 	std::cout << "parse: " << from_json<double>( "-0.0" ) << '\n';
@@ -1117,7 +1113,7 @@ int main( int, char ** )
 		long double const d1 = strtold( two63e100.data( ), &end );
 		std::cout << d1 << '\n';
 		double d2 = 0.89;
-		to_json( d2, std::cout ) << '\n';
+		to_json( d2 ) << '\n';
 	}
 #endif
 	test_show_lots_of_doubles( );
@@ -1210,29 +1206,25 @@ int main( int, char ** )
 
 	std::cout << "FP Output formating of 123456789.23456789012345:\n";
 	constexpr double outfmt_dbl = 123456789.23456789012345;
-	std::cout
-	  << "auto: "
-	  << to_json<std::string,
-	             json_base::json_number<
+	std::cout << "auto: "
+	          << to_json<json_base::json_number<
 	               double, options::number_opt( options::FPOutputFormat::Auto )>>(
-	       outfmt_dbl )
-	  << '\n';
+	               outfmt_dbl )
+	          << '\n';
 	std::cout
 	  << "decimal: "
-	  << to_json<std::string, json_base::json_number<
-	                            double, options::number_opt(
-	                                      options::FPOutputFormat::Decimal )>>(
+	  << to_json<json_base::json_number<
+	       double, options::number_opt( options::FPOutputFormat::Decimal )>>(
 	       outfmt_dbl )
 	  << '\n';
 	std::cout
 	  << "scientific: "
-	  << to_json<std::string, json_base::json_number<
-	                            double, options::number_opt(
-	                                      options::FPOutputFormat::Scientific )>>(
+	  << to_json<json_base::json_number<
+	       double, options::number_opt( options::FPOutputFormat::Scientific )>>(
 	       outfmt_dbl )
 	  << '\n';
 
-	auto byte_vec = to_json<std::vector<std::byte>>( 5.5 );
+	auto byte_vec = to_json( 5.5, std::vector<std::byte>{ } );
 	assert( byte_vec.size( ) == 3 );
 	assert( static_cast<char>( byte_vec[0] ) == '5' );
 	assert( static_cast<char>( byte_vec[1] ) == '.' );
@@ -1241,10 +1233,9 @@ int main( int, char ** )
 #if defined( __cpp_char8_t )
 #if __cpp_lib_char8_t >= 201907L
 	std::cout << "u8string\n";
-	<< to_json<std::u8string, json_base::json_number<
-	                            double, options::number_opt(
-	                                      options::FPOutputFormat::Decimal )>>(
-	     outfmt_dbl )
+	<< to_json<json_base::json_number<
+	     double, options::number_opt( options::FPOutputFormat::Decimal )>>(
+	     outfmt_dbl, std::u8string{ } )
 	<< '\n';
 #endif
 #endif
