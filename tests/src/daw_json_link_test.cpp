@@ -16,6 +16,7 @@
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_vector.h>
+#include <daw/daw_span.h>
 
 #include <cassert>
 #include <chrono>
@@ -244,7 +245,10 @@ DAW_CONSTEXPR bool test_004( ) {
 	  test_001_t_json_data, "i",
 	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
 
-	return result == 55;
+	if( result == 55 ) {
+		return true;
+	}
+	throw result == 55;
 }
 
 DAW_CONSTEXPR bool test_005( ) {
@@ -1230,13 +1234,17 @@ int main( int, char ** )
 	assert( static_cast<char>( byte_vec[1] ) == '.' );
 	assert( static_cast<char>( byte_vec[2] ) == '5' );
 	(void)byte_vec;
-#if defined( __cpp_char8_t )
+#if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L
-	std::cout << "u8string\n";
-	<< to_json<json_base::json_number<
-	     double, options::number_opt( options::FPOutputFormat::Decimal )>>(
-	     outfmt_dbl, std::u8string{ } )
-	<< '\n';
+	static_assert( daw::is_writable_output_type_v<std::u8string> );
+	std::cout
+	  << "u8string\n"
+	  << reinterpret_cast<char const *>(
+	       to_json<json_base::json_number<
+	         double, options::number_opt( options::FPOutputFormat::Decimal )>>(
+	         outfmt_dbl, std::u8string{ } )
+	         .c_str( ) )
+	  << '\n';
 #endif
 #endif
 

@@ -13,7 +13,6 @@
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_character_traits.h>
-#include <daw/daw_span.h>
 
 #include <cstdio>
 #include <iostream>
@@ -51,8 +50,8 @@ namespace daw {
 		template<>
 		inline constexpr bool is_char_sized_character_v<char> = true;
 
-#if defined( __cpp_char8_t )
-#if __cpp_char8_t >= 201907L
+#if defined( __cpp_lib_char8_t )
+#if __cpp_lib_char8_t >= 201907L
 		template<>
 		inline constexpr bool is_char_sized_character_v<char8_t> = true;
 #endif
@@ -140,19 +139,36 @@ namespace daw {
 		}
 	};
 
+	namespace writeable_output_details {
+		template<typename T, typename CharT>
+		using span_like_range_test =
+		  decltype( (void)( std::declval<T &>( ).remove_prefix( 1 ) ),
+		            (void)( std::declval<std::size_t &>( ) =
+		                      std::declval<T &>( ).size( ) ),
+		            (void)( std::declval<bool &>( ) =
+		                      std::declval<T &>( ).empty( ) ),
+		            (void)( *std::declval<T &>( ).data( ) =
+		                      std::declval<CharT>( ) ) );
+		template<typename T, typename CharT>
+		inline constexpr bool is_span_like_range_v =
+		  daw::is_detected_v<span_like_range_test, T, CharT> and
+		  ( writeable_output_details::is_char_sized_character_v<CharT> or
+		    writeable_output_details::is_byte_type_v<CharT> );
+	} // namespace writeable_output_details
+
 	/// @brief Specialization for a span to a buffer with a fixed size
 	template<typename T>
 	struct writable_output_trait<
-	  daw::span<T>,
-	  std::enable_if_t<( writeable_output_details::is_char_sized_character_v<T> or
-	                     writeable_output_details::is_byte_type_v<T> )>>
-	  : std::true_type {
+	  T, std::enable_if_t<writeable_output_details::is_span_like_range_v<
+	       T, typename T::value_type>>> : std::true_type {
+		using CharT = typename T::value_type;
+
 		template<typename... StringViews>
-		static constexpr void write( daw::span<T> &out, StringViews... svs ) {
+		static constexpr void write( T &out, StringViews... svs ) {
 			static_assert( sizeof...( StringViews ) > 0 );
 			daw_json_ensure( out.size( ) >= ( std::size( svs ) + ... ),
 			                 daw::json::ErrorReason::OutputError );
-			constexpr auto writer = []( daw::span<T> &s, auto sv ) {
+			constexpr auto writer = []( T &s, auto sv ) {
 				if( sv.empty( ) ) {
 					return 0;
 				}
@@ -163,10 +179,10 @@ namespace daw {
 			(void)( writer( out, svs ) | ... );
 		}
 
-		static constexpr void put( span<T> &out, char c ) {
+		static constexpr void put( T &out, char c ) {
 			daw_json_ensure( not out.empty( ), daw::json::ErrorReason::OutputError );
-			out[0] = static_cast<T>( c );
-			out.remove_prefix( );
+			*out.data( ) = static_cast<CharT>( c );
+			out.remove_prefix( 1 );
 		}
 	};
 
@@ -192,10 +208,9 @@ namespace daw {
 		   writeable_output_details::is_byte_type_v<
 		     CharT>)and writeable_output_details::
 		    is_resizable_contiguous_range_v<Container, CharT>;
-
 	} // namespace writeable_output_details
 
-	/// @brief Specialization for a span to a buffer with a fixed size
+	/// @brief Specialization for a resizable continain like vector/string
 	template<typename Container>
 	struct writable_output_trait<
 	  Container,
