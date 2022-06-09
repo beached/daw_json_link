@@ -19,6 +19,7 @@
 #include <daw/daw_span.h>
 
 #include <cassert>
+#include <cfloat>
 #include <chrono>
 #include <climits>
 #include <cstdint>
@@ -1075,8 +1076,8 @@ int main( int, char ** )
 	test_dblparse( "0.9868011474609375", true );
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
 #if defined( LDBL_MAX )
-	std::cout << "result: " << from_json<long double>( "0.9868011474609375" )
-	          << '\n';
+	std::cout << "long double result: "
+	          << from_json<long double>( "0.9868011474609375" ) << '\n';
 #endif
 	std::cout << "Default FP Parse\n";
 	std::cout << "Unknown Bounds\n";
@@ -1117,7 +1118,7 @@ int main( int, char ** )
 		long double const d1 = strtold( two63e100.data( ), &end );
 		std::cout << d1 << '\n';
 		double d2 = 0.89;
-		to_json( d2 ) << '\n';
+		to_json( d2, std::cout ) << '\n';
 	}
 #endif
 	test_show_lots_of_doubles( );
