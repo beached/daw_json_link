@@ -27,8 +27,8 @@ jobs:
       matrix:
         cpp_version: [ 17, 20 ]
         build_type: [ Debug, Release ]
-        os: [ ubuntu-20.04 ]
-        toolset: [ g++-9, g++-10, g++-11, clang++-8, clang++-9, clang++-10, clang++-11, clang++-12, clang++-13, clang++-14 ]
+        os: [ ubuntu-20.04, ubuntu-22.04 ]
+        toolset: [ g++-9, g++-10, g++-11, g++-12, clang++-8, clang++-9, clang++-10, clang++-11, clang++-12, clang++-13, clang++-14 ]
         exclude:
           - toolset: clang++-8
             cpp_version: 20
@@ -40,6 +40,28 @@ jobs:
             cpp_version: 20
           - toolset: g++-9
             cpp_version: 20
+          - os: ubuntu-20.04
+            toolset: g++-12
+          - os: ubuntu-22.04
+            toolset: g++-9
+          - os: ubuntu-22.04
+            toolset: g++-10
+          - os: ubuntu-22.04
+            toolset: g++-11
+          - os: ubuntu-22.04
+            toolset: clang++-8
+          - os: ubuntu-22.04
+            toolset: clang++-9
+          - os: ubuntu-22.04
+            toolset: clang++-10
+          - os: ubuntu-22.04
+            toolset: clang++-11
+          - os: ubuntu-22.04
+            toolset: clang++-12
+          - os: ubuntu-22.04
+            toolset: clang++-13
+          - os: ubuntu-22.04
+            toolset: clang++-14
     runs-on: ${{ matrix.os }}
     name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.build_type }}"
     steps:
@@ -96,13 +118,13 @@ jobs:
           ulimit -c
           sudo sysctl -w kernel.core_pattern=core.%e.%p
           ctest -C ${{ matrix.build_type }} -j2 -VV --timeout 1200 --test-dir build/
-#      - name: Fuzzing
-#        if: matrix.toolset == 'clang++-13'
-#        run: |
-#          echo "CXXFLAGS='-stdlib=libstdc++'" >> $GITHUB_ENV
-#          ulimit -c unlimited
-#          cmake --build build/ --target daw_json_fuzzing
-#          ./build/tests/daw_json_fuzzing -max_len=4000 -max_total_time=120
+      #      - name: Fuzzing
+      #        if: matrix.toolset == 'clang++-13'
+      #        run: |
+      #          echo "CXXFLAGS='-stdlib=libstdc++'" >> $GITHUB_ENV
+      #          ulimit -c unlimited
+      #          cmake --build build/ --target daw_json_fuzzing
+      #          ./build/tests/daw_json_fuzzing -max_len=4000 -max_total_time=120
       - name: Archive any crashes as an artifact
         uses: actions/upload-artifact@v3
         if: always( )
