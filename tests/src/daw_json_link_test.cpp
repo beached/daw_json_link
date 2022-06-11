@@ -1237,7 +1237,7 @@ int main( int, char ** )
 	(void)byte_vec;
 #if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L
-	static_assert( daw::is_writable_output_type_v<std::u8string> );
+	static_assert( daw::json::concepts::is_writable_output_type_v<std::u8string> );
 	std::cout
 	  << "u8string\n"
 	  << reinterpret_cast<char const *>(

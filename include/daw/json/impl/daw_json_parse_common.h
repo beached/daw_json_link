@@ -592,13 +592,13 @@ namespace daw::json {
 
 			template<typename T>
 			struct json_deduced_type_map<
-			  T, std::enable_if_t<is_readable_value_v<T> and
+			  T, std::enable_if_t<concepts::is_readable_value_v<T> and
 			                      not has_json_data_contract_trait_v<T> and
 			                      daw::is_detected_v<json_deduced_type_map,
-			                                         readable_value_type_t<T>>>> {
+			                                         concepts::readable_value_type_t<T>>>> {
 
 				static constexpr bool is_null = true;
-				using sub_type = readable_value_type_t<T>;
+				using sub_type = concepts::readable_value_type_t<T>;
 				using type = json_deduced_type_map<sub_type>;
 				static constexpr JsonParseTypes parse_type = type::parse_type;
 				static constexpr bool type_map_found = true;
@@ -782,14 +782,14 @@ namespace daw::json {
 					static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 					               "Detection failure" );
 					return daw::traits::identity<type>{ };
-				} else if constexpr( is_readable_value_v<T> ) {
-					using value_type = readable_value_type_t<T>;
+				} else if constexpr( concepts::is_readable_value_v<T> ) {
+					using value_type = concepts::readable_value_type_t<T>;
 					using sub_type =
 					  typename decltype( json_deduced_type_impl<value_type>( ) )::type;
 					using type = json_base::json_nullable<T, sub_type>;
 					return daw::traits::identity<type>{ };
 				} else {
-					static_assert( is_readable_value_v<T> );
+					static_assert( concepts::is_readable_value_v<T> );
 					using type = missing_json_data_contract_for_or_unknown_type<T>;
 					return daw::traits::identity<type>{ };
 				}
@@ -859,8 +859,8 @@ namespace daw::json {
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
 			construct_nullable_empty( ) {
 				if constexpr( std::is_invocable_v<Constructor,
-				                                  construct_readable_empty_t> ) {
-					return Constructor{ }( construct_readable_empty );
+				                                  concepts::construct_readable_empty_t> ) {
+					return Constructor{ }(concepts::construct_readable_empty );
 				} else {
 					return Constructor{ }( );
 				}

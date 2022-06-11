@@ -10,7 +10,7 @@
 
 #include "version.h"
 
-#include "../../daw_readable_value.h"
+#include "../concepts/daw_readable_value.h"
 #include "../daw_json_default_constuctor_fwd.h"
 #include "daw_json_assert.h"
 
@@ -180,24 +180,27 @@ namespace daw::json {
 		 * Default constructor for readable nullable types.
 		 */
 		template<typename T>
-		struct nullable_constructor<T, std::enable_if_t<is_readable_value_v<T>>> {
-			using value_type = readable_value_type_t<T>;
-			using rtraits_t = readable_value_traits<T>;
+		struct nullable_constructor<
+		  T, std::enable_if_t<concepts::is_readable_value_v<T>>> {
+			using value_type = concepts::readable_value_type_t<T>;
+			using rtraits_t = concepts::readable_value_traits<T>;
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( construct_readable_empty_t ) const
-			  noexcept( is_readable_empty_nothrow_constructible_v<T> ) {
-				static_assert( is_readable_empty_constructible_v<T> );
-				return rtraits_t{ }( construct_readable_empty );
+			operator( )( concepts::construct_readable_empty_t ) const
+			  noexcept( concepts::is_readable_empty_nothrow_constructible_v<T> ) {
+				static_assert( concepts::is_readable_empty_constructible_v<T> );
+				return rtraits_t{ }( concepts::construct_readable_empty );
 			}
 
 			template<typename... Args,
-			         std::enable_if_t<is_readable_value_constructible_v<T, Args...>,
-			                          std::nullptr_t> = nullptr>
+			         std::enable_if_t<
+			           concepts::is_readable_value_constructible_v<T, Args...>,
+			           std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( Args &&...args ) const
-			  noexcept( is_readable_value_nothrow_constructible_v<T, Args...> ) {
-				return rtraits_t{ }( construct_readable_value, DAW_FWD( args )... );
+			operator( )( Args &&...args ) const noexcept(
+			  concepts::is_readable_value_nothrow_constructible_v<T, Args...> ) {
+				return rtraits_t{ }( concepts::construct_readable_value,
+				                     DAW_FWD( args )... );
 			}
 		};
 	} // namespace DAW_JSON_VER

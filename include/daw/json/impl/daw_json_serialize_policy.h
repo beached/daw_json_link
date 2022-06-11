@@ -10,7 +10,7 @@
 
 #include "version.h"
 
-#include "../../daw_writable_output.h"
+#include "../concepts/daw_writable_output.h"
 #include "daw_json_option_bits.h"
 #include "daw_json_parse_options_impl.h"
 #include "daw_json_serialize_options_impl.h"
@@ -47,7 +47,7 @@ namespace daw::json {
 		           json_details::serialization::default_policy_flag>
 		struct serialization_policy {
 			static_assert(
-			  is_writable_output_type_v<WritableType>,
+			  concepts::is_writable_output_type_v<WritableType>,
 			  "Output type does not have a writeable_output_trait specialization" );
 			using i_am_a_serialization_policy = void;
 			WritableType *m_writable;
@@ -131,7 +131,7 @@ namespace daw::json {
 			template<typename... ContiguousCharRanges>
 			constexpr void write( ContiguousCharRanges &&...chrs ) {
 				static_assert( sizeof...( ContiguousCharRanges ) > 0 );
-				writable_output_trait<WritableType>::write(
+				concepts::writable_output_trait<WritableType>::write(
 				  *m_writable, daw::string_view( chrs )... );
 			}
 
@@ -141,7 +141,7 @@ namespace daw::json {
 			}
 
 			constexpr void put( char c ) {
-				writable_output_trait<WritableType>::put( *m_writable, c );
+				concepts::writable_output_trait<WritableType>::put( *m_writable, c );
 			}
 
 			constexpr serialization_policy &operator=( char c ) {
