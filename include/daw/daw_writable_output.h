@@ -13,8 +13,6 @@
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_character_traits.h>
-#include <daw/daw_span.h>
-#include <daw/daw_traits.h>
 
 #include <cstdio>
 #include <iostream>
@@ -38,13 +36,34 @@ namespace daw {
 #endif
 			return buff + source.size( );
 		}
+
+		template<typename T>
+		inline constexpr bool is_byte_type_v =
+		  std::is_same_v<T, std::byte> or std::is_same_v<T, unsigned char>;
+
+		template<typename T>
+		using is_char_sized = std::bool_constant<sizeof( T ) == 1>;
+
+		template<typename T>
+		inline constexpr bool is_char_sized_character_v = false;
+
+		template<>
+		inline constexpr bool is_char_sized_character_v<char> = true;
+
+#if defined( __cpp_lib_char8_t )
+#if __cpp_lib_char8_t >= 201907L
+		template<>
+		inline constexpr bool is_char_sized_character_v<char8_t> = true;
+#endif
+#endif
 	} // namespace writeable_output_details
 
 	/// @brief Specialization for character pointer
 	template<typename T>
 	struct writable_output_trait<
-	  T *, std::enable_if_t<(traits::is_character_type_v<T> or
-	                         std::is_same_v<T, std::byte>)and sizeof( T ) == 1>>
+	  T *,
+	  std::enable_if_t<( writeable_output_details::is_char_sized_character_v<T> or
+	                     writeable_output_details::is_byte_type_v<T> )>>
 	  : std::true_type {
 
 		template<typename... StringViews>
@@ -69,8 +88,9 @@ namespace daw {
 	};
 
 	/// @brief Specialization for ostream &
-	template<>
-	struct writable_output_trait<std::ostream &> : std::true_type {
+	template<typename T>
+	struct writable_output_trait<
+	  T, std::enable_if_t<std::is_base_of_v<std::ostream, T>>> : std::true_type {
 
 		template<typename... StringViews>
 		static inline void write( std::ostream &os, StringViews... svs ) {
@@ -119,19 +139,36 @@ namespace daw {
 		}
 	};
 
+	namespace writeable_output_details {
+		template<typename T, typename CharT>
+		using span_like_range_test =
+		  decltype( (void)( std::declval<T &>( ).remove_prefix( 1 ) ),
+		            (void)( std::declval<std::size_t &>( ) =
+		                      std::declval<T &>( ).size( ) ),
+		            (void)( std::declval<bool &>( ) =
+		                      std::declval<T &>( ).empty( ) ),
+		            (void)( *std::declval<T &>( ).data( ) =
+		                      std::declval<CharT>( ) ) );
+		template<typename T, typename CharT>
+		inline constexpr bool is_span_like_range_v =
+		  daw::is_detected_v<span_like_range_test, T, CharT> and
+		  ( writeable_output_details::is_char_sized_character_v<CharT> or
+		    writeable_output_details::is_byte_type_v<CharT> );
+	} // namespace writeable_output_details
+
 	/// @brief Specialization for a span to a buffer with a fixed size
 	template<typename T>
 	struct writable_output_trait<
-	  daw::span<T>,
-	  std::enable_if_t<(traits::is_character_type_v<T> or
-	                    std::is_same_v<T, std::byte>)and sizeof( T ) == 1>>
-	  : std::true_type {
+	  T, std::enable_if_t<writeable_output_details::is_span_like_range_v<
+	       T, typename T::value_type>>> : std::true_type {
+		using CharT = typename T::value_type;
+
 		template<typename... StringViews>
-		static constexpr void write( daw::span<T> &out, StringViews... svs ) {
+		static constexpr void write( T &out, StringViews... svs ) {
 			static_assert( sizeof...( StringViews ) > 0 );
 			daw_json_ensure( out.size( ) >= ( std::size( svs ) + ... ),
 			                 daw::json::ErrorReason::OutputError );
-			constexpr auto writer = []( daw::span<T> &s, auto sv ) {
+			constexpr auto writer = []( T &s, auto sv ) {
 				if( sv.empty( ) ) {
 					return 0;
 				}
@@ -142,29 +179,53 @@ namespace daw {
 			(void)( writer( out, svs ) | ... );
 		}
 
-		static constexpr void put( span<T> &out, char c ) {
+		static constexpr void put( T &out, char c ) {
 			daw_json_ensure( not out.empty( ), daw::json::ErrorReason::OutputError );
-			out[0] = static_cast<T>( c );
-			out.remove_prefix( );
+			*out.data( ) = static_cast<CharT>( c );
+			out.remove_prefix( 1 );
 		}
 	};
 
-	/// @brief Specialization for a span to a buffer with a fixed size
-	template<typename T, typename Traits, typename Alloc>
+	namespace writeable_output_details {
+		template<typename T, typename CharT>
+		using resizable_contiguous_range_test =
+		  decltype( (void)( std::declval<T &>( ).resize( std::size_t{ 0 } ) ),
+		            (void)( std::declval<T &>( ).size( ) ),
+		            (void)( *std::declval<T &>( ).data( ) ),
+		            (void)( *std::declval<T &>( ).data( ) =
+		                      std::declval<CharT>( ) ),
+		            (void)( std::declval<T &>( ).push_back(
+		              std::declval<CharT>( ) ) ),
+		            (void)( static_cast<CharT>( 'a' ) ) );
+
+		template<typename Container, typename CharT>
+		inline constexpr bool is_resizable_contiguous_range_v =
+		  daw::is_detected_v<resizable_contiguous_range_test, Container, CharT>;
+
+		template<typename Container, typename CharT>
+		inline constexpr bool is_string_like_writable_output_v =
+		  (writeable_output_details::is_char_sized_character_v<CharT> or
+		   writeable_output_details::is_byte_type_v<
+		     CharT>)and writeable_output_details::
+		    is_resizable_contiguous_range_v<Container, CharT>;
+	} // namespace writeable_output_details
+
+	/// @brief Specialization for a resizable continain like vector/string
+	template<typename Container>
 	struct writable_output_trait<
-	  std::basic_string<T, Traits, Alloc>,
-	  std::enable_if_t<traits::is_character_type_v<T> and sizeof( T ) == 1>>
-	  : std::true_type {
+	  Container,
+	  std::enable_if_t<writeable_output_details::is_string_like_writable_output_v<
+	    Container, typename Container::value_type>>> : std::true_type {
+		using CharT = typename Container::value_type;
 
 		template<typename... StringViews>
-		static inline void write( std::basic_string<T, Traits, Alloc> &out,
-		                          StringViews... svs ) {
+		static inline void write( Container &out, StringViews... svs ) {
 			static_assert( sizeof...( StringViews ) > 0 );
 			auto const start_pos = out.size( );
 			auto const total_size = ( std::size( svs ) + ... );
 			out.resize( start_pos + total_size );
 
-			constexpr auto writer = []( T *&p, auto sv ) {
+			constexpr auto writer = []( CharT *&p, auto sv ) {
 				if( sv.empty( ) ) {
 					return 0;
 				}
@@ -175,8 +236,8 @@ namespace daw {
 			(void)( writer( ptr, svs ) | ... );
 		}
 
-		static inline void put( std::basic_string<T, Traits, Alloc> &out, char c ) {
-			out.push_back( c );
+		static inline void put( Container &out, char c ) {
+			out.push_back( static_cast<CharT>( c ) );
 		}
 	};
 

@@ -832,7 +832,7 @@ namespace daw::json {
 						it.put( '0' );
 					} else {
 						daw_json_ensure( v > 0, ErrorReason::NumberOutOfRange );
-						char buff[daw::numeric_limits<under_type>::digits10 + 1]{ };
+						char buff[daw::numeric_limits<under_type>::digits10 + 10]{ };
 						char *ptr = buff;
 						while( v >= 10 ) {
 							auto const tmp = static_cast<std::size_t>( v % 100 );

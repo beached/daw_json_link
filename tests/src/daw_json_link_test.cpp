@@ -16,8 +16,10 @@
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_vector.h>
+#include <daw/daw_span.h>
 
 #include <cassert>
+#include <cfloat>
 #include <chrono>
 #include <climits>
 #include <cstdint>
@@ -244,7 +246,10 @@ DAW_CONSTEXPR bool test_004( ) {
 	  test_001_t_json_data, "i",
 	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
 
-	return result == 55;
+	if( result == 55 ) {
+		return true;
+	}
+	throw result == 55;
 }
 
 DAW_CONSTEXPR bool test_005( ) {
@@ -653,7 +658,7 @@ bool test_optional_array( ) {
 	auto result = from_json_array<std::optional<int>>( json_data );
 	daw_json_ensure( result.size( ) == 2 and not result[0] and result[1] == 5,
 	                 ErrorReason::Unknown );
-	std::string str{ };
+	auto str = std::string{ };
 	to_json_array<json_number_null_no_name<std::optional<int>>>( result, str );
 	auto result2 =
 	  from_json_array<json_number_null_no_name<std::optional<int>>>( str );
@@ -667,7 +672,7 @@ bool test_key_value( ) {
 	daw_json_ensure( result.size( ) == 2 and result.at( "a" ) == 0 and
 	                   result.at( "b" ) == 1,
 	                 ErrorReason::Unknown );
-	std::string str{ };
+	auto str = std::string{ };
 	(void)to_json( result, str );
 	auto result2 = from_json<std::map<std::string, int>>( str );
 	return result == result2;
@@ -822,27 +827,24 @@ int main( int, char ** )
 		auto data2 = daw::json::from_json<test_001_t>( tmp );
 		daw::do_not_optimize( data2 );
 	}
-	{
-		auto dtmp = to_json( data );
-		std::cout << dtmp << '\n';
-	}
+	to_json( data, std::cout ) << '\n';
 	CX auto ary =
 	  from_json_array<test_001_t, daw::bounded_vector_t<test_001_t, 10>>(
 	    json_data_array );
 	std::cout << "read in ";
 	std::cout << ary.size( ) << " items\n";
 	for( auto const &v : ary ) {
-		std::cout << to_json( v ) << "\n\n";
+		to_json( v, std::cout ) << "\n\n";
 	}
 	std::cout << "as array\n";
-	std::cout << to_json_array( ary ) << "\n\n";
+	to_json_array( ary, std::cout ) << "\n\n";
 
 	auto t2 = test_002_t{ data };
 	t2.a.o2 = std::nullopt;
-	std::cout << to_json( t2 ) << '\n';
+	to_json( t2, std::cout ) << '\n';
 
 	test_003_t t3{ data };
-	std::cout << to_json( t3 ) << '\n';
+	to_json( t3, std::cout ) << '\n';
 
 	e_test_001_t t4{ };
 	auto e_test_001_str = to_json( t4 );
@@ -884,7 +886,7 @@ int main( int, char ** )
 	std::cout << "sum2: " << sum << '\n';
 
 	std::vector<double> a = { 1.1, 11.1 };
-	std::cout << daw::json::to_json_array( a ) << '\n';
+	to_json_array( a, std::cout ) << '\n';
 
 	using namespace daw::json;
 	using num_t =
@@ -893,27 +895,23 @@ int main( int, char ** )
 	                                options::JsonNumberErrors::AllowNanInf )>;
 	std::cout << "Inf double: "
 	          << "serialize: "
-	          << to_json<std::string, num_t>(
-	               std::numeric_limits<double>::infinity( ) )
+	          << to_json<num_t>( std::numeric_limits<double>::infinity( ) )
 	          << '\n';
 	std::cout << "parse: " << from_json<num_t>( R"("Infinity")" ) << '\n';
 	std::cout << "-Inf double: "
 	          << "serialize: "
-	          << to_json<std::string, num_t>(
-	               -std::numeric_limits<double>::infinity( ) )
+	          << to_json<num_t>( -std::numeric_limits<double>::infinity( ) )
 	          << '\n';
 	std::cout << "parse: " << from_json<num_t>( R"("-Infinity")" ) << '\n';
 
 	std::cout << "NaN double: "
 	          << "serialize: "
-	          << to_json<std::string, num_t>(
-	               std::numeric_limits<double>::quiet_NaN( ) )
+	          << to_json<num_t>( std::numeric_limits<double>::quiet_NaN( ) )
 	          << '\n';
 	std::cout << "parse: " << from_json<num_t>( R"("NaN")" ) << '\n';
 
 	std::cout << "Negative 0: "
-	          << "serialize: "
-	          << to_json<std::string, num_t>( std::copysign( 0.0, -1.0 ) )
+	          << "serialize: " << to_json<num_t>( std::copysign( 0.0, -1.0 ) )
 	          << '\n';
 
 	std::cout << "parse: " << from_json<double>( "-0.0" ) << '\n';
@@ -1078,8 +1076,8 @@ int main( int, char ** )
 	test_dblparse( "0.9868011474609375", true );
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
 #if defined( LDBL_MAX )
-	std::cout << "result: " << from_json<long double>( "0.9868011474609375" )
-	          << '\n';
+	std::cout << "long double result: "
+	          << from_json<long double>( "0.9868011474609375" ) << '\n';
 #endif
 	std::cout << "Default FP Parse\n";
 	std::cout << "Unknown Bounds\n";
@@ -1120,7 +1118,7 @@ int main( int, char ** )
 		long double const d1 = strtold( two63e100.data( ), &end );
 		std::cout << d1 << '\n';
 		double d2 = 0.89;
-		std::cout << to_json( d2 ) << '\n';
+		to_json( d2, std::cout ) << '\n';
 	}
 #endif
 	test_show_lots_of_doubles( );
@@ -1213,36 +1211,41 @@ int main( int, char ** )
 
 	std::cout << "FP Output formating of 123456789.23456789012345:\n";
 	constexpr double outfmt_dbl = 123456789.23456789012345;
-	std::cout
-	  << "auto: "
-	  << to_json<std::string,
-	             json_base::json_number<
+	std::cout << "auto: "
+	          << to_json<json_base::json_number<
 	               double, options::number_opt( options::FPOutputFormat::Auto )>>(
-	       outfmt_dbl )
-	  << '\n';
+	               outfmt_dbl )
+	          << '\n';
 	std::cout
 	  << "decimal: "
-	  << to_json<std::string, json_base::json_number<
-	                            double, options::number_opt(
-	                                      options::FPOutputFormat::Decimal )>>(
+	  << to_json<json_base::json_number<
+	       double, options::number_opt( options::FPOutputFormat::Decimal )>>(
 	       outfmt_dbl )
 	  << '\n';
 	std::cout
 	  << "scientific: "
-	  << to_json<std::string, json_base::json_number<
-	                            double, options::number_opt(
-	                                      options::FPOutputFormat::Scientific )>>(
+	  << to_json<json_base::json_number<
+	       double, options::number_opt( options::FPOutputFormat::Scientific )>>(
 	       outfmt_dbl )
 	  << '\n';
 
-#if defined( __cpp_char8_t )
+	auto byte_vec = to_json( 5.5, std::vector<std::byte>{ } );
+	assert( byte_vec.size( ) == 3 );
+	assert( static_cast<char>( byte_vec[0] ) == '5' );
+	assert( static_cast<char>( byte_vec[1] ) == '.' );
+	assert( static_cast<char>( byte_vec[2] ) == '5' );
+	(void)byte_vec;
+#if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L
-	std::cout << "u8string\n";
-	<< to_json<std::u8string, json_base::json_number<
-	                            double, options::number_opt(
-	                                      options::FPOutputFormat::Decimal )>>(
-	     outfmt_dbl )
-	<< '\n';
+	static_assert( daw::is_writable_output_type_v<std::u8string> );
+	std::cout
+	  << "u8string\n"
+	  << reinterpret_cast<char const *>(
+	       to_json<json_base::json_number<
+	         double, options::number_opt( options::FPOutputFormat::Decimal )>>(
+	         outfmt_dbl, std::u8string{ } )
+	         .c_str( ) )
+	  << '\n';
 #endif
 #endif
 

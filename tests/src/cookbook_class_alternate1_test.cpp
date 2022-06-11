@@ -48,7 +48,7 @@ int main( ) {
 		std::cerr << "Error parsing\n";
 		std::terminate( );
 	}
-	auto const js = to_json<std::string, json_alt<Thing>>( b );
+	auto const js = to_json<json_alt<Thing>>( b );
 	if( js != "[42]" ) {
 		std::cerr << "Round-trip failure\n";
 		std::terminate( );

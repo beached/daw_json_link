@@ -6,162 +6,156 @@
 # Official repository: https://github.com/beached/daw_json_link
 #
 
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required( VERSION 3.14 )
 
-project("daw-json-link"
-        VERSION "3.0.0"
-        DESCRIPTION "Static JSON parsing in C++"
-        HOMEPAGE_URL "https://github.com/beached/daw_json_link"
-        LANGUAGES C CXX)
+project( "daw-json-link"
+         VERSION "3.0.0"
+         DESCRIPTION "Static JSON parsing in C++"
+         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
+         LANGUAGES C CXX )
 
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
+set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested." )
 
 # Options used. Those tagged with Define are also the name of the source definition
-set(DAW_JSON_VER_OVERRIDE OFF CACHE STRING "Override the default inline namespace name used for API versioning")
-option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
-option(DAW_ENABLE_TESTING "Build unit tests and examples" OFF)
-option(DAW_JSON_PARSER_DIAGNOSTICS "Define: Output debug info while parsing" OFF)
+set( DAW_JSON_VER_OVERRIDE OFF CACHE STRING "Override the default inline namespace name used for API versioning" )
+option( DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF )
+option( DAW_ENABLE_TESTING "Build unit tests and examples" OFF )
+option( DAW_JSON_PARSER_DIAGNOSTICS "Define: Output debug info while parsing" OFF )
 
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
     # gcc 11.20 has weird error "modification of '<anonymous>' is not a constant expression"
-    add_compile_definitions(DAW_NO_CONSTEXPR_SCOPE_GUARD)
+    add_compile_definitions( DAW_NO_CONSTEXPR_SCOPE_GUARD )
     # gcc has difficulty and takes too long to compile
-endif ()
+endif()
 
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-    option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
-elseif (DEFINED (CMAKE_BUILD_TYPE))
-    if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-        option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
-    else ()
-        option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
-    endif ()
-else ()
-    option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
-endif ()
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" )
+    option( DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON )
+elseif( DEFINED ( CMAKE_BUILD_TYPE ))
+    if( ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
+        option( DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON )
+    else()
+        option( DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF )
+    endif()
+else()
+    option( DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF )
+endif()
 
-option(DAW_JSON_FORCE_INT128 "Define: Force support for 128bit int" OFF)
-if (CMAKE_CXX_FLAGS MATCHES "-fno-exceptions")
-    option(DAW_USE_EXCEPTIONS "Define: Throw exceptions when json errors occur or terminate" OFF)
-    if (DAW_USE_EXCEPTIONS)
-        message(FATAL_ERROR "CXX_FLAGS contains -fno-exceptions and -DDAW_USE_EXCEPTIONS=ON has been requested.  Cannot do both")
-    endif ()
-else ()
-    option(DAW_USE_EXCEPTIONS "Define: Throw exceptions when json errors occur or terminate" ON)
-endif ()
-include(CMakeDependentOption)
-cmake_dependent_option(DAW_JSON_USE_STDEXCEPT "daw::json::json_exception will inherit from std::exception" OFF "DAW_USE_EXCEPTIONS" OFF)
+option( DAW_JSON_FORCE_INT128 "Define: Force support for 128bit int" OFF )
+if( CMAKE_CXX_FLAGS MATCHES "-fno-exceptions" )
+    option( DAW_USE_EXCEPTIONS "Define: Throw exceptions when json errors occur or terminate" OFF )
+    if( DAW_USE_EXCEPTIONS )
+        message( FATAL_ERROR "CXX_FLAGS contains -fno-exceptions and -DDAW_USE_EXCEPTIONS=ON has been requested.  Cannot do both" )
+    endif()
+else()
+    option( DAW_USE_EXCEPTIONS "Define: Throw exceptions when json errors occur or terminate" ON )
+endif()
+include( CMakeDependentOption )
 
-option(DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE "Define: Output error reason before calling terminate in non-exception builds" OFF)
+option( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE "Define: Output error reason before calling terminate in non-exception builds" OFF )
 if( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
-	message( STATUS "DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE is set.  Prior to calling terminate on error, reason will be output to stderr" )
-	add_compile_definitions(DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE=1)
-endif( )
+    message( STATUS "DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE is set.  Prior to calling terminate on error, reason will be output to stderr" )
+    add_compile_definitions( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE=1 )
+endif()
 
-if (DAW_JSON_VER_OVERRIDE)
-    message( STATUS "DAW_JSON_VER_OVERRIDE is set to '${DAW_JSON_VER_OVERRIDE}', overriding inline namespace for API version")
-    add_compile_definitions(DAW_JSON_VER_OVERRIDE=${DAW_JSON_VER_OVERRIDE})
-endif ()
+if( DAW_JSON_VER_OVERRIDE )
+    message( STATUS "DAW_JSON_VER_OVERRIDE is set to '${DAW_JSON_VER_OVERRIDE}', overriding inline namespace for API version" )
+    add_compile_definitions( DAW_JSON_VER_OVERRIDE=${DAW_JSON_VER_OVERRIDE} )
+endif()
 
-include(GNUInstallDirs)
+include( GNUInstallDirs )
 
-set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set(json_link_INSTALL_CMAKEDIR
-        "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
-        CACHE STRING
-        "The install directory to use for CMake package config files")
+set( PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include )
+set( json_link_INSTALL_CMAKEDIR
+     "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
+     CACHE STRING
+     "The install directory to use for CMake package config files" )
 
 
-add_compile_definitions(DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD})
+add_compile_definitions( DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD} )
 
-if (NOT DAW_USE_PACKAGE_MANAGEMENT)
-    add_subdirectory(extern)
-else ()
-    find_package(daw-header-libraries REQUIRED)
-    find_package(daw-utf-range REQUIRED)
-endif ()
+if( NOT DAW_USE_PACKAGE_MANAGEMENT )
+    add_subdirectory( extern )
+else()
+    find_package( daw-header-libraries REQUIRED )
+    find_package( daw-utf-range REQUIRED )
+endif()
 
-if (DAW_JSON_PARSER_DIAGNOSTICS)
-    message( STATUS "Building with parser diagnostics enabled")
-    add_compile_definitions(DAW_JSON_PARSER_DIAGNOSTICS)
-endif ()
+if( DAW_JSON_PARSER_DIAGNOSTICS )
+    message( STATUS "Building with parser diagnostics enabled" )
+    add_compile_definitions( DAW_JSON_PARSER_DIAGNOSTICS )
+endif()
 
-if (DAW_JSON_FORCE_INT128)
-    if (DAW_JSON_NO_INT128)
-    else ()
-        message( STATUS "Forcing support of int128")
-        add_definitions(-DDAW_HAS_INT128)
-    endif ()
-endif ()
+if( DAW_JSON_FORCE_INT128 )
+    if( DAW_JSON_NO_INT128 )
+    else()
+        message( STATUS "Forcing support of int128" )
+        add_definitions( -DDAW_HAS_INT128 )
+    endif()
+endif()
 
-if (DAW_USE_EXCEPTIONS)
-    message( STATUS "DAW_USE_EXCEPTIONS=ON: Errors throw json_exception")
-    add_definitions(-DDAW_USE_EXCEPTIONS=true)
-else ()
-    message( STATUS "DAW_USE_EXCEPTIONS=OFF: Errors call std::terminate")
-    add_definitions(-DDAW_DONT_USE_EXCEPTIONS=true)
-endif ()
+if( DAW_USE_EXCEPTIONS )
+    message( STATUS "DAW_USE_EXCEPTIONS=ON: Errors throw json_exception" )
+    add_definitions( -DDAW_USE_EXCEPTIONS=true )
+else()
+    message( STATUS "DAW_USE_EXCEPTIONS=OFF: Errors call std::terminate" )
+    add_definitions( -DDAW_DONT_USE_EXCEPTIONS=true )
+endif()
 
-if (DAW_JSON_USE_STDEXCEPT)
-    message( STATUS "DAW_JSON_USE_STDEXCEPT=ON: daw::json::json_exception will inherit from std::exception")
-    add_definitions(-DDAW_JSON_USE_STDEXCEPT)
-endif ()
+if( DAW_NO_FLATTEN )
+    message( STATUS "DAW_NO_FLATTEN=ON: Disabling function flattening and forced inline optimization" )
+    add_definitions( -DDAW_NO_FLATTEN -DDAW_NO_FORCED_INLINE )
+endif()
 
-if (DAW_NO_FLATTEN)
-    message( STATUS "DAW_NO_FLATTEN=ON: Disabling function flattening and forced inline optimization")
-    add_definitions(-DDAW_NO_FLATTEN -DDAW_NO_FORCED_INLINE)
-endif ()
+if( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
+    message( STATUS "DAW_JSON_NO_FAIL_ON_NO_NAME_NAME=ON: Disabling check for no_name named members" )
+    add_definitions( -DDAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
+endif()
 
-if (DAW_JSON_NO_FAIL_ON_NO_NAME_NAME)
-    message( STATUS "DAW_JSON_NO_FAIL_ON_NO_NAME_NAME=ON: Disabling check for no_name named members")
-    add_definitions(-DDAW_JSON_NO_FAIL_ON_NO_NAME_NAME)
-endif ()
+add_library( ${PROJECT_NAME} INTERFACE )
+add_library( daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME} )
+add_library( daw::json_link ALIAS ${PROJECT_NAME} )
+if( NOT DAW_USE_PACKAGE_MANAGEMENT )
+    target_link_libraries( ${PROJECT_NAME} INTERFACE daw::daw-header-libraries daw::daw-utf-range )
+endif()
 
-add_library(${PROJECT_NAME} INTERFACE)
-add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-add_library(daw::json_link ALIAS ${PROJECT_NAME})
-if (NOT DAW_USE_PACKAGE_MANAGEMENT)
-    target_link_libraries(${PROJECT_NAME} INTERFACE daw::daw-header-libraries daw::daw-utf-range)
-endif ()
+target_compile_features( ${PROJECT_NAME} INTERFACE cxx_std_17 )
+target_include_directories( ${PROJECT_NAME}
+                            INTERFACE
+                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+                            )
 
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
-target_include_directories(${PROJECT_NAME}
-        INTERFACE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-        )
+install( TARGETS ${PROJECT_NAME}
+         EXPORT ${PROJECT_NAME}_Targets
+         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 
-install(TARGETS ${PROJECT_NAME}
-        EXPORT ${PROJECT_NAME}_Targets
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-include(CMakePackageConfigHelpers)
+include( CMakePackageConfigHelpers )
 
 configure_package_config_file(
         "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
         "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
         INSTALL_DESTINATION
-        ${json_link_INSTALL_CMAKEDIR})
+        ${json_link_INSTALL_CMAKEDIR} )
 
-write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
-        VERSION ${PROJECT_VERSION}
-        COMPATIBILITY SameMajorVersion)
+write_basic_package_version_file( "${PROJECT_NAME}ConfigVersion.cmake"
+                                  VERSION ${PROJECT_VERSION}
+                                  COMPATIBILITY SameMajorVersion )
 
-install(EXPORT ${PROJECT_NAME}_Targets
-        FILE ${PROJECT_NAME}Targets.cmake
-        NAMESPACE daw::
-        DESTINATION ${json_link_INSTALL_CMAKEDIR})
+install( EXPORT ${PROJECT_NAME}_Targets
+         FILE ${PROJECT_NAME}Targets.cmake
+         NAMESPACE daw::
+         DESTINATION ${json_link_INSTALL_CMAKEDIR} )
 
-install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-        DESTINATION ${json_link_INSTALL_CMAKEDIR})
+install( FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+         "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+         DESTINATION ${json_link_INSTALL_CMAKEDIR} )
 
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION include/)
+install( DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION include/ )
 
-if (DAW_ENABLE_TESTING)
+if( DAW_ENABLE_TESTING )
     enable_testing()
-    add_subdirectory(tests)
-endif ()
+    add_subdirectory( tests )
+endif()
 
