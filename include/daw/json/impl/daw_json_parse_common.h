@@ -592,10 +592,11 @@ namespace daw::json {
 
 			template<typename T>
 			struct json_deduced_type_map<
-			  T, std::enable_if_t<concepts::is_readable_value_v<T> and
-			                      not has_json_data_contract_trait_v<T> and
-			                      daw::is_detected_v<json_deduced_type_map,
-			                                         concepts::readable_value_type_t<T>>>> {
+			  T, std::enable_if_t<
+			       concepts::is_readable_value_v<T> and
+			       not has_json_data_contract_trait_v<T> and
+			       daw::is_detected_v<json_deduced_type_map,
+			                          concepts::readable_value_type_t<T>>>> {
 
 				static constexpr bool is_null = true;
 				using sub_type = concepts::readable_value_type_t<T>;
@@ -858,9 +859,9 @@ namespace daw::json {
 			template<typename Constructor>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
 			construct_nullable_empty( ) {
-				if constexpr( std::is_invocable_v<Constructor,
-				                                  concepts::construct_readable_empty_t> ) {
-					return Constructor{ }(concepts::construct_readable_empty );
+				if constexpr( std::is_invocable_v<
+				                Constructor, concepts::construct_readable_empty_t> ) {
+					return Constructor{ }( concepts::construct_readable_empty );
 				} else {
 					return Constructor{ }( );
 				}
