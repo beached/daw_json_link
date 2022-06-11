@@ -904,7 +904,7 @@ $(function() {
 <div class="line"><a name="l00832"></a><span class="lineno">  832</span>&#160;            <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>.put( <span class="charliteral">&#39;0&#39;</span> );</div>
 <div class="line"><a name="l00833"></a><span class="lineno">  833</span>&#160;          } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00834"></a><span class="lineno">  834</span>&#160;            <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( v &gt; 0, ErrorReason::NumberOutOfRange );</div>
-<div class="line"><a name="l00835"></a><span class="lineno">  835</span>&#160;            <span class="keywordtype">char</span> buff[daw::numeric_limits&lt;under_type&gt;::digits10 + 1]{ };</div>
+<div class="line"><a name="l00835"></a><span class="lineno">  835</span>&#160;            <span class="keywordtype">char</span> buff[daw::numeric_limits&lt;under_type&gt;::digits10 + 10]{ };</div>
 <div class="line"><a name="l00836"></a><span class="lineno">  836</span>&#160;            <span class="keywordtype">char</span> *ptr = buff;</div>
 <div class="line"><a name="l00837"></a><span class="lineno">  837</span>&#160;            <span class="keywordflow">while</span>( v &gt;= 10 ) {</div>
 <div class="line"><a name="l00838"></a><span class="lineno">  838</span>&#160;              <span class="keyword">auto</span> <span class="keyword">const</span> <a class="code" href="daw__json__iterator_8h.html#aa1eb234e2b6ef9bd927ad384b04357ac">tmp</a> = <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( v % 100 );</div>

@@ -1,10 +1,11 @@
 # Variant Types
 
 Variant or sum types are where the json member can have more than one type(like string, number, class, or array).
-JSON Link supports several forms of variant types 
-  * An undiscriminated variant that is limited to a set of alternatives where there is up to one of each of the basic JSON types(array, object, string, number, bool, null).  
-  * A discriminated variant where the discriminator is another member of the same class.  e.g. ```json { "type": 1, "value": [] }``` where `"value"`'s type is determined by `"type"`
-  * A discriminated variant where the discriminator is a submember of the class type being parsed.  e.g ```json { "obj": { "type": 1 } }``` where "type" determines how the class itself will be parsed
+JSON Link supports several forms of variant types
+
+* An undiscriminated variant that is limited to a set of alternatives where there is up to one of each of the basic JSON types(array, object, string, number, bool, null).
+* A discriminated variant where the discriminator is another member of the same class. e.g. ```json { "type": 1, "value": [] }``` where `"value"`'s type is determined by `"type"`
+* A discriminated variant where the discriminator is a submember of the class type being parsed. e.g ```json { "obj": { "type": 1 } }``` where "type" determines how the class itself will be parsed
 
 Take the following JSON array:
 
@@ -32,28 +33,28 @@ string, and previously mapped types can be default mapped to elements that do no
 array, and some key_value's.
 
 ```c++
+struct MyVariantStuff1 {
+  std::variant<int, std::string> member0;
+  std::variant<std::string, bool> member1;
+};
 
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyVariantStuff1> {
+    using type = json_member_list<
+      json_variant<"member0", std::variant<int, std::string>,
+        json_variant_type_list<int,
+          json_string<no_name>>>,
+      json_variant<
+        "member1", std::variant<std::string, bool>,
+        json_variant_type_list<std::string, json_bool<no_name>>>>;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    static inline auto
+    to_json_data( MyVariantStuff1 const &value ) {
+      return std::forward_as_tuple( value.member0, value.member1 );
+    }
+  };
+} 
 ```
 
 ## Important note:
@@ -95,37 +96,37 @@ Too see a working example using this code, refer
 to [cookbook_variant2_test.cpp](../tests/src/cookbook_variant2_test.cpp)
 
 ```c++
+struct MyClass {
+  std::string name;
+  std::variant<std::string, int, bool> value;  
+};
 
+struct MyClassSwitcher {
+  // Convert JSON tag member to type index
+  constexpr size_t operator( )( int type ) const {
+    return (size_t)type;
+  }     
+  // Get value for Tag from class value
+  int operator( )( MyClass const & v ) const {
+    return (int)v.index( );
+  }
+};
 
+template<>
+struct daw::json::json_data_contract<MyClass> {
+  using type = json_member_list<
+    json_string<"name">,
+    json_tagged_variant<
+      "value", 
+      std::variant<std::string, int, bool>,
+      json_number<"type", int>,
+      MyClassSwitcher>
+    >;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  static constexpr inline to_json_data( MyClass const & v ) {
+    return std::forward_as_tuple( v.name, v.value );
+  }
+};
 ```
 
 In the above example, two members are mapped to construct MyClass, `"name"` and `"value"`. The variant uses the
@@ -163,43 +164,43 @@ Too see a working example using this code, refer
 to [cookbook_variant3_test.cpp](../tests/src/cookbook_variant3_test.cpp)
 
  ```c++
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ struct MyClass {
+   std::string name;
+   std::variant<std::string, int, bool> value;  
+ };
+ 
+ struct MyClassSwitcher {
+   // Convert JSON tag member to type index
+   constexpr size_t operator( )( int type ) const {
+     return (size_t)type;
+   }     
+   // Get value for Tag from class value
+   int operator( )( MyClass const & v ) const {
+     return (int)v.index( );
+   }
+ };
+ 
+ template<>
+ struct daw::json::json_data_contract<MyClass> {
+   using type = json_member_list<
+     json_string<"name">,
+     json_tagged_variant<
+       "value", 
+       std::variant<std::string, int, bool>,
+       json_number<"type", int>,
+       MyClassSwitcher,
+       json_tagged_variant_type_list<
+         std::string,
+         json_number<no_name, int>,
+         json_bool<no_name>    
+       >
+     >
+   >;
+ 
+   static constexpr to_json_data( MyClass const & v ) {
+     return std::forward_as_tuple( v.name, v.value );
+   }
+ };
 ```
 
 As you can see, the json_variant_type_list can use terse type names for some, or the full names.
