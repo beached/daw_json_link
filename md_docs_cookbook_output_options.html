@@ -67,7 +67,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><code>daw::json::to_json</code> allows optional policy flags to control the output. The defaults are specified below under Format Policy Flags. All the enum's below are in the <code><a class="el" href="namespacedaw_1_1json_1_1options.html">daw::json::options</a></code> namespace</p>
-<h1><a class="anchor" id="autotoc_md69"></a>
+<h1><a class="anchor" id="autotoc_md71"></a>
 Example</h1>
 <p>The example below shows output with the defaults and with Pretty formatting enabled. To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_output_flags1_test.cpp">cookbook_output_flags1_test.cpp</a> </p><div class="fragment"><div class="line"><span class="keyword">struct </span>OutputFlags1 {</div>
 <div class="line">  std::string s;</div>
@@ -103,26 +103,26 @@ Example</h1>
 <div class="line">    3</div>
 <div class="line">  ]</div>
 <div class="line">}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md70"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md72"></a>
 Format Policy Flags</h1>
-<h2><a class="anchor" id="autotoc_md71"></a>
+<h2><a class="anchor" id="autotoc_md73"></a>
 &lt;tt&gt;SerializationFormat&lt;/tt&gt;</h2>
 <p>Enable or disable formatted output</p>
-<h3><a class="anchor" id="autotoc_md72"></a>
+<h3><a class="anchor" id="autotoc_md74"></a>
 Values</h3>
 <ul>
 <li><code>Minified</code> - Output the minimal JSON document</li>
 <li><code>Pretty</code> - Use newlines and indentation to format JSON document</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md73"></a>
+<h3><a class="anchor" id="autotoc_md75"></a>
 Default</h3>
 <ul>
 <li><code>Minified</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md74"></a>
+<h2><a class="anchor" id="autotoc_md76"></a>
 &lt;tt&gt;IndentationType&lt;/tt&gt;</h2>
 <p>Control how the file is indented</p>
-<h3><a class="anchor" id="autotoc_md75"></a>
+<h3><a class="anchor" id="autotoc_md77"></a>
 Values</h3>
 <ul>
 <li><code>Tab</code> - use tab character for indentation</li>
@@ -134,29 +134,29 @@ Values</h3>
 <li><code>Space8</code> - Indent 8 spaces</li>
 <li><code>Space10</code> - Indent 10 spaces :) <a href="https://youtu.be/SsoOG6ZeyUI">https://youtu.be/SsoOG6ZeyUI</a></li>
 </ul>
-<h3><a class="anchor" id="autotoc_md76"></a>
+<h3><a class="anchor" id="autotoc_md78"></a>
 Default</h3>
 <ul>
 <li><code>Space2</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md77"></a>
+<h2><a class="anchor" id="autotoc_md79"></a>
 &lt;tt&gt;RestrictedStringOutput&lt;/tt&gt;</h2>
 <p>Allow for a JSON document that is ASCII only and each byte has a value &lt;= 0x7F</p>
-<h3><a class="anchor" id="autotoc_md78"></a>
+<h3><a class="anchor" id="autotoc_md80"></a>
 Values</h3>
 <ul>
 <li><code>None</code> - Do not restrict to 7bit ASCII</li>
 <li><code>OnlyAllow7bitStrings</code> - Restrict all string member values and all member names to 7bits, escaping all values &gt;= 0x7F.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md79"></a>
+<h3><a class="anchor" id="autotoc_md81"></a>
 Default</h3>
 <ul>
 <li><code>None</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md80"></a>
+<h2><a class="anchor" id="autotoc_md82"></a>
 &lt;tt&gt;NewLineDelimiter&lt;/tt&gt;</h2>
 <p>Change how newlines are delimited</p>
-<h3><a class="anchor" id="autotoc_md81"></a>
+<h3><a class="anchor" id="autotoc_md83"></a>
 Values</h3>
 <ul>
 <li><code>n</code> - Use <br  />
@@ -164,29 +164,29 @@ Values</h3>
 <li><code>rn</code> - Use \r<br  />
  to delimit newlines</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md82"></a>
+<h3><a class="anchor" id="autotoc_md84"></a>
 Default</h3>
 <ul>
 <li><code>n</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md83"></a>
+<h2><a class="anchor" id="autotoc_md85"></a>
 &lt;tt&gt;OutputTrailingComma&lt;/tt&gt;</h2>
 <p>With arrays/classes output optionally output a trailing comma</p>
-<h3><a class="anchor" id="autotoc_md84"></a>
+<h3><a class="anchor" id="autotoc_md86"></a>
 Values</h3>
 <ul>
 <li><code>No</code> - Do not output trailing comma's. This is conformant</li>
 <li><code>Yes</code> - Add non-conformant trailing commas to array elements and class members</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md85"></a>
+<h3><a class="anchor" id="autotoc_md87"></a>
 Default</h3>
 <ul>
 <li><code>No</code> </li>
 </ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__from__json_8h_source.html#l00023">daw_from_json.h:23</a></div></div>
-<div class="ttc" id="adaw__json__event__parser_8h_html_a32f1e0329a2cea27fc6478b5d4de3609"><div class="ttname"><a href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a></div><div class="ttdeci">StackParseStateType type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00317">daw_json_event_parser.h:317</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
+<div class="ttc" id="adaw__json__event__parser_8h_html_a32f1e0329a2cea27fc6478b5d4de3609"><div class="ttname"><a href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a></div><div class="ttdeci">StackParseStateType type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00319">daw_json_event_parser.h:319</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1options_html"><div class="ttname"><a href="namespacedaw_1_1json_1_1options.html">daw::json::options</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__options_8h_source.html#l00015">daw_json_parse_options.h:15</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

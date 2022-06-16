@@ -82,7 +82,7 @@ $(function() {
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">version.h</a>&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../../daw_writable_output.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../concepts/daw_writable_output.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__option__bits_8h.html">daw_json_option_bits.h</a>&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__parse__options__impl_8h.html">daw_json_parse_options_impl.h</a>&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__serialize__options__impl_8h.html">daw_json_serialize_options_impl.h</a>&quot;</span></div>
@@ -119,7 +119,7 @@ $(function() {
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;               json_details::serialization::default_policy_flag&gt;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">struct </span>serialization_policy {</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      static_assert(</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        is_writable_output_type_v&lt;WritableType&gt;,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        concepts::is_writable_output_type_v&lt;WritableType&gt;,</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="stringliteral">&quot;Output type does not have a writeable_output_trait specialization&quot;</span> );</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      <span class="keyword">using</span> i_am_a_serialization_policy = void;</div>
 <div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="daw__json__serialize__policy_8h.html#a09c27fa4aa9ac20e6f4201a224749b55">   53</a></span>&#160;      WritableType *<a class="code" href="daw__json__serialize__policy_8h.html#a09c27fa4aa9ac20e6f4201a224749b55">m_writable</a>;</div>
@@ -203,7 +203,7 @@ $(function() {
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... ContiguousCharRanges&gt;</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;      constexpr <span class="keywordtype">void</span> write( ContiguousCharRanges &amp;&amp;...chrs ) {</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        static_assert( <span class="keyword">sizeof</span>...( ContiguousCharRanges ) &gt; 0 );</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        writable_output_trait&lt;WritableType&gt;::write(</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        concepts::writable_output_trait&lt;WritableType&gt;::write(</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;          *<a class="code" href="daw__json__serialize__policy_8h.html#a09c27fa4aa9ac20e6f4201a224749b55">m_writable</a>, daw::string_view( chrs )... );</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      }</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160; </div>
@@ -213,7 +213,7 @@ $(function() {
 <div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;      }</div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160; </div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;      constexpr <span class="keywordtype">void</span> put( <span class="keywordtype">char</span> c ) {</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        writable_output_trait&lt;WritableType&gt;::put( *<a class="code" href="daw__json__serialize__policy_8h.html#a09c27fa4aa9ac20e6f4201a224749b55">m_writable</a>, c );</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        concepts::writable_output_trait&lt;WritableType&gt;::put( *<a class="code" href="daw__json__serialize__policy_8h.html#a09c27fa4aa9ac20e6f4201a224749b55">m_writable</a>, c );</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;      }</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160; </div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      constexpr serialization_policy &amp;operator=( <span class="keywordtype">char</span> c ) {</div>
@@ -246,7 +246,7 @@ $(function() {
 <div class="ttc" id="adaw__json__serialize__policy__details_8h_html"><div class="ttname"><a href="daw__json__serialize__policy__details_8h.html">daw_json_serialize_policy_details.h</a></div></div>
 <div class="ttc" id="adaw__json__serialize__options_8h_html_ab5bf7bbafb0678db22c8aba2504f0076"><div class="ttname"><a href="daw__json__serialize__options_8h.html#ab5bf7bbafb0678db22c8aba2504f0076">IndentationType</a></div><div class="ttdeci">IndentationType</div><div class="ttdoc">When Pretty mode is enabled, choose the indentation type.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00037">daw_json_serialize_options.h:37</a></div></div>
 <div class="ttc" id="adaw__json__serialize__policy_8h_html_a9b79916c39598f4754e9c40f6f89fd2d"><div class="ttname"><a href="daw__json__serialize__policy_8h.html#a9b79916c39598f4754e9c40f6f89fd2d">indentation_type</a></div><div class="ttdeci">static constexpr options::IndentationType indentation_type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__policy_8h_source.html#l00075">daw_json_serialize_policy.h:75</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__from__json_8h_source.html#l00023">daw_from_json.h:23</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="adaw__json__serialize__policy_8h_html_a6e9b389a2995ad32c9780bb6359b2fac"><div class="ttname"><a href="daw__json__serialize__policy_8h.html#a6e9b389a2995ad32c9780bb6359b2fac">output_trailing_comma</a></div><div class="ttdeci">static constexpr options::OutputTrailingComma output_trailing_comma</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__policy_8h_source.html#l00087">daw_json_serialize_policy.h:87</a></div></div>
 <div class="ttc" id="adaw__json__serialize__policy_8h_html_a76e66fa39c0c116ff66f2d83151575db"><div class="ttname"><a href="daw__json__serialize__policy_8h.html#a76e66fa39c0c116ff66f2d83151575db">serialization_format</a></div><div class="ttdeci">static constexpr options::SerializationFormat serialization_format</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__policy_8h_source.html#l00071">daw_json_serialize_policy.h:71</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>

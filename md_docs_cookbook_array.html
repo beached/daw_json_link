@@ -67,14 +67,14 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Parsing arrays is common and it is a fundamental data structure in JSON. It can be both the root object or a member.</p>
-<h1><a class="anchor" id="autotoc_md2"></a>
+<h1><a class="anchor" id="autotoc_md4"></a>
 Simple Array of int</h1>
 <div class="fragment"><div class="line">[1,2,3,4,5]</div>
 </div><!-- fragment --><p>The above JSON document contains an array of integers as the root object.</p>
 <p>The C++ to parse this could look like </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">std::vector&lt;int&gt; vec = from_json_array&lt;int&gt;( json_str );</div>
 </div><!-- fragment --><p>To see a working example of the following, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_array1_test.cpp">cookbook_array1_test.cpp</a> The previous is a simple example, had the element type of the array been more complicated, such as a class, a data mapping would be required.</p>
-<h1><a class="anchor" id="autotoc_md3"></a>
+<h1><a class="anchor" id="autotoc_md5"></a>
 Array of a class</h1>
 <div class="fragment"><div class="line">[</div>
 <div class="line">  {</div>
@@ -122,7 +122,7 @@ Array of a class</h1>
 <div class="line"> </div>
 <div class="line">std::vector&lt;MyClass4&gt; v = from_json_array&lt;MyClass4&gt;( str );</div>
 </div><!-- fragment --><p>The above would construct MyClass4 with arguments of types <code>std::string, unsigned, float, bool</code></p>
-<h1><a class="anchor" id="autotoc_md4"></a>
+<h1><a class="anchor" id="autotoc_md6"></a>
 Array's as members</h1>
 <p>Use the <code>json_array</code> member type in the member list to describe a member that is an array type.</p>
 <p>To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_array3_test.cpp">cookbook_array3_test.cpp</a></p>
@@ -157,7 +157,7 @@ Array's as members</h1>
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">}</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md5"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md7"></a>
 Pointer like arrays</h2>
 <p>For dealing with pointer like arrays(T *, has element_type type alias) see <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/int_ptr_test.cpp">int_ptr_test</a> </p>
 </div></div><!-- contents -->
