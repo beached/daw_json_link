@@ -41,7 +41,7 @@ namespace daw::json {
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
-static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+static inline constexpr std::size_t DAW_NUM_RUNS = 2500;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
@@ -100,17 +100,18 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 		using namespace daw::json;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "find_tweet bench(checked, json_value)", sz,
-		  [&]( auto sv ) {
-			  for( auto jp : json_value( sv )["statuses"] ) {
-				  auto const cur_id = jp.value["id"].as<std::uint64_t>( );
-				  if( cur_id == id ) {
+		  [&]( json_value jv ) {
+			  for( auto jp : jv ) {
+				  auto const cur_id = jp.value["id"];
+				  auto id_num = cur_id.template as<std::uint64_t>( );
+				  if( id_num == id ) {
 					  result = from_json<tweet>( jp.value );
 					  return;
 				  }
 			  }
 			  result = tweet{ };
 		  },
-		  json_sv1 );
+		  json_value( json_sv1 )["statuses"] );
 		test_assert( result.id == id,
 		             "Exception while parsing: res.get_exception_message()" );
 		std::cout << "found tweet id: " << id << '\n'
@@ -121,12 +122,11 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 		using namespace daw::json;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "find_tweet bench(unchecked, json_value)", sz,
-		  [&]( auto sv ) {
-			  for( auto jp :
-			       basic_json_value<parse_options( options::CheckedParseMode::no )>(
-			         sv )["statuses"] ) {
-					auto const cur_id = jp.value["id"].as<std::uint64_t>( );
-				  if( cur_id == id ) {
+		  [&]( auto jv ) {
+			  for( auto jp : jv ) {
+				  auto const cur_id = jp.value["id"];
+				  auto id_num = cur_id.template as<std::uint64_t>( );
+				  if( id_num == id ) {
 					  result = from_json<tweet>(
 					    jp.value, options::parse_flags<options::CheckedParseMode::no> );
 					  return;
@@ -134,7 +134,8 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 			  }
 			  result = tweet{ };
 		  },
-		  json_sv1 );
+		  basic_json_value<parse_options( options::CheckedParseMode::no )>(
+		    json_sv1 )["statuses"] );
 		test_assert( result.id == id,
 		             "Exception while parsing: res.get_exception_message()" );
 		std::cout << "found tweet id: " << id << '\n'
@@ -163,7 +164,7 @@ int main( int argc, char **argv )
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	constexpr std::uint64_t id = 505874901689851904ULL; // 144179654289408000ULL;
+	constexpr std::uint64_t id = 505874901689851904ULL;
 	test<options::ExecModeTypes::compile_time>( json_sv1, id );
 }
 #ifdef DAW_USE_EXCEPTIONS
