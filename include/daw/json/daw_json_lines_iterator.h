@@ -11,8 +11,8 @@
 #include "impl/version.h"
 
 #include "impl/daw_json_link_types_fwd.h"
-#include "impl/daw_json_value.h"
 #include "impl/daw_json_parse_class.h"
+#include "impl/daw_json_value.h"
 
 #include <daw/daw_cxmath.h>
 #include <daw/daw_move.h>
@@ -91,7 +91,7 @@ namespace daw::json {
 		public:
 			json_lines_iterator( ) = default;
 
-			inline constexpr explicit json_lines_iterator(
+			inline explicit constexpr json_lines_iterator(
 			  daw::string_view json_lines_doc )
 			  : m_state( ParsePolicy( std::data( json_lines_doc ),
 			                          daw::data_end( json_lines_doc ) ) ) {
@@ -193,7 +193,12 @@ namespace daw::json {
 				}
 				return m_state.first != rhs.m_state.first;
 			}
+
+			constexpr std::string_view get_raw_json_document( ) const {
+				return std::string_view( m_state.first, m_state.size( ) );
+			}
 		};
+		json_lines_iterator( daw::string_view ) -> json_lines_iterator<>;
 
 		/// @brief A range of json_lines_iterators
 		/// @tparam JsonElement Type of each element in array
@@ -210,9 +215,13 @@ namespace daw::json {
 			iterator m_last{ };
 
 		public:
-			json_lines_range( ) = default;
+			explicit json_lines_range( ) = default;
 
-			constexpr explicit json_lines_range( daw::string_view json_lines_doc )
+			explicit constexpr json_lines_range( iterator first, iterator last )
+			  : m_first( first )
+			  , m_last( last ) {}
+
+			explicit constexpr json_lines_range( daw::string_view json_lines_doc )
 			  : m_first( json_lines_doc ) {}
 
 			/// @return first item in range
@@ -231,6 +240,12 @@ namespace daw::json {
 				return m_first == m_last;
 			}
 		};
+		json_lines_range( daw::string_view ) -> json_lines_range<>;
+
+		template<typename JsonElement, auto... PolicyFlags>
+		json_lines_range( json_lines_iterator<JsonElement, PolicyFlags...>,
+		                  json_lines_iterator<JsonElement, PolicyFlags...> )
+		  -> json_lines_range<JsonElement, PolicyFlags...>;
 
 		/// @brief parition the jsonl/nbjson document into num_partition non
 		/// overlapping sub-ranges. This can be used to parallelize json lines
@@ -254,7 +269,7 @@ namespace daw::json {
 					result.emplace_back( jsonl_doc );
 					break;
 				}
-				while( tmp < last and *tmp != '\n' ) {
+				while( tmp < last and * tmp != '\n' ) {
 					++tmp;
 				}
 				if( tmp < last ) {
