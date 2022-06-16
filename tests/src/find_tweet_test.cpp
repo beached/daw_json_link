@@ -102,11 +102,7 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 		  "find_tweet bench(checked, json_value)", sz,
 		  [&]( auto sv ) {
 			  for( auto jp : json_value( sv )["statuses"] ) {
-				  auto const cur_id =
-				    jp.value["id_str"]
-				      .as<json_number_no_name<
-				        std::uint64_t,
-				        options::number_opt( options::LiteralAsStringOpt::Always )>>( );
+				  auto const cur_id = jp.value["id"].as<std::uint64_t>( );
 				  if( cur_id == id ) {
 					  result = from_json<tweet>( jp.value );
 					  return;
@@ -129,11 +125,7 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 			  for( auto jp :
 			       basic_json_value<parse_options( options::CheckedParseMode::no )>(
 			         sv )["statuses"] ) {
-				  auto const cur_id =
-				    jp.value["id_str"]
-				      .as<json_number_no_name<
-				        std::uint64_t,
-				        options::number_opt( options::LiteralAsStringOpt::Always )>>( );
+					auto const cur_id = jp.value["id"].as<std::uint64_t>( );
 				  if( cur_id == id ) {
 					  result = from_json<tweet>(
 					    jp.value, options::parse_flags<options::CheckedParseMode::no> );
