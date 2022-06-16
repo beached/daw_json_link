@@ -12,10 +12,8 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		/***
-		 * This class is used as a way to indicate that a json_data_contract
-		 * specialization has not been done for a user class.
-		 */
+		/// @brief This class is used as a way to indicate that a json_data_contract
+		/// specialization has not been done for a user class.
 		template<typename>
 		struct missing_json_data_contract_for_or_unknown_type;
 
@@ -40,7 +38,6 @@ namespace daw::json {
 		};
 
 		/// @brief This trait gets us the mapping type from the contract.
-		///
 		template<typename T>
 		using json_data_contract_trait_t = typename json_data_contract<T>::type;
 

@@ -14,7 +14,7 @@ the `json_link<Name, Type>` mapping type. The order of deduction is as follows
   | Enum                  |json_number       |Used std::is_enum and std::underlying_type
   | Floating point        |json_number       |Uses std::numeric_limits
   | Associative Container |json_key_value_map|Has begin()/end()/key_type/mapped_type and constructable with two iterators
-  | readable values       |                  |The value_type in the readable mapping of T with the Nullable option set to JsonNullDefault.  See the readable value cookbook item
+  | readable values       |                  |The value_type in the readable mapping of T with a json_null wrapped around T's deduced mapping. See the readable value cookbook item
   | Containers            |json_array        |Excluding associative containers. Uses value_type as the type for each element
 
 * Containers - map to json_array with the element type as the detected type of the value_type. Must have the methods

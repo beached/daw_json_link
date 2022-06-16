@@ -10,7 +10,7 @@
 
 #include "version.h"
 
-#include "../../daw_readable_value.h"
+#include "../concepts/daw_readable_value.h"
 #include "../daw_json_default_constuctor_fwd.h"
 #include "daw_json_assert.h"
 
@@ -30,10 +30,7 @@
 #include <utility>
 #include <vector>
 
-/***
- * Customization point traits
- *
- */
+/// @brief Customization point traits
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
@@ -73,16 +70,6 @@ namespace daw::json {
 		/// Iterator) construction
 		template<typename T, std::size_t Sz>
 		struct default_constructor<std::array<T, Sz>> {
-			DAW_ATTRIB_INLINE constexpr std::array<T, Sz> operator( )( ) const
-			  noexcept( noexcept( std::array<T, Sz>{ } ) ) {
-				return { };
-			}
-
-			DAW_ATTRIB_INLINE constexpr std::array<T, Sz> &&
-			operator( )( std::array<T, Sz> &&v ) const noexcept {
-				return DAW_MOVE( v );
-			}
-
 			template<typename Iterator, std::size_t... Is>
 			DAW_ATTRIB_INLINE static constexpr std::array<T, Sz>
 			construct_array( Iterator first, Iterator last,
@@ -104,6 +91,11 @@ namespace daw::json {
 				return std::array<T, Sz>{ get_result( Is )... };
 			}
 
+			DAW_ATTRIB_INLINE constexpr std::array<T, Sz>
+			operator( )( std::array<T, Sz> &&v ) const noexcept {
+				return DAW_MOVE( v );
+			}
+
 			template<typename Iterator>
 			DAW_ATTRIB_INLINE constexpr std::array<T, Sz>
 			operator( )( Iterator first, Iterator last ) const {
@@ -115,13 +107,8 @@ namespace daw::json {
 		/// front for non-random iterators
 		template<typename T, typename Alloc>
 		struct default_constructor<std::vector<T, Alloc>> {
-			// DAW
-			DAW_ATTRIB_INLINE std::vector<T, Alloc> operator( )( ) const
-			  noexcept( noexcept( std::vector<T, Alloc>( ) ) ) {
-				return { };
-			}
 
-			DAW_ATTRIB_INLINE std::vector<T, Alloc> &&
+			DAW_ATTRIB_INLINE std::vector<T, Alloc>
 			operator( )( std::vector<T, Alloc> &&v ) const
 			  noexcept( noexcept( std::vector<T, Alloc>( v ) ) ) {
 				return DAW_MOVE( v );
@@ -148,16 +135,14 @@ namespace daw::json {
 		};
 
 		/// @brief default constructor for std::unordered_map.  Allows construction
-		/// via (Iterator, Iterator, Allocator) \tparam Key \tparam T \tparam Hash
+		/// via (Iterator, Iterator, Allocator)
+		/// @tparam Key Key type in unordered map
+		/// @tparam T Value type in unordered map
+		/// @tparam Hash Hash type in unordered map
 		template<typename Key, typename T, typename Hash, typename CompareEqual,
 		         typename Alloc>
 		struct default_constructor<
 		  std::unordered_map<Key, T, Hash, CompareEqual, Alloc>> {
-			DAW_ATTRIB_INLINE std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
-			operator( )( ) const noexcept(
-			  noexcept( std::unordered_map<Key, T, Hash, CompareEqual, Alloc>( ) ) ) {
-				return { };
-			}
 
 			DAW_ATTRIB_INLINE std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
 			operator( )( std::unordered_map<Key, T, Hash, CompareEqual, Alloc> &&v )
@@ -176,28 +161,29 @@ namespace daw::json {
 			}
 		};
 
-		/***
-		 * Default constructor for readable nullable types.
-		 */
+		/// @brief Default constructor for readable nullable types.
 		template<typename T>
-		struct nullable_constructor<T, std::enable_if_t<is_readable_value_v<T>>> {
-			using value_type = readable_value_type_t<T>;
-			using rtraits_t = readable_value_traits<T>;
+		struct nullable_constructor<
+		  T, std::enable_if_t<concepts::is_readable_value_v<T>>> {
+			using value_type = concepts::readable_value_type_t<T>;
+			using rtraits_t = concepts::readable_value_traits<T>;
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( construct_readable_empty_t ) const
-			  noexcept( is_readable_empty_nothrow_constructible_v<T> ) {
-				static_assert( is_readable_empty_constructible_v<T> );
-				return rtraits_t{ }( construct_readable_empty );
+			operator( )( concepts::construct_readable_empty_t ) const
+			  noexcept( concepts::is_readable_empty_nothrow_constructible_v<T> ) {
+				static_assert( concepts::is_readable_empty_constructible_v<T> );
+				return rtraits_t{ }( concepts::construct_readable_empty );
 			}
 
 			template<typename... Args,
-			         std::enable_if_t<is_readable_value_constructible_v<T, Args...>,
-			                          std::nullptr_t> = nullptr>
+			         std::enable_if_t<
+			           concepts::is_readable_value_constructible_v<T, Args...>,
+			           std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( Args &&...args ) const
-			  noexcept( is_readable_value_nothrow_constructible_v<T, Args...> ) {
-				return rtraits_t{ }( construct_readable_value, DAW_FWD( args )... );
+			operator( )( Args &&...args ) const noexcept(
+			  concepts::is_readable_value_nothrow_constructible_v<T, Args...> ) {
+				return rtraits_t{ }( concepts::construct_readable_value,
+				                     DAW_FWD( args )... );
 			}
 		};
 	} // namespace DAW_JSON_VER

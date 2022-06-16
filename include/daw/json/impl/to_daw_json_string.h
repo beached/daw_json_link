@@ -138,48 +138,50 @@ namespace daw::json {
 					return to_string( value );
 				} else if constexpr( std::is_enum_v<U> ) {
 					return to_string( static_cast<std::underlying_type_t<U>>( value ) );
-				} else if constexpr( is_readable_value_v<U> ) {
-					using value_type = readable_value_type_t<U>;
+				} else if constexpr( concepts::is_readable_value_v<U> ) {
+					using value_type = concepts::readable_value_type_t<U>;
 					if constexpr( json_details::is_string_view_like_v<value_type> ) {
 						if constexpr( std::is_reference_v<DAW_TYPEOF(
-						                readable_value_read( value ) )> ) {
-							if( readable_value_has_value( value ) ) {
-								return daw::string_view( readable_value_read( value ) );
+						                concepts::readable_value_read( value ) )> ) {
+							if( concepts::readable_value_has_value( value ) ) {
+								return daw::string_view(
+								  concepts::readable_value_read( value ) );
 							}
 							return daw::string_view( "null" );
 						} else {
-							if( readable_value_has_value( value ) ) {
-								auto const &v = readable_value_read( value );
+							if( concepts::readable_value_has_value( value ) ) {
+								auto const &v = concepts::readable_value_read( value );
 								return std::string( std::data( v ), std::size( v ) );
 							}
 							return std::string( "null", 4 );
 						}
 					} else if constexpr( json_details::to_strings::has_to_string_v<
 					                       value_type> ) {
-						if( readable_value_has_value( value ) ) {
+						if( concepts::readable_value_has_value( value ) ) {
 							using json_details::to_strings::to_string;
-							return to_string( readable_value_read( value ) );
+							return to_string( concepts::readable_value_read( value ) );
 						} else {
-							using result_t =
-							  DAW_TYPEOF( to_string( readable_value_read( value ) ) );
+							using result_t = DAW_TYPEOF(
+							  to_string( concepts::readable_value_read( value ) ) );
 							return result_t{ "null" };
 						}
 					} else if constexpr( std::is_convertible_v<value_type,
 					                                           std::string_view> ) {
-						if( readable_value_has_value( value ) ) {
+						if( concepts::readable_value_has_value( value ) ) {
 							return static_cast<std::string_view>(
-							  readable_value_read( value ) );
+							  concepts::readable_value_read( value ) );
 						}
 						return std::string_view{ "null" };
 					} else if constexpr( std::is_convertible_v<value_type,
 					                                           std::string> ) {
-						if( readable_value_has_value( value ) ) {
-							return static_cast<std::string>( readable_value_read( value ) );
+						if( concepts::readable_value_has_value( value ) ) {
+							return static_cast<std::string>(
+							  concepts::readable_value_read( value ) );
 						}
 						return std::string( "null" );
 					} else {
-						if( readable_value_has_value( value ) ) {
-							return use_stream( readable_value_has_value( value ) );
+						if( concepts::readable_value_has_value( value ) ) {
+							return use_stream( concepts::readable_value_has_value( value ) );
 						} else {
 							return std::string( "null" );
 						}
@@ -633,7 +635,7 @@ namespace daw::json {
 						return it;
 					}
 				} else {
-					if( not readable_value_has_value( value ) ) {
+					if( not concepts::readable_value_has_value( value ) ) {
 						it.write( "null" );
 						return it;
 					}
@@ -641,8 +643,8 @@ namespace daw::json {
 				using member_type = typename JsonMember::member_type;
 				using tag_type = ParseTag<member_type::expected_type>;
 				return to_daw_json_string<member_type>( tag_type{ }, it, [&] {
-					if constexpr( is_readable_value_v<Optional> ) {
-						return readable_value_traits<Optional>::read( value );
+					if constexpr( concepts::is_readable_value_v<Optional> ) {
+						return concepts::readable_value_traits<Optional>::read( value );
 					} else if constexpr( json_details::has_op_star_v<Optional> ) {
 						return *value;
 					} else {
@@ -1113,6 +1115,16 @@ namespace daw::json {
 				return it;
 			}
 
+			template<typename T>
+			using is_view_like_test =
+			  decltype( (void)( std::begin( std::declval<T &>( ) ) ),
+			            (void)( std::end( std::declval<T &>( ) ) ),
+			            (void)( std::declval<typename T::value_type>( ) ) );
+
+			template<typename T>
+			inline constexpr bool is_view_like_v =
+			  daw::is_detected_v<is_view_like_test, T>;
+
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
 			[[nodiscard]] constexpr serialization_policy<WriteableType,
@@ -1123,7 +1135,7 @@ namespace daw::json {
 			  parse_to_t const &value ) {
 
 				using array_t = typename JsonMember::parse_to_t;
-				if constexpr( is_container_v<array_t> ) {
+				if constexpr( is_view_like_v<array_t> ) {
 					static_assert(
 					  std::is_convertible_v<parse_to_t, array_t>,
 					  "value must be convertible to specified type in class contract" );
@@ -1135,7 +1147,7 @@ namespace daw::json {
 					  "encode the size of the data with the pointer.  Will take any "
 					  "Container like type, but std::span like types work too" );
 					static_assert(
-					  is_container_v<parse_to_t>,
+					  is_view_like_v<parse_to_t>,
 					  "This is a special case for pointer like(T*, unique_ptr<T>, "
 					  "shared_ptr<T>) arrays.  In the to_json_data it is required to "
 					  "encode the size of the data with the pointer.  Will take any "
@@ -1436,7 +1448,7 @@ namespace daw::json {
 				visited_members.push_back( json_member_name );
 				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
 				if constexpr( is_json_nullable_v<JsonMember> ) {
-					if( not readable_value_has_value( get<pos>( tp ) ) ) {
+					if( not concepts::readable_value_has_value( get<pos>( tp ) ) ) {
 						return;
 					}
 				}

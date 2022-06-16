@@ -10,7 +10,7 @@
 
 #include "impl/version.h"
 
-#include "../daw_writable_output.h"
+#include "concepts/daw_writable_output.h"
 #include "daw_to_json_fwd.h"
 #include "impl/daw_json_container_appender.h"
 #include "impl/daw_json_link_types_fwd.h"
@@ -28,9 +28,9 @@ namespace daw::json {
 
 		template<typename JsonClass, typename Value, typename WritableType,
 		         auto... PolicyFlags,
-		         std::enable_if_t<
-		           is_writable_output_type_v<daw::remove_cvref_t<WritableType>>,
-		           std::nullptr_t>>
+		         std::enable_if_t<concepts::is_writable_output_type_v<
+		                            daw::remove_cvref_t<WritableType>>,
+		                          std::nullptr_t>>
 		constexpr daw::rvalue_to_value_t<WritableType>
 		to_json( Value const &value, WritableType &&it,
 		         options::output_flags_t<PolicyFlags...> ) {
@@ -78,9 +78,9 @@ namespace daw::json {
 
 		template<typename JsonElement, typename Container, typename WritableType,
 		         auto... PolicyFlags,
-		         std::enable_if_t<
-		           is_writable_output_type_v<daw::remove_cvref_t<WritableType>>,
-		           std::nullptr_t>>
+		         std::enable_if_t<concepts::is_writable_output_type_v<
+		                            daw::remove_cvref_t<WritableType>>,
+		                          std::nullptr_t>>
 		constexpr daw::rvalue_to_value_t<WritableType>
 		to_json_array( Container const &c, WritableType &&it,
 		               options::output_flags_t<PolicyFlags...> ) {

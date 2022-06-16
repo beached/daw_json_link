@@ -255,6 +255,12 @@ add_test( NAME twitter_timeline_test COMMAND twitter_timeline_test ./twitter_tim
 add_dependencies( ci_tests twitter_timeline_test )
 add_dependencies( full twitter_timeline_test )
 
+add_executable( find_tweet_test src/find_tweet_test.cpp )
+target_link_libraries( find_tweet_test PRIVATE json_test )
+add_test( NAME find_tweet_test COMMAND find_tweet_test ./find_tweet.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests find_tweet_test )
+add_dependencies( full find_tweet_test )
+
 if( DAW_JSON_FULL_TESTS )
     add_executable( canada_test src/canada_test.cpp )
     add_test( NAME canada_test COMMAND canada_test ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
@@ -848,6 +854,7 @@ if( Threads_FOUND )
     target_link_libraries( json_lines_bench_test json_test ${CMAKE_THREAD_LIBS_INIT} )
     add_dependencies( full json_lines_bench_test )
 endif()
+
 # **************************************************
 # JSON Benchmark
 # **************************************************
