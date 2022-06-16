@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include "../../daw_allocator_construct.h"
+#include "../concepts/daw_container_traits.h"
 #include "daw_json_assert.h"
 #include "daw_json_enums.h"
 #include "daw_json_exec_modes.h"
@@ -20,6 +21,7 @@
 #include "daw_json_type_options.h"
 #include "daw_json_value_fwd.h"
 
+#include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_fwd_pack_apply.h>
@@ -29,6 +31,7 @@
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 
+#include <array>
 #include <ciso646>
 #include <cstddef>
 #include <iterator>
@@ -515,46 +518,29 @@ namespace daw::json {
 
 			namespace container_detect {
 				template<typename T>
-				using container_value_type = typename T::value_type;
-
-				template<typename Container>
-				using container_begin_type =
-				  decltype( std::begin( std::declval<Container const &>( ) ) );
-
-				template<typename Container>
-				using container_end_type =
-				  decltype( std::end( std::declval<Container const &>( ) ) );
-
-				template<typename AssociativeContainer>
-				using container_key_type = typename AssociativeContainer::key_type;
-
-				template<typename AssociativeContainer>
-				using container_mapped_type =
-				  typename AssociativeContainer::mapped_type;
-
-				template<typename T>
-				using is_value_type_char = std::is_same<char, container_value_type<T>>;
-
+				using is_string_test =
+				  decltype( (void)( std::begin( std::declval<T &>( ) ) ),
+				            (void)( std::end( std::declval<T &>( ) ) ),
+				            std::declval<typename T::value_type>( ) );
 			} // namespace container_detect
-			template<typename T>
-			inline constexpr bool is_container_v =
-			  daw::is_detected_v<container_detect::container_value_type, T>
-			    and daw::is_detected_v<container_detect::container_begin_type, T>
-			      and daw::is_detected_v<container_detect::container_end_type, T>;
-
-			template<typename Container>
-			using is_container = std::bool_constant<is_container_v<Container>>;
 
 			template<typename String>
-			using is_string =
-			  std::conjunction<is_container<String>,
-			                   container_detect::is_value_type_char<String>>;
+			inline constexpr bool is_string_v = std::is_convertible_v<
+			  char, daw::detected_t<container_detect::is_string_test, String>>;
+
+			namespace container_detect {
+				template<typename T>
+				using is_associative_container_test =
+				  decltype( (void)( std::begin( std::declval<T &>( ) ) ),
+				            (void)( std::end( std::declval<T &>( ) ) ),
+				            (void)( std::declval<typename T::value_type>( ) ),
+				            (void)( std::declval<typename T::key_type>( ) ),
+				            (void)( std::declval<typename T::mapped_type>( ) ) );
+			} // namespace container_detect
 
 			template<typename T>
-			inline constexpr bool is_associative_container_v = std::conjunction_v<
-			  is_container<T>,
-			  daw::is_detected<container_detect::container_key_type, T>,
-			  daw::is_detected<container_detect::container_mapped_type, T>>;
+			inline constexpr bool is_associative_container_v =
+			  daw::is_detected_v<container_detect::is_associative_container_test, T>;
 
 			template<typename T>
 			using is_associative_container =
@@ -566,7 +552,6 @@ namespace daw::json {
 			  std::enable_if_t<std::conjunction_v<
 			    not_trait<has_json_data_contract_trait<AssociativeContainer>>,
 			    is_associative_container<AssociativeContainer>>>> {
-
 				static constexpr bool is_null = false;
 				using key = typename AssociativeContainer::key_type;
 				using value = typename AssociativeContainer::mapped_type;
@@ -575,14 +560,15 @@ namespace daw::json {
 				static constexpr bool type_map_found = true;
 			};
 
+			template<typename T>
+			inline constexpr bool is_deduced_array_v =
+			  not has_json_data_contract_trait_v<T> and
+			  not is_associative_container_v<T> and concepts::is_container_v<T> and
+			  not is_string_v<T>;
+
 			template<typename Container>
 			struct json_deduced_type_map<
-			  Container, std::enable_if_t<std::conjunction_v<
-			               not_trait<has_json_data_contract_trait<Container>>,
-			               not_trait<is_associative_container<Container>>,
-			               json_details::is_container<Container>,
-			               not_trait<is_string<Container>>>>> {
-
+			  Container, std::enable_if_t<is_deduced_array_v<Container>>> {
 				static constexpr bool is_null = false;
 				using value = typename Container::value_type;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Array;
@@ -597,7 +583,6 @@ namespace daw::json {
 			       not has_json_data_contract_trait_v<T> and
 			       daw::is_detected_v<json_deduced_type_map,
 			                          concepts::readable_value_type_t<T>>>> {
-
 				static constexpr bool is_null = true;
 				using sub_type = concepts::readable_value_type_t<T>;
 				using type = json_deduced_type_map<sub_type>;
@@ -710,16 +695,12 @@ namespace daw::json {
 				}
 			}
 
-			/***
-			 * Check if the current type has a quick map specialized for it
-			 */
+			/// Check if the current type has a quick map specialized for it
 			template<typename T>
 			inline constexpr bool has_json_link_quick_map_v =
 			  decltype( json_link_quick_map<T>( ) )::value;
 
-			/***
-			 * Get the quick mapped json type for type T
-			 */
+			/// @brief Get the quick mapped json type for type T
 			template<typename T>
 			using json_link_quick_map_t =
 			  typename decltype( json_link_quick_map<T>( ) )::mapped_type;
@@ -759,8 +740,6 @@ namespace daw::json {
 					static_assert( not std::is_same_v<rcvref_type, void>,
 					               "Detection failure" );
 					static_assert( not is_nonesuch_v<rcvref_type>, "Detection failure" );
-					static_assert( not std::is_same_v<rcvref_type, void>,
-					               "Detection failure" );
 					return daw::traits::identity<type>{ };
 				} else if constexpr( json_details::is_a_json_type_v<T> ) {
 					static_assert( not std::is_same_v<T, void> );
@@ -773,15 +752,8 @@ namespace daw::json {
 					static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
 					               "Detection failure" );
 					return daw::traits::identity<type>{ };
-				} else if constexpr( is_container_v<T> ) {
-					static_assert( not std::is_same_v<T, void> );
+				} else if constexpr( concepts::is_container_v<T> ) {
 					using type = json_base::json_array<typename T::value_type, T>;
-					static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
-					               "Detection failure" );
-					static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
-					               "Detection failure" );
-					static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
-					               "Detection failure" );
 					return daw::traits::identity<type>{ };
 				} else if constexpr( concepts::is_readable_value_v<T> ) {
 					using value_type = concepts::readable_value_type_t<T>;
@@ -790,9 +762,8 @@ namespace daw::json {
 					using type = json_base::json_nullable<T, sub_type>;
 					return daw::traits::identity<type>{ };
 				} else {
-					static_assert( concepts::is_readable_value_v<T> );
-					using type = missing_json_data_contract_for_or_unknown_type<T>;
-					return daw::traits::identity<type>{ };
+					static_assert( daw::deduced_false_v<T>,
+					               "Could not deduced data contract type" );
 				}
 			}
 
@@ -829,16 +800,27 @@ namespace daw::json {
 			using from_json_result_t = json_result<json_deduced_type<JsonMember>>;
 
 			template<typename Constructor, typename... Members>
-			using json_class_parse_result_impl2 = decltype(
-			  Constructor{ }( std::declval<typename Members::parse_to_t &&>( )... ) );
+			using json_class_parse_result_impl2 =
+			  std::invoke_result_t<Constructor,
+			                       typename Members::parse_to_t...>; /* decltype(
+Constructor{ }( std::declval<typename Members::parse_to_t &&>( )... ) );*/
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_impl =
 			  daw::detected_t<json_class_parse_result_impl2, Constructor, Members...>;
 
 			template<typename Constructor, typename... Members>
-			using json_class_parse_result_t = daw::remove_cvref_t<
-			  json_class_parse_result_impl<Constructor, Members...>>;
+			struct could_not_construct_from_members_error;
+
+			template<typename Constructor, typename... Members>
+			using json_class_parse_result_t = typename std::conditional_t<
+			  std::is_invocable_v<Constructor, typename Members::parse_to_t...>,
+			  std::invoke_result<Constructor, typename Members::parse_to_t...>,
+			  traits::identity<could_not_construct_from_members_error<
+			    Constructor, Members...>>>::type;
+
+			/*daw::remove_cvref_t<
+			json_class_parse_result_impl<Constructor, Members...>>;*/
 
 			template<typename JsonMember>
 			using dependent_member_t = typename JsonMember::dependent_member;

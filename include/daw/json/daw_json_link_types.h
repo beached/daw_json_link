@@ -161,13 +161,28 @@ namespace daw::json {
 				// Using construct_value here as the result of aliased type is used to
 				// construct our result and the Constructor maybe different.  This
 				// happens with BigInt and string.
-				using Constructor = typename JsonClass::constructor_t;
+				// using Constructor = typename JsonClass::constructor_t;
+				using result_t = typename JsonClass::parse_to_t;
+				return json_details::construct_value(
+				  template_args<JsonClass, daw::construct_a_t<result_t>>, parse_state,
+				  json_details::parse_value<json_member, false>(
+				    parse_state, ParseTag<json_member::expected_type>{ } ) );
+				/*
 				return json_details::construct_value(
 				  template_args<JsonClass, Constructor>, parse_state,
 				  json_details::parse_value<json_member, false>(
 				    parse_state, ParseTag<json_member::expected_type>{ } ) );
+				    */
 			}
 		};
+		namespace json_details {
+			template<typename T>
+			using is_a_json_map_alias_test = typename T::i_am_a_json_map_alias;
+
+			template<typename T>
+			inline constexpr bool is_a_json_map_alias_v =
+			  daw::is_detected_v<is_a_json_map_alias_test, T>;
+		} // namespace json_details
 
 		template<typename JsonType>
 		struct json_details::is_json_class_map<json_type_alias<JsonType>>
@@ -810,14 +825,25 @@ namespace daw::json {
 			  json_base::json_nullable<T, JsonMember, NullableType, Constructor>;
 		};
 
+		namespace json_details {
+			template<typename T>
+			struct alias_constructor_t {
+				using type = json_details::json_class_constructor_t<
+				  T,
+				  typename json_data_contract_trait_t<T>::json_member::constructor_t>;
+			};
+		} // namespace json_details
+
 		namespace json_base {
 			template<typename T, typename Constructor>
 			struct json_class {
 				using i_am_a_json_type = void;
 				using wrapped_type = T;
 				static constexpr bool must_be_class_member = false;
-				using constructor_t =
-				  json_details::json_class_constructor_t<T, Constructor>;
+
+				using constructor_t = std::conditional_t<
+				  json_details::is_a_json_map_alias_v<T>, daw::construct_a_t<T>,
+				  json_details::json_class_constructor_t<T, Constructor>>;
 
 				using json_member_list = json_data_contract_trait_t<T>;
 

@@ -1115,6 +1115,16 @@ namespace daw::json {
 				return it;
 			}
 
+			template<typename T>
+			using is_view_like_test =
+			  decltype( (void)( std::begin( std::declval<T &>( ) ) ),
+			            (void)( std::end( std::declval<T &>( ) ) ),
+			            (void)( std::declval<typename T::value_type>( ) ) );
+
+			template<typename T>
+			inline constexpr bool is_view_like_v =
+			  daw::is_detected_v<is_view_like_test, T>;
+
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
 			[[nodiscard]] constexpr serialization_policy<WriteableType,
@@ -1125,7 +1135,7 @@ namespace daw::json {
 			  parse_to_t const &value ) {
 
 				using array_t = typename JsonMember::parse_to_t;
-				if constexpr( is_container_v<array_t> ) {
+				if constexpr( is_view_like_v<array_t> ) {
 					static_assert(
 					  std::is_convertible_v<parse_to_t, array_t>,
 					  "value must be convertible to specified type in class contract" );
@@ -1137,7 +1147,7 @@ namespace daw::json {
 					  "encode the size of the data with the pointer.  Will take any "
 					  "Container like type, but std::span like types work too" );
 					static_assert(
-					  is_container_v<parse_to_t>,
+					  is_view_like_v<parse_to_t>,
 					  "This is a special case for pointer like(T*, unique_ptr<T>, "
 					  "shared_ptr<T>) arrays.  In the to_json_data it is required to "
 					  "encode the size of the data with the pointer.  Will take any "
