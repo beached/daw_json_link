@@ -384,6 +384,11 @@ namespace daw::json {
 				return m_parse_state;
 			}
 
+			[[nodiscard]] inline constexpr std::string_view
+			get_raw_json_document( ) const {
+				return std::string_view( m_parse_state.first, m_parse_state.size( ) );
+			}
+
 			/// @brief Get the first member/item
 			/// @pre type of value is class or array
 			/// @return basic_json_value_iterator to the first item/member

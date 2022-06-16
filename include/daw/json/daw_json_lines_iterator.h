@@ -11,6 +11,7 @@
 #include "impl/version.h"
 
 #include "impl/daw_json_link_types_fwd.h"
+#include "impl/daw_json_value.h"
 #include "impl/daw_json_parse_class.h"
 
 #include <daw/daw_cxmath.h>
