@@ -25,13 +25,11 @@ struct tweet {
 namespace daw::json {
 	template<>
 	struct json_data_contract<tweet> {
-		static constexpr char const id[] = "id_str";
+		static constexpr char const id[] = "id";
 		static constexpr char const text[] = "text";
 
-		using type = json_member_list<
-		  json_number<id, std::uint64_t,
-		              options::number_opt( options::LiteralAsStringOpt::Always )>,
-		  json_link<text, std::string_view>>;
+		using type = json_member_list<json_link<id, std::uint64_t>,
+		                              json_link<text, std::string_view>>;
 
 		static constexpr auto to_json_data( tweet const &t ) {
 			return std::forward_as_tuple( t.id, t.text );

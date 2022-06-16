@@ -257,7 +257,7 @@ add_dependencies( full twitter_timeline_test )
 
 add_executable( find_tweet_test src/find_tweet_test.cpp )
 target_link_libraries( find_tweet_test PRIVATE json_test )
-add_test( NAME find_tweet_test COMMAND find_tweet_test ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_test( NAME find_tweet_test COMMAND find_tweet_test ./find_tweet.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
 add_dependencies( ci_tests find_tweet_test )
 add_dependencies( full find_tweet_test )
 
