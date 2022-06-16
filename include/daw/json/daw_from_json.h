@@ -22,6 +22,7 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+
 		/// @brief Construct the JSONMember from the JSON document argument.
 		/// @tparam JsonMember any bool, arithmetic, string, string_view,
 		/// daw::json::json_data_contract
@@ -30,12 +31,10 @@ namespace daw::json {
 		/// whole value
 		/// @return A reified T constructed from JSON data
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /* typename Result,*/
-		         typename String, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json( String &&json_data, options::parse_flags_t<PolicyFlags...> ) /*
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		{
+		template<typename JsonMember, bool KnownBounds, typename String,
+		         auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
+		from_json( String &&json_data, options::parse_flags_t<PolicyFlags...> ) {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
@@ -86,17 +85,13 @@ namespace daw::json {
 		/// whole value
 		/// @return A reified JSONMember constructed from JSON data
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /*typename Result,*/
-		         typename String>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json( String &&json_data ) /*
--> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		{
+		template<typename JsonMember, bool KnownBounds, typename String>
+		[[nodiscard]] constexpr auto from_json( String &&json_data ) {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
-			return from_json<JsonMember, KnownBounds /*, Result*/>(
-			  DAW_FWD( json_data ), options::parse_flags<> );
+			return from_json<JsonMember, KnownBounds>( DAW_FWD( json_data ),
+			                                           options::parse_flags<> );
 		}
 
 		/// @brief Construct the JSONMember from the JSON document argument.
@@ -107,13 +102,11 @@ namespace daw::json {
 		/// whole value
 		/// @return A reified T constructed from JSON data
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /*typename Result,*/
-		         typename String, typename Allocator, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto from_json_alloc(
-		  String &&json_data, Allocator const &alloc,
-		  options::parse_flags_t<PolicyFlags...> ) /*
--> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		{
+		template<typename JsonMember, bool KnownBounds, typename String,
+		         typename Allocator, auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
+		from_json_alloc( String &&json_data, Allocator const &alloc,
+		                 options::parse_flags_t<PolicyFlags...> ) {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
@@ -169,17 +162,14 @@ namespace daw::json {
 		/// whole value
 		/// @return A reified T constructed from JSON data
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /*typename Result,*/
-		         typename String, typename Allocator>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_alloc( String &&json_data, Allocator const &alloc )
-		/* -> std::enable_if_t<json_details::is_string_view_like_v<String>,
-		   Result>*/
-		{
+		template<typename JsonMember, bool KnownBounds, typename String,
+		         typename Allocator>
+		[[nodiscard]] constexpr auto from_json_alloc( String &&json_data,
+		                                              Allocator const &alloc ) {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
-			return from_json_alloc<JsonMember, KnownBounds /*, Result*/>(
+			return from_json_alloc<JsonMember, KnownBounds>(
 			  DAW_FWD( json_data ), alloc, options::parse_flags<> );
 		}
 
@@ -193,13 +183,11 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /*typename Result,*/
-		         typename String, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
+		template<typename JsonMember, bool KnownBounds, typename String,
+		         auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
 		from_json( String &&json_data, std::string_view member_path,
-		           options::parse_flags_t<PolicyFlags...> ) /*
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		{
+		           options::parse_flags_t<PolicyFlags...> ) {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
@@ -267,18 +255,14 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /*typename Result,*/
-		         typename String>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json( String &&json_data,
-		           std::string_view member_path ) /*
--> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		{
+		template<typename JsonMember, bool KnownBounds, typename String>
+		[[nodiscard]] constexpr auto from_json( String &&json_data,
+		                                        std::string_view member_path ) {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
 
-			return from_json<JsonMember, KnownBounds /*, Result*/>(
+			return from_json<JsonMember, KnownBounds>(
 			  DAW_FWD( json_data ), member_path, options::parse_flags<> );
 		}
 
@@ -292,15 +276,12 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds /*, typename Result*/,
-		         typename String, typename Allocator, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
+		template<typename JsonMember, bool KnownBounds, typename String,
+		         typename Allocator, auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
 		from_json_alloc( String &&json_data, std::string_view member_path,
 		                 Allocator const &alloc,
-		                 options::parse_flags_t<PolicyFlags...> ) /*
-		  -> std::enable_if_t<
-		    json_details::is_string_view_like_v<String> , Result>*/
-		{
+		                 options::parse_flags_t<PolicyFlags...> ) {
 
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
@@ -371,18 +352,16 @@ namespace daw::json {
 		/// the whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /* typename Result,*/
-		         typename String, typename Allocator>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_alloc( String &&json_data, std::string_view member_path,
-		                 Allocator const &alloc ) /*
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		{
+		template<typename JsonMember, bool KnownBounds, typename String,
+		         typename Allocator>
+		[[nodiscard]] constexpr auto from_json_alloc( String &&json_data,
+		                                              std::string_view member_path,
+		                                              Allocator const &alloc ) {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
 
-			return from_json_alloc<JsonMember, KnownBounds /*, Result*/>(
+			return from_json_alloc<JsonMember, KnownBounds>(
 			  DAW_FWD( json_data ), member_path, alloc, options::parse_flags<> );
 		}
 
@@ -393,9 +372,9 @@ namespace daw::json {
 		/// the whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /*typename Result,*/
-		         json_options_t P, typename Allocator, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] inline constexpr auto
+		template<typename JsonMember, bool KnownBounds, json_options_t P,
+		         typename Allocator, auto... PolicyFlags>
+		[[nodiscard]] inline constexpr auto
 		from_json( basic_json_value<P, Allocator> value,
 		           options::parse_flags_t<PolicyFlags...> ) {
 			using json_member = json_details::json_deduced_type<JsonMember>;
@@ -421,13 +400,13 @@ namespace daw::json {
 		/// the whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /*typename Result,*/
-		         json_options_t PolicyFlags, typename Allocator>
-		[[maybe_unused, nodiscard]] inline constexpr auto
+		template<typename JsonMember, bool KnownBounds, json_options_t PolicyFlags,
+		         typename Allocator>
+		[[nodiscard]] inline constexpr auto
 		from_json( basic_json_value<PolicyFlags, Allocator> value ) {
 
-			return from_json<JsonMember, KnownBounds /*, Result*/>(
-			  DAW_MOVE( value ), options::parse_flags<> );
+			return from_json<JsonMember, KnownBounds>( DAW_MOVE( value ),
+			                                           options::parse_flags<> );
 		}
 
 		/// @brief Parse a JSONMember from the json_data starting at member_path.
@@ -440,9 +419,9 @@ namespace daw::json {
 		/// the whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /*typename Result,*/
-		         json_options_t P, typename Allocator, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
+		template<typename JsonMember, bool KnownBounds, json_options_t P,
+		         typename Allocator, auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
 		from_json( basic_json_value<P, Allocator> value,
 		           std::string_view member_path,
 		           options::parse_flags_t<PolicyFlags...> ) {
@@ -482,13 +461,12 @@ namespace daw::json {
 		/// the whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /* typename Result,*/
-		         json_options_t PolicyFlags, typename Allocator>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json( basic_json_value<PolicyFlags> value,
-		           std::string_view member_path ) {
-			return from_json<JsonMember, KnownBounds /*, Result*/>(
-			  DAW_MOVE( value ), member_path, options::parse_flags<> );
+		template<typename JsonMember, bool KnownBounds, json_options_t PolicyFlags,
+		         typename Allocator>
+		[[nodiscard]] constexpr auto from_json( basic_json_value<PolicyFlags> value,
+		                                        std::string_view member_path ) {
+			return from_json<JsonMember, KnownBounds>( DAW_MOVE( value ), member_path,
+			                                           options::parse_flags<> );
 		}
 
 		/// @brief Parse JSON data where the root item is an array
@@ -503,7 +481,7 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonElement, typename Container, typename Constructor,
 		         bool KnownBounds, typename String, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
+		[[nodiscard]] constexpr auto
 		from_json_array( String &&json_data,
 		                 options::parse_flags_t<PolicyFlags...> )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
@@ -578,8 +556,7 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonElement, typename Container, typename Constructor,
 		         bool KnownBounds, typename String>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_array( String &&json_data )
+		[[nodiscard]] constexpr auto from_json_array( String &&json_data )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
 		                      Container> {
 
@@ -602,7 +579,7 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonElement, typename Container, typename Constructor,
 		         bool KnownBounds, typename String, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
+		[[nodiscard]] constexpr auto
 		from_json_array( String &&json_data, std::string_view member_path,
 		                 options::parse_flags_t<PolicyFlags...> )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
@@ -692,8 +669,8 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonElement, typename Container, typename Constructor,
 		         bool KnownBounds, typename String>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_array( String &&json_data, std::string_view member_path )
+		[[nodiscard]] constexpr auto from_json_array( String &&json_data,
+		                                              std::string_view member_path )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
 		                      Container> {
 			static_assert(

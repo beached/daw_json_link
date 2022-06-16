@@ -26,11 +26,9 @@
  */
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		/***
-		 * Default Constructor for a type.  It accounts for aggregate types and uses
-		 * brace construction for them
-		 * @tparam T type to construct
-		 */
+		/// @brief Default Constructor for a type.  It accounts for aggregate types
+		/// and uses brace construction for them
+		/// @tparam T type to construct
 		template<typename T, typename = void>
 		struct default_constructor {
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T operator( )( ) const
@@ -71,12 +69,10 @@ namespace daw::json {
 		struct is_default_constructor
 		  : std::bool_constant<is_default_constructor_v<T, Ignore...>> {};
 
-		///
 		/// @brief Default constructor for nullable types.
 		/// Specializations must accept accept an operator( )( ) that signifies a
 		/// JSON null. Any other arguments only need to be valid to construct the
 		/// type.
-		///
 		template<typename T, typename = void>
 		struct nullable_constructor : default_constructor<T> {
 			/// used for types like string_view that have an empty state

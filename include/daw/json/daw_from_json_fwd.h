@@ -32,14 +32,10 @@ namespace daw::json {
 		 * @return A reified JSONMember constructed from JSON data
 		 * @throws daw::json::json_exception
 		 */
-		template<typename JsonMember, bool KnownBounds = false,
-		         /* typename Result =
-		            json_details::from_json_result_t<JsonMember>,*/
-		         typename String, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json( String &&json_data, options::parse_flags_t<PolicyFlags...> ) /*
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		  ;
+		template<typename JsonMember, bool KnownBounds = false, typename String,
+		         auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
+		from_json( String &&json_data, options::parse_flags_t<PolicyFlags...> );
 
 		/// @brief Construct the JSONMember from the JSON document argument.
 		/// @tparam JsonMember any bool, arithmetic, string, string_view,
@@ -49,13 +45,8 @@ namespace daw::json {
 		/// whole value
 		/// @return A reified JSONMember constructed from JSON data
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds = false,
-		         /*typename Result = json_details::from_json_result_t<JsonMember>,*/
-		         typename String>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json( String &&json_data ) /*
--> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> */
-		  ;
+		template<typename JsonMember, bool KnownBounds = false, typename String>
+		[[nodiscard]] constexpr auto from_json( String &&json_data );
 
 		/// @brief Construct the JSONMember from the JSON document argument.
 		/// @tparam JsonMember any bool, arithmetic, string, string_view,
@@ -65,14 +56,11 @@ namespace daw::json {
 		/// whole value
 		/// @return A reified T constructed from JSON data
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds = false,
-		         /*typename Result = json_details::from_json_result_t<JsonMember>,*/
-		         typename String, typename Allocator, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
+		template<typename JsonMember, bool KnownBounds = false, typename String,
+		         typename Allocator, auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
 		from_json_alloc( String &&json_data, Allocator const &alloc,
-		                 options::parse_flags_t<PolicyFlags...> ) /*
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		  ;
+		                 options::parse_flags_t<PolicyFlags...> );
 
 		/// @brief Construct the JSONMember from the JSON document argument.
 		/// @tparam JsonMember any bool, arithmetic, string, string_view,
@@ -82,14 +70,10 @@ namespace daw::json {
 		/// whole value
 		/// @return A reified T constructed from JSON data
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds = false,
-		         /* typename Result =
-		            json_details::from_json_result_t<JsonMember>,*/
-		         typename String, typename Allocator>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_alloc( String &&json_data, Allocator const &alloc ) /*
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		  ;
+		template<typename JsonMember, bool KnownBounds = false, typename String,
+		         typename Allocator>
+		[[nodiscard]] constexpr auto from_json_alloc( String &&json_data,
+		                                              Allocator const &alloc );
 
 		/// @brief Parse a JSONMember from the json_data starting at member_path.
 		/// @tparam JsonMember The type of the item being parsed
@@ -101,15 +85,11 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds = false,
-		         /*    typename Result =
-		            json_details::from_json_result_t<JsonMember>,*/
-		         typename String, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto from_json(
-		  String &&json_data, std::string_view member_path,
-		  options::parse_flags_t<PolicyFlags...> ) /*
--> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		  ;
+		template<typename JsonMember, bool KnownBounds = false, typename String,
+		         auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
+		from_json( String &&json_data, std::string_view member_path,
+		           options::parse_flags_t<PolicyFlags...> );
 
 		/// @brief Parse a JSONMember from the json_data starting at member_path.
 		/// @tparam JsonMember The type of the item being parsed
@@ -121,14 +101,9 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds = false,
-		         /*   typename Result =
-		            json_details::from_json_result_t<JsonMember>,*/
-		         typename String>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json( String &&json_data, std::string_view member_path ) /*
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		  ;
+		template<typename JsonMember, bool KnownBounds = false, typename String>
+		[[nodiscard]] constexpr auto from_json( String &&json_data,
+		                                        std::string_view member_path );
 
 		/// @brief Parse a JSONMember from the json_data starting at member_path.
 		/// @tparam JsonMember The type of the item being parsed
@@ -140,15 +115,12 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds = false,
-		         /*  typename Result =
-		            json_details::from_json_result_t<JsonMember>,*/
-		         typename String, typename Allocator, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto from_json_alloc(
-		  String &&json_data, std::string_view member_path, Allocator const &alloc,
-		  options::parse_flags_t<PolicyFlags...> ) /*
--> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		  ;
+		template<typename JsonMember, bool KnownBounds = false, typename String,
+		         typename Allocator, auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
+		from_json_alloc( String &&json_data, std::string_view member_path,
+		                 Allocator const &alloc,
+		                 options::parse_flags_t<PolicyFlags...> );
 
 		/// @brief Parse a JSONMember from the json_data starting at member_path.
 		/// @tparam JsonMember The type of the item being parsed
@@ -160,14 +132,11 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds = false,
-		         /*typename Result = json_details::from_json_result_t<JsonMember>,*/
-		         typename String, typename Allocator>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_alloc( String &&json_data, std::string_view member_path,
-		                 Allocator const &alloc ) /*
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result>*/
-		  ;
+		template<typename JsonMember, bool KnownBounds = false, typename String,
+		         typename Allocator>
+		[[nodiscard]] constexpr auto from_json_alloc( String &&json_data,
+		                                              std::string_view member_path,
+		                                              Allocator const &alloc );
 
 		/// @brief Parse a value from a json_value
 		/// @tparam JsonMember The type of the item being parsed
@@ -176,11 +145,9 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds = false,
-		         /* typename Result =
-		            json_details::from_json_result_t<JsonMember>,*/
-		         json_options_t P, typename A, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] inline constexpr auto
+		template<typename JsonMember, bool KnownBounds = false, json_options_t P,
+		         typename A, auto... PolicyFlags>
+		[[nodiscard]] inline constexpr auto
 		from_json( basic_json_value<P, A> value,
 		           options::parse_flags_t<PolicyFlags...> );
 
@@ -191,11 +158,9 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds = false,
-		         /*  typename Result =
-		            json_details::from_json_result_t<JsonMember>,*/
-		         json_options_t P, typename A>
-		[[maybe_unused, nodiscard]] inline constexpr auto
+		template<typename JsonMember, bool KnownBounds = false, json_options_t P,
+		         typename A>
+		[[nodiscard]] inline constexpr auto
 		from_json( basic_json_value<P, A> value );
 
 		/// @brief Parse a JSONMember from the json_data starting at member_path.
@@ -208,11 +173,9 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds = false,
-		         /*  typename Result =
-		            json_details::from_json_result_t<JsonMember>,*/
-		         json_options_t P, typename A, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
+		template<typename JsonMember, bool KnownBounds = false, json_options_t P,
+		         typename A, auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
 		from_json( basic_json_value<P, A> value, std::string_view member_path,
 		           options::parse_flags_t<PolicyFlags...> );
 
@@ -226,10 +189,10 @@ namespace daw::json {
 		/// whole value
 		/// @return A value reified from the JSON data member
 		/// @throws daw::json::json_exception
-		template<typename JsonMember, bool KnownBounds, /* typename Result,*/
-		         json_options_t P, typename A>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json( basic_json_value<P, A> value, std::string_view member_path );
+		template<typename JsonMember, bool KnownBounds, json_options_t P,
+		         typename A>
+		[[nodiscard]] constexpr auto from_json( basic_json_value<P, A> value,
+		                                        std::string_view member_path );
 
 		/// @brief Parse JSON data where the root item is an array
 		/// @tparam JsonElement The type of each element in array.  Must be one of
@@ -249,7 +212,7 @@ namespace daw::json {
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
 		         typename Constructor = use_default, bool KnownBounds = false,
 		         typename String, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
+		[[nodiscard]] constexpr auto
 		from_json_array( String &&json_data, std::string_view member_path,
 		                 options::parse_flags_t<PolicyFlags...> )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
@@ -273,8 +236,8 @@ namespace daw::json {
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
 		         typename Constructor = use_default, bool KnownBounds = false,
 		         typename String>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_array( String &&json_data, std::string_view member_path )
+		[[nodiscard]] constexpr auto from_json_array( String &&json_data,
+		                                              std::string_view member_path )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
 		                      Container>;
 
@@ -293,7 +256,7 @@ namespace daw::json {
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
 		         typename Constructor = use_default, bool KnownBounds = false,
 		         typename String, auto... PolicyFlags>
-		[[maybe_unused, nodiscard]] constexpr auto
+		[[nodiscard]] constexpr auto
 		from_json_array( String &&json_data,
 		                 options::parse_flags_t<PolicyFlags...> )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
@@ -314,8 +277,7 @@ namespace daw::json {
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
 		         typename Constructor = use_default, bool KnownBounds = false,
 		         typename String>
-		[[maybe_unused, nodiscard]] constexpr auto
-		from_json_array( String &&json_data )
+		[[nodiscard]] constexpr auto from_json_array( String &&json_data )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
 		                      Container>;
 	} // namespace DAW_JSON_VER

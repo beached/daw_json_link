@@ -462,7 +462,7 @@ inline namespace {
 		auto const tst = [json_data_twitter, json_data_citm,
 		                  json_data_canada]( auto parse_policy ) {
 			return make_bench_result(
-			  "nativejson benchmark from_json(checked)",
+			  "nativejson benchmark from_json(unchecked)",
 			  json_data_twitter.size( ) + json_data_citm.size( ) +
 			    json_data_canada.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(

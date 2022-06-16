@@ -26,6 +26,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		enum json_parse_handler_result { Continue, SkipClassArray, Complete };
+
 		namespace json_details {
 			struct handler_result_holder {
 				json_parse_handler_result value = json_parse_handler_result::Continue;
@@ -309,6 +310,7 @@ namespace daw::json {
 			}
 
 		} // namespace json_details
+
 		enum class StackParseStateType { Class, Array };
 
 		template<json_options_t P, typename A>
