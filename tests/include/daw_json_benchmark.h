@@ -132,7 +132,6 @@ namespace daw::json::benchmark {
 		}
 		if( min_num_runs < 2 ) {
 			min_num_runs = 2;
-			;
 		}
 
 		using ns_duration_t = std::chrono::nanoseconds;
