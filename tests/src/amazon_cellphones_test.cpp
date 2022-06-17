@@ -43,6 +43,8 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
+std::string_view last_doc {};
+
 template<daw::json::options::ExecModeTypes ExecMode>
 void test( std::string_view json ) {
 	std::cout << "Using " << to_string( ExecMode )
@@ -125,13 +127,14 @@ int main( int argc, char **argv )
 	auto const json_sv1 = std::string_view( json_data1 );
 	assert( json_sv1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 
+	last_doc = json_sv1;
 	test<options::ExecModeTypes::compile_time>( json_sv1 );
 	test<options::ExecModeTypes::runtime>( json_sv1 );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
-	std::cerr << to_formatted_string( jex ) << '\n';
+	std::cerr << to_formatted_string( jex, last_doc.data( ) ) << '\n';
 	exit( 1 );
 } catch( std::exception const &ex ) {
 	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
