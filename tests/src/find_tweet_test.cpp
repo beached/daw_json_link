@@ -145,10 +145,6 @@ int main( int argc, char **argv )
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 	assert( json_sv1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 
-	auto const sz = json_sv1.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
-
 	constexpr std::uint64_t id = 505874901689851904ULL;
 	test<options::ExecModeTypes::compile_time>( json_sv1, id );
 	test<options::ExecModeTypes::runtime>( json_sv1, id );
