@@ -323,7 +323,7 @@ namespace daw::json {
 			             static_cast<std::ptrdiff_t>( previous_char_count ) ),
 			  previous_char_count + 1 );
 #ifndef _WIN32
-			result += "\nlocation:\x1b[1m";
+			result += " \nlocation: \x1b[1m";
 #endif
 			result +=
 			  std::accumulate( std::data( loc_data ), daw::data_end( loc_data ),

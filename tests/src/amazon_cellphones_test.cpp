@@ -43,7 +43,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-std::string_view last_doc {};
+std::string_view last_doc{ };
 
 template<daw::json::options::ExecModeTypes ExecMode>
 void test( std::string_view json ) {
@@ -60,7 +60,11 @@ void test( std::string_view json ) {
 
 	auto it = json_lines_iterator( json );
 	++it;
-	auto json_sv = it.get_raw_json_document( );
+	auto json_sv =
+	  daw::string_view( it.get_raw_json_document( ) ).trim_prefix_copy( );
+
+	daw_json_ensure( json_sv.starts_with( '[' ),
+	                 ErrorReason::ExpectedArrayOrClassStart );
 	auto const sz = json_sv.size( );
 
 	{
