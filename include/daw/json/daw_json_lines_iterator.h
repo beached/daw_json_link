@@ -217,7 +217,8 @@ namespace daw::json {
 		public:
 			explicit json_lines_range( ) = default;
 
-			explicit constexpr json_lines_range( iterator first, iterator last )
+			explicit constexpr json_lines_range( iterator first,
+			                                     iterator last = iterator( ) )
 			  : m_first( first )
 			  , m_last( last ) {}
 

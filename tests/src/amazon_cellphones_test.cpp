@@ -16,11 +16,9 @@
 #include <daw/daw_read_file.h>
 
 #include <cstdint>
-#include <future>
 #include <iostream>
 #include <map>
 #include <string>
-#include <thread>
 #include <tuple>
 
 struct brand {
@@ -49,56 +47,64 @@ void test( std::string_view json ) {
 	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 
-	auto result = std::map<std::string, brand>( );
 	using namespace daw::json;
-	result.clear( );
-	auto const part_no = std::thread::hardware_concurrency( ) > 0
-	                       ? std::thread::hardware_concurrency( )
-	                       : 1;
+
+	using line_item_t = json_tuple_no_name<
+	  std::tuple<std::string_view, double, std::uint64_t>,
+	  json_tuple_member_list<json_tuple_member<1, std::string_view>,
+	                         json_tuple_member<5, double>,
+	                         json_tuple_member<7, std::uint64_t>>>;
+
 	auto it = json_lines_iterator( json );
 	++it;
-	auto json_doc = it.get_raw_json_document( );
-	auto const chkpartitions =
-	  daw::json::partition_jsonl_document<json_tuple_no_name<
-	    std::tuple<std::string, double, std::uint64_t>,
-	    json_tuple_member_list<
-	      json_tuple_member<1, json_string_raw_no_name<std::string>>,
-	      json_tuple_member<5, double>, json_tuple_member<7, std::uint64_t>>>>(
-	    part_no, json_doc );
+	auto json_sv = it.get_raw_json_document( );
+	auto const sz = json_sv.size( );
 
-	auto results = std::vector<std::future<std::map<std::string, brand>>>( );
-	results.reserve( part_no );
-	for( auto part : chkpartitions ) {
-		results.push_back( std::async( std::launch::async, [part] {
-			auto r = std::map<std::string, brand>( );
-			for( auto [key, rating, reviews] : part ) {
-				auto pos = r.find( key );
-				if( pos == r.end( ) ) {
-					r.emplace(
-					  key, brand{ rating * static_cast<double>( reviews ), reviews } );
-				} else {
-					pos->second.cumulative_rating +=
-					  rating * static_cast<double>( reviews );
-					pos->second.reviews_count += reviews;
-				}
-			}
-			return r;
-		} ) );
+	{
+		auto result = std::map<std::string, brand, std::less<>>( );
+		auto json_lines_doc = json_lines_range<line_item_t>( json_sv );
+		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		  "amazon cellphone(checked)", sz,
+		  [&]( auto jl ) {
+			  for( auto [key, rating, reviews] : jl ) {
+				  auto pos = result.find( key );
+				  if( pos == result.end( ) ) {
+					  result.emplace(
+					    key, brand{ rating * static_cast<double>( reviews ), reviews } );
+				  } else {
+					  pos->second.cumulative_rating +=
+					    rating * static_cast<double>( reviews );
+					  pos->second.reviews_count += reviews;
+				  }
+			  }
+		  },
+		  json_lines_doc );
+		test_assert( not result.empty( ),
+		             "Exception while parsing: res.get_exception_message()" );
 	}
-	for( auto &f : results ) {
-		auto m = f.get( );
-		result.merge( m );
-		if( m.empty( ) ) {
-			continue;
-		}
-		for( auto const &p : m ) {
-			auto pos = result.find( p.first );
-			pos->second.cumulative_rating += p.second.cumulative_rating;
-			pos->second.reviews_count += p.second.reviews_count;
-		}
+	{
+		auto result = std::map<std::string, brand, std::less<>>( );
+		auto json_lines_doc =
+		  json_lines_range<line_item_t, options::CheckedParseMode::no>( json_sv );
+		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		  "amazon cellphone(unchecked)", sz,
+		  [&]( auto jl ) {
+			  for( auto [key, rating, reviews] : jl ) {
+				  auto pos = result.find( key );
+				  if( pos == result.end( ) ) {
+					  result.emplace(
+					    key, brand{ rating * static_cast<double>( reviews ), reviews } );
+				  } else {
+					  pos->second.cumulative_rating +=
+					    rating * static_cast<double>( reviews );
+					  pos->second.reviews_count += reviews;
+				  }
+			  }
+		  },
+		  json_lines_doc );
+		test_assert( not result.empty( ),
+		             "Exception while parsing: res.get_exception_message()" );
 	}
-	test_assert( not result.empty( ),
-	             "Exception while parsing: res.get_exception_message()" );
 }
 
 int main( int argc, char **argv )
@@ -106,7 +112,6 @@ int main( int argc, char **argv )
   try
 #endif
 {
-
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open(twitter_timeline.json)\n";
