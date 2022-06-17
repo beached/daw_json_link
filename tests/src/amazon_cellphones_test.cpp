@@ -8,11 +8,12 @@
 
 #include "defines.h"
 
+#include "daw_json_benchmark.h"
+
 #include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_lines_iterator.h>
 #include <daw/json/daw_json_link.h>
 
-#include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 
 #include <cstdint>
@@ -63,9 +64,9 @@ void test( std::string_view json ) {
 	{
 		auto result = std::map<std::string, brand, std::less<>>( );
 		auto json_lines_doc = json_lines_range<line_item_t>( json_sv );
-		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "amazon cellphone(checked)", sz,
-		  [&]( auto jl ) {
+		auto res = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "amazon cellphone(checked)",
+		  [&result]( auto jl ) {
 			  for( auto [key, rating, reviews] : jl ) {
 				  auto pos = result.find( key );
 				  if( pos == result.end( ) ) {
@@ -79,6 +80,7 @@ void test( std::string_view json ) {
 			  }
 		  },
 		  json_lines_doc );
+		(void)res.get( );
 		test_assert( not result.empty( ),
 		             "Exception while parsing: res.get_exception_message()" );
 	}
@@ -86,8 +88,8 @@ void test( std::string_view json ) {
 		auto result = std::map<std::string, brand, std::less<>>( );
 		auto json_lines_doc =
 		  json_lines_range<line_item_t, options::CheckedParseMode::no>( json_sv );
-		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "amazon cellphone(unchecked)", sz,
+		auto res = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "amazon cellphone(unchecked)",
 		  [&]( auto jl ) {
 			  for( auto [key, rating, reviews] : jl ) {
 				  auto pos = result.find( key );
@@ -102,6 +104,7 @@ void test( std::string_view json ) {
 			  }
 		  },
 		  json_lines_doc );
+		(void)res.get( );
 		test_assert( not result.empty( ),
 		             "Exception while parsing: res.get_exception_message()" );
 	}
@@ -122,11 +125,8 @@ int main( int argc, char **argv )
 	auto const json_sv1 = std::string_view( json_data1 );
 	assert( json_sv1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 
-	auto const sz = json_sv1.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
-
 	test<options::ExecModeTypes::compile_time>( json_sv1 );
+	test<options::ExecModeTypes::runtime>( json_sv1 );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
