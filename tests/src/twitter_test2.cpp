@@ -66,7 +66,7 @@ int main( int argc, char **argv )
 	          << '\n';
 
 	std::optional<daw::twitter2::twitter_object_t> twitter_result;
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
@@ -81,7 +81,7 @@ int main( int argc, char **argv )
 	             "Missing value" );
 
 	twitter_result = std::nullopt;
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<daw::twitter2::twitter_object_t>(
@@ -97,7 +97,7 @@ int main( int argc, char **argv )
 
 	std::string str = std::string( );
 	str.reserve( json_sv1.size( ) );
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter_catalog bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );

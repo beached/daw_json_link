@@ -18,7 +18,7 @@
 
 namespace daw::json::benchmark {
 	template<typename Rep, typename Period>
-	[[nodiscard]] inline std::string
+	DAW_ATTRIB_NOINLINE [[nodiscard]] std::string
 	ns_to_string( std::chrono::duration<Rep, Period> time,
 	              std::size_t prec = 0 ) {
 		std::stringstream ss;
@@ -56,7 +56,8 @@ namespace daw::json::benchmark {
 	}
 
 	template<typename Bytes>
-	inline std::string to_min_SI_unit_full( Bytes bytes, std::size_t prec = 1 ) {
+	DAW_ATTRIB_NOINLINE std::string to_min_SI_unit_full( Bytes bytes,
+	                                                     std::size_t prec = 1 ) {
 		std::stringstream ss;
 		ss << std::setprecision( static_cast<int>( prec ) ) << std::fixed;
 		auto val = static_cast<double>( bytes );
@@ -90,7 +91,8 @@ namespace daw::json::benchmark {
 	}
 
 	template<typename Bytes>
-	inline std::string to_min_SI_unit( Bytes bytes, std::size_t prec = 1 ) {
+	DAW_ATTRIB_NOINLINE std::string to_min_SI_unit( Bytes bytes,
+	                                                std::size_t prec = 1 ) {
 		std::stringstream ss;
 		ss << std::setprecision( static_cast<int>( prec ) ) << std::fixed;
 		auto val = static_cast<double>( bytes );
@@ -124,7 +126,7 @@ namespace daw::json::benchmark {
 	}
 
 	template<typename Func, typename... Args>
-	inline daw::expected_t<std::invoke_result_t<Func, Args...>>
+	DAW_ATTRIB_NOINLINE daw::expected_t<std::invoke_result_t<Func, Args...>>
 	benchmark( std::size_t min_num_runs, std::size_t data_size,
 	           daw::string_view title, Func &&func, Args const &...args ) {
 		if( min_num_runs % 2 == 1 ) {
@@ -144,6 +146,8 @@ namespace daw::json::benchmark {
 		auto const base_start = std::chrono::steady_clock::now( );
 		for( std::size_t n = 0; n < min_num_runs; ++n ) {
 			auto const run_start = std::chrono::steady_clock::now( );
+			daw::do_not_optimize( func );
+			daw::do_not_optimize( args... );
 			try {
 				(void)func( args... );
 			} catch( ... ) {
@@ -170,6 +174,8 @@ namespace daw::json::benchmark {
 		auto const full_start = std::chrono::steady_clock::now( );
 		for( std::size_t n = 0; n < min_num_runs * 2; ++n ) {
 			auto const run_start = std::chrono::steady_clock::now( );
+			daw::do_not_optimize( func );
+			daw::do_not_optimize( args... );
 			try {
 				(void)func( args... );
 			} catch( ... ) {
@@ -231,9 +237,9 @@ namespace daw::json::benchmark {
 		try {
 			if constexpr( std::is_same_v<func_result_t, void> ) {
 				func( args... );
-				result.operator=( true );
+				result.set_value( );
 			} else {
-				result = func( args... );
+				result.set_value( func( args... ) );
 			}
 		} catch( ... ) {
 			std::cerr << "Error during benchmark run: " << title << '\n';

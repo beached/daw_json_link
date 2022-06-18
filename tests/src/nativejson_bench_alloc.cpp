@@ -63,7 +63,7 @@ void test( char **argv, AllocType &alloc ) {
 #ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
-		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_twitter bench", json_sv1.size( ),
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
@@ -90,7 +90,7 @@ void test( char **argv, AllocType &alloc ) {
 	               std::to_string( twitter_result->statuses.front( ).user.id ) );
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_twitter bench trusted", json_sv1.size( ),
 	  [&]( auto f1 ) {
 		  {
@@ -113,7 +113,7 @@ void test( char **argv, AllocType &alloc ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_citm bench", json_sv2.size( ),
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
@@ -133,7 +133,7 @@ void test( char **argv, AllocType &alloc ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_citm bench trusted", json_sv2.size( ),
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
@@ -153,7 +153,7 @@ void test( char **argv, AllocType &alloc ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_canada bench", json_sv3.size( ),
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
@@ -168,7 +168,7 @@ void test( char **argv, AllocType &alloc ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_canada bench trusted", json_sv3.size( ),
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
@@ -185,7 +185,7 @@ void test( char **argv, AllocType &alloc ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  twitter_result.reset( );
@@ -220,7 +220,7 @@ void test( char **argv, AllocType &alloc ) {
 	             "Incorrect value" );
 	test_assert( canada_result, "Missing value" );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench trusted", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  twitter_result.reset( );

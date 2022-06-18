@@ -65,7 +65,7 @@ void test( std::string_view json_sv1 ) {
 	test_assert( apache_builds_result.numExecutors == 0,
 	             "Bad value for numExecutors" );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "apache_builds bench", sz,
 	  []( auto f1 ) {
 		  auto r =
@@ -75,7 +75,7 @@ void test( std::string_view json_sv1 ) {
 	  json_sv1 );
 
 	std::string str{ };
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "apache_builds bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );

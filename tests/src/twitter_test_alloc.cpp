@@ -58,7 +58,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	          << " exec model\n*********************************************\n";
 	std::optional<daw::twitter::twitter_object_t> twitter_result;
 	// ******************************
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked)", sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
@@ -77,7 +77,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	             "Missing value" );
 
 	// options::CheckedParseMode::no
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
@@ -96,7 +96,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	             "Missing value" );
 
 	// CppCommentSkippingPolicyChecked
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(cpp comments)", sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
@@ -115,7 +115,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// CppCommentSkippingPolicyUnchecked
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(cpp comments, unchecked)", sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
@@ -136,7 +136,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	             "Missing value" );
 #endif
 	// HashCommentSkippingPolicyChecked
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(hash comments)", sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
@@ -155,7 +155,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// HashCommentSkippingPolicyUnchecked
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(hash comments, unchecked)", sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
@@ -177,7 +177,7 @@ void test( std::string_view json_data, AllocType &alloc )
 #endif
 	// ******************************
 	// Escaped Names
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked, escaped names)", sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
@@ -196,7 +196,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	             "Missing value" );
 
 	// options::CheckedParseMode::no Escaped Names
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked, escaped names)", sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
@@ -265,7 +265,7 @@ int main( int argc, char **argv )
 		  daw::json::from_json_alloc<daw::twitter::twitter_object_t>( json_data,
 		                                                              alloc );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
-		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter bench(to_json_string)", sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
