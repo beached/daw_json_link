@@ -146,15 +146,18 @@ namespace daw::json::benchmark {
 		auto const base_start = std::chrono::steady_clock::now( );
 		for( std::size_t n = 0; n < min_num_runs; ++n ) {
 			auto const run_start = std::chrono::steady_clock::now( );
-			daw::do_not_optimize( func );
 			daw::do_not_optimize( args... );
+#if defined( DAW_USE_EXCEPTIONS )
 			try {
+#endif
 				(void)func( args... );
+#if defined( DAW_USE_EXCEPTIONS )
 			} catch( ... ) {
 				std::cerr << "Error during benchmark run: " << title << '\n';
 				result.set_exception( );
 				return result;
 			}
+#endif
 			auto const run_finish = std::chrono::steady_clock::now( );
 			auto const run_duration = run_finish - run_start;
 			if( run_duration < min_duration ) {
@@ -176,13 +179,13 @@ namespace daw::json::benchmark {
 			auto const run_start = std::chrono::steady_clock::now( );
 			daw::do_not_optimize( func );
 			daw::do_not_optimize( args... );
+#if defined( DAW_USE_EXCEPTIONS )
 			try {
+#endif
 				(void)func( args... );
-			} catch( ... ) {
-				std::cerr << "Error during benchmark run: " << title << '\n';
-				result.set_exception( );
-				return result;
-			}
+#if defined( DAW_USE_EXCEPTIONS )
+			} catch( ... ) {}
+#endif
 			auto const run_finish = std::chrono::steady_clock::now( );
 			auto const run_duration = run_finish - run_start;
 			if( run_duration < min_duration ) {
@@ -234,18 +237,22 @@ namespace daw::json::benchmark {
 		          << "\tdata size: " << to_min_SI_unit( data_size )
 		          << "B\tnumber of runs: " << min_num_runs << "\n\n";
 
+#if defined( DAW_USE_EXCEPTIONS )
 		try {
+#endif
 			if constexpr( std::is_same_v<func_result_t, void> ) {
 				func( args... );
 				result.set_value( );
 			} else {
 				result.set_value( func( args... ) );
 			}
+#if defined( DAW_USE_EXCEPTIONS )
 		} catch( ... ) {
 			std::cerr << "Error during benchmark run: " << title << '\n';
 			result.set_exception( std::current_exception( ) );
 			return result;
 		}
+#endif
 		return result;
 	}
 

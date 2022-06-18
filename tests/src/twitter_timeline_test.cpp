@@ -45,14 +45,15 @@ void test( std::string_view json_sv1 ) {
 	{
 		using range_t = daw::json::json_array_range<daw::twitter::tweet, ExecMode>;
 
+		auto jarng = range_t( json_sv1 );
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(checked)", sz,
-		  [&]( auto rng ) {
+		  [&twitter_result]( auto rng ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
 		  },
-		  range_t( json_sv1 ) );
+		  jarng );
 		test_assert( res.has_value( ),
-		             "Exception while parsing: res.get_exception_message()" );
+		             "Exception while parsing: " + res.get_exception_message( ) );
 	}
 	{
 		using range_t = daw::json::json_array_range<daw::twitter::tweet, ExecMode>;
@@ -75,7 +76,7 @@ void test( std::string_view json_sv1 ) {
 		  },
 		  range_t( json_sv1 ) );
 		test_assert( res.has_value( ),
-		             "Exception while parsing: res.get_exception_message()" );
+		             "Exception while parsing: " + res.get_exception_message( ) );
 	}
 	{
 		using range_t = daw::json::json_array_range<

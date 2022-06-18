@@ -195,16 +195,17 @@ void test( char **argv ) {
 	{
 		auto ret = daw::json::benchmark::benchmark(
 		  DAW_NUM_RUNS, sz, "nativejson bench(checked)",
-		  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
-			  twitter_result = from_json<daw::twitter::twitter_object_t>(
-			    f1, checked_policy_v<ExecMode, true> );
-			  citm_result = from_json<daw::citm::citm_object_t>(
-			    f2, checked_policy_v<ExecMode, true> );
-			  canada_result = from_json<daw::geojson::Polygon>(
-			    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
+		  []( auto const &f1, auto const &f2, auto const &f3 ) {
+			  return std::tuple{
+			    from_json<daw::twitter::twitter_object_t>(
+			      f1, checked_policy_v<ExecMode, true> ),
+			    from_json<daw::citm::citm_object_t>(
+			      f2, checked_policy_v<ExecMode, true> ),
+			    from_json<daw::geojson::Polygon>(
+			      f3, "features[0].geometry", checked_policy_v<ExecMode, false> ) };
 		  },
 		  json_sv1, json_sv2, json_sv3 );
-		(void)ret.get( );
+		std::tie( twitter_result, citm_result, canada_result ) = ret.get( );
 	}
 
 	std::cout << std::flush;
@@ -231,17 +232,19 @@ void test( char **argv ) {
 	{
 		auto ret = daw::json::benchmark::benchmark(
 		  DAW_NUM_RUNS, sz, "nativejson bench(unchecked)",
-		  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
-			  twitter_result = from_json<daw::twitter::twitter_object_t>(
-			    f1, unchecked_policy_v<ExecMode, true> );
-			  citm_result = from_json<daw::citm::citm_object_t>(
-			    f2, unchecked_policy_v<ExecMode, true> );
-			  canada_result = from_json<daw::geojson::Polygon>(
-			    f3, "features[0].geometry", unchecked_policy_v<ExecMode, false> );
+		  []( auto const &f1, auto const &f2, auto const &f3 ) {
+			  return std::tuple{
+			    from_json<daw::twitter::twitter_object_t>(
+			      f1, unchecked_policy_v<ExecMode, true> ),
+			    from_json<daw::citm::citm_object_t>(
+			      f2, unchecked_policy_v<ExecMode, true> ),
+			    from_json<daw::geojson::Polygon>(
+			      f3, "features[0].geometry", unchecked_policy_v<ExecMode, false> ) };
 		  },
 		  json_sv1, json_sv2, json_sv3 );
-		(void)ret.get( );
+		std::tie( twitter_result, citm_result, canada_result ) = ret.get( );
 	}
+
 	std::cout << std::flush;
 
 	daw::do_not_optimize( twitter_result );

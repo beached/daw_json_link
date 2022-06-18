@@ -26,23 +26,27 @@
 #define DAW_CONSTEXPR constexpr
 #endif
 
-#define ensure( Bool )                                 \
-	if( not( Bool ) ) {                                  \
-		std::cerr << "Error in assertion: " #Bool << '\n'; \
-		std::terminate( );                                 \
-	}                                                    \
-	while( false )
-
-template<typename Bool>
-inline constexpr void test_assert( Bool &&b, std::string_view msg ) {
-	if( not b ) {
-		std::cerr << msg << '\n';
-		std::terminate( );
-	}
+template<typename StringView>
+DAW_ATTRIB_NOINLINE void daw_ensure_error( StringView && msg ) {
+	std::cerr << msg << std::endl << std::flush;
+	std::terminate( );
 }
 
-inline void display_exception( daw::json::json_exception const &jex,
-                               char const *json_data ) {
+#define ensure( Bool )                                \
+	if( DAW_UNLIKELY( not( Bool ) ) ) {                 \
+		daw_ensure_error( "Error in assertion: " #Bool ); \
+	}                                                   \
+	while( false )
+
+#define test_assert( Bool, Msg )      \
+	if( DAW_UNLIKELY( not( Bool ) ) ) { \
+		daw_ensure_error( Msg );          \
+	}                                   \
+	while( false )
+
+DAW_ATTRIB_NOINLINE inline void
+display_exception( daw::json::json_exception const &jex,
+                   char const *json_data ) {
 	std::cerr << "Exception thrown by parser: "
 	          << to_formatted_string( jex, json_data );
 	if( jex.parse_location( ) ) {
@@ -57,6 +61,7 @@ inline void display_exception( daw::json::json_exception const &jex,
 			          << '\n';
 			std::cerr << "JSON Path to value close to error '"
 			          << to_json_path_string( path_stack ) << "'\n";
+			std::cerr << std::flush;
 		}
 	}
 }
