@@ -9,10 +9,10 @@
 #pragma once
 
 #include <daw/daw_do_not_optimize.h>
+#include <daw/daw_expected.h>
 #include <daw/daw_string_view.h>
 
 #include <chrono>
-#include <future>
 #include <iomanip>
 #include <iostream>
 
@@ -124,7 +124,7 @@ namespace daw::json::benchmark {
 	}
 
 	template<typename Func, typename... Args>
-	inline std::future<std::invoke_result_t<Func, Args...>>
+	inline daw::expected_t<std::invoke_result_t<Func, Args...>>
 	benchmark( std::size_t min_num_runs, std::size_t data_size,
 	           daw::string_view title, Func &&func, Args const &...args ) {
 		if( min_num_runs % 2 == 1 ) {
@@ -137,20 +137,7 @@ namespace daw::json::benchmark {
 		using ns_duration_t = std::chrono::nanoseconds;
 		using namespace std::chrono_literals;
 		using func_result_t = std::invoke_result_t<Func, Args...>;
-		auto result = std::promise<func_result_t>( );
-
-		try {
-			if constexpr( std::is_same_v<func_result_t, void> ) {
-				func( args... );
-				result.set_value( );
-			} else {
-				result.set_value( func( args... ) );
-			}
-		} catch( ... ) {
-			std::cerr << "Error during benchmark run: " << title << '\n';
-			result.set_exception( std::current_exception( ) );
-			return result.get_future( );
-		}
+		auto result = daw::expected_t<func_result_t>( );
 
 		ns_duration_t min_duration = 4'611'686'018'427'387'904ns;
 		ns_duration_t max_duration = 0ns;
@@ -161,8 +148,8 @@ namespace daw::json::benchmark {
 				(void)func( args... );
 			} catch( ... ) {
 				std::cerr << "Error during benchmark run: " << title << '\n';
-				result.set_exception( std::current_exception( ) );
-				return result.get_future( );
+				result.set_exception( );
+				return result;
 			}
 			auto const run_finish = std::chrono::steady_clock::now( );
 			auto const run_duration = run_finish - run_start;
@@ -187,8 +174,8 @@ namespace daw::json::benchmark {
 				(void)func( args... );
 			} catch( ... ) {
 				std::cerr << "Error during benchmark run: " << title << '\n';
-				result.set_exception( std::current_exception( ) );
-				return result.get_future( );
+				result.set_exception( );
+				return result;
 			}
 			auto const run_finish = std::chrono::steady_clock::now( );
 			auto const run_duration = run_finish - run_start;
@@ -241,7 +228,19 @@ namespace daw::json::benchmark {
 		          << "\tdata size: " << to_min_SI_unit( data_size )
 		          << "B\tnumber of runs: " << min_num_runs << "\n\n";
 
-		return result.get_future( );
+		try {
+			if constexpr( std::is_same_v<func_result_t, void> ) {
+				func( args... );
+				result.operator=( true );
+			} else {
+				result = func( args... );
+			}
+		} catch( ... ) {
+			std::cerr << "Error during benchmark run: " << title << '\n';
+			result.set_exception( std::current_exception( ) );
+			return result;
+		}
+		return result;
 	}
 
 } // namespace daw::json::benchmark

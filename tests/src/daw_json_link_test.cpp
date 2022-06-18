@@ -33,10 +33,8 @@
 #include <tuple>
 #include <vector>
 
-#define AS_CONSTEXPR( ... ) \
-	[&]( ) constexpr {        \
-		return __VA_ARGS__;     \
-	}                         \
+#define AS_CONSTEXPR( ... )                \
+	[&]( ) constexpr { return __VA_ARGS__; } \
 	( )
 
 /***
@@ -1232,11 +1230,34 @@ int main( int, char ** )
 	  << '\n';
 
 	auto byte_vec = to_json( 5.5, std::vector<std::byte>{ } );
-	assert( byte_vec.size( ) == 3 );
-	assert( static_cast<char>( byte_vec[0] ) == '5' );
-	assert( static_cast<char>( byte_vec[1] ) == '.' );
-	assert( static_cast<char>( byte_vec[2] ) == '5' );
+	ensure( byte_vec.size( ) == 3 );
+	ensure( static_cast<char>( byte_vec[0] ) == '5' );
+	ensure( static_cast<char>( byte_vec[1] ) == '.' );
+	ensure( static_cast<char>( byte_vec[2] ) == '5' );
 	(void)byte_vec;
+
+	daw::string_view jd_opt_jv1 = R"json({"name":5,"name2":{"foo":6}})json";
+	auto jv = daw::json::json_value( jd_opt_jv1 );
+	auto opt_int0 = as<std::optional<int>>( jv["name"] );
+	ensure( opt_int0 );
+	ensure( *opt_int0 == 5 );
+	auto opt_int1 = as<std::optional<int>>( jv["name2.foo"] );
+	ensure( opt_int1 );
+	ensure( *opt_int1 == 6 );
+	auto opt_int2 = as<std::optional<int>>( jv["name2.bar"] );
+	ensure( not opt_int2 );
+	auto opt_int3 =
+	  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name" );
+	ensure( opt_int3 );
+	ensure( *opt_int3 == 5 );
+	auto opt_int4 =
+	  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.foo" );
+	ensure( opt_int4 );
+	ensure( *opt_int4 == 6 );
+	auto opt_int5 =
+	  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.bar" );
+	ensure( not opt_int5 );
+
 #if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L
 	static_assert(

@@ -223,7 +223,7 @@ namespace daw::json {
 			  ParseState( std::data( json_data ), daw::data_end( json_data ) ) );
 			jv = jv.find_member( member_path );
 
-			if constexpr( json_details::is_json_nullable_v<JsonMember> ) {
+			if constexpr( json_details::is_json_nullable_v<json_member> ) {
 				if( not jv ) {
 					return json_details::construct_nullable_empty<
 					  typename json_member::constructor_t>( );
