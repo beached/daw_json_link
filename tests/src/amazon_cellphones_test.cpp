@@ -43,7 +43,9 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-std::string_view last_doc{ };
+inline namespace {
+	std::string_view last_doc{ };
+}
 
 template<daw::json::options::ExecModeTypes ExecMode>
 void test( std::string_view json ) {
