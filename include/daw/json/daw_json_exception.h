@@ -314,6 +314,18 @@ namespace daw::json {
 			if( json_document == nullptr or je.parse_location( ) == nullptr ) {
 				return result;
 			}
+			char const *last_nl = nullptr;
+			auto const line_no = daw::algorithm::accumulate(
+			  json_document, je.parse_location( ), std::size_t{ 1 },
+			  [&]( std::size_t count, char const &c ) {
+				  if( c == '\n' ) {
+					  last_nl = &c;
+					  ++count;
+				  }
+				  return count;
+			  } );
+			auto const col_no =
+			  static_cast<std::size_t>( je.parse_location( ) - last_nl ) + 1U;
 			auto const previous_char_count =
 			  ( std::min )( static_cast<std::size_t>( 50 ),
 			                static_cast<std::size_t>( std::distance(
@@ -322,10 +334,10 @@ namespace daw::json {
 			  std::prev( je.parse_location( ),
 			             static_cast<std::ptrdiff_t>( previous_char_count ) ),
 			  previous_char_count + 1 );
+			result += " \nlocation: near line: " + std::to_string( line_no ) +
+			          " col: " + std::to_string( col_no );
 #ifndef _WIN32
-			result += " \nlocation: \x1b[1m";
-#else
-			result += " \nlocation: ";
+			result += " \"\x1b[1m";
 #endif
 			result +=
 			  std::accumulate( std::data( loc_data ), daw::data_end( loc_data ),
@@ -336,10 +348,9 @@ namespace daw::json {
 				                   return s;
 			                   } );
 #ifndef _WIN32
-			result += "\x1b[0m\n";
-#else
-			result += "\n";
+			result += "\x1b[0m";
 #endif
+			result += "\"\n";
 			return result;
 		}
 	} // namespace DAW_JSON_VER
