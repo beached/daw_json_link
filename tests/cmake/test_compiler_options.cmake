@@ -37,7 +37,6 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-documentation
                 -Wno-exit-time-destructors
                 -Wno-float-equal
-                -Wno-global-constructors
                 -Wno-missing-prototypes
                 -Wno-newline-eof
                 -Wno-padded
