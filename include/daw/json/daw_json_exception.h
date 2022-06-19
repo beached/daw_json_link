@@ -339,11 +339,20 @@ namespace daw::json {
 #ifndef _WIN32
 			result += "\x1b[1m";
 #endif
+			result.reserve( result.size( ) + std::size( loc_data ) );
 			result +=
 			  std::accumulate( std::data( loc_data ), daw::data_end( loc_data ),
 			                   std::string{ }, []( std::string s, char c ) {
-				                   if( ( c != '\n' ) & ( c != '\r' ) ) {
+				                   switch( c ) {
+				                   case '\n':
+				                   case '\r':
+					                   break;
+				                   case '"':
+					                   s += '\\';
+					                   [[fallthrough]];
+				                   default:
 					                   s += c;
+					                   break;
 				                   }
 				                   return s;
 			                   } );
