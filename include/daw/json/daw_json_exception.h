@@ -324,6 +324,8 @@ namespace daw::json {
 			  previous_char_count + 1 );
 #ifndef _WIN32
 			result += " \nlocation: \x1b[1m";
+#else
+			result += " \nlocation: ";
 #endif
 			result +=
 			  std::accumulate( std::data( loc_data ), daw::data_end( loc_data ),
