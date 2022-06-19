@@ -85,7 +85,7 @@ namespace daw::json {
 
 			template<typename ParseState, typename Result,
 			         typename max_storage_digits, typename CharT>
-			DAW_ATTRIB_INLINE constexpr bool
+			inline constexpr bool
 			should_use_strtod( CharT *whole_first, CharT *whole_last,
 			                   CharT *fract_first, CharT *fract_last ) {
 				if constexpr( std::is_floating_point_v<Result> and
@@ -132,6 +132,7 @@ namespace daw::json {
 
 				using max_storage_digits = daw::constant<static_cast<std::ptrdiff_t>(
 				  daw::numeric_limits<std::uint64_t>::digits10 )>;
+
 				bool use_strtod =
 				  should_use_strtod<ParseState, Result, max_storage_digits>(
 				    whole_first, whole_last, fract_first, fract_last );
