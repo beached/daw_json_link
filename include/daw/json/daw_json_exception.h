@@ -337,6 +337,8 @@ namespace daw::json {
 			                   } );
 #ifndef _WIN32
 			result += "\x1b[0m\n";
+#else
+			reuslt += "\n";
 #endif
 			return result;
 		}
