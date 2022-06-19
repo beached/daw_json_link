@@ -1093,8 +1093,11 @@ namespace daw::json {
 					using json_member_t = ordered_member_subtype_t<CurrentMember>;
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					ParseState parse_state2 =
-					  pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
-					    parse_state, ClassIdx, index_t::value, parse_locations );
+/*					  pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
+					    parse_state, ClassIdx, index_t::value, parse_locations );*/
+					pocm_details::maybe_skip_members<
+					  is_json_nullable_v<json_member_t>>(
+					  parse_state, ClassIdx, CurrentMember::member_index, parse_locations );
 					if constexpr( sizeof...( Is ) > 1 ) {
 						++ClassIdx;
 						if( parse_state2.first == parse_state.first ) {

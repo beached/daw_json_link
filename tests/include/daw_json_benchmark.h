@@ -152,11 +152,7 @@ namespace daw::json::benchmark {
 #endif
 				(void)func( args... );
 #if defined( DAW_USE_EXCEPTIONS )
-			} catch( ... ) {
-				std::cerr << "Error during benchmark run: " << title << '\n';
-				result.set_exception( );
-				return result;
-			}
+			} catch( ... ) {}
 #endif
 			auto const run_finish = std::chrono::steady_clock::now( );
 			auto const run_duration = run_finish - run_start;
@@ -250,7 +246,6 @@ namespace daw::json::benchmark {
 		} catch( ... ) {
 			std::cerr << "Error during benchmark run: " << title << '\n';
 			result.set_exception( std::current_exception( ) );
-			return result;
 		}
 #endif
 		return result;

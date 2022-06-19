@@ -336,7 +336,7 @@ namespace daw::json {
 			  previous_char_count + 1 );
 			result += " \nlocation: near line: " + std::to_string( line_no ) +
 			          " col: " + std::to_string( col_no ) + "\n\"";
-#ifndef _WIN32
+#if not defined( DAW_JSON_NO_COLOUR )
 			result += "\x1b[1m";
 #endif
 			result.reserve( result.size( ) + std::size( loc_data ) );
@@ -347,16 +347,18 @@ namespace daw::json {
 				                   case '\n':
 				                   case '\r':
 					                   break;
+#if defined( DAW_JSON_NO_COLOUR )
 				                   case '"':
 					                   s += '\\';
 					                   [[fallthrough]];
+#endif
 				                   default:
 					                   s += c;
 					                   break;
 				                   }
 				                   return s;
 			                   } );
-#ifndef _WIN32
+#if not defined( DAW_JSON_NO_COLOUR )
 			result += "\x1b[0m";
 #endif
 			result += "\"\n";
