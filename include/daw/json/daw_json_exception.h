@@ -335,9 +335,9 @@ namespace daw::json {
 			             static_cast<std::ptrdiff_t>( previous_char_count ) ),
 			  previous_char_count + 1 );
 			result += " \nlocation: near line: " + std::to_string( line_no ) +
-			          " col: " + std::to_string( col_no );
+			          " col: " + std::to_string( col_no ) + "\n\"";
 #ifndef _WIN32
-			result += " \"\x1b[1m";
+			result += "\x1b[1m";
 #endif
 			result +=
 			  std::accumulate( std::data( loc_data ), daw::data_end( loc_data ),
