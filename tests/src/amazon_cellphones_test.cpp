@@ -43,12 +43,8 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-inline namespace {
-	std::string_view last_doc{ };
-}
-
 template<daw::json::options::ExecModeTypes ExecMode>
-void test( std::string_view json ) {
+void test( daw::string_view json ) {
 	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 
@@ -118,36 +114,37 @@ void test( std::string_view json ) {
 	}
 }
 
-int main( int argc, char **argv )
+int main( int argc, char **argv ) {
+	auto json_doc = std::optional<std::string>{ };
 #ifdef DAW_USE_EXCEPTIONS
-  try
+	try
 #endif
-{
-	using namespace daw::json;
-	if( argc < 2 ) {
-		std::cerr << "Must supply a filenames to open(twitter_timeline.json)\n";
-		exit( 1 );
+	{
+		using namespace daw::json;
+		if( argc < 2 ) {
+			std::cerr << "Must supply a filenames to open(twitter_timeline.json)\n";
+			exit( 1 );
+		}
+
+		json_doc = daw::read_file( argv[1] );
+		daw::string_view const json_sv = json_doc.value( );
+		assert( json_sv.size( ) > 2 and "Minimum json data size is 2 '{}'" );
+
+		test<options::ExecModeTypes::compile_time>( json_sv );
+		test<options::ExecModeTypes::runtime>( json_sv );
 	}
-
-	auto const json_data1 = *daw::read_file( argv[1] );
-	auto const json_sv1 = std::string_view( json_data1 );
-	assert( json_sv1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
-
-	last_doc = json_sv1;
-	test<options::ExecModeTypes::compile_time>( json_sv1 );
-	test<options::ExecModeTypes::runtime>( json_sv1 );
-}
 #ifdef DAW_USE_EXCEPTIONS
-catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
-	std::cerr << to_formatted_string( jex, last_doc.data( ) ) << '\n';
-	exit( 1 );
-} catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
-	exit( 1 );
-} catch( ... ) {
-	std::cerr << "Unknown exception thrown during testing\n";
-	throw;
-}
+	catch( daw::json::json_exception const &jex ) {
+		std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+		std::cerr << to_formatted_string( jex, json_doc->data( ) ) << '\n';
+		exit( 1 );
+	} catch( std::exception const &ex ) {
+		std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+		          << '\n';
+		exit( 1 );
+	} catch( ... ) {
+		std::cerr << "Unknown exception thrown during testing\n";
+		throw;
+	}
 #endif
+}

@@ -32,14 +32,15 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Weverything
                 -ftemplate-backtrace-limit=0
                 -Wno-c++98-compat
-                -Wno-covered-switch-default
-                -Wno-padded
-                -Wno-exit-time-destructors
                 -Wno-c++98-compat-pedantic
-                -Wno-missing-prototypes
-                -Wno-float-equal
+                -Wno-covered-switch-default
                 -Wno-documentation
+                -Wno-exit-time-destructors
+                -Wno-float-equal
+                -Wno-global-constructors
+                -Wno-missing-prototypes
                 -Wno-newline-eof
+                -Wno-padded
                 -Wno-weak-vtables
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
                 -Wno-mismatched-tags
