@@ -363,7 +363,8 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename T>
-			inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL JsonParseTypes
+			number_parse_type_impl_test( ) {
 				if constexpr( daw::is_floating_point_v<T> ) {
 					return JsonParseTypes::Real;
 				} else if constexpr( daw::is_signed_v<T> ) {
@@ -372,7 +373,11 @@ namespace daw::json {
 					static_assert( daw::is_unsigned_v<T> );
 					return JsonParseTypes::Unsigned;
 				}
-			}( );
+			}
+
+			template<typename T>
+			inline constexpr JsonParseTypes
+			  number_parse_type_impl_v = number_parse_type_impl_test<T>( );
 
 			template<typename T>
 			constexpr auto number_parse_type_test( )
