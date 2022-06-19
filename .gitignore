@@ -84,8 +84,8 @@ bld/
 bower_components/
 build/
 ClientBin/
-cmake-build-*/*
-CMakeFiles/*
+cmake-build-*/
+CMakeFiles/
 CMakeSettings.json
 csx/
 dlldata.c
