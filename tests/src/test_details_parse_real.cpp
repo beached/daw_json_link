@@ -32,6 +32,10 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 200;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
+#else
+#if not defined( DAW_NUM_RUNS ) or DAW_NUM_RUNS < 1
+#error "DAW_NUM_RUNS must be an integer > 0"
+#endif
 #endif
 #if not defined( DAW_NUM_RUNS2 )
 #if not defined( DEBUG ) or defined( NDEBUG )
@@ -39,9 +43,11 @@ static inline constexpr std::size_t DAW_NUM_RUNS2 = 10;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS2 = 1;
 #endif
+#else
+#if not defined( DAW_NUM_RUNS2 ) or DAW_NUM_RUNS2 < 1
+#error "DAW_NUM_RUNS2 must be an integer > 0"2
 #endif
-
-static_assert( DAW_NUM_RUNS > 0 );
+#endif
 
 template<std::size_t NUM_VALS = 100'000>
 void test_lots_of_doubles( ) {
