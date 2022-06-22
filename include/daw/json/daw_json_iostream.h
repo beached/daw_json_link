@@ -44,9 +44,7 @@ template<typename T>
 auto operator<<( std::ostream &os, T const &value ) -> std::enable_if_t<
   daw::json::json_details::is_opted_into_json_iostreams_v<T>, std::ostream &> {
 
-	auto out_it = std::ostreambuf_iterator<char>( os );
-	daw::json::to_json( value, out_it );
-	return os;
+	return daw::json::to_json( value, os );
 }
 
 template<typename Container>
@@ -54,7 +52,5 @@ auto operator<<( std::ostream &os, Container const &c ) -> std::enable_if_t<
   daw::json::json_details::is_container_opted_into_json_iostreams_v<Container>,
   std::ostream &> {
 
-	auto out_it = std::ostreambuf_iterator<char>( os );
-	(void)daw::json::to_json_array( c, out_it );
-	return os;
+	return daw::json::to_json_array( c, os );
 }

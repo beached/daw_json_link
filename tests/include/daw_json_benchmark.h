@@ -15,6 +15,7 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 namespace daw::json::benchmark {
 	template<typename Rep, typename Period>
@@ -126,14 +127,13 @@ namespace daw::json::benchmark {
 	}
 
 	template<typename Func, typename... Args>
-	DAW_ATTRIB_NOINLINE daw::expected_t<std::invoke_result_t<Func, Args...>>
+	daw::expected_t<std::invoke_result_t<Func, Args...>>
 	benchmark( std::size_t min_num_runs, std::size_t data_size,
 	           daw::string_view title, Func &&func, Args const &...args ) {
-		if( min_num_runs % 2 == 1 ) {
-			++min_num_runs;
-		}
 		if( min_num_runs < 2 ) {
 			min_num_runs = 2;
+		} else {
+			min_num_runs += min_num_runs % 2;
 		}
 
 		using ns_duration_t = std::chrono::nanoseconds;
@@ -150,7 +150,11 @@ namespace daw::json::benchmark {
 #if defined( DAW_USE_EXCEPTIONS )
 			try {
 #endif
-				(void)func( args... );
+				if constexpr( not std::is_same_v<void, func_result_t> ) {
+					daw::do_not_optimize( func( args... ) );
+				} else {
+					func( args... );
+				}
 #if defined( DAW_USE_EXCEPTIONS )
 			} catch( ... ) {}
 #endif
@@ -173,12 +177,15 @@ namespace daw::json::benchmark {
 		auto const full_start = std::chrono::steady_clock::now( );
 		for( std::size_t n = 0; n < min_num_runs * 2; ++n ) {
 			auto const run_start = std::chrono::steady_clock::now( );
-			daw::do_not_optimize( func );
 			daw::do_not_optimize( args... );
 #if defined( DAW_USE_EXCEPTIONS )
 			try {
 #endif
-				(void)func( args... );
+				if constexpr( not std::is_same_v<void, func_result_t> ) {
+					daw::do_not_optimize( func( args... ) );
+				} else {
+					func( args... );
+				}
 #if defined( DAW_USE_EXCEPTIONS )
 			} catch( ... ) {}
 #endif
@@ -236,7 +243,7 @@ namespace daw::json::benchmark {
 #if defined( DAW_USE_EXCEPTIONS )
 		try {
 #endif
-			if constexpr( std::is_same_v<func_result_t, void> ) {
+			if constexpr( std::is_same_v<void, func_result_t> ) {
 				func( args... );
 				result.set_value( );
 			} else {
