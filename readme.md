@@ -701,10 +701,11 @@ There are a few defines that affect how JSON Link operates
 ###### [Top](#content)
 
 * C++ 17 compiler 
-* GCC(9/10/11) have been tested
-	* gcc-7/8 may work in some cases
-* Clang(7/8/9/10/11/12) have been tested. 
+* GCC(9/10/11/12) have been tested
+* Clang(8/9/10/11/12/13/14) have been tested. 
 * MSVC 19.29 has been tested. 
+
+Older compilers may still work but in testing some resulted in ICE's or compile errors due to buggy C++17 support.  Often not using constexpr can help too.
 
 ### For building tests
   * git
