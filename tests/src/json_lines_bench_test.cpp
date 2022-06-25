@@ -10,9 +10,9 @@
 /// json object that has a body method.  Used
 /// https://files.pushshift.io/reddit/comments/ for testing
 
+#include "daw_json_benchmark.h"
 #include "defines.h"
 
-#include <daw/daw_benchmark.h>
 #include <daw/daw_memory_mapped_file.h>
 #include <daw/json/daw_json_lines_iterator.h>
 #include <daw/json/daw_json_link.h>
@@ -25,7 +25,7 @@
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
-static inline constexpr std::size_t DAW_NUM_RUNS = 5;
+static inline constexpr std::size_t DAW_NUM_RUNS = 4;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
@@ -54,8 +54,8 @@ int main( int argc, char **argv ) {
 		daw::do_not_optimize( jsonl_doc[i] );
 	}
 
-	std::size_t real_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "json_lines untyped checked", jsonl_doc.size( ),
+	auto real_count = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS, jsonl_doc.size( ), "json_lines untyped checked",
 	  []( daw::string_view jd ) {
 		  auto tp_range =
 		    daw::json::json_lines_range<daw::json::json_raw_no_name<>>( jd );
@@ -64,14 +64,14 @@ int main( int argc, char **argv ) {
 		                     []( std::size_t c, auto jv ) {
 			                     return c += jv["body"].get_string_view( ).size( );
 		                     } );
-		  daw::do_not_optimize( count );
 		  return count;
 	  },
 	  jsonl_doc );
+	ensure( real_count.has_value( ) );
 
-	auto untyped_uncheck_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "json_lines untyped unchecked", jsonl_doc.size( ),
-	  []( daw::string_view jd ) {
+	auto untyped_uncheck_count = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS, jsonl_doc.size( ), "json_lines untyped unchecked",
+	  []( daw::string_view jd ) constexpr {
 		  auto tp_range =
 		    daw::json::json_lines_range<daw::json::json_raw_no_name<>,
 		                                daw::json::options::CheckedParseMode::no>(
@@ -81,30 +81,30 @@ int main( int argc, char **argv ) {
 		                     []( std::size_t c, auto jv ) {
 			                     return c += jv["body"].get_string_view( ).size( );
 		                     } );
-		  daw::do_not_optimize( count );
 		  return count;
 	  },
 	  jsonl_doc );
-	ensure( untyped_uncheck_count == real_count );
+	ensure( untyped_uncheck_count.has_value( ) );
+	ensure( untyped_uncheck_count.get( ) == real_count.get( ) );
 
-	auto typed_check_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "json_lines typed checked", jsonl_doc.size( ),
-	  []( daw::string_view jd ) {
+	auto typed_check_count = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS, jsonl_doc.size( ), "json_lines typed checked",
+	  []( daw::string_view jd ) constexpr {
 		  auto tp_range = daw::json::json_lines_range<jsonl_entry>( jd );
 		  auto count =
 		    std::accumulate( tp_range.begin( ), tp_range.end( ), std::size_t{ 0 },
 		                     []( std::size_t c, jsonl_entry entry ) {
 			                     return c += entry.body.size( );
 		                     } );
-		  daw::do_not_optimize( count );
 		  return count;
 	  },
 	  jsonl_doc );
-	ensure( typed_check_count == real_count );
+	ensure( typed_check_count.has_value( ) );
+	ensure( typed_check_count.get( ) == real_count.get( ) );
 
-	auto typed_uncheck_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "json_lines typed unchecked", jsonl_doc.size( ),
-	  []( daw::string_view jd ) {
+	auto typed_uncheck_count = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS, jsonl_doc.size( ), "json_lines typed unchecked",
+	  []( daw::string_view jd ) constexpr {
 		  auto tp_range = daw::json::json_lines_range<
 		    jsonl_entry, daw::json::options::CheckedParseMode::no>( jd );
 		  auto count =
@@ -112,17 +112,17 @@ int main( int argc, char **argv ) {
 		                     []( std::size_t c, jsonl_entry entry ) {
 			                     return c += entry.body.size( );
 		                     } );
-		  daw::do_not_optimize( count );
 		  return count;
 	  },
 	  jsonl_doc );
-	ensure( typed_uncheck_count == real_count );
+	ensure( typed_uncheck_count.has_value( ) );
+	ensure( typed_uncheck_count.get( ) == real_count.get( ) );
 
 	auto const chkpartitions = daw::json::partition_jsonl_document<jsonl_entry>(
 	  std::thread::hardware_concurrency( ), jsonl_doc );
 
-	auto typed_checked_threaded_count = *daw::bench_n_test_mbs<DAW_NUM_RUNS * 10>(
-	  "json_lines typed threaded checked", jsonl_doc.size( ),
+	auto typed_checked_threaded_count = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS * 10, jsonl_doc.size( ), "json_lines typed threaded checked",
 	  []( auto const &parts ) {
 		  auto results = std::vector<std::future<std::size_t>>( );
 		  for( auto const &part : parts ) {
@@ -140,39 +140,38 @@ int main( int argc, char **argv ) {
 		                     std::size_t{ 0 }, []( auto lhs, auto &rhs ) {
 			                     return lhs + rhs.get( );
 		                     } );
-		  daw::do_not_optimize( count );
 		  return count;
 	  },
 	  chkpartitions );
-	ensure( typed_checked_threaded_count == real_count );
+	ensure( typed_checked_threaded_count.has_value( ) );
+	ensure( typed_checked_threaded_count.get( ) == real_count.get( ) );
 
 	auto const unchkpartitions = daw::json::partition_jsonl_document<
 	  jsonl_entry, daw::json::options::CheckedParseMode::no>(
 	  std::thread::hardware_concurrency( ), jsonl_doc );
 
-	auto typed_unchecked_threaded_count =
-	  *daw::bench_n_test_mbs<DAW_NUM_RUNS * 10>(
-	    "json_lines typed threaded unchecked", jsonl_doc.size( ),
-	    []( auto const &parts ) {
-		    auto results = std::vector<std::future<std::size_t>>( );
-		    for( auto const &part : parts ) {
-			    results.push_back( std::async( std::launch::async, [&] {
-				    std::size_t count =
-				      std::accumulate( part.begin( ), part.end( ), std::size_t{ 0 },
-				                       []( std::size_t c, jsonl_entry entry ) {
-					                       return c += entry.body.size( );
-				                       } );
-				    return count;
-			    } ) );
-		    }
-		    std::size_t count =
-		      std::accumulate( std::begin( results ), std::end( results ),
-		                       std::size_t{ 0 }, []( auto lhs, auto &rhs ) {
-			                       return lhs + rhs.get( );
-		                       } );
-		    daw::do_not_optimize( count );
-		    return count;
-	    },
-	    unchkpartitions );
-	ensure( typed_unchecked_threaded_count == real_count );
+	auto typed_unchecked_threaded_count = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS * 10, jsonl_doc.size( ), "json_lines typed threaded unchecked",
+	  []( auto const &parts ) {
+		  auto results = std::vector<std::future<std::size_t>>( );
+		  for( auto const &part : parts ) {
+			  results.push_back( std::async( std::launch::async, [&] {
+				  std::size_t count =
+				    std::accumulate( part.begin( ), part.end( ), std::size_t{ 0 },
+				                     []( std::size_t c, jsonl_entry entry ) {
+					                     return c += entry.body.size( );
+				                     } );
+				  return count;
+			  } ) );
+		  }
+		  std::size_t count =
+		    std::accumulate( std::begin( results ), std::end( results ),
+		                     std::size_t{ 0 }, []( auto lhs, auto &rhs ) {
+			                     return lhs + rhs.get( );
+		                     } );
+		  return count;
+	  },
+	  unchkpartitions );
+	ensure( typed_unchecked_threaded_count.has_value( ) );
+	ensure( typed_unchecked_threaded_count.get( ) == real_count.get( ) );
 }

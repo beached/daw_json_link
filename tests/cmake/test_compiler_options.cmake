@@ -32,14 +32,14 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Weverything
                 -ftemplate-backtrace-limit=0
                 -Wno-c++98-compat
-                -Wno-covered-switch-default
-                -Wno-padded
-                -Wno-exit-time-destructors
                 -Wno-c++98-compat-pedantic
-                -Wno-missing-prototypes
-                -Wno-float-equal
+                -Wno-covered-switch-default
                 -Wno-documentation
+                -Wno-exit-time-destructors
+                -Wno-float-equal
+                -Wno-missing-prototypes
                 -Wno-newline-eof
+                -Wno-padded
                 -Wno-weak-vtables
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
                 -Wno-mismatched-tags
@@ -146,6 +146,7 @@ elseif( MSVC )
     add_compile_options( "/permissive-" )
     add_compile_options( "/wd4146" )
     add_compile_options( "/bigobj" )
+    add_compile_options( "/w14868" )
     # Ensure that string pooling is enabled. Otherwise it breaks constexpr string literals.
     # This affects debug modes by default, but optionally Release
     # https://developercommunity.visualstudio.com/t/codegen:-constexpr-pointer-to-trailing-z/900648

@@ -23,5 +23,12 @@ namespace daw::json {
 
 		/// @brief An untyped JSON value
 		using json_value = basic_json_value<>;
+
+		template<typename>
+		inline constexpr bool is_a_basic_json_value = false;
+
+		template<json_options_t PolicyFlags, typename Allocator>
+		inline constexpr bool
+		  is_a_basic_json_value<basic_json_value<PolicyFlags, Allocator>> = true;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

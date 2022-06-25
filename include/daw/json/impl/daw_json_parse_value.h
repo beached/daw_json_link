@@ -1052,6 +1052,22 @@ namespace daw::json {
 					return parse_state;
 				}
 #endif
+				template<typename T>
+				using has_member_index_test = decltype( T::member_index );
+
+				template<typename T>
+				inline constexpr bool has_member_index_v =
+				  daw::is_detected_v<has_member_index_test, T>;
+
+				template<typename T>
+				struct member_index_t {
+					static constexpr std::size_t value = T::member_index;
+				};
+
+				template<typename Idx, typename JsonMember>
+				inline constexpr std::size_t member_index_v =
+				  std::conditional_t<has_member_index_v<JsonMember>,
+				                     member_index_t<JsonMember>, Idx>::value;
 			} // namespace pocm_details
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState,
@@ -1091,10 +1107,13 @@ namespace daw::json {
 					  std::tuple_element_t<index_t::value, tuple_members>;
 
 					using json_member_t = ordered_member_subtype_t<CurrentMember>;
+
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					ParseState parse_state2 =
 					  pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
-					    parse_state, ClassIdx, index_t::value, parse_locations );
+					    parse_state, ClassIdx, /*index_t::value*/
+					    pocm_details::member_index_v<index_t, CurrentMember>,
+					    parse_locations );
 					if constexpr( sizeof...( Is ) > 1 ) {
 						++ClassIdx;
 						if( parse_state2.first == parse_state.first ) {

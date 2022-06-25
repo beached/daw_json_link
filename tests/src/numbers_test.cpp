@@ -36,7 +36,7 @@ void test( std::string_view data ) {
 		auto rng = range_t( data );
 		return std::vector<double>( rng.begin( ), rng.end( ) );
 	}( );
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "numbers bench (checked)", data.size( ),
 	  [&]( auto rng ) {
 		  double *ptr = results.data( );
@@ -48,7 +48,7 @@ void test( std::string_view data ) {
 	daw::do_not_optimize( results );
 	using range2_t = daw::json::json_array_range<
 	  double, daw::json::options::CheckedParseMode::no, ExecMode>;
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "numbers bench (unchecked)", data.size( ),
 	  [&]( auto rng ) {
 		  double *ptr = results.data( );

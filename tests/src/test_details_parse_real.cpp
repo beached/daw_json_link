@@ -32,6 +32,10 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 200;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
+#else
+#if not defined( DAW_NUM_RUNS ) or DAW_NUM_RUNS < 1
+#error "DAW_NUM_RUNS must be an integer > 0"
+#endif
 #endif
 #if not defined( DAW_NUM_RUNS2 )
 #if not defined( DEBUG ) or defined( NDEBUG )
@@ -39,9 +43,11 @@ static inline constexpr std::size_t DAW_NUM_RUNS2 = 10;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS2 = 1;
 #endif
+#else
+#if not defined( DAW_NUM_RUNS2 ) or DAW_NUM_RUNS2 < 1
+#error "DAW_NUM_RUNS2 must be an integer > 0"2
 #endif
-
-static_assert( DAW_NUM_RUNS > 0 );
+#endif
 
 template<std::size_t NUM_VALS = 100'000>
 void test_lots_of_doubles( ) {
@@ -65,7 +71,7 @@ void test_lots_of_doubles( ) {
 		rng = daw::json::json_details::skip_number( rng );
 		numbers[i] = rng;
 	}
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "float parsing(unknown bounds)", bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
@@ -78,7 +84,7 @@ void test_lots_of_doubles( ) {
 	  },
 	  numbers );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "double parsing(unknown bounds)", bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
@@ -91,7 +97,7 @@ void test_lots_of_doubles( ) {
 	  },
 	  numbers );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "long double parsing(unknown bounds)", bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
@@ -105,7 +111,7 @@ void test_lots_of_doubles( ) {
 	  },
 	  numbers );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "float parsing(known bounds)", bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
@@ -118,7 +124,7 @@ void test_lots_of_doubles( ) {
 	  },
 	  numbers );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "double parsing(known bounds)", bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
@@ -131,7 +137,7 @@ void test_lots_of_doubles( ) {
 	  },
 	  numbers );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "long double parsing(known bounds)", bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
@@ -146,7 +152,7 @@ void test_lots_of_doubles( ) {
 	  numbers );
 
 	// Too slow to need lots of tests
-	daw::bench_n_test_mbs<DAW_NUM_RUNS2>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS2>(
 	  "double parsing(strtod)", bytes,
 	  []( std::vector<std::string> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {

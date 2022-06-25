@@ -49,7 +49,7 @@ auto test( std::string_view json_data ) {
 	auto const v2 = values;
 	clear( values );
 	daw::do_not_optimize( values );
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "strings.json checked", json_data.size( ),
 	  []( auto sv, auto ptr ) {
 		  auto range = json_array_range<std::string, ExecMode>( sv );
@@ -72,7 +72,7 @@ auto test( std::string_view json_data ) {
 	  json_data,
 	  options::parse_flags<daw::json::options::CheckedParseMode::no, ExecMode> );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "strings.json unchecked", json_data.size( ),
 	  []( auto sv, auto ptr ) mutable {
 		  auto range =

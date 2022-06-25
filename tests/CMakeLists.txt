@@ -261,6 +261,12 @@ add_test( NAME find_tweet_test COMMAND find_tweet_test ./find_tweet.json WORKING
 add_dependencies( ci_tests find_tweet_test )
 add_dependencies( full find_tweet_test )
 
+add_executable( amazon_cellphones_test src/amazon_cellphones_test.cpp )
+target_link_libraries( amazon_cellphones_test PRIVATE json_test )
+add_test( NAME amazon_cellphones_test COMMAND amazon_cellphones_test ./amazon_cellphones.ndjson WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests amazon_cellphones_test )
+add_dependencies( full amazon_cellphones_test )
+
 if( DAW_JSON_FULL_TESTS )
     add_executable( canada_test src/canada_test.cpp )
     add_test( NAME canada_test COMMAND canada_test ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )

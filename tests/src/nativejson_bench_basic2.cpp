@@ -56,7 +56,7 @@ int main( int argc, char **argv )
 #ifdef NDEBUG
 	std::cout << "non-debug run\n";
 	auto const sz = sv_twitter.size( ) + sv_citm.size( ) + sv_canada.size( );
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  j1 = daw::json::from_json<daw::twitter2::twitter_object_t>(

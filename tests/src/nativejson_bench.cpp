@@ -9,10 +9,10 @@
 #include "defines.h"
 
 #include "citm_test_json.h"
+#include "daw_json_benchmark.h"
 #include "geojson_json.h"
 #include "twitter_test_json.h"
 
-#include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/json/daw_json_link.h>
 
@@ -22,7 +22,7 @@
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
-static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+static inline constexpr std::size_t DAW_NUM_RUNS = 500;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
@@ -68,8 +68,6 @@ void test( char **argv ) {
 	          << " exec model\n*********************************************\n";
 	auto const sz =
 	  std::size( json_sv1 ) + std::size( json_sv2 ) + std::size( json_sv3 );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
 
 	std::cout << std::flush;
 
@@ -81,14 +79,14 @@ void test( char **argv ) {
 	try
 #endif
 	{
-		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "nativejson_twitter bench", std::size( json_sv1 ),
-		  [&twitter_result]( auto const &f1 ) {
-			  twitter_result = from_json<daw::twitter::twitter_object_t>(
+		auto ret = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, json_sv1.size( ), "twitter bench(checked)",
+		  []( auto const &f1 ) {
+			  return from_json<daw::twitter::twitter_object_t>(
 			    f1, checked_policy_v<ExecMode, true> );
 		  },
 		  json_sv1 );
-		daw::do_not_optimize( twitter_result );
+		twitter_result = ret.get( );
 	}
 #ifdef DAW_USE_EXCEPTIONS
 	catch( json_exception const &jex ) {
@@ -107,17 +105,16 @@ void test( char **argv ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_twitter bench trusted", std::size( json_sv1 ),
-	  [&twitter_result]( auto const &f1 ) {
-		  {
-			  twitter_result = from_json<daw::twitter::twitter_object_t>(
+	{
+		auto ret = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, json_sv1.size( ), "twitter bench(unchecked)",
+		  []( auto f1 ) {
+			  return from_json<daw::twitter::twitter_object_t>(
 			    f1, checked_policy_v<ExecMode, true> );
-		  }
-	  },
-	  json_sv1 );
-	daw::do_not_optimize( twitter_result );
-	test_assert( twitter_result, "Missing value" );
+		  },
+		  json_sv1 );
+		twitter_result = ret.get( );
+	}
 	test_assert( not twitter_result->statuses.empty( ),
 	             "Expected values: twitter_result is empty" );
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
@@ -126,14 +123,16 @@ void test( char **argv ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_citm bench", std::size( json_sv2 ),
-	  [&citm_result]( auto const &f2 ) {
-		  citm_result = from_json<daw::citm::citm_object_t>(
-		    f2, checked_policy_v<ExecMode, true> );
-	  },
-	  json_sv2 );
-	daw::do_not_optimize( citm_result );
+	{
+		auto ret = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, json_sv2.size( ), "citm bench(checked)",
+		  []( auto const &f2 ) {
+			  return from_json<daw::citm::citm_object_t>(
+			    f2, checked_policy_v<ExecMode, true> );
+		  },
+		  json_sv2 );
+		citm_result = ret.get( );
+	}
 	test_assert( citm_result, "Missing value" );
 	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
 	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
@@ -144,14 +143,16 @@ void test( char **argv ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_citm bench trusted", std::size( json_sv2 ),
-	  [&citm_result]( auto const &f2 ) {
-		  citm_result = from_json<daw::citm::citm_object_t>(
-		    f2, checked_policy_v<ExecMode, true> );
-	  },
-	  json_sv2 );
-	test_assert( citm_result, "Missing value" );
+	{
+		auto ret = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, json_sv2.size( ), "citm bench(unchecked)",
+		  []( auto const &f2 ) {
+			  return from_json<daw::citm::citm_object_t>(
+			    f2, checked_policy_v<ExecMode, true> );
+		  },
+		  json_sv2 );
+		citm_result = ret.get( );
+	}
 	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
 	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
 	             "Expected value" );
@@ -161,43 +162,51 @@ void test( char **argv ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_canada bench", std::size( json_sv3 ),
-	  [&canada_result]( auto const &f3 ) {
-		  canada_result = from_json<daw::geojson::Polygon>(
-		    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
-	  },
-	  json_sv3 );
-	daw::do_not_optimize( canada_result );
+	{
+		auto ret = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, json_sv3.size( ), "canada bench(checked)",
+		  []( auto const &f3 ) {
+			  return from_json<daw::geojson::Polygon>(
+			    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
+		  },
+		  json_sv3 );
+		canada_result = ret.get( );
+	}
 	test_assert( canada_result, "Missing value" );
 	canada_result.reset( );
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_canada bench trusted", std::size( json_sv3 ),
-	  [&canada_result]( auto const &f3 ) {
-		  canada_result = from_json<daw::geojson::Polygon>(
-		    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
-	  },
-	  json_sv3 );
-	daw::do_not_optimize( canada_result );
+	{
+		auto ret = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, json_sv3.size( ), "canada bench(unchecked)",
+		  []( auto const &f3 ) {
+			  return from_json<daw::geojson::Polygon>(
+			    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
+		  },
+		  json_sv3 );
+		canada_result = ret.get( );
+	}
 	test_assert( canada_result, "Missing value" );
 	canada_result.reset( );
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson bench", sz,
-	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
-		  twitter_result = from_json<daw::twitter::twitter_object_t>(
-		    f1, checked_policy_v<ExecMode, true> );
-		  citm_result = from_json<daw::citm::citm_object_t>(
-		    f2, checked_policy_v<ExecMode, true> );
-		  canada_result = from_json<daw::geojson::Polygon>(
-		    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
-	  },
-	  json_sv1, json_sv2, json_sv3 );
+	{
+		auto ret = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "nativejson bench(checked)",
+		  []( auto const &f1, auto const &f2, auto const &f3 ) {
+			  return std::tuple{
+			    from_json<daw::twitter::twitter_object_t>(
+			      f1, checked_policy_v<ExecMode, true> ),
+			    from_json<daw::citm::citm_object_t>(
+			      f2, checked_policy_v<ExecMode, true> ),
+			    from_json<daw::geojson::Polygon>(
+			      f3, "features[0].geometry", checked_policy_v<ExecMode, false> ) };
+		  },
+		  json_sv1, json_sv2, json_sv3 );
+		std::tie( twitter_result, citm_result, canada_result ) = ret.get( );
+	}
 
 	std::cout << std::flush;
 
@@ -220,17 +229,21 @@ void test( char **argv ) {
 	citm_result.reset( );
 	canada_result.reset( );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson bench trusted", sz,
-	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
-		  twitter_result = from_json<daw::twitter::twitter_object_t>(
-		    f1, unchecked_policy_v<ExecMode, true> );
-		  citm_result = from_json<daw::citm::citm_object_t>(
-		    f2, unchecked_policy_v<ExecMode, true> );
-		  canada_result = from_json<daw::geojson::Polygon>(
-		    f3, "features[0].geometry", unchecked_policy_v<ExecMode, false> );
-	  },
-	  json_sv1, json_sv2, json_sv3 );
+	{
+		auto ret = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "nativejson bench(unchecked)",
+		  []( auto const &f1, auto const &f2, auto const &f3 ) {
+			  return std::tuple{
+			    from_json<daw::twitter::twitter_object_t>(
+			      f1, unchecked_policy_v<ExecMode, true> ),
+			    from_json<daw::citm::citm_object_t>(
+			      f2, unchecked_policy_v<ExecMode, true> ),
+			    from_json<daw::geojson::Polygon>(
+			      f3, "features[0].geometry", unchecked_policy_v<ExecMode, false> ) };
+		  },
+		  json_sv1, json_sv2, json_sv3 );
+		std::tie( twitter_result, citm_result, canada_result ) = ret.get( );
+	}
 
 	std::cout << std::flush;
 

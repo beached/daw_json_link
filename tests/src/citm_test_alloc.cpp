@@ -114,7 +114,7 @@ int main( int argc, char **argv )
 	// Should be 522'960 bytes
 	std::string str{ };
 	str.reserve( json_sv1.size( ) );
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "citm bench(to_json_string)", sz,
 
 	  [&]( daw::citm::citm_object_t const &tr ) {

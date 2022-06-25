@@ -20,7 +20,7 @@ set(FETCHCONTENT_UPDATES_DISCONNECTED OFF)
 FetchContent_Declare(
         daw_header_libraries
         GIT_REPOSITORY https://github.com/beached/header_libraries.git
-        GIT_TAG master
+        GIT_TAG master 
 )
 
 FetchContent_Declare(

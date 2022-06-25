@@ -83,6 +83,22 @@ namespace daw::json {
 				return first;
 			}
 
+			template<typename ParseState, typename Result,
+			         typename max_storage_digits, typename CharT>
+			inline constexpr bool
+			should_use_strtod( CharT *whole_first, CharT *whole_last,
+			                   CharT *fract_first, CharT *fract_last ) {
+				if constexpr( std::is_floating_point_v<Result> and
+				              ParseState::precise_ieee754( ) ) {
+					return DAW_UNLIKELY(
+					  ( ( whole_last - whole_first ) +
+					    ( fract_first ? fract_last - fract_first : 0 ) ) >
+					  max_storage_digits::value );
+				} else {
+					return false;
+				}
+			}
+
 			template<typename Result, bool KnownRange, typename ParseState,
 			         std::enable_if_t<KnownRange, std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
@@ -116,17 +132,10 @@ namespace daw::json {
 
 				using max_storage_digits = daw::constant<static_cast<std::ptrdiff_t>(
 				  daw::numeric_limits<std::uint64_t>::digits10 )>;
-				bool use_strtod = [&] {
-					if constexpr( std::is_floating_point_v<Result> and
-					              ParseState::precise_ieee754( ) ) {
-						return DAW_UNLIKELY(
-						  ( ( whole_last - whole_first ) +
-						    ( fract_first ? fract_last - fract_first : 0 ) ) >
-						  max_storage_digits::value );
-					} else {
-						return false;
-					}
-				}( );
+
+				bool use_strtod =
+				  should_use_strtod<ParseState, Result, max_storage_digits>(
+				    whole_first, whole_last, fract_first, fract_last );
 
 				Result const sign = [&] {
 					if( *whole_first == '-' ) {

@@ -8,9 +8,8 @@
 
 #include "gsoc.h"
 
-#include <daw/json/daw_json_link.h>
+#include "daw_json_benchmark.h"
 
-#include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 
 #include <cassert>
@@ -40,29 +39,32 @@ int main( int argc, char **argv )
 	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 
 	auto const sz = json_data1.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
 	using namespace daw::json;
 
-	std::optional<daw::gsoc::gsoc_object_t> gsoc_result;
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "gsoc bench(checked)", sz,
-	  [&]( std::string const &jd ) {
-		  gsoc_result = from_json<daw::gsoc::gsoc_object_t>( jd );
-		  daw::do_not_optimize( gsoc_result );
-	  },
-	  json_data1 );
+	{
+		auto gsoc_result = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "gsoc bench(checked)",
+		  []( daw::string_view jd ) {
+			  auto res = from_json<daw::gsoc::gsoc_object_t>( jd );
+			  daw::do_not_optimize( res );
+			  return res;
+		  },
+		  json_data1 );
+		(void)gsoc_result.get( );
+	}
 
-	daw::do_not_optimize( json_data1 );
-
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "gsoc bench(unchecked)", sz,
-	  [&gsoc_result]( std::string const &jd ) {
-		  gsoc_result = from_json<daw::gsoc::gsoc_object_t>(
-		    jd, options::parse_flags<options::CheckedParseMode::no> );
-		  daw::do_not_optimize( gsoc_result );
-	  },
-	  json_data1 );
+	{
+		auto gsoc_result = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "gsoc bench(unchecked)",
+		  []( daw::string_view jd ) {
+			  auto res = from_json<daw::gsoc::gsoc_object_t>(
+			    jd, options::parse_flags<options::CheckedParseMode::no> );
+			  daw::do_not_optimize( res );
+			  return res;
+		  },
+		  json_data1 );
+		(void)gsoc_result.get( );
+	}
 
 	std::cout
 	  << "to_json testing\n*********************************************\n";
@@ -71,14 +73,16 @@ int main( int argc, char **argv )
 	{
 		auto const gsoc_result2 = from_json<daw::gsoc::gsoc_object_t>( json_data1 );
 		str.reserve( json_data1.size( ) );
-		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "gsoc bench(to_json_string)", sz,
-		  [&]( auto const &value ) {
+
+		auto to_json_ret = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "gsoc bench(to_json)",
+		  [&str]( daw::gsoc::gsoc_object_t const &obj ) {
 			  str.clear( );
-			  (void)to_json( value, str );
+			  (void)to_json( obj, str );
 			  daw::do_not_optimize( str );
 		  },
 		  gsoc_result2 );
+		(void)to_json_ret.get( );
 	}
 	daw::do_not_optimize( str );
 	auto const gsoc_result2 = from_json<daw::gsoc::gsoc_object_t>( str );
@@ -88,14 +92,15 @@ int main( int argc, char **argv )
 		str.clear( );
 		str.resize( str_sz * 2 );
 		char const *out_ptr = nullptr;
-		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "gsoc bench(to_json_string2)", sz,
-		  [&]( auto const &tr ) {
+		auto to_json_ret = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "gsoc bench(to_json2)",
+		  [&]( daw::gsoc::gsoc_object_t const &obj ) {
 			  auto *out_it = str.data( );
-			  out_ptr = to_json( tr, out_it );
+			  out_ptr = to_json( obj, out_it );
 			  daw::do_not_optimize( str );
 		  },
-		  *gsoc_result );
+		  gsoc_result2 );
+		(void)to_json_ret.get( );
 		daw_json_ensure( out_ptr != nullptr, ErrorReason::NullOutputIterator );
 		daw_json_ensure( out_ptr - str.data( ) > 0, ErrorReason::NumberOutOfRange );
 		daw_json_ensure( static_cast<std::size_t>( out_ptr - str.data( ) ) <=

@@ -82,7 +82,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	{
 		using range_t = daw::json::json_array_range<unicode_data, ExecMode>;
 
-		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "full unicode bench(checked)", json_str.size( ),
 		  []( auto rng ) {
 			  auto first = rng.begin( );
@@ -92,7 +92,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 		  },
 		  range_t( std::string_view( json_str ) ) )
 		  .get( );
-		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "full unicode all escaped bench(checked)", json_str.size( ),
 		  []( auto rng ) {
 			  auto first = rng.begin( );
@@ -106,7 +106,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	{
 		using range_t = daw::json::json_array_range<
 		  unicode_data, daw::json::options::CheckedParseMode::no, ExecMode>;
-		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "full unicode bench(unchecked)", json_str.size( ),
 		  []( auto rng ) {
 			  auto first = rng.begin( );
@@ -116,7 +116,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 		  },
 		  range_t( std::string_view( json_str ) ) )
 		  .get( );
-		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "full unicode all escaped bench(unchecked)", json_str.size( ),
 		  []( auto rng ) {
 			  auto first = rng.begin( );

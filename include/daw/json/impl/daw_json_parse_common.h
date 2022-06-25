@@ -363,7 +363,8 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename T>
-			inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL JsonParseTypes
+			number_parse_type_impl_test( ) {
 				if constexpr( daw::is_floating_point_v<T> ) {
 					return JsonParseTypes::Real;
 				} else if constexpr( daw::is_signed_v<T> ) {
@@ -372,7 +373,11 @@ namespace daw::json {
 					static_assert( daw::is_unsigned_v<T> );
 					return JsonParseTypes::Unsigned;
 				}
-			}( );
+			}
+
+			template<typename T>
+			inline constexpr JsonParseTypes
+			  number_parse_type_impl_v = number_parse_type_impl_test<T>( );
 
 			template<typename T>
 			constexpr auto number_parse_type_test( )
@@ -720,7 +725,9 @@ namespace daw::json {
 
 			template<typename T>
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_deduced_type_impl( ) noexcept {
-				if constexpr( is_an_ordered_member_v<T> ) {
+				if constexpr( is_a_basic_json_value<T> ) {
+					return daw::traits::identity<json_base::json_raw<T>>{ };
+				} else if constexpr( is_an_ordered_member_v<T> ) {
 					using type = T;
 					return daw::traits::identity<type>{ };
 				} else if constexpr( has_json_data_contract_trait_v<T> ) {

@@ -10,8 +10,8 @@
 
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
+#include "daw_json_benchmark.h"
 
-#include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 
 #include <iostream>
@@ -55,8 +55,8 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 	{
 		using range_t = daw::json::json_array_range<tweet, ExecMode>;
 		auto result = tweet{ };
-		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "find_tweet bench(checked)", sz,
+		auto res = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "find_tweet bench(checked)",
 		  [&]( auto rng ) {
 			  for( tweet t : rng ) {
 				  if( t.id == id ) {
@@ -67,17 +67,15 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 			  result = tweet{ };
 		  },
 		  range_t( json_sv1, "statuses" ) );
-		test_assert( result.id == id,
-		             "Exception while parsing: res.get_exception_message()" );
-		std::cout << "found tweet id: " << id << '\n'
-		          << daw::json::to_json( result ) << '\n';
+		(void)res.get( );
+		test_assert( result.id == id, "Invalid id found" );
 	}
 	{
 		using range_t = daw::json::json_array_range<
 		  tweet, daw::json::options::CheckedParseMode::no, ExecMode>;
 		auto result = tweet{ };
-		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "find_tweet bench(unchecked)", sz,
+		auto res = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "find_tweet bench(unchecked)",
 		  [&]( auto rng ) {
 			  for( tweet t : rng ) {
 				  if( t.id == id ) {
@@ -88,45 +86,36 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 			  result = tweet{ };
 		  },
 		  range_t( json_sv1, "statuses" ) );
-		test_assert( result.id == id,
-		             "Exception while parsing: res.get_exception_message()" );
-		std::cout << "found tweet id: " << id << '\n'
-		          << daw::json::to_json( result ) << '\n';
+		(void)res.get( );
+		test_assert( result.id == id, "Invalid id found" );
 	}
 	{
 		auto result = tweet{ };
 		using namespace daw::json;
-		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "find_tweet bench(checked, json_value)", sz,
+		auto res = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "find_tweet bench(checked, json_value)",
 		  [&]( json_value jv ) {
 			  for( auto jp : jv ) {
-				  auto const cur_id = jp.value["id"];
-				  auto id_num = cur_id.template as<std::uint64_t>( );
-				  if( id_num == id ) {
-					  result = from_json<tweet>( jp.value );
+				  if( as<std::uint64_t>( jp.value["id"] ) == id ) {
+					  result = as<tweet>( jp.value );
 					  return;
 				  }
 			  }
 			  result = tweet{ };
 		  },
 		  json_value( json_sv1 )["statuses"] );
-		test_assert( result.id == id,
-		             "Exception while parsing: res.get_exception_message()" );
-		std::cout << "found tweet id: " << id << '\n'
-		          << daw::json::to_json( result ) << '\n';
+		(void)res.get( );
+		test_assert( result.id == id, "Invalid id found" );
 	}
 	{
 		auto result = tweet{ };
 		using namespace daw::json;
-		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "find_tweet bench(unchecked, json_value)", sz,
+		auto res = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "find_tweet bench(unchecked, json_value)",
 		  [&]( auto jv ) {
 			  for( auto jp : jv ) {
-				  auto const cur_id = jp.value["id"];
-				  auto id_num = cur_id.template as<std::uint64_t>( );
-				  if( id_num == id ) {
-					  result = from_json<tweet>(
-					    jp.value, options::parse_flags<options::CheckedParseMode::no> );
+				  if( as<std::uint64_t>( jp.value["id"] ) == id ) {
+					  result = as<tweet>( jp.value );
 					  return;
 				  }
 			  }
@@ -134,10 +123,8 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 		  },
 		  basic_json_value<parse_options( options::CheckedParseMode::no )>(
 		    json_sv1 )["statuses"] );
-		test_assert( result.id == id,
-		             "Exception while parsing: res.get_exception_message()" );
-		std::cout << "found tweet id: " << id << '\n'
-		          << daw::json::to_json( result ) << '\n';
+		(void)res.get( );
+		test_assert( result.id == id, "Invalid id found" );
 	}
 }
 
@@ -158,12 +145,9 @@ int main( int argc, char **argv )
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 	assert( json_sv1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 
-	auto const sz = json_sv1.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
-
 	constexpr std::uint64_t id = 505874901689851904ULL;
 	test<options::ExecModeTypes::compile_time>( json_sv1, id );
+	test<options::ExecModeTypes::runtime>( json_sv1, id );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
