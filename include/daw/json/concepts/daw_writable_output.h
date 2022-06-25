@@ -147,7 +147,7 @@ namespace daw::json {
 			namespace writeable_output_details {
 				template<typename T, typename CharT>
 				using span_like_range_test =
-				  decltype( (void)( std::declval<T &>( ).remove_prefix( 1 ) ),
+				  decltype( (void)( std::declval<T &>( ).subspan( 1 ) ),
 				            (void)( std::declval<std::size_t &>( ) =
 				                      std::declval<T &>( ).size( ) ),
 				            (void)( std::declval<bool &>( ) =
@@ -178,7 +178,7 @@ namespace daw::json {
 							return 0;
 						}
 						(void)writeable_output_details::copy_to_buffer( s.data( ), sv );
-						s.remove_prefix( sv.size( ) );
+						s = s.subspan( sv.size( ) );
 						return 0;
 					};
 					(void)( writer( out, svs ) | ... );

@@ -33,8 +33,8 @@
   * [Benchmarks](#benchmarks)
   * [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
   * [Differences between C++17 and C++20](#differences-between-c17-and-c20)
-  * [C++ 17 Naming of members](#naming-of-json-members)
-  * [C++ 20 Naming of members](#c-20-naming-of-json-members)
+    * [C++ 17 Naming of members](#naming-of-json-members)
+    * [C++ 20 Naming of members](#c-20-naming-of-json-members)
   * [Using data types](#using-mapped-data-types)
   * [Error Handling](#error-handling)
   * [Parsing call](#parsing-call)
@@ -262,7 +262,8 @@ The library, currently, does not unescape/escape member names when serializing, 
 ## Differences between C++17 and C++20
 ###### [Top](#content)
 
-There are slight differences between C++17 and C++20 
+There are slight differences between C++17 and C++20 where C++20 allows for some code not available in C++17.
+
 # Naming of JSON members
 ```c++
 namespace daw::json {
@@ -273,6 +274,8 @@ namespace daw::json {
   };
 }
 ```
+Both versions of C++ support this method for naming members.
+
 # C++ 20 Naming of JSON members
 When compiled within C++20 compiler, in addition to passing a `char const *` as in C++17, the member names can be specified as string literals directly.  C++20 compiler support is still really early and here be dragons.  There are known issues with g++9.x in C++20 mode, and it's only tested with g++10/11.  Here be dragons
 ```c++

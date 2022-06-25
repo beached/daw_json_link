@@ -40,6 +40,7 @@ namespace daw::json {
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json
 
+/// @brief An opt in ostream interface for types that have JSON mappings.
 template<typename T>
 auto operator<<( std::ostream &os, T const &value ) -> std::enable_if_t<
   daw::json::json_details::is_opted_into_json_iostreams_v<T>, std::ostream &> {
@@ -47,6 +48,8 @@ auto operator<<( std::ostream &os, T const &value ) -> std::enable_if_t<
 	return daw::json::to_json( value, os );
 }
 
+/// @brief An opt in ostream interface for containers of types that have JSON
+/// mappings.
 template<typename Container>
 auto operator<<( std::ostream &os, Container const &c ) -> std::enable_if_t<
   daw::json::json_details::is_container_opted_into_json_iostreams_v<Container>,
