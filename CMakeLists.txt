@@ -111,6 +111,12 @@ if( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
     add_definitions( -DDAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 endif()
 
+option( DAW_JSON_CNTTP_JSON_NAME "Force CNTTP member names to allow literals on compilers that don't set feature flags bug support it" OFF )
+if( DAW_JSON_CNTTP_JSON_NAME )
+    message( STATUS "DAW_JSON_CNTTP_JSON_NAME=ON: Forcing CNTTP Json Member Name support" )
+    add_definitions( -DDAW_JSON_CNTTP_JSON_NAME )
+endif()
+
 add_library( ${PROJECT_NAME} INTERFACE )
 add_library( daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME} )
 add_library( daw::json_link ALIAS ${PROJECT_NAME} )
