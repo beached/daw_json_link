@@ -58,17 +58,6 @@ namespace daw::json {
 			}
 		};
 
-		template<typename, typename = void>
-		inline constexpr bool is_default_constructor_v = false;
-
-		template<typename T>
-		inline constexpr bool is_default_constructor_v<default_constructor<T>> =
-		  true;
-
-		template<typename T, typename... Ignore>
-		struct is_default_constructor
-		  : std::bool_constant<is_default_constructor_v<T, Ignore...>> {};
-
 		/// @brief Default constructor for nullable types.
 		/// Specializations must accept accept an operator( )( ) that signifies a
 		/// JSON null. Any other arguments only need to be valid to construct the
