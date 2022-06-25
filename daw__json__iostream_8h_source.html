@@ -112,29 +112,25 @@ $(function() {
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="daw__json__iostream_8h.html#a638b36a52c773408a091b04cd0b6bf4f">   44</a></span>&#160;<span class="keyword">auto</span> <a class="code" href="daw__json__iostream_8h.html#a638b36a52c773408a091b04cd0b6bf4f">operator&lt;&lt;</a>( std::ostream &amp;os, T <span class="keyword">const</span> &amp;<a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a> ) -&gt; std::enable_if_t&lt;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  daw::json::json_details::is_opted_into_json_iostreams_v&lt;T&gt;, std::ostream &amp;&gt; {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keyword">auto</span> out_it = std::ostreambuf_iterator&lt;char&gt;( os );</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  daw::json::to_json( <a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a>, out_it );</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container&gt;</div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="daw__json__iostream_8h.html#a588967a7d0b23c5be6718b5ba5c02669">   53</a></span>&#160;<span class="keyword">auto</span> <a class="code" href="daw__json__iostream_8h.html#a638b36a52c773408a091b04cd0b6bf4f">operator&lt;&lt;</a>( std::ostream &amp;os, Container <span class="keyword">const</span> &amp;c ) -&gt; std::enable_if_t&lt;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  daw::json::json_details::is_container_opted_into_json_iostreams_v&lt;Container&gt;,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  std::ostream &amp;&gt; {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keyword">auto</span> out_it = std::ostreambuf_iterator&lt;char&gt;( os );</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  (void)daw::json::to_json_array( c, out_it );</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="daw__json__iostream_8h.html#a638b36a52c773408a091b04cd0b6bf4f">   45</a></span>&#160;<span class="keyword">auto</span> <a class="code" href="daw__json__iostream_8h.html#a638b36a52c773408a091b04cd0b6bf4f">operator&lt;&lt;</a>( std::ostream &amp;os, T <span class="keyword">const</span> &amp;<a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a> ) -&gt; std::enable_if_t&lt;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  daw::json::json_details::is_opted_into_json_iostreams_v&lt;T&gt;, std::ostream &amp;&gt; {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordflow">return</span> daw::json::to_json( <a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a>, os );</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container&gt;</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="daw__json__iostream_8h.html#a588967a7d0b23c5be6718b5ba5c02669">   54</a></span>&#160;<span class="keyword">auto</span> <a class="code" href="daw__json__iostream_8h.html#a638b36a52c773408a091b04cd0b6bf4f">operator&lt;&lt;</a>( std::ostream &amp;os, Container <span class="keyword">const</span> &amp;c ) -&gt; std::enable_if_t&lt;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  daw::json::json_details::is_container_opted_into_json_iostreams_v&lt;Container&gt;,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  std::ostream &amp;&gt; {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">return</span> daw::json::to_json_array( c, os );</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="adaw__json__event__parser_8h_html_af3874c625cee7edbb7e82023085f86c7"><div class="ttname"><a href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a></div><div class="ttdeci">json_parse_handler_result value</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00032">daw_json_event_parser.h:32</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
-<div class="ttc" id="adaw__json__iostream_8h_html_a638b36a52c773408a091b04cd0b6bf4f"><div class="ttname"><a href="daw__json__iostream_8h.html#a638b36a52c773408a091b04cd0b6bf4f">operator&lt;&lt;</a></div><div class="ttdeci">auto operator&lt;&lt;(std::ostream &amp;os, T const &amp;value) -&gt; std::enable_if_t&lt; daw::json::json_details::is_opted_into_json_iostreams_v&lt; T &gt;, std::ostream &amp; &gt;</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__iostream_8h_source.html#l00044">daw_json_iostream.h:44</a></div></div>
+<div class="ttc" id="adaw__json__iostream_8h_html_a638b36a52c773408a091b04cd0b6bf4f"><div class="ttname"><a href="daw__json__iostream_8h.html#a638b36a52c773408a091b04cd0b6bf4f">operator&lt;&lt;</a></div><div class="ttdeci">auto operator&lt;&lt;(std::ostream &amp;os, T const &amp;value) -&gt; std::enable_if_t&lt; daw::json::json_details::is_opted_into_json_iostreams_v&lt; T &gt;, std::ostream &amp; &gt;</div><div class="ttdoc">An opt in ostream interface for types that have JSON mappings.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__iostream_8h_source.html#l00045">daw_json_iostream.h:45</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00016">version.h:16</a></div></div>
 <div class="ttc" id="adaw__json__link_8h_html"><div class="ttname"><a href="daw__json__link_8h.html">daw_json_link.h</a></div></div>
 <!-- start footer part -->

@@ -216,7 +216,7 @@ $(function() {
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      <span class="keyword">namespace </span>writeable_output_details {</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> CharT&gt;</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        <span class="keyword">using</span> span_like_range_test =</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;          decltype( (<span class="keywordtype">void</span>)( std::declval&lt;T &amp;&gt;( ).remove_prefix( 1 ) ),</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;          decltype( (<span class="keywordtype">void</span>)( std::declval&lt;T &amp;&gt;( ).subspan( 1 ) ),</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                    (<span class="keywordtype">void</span>)( std::declval&lt;std::size_t &amp;&gt;( ) =</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                              std::declval&lt;T &amp;&gt;( ).size( ) ),</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                    (<span class="keywordtype">void</span>)( std::declval&lt;bool &amp;&gt;( ) =</div>
@@ -246,7 +246,7 @@ $(function() {
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;              <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;            }</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;            (void)writeable_output_details::copy_to_buffer( s.data( ), sv );</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;            s.remove_prefix( sv.size( ) );</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;            s = s.subspan( sv.size( ) );</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;            <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;          };</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;          (void)( writer( out, svs ) | ... );</div>

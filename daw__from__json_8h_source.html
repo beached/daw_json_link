@@ -241,7 +241,7 @@ $(function() {
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        ParseState( std::data( json_data ), daw::data_end( json_data ) ) );</div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;      jv = jv.find_member( member_path );</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160; </div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;      <span class="keywordflow">if</span> constexpr( json_details::is_json_nullable_v&lt;JsonMember&gt; ) {</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;      <span class="keywordflow">if</span> constexpr( json_details::is_json_nullable_v&lt;json_member&gt; ) {</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        <span class="keywordflow">if</span>( not jv ) {</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;          <span class="keywordflow">return</span> json_details::construct_nullable_empty&lt;</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;            <span class="keyword">typename</span> json_member::constructor_t&gt;( );</div>
