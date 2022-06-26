@@ -12,21 +12,29 @@
   * [Default Mapping of Types](#default-mapping-of-types)
   * [API Documentation](https://beached.github.io/daw_json_link/html/) - Member mapping classes and methods
   * [Cookbook](docs/cookbook/readme.md) Get cooking and putting it all together 
-  * [Arrays](docs/cookbook/array.md)
-  * [Classes](docs/cookbook/class.md)
-  * [Class from Array](docs/cookbook/class_from_array.md)
-  * [Dates](docs/cookbook/dates.md)
-  * [Enums](docs/cookbook/enums.md)
-  * [Graphs](docs/cookbook/graphs.md)
-  * [Key Values](docs/cookbook/key_values.md) - Map and Dictionary like things
-  * [Numbers](docs/cookbook/numbers.md)
-  * [Optional/Nullable Values](docs/cookbook/optional_values.md)
-  * [Parsing Individual Members](docs/cookbook/parsing_individual_members.md)
-  * [Parser Options](docs/cookbook/parser_policies.md)
-  * [Strings](docs/cookbook/strings.md)
-  * [Unknown JSON and Raw Parsing](docs/cookbook/unknown_types_and_raw_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
-  * [Variant](docs/cookbook/variant.md)
-  * [Automatic Code Generation](docs/cookbook/automated_code_generation.md)
+    * [Aliases](docs/cookbook/aliases.md)
+    * [Arrays](docs/cookbook/array.md)
+    * [Classes](docs/cookbook/class.md)
+    * [Classes from Array/JSON Tuples](docs/cookbook/class_from_array.md)
+    * [Dates](docs/cookbook/dates.md)
+    * [Enums](docs/cookbook/enums.md)
+    * [Graphs](docs/cookbook/graphs.md)
+    * [Inserting and Extracting Raw JSON](docs/cookbook/inserting_extracting_raw_json.md)
+    * [JSON Lines/NDJSON](docs/cookbook/json_lines.md)
+    * [JSON Schema Output](docs/cookbook/json_schema.md)
+    * [Key Values](docs/cookbook/key_values.md) - Map and Dictionary like things
+    * [Mapping Deduction](docs/cookbook/mapping_deduction.md)
+    * [Memmber Options](docs/cookbook/member_options.md) - Options for the parse mappings
+    * [Numbers](docs/cookbook/numbers.md)
+    * [Optional/Nullable Values](docs/cookbook/optional_values.md)
+    * [Output Options](docs/cookbook/output_options.md) - Options for serialization
+    * [Parser Options](docs/cookbook/parser_policies.md) - Options for parsing
+    * [Parsing Individual Members](docs/cookbook/parsing_individual_members.md)
+    * [Readable Value](docs/cookbook/readable_value.md) - Trait for mapping Option/Nullable types used in deduction
+    * [Strings](docs/cookbook/strings.md)
+    * [Unknown JSON and Raw Parsing](docs/cookbook/unknown_types_and_raw_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
+    * [Variant](docs/cookbook/variant.md)
+    * [Automatic Code Generation](docs/cookbook/automated_code_generation.md)
   * [Intro](#intro)
   * [Installing/Using](#installingusing)
   * [Performance considerations](#performance-considerations)
@@ -587,9 +595,9 @@ or
     "a": "",
     "b": "",
     "c": "",
-    "d":"",
-    "e":"",
-    "f" : {
+    "d": "",
+    "e": "",
+    "f": {
       "member1": ""
     }
   }
