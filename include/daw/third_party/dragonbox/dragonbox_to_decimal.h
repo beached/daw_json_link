@@ -2212,7 +2212,8 @@ namespace daw::jkj::dragonbox {
 						using input_validation_policy = assert_finite;
 						template<class Float>
 						static inline constexpr void
-						validate_input( [[maybe_unused]] ieee754_bits<Float> br ) noexcept {
+						validate_input( ieee754_bits<Float> br ) noexcept {
+							(void)br;
 							assert( br.is_finite( ) );
 						}
 					};

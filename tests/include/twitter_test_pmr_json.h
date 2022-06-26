@@ -128,7 +128,7 @@ namespace daw::json {
 		  json_member_list<json_string<result_type, daw::twitter::String>,
 		                   json_string<iso_language_code, daw::twitter::String>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::metadata_t const &value ) {
 			return std::forward_as_tuple( value.result_type,
 			                              value.iso_language_code );
@@ -154,7 +154,7 @@ namespace daw::json {
 		  json_string<display_url, daw::twitter::String>,
 		  json_array<indices, int32_t, daw::twitter::Vector<int32_t>>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::urls_element_t const &value ) {
 			return std::forward_as_tuple( value.url, value.expanded_url,
 			                              value.display_url, value.indices );
@@ -173,7 +173,7 @@ namespace daw::json {
 		  json_array<urls, daw::twitter::urls_element_t,
 		             daw::twitter::Vector<daw::twitter::urls_element_t>>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::url_t const &value ) {
 			return std::forward_as_tuple( value.urls );
 		}
@@ -191,7 +191,7 @@ namespace daw::json {
 		  json_array<urls, daw::twitter::urls_element_t,
 		             daw::twitter::Vector<daw::twitter::urls_element_t>>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::description_t const &value ) {
 			return std::forward_as_tuple( value.urls );
 		}
@@ -211,7 +211,7 @@ namespace daw::json {
 		  json_class_null<url, std::optional<daw::twitter::url_t>>,
 		  json_class_null<description, std::optional<daw::twitter::description_t>>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::entities_t const &value ) {
 			return std::forward_as_tuple( value.url, value.description );
 		}
@@ -340,7 +340,7 @@ namespace daw::json {
 		  json_bool<default_profile_image>, json_bool<following>,
 		  json_bool<follow_request_sent>, json_bool<notifications>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::user_t const &value ) {
 			return std::forward_as_tuple(
 			  value.id, value.id_str, value.name, value.screen_name, value.location,
@@ -376,7 +376,7 @@ namespace daw::json {
 		  json_string<text, daw::twitter::String>,
 		  json_array<indices, int32_t, daw::twitter::Vector<int32_t>>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::hashtags_element_t const &value ) {
 			return std::forward_as_tuple( value.text, value.indices );
 		}
@@ -451,7 +451,7 @@ namespace daw::json {
 		  json_bool<retweeted>, json_bool_null<possibly_sensitive>,
 		  json_string<lang, daw::twitter::String>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::tweet_object_t const &value ) {
 			return std::forward_as_tuple(
 			  value.metadata, value.created_at, value.id, value.id_str, value.text,
@@ -485,7 +485,7 @@ namespace daw::json {
 		  json_string<id_str, daw::twitter::String>,
 		  json_array<indices, int64_t, daw::twitter::Vector<int64_t>>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::user_mentions_element_t const &value ) {
 			return std::forward_as_tuple( value.screen_name, value.name, value.id,
 			                              value.id_str, value.indices );
@@ -506,7 +506,7 @@ namespace daw::json {
 		  json_member_list<json_number<w, int64_t>, json_number<h, int64_t>,
 		                   json_string<resize, daw::twitter::String>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::medium_t const &value ) {
 			return std::forward_as_tuple( value.w, value.h, value.resize );
 		}
@@ -526,7 +526,7 @@ namespace daw::json {
 		  json_member_list<json_number<w, int64_t>, json_number<h, int64_t>,
 		                   json_string<resize, daw::twitter::String>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::small_t const &value ) {
 			return std::forward_as_tuple( value.w, value.h, value.resize );
 		}
@@ -546,7 +546,7 @@ namespace daw::json {
 		  json_member_list<json_number<w, int64_t>, json_number<h, int64_t>,
 		                   json_string<resize, daw::twitter::String>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::thumb_t const &value ) {
 			return std::forward_as_tuple( value.w, value.h, value.resize );
 		}
@@ -566,7 +566,7 @@ namespace daw::json {
 		  json_member_list<json_number<w, int64_t>, json_number<h, int64_t>,
 		                   json_string<resize, daw::twitter::String>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::large_t const &value ) {
 			return std::forward_as_tuple( value.w, value.h, value.resize );
 		}
@@ -589,7 +589,7 @@ namespace daw::json {
 		                              json_class<thumb, daw::twitter::thumb_t>,
 		                              json_class<large, daw::twitter::large_t>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::sizes_t const &value ) {
 			return std::forward_as_tuple( value.medium, value.small_, value.thumb,
 			                              value.large );
@@ -631,7 +631,7 @@ namespace daw::json {
 		  json_string<_jsontype, daw::twitter::String>,
 		  json_class<sizes, daw::twitter::sizes_t>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::media_element_t const &value ) {
 			return std::forward_as_tuple(
 			  value.id, value.id_str, value.indices, value.media_url,
@@ -710,7 +710,7 @@ namespace daw::json {
 		  json_bool<retweeted>, json_bool_null<possibly_sensitive>,
 		  json_string<lang, daw::twitter::String>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::retweeted_status_t const &value ) {
 			return std::forward_as_tuple(
 			  value.metadata, value.created_at, value.id, value.id_str, value.text,
@@ -754,7 +754,7 @@ namespace daw::json {
 		                   json_number<since_id, int64_t>,
 		                   json_string<since_id_str, daw::twitter::String>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::search_metadata_t const &value ) {
 			return std::forward_as_tuple( value.completed_in, value.max_id,
 			                              value.max_id_str, value.next_results,
@@ -778,7 +778,7 @@ namespace daw::json {
 		             daw::twitter::Vector<daw::twitter::tweet_object_t>>,
 		  json_class<search_metadata, daw::twitter::search_metadata_t>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::twitter_object_t const &value ) {
 			return std::forward_as_tuple( value.statuses, value.search_metadata );
 		}

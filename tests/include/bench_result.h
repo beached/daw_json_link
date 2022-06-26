@@ -99,7 +99,7 @@ namespace daw::json {
 		  json_string<os_platform>, json_string<build_type>,
 		  json_string<project_name>, json_string<project_subname>>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::bench::bench_result const &value ) {
 			return std::tie(
 			  value.name, value.test_time, value.data_size, value.run_times,

@@ -198,7 +198,7 @@ namespace daw::json {
 				return std::string_view( m_state.first, m_state.size( ) );
 			}
 		};
-		json_lines_iterator( daw::string_view ) -> json_lines_iterator<>;
+		json_lines_iterator( daw::string_view )->json_lines_iterator<>;
 
 		/// @brief A range of json_lines_iterators
 		/// @tparam JsonElement Type of each element in array
@@ -241,7 +241,7 @@ namespace daw::json {
 				return m_first == m_last;
 			}
 		};
-		json_lines_range( daw::string_view ) -> json_lines_range<>;
+		json_lines_range( daw::string_view )->json_lines_range<>;
 
 		template<typename JsonElement, auto... PolicyFlags>
 		json_lines_range( json_lines_iterator<JsonElement, PolicyFlags...>,
@@ -270,7 +270,7 @@ namespace daw::json {
 					result.emplace_back( jsonl_doc );
 					break;
 				}
-				while( tmp < last and * tmp != '\n' ) {
+				while( tmp < last and *tmp != '\n' ) {
 					++tmp;
 				}
 				if( tmp < last ) {

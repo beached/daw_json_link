@@ -55,7 +55,7 @@ namespace daw::json {
 			 */
 			template<typename OutputIterator, typename Value,
 			         template<class...> class Tuple, typename... Ts>
-			[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
+			[[nodiscard]] static inline constexpr OutputIterator
 			serialize( OutputIterator it, Tuple<Ts...> const &args, Value const &v ) {
 				static_assert(
 				  sizeof...( Ts ) == sizeof...( JsonMembers ),
@@ -84,8 +84,7 @@ namespace daw::json {
 			 * @return A T object
 			 */
 			template<typename JsonClass, typename ParseState>
-			[[maybe_unused,
-			  nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
+			[[nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
 			  json_result<JsonClass>
 			  parse_to_class( ParseState &parse_state,
 			                  template_param<JsonClass> = template_arg<JsonClass> ) {
@@ -139,7 +138,7 @@ namespace daw::json {
 			  "this context" );
 
 			template<typename OutputIterator, typename Member, typename Value>
-			[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
+			[[nodiscard]] static inline constexpr OutputIterator
 			serialize( OutputIterator it, Member const &m, Value const & ) {
 				return json_details::member_to_string( template_arg<json_member>, it,
 				                                       m );
@@ -150,8 +149,7 @@ namespace daw::json {
 			  json_details::json_class_parse_result_t<Constructor, json_member>;
 
 			template<typename JsonClass, typename ParseState>
-			[[maybe_unused,
-			  nodiscard]] DAW_ATTRIB_FLATTEN static constexpr json_details::
+			[[nodiscard]] DAW_ATTRIB_FLATTEN static constexpr json_details::
 			  json_result<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
@@ -206,7 +204,7 @@ namespace daw::json {
 		struct json_data_contract<tuple_json_mapping<Members...>> {
 			using type = json_member_list<Members...>;
 
-			[[nodiscard, maybe_unused]] static inline auto const &
+			[[nodiscard]] static inline auto const &
 			to_json_data( tuple_json_mapping<Members...> const &value ) {
 				return value.members;
 			}
@@ -270,7 +268,7 @@ namespace daw::json {
 			 */
 			template<typename OutputIterator, typename Value,
 			         template<class...> class Tuple, typename... Ts>
-			[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
+			[[nodiscard]] static inline constexpr OutputIterator
 			serialize( OutputIterator it, Tuple<Ts...> const &args, Value const &v ) {
 				static_assert( sizeof...( Ts ) == sizeof...( JsonMembers ),
 				               "Argument count is incorrect" );
@@ -303,8 +301,7 @@ namespace daw::json {
 			 * @return A T object
 			 */
 			template<typename JsonClass, typename ParseState>
-			[[maybe_unused,
-			  nodiscard]] static inline constexpr json_details::json_result<JsonClass>
+			[[nodiscard]] static inline constexpr json_details::json_result<JsonClass>
 			parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
@@ -346,7 +343,7 @@ namespace daw::json {
 			 * @return the OutputIterator it
 			 */
 			template<typename OutputIterator, typename Value>
-			[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
+			[[nodiscard]] static inline constexpr OutputIterator
 			serialize( OutputIterator it, Value const &v ) {
 
 				return daw::visit_nt( v, [&]( auto const &alternative ) {
@@ -377,8 +374,7 @@ namespace daw::json {
 			 * @return A T object
 			 */
 			template<typename JsonClass, typename ParseState>
-			[[maybe_unused,
-			  nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
+			[[nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
 			  from_json_result_t<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
