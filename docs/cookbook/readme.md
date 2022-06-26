@@ -2,19 +2,26 @@
 
 This folder contains examples of various JSON constructs and how to create a C++ class/contract to parse them
 
+* [Aliases](aliases.md)
 * [Arrays](array.md)
+* [Automatic Code Generation](automated_code_generation.md)
+* [Classes from Array/JSON Tuples](class_from_array.md)
 * [Classes](class.md)
-* [Class from Array](class_from_array.md)
 * [Dates](dates.md)
 * [Enums](enums.md)
 * [Graphs](graphs.md)
+* [Inserting and Extracting Raw JSON](inserting_extracting_raw_json.md)
+* [JSON Lines/NDJSON](json_lines.md)
+* [JSON Schema Output](json_schema.md)
 * [Key Values](key_values.md) - Map and Dictionary like things
+* [Mapping Deduction](mapping_deduction.md)
+* [Memmber Options](member_options.md) - Options for the parse mappings
 * [Numbers](numbers.md)
 * [Optional/Nullable Values](optional_values.md)
+* [Output Options](output_options.md) - Options for serialization
+* [Parser Options](parser_policies.md) - Options for parsing
 * [Parsing Individual Members](parsing_individual_members.md)
-* [Parser Options](parser_policies.md)
+* [Readable Value](readable_value.md) - Trait for mapping Option/Nullable types used in deduction
 * [Strings](strings.md)
-* [Unknown JSON and Delayed Parsing](unknown_types_and_delayed_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
+* [Unknown JSON and Raw Parsing](unknown_types_and_raw_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
 * [Variant](variant.md)
-* [Automatic Code Generation](automated_code_generation.md)
-
