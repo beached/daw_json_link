@@ -25,6 +25,7 @@ set( DAW_NUM_RUNS OFF CACHE STRING "Define: Change the number of runs of some te
 option( CMAKE_INTERPROCEDURAL_OPTIMIZATION "Enable LTO" OFF )
 option( DAW_JSON_USE_SANITIZERS "Enable address and undefined behaviour sanitizers" OFF )
 option( DAW_JSON_FULL_TESTS "Enable tests for benchmarks" OFF )
+option( DAW_JSON_NO_INT128 "Disable 128bit int tests" OFF )
 
 if( DAW_JSON_NO_CONST_EXPR )
     message( STATUS "DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON" )
@@ -48,6 +49,11 @@ if( DAW_JSON_USE_SANITIZERS )
     add_definitions( -DDAW_JSON_NO_INT128 )
 else()
     message( STATUS "DAW_JSON_USE_SANITIZERS=OFF: compiler sanitizers disabled" )
+endif()
+
+if( DAW_JSON_NO_INT128 )
+    message( STATUS "DAW_JSON_NO_INT128=ON: int128 tests are disabled" )
+    add_definitions( -DDAW_JSON_NO_INT128 )
 endif()
 
 include( cmake/test_compiler_options.cmake )
