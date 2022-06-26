@@ -44,7 +44,7 @@ Below is the C++ code to parse and use it.
 ```c++
 struct MyClass2 {
   int member0;
-  daw::json::json_delayed_value member_later;
+  daw::json::json_value member_later;
   std::string member1;
 };
 
