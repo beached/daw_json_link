@@ -184,18 +184,17 @@ $(function() {
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        <span class="keyword">using</span> allocator_type_as = std::allocator&lt;T&gt;;</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160; </div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        [[maybe_unused]] <span class="keyword">inline</span> std::allocator&lt;T&gt;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        get_allocator_for( template_param&lt;T&gt; )<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;          <span class="keywordflow">return</span> std::allocator&lt;T&gt;( );</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        }</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; </div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        [[nodiscard]] constexpr NoAllocator get_allocator( )<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;          <span class="keywordflow">return</span> { };</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        }</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      };</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <span class="keyword">inline</span> std::allocator&lt;T&gt; get_allocator_for( template_param&lt;T&gt; )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;          <span class="keywordflow">return</span> std::allocator&lt;T&gt;( );</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        }</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        [[nodiscard]] constexpr NoAllocator get_allocator( )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;          <span class="keywordflow">return</span> { };</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        }</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      };</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="adaw__json__allocator__wrapper_8h_html_afde2088dac3c06b846286e827dd04626"><div class="ttname"><a href="daw__json__allocator__wrapper_8h.html#afde2088dac3c06b846286e827dd04626">has_allocator</a></div><div class="ttdeci">static constexpr bool has_allocator</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__allocator__wrapper_8h_source.html#l00073">daw_json_allocator_wrapper.h:73</a></div></div>

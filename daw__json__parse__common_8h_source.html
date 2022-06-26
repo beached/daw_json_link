@@ -128,7 +128,7 @@ $(function() {
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Value, <span class="keyword">typename</span> Constructor, <span class="keyword">typename</span> ParseState,</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;               <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      [[maybe_unused]] DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr <span class="keyword">auto</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr <span class="keyword">auto</span></div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      construct_value( template_params&lt;Value, Constructor&gt;,</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                       ParseState &amp;<a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>, Args &amp;&amp;...args ) {</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="comment">// Silence MSVC warning, used in other if constexpr case</span></div>
@@ -179,7 +179,7 @@ $(function() {
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Value, <span class="keyword">typename</span> Constructor, <span class="keyword">typename</span> ParseState,</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;               <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;      [[maybe_unused]] DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr <span class="keyword">auto</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr <span class="keyword">auto</span></div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;      construct_value_tp( ParseState &amp;<a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>,</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                          fwd_pack&lt;Args...&gt; &amp;&amp;tp_args ) {</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        <span class="keywordflow">if</span> constexpr( <a class="code" href="daw__json__allocator__wrapper_8h.html#afde2088dac3c06b846286e827dd04626">ParseState::has_allocator</a> ) {</div>
