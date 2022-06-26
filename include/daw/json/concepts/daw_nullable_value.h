@@ -10,7 +10,7 @@
 
 #include "../impl/version.h"
 
-#include "daw_readable_value_fwd.h"
+#include "daw_nullable_value_fwd.h"
 
 #include <daw/daw_cpp_feature_check.h>
 
@@ -28,38 +28,38 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace concepts {
 			template<typename T>
-			struct readable_value_traits<std::optional<T>> {
+			struct nullable_value_traits<std::optional<T>> {
 				using value_type = T;
-				using readable_type = std::optional<T>;
-				static constexpr bool is_readable = true;
+				using nullable_type = std::optional<T>;
+				static constexpr bool is_nullable = true;
 
-				static constexpr value_type const &read( readable_type const &val ) {
+				static constexpr value_type const &read( nullable_type const &val ) {
 					assert( has_value( val ) );
 					return *val;
 				}
 
-				constexpr readable_type operator( )( construct_readable_value_t,
-				                                     readable_type const &opt ) const
-				  noexcept( std::is_nothrow_copy_constructible_v<readable_type> ) {
+				constexpr nullable_type operator( )( construct_nullable_with_value_t,
+				                                     nullable_type const &opt ) const
+				  noexcept( std::is_nothrow_copy_constructible_v<nullable_type> ) {
 					return opt;
 				}
-				constexpr readable_type operator( )( construct_readable_value_t,
-				                                     readable_type &&opt ) const
-				  noexcept( std::is_nothrow_move_constructible_v<readable_type> ) {
+				constexpr nullable_type operator( )( construct_nullable_with_value_t,
+				                                     nullable_type &&opt ) const
+				  noexcept( std::is_nothrow_move_constructible_v<nullable_type> ) {
 					return opt;
 				}
 
 				template<typename... Args,
 				         std::enable_if_t<
-				           readable_impl::is_readable_value_type_constructible_v<
+				           nullable_impl::is_nullable_value_type_constructible_v<
 				             value_type, Args...>,
 				           std::nullptr_t> = nullptr>
-				constexpr readable_type operator( )( construct_readable_value_t,
+				constexpr nullable_type operator( )( construct_nullable_with_value_t,
 				                                     Args &&...args ) const
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<value_type> and
-					              readable_impl::is_list_constructible_v<value_type,
+					              nullable_impl::is_list_constructible_v<value_type,
 					                                                     Args...> ) {
 						return std::optional<value_type>(
 						  value_type{ DAW_FWD( args )... } );
@@ -72,44 +72,44 @@ namespace daw::json {
 #endif
 				}
 
-				constexpr readable_type
-				operator( )( construct_readable_empty_t ) const noexcept {
-					return readable_type( );
+				constexpr nullable_type
+				operator( )( construct_nullable_with_empty_t ) const noexcept {
+					return nullable_type( );
 				}
 
-				static constexpr bool has_value( readable_type const &val ) {
+				static constexpr bool has_value( nullable_type const &val ) {
 					return val.has_value( );
 				}
 			};
 
 			template<typename T>
-			struct readable_value_traits<std::unique_ptr<T>> {
+			struct nullable_value_traits<std::unique_ptr<T>> {
 				using value_type = T;
-				using readable_type = std::unique_ptr<T>;
-				static constexpr bool is_readable = true;
+				using nullable_type = std::unique_ptr<T>;
+				static constexpr bool is_nullable = true;
 
-				static constexpr value_type const &read( readable_type const &val ) {
+				static constexpr value_type const &read( nullable_type const &val ) {
 					assert( has_value( val ) );
 					return *val;
 				}
 
-				constexpr readable_type operator( )( construct_readable_value_t,
-				                                     readable_type &&opt ) const
-				  noexcept( std::is_nothrow_move_constructible_v<readable_type> ) {
+				constexpr nullable_type operator( )( construct_nullable_with_value_t,
+				                                     nullable_type &&opt ) const
+				  noexcept( std::is_nothrow_move_constructible_v<nullable_type> ) {
 					return opt;
 				}
 
 				template<typename... Args,
 				         std::enable_if_t<
-				           readable_impl::is_readable_value_type_constructible_v<
+				           nullable_impl::is_nullable_value_type_constructible_v<
 				             value_type, Args...>,
 				           std::nullptr_t> = nullptr>
-				constexpr readable_type operator( )( construct_readable_value_t,
+				constexpr nullable_type operator( )( construct_nullable_with_value_t,
 				                                     Args &&...args ) const
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<value_type> and
-					              readable_impl::is_list_constructible_v<value_type,
+					              nullable_impl::is_list_constructible_v<value_type,
 					                                                     Args...> ) {
 						return std::make_unique<value_type>(
 						  value_type{ DAW_FWD( args )... } );
@@ -121,49 +121,49 @@ namespace daw::json {
 #endif
 				}
 
-				constexpr readable_type
-				operator( )( construct_readable_empty_t ) const noexcept {
-					return readable_type( );
+				constexpr nullable_type
+				operator( )( construct_nullable_with_empty_t ) const noexcept {
+					return nullable_type( );
 				}
 
-				static constexpr bool has_value( readable_type const &val ) {
+				static constexpr bool has_value( nullable_type const &val ) {
 					return static_cast<bool>( val );
 				}
 			};
 
 			template<typename T>
-			struct readable_value_traits<std::shared_ptr<T>> {
+			struct nullable_value_traits<std::shared_ptr<T>> {
 				using value_type = T;
-				using readable_type = std::shared_ptr<T>;
-				static constexpr bool is_readable = true;
+				using nullable_type = std::shared_ptr<T>;
+				static constexpr bool is_nullable = true;
 
-				static constexpr value_type const &read( readable_type const &val ) {
+				static constexpr value_type const &read( nullable_type const &val ) {
 					assert( has_value( val ) );
 					return *val;
 				}
 
-				constexpr readable_type operator( )( construct_readable_value_t,
-				                                     readable_type const &opt ) const
-				  noexcept( std::is_nothrow_copy_constructible_v<readable_type> ) {
+				constexpr nullable_type operator( )( construct_nullable_with_value_t,
+				                                     nullable_type const &opt ) const
+				  noexcept( std::is_nothrow_copy_constructible_v<nullable_type> ) {
 					return opt;
 				}
-				constexpr readable_type operator( )( construct_readable_value_t,
-				                                     readable_type &&opt ) const
-				  noexcept( std::is_nothrow_move_constructible_v<readable_type> ) {
+				constexpr nullable_type operator( )( construct_nullable_with_value_t,
+				                                     nullable_type &&opt ) const
+				  noexcept( std::is_nothrow_move_constructible_v<nullable_type> ) {
 					return opt;
 				}
 
 				template<typename... Args,
 				         std::enable_if_t<
-				           readable_impl::is_readable_value_type_constructible_v<
+				           nullable_impl::is_nullable_value_type_constructible_v<
 				             value_type, Args...>,
 				           std::nullptr_t> = nullptr>
-				constexpr readable_type operator( )( construct_readable_value_t,
+				constexpr nullable_type operator( )( construct_nullable_with_value_t,
 				                                     Args &&...args ) const
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<value_type> and
-					              readable_impl::is_list_constructible_v<value_type,
+					              nullable_impl::is_list_constructible_v<value_type,
 					                                                     Args...> ) {
 						return std::make_shared<value_type>(
 						  value_type{ DAW_FWD( args )... } );
@@ -175,44 +175,44 @@ namespace daw::json {
 #endif
 				}
 
-				constexpr readable_type
-				operator( )( construct_readable_empty_t ) const noexcept {
-					return readable_type( );
+				constexpr nullable_type
+				operator( )( construct_nullable_with_empty_t ) const noexcept {
+					return nullable_type( );
 				}
 
-				static constexpr bool has_value( readable_type const &val ) {
+				static constexpr bool has_value( nullable_type const &val ) {
 					return static_cast<bool>( val );
 				}
 			};
 
 			template<typename T>
-			struct readable_value_traits<T *> {
+			struct nullable_value_traits<T *> {
 				using value_type = T;
-				using readable_type = T *;
-				static constexpr bool is_readable = true;
+				using nullable_type = T *;
+				static constexpr bool is_nullable = true;
 
-				static constexpr value_type const &read( readable_type const &val ) {
+				static constexpr value_type const &read( nullable_type const &val ) {
 					assert( has_value( val ) );
 					return *val;
 				}
 
-				constexpr readable_type
-				operator( )( construct_readable_value_t,
-				             readable_type ptr ) const noexcept {
+				constexpr nullable_type
+				operator( )( construct_nullable_with_value_t,
+				             nullable_type ptr ) const noexcept {
 					return ptr;
 				}
 
 				template<typename... Args,
 				         std::enable_if_t<
-				           readable_impl::is_readable_value_type_constructible_v<
+				           nullable_impl::is_nullable_value_type_constructible_v<
 				             value_type, Args...>,
 				           std::nullptr_t> = nullptr>
-				constexpr readable_type operator( )( construct_readable_value_t,
+				constexpr nullable_type operator( )( construct_nullable_with_value_t,
 				                                     Args &&...args ) const
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<T> and
-					              readable_impl::is_list_constructible_v<T, Args...> ) {
+					              nullable_impl::is_list_constructible_v<T, Args...> ) {
 						return new value_type{ DAW_FWD( args )... };
 					} else {
 #endif
@@ -222,12 +222,12 @@ namespace daw::json {
 #endif
 				}
 
-				constexpr readable_type
-				operator( )( construct_readable_empty_t ) const noexcept {
+				constexpr nullable_type
+				operator( )( construct_nullable_with_empty_t ) const noexcept {
 					return nullptr;
 				}
 
-				static constexpr bool has_value( readable_type const &val ) {
+				static constexpr bool has_value( nullable_type const &val ) {
 					return static_cast<bool>( val );
 				}
 			};

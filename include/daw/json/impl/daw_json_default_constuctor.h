@@ -10,7 +10,7 @@
 
 #include "version.h"
 
-#include "../concepts/daw_readable_value.h"
+#include "../concepts/daw_nullable_value.h"
 #include "../daw_json_default_constuctor_fwd.h"
 #include "daw_json_assert.h"
 
@@ -164,25 +164,25 @@ namespace daw::json {
 		/// @brief Default constructor for readable nullable types.
 		template<typename T>
 		struct nullable_constructor<
-		  T, std::enable_if_t<concepts::is_readable_value_v<T>>> {
-			using value_type = concepts::readable_value_type_t<T>;
-			using rtraits_t = concepts::readable_value_traits<T>;
+		  T, std::enable_if_t<concepts::is_nullable_value_v<T>>> {
+			using value_type = concepts::nullable_value_type_t<T>;
+			using rtraits_t = concepts::nullable_value_traits<T>;
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( concepts::construct_readable_empty_t ) const
-			  noexcept( concepts::is_readable_empty_nothrow_constructible_v<T> ) {
-				static_assert( concepts::is_readable_empty_constructible_v<T> );
-				return rtraits_t{ }( concepts::construct_readable_empty );
+			operator( )( concepts::construct_nullable_with_empty_t ) const
+			  noexcept( concepts::is_nullable_empty_nothrow_constructible_v<T> ) {
+				static_assert( concepts::is_nullable_empty_constructible_v<T> );
+				return rtraits_t{ }( concepts::construct_nullable_with_empty );
 			}
 
 			template<typename... Args,
 			         std::enable_if_t<
-			           concepts::is_readable_value_constructible_v<T, Args...>,
+			           concepts::is_nullable_value_constructible_v<T, Args...>,
 			           std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
 			operator( )( Args &&...args ) const noexcept(
-			  concepts::is_readable_value_nothrow_constructible_v<T, Args...> ) {
-				return rtraits_t{ }( concepts::construct_readable_value,
+			  concepts::is_nullable_value_nothrow_constructible_v<T, Args...> ) {
+				return rtraits_t{ }( concepts::construct_nullable_with_value,
 				                     DAW_FWD( args )... );
 			}
 		};

@@ -33,10 +33,8 @@
 #include <tuple>
 #include <vector>
 
-#define AS_CONSTEXPR( ... ) \
-	[&]( ) constexpr {        \
-		return __VA_ARGS__;     \
-	}                         \
+#define AS_CONSTEXPR( ... )                \
+	[&]( ) constexpr { return __VA_ARGS__; } \
 	( )
 
 /***
@@ -759,52 +757,52 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int, char ** )
+int main( int, char ** ) {
 #ifdef DAW_USE_EXCEPTIONS
-  try
+	try {
 #endif
-{
-	constexpr daw::string_view foo2_json = R"json( { "m1": {}, "m2": 42  } )json";
-	DAW_CONSTEXPR auto foo1_val = daw::json::from_json<Foo1>( foo2_json, "m1" );
-	(void)foo1_val;
+		constexpr daw::string_view foo2_json =
+		  R"json( { "m1": {}, "m2": 42  } )json";
+		DAW_CONSTEXPR auto foo1_val = daw::json::from_json<Foo1>( foo2_json, "m1" );
+		(void)foo1_val;
 #if not defined( DAW_JSON_NO_CONST_EXPR )
-	static_assert( std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1> );
+		static_assert( std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1> );
 #else
 	assert( (std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1>));
 #endif
 
-	auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
-	ensure( foo2_val.m1 );
-	auto const foo2_str = daw::json::to_json( foo2_val );
-	(void)foo2_str;
-	using namespace std::string_literals;
-	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
-	using namespace daw::json;
-	auto oo_result =
-	  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
-	daw::expecting( not oo_result.b );
-	daw::expecting( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
-	daw::expecting( parse_real_test<double>( "5", 5.0 ) );
-	daw::expecting( parse_real_test<double>( "5.5", 5.5 ) );
-	daw::expecting( parse_real_test<double>( "5.5e2", 550.0 ) );
-	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
-	daw::expecting( parse_real_test<double>( "5e2", 500.0 ) );
-	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
-	daw::expecting( parse_real_test<double>(
-	  std::string_view( test_001_t_json_data ).substr( 12, 9 ), -1.234e+3 ) );
-	std::cout << "'" << std::string_view( test_001_t_json_data ).substr( 33, 2 )
-	          << "'\n";
-	daw::expecting( parse_real_test<double>(
-	  std::string_view( test_001_t_json_data ).substr( 33, 2 ), 55 ) );
-
-	test_004( );
-	test_005( );
-	test_006( );
-	{
-		DAW_CONSTEXPR auto const v =
+		auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
+		ensure( foo2_val.m1 );
+		auto const foo2_str = daw::json::to_json( foo2_val );
+		(void)foo2_str;
+		using namespace std::string_literals;
+		std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
+		using namespace daw::json;
+		auto oo_result =
 		  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
-		daw::expecting( not v.b );
-	}
+		daw::expecting( not oo_result.b );
+		daw::expecting( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
+		daw::expecting( parse_real_test<double>( "5", 5.0 ) );
+		daw::expecting( parse_real_test<double>( "5.5", 5.5 ) );
+		daw::expecting( parse_real_test<double>( "5.5e2", 550.0 ) );
+		daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
+		daw::expecting( parse_real_test<double>( "5e2", 500.0 ) );
+		daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
+		daw::expecting( parse_real_test<double>(
+		  std::string_view( test_001_t_json_data ).substr( 12, 9 ), -1.234e+3 ) );
+		std::cout << "'" << std::string_view( test_001_t_json_data ).substr( 33, 2 )
+		          << "'\n";
+		daw::expecting( parse_real_test<double>(
+		  std::string_view( test_001_t_json_data ).substr( 33, 2 ), 55 ) );
+
+		test_004( );
+		test_005( );
+		test_006( );
+		{
+			DAW_CONSTEXPR auto const v =
+			  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
+			daw::expecting( not v.b );
+		}
 #if( defined( __GNUC__ ) and __GNUC__ <= 9 ) or ( defined( _MSC_VER ) )
 #define CX
 #elif defined( DAW_JSON_NO_CONST_EXPR )
@@ -817,477 +815,480 @@ int main( int, char ** )
   ( not defined( _MSC_VER ) ) and                                       \
   ( not defined( __clang__ ) and not defined( _LIBCPP_VERSION ) or      \
     __clang_major__ > 9 )
-	test128( );
+		test128( );
 #else
 	std::cout << "No 128bit int support detected\n";
 #endif
 
-	// daw::do_not_optimize( test_001_t_json_data );
-	CX auto data = daw::json::from_json<test_001_t>( test_001_t_json_data );
-	{
-		std::string tmp = to_json( data );
-		auto data2 = daw::json::from_json<test_001_t>( tmp );
-		daw::do_not_optimize( data2 );
-	}
-	to_json( data, std::cout ) << '\n';
-	CX auto ary =
-	  from_json_array<test_001_t, daw::bounded_vector_t<test_001_t, 10>>(
-	    json_data_array );
-	std::cout << "read in ";
-	std::cout << ary.size( ) << " items\n";
-	for( auto const &v : ary ) {
-		to_json( v, std::cout ) << "\n\n";
-	}
-	std::cout << "as array\n";
-	to_json_array( ary, std::cout ) << "\n\n";
+		// daw::do_not_optimize( test_001_t_json_data );
+		CX auto data = daw::json::from_json<test_001_t>( test_001_t_json_data );
+		{
+			std::string tmp = to_json( data );
+			auto data2 = daw::json::from_json<test_001_t>( tmp );
+			daw::do_not_optimize( data2 );
+		}
+		to_json( data, std::cout ) << '\n';
+		CX auto ary =
+		  from_json_array<test_001_t, daw::bounded_vector_t<test_001_t, 10>>(
+		    json_data_array );
+		std::cout << "read in ";
+		std::cout << ary.size( ) << " items\n";
+		for( auto const &v : ary ) {
+			to_json( v, std::cout ) << "\n\n";
+		}
+		std::cout << "as array\n";
+		to_json_array( ary, std::cout ) << "\n\n";
 
-	auto t2 = test_002_t{ data };
-	t2.a.o2 = std::nullopt;
-	to_json( t2, std::cout ) << '\n';
+		auto t2 = test_002_t{ data };
+		t2.a.o2 = std::nullopt;
+		to_json( t2, std::cout ) << '\n';
 
-	test_003_t t3{ data };
-	to_json( t3, std::cout ) << '\n';
+		test_003_t t3{ data };
+		to_json( t3, std::cout ) << '\n';
 
-	e_test_001_t t4{ };
-	auto e_test_001_str = to_json( t4 );
-	std::cout << e_test_001_str << '\n';
-	auto e_test_001_back = from_json<e_test_001_t>( e_test_001_str );
-	daw::do_not_optimize( e_test_001_back );
+		e_test_001_t t4{ };
+		auto e_test_001_str = to_json( t4 );
+		std::cout << e_test_001_str << '\n';
+		auto e_test_001_back = from_json<e_test_001_t>( e_test_001_str );
+		daw::do_not_optimize( e_test_001_back );
 
-	DAW_CONSTEXPR std::string_view const json_data2 =
-	  R"({
+		DAW_CONSTEXPR std::string_view const json_data2 =
+		  R"({
 	"a": {
 		"b.hi": {
 			"c": [1,2,3] }}})";
 
-	using iterator2_t = daw::json::json_array_iterator<int>;
-	using namespace std::string_view_literals;
+		using iterator2_t = daw::json::json_array_iterator<int>;
+		using namespace std::string_view_literals;
 
-	auto first = iterator2_t( json_data2, "a.b\\.hi.c" );
-	auto sum = 0;
-	while( first ) {
-		sum += *first;
-		++first;
-	}
-	std::cout << "sum: " << sum << '\n';
+		auto first = iterator2_t( json_data2, "a.b\\.hi.c" );
+		auto sum = 0;
+		while( first ) {
+			sum += *first;
+			++first;
+		}
+		std::cout << "sum: " << sum << '\n';
 
-	constexpr std::string_view const json_data3 =
-	  R"({
+		constexpr std::string_view const json_data3 =
+		  R"({
 	"a": {
 		"b.hi": {
 			"c": [{"x":1},{"x":2},{"x":3}] }}})";
 
-	using iterator3_t = daw::json::json_array_iterator<NumberX>;
+		using iterator3_t = daw::json::json_array_iterator<NumberX>;
 
-	auto first3 = iterator3_t( json_data3, "a.b\\.hi.c" );
-	sum = 0;
-	while( first3 ) {
-		sum += first3->x;
-		++first3;
-	}
-	std::cout << "sum2: " << sum << '\n';
+		auto first3 = iterator3_t( json_data3, "a.b\\.hi.c" );
+		sum = 0;
+		while( first3 ) {
+			sum += first3->x;
+			++first3;
+		}
+		std::cout << "sum2: " << sum << '\n';
 
-	std::vector<double> a = { 1.1, 11.1 };
-	to_json_array( a, std::cout ) << '\n';
+		std::vector<double> a = { 1.1, 11.1 };
+		to_json_array( a, std::cout ) << '\n';
 
-	using namespace daw::json;
-	using num_t =
-	  json_number_no_name<double, options::number_opt(
-	                                options::LiteralAsStringOpt::Always,
-	                                options::JsonNumberErrors::AllowNanInf )>;
-	std::cout << "Inf double: "
-	          << "serialize: "
-	          << to_json<num_t>( std::numeric_limits<double>::infinity( ) )
-	          << '\n';
-	std::cout << "parse: " << from_json<num_t>( R"("Infinity")" ) << '\n';
-	std::cout << "-Inf double: "
-	          << "serialize: "
-	          << to_json<num_t>( -std::numeric_limits<double>::infinity( ) )
-	          << '\n';
-	std::cout << "parse: " << from_json<num_t>( R"("-Infinity")" ) << '\n';
+		using namespace daw::json;
+		using num_t =
+		  json_number_no_name<double, options::number_opt(
+		                                options::LiteralAsStringOpt::Always,
+		                                options::JsonNumberErrors::AllowNanInf )>;
+		std::cout << "Inf double: "
+		          << "serialize: "
+		          << to_json<num_t>( std::numeric_limits<double>::infinity( ) )
+		          << '\n';
+		std::cout << "parse: " << from_json<num_t>( R"("Infinity")" ) << '\n';
+		std::cout << "-Inf double: "
+		          << "serialize: "
+		          << to_json<num_t>( -std::numeric_limits<double>::infinity( ) )
+		          << '\n';
+		std::cout << "parse: " << from_json<num_t>( R"("-Infinity")" ) << '\n';
 
-	std::cout << "NaN double: "
-	          << "serialize: "
-	          << to_json<num_t>( std::numeric_limits<double>::quiet_NaN( ) )
-	          << '\n';
-	std::cout << "parse: " << from_json<num_t>( R"("NaN")" ) << '\n';
+		std::cout << "NaN double: "
+		          << "serialize: "
+		          << to_json<num_t>( std::numeric_limits<double>::quiet_NaN( ) )
+		          << '\n';
+		std::cout << "parse: " << from_json<num_t>( R"("NaN")" ) << '\n';
 
-	std::cout << "Negative 0: "
-	          << "serialize: " << to_json<num_t>( std::copysign( 0.0, -1.0 ) )
-	          << '\n';
-
-	std::cout << "parse: " << from_json<double>( "-0.0" ) << '\n';
-
-	std::cout << "denormal - DOUBLE_MIN/2 double: "
-	          << to_json( std::numeric_limits<double>::min( ) / 2.0 ) << '\n';
-
-	std::cout << "denormal min double: "
-	          << to_json( std::numeric_limits<double>::denorm_min( ) ) << '\n';
-
-	std::cout << "5E-324 -> " << from_json<double>( "5E-324" ) << '\n';
-	std::cout << "1.1125369292536007E-308 -> "
-	          << AS_CONSTEXPR( from_json<double>( "1.1125369292536007E-308" ) )
-	          << '\n';
-
-	std::cout << "min double: " << to_json( std::numeric_limits<double>::min( ) )
-	          << '\n';
-	std::cout << "2.2250738585072014E-308 -> "
-	          << AS_CONSTEXPR( from_json<double>( "2.2250738585072014E-308" ) )
-	          << '\n';
-	std::cout << "2.2250738585072014E-307 -> "
-	          << AS_CONSTEXPR( from_json<double>( "2.2250738585072014E-307" ) )
-	          << '\n';
-	std::cout << "0.22250738585072014E-307 -> "
-	          << AS_CONSTEXPR( from_json<double>( "0.22250738585072014E-307" ) )
-	          << '\n';
-
-	std::cout << AS_CONSTEXPR( from_json<double>( "5E-324" ) ) << '\n';
-	std::cout << "max double: " << to_json( std::numeric_limits<double>::max( ) )
-	          << '\n';
-	std::cout << "1.7976931348623157E308 -> "
-	          << AS_CONSTEXPR( from_json<double>( "1.7976931348623157E308" ) )
-	          << '\n';
-
-	std::cout << "1.7976931348623157E307 -> "
-	          << AS_CONSTEXPR( from_json<double>( "1.7976931348623157E307" ) )
-	          << '\n';
-	std::cout << "10.7976931348623157E307 -> "
-	          << AS_CONSTEXPR( from_json<double>( "10.7976931348623157E307" ) )
-	          << '\n';
-	std::cout << "9e2147483609 -> "
-	          << AS_CONSTEXPR( from_json<double>( "9e2147483609" ) ) << '\n';
-	std::cout << "0."
-	             "0000000000000000000000000000000000000000000000000000000000000"
-	             "0000000000"
-	             "0000000000000000000000000000000000000000000000000000000000000"
-	             "0000000000"
-	             "0000000000000000000000000000000000000000000000000000000000000"
-	             "0000000000"
-	             "0000000000000000000000000000000000000000000000000000000000000"
-	             "0000000000"
-	             "0000000000000000000000000 -> "
-	          << AS_CONSTEXPR(
-	               from_json<double>( "0."
-	                                  "0000000000000000000000000000000000000000"
-	                                  "00000000000000000000000000000"
-	                                  "0000000000000000000000000000000000000000"
-	                                  "00000000000000000000000000000"
-	                                  "0000000000000000000000000000000000000000"
-	                                  "00000000000000000000000000000"
-	                                  "0000000000000000000000000000000000000000"
-	                                  "00000000000000000000000000000"
-	                                  "000000000000000000000000000000000" ) )
-	          << '\n';
-
-	std::cout << "3e-3330000000000000000000000000000000 -> "
-	          << AS_CONSTEXPR(
-	               from_json<double>( "3e-3330000000000000000000000000000000" ) )
-	          << '\n';
-
-	std::cout << "DAW***********************************\n";
-	test_dblparse2( "1217.2772861138403", 1217.2772861138403, true );
-	test_dblparse2( "-161.68713249779881", -161.68713249779881, true );
-	test_dblparse2( "267.04251495962637", 267.04251495962637, true );
-	test_dblparse2( "1002.9111801605201", 1002.9111801605201, true );
-	test_dblparse2( "-599.61476423470071", -599.61476423470071, true );
-	test_dblparse2( "2137.0241926849581", 2137.0241926849581, true );
-	test_dblparse2( "-0.0", std::copysign( 0.0, -1.0 ), true );
-	std::cout << "DAW***********************************\n";
-	test_dblparse2( "5792711765526609591.9963073925412025509e-82",
-	                5792711765526609591.9963073925412025509e-82 );
-	test_dblparse( "4891559871276714924261e222", true );
-	test_dblparse(
-	  "111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "11"
-	  "111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "11"
-	  "111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "11"
-	  "111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "11"
-	  "111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "11"
-	  "111111111111111111111111111111.0e-100",
-	  true );
-	test_dblparse(
-	  "111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "11"
-	  "111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "11"
-	  "111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "11"
-	  "111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "11"
-	  "111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "11"
-	  "111111111111111111111111111111.0e+100",
-	  true );
-	test_dblparse( "14514284786278117030.4620546740167642908e-104", true );
-	test_dblparse( "560449937253421.57275338353451748e-223", true );
-	test_dblparse( "127987629894956.6249879371780786496e-274", true );
-	test_dblparse( "19700720435664.186294290058937593e13", true );
-	test_dblparse( "5.9409999999999999999996e-324", true );
-	test_dblparse( "9728625633136924125.18356202983677566044e-308", true );
-	test_dblparse( "9728625633136924125.18356202983677566044e-500", true );
-	test_dblparse( "10199214983525025199.13135016100190689227e308", true );
-	test_dblparse( "10199214983525025199.13135016100190689227e-308", true );
-	test_dblparse( "0.000000000000000000000000000000000000001e-308", true );
-	test_dblparse( "6372891218502368041059e64", true );
-	test_dblparse( "9223372036854776000e100", true );
-	test_dblparse( "9223372036854776000e2000", true );
-	test_dblparse( "9223372036854776000e+20", true );
-	test_dblparse( "9223372036854776000e-2000", true );
-	test_dblparse( "2e-1000", true );
-	test_dblparse( "42.69", true );
-	test_dblparse( "1e-1000", true );
-	test_dblparse( "78146521210545563.1397450998275178158e-308", true );
-	test_dblparse( "8725540998407961.3743556965848965343e-308", true );
-	test_dblparse( "1e-10000", true );
-	test_dblparse<false, true>( "0.9868011474609375", true );
-	std::cout.precision( std::numeric_limits<double>::max_digits10 );
-#if defined( LDBL_MAX )
-	std::cout << "result: " << from_json<long double>( "1e-10000" ) << '\n';
-#endif
-	test_dblparse( "1e-214748364", true );
-	test_dblparse( "0.89", true );
-	test_dblparse( "10070988951557009.8178168006534510403e-302", true );
-	test_dblparse(
-	  "2."
-	  "225073858507201136057409796709131975934819546351645648023426109724822222"
-	  "02"
-	  "107694551652952390813508791414915891303962110687008643869459464552765720"
-	  "74"
-	  "078206217433799881410632673292535522868813721490129811224514518898490572"
-	  "22"
-	  "307285255133155755015914397476397983411801999323962548289017107081850690"
-	  "63"
-	  "066665599493827577257201576306269066333264756530000924588831643303777979"
-	  "18"
-	  "696120494973903778297049050510806099407302629371289589500035837999672072"
-	  "54"
-	  "304360284078895771796150945516748243471030702609144621572289880258182545"
-	  "18"
-	  "032570701886087211312807951223342628836862232150377566662250398253433597"
-	  "45"
-	  "688844239002654981983854879482922068947216898310996983658468140228542433"
-	  "30"
-	  "660339850886445804001034933970427567186443383770486037861622771738545623"
-	  "06"
-	  "5874679014086723327636718751234567890123456789012345678901e-308",
-	  true );
-	test_dblparse( "0.9868011474609375", true );
-	std::cout.precision( std::numeric_limits<double>::max_digits10 );
-#if defined( LDBL_MAX )
-	std::cout << "long double result: "
-	          << from_json<long double>( "0.9868011474609375" ) << '\n';
-#endif
-	std::cout << "Default FP Parse\n";
-	std::cout << "Unknown Bounds\n";
-	test_lots_of_doubles<false, false>( );
-	std::cout << "Known Bounds\n";
-	test_lots_of_doubles<true, false>( );
-	std::cout << "Precise FP Parse\n";
-	std::cout << "Unknown Bounds\n";
-	test_lots_of_doubles<false, true>( );
-	std::cout << "Known Bounds\n";
-	test_lots_of_doubles<true, true>( );
-
-#if defined( LDBL_MAX )
-	if constexpr( sizeof( double ) < sizeof( long double ) ) {
-		std::cout << "long double test\n";
-		std::cout << std::setprecision(
-		               std::numeric_limits<long double>::max_digits10 )
-		          << from_json<long double>(
-		               "11111111111111111111111111111111111111111111"
-		               "11111111111111111111111111111111111111111111"
-		               "11111111111111111111111111111111111111111111"
-		               "11111111111111111111111111111111111111111111"
-		               "11111111111111111111111111111111111111111111"
-		               "11111111111111111111111111111111111111111111"
-		               "11111111111111111111111111111111111111111111"
-		               "11111111111111111111111111111111111111111111"
-		               "111111111111111111"
-		               "111111111111111111111111111111.0e+400" )
+		std::cout << "Negative 0: "
+		          << "serialize: " << to_json<num_t>( std::copysign( 0.0, -1.0 ) )
 		          << '\n';
 
-		std::cout << "testing 9223372036854776000e100\n";
-		constexpr std::string_view two63e100 = "9223372036854776000e100";
-		auto const d0 = from_json<long double>(
-		  two63e100, options::parse_flags<options::ExecModeTypes::runtime> );
-		std::cout << d0 << '\n';
-		std::cout << "using strtold\n";
-		char *end = nullptr;
-		long double const d1 = strtold( two63e100.data( ), &end );
-		std::cout << d1 << '\n';
-		double d2 = 0.89;
-		to_json( d2, std::cout ) << '\n';
-	}
-#endif
-	test_show_lots_of_doubles( );
-	test_optional_array( );
-	test_key_value( );
-	test_vector_of_bool( );
-	static_assert( from_json<bool>( "true" ) );
-	static_assert( not from_json<bool>( "false" ) );
-	static_assert( not *from_json<std::optional<bool>>( "false" ) );
-	static_assert( not from_json<std::optional<bool>>( "null" ) );
-	static_assert( from_json<signed char>( "-1" ) ==
-	               static_cast<signed char>( -1 ) );
-	static_assert( from_json<short>( "-1" ) == static_cast<short>( -1 ) );
-	static_assert( from_json<int>( "-1" ) == -1 );
-	static_assert( from_json<long>( "-1" ) == -1 );
-	static_assert( from_json<long long>( "-1" ) == -1 );
-	static_assert( from_json<unsigned char>( "1" ) == 1 );
-	static_assert( from_json<unsigned short>( "1" ) == 1 );
-	static_assert( from_json<unsigned int>( "1" ) == 1 );
-	static_assert( from_json<unsigned long>( "1" ) == 1 );
-	static_assert( from_json<unsigned long long>( "1" ) == 1 );
-	assert( from_json<std::string>( R"("hello world")" ) == "hello world" );
-	assert( from_json<std::deque<int>>( "[1,2,3]"s ).at( 1 ) == 2 );
-	assert( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
-	assert( ( from_json<json_array_no_name<char, std::string>>( "[97,98,99]"s ) ==
-	          "abc" ) );
-	static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
+		std::cout << "parse: " << from_json<double>( "-0.0" ) << '\n';
 
-	auto const test_bad_float = []( ) -> bool {
-#ifdef DAW_USE_EXCEPTIONS
-		try {
-#endif
-			(void)from_json<double>( "0e "sv );
-#ifdef DAW_USE_EXCEPTIONS
-		} catch( daw::json::json_exception const & ) { return true; }
-#endif
-		return false;
-	};
-	daw_json_ensure( test_bad_float( ), ErrorReason::Unknown );
+		std::cout << "denormal - DOUBLE_MIN/2 double: "
+		          << to_json( std::numeric_limits<double>::min( ) / 2.0 ) << '\n';
 
-	auto const test_empty_map = []( ) -> bool {
-#ifdef DAW_USE_EXCEPTIONS
-		try {
-#endif
-			auto m = from_json<std::map<std::string, std::string>>( "{}"sv );
-			if( not m.empty( ) ) {
-				return false;
-			}
-			auto const s = to_json( m );
+		std::cout << "denormal min double: "
+		          << to_json( std::numeric_limits<double>::denorm_min( ) ) << '\n';
 
-			return s == "{}";
-#ifdef DAW_USE_EXCEPTIONS
-		} catch( daw::json::json_exception const &jex ) {
-			std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
-			throw;
+		std::cout << "5E-324 -> " << from_json<double>( "5E-324" ) << '\n';
+		std::cout << "1.1125369292536007E-308 -> "
+		          << AS_CONSTEXPR( from_json<double>( "1.1125369292536007E-308" ) )
+		          << '\n';
+
+		std::cout << "min double: "
+		          << to_json( std::numeric_limits<double>::min( ) ) << '\n';
+		std::cout << "2.2250738585072014E-308 -> "
+		          << AS_CONSTEXPR( from_json<double>( "2.2250738585072014E-308" ) )
+		          << '\n';
+		std::cout << "2.2250738585072014E-307 -> "
+		          << AS_CONSTEXPR( from_json<double>( "2.2250738585072014E-307" ) )
+		          << '\n';
+		std::cout << "0.22250738585072014E-307 -> "
+		          << AS_CONSTEXPR( from_json<double>( "0.22250738585072014E-307" ) )
+		          << '\n';
+
+		std::cout << AS_CONSTEXPR( from_json<double>( "5E-324" ) ) << '\n';
+		std::cout << "max double: "
+		          << to_json( std::numeric_limits<double>::max( ) ) << '\n';
+		std::cout << "1.7976931348623157E308 -> "
+		          << AS_CONSTEXPR( from_json<double>( "1.7976931348623157E308" ) )
+		          << '\n';
+
+		std::cout << "1.7976931348623157E307 -> "
+		          << AS_CONSTEXPR( from_json<double>( "1.7976931348623157E307" ) )
+		          << '\n';
+		std::cout << "10.7976931348623157E307 -> "
+		          << AS_CONSTEXPR( from_json<double>( "10.7976931348623157E307" ) )
+		          << '\n';
+		std::cout << "9e2147483609 -> "
+		          << AS_CONSTEXPR( from_json<double>( "9e2147483609" ) ) << '\n';
+		std::cout << "0."
+		             "0000000000000000000000000000000000000000000000000000000000000"
+		             "0000000000"
+		             "0000000000000000000000000000000000000000000000000000000000000"
+		             "0000000000"
+		             "0000000000000000000000000000000000000000000000000000000000000"
+		             "0000000000"
+		             "0000000000000000000000000000000000000000000000000000000000000"
+		             "0000000000"
+		             "0000000000000000000000000 -> "
+		          << AS_CONSTEXPR(
+		               from_json<double>( "0."
+		                                  "0000000000000000000000000000000000000000"
+		                                  "00000000000000000000000000000"
+		                                  "0000000000000000000000000000000000000000"
+		                                  "00000000000000000000000000000"
+		                                  "0000000000000000000000000000000000000000"
+		                                  "00000000000000000000000000000"
+		                                  "0000000000000000000000000000000000000000"
+		                                  "00000000000000000000000000000"
+		                                  "000000000000000000000000000000000" ) )
+		          << '\n';
+
+		std::cout << "3e-3330000000000000000000000000000000 -> "
+		          << AS_CONSTEXPR( from_json<double>(
+		               "3e-3330000000000000000000000000000000" ) )
+		          << '\n';
+
+		std::cout << "DAW***********************************\n";
+		test_dblparse2( "1217.2772861138403", 1217.2772861138403, true );
+		test_dblparse2( "-161.68713249779881", -161.68713249779881, true );
+		test_dblparse2( "267.04251495962637", 267.04251495962637, true );
+		test_dblparse2( "1002.9111801605201", 1002.9111801605201, true );
+		test_dblparse2( "-599.61476423470071", -599.61476423470071, true );
+		test_dblparse2( "2137.0241926849581", 2137.0241926849581, true );
+		test_dblparse2( "-0.0", std::copysign( 0.0, -1.0 ), true );
+		std::cout << "DAW***********************************\n";
+		test_dblparse2( "5792711765526609591.9963073925412025509e-82",
+		                5792711765526609591.9963073925412025509e-82 );
+		test_dblparse( "4891559871276714924261e222", true );
+		test_dblparse(
+		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "111111111111111111111111111111.0e-100",
+		  true );
+		test_dblparse(
+		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "111111111111111111111111111111.0e+100",
+		  true );
+		test_dblparse( "14514284786278117030.4620546740167642908e-104", true );
+		test_dblparse( "560449937253421.57275338353451748e-223", true );
+		test_dblparse( "127987629894956.6249879371780786496e-274", true );
+		test_dblparse( "19700720435664.186294290058937593e13", true );
+		test_dblparse( "5.9409999999999999999996e-324", true );
+		test_dblparse( "9728625633136924125.18356202983677566044e-308", true );
+		test_dblparse( "9728625633136924125.18356202983677566044e-500", true );
+		test_dblparse( "10199214983525025199.13135016100190689227e308", true );
+		test_dblparse( "10199214983525025199.13135016100190689227e-308", true );
+		test_dblparse( "0.000000000000000000000000000000000000001e-308", true );
+		test_dblparse( "6372891218502368041059e64", true );
+		test_dblparse( "9223372036854776000e100", true );
+		test_dblparse( "9223372036854776000e2000", true );
+		test_dblparse( "9223372036854776000e+20", true );
+		test_dblparse( "9223372036854776000e-2000", true );
+		test_dblparse( "2e-1000", true );
+		test_dblparse( "42.69", true );
+		test_dblparse( "1e-1000", true );
+		test_dblparse( "78146521210545563.1397450998275178158e-308", true );
+		test_dblparse( "8725540998407961.3743556965848965343e-308", true );
+		test_dblparse( "1e-10000", true );
+		test_dblparse<false, true>( "0.9868011474609375", true );
+		std::cout.precision( std::numeric_limits<double>::max_digits10 );
+#if defined( LDBL_MAX )
+		std::cout << "result: " << from_json<long double>( "1e-10000" ) << '\n';
+#endif
+		test_dblparse( "1e-214748364", true );
+		test_dblparse( "0.89", true );
+		test_dblparse( "10070988951557009.8178168006534510403e-302", true );
+		test_dblparse(
+		  "2."
+		  "225073858507201136057409796709131975934819546351645648023426109724822222"
+		  "02"
+		  "107694551652952390813508791414915891303962110687008643869459464552765720"
+		  "74"
+		  "078206217433799881410632673292535522868813721490129811224514518898490572"
+		  "22"
+		  "307285255133155755015914397476397983411801999323962548289017107081850690"
+		  "63"
+		  "066665599493827577257201576306269066333264756530000924588831643303777979"
+		  "18"
+		  "696120494973903778297049050510806099407302629371289589500035837999672072"
+		  "54"
+		  "304360284078895771796150945516748243471030702609144621572289880258182545"
+		  "18"
+		  "032570701886087211312807951223342628836862232150377566662250398253433597"
+		  "45"
+		  "688844239002654981983854879482922068947216898310996983658468140228542433"
+		  "30"
+		  "660339850886445804001034933970427567186443383770486037861622771738545623"
+		  "06"
+		  "5874679014086723327636718751234567890123456789012345678901e-308",
+		  true );
+		test_dblparse( "0.9868011474609375", true );
+		std::cout.precision( std::numeric_limits<double>::max_digits10 );
+#if defined( LDBL_MAX )
+		std::cout << "long double result: "
+		          << from_json<long double>( "0.9868011474609375" ) << '\n';
+#endif
+		std::cout << "Default FP Parse\n";
+		std::cout << "Unknown Bounds\n";
+		test_lots_of_doubles<false, false>( );
+		std::cout << "Known Bounds\n";
+		test_lots_of_doubles<true, false>( );
+		std::cout << "Precise FP Parse\n";
+		std::cout << "Unknown Bounds\n";
+		test_lots_of_doubles<false, true>( );
+		std::cout << "Known Bounds\n";
+		test_lots_of_doubles<true, true>( );
+
+#if defined( LDBL_MAX )
+		if constexpr( sizeof( double ) < sizeof( long double ) ) {
+			std::cout << "long double test\n";
+			std::cout << std::setprecision(
+			               std::numeric_limits<long double>::max_digits10 )
+			          << from_json<long double>(
+			               "11111111111111111111111111111111111111111111"
+			               "11111111111111111111111111111111111111111111"
+			               "11111111111111111111111111111111111111111111"
+			               "11111111111111111111111111111111111111111111"
+			               "11111111111111111111111111111111111111111111"
+			               "11111111111111111111111111111111111111111111"
+			               "11111111111111111111111111111111111111111111"
+			               "11111111111111111111111111111111111111111111"
+			               "111111111111111111"
+			               "111111111111111111111111111111.0e+400" )
+			          << '\n';
+
+			std::cout << "testing 9223372036854776000e100\n";
+			constexpr std::string_view two63e100 = "9223372036854776000e100";
+			auto const d0 = from_json<long double>(
+			  two63e100, options::parse_flags<options::ExecModeTypes::runtime> );
+			std::cout << d0 << '\n';
+			std::cout << "using strtold\n";
+			char *end = nullptr;
+			long double const d1 = strtold( two63e100.data( ), &end );
+			std::cout << d1 << '\n';
+			double d2 = 0.89;
+			to_json( d2, std::cout ) << '\n';
 		}
 #endif
-	};
-	daw_json_ensure( test_empty_map( ), ErrorReason::Unknown );
+		test_show_lots_of_doubles( );
+		test_optional_array( );
+		test_key_value( );
+		test_vector_of_bool( );
+		static_assert( from_json<bool>( "true" ) );
+		static_assert( not from_json<bool>( "false" ) );
+		static_assert( not *from_json<std::optional<bool>>( "false" ) );
+		static_assert( not from_json<std::optional<bool>>( "null" ) );
+		static_assert( from_json<signed char>( "-1" ) ==
+		               static_cast<signed char>( -1 ) );
+		static_assert( from_json<short>( "-1" ) == static_cast<short>( -1 ) );
+		static_assert( from_json<int>( "-1" ) == -1 );
+		static_assert( from_json<long>( "-1" ) == -1 );
+		static_assert( from_json<long long>( "-1" ) == -1 );
+		static_assert( from_json<unsigned char>( "1" ) == 1 );
+		static_assert( from_json<unsigned short>( "1" ) == 1 );
+		static_assert( from_json<unsigned int>( "1" ) == 1 );
+		static_assert( from_json<unsigned long>( "1" ) == 1 );
+		static_assert( from_json<unsigned long long>( "1" ) == 1 );
+		assert( from_json<std::string>( R"("hello world")" ) == "hello world" );
+		assert( from_json<std::deque<int>>( "[1,2,3]"s ).at( 1 ) == 2 );
+		assert( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
+		assert( ( from_json<json_array_no_name<char, std::string>>(
+		            "[97,98,99]"s ) == "abc" ) );
+		static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 
-	auto const test_leading_zero = []( auto i ) {
-		using test_t = daw::remove_cvref_t<decltype( i )>;
+		auto const test_bad_float = []( ) -> bool {
 #ifdef DAW_USE_EXCEPTIONS
-		try {
+			try {
 #endif
-			auto l0 = from_json<test_t>( "01.0"sv );
-			(void)l0;
+				(void)from_json<double>( "0e "sv );
 #ifdef DAW_USE_EXCEPTIONS
-		} catch( daw::json::json_exception const & ) { return true; }
+			} catch( daw::json::json_exception const & ) { return true; }
 #endif
-		return false;
-	};
-	daw_json_ensure( test_leading_zero( 0.0 ), ErrorReason::Unknown );
-	daw_json_ensure( test_leading_zero( 0 ), ErrorReason::Unknown );
-	daw_json_ensure( test_leading_zero( 0U ), ErrorReason::Unknown );
+			return false;
+		};
+		daw_json_ensure( test_bad_float( ), ErrorReason::Unknown );
 
-	static_assert(
-	  from_json<json_key_value_no_name<
-	    std::array<std::pair<std::string_view, int>, 2>, int, std::string_view>>(
-	    R"({"a":0,"b":1})" )[1]
-	    .second == 1 );
+		auto const test_empty_map = []( ) -> bool {
+#ifdef DAW_USE_EXCEPTIONS
+			try {
+#endif
+				auto m = from_json<std::map<std::string, std::string>>( "{}"sv );
+				if( not m.empty( ) ) {
+					return false;
+				}
+				auto const s = to_json( m );
 
-	constexpr auto v =
-	  from_json<tuple_json_mapping<>>( std::string_view( "{}" ) );
-	auto vstr = to_json( v );
-	(void)vstr;
-	constexpr auto v1 = from_json<empty_ordered>( std::string_view( "[]" ) );
-	auto v1str = to_json( v1 );
-	(void)v1str;
+				return s == "{}";
+#ifdef DAW_USE_EXCEPTIONS
+			} catch( daw::json::json_exception const &jex ) {
+				std::cerr << "Exception thrown by parser: " << jex.reason( )
+				          << std::endl;
+				throw;
+			}
+#endif
+		};
+		daw_json_ensure( test_empty_map( ), ErrorReason::Unknown );
 
-	std::cout << "FP Output formating of 123456789.23456789012345:\n";
-	constexpr double outfmt_dbl = 123456789.23456789012345;
-	std::cout << "auto: "
-	          << to_json<json_base::json_number<
-	               double, options::number_opt( options::FPOutputFormat::Auto )>>(
-	               outfmt_dbl )
-	          << '\n';
-	std::cout
-	  << "decimal: "
-	  << to_json<json_base::json_number<
-	       double, options::number_opt( options::FPOutputFormat::Decimal )>>(
-	       outfmt_dbl )
-	  << '\n';
-	std::cout
-	  << "scientific: "
-	  << to_json<json_base::json_number<
-	       double, options::number_opt( options::FPOutputFormat::Scientific )>>(
-	       outfmt_dbl )
-	  << '\n';
+		auto const test_leading_zero = []( auto i ) {
+			using test_t = daw::remove_cvref_t<decltype( i )>;
+#ifdef DAW_USE_EXCEPTIONS
+			try {
+#endif
+				auto l0 = from_json<test_t>( "01.0"sv );
+				(void)l0;
+#ifdef DAW_USE_EXCEPTIONS
+			} catch( daw::json::json_exception const & ) { return true; }
+#endif
+			return false;
+		};
+		daw_json_ensure( test_leading_zero( 0.0 ), ErrorReason::Unknown );
+		daw_json_ensure( test_leading_zero( 0 ), ErrorReason::Unknown );
+		daw_json_ensure( test_leading_zero( 0U ), ErrorReason::Unknown );
 
-	auto byte_vec = to_json( 5.5, std::vector<std::byte>{ } );
-	ensure( byte_vec.size( ) == 3 );
-	ensure( static_cast<char>( byte_vec[0] ) == '5' );
-	ensure( static_cast<char>( byte_vec[1] ) == '.' );
-	ensure( static_cast<char>( byte_vec[2] ) == '5' );
-	(void)byte_vec;
+		static_assert(
+		  from_json<
+		    json_key_value_no_name<std::array<std::pair<std::string_view, int>, 2>,
+		                           int, std::string_view>>( R"({"a":0,"b":1})" )[1]
+		    .second == 1 );
 
-	daw::string_view jd_opt_jv1 = R"json({"name":5,"name2":{"foo":6}})json";
-	auto jv = daw::json::json_value( jd_opt_jv1 );
-	auto opt_int0 = as<std::optional<int>>( jv["name"] );
-	ensure( opt_int0 );
-	ensure( *opt_int0 == 5 );
-	auto opt_int1 = as<std::optional<int>>( jv["name2.foo"] );
-	ensure( opt_int1 );
-	ensure( *opt_int1 == 6 );
-	auto opt_int2 = as<std::optional<int>>( jv["name2.bar"] );
-	ensure( not opt_int2 );
-	auto opt_int3 =
-	  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name" );
-	ensure( opt_int3 );
-	ensure( *opt_int3 == 5 );
-	auto opt_int4 =
-	  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.foo" );
-	ensure( opt_int4 );
-	ensure( *opt_int4 == 6 );
-	auto opt_int5 =
-	  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.bar" );
-	ensure( not opt_int5 );
+		constexpr auto v =
+		  from_json<tuple_json_mapping<>>( std::string_view( "{}" ) );
+		auto vstr = to_json( v );
+		(void)vstr;
+		constexpr auto v1 = from_json<empty_ordered>( std::string_view( "[]" ) );
+		auto v1str = to_json( v1 );
+		(void)v1str;
+
+		std::cout << "FP Output formating of 123456789.23456789012345:\n";
+		constexpr double outfmt_dbl = 123456789.23456789012345;
+		std::cout
+		  << "auto: "
+		  << to_json<json_base::json_number<
+		       double, options::number_opt( options::FPOutputFormat::Auto )>>(
+		       outfmt_dbl )
+		  << '\n';
+		std::cout
+		  << "decimal: "
+		  << to_json<json_base::json_number<
+		       double, options::number_opt( options::FPOutputFormat::Decimal )>>(
+		       outfmt_dbl )
+		  << '\n';
+		std::cout
+		  << "scientific: "
+		  << to_json<json_base::json_number<
+		       double, options::number_opt( options::FPOutputFormat::Scientific )>>(
+		       outfmt_dbl )
+		  << '\n';
+
+		auto byte_vec = to_json( 5.5, std::vector<std::byte>{ } );
+		ensure( byte_vec.size( ) == 3 );
+		ensure( static_cast<char>( byte_vec[0] ) == '5' );
+		ensure( static_cast<char>( byte_vec[1] ) == '.' );
+		ensure( static_cast<char>( byte_vec[2] ) == '5' );
+		(void)byte_vec;
+
+		daw::string_view jd_opt_jv1 = R"json({"name":5,"name2":{"foo":6}})json";
+		auto jv = daw::json::json_value( jd_opt_jv1 );
+		auto opt_int0 = as<std::optional<int>>( jv["name"] );
+		ensure( opt_int0 );
+		ensure( *opt_int0 == 5 );
+		auto opt_int1 = as<std::optional<int>>( jv["name2.foo"] );
+		ensure( opt_int1 );
+		ensure( *opt_int1 == 6 );
+		auto opt_int2 = as<std::optional<int>>( jv["name2.bar"] );
+		ensure( not opt_int2 );
+		auto opt_int3 =
+		  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name" );
+		ensure( opt_int3 );
+		ensure( *opt_int3 == 5 );
+		auto opt_int4 =
+		  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.foo" );
+		ensure( opt_int4 );
+		ensure( *opt_int4 == 6 );
+		auto opt_int5 =
+		  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.bar" );
+		ensure( not opt_int5 );
 
 #if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L
-	static_assert(
-	  daw::json::concepts::is_writable_output_type_v<std::u8string> );
-	std::cout
-	  << "u8string\n"
-	  << reinterpret_cast<char const *>(
-	       to_json<json_base::json_number<
-	         double, options::number_opt( options::FPOutputFormat::Decimal )>>(
-	         outfmt_dbl, std::u8string{ } )
-	         .c_str( ) )
-	  << '\n';
+		static_assert(
+		  daw::json::concepts::is_writable_output_type_v<std::u8string> );
+		std::cout
+		  << "u8string\n"
+		  << reinterpret_cast<char const *>(
+		       to_json<json_base::json_number<
+		         double, options::number_opt( options::FPOutputFormat::Decimal )>>(
+		         outfmt_dbl, std::u8string{ } )
+		         .c_str( ) )
+		  << '\n';
 #endif
 #endif
 
-	std::cout << "\n\nJSON Link Version: " << json_link_version( ) << '\n';
-	std::cout << "done\n\n";
-}
+		std::cout << "\n\nJSON Link Version: " << json_link_version( ) << '\n';
+		std::cout << "done\n\n";
+	}
 #ifdef DAW_USE_EXCEPTIONS
-catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
-	exit( 1 );
-} catch( std::exception const &ex ) {
-	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
-	          << '\n';
-	exit( 1 );
-} catch( ... ) {
-	std::cerr << "Unknown exception thrown during testing\n";
-	throw;
-}
+	catch( daw::json::json_exception const &jex ) {
+		std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+		exit( 1 );
+	} catch( std::exception const &ex ) {
+		std::cerr << "Unknown exception thrown during testing: " << ex.what( )
+		          << '\n';
+		exit( 1 );
+	} catch( ... ) {
+		std::cerr << "Unknown exception thrown during testing\n";
+		throw;
+	}
 #endif
+}

@@ -24,13 +24,13 @@
     * [JSON Schema Output](docs/cookbook/json_schema.md)
     * [Key Values](docs/cookbook/key_values.md) - Map and Dictionary like things
     * [Mapping Deduction](docs/cookbook/mapping_deduction.md)
-    * [Memmber Options](docs/cookbook/member_options.md) - Options for the parse mappings
+    * [Member Options](docs/cookbook/member_options.md) - Options for the parse mappings
+    * [Nullable Concept](nullable_value_concept.md) - Trait for mapping Option/Nullable types used in deduction
+    * [Nullable JSON Values](json_nullable.md) 
     * [Numbers](docs/cookbook/numbers.md)
-    * [Optional/Nullable Values](docs/cookbook/optional_values.md)
     * [Output Options](docs/cookbook/output_options.md) - Options for serialization
     * [Parser Options](docs/cookbook/parser_policies.md) - Options for parsing
     * [Parsing Individual Members](docs/cookbook/parsing_individual_members.md)
-    * [Readable Value](docs/cookbook/readable_value.md) - Trait for mapping Option/Nullable types used in deduction
     * [Strings](docs/cookbook/strings.md)
     * [Unknown JSON and Raw Parsing](docs/cookbook/unknown_types_and_raw_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
     * [Variant](docs/cookbook/variant.md)
@@ -122,7 +122,7 @@ The event based parser(SAX) can be called via `daw::json::json_event_parser`.  I
   * [I Like BigInt's](https://www.youtube.com/watch?v=mhlrYvd1qso)
 * Links to other examples  
   * [Parsing a Config File](https://github.com/beached/daw_json_link_config_parser)
-  * [Parsing BigInt/Multiprecision Numbers](https://github.com/beached/daw_json_link_bigint_mp_numbers) 	
+  * [Parsing BigInt/Multiprecision Numbers](https://github.com/beached/daw_json_link_bigint_mp_numbers)
 * Small samples below
 
 
@@ -131,7 +131,7 @@ There are two parts to the trait `json_data_contract`, first is a type alias nam
  ```c++
 struct Thing {
   int a;
-  int b;	
+  int b;
 };
 ```
 The construct for `Thing` requires 2 integers and if we had the following JSON:
@@ -146,12 +146,12 @@ We could do the mapping like the following:
 namespace daw::json {
   template<>
   struct json_data_contract<Thing> {
-  	static constexpr char const a[] = "a";
-  	static constexpr char const b[] = "b";
-  	using type = json_member_list<
-  	  json_number<a, int>,
-  	  json_number<b, int>
-  	>;
+    static constexpr char const a[] = "a";
+    static constexpr char const b[] = "b";
+    using type = json_member_list<
+      json_number<a, int>,
+      json_number<b, int>
+    >;
   };
 }
 ```
@@ -161,12 +161,12 @@ The above is all that is needed for parsing JSON, for serializing a static membe
 namespace daw::json {
   template<>
   struct json_data_contract<Thing> {
-  	static constexpr char const a[] = "a";
-  	static constexpr char const b[] = "b";
-  	using type = json_member_list<
-  	  json_number<a, int>,
-  	  json_number<b, int>
-  	>;
+    static constexpr char const a[] = "a";
+    static constexpr char const b[] = "b";
+    using type = json_member_list<
+      json_number<a, int>,
+      json_number<b, int>
+    >;
   };
   
   static auto to_json_data( Thing const & v ) {
@@ -214,9 +214,9 @@ To use daw_json_link in your cmake projects, adding the following should allow i
 ```cmake
 include( FetchContent )
 FetchContent_Declare(
-        daw_json_link
-        GIT_REPOSITORY https://github.com/beached/daw_json_link
-				GIT_TAG release
+  daw_json_link
+  GIT_REPOSITORY https://github.com/beached/daw_json_link
+  GIT_TAG release
 )
 FetchContent_MakeAvailable(daw_json_link)
 #...
@@ -309,9 +309,11 @@ MyClass my_class = from_json<MyClass, options::parse_flags<options::CheckedParse
 ```
 
 JSON documents with array root's use the `from_json_array` function to parse 
+
 ```c++
 std::vector<MyClass> my_data = from_json_array<MyClass>( json_str );
-```	
+```
+
 Alternatively, if the input is trusted, the less checked version can be faster 
 ```c++
 std::vector<MyClass> my_data = from_json_array<MyClass, std::vector<MyClass>, options::parse_flags<options::CheckedParseMode::no>>( json_str );
@@ -694,12 +696,12 @@ std::cout << values << '\n';
 A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_json_iostream_test.cpp) or on [compiler explorer](https://gcc.godbolt.org/z/qGGnvvYsd)
 
 ## Common errors
-  * ```error: pointer to subobject of string literal is not allowed in a template argument```
+  * `error: pointer to subobject of string literal is not allowed in a template argument`
     * Your compiler does not support Class Non-Type Template Parameters, or is not in C++20 mode.  If you do not have compiler support, you can the C++17 naming style above e.g. 
 ```cpp
-		constexpr char const member_name[] = "member_name";
-		//...
-		json_link<member_name, Type>
+constexpr char const member_name[] = "member_name";
+//...
+json_link<member_name, Type>
 ```
 
 ## Build configuration points
@@ -734,4 +736,3 @@ Older compilers may still work but in testing some resulted in ICE's or compile 
   When used with `std::multimap<std::string, T>` or `std::vector<std::pair<std::string, T>>` all members are preserved with the former in order.  Alternatively, the `json_value` type will allow iteration over the class members and lazy parsing of the correct one. 
   See [Cookbook Key Values](docs/cookbook/key_values.md) which demonstrates these methods.
 * Trailing commas, the parser makes no effort to detect trailing commas.
-	

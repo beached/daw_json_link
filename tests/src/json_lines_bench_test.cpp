@@ -13,6 +13,7 @@
 #include "daw_json_benchmark.h"
 #include "defines.h"
 
+#include <daw/daw_algorithm.h>
 #include <daw/daw_memory_mapped_file.h>
 #include <daw/json/daw_json_lines_iterator.h>
 #include <daw/json/daw_json_link.h>
@@ -59,11 +60,11 @@ int main( int argc, char **argv ) {
 	  []( daw::string_view jd ) {
 		  auto tp_range =
 		    daw::json::json_lines_range<daw::json::json_raw_no_name<>>( jd );
-		  auto count =
-		    std::accumulate( tp_range.begin( ), tp_range.end( ), std::size_t{ 0 },
-		                     []( std::size_t c, auto jv ) {
-			                     return c += jv["body"].get_string_view( ).size( );
-		                     } );
+		  auto count = daw::algorithm::accumulate(
+		    tp_range.begin( ), tp_range.end( ), std::size_t{ 0 },
+		    []( std::size_t c, auto jv ) {
+			    return c += jv["body"].get_string_view( ).size( );
+		    } );
 		  return count;
 	  },
 	  jsonl_doc );
@@ -76,11 +77,11 @@ int main( int argc, char **argv ) {
 		    daw::json::json_lines_range<daw::json::json_raw_no_name<>,
 		                                daw::json::options::CheckedParseMode::no>(
 		      jd );
-		  auto count =
-		    std::accumulate( tp_range.begin( ), tp_range.end( ), std::size_t{ 0 },
-		                     []( std::size_t c, auto jv ) {
-			                     return c += jv["body"].get_string_view( ).size( );
-		                     } );
+		  auto count = daw::algorithm::accumulate(
+		    tp_range.begin( ), tp_range.end( ), std::size_t{ 0 },
+		    []( std::size_t c, auto jv ) {
+			    return c += jv["body"].get_string_view( ).size( );
+		    } );
 		  return count;
 	  },
 	  jsonl_doc );
@@ -91,11 +92,11 @@ int main( int argc, char **argv ) {
 	  DAW_NUM_RUNS, jsonl_doc.size( ), "json_lines typed checked",
 	  []( daw::string_view jd ) constexpr {
 		  auto tp_range = daw::json::json_lines_range<jsonl_entry>( jd );
-		  auto count =
-		    std::accumulate( tp_range.begin( ), tp_range.end( ), std::size_t{ 0 },
-		                     []( std::size_t c, jsonl_entry entry ) {
-			                     return c += entry.body.size( );
-		                     } );
+		  auto count = daw::algorithm::accumulate(
+		    tp_range.begin( ), tp_range.end( ), std::size_t{ 0 },
+		    []( std::size_t c, jsonl_entry entry ) {
+			    return c += entry.body.size( );
+		    } );
 		  return count;
 	  },
 	  jsonl_doc );
@@ -107,11 +108,11 @@ int main( int argc, char **argv ) {
 	  []( daw::string_view jd ) constexpr {
 		  auto tp_range = daw::json::json_lines_range<
 		    jsonl_entry, daw::json::options::CheckedParseMode::no>( jd );
-		  auto count =
-		    std::accumulate( tp_range.begin( ), tp_range.end( ), std::size_t{ 0 },
-		                     []( std::size_t c, jsonl_entry entry ) {
-			                     return c += entry.body.size( );
-		                     } );
+		  auto count = daw::algorithm::accumulate(
+		    tp_range.begin( ), tp_range.end( ), std::size_t{ 0 },
+		    []( std::size_t c, jsonl_entry entry ) {
+			    return c += entry.body.size( );
+		    } );
 		  return count;
 	  },
 	  jsonl_doc );
@@ -127,19 +128,19 @@ int main( int argc, char **argv ) {
 		  auto results = std::vector<std::future<std::size_t>>( );
 		  for( auto const &part : parts ) {
 			  results.push_back( std::async( std::launch::async, [&] {
-				  std::size_t count =
-				    std::accumulate( part.begin( ), part.end( ), std::size_t{ 0 },
-				                     []( std::size_t c, jsonl_entry entry ) {
-					                     return c += entry.body.size( );
-				                     } );
+				  std::size_t count = daw::algorithm::accumulate(
+				    part.begin( ), part.end( ), std::size_t{ 0 },
+				    []( std::size_t c, jsonl_entry entry ) {
+					    return c += entry.body.size( );
+				    } );
 				  return count;
 			  } ) );
 		  }
-		  std::size_t count =
-		    std::accumulate( std::begin( results ), std::end( results ),
-		                     std::size_t{ 0 }, []( auto lhs, auto &rhs ) {
-			                     return lhs + rhs.get( );
-		                     } );
+		  std::size_t count = daw::algorithm::accumulate(
+		    std::begin( results ), std::end( results ), std::size_t{ 0 },
+		    []( auto lhs, auto &rhs ) {
+			    return lhs + rhs.get( );
+		    } );
 		  return count;
 	  },
 	  chkpartitions );
@@ -156,19 +157,19 @@ int main( int argc, char **argv ) {
 		  auto results = std::vector<std::future<std::size_t>>( );
 		  for( auto const &part : parts ) {
 			  results.push_back( std::async( std::launch::async, [&] {
-				  std::size_t count =
-				    std::accumulate( part.begin( ), part.end( ), std::size_t{ 0 },
-				                     []( std::size_t c, jsonl_entry entry ) {
-					                     return c += entry.body.size( );
-				                     } );
+				  std::size_t count = daw::algorithm::accumulate(
+				    part.begin( ), part.end( ), std::size_t{ 0 },
+				    []( std::size_t c, jsonl_entry entry ) {
+					    return c += entry.body.size( );
+				    } );
 				  return count;
 			  } ) );
 		  }
-		  std::size_t count =
-		    std::accumulate( std::begin( results ), std::end( results ),
-		                     std::size_t{ 0 }, []( auto lhs, auto &rhs ) {
-			                     return lhs + rhs.get( );
-		                     } );
+		  std::size_t count = daw::algorithm::accumulate(
+		    std::begin( results ), std::end( results ), std::size_t{ 0 },
+		    []( auto lhs, auto &rhs ) {
+			    return lhs + rhs.get( );
+		    } );
 		  return count;
 	  },
 	  unchkpartitions );
