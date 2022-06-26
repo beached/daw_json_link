@@ -66,13 +66,13 @@ $(function() {
 <div class="title">Readable Values </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>A readable value is also called and option type or nullable type. This includes std::optional, std::unique_ptr, std::shared_ptr, and pointers. In order to use them without a custom Constructor type for each mapping, or in deduced situations (<code>json_link&lt;...&gt;</code>) they must be mapped via the <code>daw::readable_value_traits</code> type mapping.</p>
+<div class="textblock"><p>A nullable value is also called and option type or readable type. This includes std::optional, std::unique_ptr, std::shared_ptr, and pointers. In order to use them without a custom Constructor type for each mapping, or in deduced situations (<code>json_link&lt;...&gt;</code>) they must be mapped via the <code>daw::nullable_value_traits</code> type mapping.</p>
 <p>A specialization must have the following, assuming T is the specialized type(e.g <code>std::optional&lt;int&gt;</code>):</p><ul>
 <li><code>value_type</code> type alias to the inner type. e.g ( <code>std::optional&lt;U&gt;</code> -&gt; <code>U</code> )</li>
-<li><code>is_readable</code> A variable that must be <code>static constexpr bool is_readable = true</code> for readable types. If false it will mark the type <code>T</code> as not readable</li>
-<li><code>static value_type const &amp; read( T const &amp; )</code> A function that reads the value from the readable type and returns a const ref to it. A <code>value_type</code> return will work too</li>
-<li><code>T operator( )( daw::construct_readable_empty_t ) const</code> A member function that takes no args and returns an empty value.</li>
-<li><code>T operator( )( daw::construct_readable_value_t, Args... ) const</code> A member function that when passed appropriate args constructs a value. It should be SFINAE'able and constrain on valid arguments.</li>
+<li><code>is_nullable</code> A variable that must be <code>static constexpr bool is_nullable = true</code> for nullable types. If false it will mark the type <code>T</code> as not nullable</li>
+<li><code>static value_type const &amp; read( T const &amp; )</code> A function that reads the value from the nullable type and returns a const ref to it. A <code>value_type</code> return will work too</li>
+<li><code>T operator( )( daw::construct_nullable_with_empty_t ) const</code> A member function that takes no args and returns an empty value.</li>
+<li><code>T operator( )( daw::construct_nullable_with_value_t, Args... ) const</code> A member function that when passed appropriate args constructs a value. It should be SFINAE'able and constrain on valid arguments.</li>
 <li><code>static bool has_value( T const &amp; )</code> returns if the value is present or not. </li>
 </ul>
 </div></div><!-- contents -->

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['readable_5fvalue_2emd_373',['readable_value.md',['../readable__value_8md.html',1,'']]]
+  ['strings_2emd_374',['strings.md',['../strings_8md.html',1,'']]]
 ];

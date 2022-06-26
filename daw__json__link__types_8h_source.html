@@ -711,8 +711,8 @@ $(function() {
 <div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;          not std::is_same_v&lt;JsonMember, use_default&gt;,</div>
 <div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;          traits::identity&lt;JsonMember&gt;,</div>
 <div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;          std::conditional_t&lt;</div>
-<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;            concepts::is_readable_value_v&lt;T&gt;,</div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;            json_details::ident_trait&lt;concepts::readable_value_type_t, T&gt;,</div>
+<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;            concepts::is_nullable_value_v&lt;T&gt;,</div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;            json_details::ident_trait&lt;concepts::nullable_value_type_t, T&gt;,</div>
 <div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;            std::conditional&lt;json_details::has_op_star_v&lt;T&gt;,</div>
 <div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;                             json_details::unwrapped_t&lt;T&gt;, T&gt;&gt;&gt;<a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">::type</a>;</div>
 <div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160; </div>

@@ -82,7 +82,7 @@ $(function() {
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">version.h</a>&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../concepts/daw_readable_value.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../concepts/daw_nullable_value.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../daw_json_data_contract.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__default__constuctor_8h.html">daw_json_default_constuctor.h</a>&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__enums_8h.html">daw_json_enums.h</a>&quot;</span></div>
@@ -419,7 +419,7 @@ $(function() {
 <div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;        daw::is_detected_v&lt;json_details::tuple_test, T&gt;;</div>
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160; </div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;      <span class="keyword">using</span> unwrapped_t = concepts::readable_value_type_t&lt;T&gt;;</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;      <span class="keyword">using</span> unwrapped_t = concepts::nullable_value_type_t&lt;T&gt;;</div>
 <div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160; </div>
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;      <span class="keyword">using</span> mapped_type_t = <span class="keyword">typename</span> T::mapped_type;</div>

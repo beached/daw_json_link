@@ -650,12 +650,12 @@ $(function() {
 <div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;      <span class="keyword">struct </span>json_deduced_type_map&lt;</div>
 <div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;        T, <a class="code" href="namespacestd.html">std</a>::enable_if_t&lt;</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;             concepts::is_readable_value_v&lt;T&gt; and</div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;             concepts::is_nullable_value_v&lt;T&gt; and</div>
 <div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;             not has_json_data_contract_trait_v&lt;T&gt; and</div>
 <div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;             daw::is_detected_v&lt;json_deduced_type_map,</div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;                                concepts::readable_value_type_t&lt;T&gt;&gt;&gt;&gt; {</div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;                                concepts::nullable_value_type_t&lt;T&gt;&gt;&gt;&gt; {</div>
 <div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">bool</span> <a class="code" href="daw__json__parse__common_8h.html#a65c117169125289bccf9472ef0e5410a">is_null</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;        <span class="keyword">using</span> sub_type = concepts::readable_value_type_t&lt;T&gt;;</div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;        <span class="keyword">using</span> sub_type = concepts::nullable_value_type_t&lt;T&gt;;</div>
 <div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;        <span class="keyword">using</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> = json_deduced_type_map&lt;sub_type&gt;;</div>
 <div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;        <span class="keyword">static</span> constexpr JsonParseTypes <a class="code" href="daw__json__parse__common_8h.html#a8aca4624a7ee60c9edde8f8d9a262b69">parse_type</a> = <a class="code" href="daw__json__parse__common_8h.html#a8aca4624a7ee60c9edde8f8d9a262b69">type::parse_type</a>;</div>
 <div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">bool</span> <a class="code" href="daw__json__parse__common_8h.html#a80a7f638e36d8cdffa6d017951cd89ca">type_map_found</a> = <span class="keyword">true</span>;</div>
@@ -826,8 +826,8 @@ $(function() {
 <div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> constexpr( concepts::is_container_v&lt;T&gt; ) {</div>
 <div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;          <span class="keyword">using</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> = json_base::json_array&lt;typename T::value_type, T&gt;;</div>
 <div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;          <span class="keywordflow">return</span> daw::traits::identity&lt;type&gt;{ };</div>
-<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> constexpr( concepts::is_readable_value_v&lt;T&gt; ) {</div>
-<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;          <span class="keyword">using</span> value_type = concepts::readable_value_type_t&lt;T&gt;;</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> constexpr( concepts::is_nullable_value_v&lt;T&gt; ) {</div>
+<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;          <span class="keyword">using</span> value_type = concepts::nullable_value_type_t&lt;T&gt;;</div>
 <div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;          <span class="keyword">using</span> sub_type =</div>
 <div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;            <span class="keyword">typename</span> decltype( json_deduced_type_impl&lt;value_type&gt;( ) )::<a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a>;</div>
 <div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;          <span class="keyword">using</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> = json_base::json_nullable&lt;T, sub_type&gt;;</div>
@@ -913,8 +913,8 @@ $(function() {
 <div class="line"><a name="l00849"></a><span class="lineno">  849</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE constexpr <span class="keyword">auto</span></div>
 <div class="line"><a name="l00850"></a><span class="lineno">  850</span>&#160;      construct_nullable_empty( ) {</div>
 <div class="line"><a name="l00851"></a><span class="lineno">  851</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_invocable_v&lt;</div>
-<div class="line"><a name="l00852"></a><span class="lineno">  852</span>&#160;                        Constructor, concepts::construct_readable_empty_t&gt; ) {</div>
-<div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( concepts::construct_readable_empty );</div>
+<div class="line"><a name="l00852"></a><span class="lineno">  852</span>&#160;                        Constructor, concepts::construct_nullable_with_empty_t&gt; ) {</div>
+<div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( concepts::construct_nullable_with_empty );</div>
 <div class="line"><a name="l00854"></a><span class="lineno">  854</span>&#160;        } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00855"></a><span class="lineno">  855</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( );</div>
 <div class="line"><a name="l00856"></a><span class="lineno">  856</span>&#160;        }</div>

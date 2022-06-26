@@ -359,10 +359,10 @@ $(function() {
 <div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;        <span class="keyword">auto</span> <span class="keyword">const</span> construct_empty = [&amp;] {</div>
 <div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;          <span class="keywordflow">if</span> constexpr( std::is_invocable_v&lt;</div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;                          constructor_t,</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;                          concepts::construct_readable_empty_t&gt; ) {</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;                          concepts::construct_nullable_with_empty_t&gt; ) {</div>
 <div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;            <span class="keywordflow">return</span> construct_value(</div>
 <div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;              template_args&lt;typename JsonMember::wrapped_type, constructor_t&gt;,</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;              <a class="code" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, concepts::construct_readable_empty );</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;              <a class="code" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, concepts::construct_nullable_with_empty );</div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;          } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;            <span class="keywordflow">return</span> construct_value(</div>
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;              template_args&lt;typename JsonMember::wrapped_type, constructor_t&gt;,</div>

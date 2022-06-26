@@ -67,7 +67,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><code>daw::json::to_json</code> allows optional policy flags to control the output. The defaults are specified below under Format Policy Flags. All the enum's below are in the <code><a class="el" href="namespacedaw_1_1json_1_1options.html">daw::json::options</a></code> namespace</p>
-<h1><a class="anchor" id="autotoc_md71"></a>
+<h1><a class="anchor" id="autotoc_md72"></a>
 Example</h1>
 <p>The example below shows output with the defaults and with Pretty formatting enabled. To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_output_flags1_test.cpp">cookbook_output_flags1_test.cpp</a> </p><div class="fragment"><div class="line"><span class="keyword">struct </span>OutputFlags1 {</div>
 <div class="line">  std::string s;</div>
@@ -103,26 +103,26 @@ Example</h1>
 <div class="line">    3</div>
 <div class="line">  ]</div>
 <div class="line">}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md72"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md73"></a>
 Format Policy Flags</h1>
-<h2><a class="anchor" id="autotoc_md73"></a>
+<h2><a class="anchor" id="autotoc_md74"></a>
 &lt;tt&gt;SerializationFormat&lt;/tt&gt;</h2>
 <p>Enable or disable formatted output</p>
-<h3><a class="anchor" id="autotoc_md74"></a>
+<h3><a class="anchor" id="autotoc_md75"></a>
 Values</h3>
 <ul>
 <li><code>Minified</code> - Output the minimal JSON document</li>
 <li><code>Pretty</code> - Use newlines and indentation to format JSON document</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md75"></a>
+<h3><a class="anchor" id="autotoc_md76"></a>
 Default</h3>
 <ul>
 <li><code>Minified</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md76"></a>
+<h2><a class="anchor" id="autotoc_md77"></a>
 &lt;tt&gt;IndentationType&lt;/tt&gt;</h2>
 <p>Control how the file is indented</p>
-<h3><a class="anchor" id="autotoc_md77"></a>
+<h3><a class="anchor" id="autotoc_md78"></a>
 Values</h3>
 <ul>
 <li><code>Tab</code> - use tab character for indentation</li>
@@ -134,29 +134,29 @@ Values</h3>
 <li><code>Space8</code> - Indent 8 spaces</li>
 <li><code>Space10</code> - Indent 10 spaces :) <a href="https://youtu.be/SsoOG6ZeyUI">https://youtu.be/SsoOG6ZeyUI</a></li>
 </ul>
-<h3><a class="anchor" id="autotoc_md78"></a>
+<h3><a class="anchor" id="autotoc_md79"></a>
 Default</h3>
 <ul>
 <li><code>Space2</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md79"></a>
+<h2><a class="anchor" id="autotoc_md80"></a>
 &lt;tt&gt;RestrictedStringOutput&lt;/tt&gt;</h2>
 <p>Allow for a JSON document that is ASCII only and each byte has a value &lt;= 0x7F</p>
-<h3><a class="anchor" id="autotoc_md80"></a>
+<h3><a class="anchor" id="autotoc_md81"></a>
 Values</h3>
 <ul>
 <li><code>None</code> - Do not restrict to 7bit ASCII</li>
 <li><code>OnlyAllow7bitStrings</code> - Restrict all string member values and all member names to 7bits, escaping all values &gt;= 0x7F.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md81"></a>
+<h3><a class="anchor" id="autotoc_md82"></a>
 Default</h3>
 <ul>
 <li><code>None</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md82"></a>
+<h2><a class="anchor" id="autotoc_md83"></a>
 &lt;tt&gt;NewLineDelimiter&lt;/tt&gt;</h2>
 <p>Change how newlines are delimited</p>
-<h3><a class="anchor" id="autotoc_md83"></a>
+<h3><a class="anchor" id="autotoc_md84"></a>
 Values</h3>
 <ul>
 <li><code>n</code> - Use <br  />
@@ -164,21 +164,21 @@ Values</h3>
 <li><code>rn</code> - Use \r<br  />
  to delimit newlines</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md84"></a>
+<h3><a class="anchor" id="autotoc_md85"></a>
 Default</h3>
 <ul>
 <li><code>n</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md85"></a>
+<h2><a class="anchor" id="autotoc_md86"></a>
 &lt;tt&gt;OutputTrailingComma&lt;/tt&gt;</h2>
 <p>With arrays/classes output optionally output a trailing comma</p>
-<h3><a class="anchor" id="autotoc_md86"></a>
+<h3><a class="anchor" id="autotoc_md87"></a>
 Values</h3>
 <ul>
 <li><code>No</code> - Do not output trailing comma's. This is conformant</li>
 <li><code>Yes</code> - Add non-conformant trailing commas to array elements and class members</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md87"></a>
+<h3><a class="anchor" id="autotoc_md88"></a>
 Default</h3>
 <ul>
 <li><code>No</code> </li>

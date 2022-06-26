@@ -290,14 +290,14 @@ $(function() {
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr std::pair&lt;ParseState, bool&gt;</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;      find_class_member( ParseState &amp;<a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>,</div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;                         locations_info_t&lt;N, CharT, B&gt; &amp;locations,</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;                         <span class="keywordtype">bool</span> is_nullable, daw::string_view member_name ) {</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;                         <span class="keywordtype">bool</span> <a class="code" href="daw__nullable__value_8h.html#a76a1745f653d986c6c5d0776fd43b812">is_nullable</a>, daw::string_view member_name ) {</div>
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160; </div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        <span class="comment">// silencing gcc9 warning as these are selectively used</span></div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        (void)is_nullable;</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        (void)<a class="code" href="daw__nullable__value_8h.html#a76a1745f653d986c6c5d0776fd43b812">is_nullable</a>;</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        (void)member_name;</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160; </div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;          nsc_or( is_nullable, ( not locations[pos].missing( ) ),</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;          nsc_or( <a class="code" href="daw__nullable__value_8h.html#a76a1745f653d986c6c5d0776fd43b812">is_nullable</a>, ( not locations[pos].missing( ) ),</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;                  ( not <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.is_closing_brace_checked( ) ) ),</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;          missing_member( member_name ), <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
 <div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160; </div>
@@ -398,6 +398,7 @@ $(function() {
 <div class="ttc" id="adaw__json__location__info_8h_html_a3bc6b182ef52a099be02e6d2116afc48"><div class="ttname"><a href="daw__json__location__info_8h.html#a3bc6b182ef52a099be02e6d2116afc48">AllMembersMustExist</a></div><div class="ttdeci">AllMembersMustExist</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__location__info_8h_source.html#l00214">daw_json_location_info.h:214</a></div></div>
 <div class="ttc" id="adaw__json__location__info_8h_html_a37e1e1f76fc8b76400ea9c6595c760ab"><div class="ttname"><a href="daw__json__location__info_8h.html#a37e1e1f76fc8b76400ea9c6595c760ab">last</a></div><div class="ttdeci">CharT * last</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__location__info_8h_source.html#l00043">daw_json_location_info.h:43</a></div></div>
 <div class="ttc" id="adaw__json__location__info_8h_html_a7008aeb23a3652d34ec0f124443616c5"><div class="ttname"><a href="daw__json__location__info_8h.html#a7008aeb23a3652d34ec0f124443616c5">first</a></div><div class="ttdeci">CharT * first</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__location__info_8h_source.html#l00042">daw_json_location_info.h:42</a></div></div>
+<div class="ttc" id="adaw__nullable__value_8h_html_a76a1745f653d986c6c5d0776fd43b812"><div class="ttname"><a href="daw__nullable__value_8h.html#a76a1745f653d986c6c5d0776fd43b812">is_nullable</a></div><div class="ttdeci">static constexpr bool is_nullable</div><div class="ttdef"><b>Definition:</b> <a href="daw__nullable__value_8h_source.html#l00192">daw_nullable_value.h:192</a></div></div>
 <div class="ttc" id="adaw__json__location__info_8h_html_ab559089020e7dfe081b180c5930ed9e0"><div class="ttname"><a href="daw__json__location__info_8h.html#ab559089020e7dfe081b180c5930ed9e0">names</a></div><div class="ttdeci">value_type names[MemberCount]</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__location__info_8h_source.html#l00116">daw_json_location_info.h:116</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
