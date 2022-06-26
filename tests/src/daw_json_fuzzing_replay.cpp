@@ -154,13 +154,13 @@ extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
 		  json_doc );
 		switch( jv.type( ) ) {
 		case daw::json::JsonBaseParseTypes::Number:
-			ofile << as<double>( jv );
+			ofile << jv.template as<double>( );
 			break;
 		case daw::json::JsonBaseParseTypes::Bool:
-			ofile << as<bool>( jv );
+			ofile << jv.template as<bool>( );
 			break;
 		case daw::json::JsonBaseParseTypes::String:
-			ofile << as<std::string>( jv );
+			ofile << jv.template as<std::string>( );
 			break;
 		case daw::json::JsonBaseParseTypes::Class:
 			minify( json_doc, std::ostreambuf_iterator<char>( ofile ) );
