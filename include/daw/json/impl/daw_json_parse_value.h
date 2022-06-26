@@ -287,10 +287,10 @@ namespace daw::json {
 				auto const construct_empty = [&] {
 					if constexpr( std::is_invocable_v<
 					                constructor_t,
-					                concepts::construct_readable_empty_t> ) {
+					                concepts::construct_nullable_with_empty_t> ) {
 						return construct_value(
 						  template_args<typename JsonMember::wrapped_type, constructor_t>,
-						  parse_state, concepts::construct_readable_empty );
+						  parse_state, concepts::construct_nullable_with_empty );
 					} else {
 						return construct_value(
 						  template_args<typename JsonMember::wrapped_type, constructor_t>,

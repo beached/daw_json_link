@@ -777,8 +777,8 @@ namespace daw::json {
 				  not std::is_same_v<JsonMember, use_default>,
 				  traits::identity<JsonMember>,
 				  std::conditional_t<
-				    concepts::is_readable_value_v<T>,
-				    json_details::ident_trait<concepts::readable_value_type_t, T>,
+				    concepts::is_nullable_value_v<T>,
+				    json_details::ident_trait<concepts::nullable_value_type_t, T>,
 				    std::conditional<json_details::has_op_star_v<T>,
 				                     json_details::unwrapped_t<T>, T>>>::type;
 

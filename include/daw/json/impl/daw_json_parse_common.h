@@ -584,12 +584,12 @@ namespace daw::json {
 			template<typename T>
 			struct json_deduced_type_map<
 			  T, std::enable_if_t<
-			       concepts::is_readable_value_v<T> and
+			       concepts::is_nullable_value_v<T> and
 			       not has_json_data_contract_trait_v<T> and
 			       daw::is_detected_v<json_deduced_type_map,
-			                          concepts::readable_value_type_t<T>>>> {
+			                          concepts::nullable_value_type_t<T>>>> {
 				static constexpr bool is_null = true;
-				using sub_type = concepts::readable_value_type_t<T>;
+				using sub_type = concepts::nullable_value_type_t<T>;
 				using type = json_deduced_type_map<sub_type>;
 				static constexpr JsonParseTypes parse_type = type::parse_type;
 				static constexpr bool type_map_found = true;
@@ -762,8 +762,8 @@ namespace daw::json {
 				} else if constexpr( concepts::is_container_v<T> ) {
 					using type = json_base::json_array<typename T::value_type, T>;
 					return daw::traits::identity<type>{ };
-				} else if constexpr( concepts::is_readable_value_v<T> ) {
-					using value_type = concepts::readable_value_type_t<T>;
+				} else if constexpr( concepts::is_nullable_value_v<T> ) {
+					using value_type = concepts::nullable_value_type_t<T>;
 					using sub_type =
 					  typename decltype( json_deduced_type_impl<value_type>( ) )::type;
 					using type = json_base::json_nullable<T, sub_type>;
@@ -849,8 +849,8 @@ Constructor{ }( std::declval<typename Members::parse_to_t &&>( )... ) );*/
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
 			construct_nullable_empty( ) {
 				if constexpr( std::is_invocable_v<
-				                Constructor, concepts::construct_readable_empty_t> ) {
-					return Constructor{ }( concepts::construct_readable_empty );
+				                Constructor, concepts::construct_nullable_with_empty_t> ) {
+					return Constructor{ }( concepts::construct_nullable_with_empty );
 				} else {
 					return Constructor{ }( );
 				}

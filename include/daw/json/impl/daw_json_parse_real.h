@@ -95,6 +95,11 @@ namespace daw::json {
 					    ( fract_first ? fract_last - fract_first : 0 ) ) >
 					  max_storage_digits::value );
 				} else {
+					// avoid -Wunused-but-set-parameter in gcc warnings
+					(void)whole_first;
+					(void)whole_last;
+					(void)fract_first;
+					(void)fract_last;
 					return false;
 				}
 			}
