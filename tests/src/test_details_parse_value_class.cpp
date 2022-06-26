@@ -41,8 +41,7 @@ namespace daw::json {
 	struct json_data_contract<daw::Empty> {
 		using type = json_member_list<>;
 
-		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::Empty const & ) {
+		[[nodiscard]] static inline auto to_json_data( daw::Empty const & ) {
 			return std::tuple<>( );
 		}
 	};

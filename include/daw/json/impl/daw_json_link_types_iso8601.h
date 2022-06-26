@@ -23,7 +23,7 @@ namespace daw::json {
 			using result_type = std::chrono::time_point<std::chrono::system_clock,
 			                                            std::chrono::milliseconds>;
 
-			[[maybe_unused, nodiscard]] inline constexpr result_type
+			[[nodiscard]] inline constexpr result_type
 			operator( )( char const *ptr, std::size_t sz ) const {
 				return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
 			}

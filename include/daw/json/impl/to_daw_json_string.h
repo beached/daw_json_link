@@ -52,8 +52,8 @@ namespace daw::json {
 			// Need to use ADL to_string in unevaluated contexts.  Limiting to it's
 			// own namespace
 			template<typename T>
-			[[nodiscard, maybe_unused]] constexpr auto
-			to_string( std::optional<T> const &v ) -> decltype( to_string( *v ) ) {
+			[[nodiscard]] constexpr auto to_string( std::optional<T> const &v )
+			  -> decltype( to_string( *v ) ) {
 				if( not has_value( v ) ) {
 					return { "null" };
 				}
@@ -62,7 +62,7 @@ namespace daw::json {
 
 			namespace to_string_test {
 				template<typename T>
-				[[maybe_unused]] auto to_string_test( T &&v )
+				auto to_string_test( T &&v )
 				  -> decltype( to_string( DAW_FWD2( T, v ) ) );
 
 				template<typename T>
@@ -1192,13 +1192,13 @@ namespace daw::json {
 			}
 
 			template<typename Key, typename Value>
-			[[maybe_unused]] inline constexpr Key const &
+			inline constexpr Key const &
 			json_get_key( std::pair<Key, Value> const &kv ) {
 				return kv.first;
 			}
 
 			template<typename Key, typename Value>
-			[[maybe_unused]] inline constexpr Value const &
+			inline constexpr Value const &
 			json_get_value( std::pair<Key, Value> const &kv ) {
 				return kv.second;
 			}

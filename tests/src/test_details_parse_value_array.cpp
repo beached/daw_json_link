@@ -61,7 +61,7 @@ namespace daw::json {
 	};
 
 	template<typename... Members>
-	[[nodiscard, maybe_unused]] static inline auto const &
+	[[nodiscard]] static inline auto const &
 	to_json_data( InlineClass<Members...> const &value ) {
 		return value.members;
 	}

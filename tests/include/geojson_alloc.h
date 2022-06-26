@@ -59,7 +59,7 @@ namespace daw::json {
 	struct json_data_contract<daw::geojson::Point> {
 		using type = json_tuple_member_list<double, double>;
 
-		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
+		[[nodiscard]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Point const &p ) {
 			return std::forward_as_tuple( p.x, p.y );
 		}
@@ -73,7 +73,7 @@ namespace daw::json {
 		static constexpr char const name[] = "name";
 		using type = json_member_list<json_string_raw<name, std::string_view>>;
 #endif
-		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
+		[[nodiscard]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Property const &value ) {
 			return std::forward_as_tuple( value.name );
 		}
@@ -98,7 +98,7 @@ namespace daw::json {
 		    daw::geojson::Vector<daw::geojson::Vector<daw::geojson::Point>>>>;
 #endif
 
-		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
+		[[nodiscard]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Polygon const &value ) {
 			return std::forward_as_tuple( value.type, value.coordinates );
 		}
@@ -120,7 +120,7 @@ namespace daw::json {
 		                   json_class<properties, daw::geojson::Property>,
 		                   json_class<geometry, daw::geojson::Polygon>>;
 #endif
-		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
+		[[nodiscard]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Feature const &value ) {
 			return std::forward_as_tuple( value.type, value.properties,
 			                              value.geometry );
@@ -142,7 +142,7 @@ namespace daw::json {
 		                   json_array<features, daw::geojson::Feature,
 		                              daw::geojson::Vector<daw::geojson::Feature>>>;
 #endif
-		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
+		[[nodiscard]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::FeatureCollection const &value ) {
 			return std::forward_as_tuple( value.type, value.features );
 		}

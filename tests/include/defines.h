@@ -27,7 +27,7 @@
 #endif
 
 template<typename StringView>
-DAW_ATTRIB_NOINLINE void daw_ensure_error( StringView && msg ) {
+DAW_ATTRIB_NOINLINE void daw_ensure_error( StringView &&msg ) {
 	std::cerr << msg << std::endl << std::flush;
 	std::terminate( );
 }

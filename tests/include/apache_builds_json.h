@@ -27,7 +27,7 @@ namespace daw::json {
 		                              json_link<url, std::string_view>,
 		                              json_link<color, std::string_view>>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( apache_builds::jobs_t const &value ) {
 			return std::forward_as_tuple( value.name, value.url, value.color );
 		}
@@ -41,7 +41,7 @@ namespace daw::json {
 		using type = json_member_list<json_link<name, std::string_view>,
 		                              json_link<url, std::string_view>>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( apache_builds::views_t const &value ) {
 			return std::forward_as_tuple( value.name, value.url );
 		}
@@ -73,7 +73,7 @@ namespace daw::json {
 		  json_link<useCrumbs, bool>, json_link<useSecurity, bool>,
 		  json_link<views, std::vector<apache_builds::views_t>>>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( apache_builds::apache_builds const &value ) {
 			return std::forward_as_tuple(
 			  value.mode, value.nodeDescription, value.nodeName, value.numExecutors,

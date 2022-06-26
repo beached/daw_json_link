@@ -193,7 +193,7 @@ namespace daw::json {
 			// appender
 			template<bool AllowHighEight, typename JsonMember, bool KnownBounds,
 			         typename ParseState>
-			[[nodiscard, maybe_unused]] constexpr auto // json_result<JsonMember>
+			[[nodiscard]] constexpr auto // json_result<JsonMember>
 			parse_string_known_stdstring( ParseState &parse_state ) {
 				using string_type = json_base_type<JsonMember>;
 				string_type result =

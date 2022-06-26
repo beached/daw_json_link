@@ -27,8 +27,7 @@ namespace daw::json {
 				 * the string can be escaped too
 				 */
 				template<typename ParseState>
-				[[maybe_unused]] static constexpr void
-				trim_end_of_name( ParseState &parse_state ) {
+				static constexpr void trim_end_of_name( ParseState &parse_state ) {
 					parse_state.trim_left( );
 					// TODO: should we check for end
 					daw_json_assert_weak( parse_state.front_checked( ) == ':',
@@ -38,7 +37,7 @@ namespace daw::json {
 				}
 
 				template<typename ParseState>
-				[[nodiscard, maybe_unused]] DAW_ATTRIB_INLINE constexpr daw::string_view
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr daw::string_view
 				parse_nq( ParseState &parse_state ) {
 					if constexpr( ParseState::allow_escaped_names( ) ) {
 						auto r = skip_string_nq( parse_state );

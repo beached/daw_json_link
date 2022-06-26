@@ -38,7 +38,7 @@ namespace daw::json {
 		  json_array<subTopicIds, std::int64_t, daw::citm::Vector<std::int64_t>>,
 		  json_array<topicIds, std::int64_t, daw::citm::Vector<std::int64_t>>>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::events_value_t const &value ) {
 			return std::forward_as_tuple( value.id, value.logo, value.name,
 			                              value.subTopicIds, value.topicIds );
@@ -56,7 +56,7 @@ namespace daw::json {
 		                   json_number<audienceSubCategoryId, std::int64_t>,
 		                   json_number<seatCategoryId, std::int64_t>>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::prices_element_t const &value ) {
 			return std::forward_as_tuple( value.amount, value.audienceSubCategoryId,
 			                              value.seatCategoryId );
@@ -68,7 +68,7 @@ namespace daw::json {
 		static inline constexpr char const areaId[] = "areaId";
 		using type = json_member_list<json_number<areaId, std::int64_t>>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::areas_element_t const &value ) {
 			return std::forward_as_tuple( value.areaId );
 		}
@@ -82,7 +82,7 @@ namespace daw::json {
 		  json_array<areas, daw::citm::areas_element_t,
 		             daw::citm::Vector<daw::citm::areas_element_t>>,
 		  json_number<seatCategoryId, std::int64_t>>;
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::seatCategories_element_t const &value ) {
 			return std::forward_as_tuple( value.areas, value.seatCategoryId );
 		}
@@ -107,7 +107,7 @@ namespace daw::json {
 		  json_number<start, std::int64_t>,
 		  json_string_raw<venueCode, std::string_view>>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::performances_element_t const &value ) {
 			return std::forward_as_tuple( value.eventId, value.id, value.logo,
 			                              value.prices, value.seatCategories,
@@ -121,7 +121,7 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_string_raw<PLEYEL_PLEYEL, std::string_view>>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::venueNames_t const &value ) {
 			return std::forward_as_tuple( value.pleyel_pleyel );
 		}
@@ -176,7 +176,7 @@ namespace daw::json {
 		    daw::citm::Vector<std::int64_t>, std::string_view>,
 		  json_class_null<venueNames, std::optional<daw::citm::venueNames_t>>>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::citm_object_t const &value ) {
 			return std::forward_as_tuple(
 			  value.areaNames, value.audienceSubCategoryNames, value.events,

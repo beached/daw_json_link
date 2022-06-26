@@ -45,7 +45,7 @@ namespace daw::json {
 				CharT *class_last = nullptr;
 				std::size_t counter = 0;
 
-				[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
+				[[nodiscard]] inline constexpr bool missing( ) const {
 					return first == nullptr;
 				}
 
@@ -75,7 +75,7 @@ namespace daw::json {
 				CharT *class_last = nullptr;
 				std::size_t counter = 0;
 
-				[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
+				[[nodiscard]] inline constexpr bool missing( ) const {
 					return first == nullptr;
 				}
 
