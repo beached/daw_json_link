@@ -22,6 +22,6 @@ namespace daw::json {
 The data for this mapping could look like "12345/56789"
 
 The
-file [cookbook_aliases1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_aliases1_test.cpp)
+file [cookbook_aliases1_test.cpp](../../tests/src/cookbook_aliases1_test.cpp)
 shows an example share a type `MyClass` has a single member of type `std::string` that is serialized and deserialized as
 a string.

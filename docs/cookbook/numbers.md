@@ -1,8 +1,9 @@
 # Numbers
 
-There is direct support for numbers in JSON of the form `integer`[.`fraction`][e`exponent`] .  Often we know the number we are parsing is more limited in form such as an unsigned integer, a signed integer, or a real number.
+There is direct support for numbers in JSON of the form `integer`[.`fraction`][e`exponent`] . Often we know the number we are parsing is more limited in form such as an unsigned integer, a signed integer, or a real number.
 
 ## Default, full parsing of JSON numbers (eg real numbers).
+
 ```json
 {
   "member0": 1.23,
@@ -11,10 +12,12 @@ There is direct support for numbers in JSON of the form `integer`[.`fraction`][e
   "member3": 3e3
 }
 ```
+
 The above JSON object has 4 members, each of which are numbers.
 
 Below is the C++ data structure and trait to map the structure to the JSON object.
-To see a working example using this code, refer to [cookbook_numbers1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_numbers1_test.cpp) 
+To see a working example using this code, refer to [cookbook_numbers1_test.cpp](../../tests/src/cookbook_numbers1_test.cpp)
+
 ```c++
 struct MyClass1 {
   double member0;
@@ -44,6 +47,7 @@ namespace daw::json {
 ```
 
 ## Specific numeric type parsing
+
 The parser supports parsing to specific types such as int32_t and uin64_t with range checking, if possible.
 
 ```json
@@ -52,10 +56,12 @@ The parser supports parsing to specific types such as int32_t and uin64_t with r
   "member_signed": -12345
 }
 ```
+
 The above JSON object has 2 members, both numbers but one is expected to always be an unsigned, the other a signed integer
 
 Below is the C++ data structure and trait to map the structure to the JSON object.
-To see a working example using this code, refer to [cookbook_numbers2_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_numbers2_test.cpp) 
+To see a working example using this code, refer to [cookbook_numbers2_test.cpp](../../tests/src/cookbook_numbers2_test.cpp)
+
 ```c++
 struct MyClass2 {
   unsigned member_unsigned;
@@ -80,20 +86,23 @@ namespace daw::json {
 ```
 
 ## Big Numbers, Rationals, ...
-The parser supports parsing big numbers that model arithmetic types directly.  However, some types have built in serialization/deserialization and that is often more efficient.
 
-The json_type_alias lets us parse as if it was another json type.  Often this is json_string via std::string, but there is no restriction on it.  The result is passed to the constructor of the type being mapped.
+The parser supports parsing big numbers that model arithmetic types directly. However, some types have built in serialization/deserialization and that is often more efficient.
+
+The json_type_alias lets us parse as if it was another json type. Often this is json_string via std::string, but there is no restriction on it. The result is passed to the constructor of the type being mapped.
 
 For instance, if we have an array of large numbers we want to parse to boost::multiprecision::cpp_dec_float_100,
+
 ```json
 [
-	"54326789013892014531903492543267890138920145319034925432678901389201", 
-	"7890138920145319034925432678907890138920145319034925432678901903492543267890"
+  "54326789013892014531903492543267890138920145319034925432678901389201",
+  "7890138920145319034925432678907890138920145319034925432678901903492543267890"
 ]
 ```
 
-To see a working example using this code, refer to [cookbook_numbers3_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_numbers3_test.cpp)
+To see a working example using this code, refer to [cookbook_numbers3_test.cpp](../../tests/src/cookbook_numbers3_test.cpp)
 The following code will map any boost multiprecision number to/from JSON strings.
+
 ```c++
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
