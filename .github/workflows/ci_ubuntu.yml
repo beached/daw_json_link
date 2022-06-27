@@ -33,6 +33,9 @@ jobs:
           - toolset: clang++-8
             cpp_version: 20
           - toolset: clang++-9
+            cpp_version: 17
+            build_type: Debug
+          - toolset: clang++-9
             cpp_version: 20
           - toolset: clang++-10
             cpp_version: 20
