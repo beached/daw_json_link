@@ -76,7 +76,8 @@ Default, full parsing of JSON numbers (eg real numbers).</h1>
 <div class="line">  &quot;member3&quot;: 3e3</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The above JSON object has 4 members, each of which are numbers.</p>
-<p>Below is the C++ data structure and trait to map the structure to the JSON object. To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_numbers1_test.cpp">cookbook_numbers1_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
+<p>Below is the C++ data structure and trait to map the structure to the JSON object. To see a working example using this code, refer to <a href="../../tests/src/cookbook_numbers1_test.cpp">cookbook_numbers1_test.cpp</a></p>
+<div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyClass1 {</div>
 <div class="line">  double member0;</div>
 <div class="line">  double member1;</div>
@@ -110,7 +111,8 @@ Specific numeric type parsing</h1>
 <div class="line">  &quot;member_signed&quot;: -12345</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The above JSON object has 2 members, both numbers but one is expected to always be an unsigned, the other a signed integer</p>
-<p>Below is the C++ data structure and trait to map the structure to the JSON object. To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_numbers2_test.cpp">cookbook_numbers2_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
+<p>Below is the C++ data structure and trait to map the structure to the JSON object. To see a working example using this code, refer to <a href="../../tests/src/cookbook_numbers2_test.cpp">cookbook_numbers2_test.cpp</a></p>
+<div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyClass2 {</div>
 <div class="line">  unsigned member_unsigned;</div>
 <div class="line">  signed member_signed;</div>
@@ -135,11 +137,13 @@ Specific numeric type parsing</h1>
 Big Numbers, Rationals, ...</h1>
 <p>The parser supports parsing big numbers that model arithmetic types directly. However, some types have built in serialization/deserialization and that is often more efficient.</p>
 <p>The json_type_alias lets us parse as if it was another json type. Often this is json_string via std::string, but there is no restriction on it. The result is passed to the constructor of the type being mapped.</p>
-<p>For instance, if we have an array of large numbers we want to parse to boost::multiprecision::cpp_dec_float_100, </p><div class="fragment"><div class="line">[</div>
-<div class="line">  &quot;54326789013892014531903492543267890138920145319034925432678901389201&quot;, </div>
+<p>For instance, if we have an array of large numbers we want to parse to boost::multiprecision::cpp_dec_float_100,</p>
+<div class="fragment"><div class="line">[</div>
+<div class="line">  &quot;54326789013892014531903492543267890138920145319034925432678901389201&quot;,</div>
 <div class="line">  &quot;7890138920145319034925432678907890138920145319034925432678901903492543267890&quot;</div>
 <div class="line">]</div>
-</div><!-- fragment --><p>To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_numbers3_test.cpp">cookbook_numbers3_test.cpp</a> The following code will map any boost multiprecision number to/from JSON strings. </p><div class="fragment"><div class="line"> {c++}</div>
+</div><!-- fragment --><p>To see a working example using this code, refer to <a href="../../tests/src/cookbook_numbers3_test.cpp">cookbook_numbers3_test.cpp</a> The following code will map any boost multiprecision number to/from JSON strings.</p>
+<div class="fragment"><div class="line"> {c++}</div>
 <div class="line">#include &lt;boost/multiprecision/cpp_dec_float.hpp&gt;</div>
 <div class="line"> </div>
 <div class="line">namespace daw::json {</div>

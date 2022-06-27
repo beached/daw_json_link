@@ -1,31 +1,40 @@
 # Array's
-Parsing arrays is common and it is a fundamental data structure in JSON.  It can be both the root object or a member.
+
+Parsing arrays is common and it is a fundamental data structure in JSON. It can be both the root object or a member.
 
 ## Simple Array of int
+
 ```json
-[1,2,3,4,5]
+[
+  1,
+  2,
+  3,
+  4,
+  5
+]
 ```
+
 The above JSON document contains an array of integers as the root object.
 
-
 The C++ to parse this could look like
+
 ```c++
 std::vector<int> vec = from_json_array<int>( json_str );
 ```
-To see a working example of the following, refer to [cookbook_array1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_array1_test.cpp) 
-The previous is a simple example, had the element type of the array been more complicated, such as a class, a data mapping would be required.
 
+To see a working example of the following, refer to [cookbook_array1_test.cpp](../../tests/src/cookbook_array1_test.cpp)
+The previous is a simple example, had the element type of the array been more complicated, such as a class, a data mapping would be required.
 
 ## Array of a class
 
 ```json
 [
   {
-    "a": "Hello World", 
-    "b": 1234, 
-    "c": 1.23, 
+    "a": "Hello World",
+    "b": 1234,
+    "c": 1.23,
     "d": false
-  }, 
+  },
   {
     "a": "Goodbye World",
     "b": 4321,
@@ -38,7 +47,7 @@ The previous is a simple example, had the element type of the array been more co
 Here we hae a JSON array containing a class with members of type string, unsigned, float, and boolean.
 
 The C++ data structures and the mapping could look like the following
-To see a working example using this code, refer to [cookbook_array2_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_array2_test.cpp)
+To see a working example using this code, refer to [cookbook_array2_test.cpp](../../tests/src/cookbook_array2_test.cpp)
 
 ```c++
 struct MyClass4 {
@@ -70,20 +79,32 @@ namespace daw::json {
 
 std::vector<MyClass4> v = from_json_array<MyClass4>( str );
 ```
+
 The above would construct MyClass4 with arguments of types `std::string, unsigned, float, bool`
 
 ## Array's as members
+
 Use the `json_array` member type in the member list to describe a member that is an array type.
 
-To see a working example using this code, refer to [cookbook_array3_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_array3_test.cpp) 
+To see a working example using this code, refer to [cookbook_array3_test.cpp](../../tests/src/cookbook_array3_test.cpp)
 
 ```json
 {
   "member0": 5,
-  "member1": [ 1,2,3,4,5 ],
-  "member2": [ "hello", "world" ]
+  "member1": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "member2": [
+    "hello",
+    "world"
+  ]
 }
 ```
+
 The above JSON document, has an object root, with int, array of int, and an array of string members
 
 The C++ data structures could look like the following
@@ -97,6 +118,7 @@ struct MyArrayClass1 {
 ```
 
 The `json_data_contract` specialization as follows
+
 ```c++
 namespace daw::json {
   template<>
@@ -118,4 +140,5 @@ namespace daw::json {
 ```
 
 ### Pointer like arrays
-For dealing with pointer like arrays(T *, has element_type type alias) see [int_ptr_test](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/int_ptr_test.cpp)
+
+For dealing with pointer like arrays(T *, has element_type type alias) see [int_ptr_test](../../tests/src/int_ptr_test.cpp)

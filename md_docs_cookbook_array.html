@@ -69,20 +69,27 @@ $(function() {
 <div class="textblock"><p>Parsing arrays is common and it is a fundamental data structure in JSON. It can be both the root object or a member.</p>
 <h1><a class="anchor" id="autotoc_md4"></a>
 Simple Array of int</h1>
-<div class="fragment"><div class="line">[1,2,3,4,5]</div>
+<div class="fragment"><div class="line">[</div>
+<div class="line">  1,</div>
+<div class="line">  2,</div>
+<div class="line">  3,</div>
+<div class="line">  4,</div>
+<div class="line">  5</div>
+<div class="line">]</div>
 </div><!-- fragment --><p>The above JSON document contains an array of integers as the root object.</p>
-<p>The C++ to parse this could look like </p><div class="fragment"><div class="line"> {c++}</div>
+<p>The C++ to parse this could look like</p>
+<div class="fragment"><div class="line"> {c++}</div>
 <div class="line">std::vector&lt;int&gt; vec = from_json_array&lt;int&gt;( json_str );</div>
-</div><!-- fragment --><p>To see a working example of the following, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_array1_test.cpp">cookbook_array1_test.cpp</a> The previous is a simple example, had the element type of the array been more complicated, such as a class, a data mapping would be required.</p>
+</div><!-- fragment --><p>To see a working example of the following, refer to <a href="../../tests/src/cookbook_array1_test.cpp">cookbook_array1_test.cpp</a> The previous is a simple example, had the element type of the array been more complicated, such as a class, a data mapping would be required.</p>
 <h1><a class="anchor" id="autotoc_md5"></a>
 Array of a class</h1>
 <div class="fragment"><div class="line">[</div>
 <div class="line">  {</div>
-<div class="line">    &quot;a&quot;: &quot;Hello World&quot;, </div>
-<div class="line">    &quot;b&quot;: 1234, </div>
-<div class="line">    &quot;c&quot;: 1.23, </div>
+<div class="line">    &quot;a&quot;: &quot;Hello World&quot;,</div>
+<div class="line">    &quot;b&quot;: 1234,</div>
+<div class="line">    &quot;c&quot;: 1.23,</div>
 <div class="line">    &quot;d&quot;: false</div>
-<div class="line">  }, </div>
+<div class="line">  },</div>
 <div class="line">  {</div>
 <div class="line">    &quot;a&quot;: &quot;Goodbye World&quot;,</div>
 <div class="line">    &quot;b&quot;: 4321,</div>
@@ -91,7 +98,7 @@ Array of a class</h1>
 <div class="line">  }</div>
 <div class="line">]</div>
 </div><!-- fragment --><p>Here we hae a JSON array containing a class with members of type string, unsigned, float, and boolean.</p>
-<p>The C++ data structures and the mapping could look like the following To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_array2_test.cpp">cookbook_array2_test.cpp</a></p>
+<p>The C++ data structures and the mapping could look like the following To see a working example using this code, refer to <a href="../../tests/src/cookbook_array2_test.cpp">cookbook_array2_test.cpp</a></p>
 <div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyClass4 {</div>
 <div class="line">  std::string a;</div>
@@ -125,11 +132,20 @@ Array of a class</h1>
 <h1><a class="anchor" id="autotoc_md6"></a>
 Array's as members</h1>
 <p>Use the <code>json_array</code> member type in the member list to describe a member that is an array type.</p>
-<p>To see a working example using this code, refer to <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_array3_test.cpp">cookbook_array3_test.cpp</a></p>
+<p>To see a working example using this code, refer to <a href="../../tests/src/cookbook_array3_test.cpp">cookbook_array3_test.cpp</a></p>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;member0&quot;: 5,</div>
-<div class="line">  &quot;member1&quot;: [ 1,2,3,4,5 ],</div>
-<div class="line">  &quot;member2&quot;: [ &quot;hello&quot;, &quot;world&quot; ]</div>
+<div class="line">  &quot;member1&quot;: [</div>
+<div class="line">    1,</div>
+<div class="line">    2,</div>
+<div class="line">    3,</div>
+<div class="line">    4,</div>
+<div class="line">    5</div>
+<div class="line">  ],</div>
+<div class="line">  &quot;member2&quot;: [</div>
+<div class="line">    &quot;hello&quot;,</div>
+<div class="line">    &quot;world&quot;</div>
+<div class="line">  ]</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The above JSON document, has an object root, with int, array of int, and an array of string members</p>
 <p>The C++ data structures could look like the following</p>
@@ -139,7 +155,8 @@ Array's as members</h1>
 <div class="line">  std::vector&lt;int&gt; member1;</div>
 <div class="line">  std::vector&lt;std::string&gt; member2;</div>
 <div class="line">};</div>
-</div><!-- fragment --><p>The <code>json_data_contract</code> specialization as follows </p><div class="fragment"><div class="line"> {c++}</div>
+</div><!-- fragment --><p>The <code>json_data_contract</code> specialization as follows</p>
+<div class="fragment"><div class="line"> {c++}</div>
 <div class="line">namespace daw::json {</div>
 <div class="line">  template&lt;&gt;</div>
 <div class="line">  struct json_data_contract&lt;MyArrayClass1&gt; {</div>
@@ -159,7 +176,7 @@ Array's as members</h1>
 <div class="line">}</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md7"></a>
 Pointer like arrays</h2>
-<p>For dealing with pointer like arrays(T *, has element_type type alias) see <a href="https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/int_ptr_test.cpp">int_ptr_test</a> </p>
+<p>For dealing with pointer like arrays(T *, has element_type type alias) see <a href="../../tests/src/int_ptr_test.cpp">int_ptr_test</a> </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
