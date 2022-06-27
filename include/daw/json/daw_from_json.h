@@ -435,7 +435,7 @@ namespace daw::json {
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
 			auto const old_parse_state = value.get_raw_state( );
-			
+
 			auto jv = basic_json_value(
 			  ParsePolicy( old_parse_state.first, old_parse_state.last,
 			               old_parse_state.class_first, old_parse_state.class_last,

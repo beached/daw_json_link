@@ -87,7 +87,7 @@ jobs:
         run: |
           echo "CC=$(echo clang-${{ env.DAW_CLANG_VER }})" >> $GITHUB_ENV
           echo "CXX=$(echo clang++-${{ env.DAW_CLANG_VER }})" >> $GITHUB_ENV
-          echo "CXXFLAGS='-stdlib=libc++'" >> $GITHUB_ENV
+          echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV
           echo "UBSAN_OPTIONS='halt_on_errors=1'" >> $GITHUB_ENV
       - name: Install Clang Environment
         if: startsWith( matrix.toolset, 'clang' )
