@@ -16,7 +16,7 @@ JSON. However, numbers and other literals are able to be encoded as strings.
 }
 ```
 
-Too see a working example using this code, refer to [cookbook_kv1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_kv1_test.cpp)
+Too see a working example using this code, refer to [cookbook_kv1_test.cpp](../../tests/src/cookbook_kv1_test.cpp)
 Below the JSON object is mapped to a `std::unordered_map<std::string, int>`
 
 ```c++
@@ -63,7 +63,7 @@ The above JSON document an array member named `"kv"` whose element is an object 
 values named `"value"`.
 
 Below it is mapped to a `std::unorderd_map<intmax_t, std::string>`
-Too see a working example using this code, refer to [cookbook_kv2_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_kv2_test.cpp)
+Too see a working example using this code, refer to [cookbook_kv2_test.cpp](../../tests/src/cookbook_kv2_test.cpp)
 
 ```c++
 struct MyKeyValue2 {
@@ -99,7 +99,7 @@ It is possible to parse/serialize Multimap likes types. A JSON document, such as
 When mapped to a C++ class, it will parse the first `"firstName"` it finds, skipping the rest. To parse this as
 a `json_key_value`, the following code will work if it is a submember of the root, or subsequent submember's.
 
-Too see a working example using this code, refer to [cookbook_kv3_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_kv3_test.cpp)
+Too see a working example using this code, refer to [cookbook_kv3_test.cpp](../../tests/src/cookbook_kv3_test.cpp)
 
 ```c++
 struct MyKeyValue3 {
@@ -134,7 +134,7 @@ If the root object has duplicate keys, one needs to use the `json_value` interfa
 }
 ```
 
-Too see a working example using this code, refer to [cookbook_kv4_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_kv4_test.cpp)
+Too see a working example using this code, refer to [cookbook_kv4_test.cpp](../../tests/src/cookbook_kv4_test.cpp)
 
 ```c++
 std::string_view json_data = ...;

@@ -1,15 +1,19 @@
 ### Classes from array's
 
-Sometimes the members of a class are encoded as a JSON array.  GeoJSON is an example of this.  
+Sometimes the members of a class are encoded as a JSON array. GeoJSON is an example of this.
 
 ```json
-[ 34.3434, 134.3434 ]
+[
+  34.3434,
+  134.3434
+]
 ```
 
 The above is the encoding of a Point in GeoJSON.
-Too see a working example using this code, refer to [cookbook_class_from_array1_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_class_from_array1_test.cpp) 
+Too see a working example using this code, refer to [cookbook_class_from_array1_test.cpp](../../tests/src/cookbook_class_from_array1_test.cpp)
 
-Below is a `Point` structure with two double members.  The mapping uses a `json_ordered_member_list` and can accept unnamed member items.  Below describes a mapping to an array's first and second elements.  Any subsequent members are ignored.
+Below is a `Point` structure with two double members. The mapping uses a `json_ordered_member_list` and can accept unnamed member items. Below describes a mapping to an array's first and second elements. Any subsequent members are ignored.
+
 ```c++
 struct Point {
 	double x;
@@ -28,7 +32,7 @@ namespace daw::json {
 }
 ```
 
-Sometimes the members to extract are not contiguous and a specific index into the array is requried.  For this a member can be wrapped in a `ordered_json_member<size_t, JsonMember>` type. 
+Sometimes the members to extract are not contiguous and a specific index into the array is requried. For this a member can be wrapped in a `ordered_json_member<size_t, JsonMember>` type.
 
 ```json
 [
@@ -54,9 +58,9 @@ Sometimes the members to extract are not contiguous and a specific index into th
 ]
 ```
 
-With the previous `Point` struct, the mapping here will be to parse the first element as a double, and the sixth element as a double. 
+With the previous `Point` struct, the mapping here will be to parse the first element as a double, and the sixth element as a double.
 
-Too see a working example using this code, refer to [cookbook_class_from_array2_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/cookbook_class_from_array2_test.cpp) 
+Too see a working example using this code, refer to [cookbook_class_from_array2_test.cpp](../../tests/src/cookbook_class_from_array2_test.cpp)
 
 ```c++
 struct Point {

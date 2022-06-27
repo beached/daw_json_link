@@ -1,9 +1,10 @@
 # JSON Lines Support
 
-[JSON Lines](https://jsonlines.org/) is in the form of an iterator `daw::json::json_lines_iterator` and a range `daw::json::json_lines_range` like object. They allow iteration over each lines in the JSON Lines file. 
+[JSON Lines](https://jsonlines.org/) is in the form of an iterator `daw::json::json_lines_iterator` and a range `daw::json::json_lines_range` like object. They allow iteration over each lines in the JSON Lines file.
 
 ## Parsing JSON Lines
-A working example can be seen at [json_lines_test.cpp](https://raw.githubusercontent.com/beached/daw_json_link/release/tests/src/json_lines_test.cpp)
+
+A working example can be seen at [json_lines_test.cpp](../../tests/src/json_lines_test.cpp)
 
 ```json lines
 {
