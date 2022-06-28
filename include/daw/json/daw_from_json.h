@@ -385,9 +385,11 @@ namespace daw::json {
 			using ParsePolicy = typename BasicParsePolicy<
 			  P, Allocator>::template SetPolicyOptions<PolicyFlags...>;
 
-			auto const json_data = value.get_string_view( );
+			auto const old_parse_state = value.get_raw_state( );
 			auto parse_state =
-			  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) );
+			  ParsePolicy( old_parse_state.first, old_parse_state.last,
+			               old_parse_state.class_first, old_parse_state.class_last,
+			               old_parse_state.get_allocator( ) );
 
 			return json_details::parse_value<json_member, KnownBounds>(
 			  parse_state, ParseTag<json_member::expected_type>{ } );
@@ -432,10 +434,13 @@ namespace daw::json {
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
-			auto json_data = value.get_state( );
+			auto const old_parse_state = value.get_raw_state( );
 
 			auto jv = basic_json_value(
-			  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) ) );
+			  ParsePolicy( old_parse_state.first, old_parse_state.last,
+			               old_parse_state.class_first, old_parse_state.class_last,
+			               old_parse_state.get_allocator( ) ) );
+
 			jv = jv.find_member( member_path );
 
 			if constexpr( json_details::is_json_nullable_v<json_member> ) {
