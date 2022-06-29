@@ -91,11 +91,11 @@ $(function() {
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">namespace </span>utils {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> WriteableType&gt;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      <span class="keyword">inline</span> constexpr WriteableType output_kv( WriteableType <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>,</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      <span class="keyword">inline</span> constexpr WriteableType output_kv( WriteableType it,</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                                                std::string_view key,</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                                                std::string_view <a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a> ) {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>.write( key, <span class="stringliteral">&quot;:&quot;</span>, <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>.space, <a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a> );</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                                                std::string_view value ) {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        it.write( key, <span class="stringliteral">&quot;:&quot;</span>, it.space, value );</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keywordflow">return</span> it;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      }</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    } <span class="comment">// namespace utils</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
@@ -126,7 +126,7 @@ $(function() {
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                              WriteableType out_it ) {</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="comment">// TODO allow a trait to describe the valid literal types or if it</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="comment">// matches one of the other predefined types</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        static_assert( <a class="code" href="daw__json__link__types_8h.html#a71d76baa52e7382048436c143095f351">JsonMember::custom_json_type</a> ==</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        static_assert( JsonMember::custom_json_type ==</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                       options::JsonCustomTypes::String );</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">if</span> constexpr( not is_root ) {</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;          out_it.put( <span class="charliteral">&#39;{&#39;</span> );</div>
@@ -403,7 +403,7 @@ $(function() {
 <div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;            seen[Idx] = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;          }</div>
 <div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160; </div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;          out_it.write( <span class="stringliteral">&quot;\&quot;&quot;</span>, <a class="code" href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">JsonMember::name</a>, <span class="stringliteral">&quot;\&quot;:&quot;</span>, out_it.space );</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;          out_it.write( <span class="stringliteral">&quot;\&quot;&quot;</span>, JsonMember::name, <span class="stringliteral">&quot;\&quot;:&quot;</span>, out_it.space );</div>
 <div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;          out_it = to_json_schema&lt;JsonMember&gt;(</div>
 <div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;            ParseTag&lt;JsonMember::expected_type&gt;{ }, out_it );</div>
 <div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;          <span class="keywordflow">if</span> constexpr( Idx + 1 &lt; <span class="keyword">sizeof</span>...( JsonMembers ) ) {</div>
@@ -433,7 +433,7 @@ $(function() {
 <div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;            }</div>
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;            out_it.next_member( );</div>
 <div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;            out_it.put( <span class="charliteral">&#39;&quot;&#39;</span> );</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;            out_it = utils::copy_to_iterator( out_it, <a class="code" href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">JsonMember::name</a> );</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;            out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a7b52c72b6b57d18deaee3dc4a517d942">utils::copy_to_iterator</a>( out_it, JsonMember::name );</div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;            out_it.put( <span class="charliteral">&#39;&quot;&#39;</span> );</div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;          }</div>
 <div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
@@ -449,10 +449,10 @@ $(function() {
 <div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;              is_first = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;            }</div>
 <div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;            out_it.next_member( );</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;            out_it.write( <span class="stringliteral">&quot;\&quot;&quot;</span>, <a class="code" href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">JsonMember::name</a>, <span class="stringliteral">&quot;\&quot;:&quot;</span>, out_it.space, <span class="stringliteral">&quot;[&quot;</span> );</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;            out_it.write( <span class="stringliteral">&quot;\&quot;&quot;</span>, JsonMember::name, <span class="stringliteral">&quot;\&quot;:&quot;</span>, out_it.space, <span class="stringliteral">&quot;[&quot;</span> );</div>
 <div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;            out_it.add_indent( );</div>
 <div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;            out_it.next_member( );</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;            out_it.write( <span class="stringliteral">&quot;\&quot;&quot;</span>, <a class="code" href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">dependent_member_t&lt;JsonMember&gt;::name</a>, <span class="stringliteral">&quot;\&quot;&quot;</span> );</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;            out_it.write( <span class="stringliteral">&quot;\&quot;&quot;</span>, dependent_member_t&lt;JsonMember&gt;::name, <span class="stringliteral">&quot;\&quot;&quot;</span> );</div>
 <div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;            out_it.del_indent( );</div>
 <div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;            out_it.next_member( );</div>
 <div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;            out_it.put( <span class="charliteral">&#39;]&#39;</span> );</div>
@@ -488,7 +488,7 @@ $(function() {
 <div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;          out_it.put( <span class="charliteral">&#39;]&#39;</span> );</div>
 <div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160; </div>
 <div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;          static_assert(</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;            not( ( <a class="code" href="daw__json__link__types_8h.html#aaf740e0725ca73b87b3540738b8e0b5e">json_link_no_name&lt;JsonMembers&gt;::expected_type</a> ==</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;            not( ( json_link_no_name&lt;JsonMembers&gt;::expected_type ==</div>
 <div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;                   JsonParseTypes::VariantTagged ) or</div>
 <div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;                 ... ),</div>
 <div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;            <span class="stringliteral">&quot;A tagged variant is not supported in a tuple/ordered json &quot;</span></div>
@@ -546,7 +546,7 @@ $(function() {
 <div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;      }</div>
 <div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160; </div>
 <div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;      <span class="keyword">namespace </span>json_details {</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Tuple, <span class="keywordtype">bool</span> is_root, <span class="keyword">typename</span> WritableType,</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b">Tuple</a>, <span class="keywordtype">bool</span> is_root, <span class="keyword">typename</span> WritableType,</div>
 <div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;                 std::size_t... Is&gt;</div>
 <div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;        constexpr WritableType</div>
 <div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;        to_json_tuple_schema( WritableType out_it,</div>
@@ -569,7 +569,7 @@ $(function() {
 <div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;                is_first = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;              }</div>
 <div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;              out_it.next_member( );</div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;              <span class="keyword">static</span> constexpr std::size_t index = decltype( Idx )::<a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a>;</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;              <span class="keyword">static</span> constexpr std::size_t index = decltype( Idx )::value;</div>
 <div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;              <span class="keyword">using</span> pack_element = tuple_elements_pack&lt;Tuple&gt;;</div>
 <div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;              <span class="keyword">using</span> JsonMember = json_deduced_type&lt;</div>
 <div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;                <span class="keyword">typename</span> pack_element::template element_t&lt;index&gt;&gt;;</div>
@@ -806,22 +806,22 @@ $(function() {
 <div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160; </div>
 <div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> WritableType, <span class="keyword">auto</span>... PolicyFlags&gt;</div>
 <div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;    constexpr WritableType to_json_schema(</div>
-<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;      WritableType <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>, std::string_view <span class="keywordtype">id</span>, std::string_view title,</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;      WritableType it, std::string_view <span class="keywordtype">id</span>, std::string_view title,</div>
 <div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;      options::output_flags_t&lt;PolicyFlags...&gt; = options::output_flags&lt;&gt; ) {</div>
 <div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160; </div>
 <div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;      <span class="keyword">auto</span> out_it = [&amp;] {</div>
 <div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;        <span class="keywordflow">if</span> constexpr( is_serialization_policy_v&lt;WritableType&gt; ) {</div>
 <div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;          <span class="keywordflow">if</span> constexpr( <span class="keyword">sizeof</span>...( PolicyFlags ) == 0 ) {</div>
-<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>;</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;            <span class="keywordflow">return</span> it;</div>
 <div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;          } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;            <span class="keywordflow">return</span> serialization_policy&lt;<span class="keyword">typename</span> WritableType::iterator_type,</div>
 <div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;                                        json_details::serialization::set_bits(</div>
 <div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;                                          WritableType::policy_flags( ),</div>
-<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;                                          PolicyFlags... )&gt;( <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>.get( ) );</div>
+<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;                                          PolicyFlags... )&gt;( it.get( ) );</div>
 <div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;          }</div>
 <div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;        } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;          <span class="keywordflow">return</span> serialization_policy&lt;</div>
-<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;            WritableType, options::output_flags_t&lt;PolicyFlags...&gt;<a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">::value</a>&gt;( <a class="code" href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a> );</div>
+<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;            WritableType, options::output_flags_t&lt;PolicyFlags...&gt;::value&gt;( it );</div>
 <div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;        }</div>
 <div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;      }( );</div>
 <div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;      out_it.put( <span class="charliteral">&#39;{&#39;</span> );</div>
@@ -832,12 +832,12 @@ $(function() {
 <div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;<span class="stringliteral">        R</span><span class="stringliteral">&quot;(&quot;https://json-schema.org/draft/2020-12/schema&quot;,)&quot; );</span></div>
 <div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;<span class="stringliteral">      out_it.next_member( );</span></div>
 <div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;<span class="stringliteral">      out_it = utils::output_kv( out_it, R</span><span class="stringliteral">&quot;(&quot;$id&quot;)&quot;, </span><span class="stringliteral">&quot;\&quot;&quot;</span> );</div>
-<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;      out_it = utils::copy_to_iterator( out_it, <span class="keywordtype">id</span> );</div>
-<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;      out_it = utils::copy_to_iterator( out_it, R<span class="stringliteral">&quot;(&quot;,)&quot; );</span></div>
+<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;      out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a7b52c72b6b57d18deaee3dc4a517d942">utils::copy_to_iterator</a>( out_it, <span class="keywordtype">id</span> );</div>
+<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;      out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a7b52c72b6b57d18deaee3dc4a517d942">utils::copy_to_iterator</a>( out_it, R<span class="stringliteral">&quot;(&quot;,)&quot; );</span></div>
 <div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;<span class="stringliteral">      out_it.next_member( );</span></div>
 <div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;<span class="stringliteral">      out_it = utils::output_kv( out_it, R</span><span class="stringliteral">&quot;(&quot;title&quot;)&quot;, </span><span class="stringliteral">&quot;\&quot;&quot;</span> );</div>
-<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;      out_it = utils::copy_to_iterator( out_it, title );</div>
-<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;      out_it = utils::copy_to_iterator( out_it, R<span class="stringliteral">&quot;(&quot;,)&quot; );</span></div>
+<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;      out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a7b52c72b6b57d18deaee3dc4a517d942">utils::copy_to_iterator</a>( out_it, title );</div>
+<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;      out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a7b52c72b6b57d18deaee3dc4a517d942">utils::copy_to_iterator</a>( out_it, R<span class="stringliteral">&quot;(&quot;,)&quot; );</span></div>
 <div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;<span class="stringliteral">      </span><span class="keyword">using</span> json_type = json_link_no_name&lt;T&gt;;</div>
 <div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;      out_it = json_details::to_json_schema&lt;json_type, true&gt;(</div>
 <div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;        ParseTag&lt;json_type::expected_type&gt;{ }, out_it );</div>
@@ -860,16 +860,13 @@ $(function() {
 <div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="adaw__json__link__types_8h_html_a71d76baa52e7382048436c143095f351"><div class="ttname"><a href="daw__json__link__types_8h.html#a71d76baa52e7382048436c143095f351">custom_json_type</a></div><div class="ttdeci">static constexpr options::JsonCustomTypes custom_json_type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__link__types_8h_source.html#l01143">daw_json_link_types.h:1143</a></div></div>
-<div class="ttc" id="adaw__json__default__constuctor_8h_html_ac431630602ea95459f51fee16fcd02ab"><div class="ttname"><a href="daw__json__default__constuctor_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a></div><div class="ttdeci">Iterator &amp; it</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__default__constuctor_8h_source.html#l00046">daw_json_default_constuctor.h:46</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
-<div class="ttc" id="adaw__json__event__parser_8h_html_af3874c625cee7edbb7e82023085f86c7"><div class="ttname"><a href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a></div><div class="ttdeci">json_parse_handler_result value</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00032">daw_json_event_parser.h:32</a></div></div>
-<div class="ttc" id="adaw__json__link__types_8h_html_aa1e5e6189406b825e4e001d65f35c210"><div class="ttname"><a href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">name</a></div><div class="ttdeci">static constexpr daw::string_view name</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__link__types_8h_source.html#l00469">daw_json_link_types.h:469</a></div></div>
 <div class="ttc" id="ato__daw__json__string_8h_html"><div class="ttname"><a href="to__daw__json__string_8h.html">to_daw_json_string.h</a></div></div>
 <div class="ttc" id="adaw__json__link__types_8h_html"><div class="ttname"><a href="daw__json__link__types_8h.html">daw_json_link_types.h</a></div></div>
 <div class="ttc" id="adaw__json__serialize__policy_8h_html"><div class="ttname"><a href="daw__json__serialize__policy_8h.html">daw_json_serialize_policy.h</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b">daw::json::anonymous_namespace{daw_json_enums.h}::JsonParseTypes::Tuple</a></div><div class="ttdeci">@ Tuple</div><div class="ttdoc">A variant type where the Switcher is based on a submember of the class being parsed.</div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00017">version.h:17</a></div></div>
-<div class="ttc" id="adaw__json__link__types_8h_html_aaf740e0725ca73b87b3540738b8e0b5e"><div class="ttname"><a href="daw__json__link__types_8h.html#aaf740e0725ca73b87b3540738b8e0b5e">expected_type</a></div><div class="ttdeci">static constexpr JsonParseTypes expected_type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__link__types_8h_source.html#l00428">daw_json_link_types.h:428</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_a7b52c72b6b57d18deaee3dc4a517d942"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a7b52c72b6b57d18deaee3dc4a517d942">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::copy_to_iterator</a></div><div class="ttdeci">constexpr WritableType copy_to_iterator(WritableType it, Container const &amp;container)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00392">to_daw_json_string.h:392</a></div></div>
 <div class="ttc" id="adaw__to__json__fwd_8h_html"><div class="ttname"><a href="daw__to__json__fwd_8h.html">daw_to_json_fwd.h</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

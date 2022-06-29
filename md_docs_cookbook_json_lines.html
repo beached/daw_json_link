@@ -66,7 +66,7 @@ $(function() {
 <div class="title">JSON Lines Support </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a href="https://jsonlines.org/">JSON Lines</a> is in the form of an iterator <code>daw::json::json_lines_iterator</code> and a range <code>daw::json::json_lines_range</code> like object. They allow iteration over each lines in the JSON Lines file.</p>
+<div class="textblock"><p><a href="https://jsonlines.org/">JSON Lines</a> is in the form of an iterator <code><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html" title="Iterator for iterating over JSON array&#39;s.">daw::json::json_lines_iterator</a></code> and a range <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__range.html" title="A range of json_lines_iterators.">daw::json::json_lines_range</a></code> like object. They allow iteration over each lines in the JSON Lines file.</p>
 <h1><a class="anchor" id="autotoc_md26"></a>
 Parsing JSON Lines</h1>
 <p>A working example can be seen at <a href="../../tests/src/json_lines_test.cpp">json_lines_test.cpp</a></p>
@@ -89,12 +89,12 @@ Parsing JSON Lines</h1>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;Element&gt; {</div>
 <div class="line">    <span class="keyword">static</span> constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> a[] = <span class="stringliteral">&quot;a&quot;</span>;</div>
 <div class="line">    <span class="keyword">static</span> constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> b[] = <span class="stringliteral">&quot;b&quot;</span>;</div>
-<div class="line">    <span class="keyword">using</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> = json_member_list&lt;json_link&lt;a, int&gt;, json_link&lt;b, bool&gt;&gt;;</div>
+<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;json_link&lt;a, int&gt;, json_link&lt;b, bool&gt;&gt;;</div>
 <div class="line">  };</div>
 <div class="line">} <span class="comment">// namespace daw::json</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">  <span class="keyword">auto</span> jl_range = daw::json::json_lines_range&lt;Element&gt;( json_lines_doc );</div>
+<div class="line">  <span class="keyword">auto</span> jl_range = <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__range.html">daw::json::json_lines_range&lt;Element&gt;</a>( json_lines_doc );</div>
 <div class="line">  <span class="keywordflow">for</span>( Element e : jl_range ) {</div>
 <div class="line">    std::cout &lt;&lt; e.a &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; e.b &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line">  }  </div>
@@ -105,13 +105,15 @@ Serializing to JSON Lines</h1>
 <div class="fragment"><div class="line">std::vector&lt;Element&gt; elements = get_element_vector( );</div>
 <div class="line"><span class="keyword">auto</span> result = std::string( );</div>
 <div class="line"><span class="keywordflow">for</span>( <span class="keyword">auto</span> <span class="keyword">const</span> &amp; e : elements ) {</div>
-<div class="line">  daw::json::to_json( e, result );</div>
+<div class="line">  <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a859449aeea134506b34eaeeca6e9c42a">daw::json::to_json</a>( e, result );</div>
 <div class="line">  result += <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line">}</div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
-<div class="ttc" id="adaw__json__event__parser_8h_html_a32f1e0329a2cea27fc6478b5d4de3609"><div class="ttname"><a href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a></div><div class="ttdeci">StackParseStateType type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00319">daw_json_event_parser.h:319</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a859449aeea134506b34eaeeca6e9c42a"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a859449aeea134506b34eaeeca6e9c42a">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">constexpr daw::rvalue_to_value_t&lt; WritableType &gt; to_json(Value const &amp;value, WritableType &amp;&amp;it, options::output_flags_t&lt; PolicyFlags... &gt;)</div><div class="ttdef"><b>Definition:</b> <a href="daw__to__json_8h_source.html#l00035">daw_to_json.h:35</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__range_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__range.html">daw::json::anonymous_namespace{daw_json_lines_iterator.h}::json_lines_range</a></div><div class="ttdoc">A range of json_lines_iterators.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__lines__iterator_8h_source.html#l00207">daw_json_lines_iterator.h:207</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__data__contract_8h_source.html#l00037">daw_json_data_contract.h:37</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -66,10 +66,11 @@ $(function() {
 <div class="title">Output Options </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><code>daw::json::to_json</code> allows optional policy flags to control the output. The defaults are specified below under Format Policy Flags. All the enum's below are in the <code><a class="el" href="namespacedaw_1_1json_1_1options.html">daw::json::options</a></code> namespace</p>
+<div class="textblock"><p><code><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a859449aeea134506b34eaeeca6e9c42a">daw::json::to_json</a></code> allows optional policy flags to control the output. The defaults are specified below under Format Policy Flags. All the enum's below are in the <code>daw::json::options</code> namespace</p>
 <h1><a class="anchor" id="autotoc_md72"></a>
 Example</h1>
-<p>The example below shows output with the defaults and with Pretty formatting enabled. To see a working example using this code, refer to <a href="../../tests/src/cookbook_output_flags1_test.cpp">cookbook_output_flags1_test.cpp</a> </p><div class="fragment"><div class="line"><span class="keyword">struct </span>OutputFlags1 {</div>
+<p>The example below shows output with the defaults and with Pretty formatting enabled. To see a working example using this code, refer to <a href="../../tests/src/cookbook_output_flags1_test.cpp">cookbook_output_flags1_test.cpp</a></p>
+<div class="fragment"><div class="line"><span class="keyword">struct </span>OutputFlags1 {</div>
 <div class="line">  std::string s;</div>
 <div class="line">  std::vector&lt;int&gt; ary;</div>
 <div class="line">};</div>
@@ -79,7 +80,7 @@ Example</h1>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;OutputFlags1&gt; {</div>
 <div class="line">    <span class="keyword">static</span> constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> s[] = <span class="stringliteral">&quot;s&quot;</span>;</div>
 <div class="line">    <span class="keyword">static</span> constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> ary[] = <span class="stringliteral">&quot;ary&quot;</span>;</div>
-<div class="line">    <span class="keyword">using</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> = json_member_list&lt;json_string&lt;s&gt;, json_array&lt;ary, int&gt;&gt;;</div>
+<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;json_string&lt;s&gt;, json_array&lt;ary, int&gt;&gt;;</div>
 <div class="line"> </div>
 <div class="line">    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">auto</span> to_json_data( OutputFlags1 <span class="keyword">const</span> &amp;v ) {</div>
 <div class="line">      <span class="keywordflow">return</span> std::forward_as_tuple( v.s, v.ary );</div>
@@ -88,10 +89,10 @@ Example</h1>
 <div class="line">} <span class="comment">// namespace daw::json</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">  <span class="keyword">using namespace </span><a class="code" href="namespacedaw_1_1json_1_1options.html">daw::json::options</a>;</div>
+<div class="line">  <span class="keyword">using namespace </span>daw::json::options;</div>
 <div class="line">  <span class="keyword">auto</span> <span class="keyword">const</span> v = OutputFlags1{ <span class="stringliteral">&quot;Hello&quot;</span>, { 1, 2, 3 } };</div>
-<div class="line">  puts( daw::json::to_json( v ).c_str( ) );</div>
-<div class="line">  puts( daw::json::to_json( v, output_flags&lt;SerializationFormat::Pretty&gt; ).c_str( ) );</div>
+<div class="line">  puts( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a859449aeea134506b34eaeeca6e9c42a">daw::json::to_json</a>( v ).c_str( ) );</div>
+<div class="line">  puts( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a859449aeea134506b34eaeeca6e9c42a">daw::json::to_json</a>( v, output_flags&lt;SerializationFormat::Pretty&gt; ).c_str( ) );</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;s&quot;:&quot;Hello&quot;,&quot;ary&quot;:[1,2,3]}</div>
@@ -159,10 +160,8 @@ Default</h3>
 <h3><a class="anchor" id="autotoc_md84"></a>
 Values</h3>
 <ul>
-<li><code>n</code> - Use <br  />
- to delimit newlines</li>
-<li><code>rn</code> - Use \r<br  />
- to delimit newlines</li>
+<li><code>n</code> - Use <code>\n</code> to delimit newlines</li>
+<li><code>rn</code> - Use <code>\r\n</code> to delimit newlines</li>
 </ul>
 <h3><a class="anchor" id="autotoc_md85"></a>
 Default</h3>
@@ -186,8 +185,8 @@ Default</h3>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
-<div class="ttc" id="adaw__json__event__parser_8h_html_a32f1e0329a2cea27fc6478b5d4de3609"><div class="ttname"><a href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a></div><div class="ttdeci">StackParseStateType type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00319">daw_json_event_parser.h:319</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1options_html"><div class="ttname"><a href="namespacedaw_1_1json_1_1options.html">daw::json::options</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__options_8h_source.html#l00015">daw_json_parse_options.h:15</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a859449aeea134506b34eaeeca6e9c42a"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a859449aeea134506b34eaeeca6e9c42a">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">constexpr daw::rvalue_to_value_t&lt; WritableType &gt; to_json(Value const &amp;value, WritableType &amp;&amp;it, options::output_flags_t&lt; PolicyFlags... &gt;)</div><div class="ttdef"><b>Definition:</b> <a href="daw__to__json_8h_source.html#l00035">daw_to_json.h:35</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__data__contract_8h_source.html#l00037">daw_json_data_contract.h:37</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

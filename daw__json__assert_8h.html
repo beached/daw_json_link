@@ -69,6 +69,7 @@ $(function() {
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_assert.h File Reference</div>  </div>
@@ -99,6 +100,8 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
 <tr class="memdesc:namespacedaw_1_1json"><td class="mdescLeft">&#160;</td><td class="mdescRight">Customization point traits. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html">daw::json::anonymous_namespace{daw_json_assert.h}</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
@@ -108,6 +111,27 @@ Macros</h2></td></tr>
 <tr class="memitem:aa08d5b456f511ea5d387f849f8764643"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>(Bool, ...)</td></tr>
 <tr class="memdesc:aa08d5b456f511ea5d387f849f8764643"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure that Bool is true. If false pass rest of args to daw_json_error.  <a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">More...</a><br /></td></tr>
 <tr class="separator:aa08d5b456f511ea5d387f849f8764643"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ad0e7ccd3da29b09e03c1268784c51a0d"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
+<tr class="memitem:ad0e7ccd3da29b09e03c1268784c51a0d"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#ad0e7ccd3da29b09e03c1268784c51a0d">daw::json::anonymous_namespace{daw_json_assert.h}::daw_json_error</a> (ErrorReason reason)</td></tr>
+<tr class="separator:ad0e7ccd3da29b09e03c1268784c51a0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b7e1aab0e75ec687b4f3757879dc8df"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState &gt; </td></tr>
+<tr class="memitem:a8b7e1aab0e75ec687b4f3757879dc8df"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#a8b7e1aab0e75ec687b4f3757879dc8df">daw::json::anonymous_namespace{daw_json_assert.h}::daw_json_error</a> (ErrorReason reason, ParseState const &amp;location)</td></tr>
+<tr class="separator:a8b7e1aab0e75ec687b4f3757879dc8df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a308086fc9f30a7e3409fe0bf20dd8203"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
+<tr class="memitem:a308086fc9f30a7e3409fe0bf20dd8203"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#a308086fc9f30a7e3409fe0bf20dd8203">daw::json::anonymous_namespace{daw_json_assert.h}::daw_json_error</a> (json_details::missing_member reason)</td></tr>
+<tr class="separator:a308086fc9f30a7e3409fe0bf20dd8203"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4eac5916ccbdab50d33a019b276271f"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState &gt; </td></tr>
+<tr class="memitem:ad4eac5916ccbdab50d33a019b276271f"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#ad4eac5916ccbdab50d33a019b276271f">daw::json::anonymous_namespace{daw_json_assert.h}::daw_json_error</a> (json_details::missing_member reason, ParseState const &amp;location)</td></tr>
+<tr class="separator:ad4eac5916ccbdab50d33a019b276271f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9679edcb71d947cf0b05428590b48e3c"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
+<tr class="memitem:a9679edcb71d947cf0b05428590b48e3c"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#a9679edcb71d947cf0b05428590b48e3c">daw::json::anonymous_namespace{daw_json_assert.h}::daw_json_error</a> (json_details::missing_token reason)</td></tr>
+<tr class="separator:a9679edcb71d947cf0b05428590b48e3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a753cc0ebb4c7cc9df80af8beb8f2892f"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState &gt; </td></tr>
+<tr class="memitem:a753cc0ebb4c7cc9df80af8beb8f2892f"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#a753cc0ebb4c7cc9df80af8beb8f2892f">daw::json::anonymous_namespace{daw_json_assert.h}::daw_json_error</a> (json_details::missing_token reason, ParseState const &amp;location)</td></tr>
+<tr class="separator:a753cc0ebb4c7cc9df80af8beb8f2892f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -141,7 +165,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">do</span> {                                                   \</div>
-<div class="line">    if constexpr( not <a class="code" href="daw__json__parse__policy_8h.html#a8401ec63728e898ca0780973704f1ac2">ParseState::is_unchecked_input</a> ) { \</div>
+<div class="line">    if constexpr( not ParseState::is_unchecked_input ) { \</div>
 <div class="line">      if( DAW_UNLIKELY( not( Bool ) ) ) {                \</div>
 <div class="line">        daw_json_error( __VA_ARGS__ );                   \</div>
 <div class="line">      }                                                  \</div>
@@ -217,7 +241,6 @@ Variables</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="adaw__json__parse__policy_8h_html_a8401ec63728e898ca0780973704f1ac2"><div class="ttname"><a href="daw__json__parse__policy_8h.html#a8401ec63728e898ca0780973704f1ac2">is_unchecked_input</a></div><div class="ttdeci">static constexpr bool is_unchecked_input</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__policy_8h_source.html#l00070">daw_json_parse_policy.h:70</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

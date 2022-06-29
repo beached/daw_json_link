@@ -106,8 +106,8 @@ $(function() {
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;          <span class="keyword">typename</span> StringView,</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;          std::enable_if_t&lt;traits::not_same_v&lt;StringView, missing_member&gt;,</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                           std::nullptr_t&gt; = <span class="keyword">nullptr</span>&gt;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keyword">explicit</span> constexpr missing_member( StringView <a class="code" href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">name</a> )</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;          : member_name( <a class="code" href="namespacestd.html">std</a>::data( <a class="code" href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">name</a> ) ) {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keyword">explicit</span> constexpr missing_member( StringView name )</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;          : member_name( <a class="code" href="namespacestd.html">std</a>::data( name ) ) {</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;          <span class="keywordflow">if</span>( member_name and member_name[0] == <span class="charliteral">&#39;\a&#39;</span> ) {</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            member_name = <span class="stringliteral">&quot;no_name&quot;</span>;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;          }</div>
@@ -131,7 +131,7 @@ $(function() {
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="comment">// enum class ErrorType { Unknown, MissingMember, UnexpectedCharacter };</span></div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keyword">enum class</span> ErrorReason {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      Unknown,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a>,</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      UnexpectedEndOfData,</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      InvalidNumber,</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      InvalidNumberStart,</div>
@@ -314,21 +314,21 @@ $(function() {
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        , m_data( mt.token ) {}</div>
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;      DAW_ATTRIB_NOINLINE <span class="keyword">explicit</span> <span class="keyword">inline</span> json_exception(</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        json_details::missing_member mm, std::string_view <a class="code" href="daw__json__value__state_8h.html#af42a994530dd2fbaf0c1b826e576e1bf">location</a> )</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        json_details::missing_member mm, std::string_view location )</div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        : m_reason( ErrorReason::MemberNotFound )</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        , m_data( mm.member_name )</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        , m_parse_loc( <a class="code" href="namespacestd.html">std</a>::data( <a class="code" href="daw__json__value__state_8h.html#af42a994530dd2fbaf0c1b826e576e1bf">location</a> ) ) {}</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        , m_parse_loc( <a class="code" href="namespacestd.html">std</a>::data( location ) ) {}</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160; </div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;      DAW_ATTRIB_NOINLINE <span class="keyword">explicit</span> <span class="keyword">inline</span> json_exception(</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        json_details::missing_token mt, <span class="keywordtype">char</span> <span class="keyword">const</span> *<a class="code" href="daw__json__value__state_8h.html#af42a994530dd2fbaf0c1b826e576e1bf">location</a> )</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        json_details::missing_token mt, <span class="keywordtype">char</span> <span class="keyword">const</span> *location )</div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        : m_reason( ErrorReason::ExpectedTokenNotFound )</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        , m_data( mt.token )</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        , m_parse_loc( <a class="code" href="daw__json__value__state_8h.html#af42a994530dd2fbaf0c1b826e576e1bf">location</a> ) {}</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        , m_parse_loc( location ) {}</div>
 <div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160; </div>
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;      DAW_ATTRIB_NOINLINE <span class="keyword">explicit</span> <span class="keyword">inline</span> json_exception( ErrorReason reason,</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;                                                          <span class="keywordtype">char</span> <span class="keyword">const</span> *<a class="code" href="daw__json__value__state_8h.html#af42a994530dd2fbaf0c1b826e576e1bf">location</a> )</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;                                                          <span class="keywordtype">char</span> <span class="keyword">const</span> *location )</div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        : m_reason( reason )</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        , m_parse_loc( <a class="code" href="daw__json__value__state_8h.html#af42a994530dd2fbaf0c1b826e576e1bf">location</a> ) {}</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        , m_parse_loc( location ) {}</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160; </div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;      DAW_ATTRIB_NOINLINE [[nodiscard]] <span class="keyword">inline</span> ErrorReason</div>
 <div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;      reason_type( )<span class="keyword"> const </span>{</div>
@@ -406,8 +406,8 @@ $(function() {
 <div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;        std::prev( je.parse_location( ),</div>
 <div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;                   <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>( previous_char_count ) ),</div>
 <div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        previous_char_count + 1 );</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;      result += <span class="stringliteral">&quot; \nlocation: near line: &quot;</span> + std::to_string( line_no ) +</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;                <span class="stringliteral">&quot; col: &quot;</span> + std::to_string( col_no ) + <span class="stringliteral">&quot;\n\&quot;&quot;</span>;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;      result += <span class="stringliteral">&quot; \nlocation: near line: &quot;</span> + <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">std::to_string</a>( line_no ) +</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;                <span class="stringliteral">&quot; col: &quot;</span> + <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">std::to_string</a>( col_no ) + <span class="stringliteral">&quot;\n\&quot;&quot;</span>;</div>
 <div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="preprocessor">#if not defined( DAW_JSON_NO_COLOUR )</span></div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      result += <span class="stringliteral">&quot;\x1b[1m&quot;</span>;</div>
 <div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;<span class="preprocessor">#endif</span></div>
@@ -439,10 +439,10 @@ $(function() {
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a03ce1a19bcc03c87524a09913907d38d"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">daw::json::anonymous_namespace{daw_json_enums.h}::to_string</a></div><div class="ttdeci">constexpr std::string_view to_string(JsonBaseParseTypes pt)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__enums_8h_source.html#l00063">daw_json_enums.h:63</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
-<div class="ttc" id="adaw__json__link__types_8h_html_aa1e5e6189406b825e4e001d65f35c210"><div class="ttname"><a href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">name</a></div><div class="ttdeci">static constexpr daw::string_view name</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__link__types_8h_source.html#l00469">daw_json_link_types.h:469</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
-<div class="ttc" id="adaw__json__value__state_8h_html_af42a994530dd2fbaf0c1b826e576e1bf"><div class="ttname"><a href="daw__json__value__state_8h.html#af42a994530dd2fbaf0c1b826e576e1bf">location</a></div><div class="ttdeci">basic_json_value_iterator&lt; PolicyFlags, Allocator &gt; location</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value__state_8h_source.html#l00040">daw_json_value_state.h:40</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a7450e9320c653f81c31714a390d56674a88183b946cc5f0e8c96b2e66e1c74a7e"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674a88183b946cc5f0e8c96b2e66e1c74a7e">daw::json::anonymous_namespace{daw_json_enums.h}::JsonParseTypes::Unknown</a></div><div class="ttdeci">@ Unknown</div><div class="ttdoc">Array - An array type where each element is mapped to the member of a C++ class.</div></div>
 <div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value_8h_source.html#l00089">daw_json_value.h:89</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00017">version.h:17</a></div></div>
 <!-- start footer part -->

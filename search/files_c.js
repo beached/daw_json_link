@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['strings_2emd_374',['strings.md',['../strings_8md.html',1,'']]]
+  ['strings_2emd_1107',['strings.md',['../strings_8md.html',1,'']]]
 ];

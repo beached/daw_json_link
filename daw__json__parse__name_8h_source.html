@@ -91,7 +91,7 @@ $(function() {
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;ciso646&gt;</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__name_8h_03.html">   22</a></span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      <span class="keyword">namespace </span>name::name_parser {</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <span class="comment">/*</span></div>
@@ -99,43 +99,43 @@ $(function() {
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">         * the string can be escaped too</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">         */</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> trim_end_of_name( ParseState &amp;<a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> ) {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;          <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.trim_left( );</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> trim_end_of_name( ParseState &amp;parse_state ) {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;          parse_state.trim_left( );</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;          <span class="comment">// TODO: should we check for end</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.front_checked( ) == <span class="charliteral">&#39;:&#39;</span>,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                                ErrorReason::InvalidMemberName, <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;          <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.remove_prefix( );</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;          <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.trim_left( );</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.front_checked( ) == <span class="charliteral">&#39;:&#39;</span>,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                                ErrorReason::InvalidMemberName, parse_state );</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;          parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;          parse_state.trim_left( );</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        }</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        [[nodiscard]] DAW_ATTRIB_INLINE constexpr daw::string_view</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        parse_nq( ParseState &amp;<a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> ) {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        parse_nq( ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;          <span class="keywordflow">if</span> constexpr( ParseState::allow_escaped_names( ) ) {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keyword">auto</span> r = skip_string_nq( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            trim_end_of_name( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keyword">auto</span> r = skip_string_nq( parse_state );</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            trim_end_of_name( parse_state );</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="keywordflow">return</span> daw::string_view( std::data( r ), std::size( r ) );</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> ptr = <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.first;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordflow">if</span> constexpr( <a class="code" href="daw__json__parse__policy_8h.html#a8401ec63728e898ca0780973704f1ac2">ParseState::is_unchecked_input</a> ) {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;              <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.template move_to_next_of_unchecked&lt;<span class="charliteral">&#39;&quot;&#39;</span>&gt;( );</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> ptr = parse_state.first;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordflow">if</span> constexpr( ParseState::is_unchecked_input ) {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;              parse_state.template move_to_next_of_unchecked&lt;<span class="charliteral">&#39;&quot;&#39;</span>&gt;( );</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;              <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.template move_to_next_of_checked&lt;<span class="charliteral">&#39;&quot;&#39;</span>&gt;( );</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;              parse_state.template move_to_next_of_checked&lt;<span class="charliteral">&#39;&quot;&#39;</span>&gt;( );</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.is_quotes_checked( ) and</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                    *std::prev( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.first ) != <span class="charliteral">&#39;\\&#39;</span>,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                  ErrorReason::InvalidString, <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            <span class="keyword">auto</span> result = daw::string_view( ptr, <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.first );</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.remove_prefix( );</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            trim_end_of_name( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.is_quotes_checked( ) and</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                    *std::prev( parse_state.first ) != <span class="charliteral">&#39;\\&#39;</span>,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                  ErrorReason::InvalidString, parse_state );</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            <span class="keyword">auto</span> result = daw::string_view( ptr, parse_state.first );</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            trim_end_of_name( parse_state );</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            <span class="keywordflow">return</span> result;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;          }</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        }</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      } <span class="comment">// namespace name::name_parser</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keyword">struct </span>pop_json_path_result {</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="daw__json__parse__name_8h.html#a69f9ca62a19b436db09b41f7c91af67d">   65</a></span>&#160;        daw::string_view <a class="code" href="daw__json__parse__name_8h.html#a69f9ca62a19b436db09b41f7c91af67d">current</a>{ };</div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="daw__json__parse__name_8h.html#a4ca5cb55114fcfc823e739e6a9b3573a">   66</a></span>&#160;        <span class="keywordtype">char</span> <a class="code" href="daw__json__parse__name_8h.html#a4ca5cb55114fcfc823e739e6a9b3573a">found_char</a> = 0;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        daw::string_view current{ };</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordtype">char</span> found_char = 0;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      };</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="comment">// Paths are specified with dot separators, if the name has a dot in it,</span></div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      <span class="comment">// it must be escaped</span></div>
@@ -197,51 +197,51 @@ $(function() {
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      <span class="comment">// value(e.g after the colon(:) and trimmed)</span></div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      [[nodiscard]] DAW_ATTRIB_FLATTEN <span class="keyword">inline</span> constexpr daw::string_view</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      parse_name( ParseState &amp;<a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> ) {</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.is_quotes_checked( ),</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                              ErrorReason::InvalidMemberName, <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.remove_prefix( );</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <span class="keywordflow">return</span> name::name_parser::parse_nq( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      parse_name( ParseState &amp;parse_state ) {</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.is_quotes_checked( ),</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                              ErrorReason::InvalidMemberName, parse_state );</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <span class="keywordflow">return</span> name::name_parser::parse_nq( parse_state );</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      }</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      constexpr <span class="keywordtype">bool</span> find_range2( ParseState &amp;<a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>,</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      constexpr <span class="keywordtype">bool</span> find_range2( ParseState &amp;parse_state,</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;                                  daw::string_view path ) {</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        <span class="keyword">auto</span> pop_result = pop_json_path( path );</div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        <span class="keywordflow">while</span>( not pop_result.current.empty( ) ) {</div>
 <div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;          <span class="keywordflow">if</span>( pop_result.found_char == <span class="charliteral">&#39;]&#39;</span> ) {</div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;            <span class="comment">// Array Index</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.is_opening_bracket_checked( ),</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;                                  ErrorReason::InvalidJSONPath, <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;            <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.remove_prefix( );</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;            <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.trim_left_unchecked( );</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.is_opening_bracket_checked( ),</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;                                  ErrorReason::InvalidJSONPath, parse_state );</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;            parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;            parse_state.trim_left_unchecked( );</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;            <span class="keyword">auto</span> idx = daw::parser::parse_unsigned_int&lt;std::size_t&gt;(</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;              pop_result.current );</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;            <span class="keywordflow">while</span>( idx &gt; 0 ) {</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;              --idx;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;              (void)skip_value( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;              <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.trim_left_checked( );</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;              <span class="keywordflow">if</span>( ( idx &gt; 0 ) &amp; ( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.has_more( ) and</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                                  ( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.front( ) != <span class="charliteral">&#39;,&#39;</span> ) ) ) {</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;              (void)skip_value( parse_state );</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;              parse_state.trim_left_checked( );</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;              <span class="keywordflow">if</span>( ( idx &gt; 0 ) &amp; ( parse_state.has_more( ) and</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                                  ( parse_state.front( ) != <span class="charliteral">&#39;,&#39;</span> ) ) ) {</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;              }</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;              <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.move_next_member_or_end( );</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;              parse_state.move_next_member_or_end( );</div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;            }</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.is_opening_brace_checked( ),</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;                                  ErrorReason::InvalidJSONPath, <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;            <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.remove_prefix( );</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;            <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.trim_left_unchecked( );</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;            <span class="keyword">auto</span> <a class="code" href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">name</a> = parse_name( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;            <span class="keywordflow">while</span>( not json_path_compare( pop_result.current, <a class="code" href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">name</a> ) ) {</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;              (void)skip_value( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;              <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.move_next_member_or_end( );</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;              <span class="keywordflow">if</span>( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.empty( ) or <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.front( ) != <span class="charliteral">&#39;&quot;&#39;</span> ) {</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.is_opening_brace_checked( ),</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;                                  ErrorReason::InvalidJSONPath, parse_state );</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;            parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;            parse_state.trim_left_unchecked( );</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;            <span class="keyword">auto</span> name = parse_name( parse_state );</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;            <span class="keywordflow">while</span>( not json_path_compare( pop_result.current, name ) ) {</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;              (void)skip_value( parse_state );</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;              parse_state.move_next_member_or_end( );</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;              <span class="keywordflow">if</span>( parse_state.empty( ) or parse_state.front( ) != <span class="charliteral">&#39;&quot;&#39;</span> ) {</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;              }</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;              <a class="code" href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">name</a> = parse_name( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;              name = parse_name( parse_state );</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;            }</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;          }</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;          pop_result = pop_json_path( path );</div>
@@ -252,14 +252,14 @@ $(function() {
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParsePolicy&gt;</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;      [[nodiscard]] constexpr std::pair&lt;bool, ParsePolicy&gt;</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      find_range( daw::string_view str, daw::string_view start_path ) {</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;        <span class="keyword">auto</span> <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> =</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;        <span class="keyword">auto</span> parse_state =</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;          ParsePolicy( std::data( str ), daw::data_end( str ) );</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;        <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.trim_left_checked( );</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;        parse_state.trim_left_checked( );</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;        <span class="keywordtype">bool</span> found = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        <span class="keywordflow">if</span>( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.has_more( ) and not start_path.empty( ) ) {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;          found = find_range2( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>, start_path );</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        <span class="keywordflow">if</span>( parse_state.has_more( ) and not start_path.empty( ) ) {</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;          found = find_range2( parse_state, start_path );</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        }</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        <span class="keywordflow">return</span> std::pair&lt;bool, ParsePolicy&gt;( found, <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> );</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        <span class="keywordflow">return</span> std::pair&lt;bool, ParsePolicy&gt;( found, parse_state );</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      }</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160; </div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParsePolicy, <span class="keyword">typename</span> Allocator&gt;</div>
@@ -269,15 +269,15 @@ $(function() {
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        static_assert(</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;          std::is_same_v&lt;char const *, typename ParsePolicy::iterator&gt;,</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;          <span class="stringliteral">&quot;Only char const * ranges are currently supported&quot;</span> );</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        <span class="keyword">auto</span> <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> = ParsePolicy::with_allocator(</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        <span class="keyword">auto</span> parse_state = ParsePolicy::with_allocator(</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;          std::data( str ), daw::data_end( str ), alloc );</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.trim_left_checked( );</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;        <span class="keywordflow">if</span>( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>.has_more( ) and not start_path.empty( ) ) {</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;          <span class="keywordflow">if</span>( not find_range2( <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a>, start_path ) ) {</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;            <span class="keywordflow">return</span> std::pair{ <span class="keyword">false</span>, <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> };</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        parse_state.trim_left_checked( );</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;        <span class="keywordflow">if</span>( parse_state.has_more( ) and not start_path.empty( ) ) {</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;          <span class="keywordflow">if</span>( not find_range2( parse_state, start_path ) ) {</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;            <span class="keywordflow">return</span> std::pair{ <span class="keyword">false</span>, parse_state };</div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;          }</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        }</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordflow">return</span> std::pair{ <span class="keyword">true</span>, <a class="code" href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a> };</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordflow">return</span> std::pair{ <span class="keyword">true</span>, parse_state };</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;      }</div>
 <div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    } <span class="comment">// namespace json_details</span></div>
 <div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
@@ -287,13 +287,8 @@ $(function() {
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00208">daw_json_assert.h:208</a></div></div>
 <div class="ttc" id="adaw__json__parse__std__string_8h_html"><div class="ttname"><a href="daw__json__parse__std__string_8h.html">daw_json_parse_std_string.h</a></div></div>
-<div class="ttc" id="adaw__json__link__types_8h_html_aa1e5e6189406b825e4e001d65f35c210"><div class="ttname"><a href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">name</a></div><div class="ttdeci">static constexpr daw::string_view name</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__link__types_8h_source.html#l00469">daw_json_link_types.h:469</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
-<div class="ttc" id="adaw__json__parse__array__iterator_8h_html_a496d9220f915d8a4a9d997e59825988b"><div class="ttname"><a href="daw__json__parse__array__iterator_8h.html#a496d9220f915d8a4a9d997e59825988b">parse_state</a></div><div class="ttdeci">ParseState * parse_state</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__array__iterator_8h_source.html#l00031">daw_json_parse_array_iterator.h:31</a></div></div>
-<div class="ttc" id="adaw__json__parse__name_8h_html_a4ca5cb55114fcfc823e739e6a9b3573a"><div class="ttname"><a href="daw__json__parse__name_8h.html#a4ca5cb55114fcfc823e739e6a9b3573a">found_char</a></div><div class="ttdeci">char found_char</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__name_8h_source.html#l00066">daw_json_parse_name.h:66</a></div></div>
-<div class="ttc" id="adaw__json__parse__policy_8h_html_a8401ec63728e898ca0780973704f1ac2"><div class="ttname"><a href="daw__json__parse__policy_8h.html#a8401ec63728e898ca0780973704f1ac2">is_unchecked_input</a></div><div class="ttdeci">static constexpr bool is_unchecked_input</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__policy_8h_source.html#l00070">daw_json_parse_policy.h:70</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
-<div class="ttc" id="adaw__json__parse__name_8h_html_a69f9ca62a19b436db09b41f7c91af67d"><div class="ttname"><a href="daw__json__parse__name_8h.html#a69f9ca62a19b436db09b41f7c91af67d">current</a></div><div class="ttdeci">daw::string_view current</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__name_8h_source.html#l00065">daw_json_parse_name.h:65</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00017">version.h:17</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

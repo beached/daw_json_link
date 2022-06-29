@@ -94,7 +94,7 @@ $(function() {
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__real__power10_8h_03.html">   25</a></span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">double</span> dpow10_tbl[] = {</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        1e0,   1e1,   1e2,   1e3,   1e4,   1e5,   1e6,   1e7,   1e8,   1e9,</div>
@@ -141,7 +141,7 @@ $(function() {
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result, <span class="keyword">typename</span> Un<span class="keywordtype">signed</span>&gt;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr Result</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      power10( constexpr_exec_tag, Result result, Unsigned p ) {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      power10( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>, Result result, Unsigned p ) {</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="comment">// We only have a double table, of which float is a subset.  Long double</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="comment">// will be calculated in terms of that</span></div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
@@ -193,10 +193,10 @@ $(function() {
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result, <span class="keyword">typename</span> Un<span class="keywordtype">signed</span>&gt;</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr Result</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      power10( runtime_exec_tag, Result result, Unsigned p ) {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      power10( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">runtime_exec_tag</a>, Result result, Unsigned p ) {</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_same_v&lt;Result, double&gt; or</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;                      std::is_same_v&lt;Result, float&gt; ) {</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;          <span class="keywordflow">return</span> power10( constexpr_exec_tag{ }, result,</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;          <span class="keywordflow">return</span> power10( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>{ }, result,</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;                          <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( p ) );</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;          <span class="comment">// For long double and others fallback to the slower std::pow</span></div>
@@ -209,7 +209,9 @@ $(function() {
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">daw::json::anonymous_namespace{daw_json_exec_modes.h}::runtime_exec_tag</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__exec__modes_8h_source.html#l00028">daw_json_exec_modes.h:28</a></div></div>
 <div class="ttc" id="adaw__json__exec__modes_8h_html"><div class="ttname"><a href="daw__json__exec__modes_8h.html">daw_json_exec_modes.h</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">daw::json::anonymous_namespace{daw_json_exec_modes.h}::constexpr_exec_tag</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__exec__modes_8h_source.html#l00019">daw_json_exec_modes.h:19</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00017">version.h:17</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

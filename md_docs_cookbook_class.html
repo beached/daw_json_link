@@ -168,7 +168,7 @@ Selective mapping</h1>
 </div><!-- fragment --><p>Only the <code>"a"</code> member is mapped, the <code>"b"</code> member of the JSON object is ignored.</p>
 <h1><a class="anchor" id="autotoc_md14"></a>
 Alternate Class Mappings</h1>
-<p>If a type is already mapped or has many possible JSON mappings you can provide an alternate mapping. This is accomplished by mapping to the <code>daw::json::json_alt&lt;Type, Index&gt;</code> type. The optional index allows for any number of mappings that fit into a <code>std::size_t</code>.</p>
+<p>If a type is already mapped or has many possible JSON mappings you can provide an alternate mapping. This is accomplished by mapping to the <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__alternate__mapping_8h_03_1_1json__alt.html" title="Allows for alternate/multiple mappings of types that already have mappings.">daw::json::json_alt</a>&lt;Type, Index&gt;</code> type. The optional index allows for any number of mappings that fit into a <code>std::size_t</code>.</p>
 <p>To see a working example using this code, refer to <a href="../../tests/src/cookbook_class_alternate1_test.cpp">cookbook_class_alternate1_test.cpp</a></p>
 <div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct Thing {</div>

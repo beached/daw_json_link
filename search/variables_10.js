@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['underlying_5fjson_5ftype_451',['underlying_json_type',['../daw__json__link__types_8h.html#a5084c66e4e655fcb05e414f722a36313',1,'daw_json_link_types.h']]],
-  ['use_5fdaw_5fjson_5fexceptions_5fv_452',['use_daw_json_exceptions_v',['../daw__json__assert_8h.html#a236cef0d7e6c40781c19e4ebcd63aa5b',1,'daw_json_assert.h']]],
-  ['use_5fexact_5fmappings_5fby_5fdefault_453',['use_exact_mappings_by_default',['../daw__json__parse__policy_8h.html#a98401122e5ba4609eb59b108ba940844',1,'daw_json_parse_policy.h']]]
+  ['type_1385',['type',['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03_1_1_json_event_parser_stack_value.html#ad8d94d86b5d159e577b3f4be7f831b1e',1,'daw::json::anonymous_namespace{daw_json_event_parser.h}::JsonEventParserStackValue']]]
 ];

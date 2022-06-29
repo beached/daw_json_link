@@ -109,10 +109,10 @@ $(function() {
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">} </div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md115"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md116"></a>
 Important note:</h1>
 <p>The elements in the <code>json_variant_type_list</code> must have matching types in the variant alternatives. (e.g. std::string -&gt; json_string, bool -&gt; json_bool )</p>
-<h1><a class="anchor" id="autotoc_md116"></a>
+<h1><a class="anchor" id="autotoc_md117"></a>
 Tagged Variants</h1>
 <p>It is common to have a tag discriminator in JSON data. The <code>json_tagged_variant</code> member type allows using another parsed member to return an index in a member list to parse. This allows any number of types to be inside the variant.</p>
 <p>Below is a JSON array, containing a variant element where the <code>"type"</code> member determines the type of the <code>"value"</code> member. In many JSON documents, the discriminator will be a string.</p>
@@ -228,7 +228,7 @@ Tagged Variants</h1>
 <div class="line">  }</div>
 <div class="line">};</div>
 </div><!-- fragment --><p>As you can see, the json_variant_type_list can use terse type names for some, or the full names.</p>
-<h1><a class="anchor" id="autotoc_md117"></a>
+<h1><a class="anchor" id="autotoc_md118"></a>
 Submember as tag for tagged_variant</h1>
 <p>There are cases where a classes structure is determined by one of it's submembers. This comes up with file versioning.</p>
 <p>In our example we have two versions of a config file. The tag member <code>"version"</code> determines the layout of the other members in the example.</p>
@@ -252,8 +252,8 @@ Submember as tag for tagged_variant</h1>
 <div class="fragment"><div class="line"><span class="keyword">namespace </span>version1 {</div>
 <div class="line"><span class="keyword">struct </span>Config {</div>
 <div class="line">  <span class="keywordtype">int</span> version;</div>
-<div class="line">  std::string <a class="code" href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">name</a>;</div>
-<div class="line">  <span class="keywordtype">int</span> <a class="code" href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a>;</div>
+<div class="line">  std::string name;</div>
+<div class="line">  <span class="keywordtype">int</span> value;</div>
 <div class="line">  std::string next_question;</div>
 <div class="line">};</div>
 <div class="line">}</div>
@@ -269,8 +269,8 @@ Submember as tag for tagged_variant</h1>
 <div class="line"> </div>
 <div class="line"><span class="keyword">struct </span>Switcher {</div>
 <div class="line">  <span class="comment">// Convert JSON tag member to type index</span></div>
-<div class="line">  <span class="keywordtype">size_t</span> operator( )( <span class="keywordtype">int</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> ) <span class="keyword">const</span> {</div>
-<div class="line">    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> - 1 );</div>
+<div class="line">  <span class="keywordtype">size_t</span> operator( )( <span class="keywordtype">int</span> type ) <span class="keyword">const</span> {</div>
+<div class="line">    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( type - 1 );</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// Get value for Tag from class value</span></div>
@@ -282,7 +282,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line"><span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;version1::Config&gt; {</div>
-<div class="line">    <span class="keyword">using</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> = json_member_list&lt;</div>
+<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;</div>
 <div class="line">      json_number&lt;<span class="stringliteral">&quot;version&quot;</span>, <span class="keywordtype">int</span>&gt;,  </div>
 <div class="line">      json_string&lt;<span class="stringliteral">&quot;name&quot;</span>&gt;,</div>
 <div class="line">      json_number&lt;<span class="stringliteral">&quot;value&quot;</span>, <span class="keywordtype">int</span>&gt;,</div>
@@ -296,7 +296,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line">  </div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;version2::Config&gt; {</div>
-<div class="line">    <span class="keyword">using</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> = json_member_list&lt;</div>
+<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;</div>
 <div class="line">      json_number&lt;<span class="stringliteral">&quot;version&quot;</span>, <span class="keywordtype">int</span>&gt;,  </div>
 <div class="line">      json_key_value_array&lt;<span class="stringliteral">&quot;config_options&quot;</span>, </div>
 <div class="line">        std::map&lt;std::string, int&gt;,</div>
@@ -313,7 +313,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line">  </div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;<a class="code" href="namespacestd.html">std</a>::variant&lt;version1::Config, version2::Config&gt;&gt; {</div>
-<div class="line">      <span class="keyword">using</span> <a class="code" href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a> = json_submember_tagged_variant&lt;</div>
+<div class="line">      <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_submember_tagged_variant&lt;</div>
 <div class="line">        json_number&lt;<span class="stringliteral">&quot;version&quot;</span>, <span class="keywordtype">int</span>&gt;,</div>
 <div class="line">        Switcher,   </div>
 <div class="line">        version1::Config,</div>
@@ -324,10 +324,8 @@ Submember as tag for tagged_variant</h1>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
-<div class="ttc" id="adaw__json__event__parser_8h_html_af3874c625cee7edbb7e82023085f86c7"><div class="ttname"><a href="daw__json__event__parser_8h.html#af3874c625cee7edbb7e82023085f86c7">value</a></div><div class="ttdeci">json_parse_handler_result value</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00032">daw_json_event_parser.h:32</a></div></div>
-<div class="ttc" id="adaw__json__link__types_8h_html_aa1e5e6189406b825e4e001d65f35c210"><div class="ttname"><a href="daw__json__link__types_8h.html#aa1e5e6189406b825e4e001d65f35c210">name</a></div><div class="ttdeci">static constexpr daw::string_view name</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__link__types_8h_source.html#l00469">daw_json_link_types.h:469</a></div></div>
-<div class="ttc" id="adaw__json__event__parser_8h_html_a32f1e0329a2cea27fc6478b5d4de3609"><div class="ttname"><a href="daw__json__event__parser_8h.html#a32f1e0329a2cea27fc6478b5d4de3609">type</a></div><div class="ttdeci">StackParseStateType type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__event__parser_8h_source.html#l00319">daw_json_event_parser.h:319</a></div></div>
 <div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value_8h_source.html#l00089">daw_json_value.h:89</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__data__contract_8h_source.html#l00037">daw_json_data_contract.h:37</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

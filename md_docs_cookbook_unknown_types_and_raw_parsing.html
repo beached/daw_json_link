@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DAW JSON Link: unknown_types_and_raw_parsing</title>
+<title>DAW JSON Link: Unknown Types and Delayed Parsing</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -63,11 +63,10 @@ $(function() {
 </div><!-- top -->
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">unknown_types_and_raw_parsing </div>  </div>
+<div class="title">Unknown Types and Delayed Parsing </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>#Unknown Types and Delayed Parsing</p>
-<h1><a class="anchor" id="autotoc_md111"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md112"></a>
 Unknown JSON Data</h1>
 <p>When the data structure is unknown or partially known it can be parsed as a <code>json_raw</code> type. This also, allows for skipping the parsing of certain members and returning later.</p>
 <div class="fragment"><div class="line">[</div>
@@ -91,7 +90,7 @@ Unknown JSON Data</h1>
 <div class="line">  std::cout &lt;&lt; to_string( member.value.type( ) ) &lt;&lt; &quot; with a value of &quot;</div>
 <div class="line">            &lt;&lt; member.value.get_string_view( ) &lt;&lt; &#39;\n&#39;;</div>
 <div class="line">}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md112"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md113"></a>
 Delayed Parsing</h1>
 <p>It is possible to delay the parsing of json members until a later time. The <code>json_raw</code> member type will store the character range and allow full parsing later. The cost of doing so is similar to that of skipping the value and is already paid for when parsing JSON data.</p>
 <div class="fragment"><div class="line">{</div>
@@ -152,7 +151,7 @@ Delayed Parsing</h1>
 <div class="line">MyClass2 val = from_json&lt;MyClass2&gt;( json_data );</div>
 <div class="line"> </div>
 <div class="line">MyDelayedClass delayed_val = cls2.member_layer.template parse&lt;MyDelayedClass&gt;( );</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md113"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md114"></a>
 RAW JSON</h1>
 <p>Parsing to a raw JSON string can be done too. the <code>json_raw</code> mapping type allows for an optional type argument that specifies the destination/source type. It requires that the type be constructable from a char const * and a std::size_t.</p>
 <p>To see a working example using this code, refer to <a href="../../tests/src/cookbook_unknown_types_and_raw_parsing3_test.cpp">cookbook_unknown_types_and_delayed_parsing3_test.cpp</a>.</p>

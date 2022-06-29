@@ -67,7 +67,10 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_serialize_policy.h File Reference</div>  </div>
 </div><!--header-->
@@ -85,6 +88,11 @@ $(function() {
 </div>
 <p><a href="daw__json__serialize__policy_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serialization_policy&lt; WritableType, PolicyFlags &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
@@ -92,205 +100,25 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
 <tr class="memdesc:namespacedaw_1_1json"><td class="mdescLeft">&#160;</td><td class="mdescRight">Customization point traits. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03.html">daw::json::anonymous_namespace{daw_json_serialize_policy.h}</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:aa962dac38be140f2c977bbf32da2b889"><td class="memTemplParams" colspan="2">template&lt;typename... Policies&gt; </td></tr>
+<tr class="memitem:aa962dac38be140f2c977bbf32da2b889"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_options_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03.html#aa962dac38be140f2c977bbf32da2b889">daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serialize_options</a> (Policies... policies)</td></tr>
+<tr class="separator:aa962dac38be140f2c977bbf32da2b889"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a6ff2f81ce25ba3965b5d883c7873912c"><td class="memTemplParams" colspan="2">template&lt;typename , typename... &gt; </td></tr>
+<tr class="memitem:a6ff2f81ce25ba3965b5d883c7873912c"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03.html#a6ff2f81ce25ba3965b5d883c7873912c">daw::json::anonymous_namespace{daw_json_serialize_policy.h}::is_serialization_policy_v</a> = false</td></tr>
+<tr class="separator:a6ff2f81ce25ba3965b5d883c7873912c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a150b71a4b64d2689721e641cb9aed3a7"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator , json_options_t PolicyFlags&gt; </td></tr>
+<tr class="memitem:a150b71a4b64d2689721e641cb9aed3a7"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03.html#a150b71a4b64d2689721e641cb9aed3a7">daw::json::anonymous_namespace{daw_json_serialize_policy.h}::is_serialization_policy_v&lt; serialization_policy&lt; OutputIterator, PolicyFlags &gt; &gt;</a> = true</td></tr>
+<tr class="separator:a150b71a4b64d2689721e641cb9aed3a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="a531df2c08579d6a1c4badca0f867e2e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a531df2c08579d6a1c4badca0f867e2e0">&#9670;&nbsp;</a></span>indentation_level</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::size_t indentation_level = 0</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__serialize__policy_8h_source.html#l00059">59</a> of file <a class="el" href="daw__json__serialize__policy_8h_source.html">daw_json_serialize_policy.h</a>.</p>
-
-</div>
-</div>
-<a id="a9b79916c39598f4754e9c40f6f89fd2d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9b79916c39598f4754e9c40f6f89fd2d">&#9670;&nbsp;</a></span>indentation_type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr <a class="el" href="daw__json__serialize__options_8h.html#ab5bf7bbafb0678db22c8aba2504f0076">options::IndentationType</a> indentation_type</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        json_details::serialization::get_bits_for&lt;options::IndentationType&gt;(</div>
-<div class="line">          PolicyFlags )</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__serialize__policy_8h_source.html#l00075">75</a> of file <a class="el" href="daw__json__serialize__policy_8h_source.html">daw_json_serialize_policy.h</a>.</p>
-
-</div>
-</div>
-<a id="a09c27fa4aa9ac20e6f4201a224749b55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a09c27fa4aa9ac20e6f4201a224749b55">&#9670;&nbsp;</a></span>m_writable</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">WritableType* m_writable</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__serialize__policy_8h_source.html#l00053">53</a> of file <a class="el" href="daw__json__serialize__policy_8h_source.html">daw_json_serialize_policy.h</a>.</p>
-
-</div>
-</div>
-<a id="a9836f3fc9ed50a4e4ca25801383a907b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9836f3fc9ed50a4e4ca25801383a907b">&#9670;&nbsp;</a></span>newline_delimiter</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr <a class="el" href="daw__json__serialize__options_8h.html#a2a6758418e34490f352e65be20ba0727">options::NewLineDelimiter</a> newline_delimiter</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        json_details::serialization::get_bits_for&lt;options::NewLineDelimiter&gt;(</div>
-<div class="line">          PolicyFlags )</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__serialize__policy_8h_source.html#l00083">83</a> of file <a class="el" href="daw__json__serialize__policy_8h_source.html">daw_json_serialize_policy.h</a>.</p>
-
-</div>
-</div>
-<a id="a6e9b389a2995ad32c9780bb6359b2fac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e9b389a2995ad32c9780bb6359b2fac">&#9670;&nbsp;</a></span>output_trailing_comma</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr <a class="el" href="daw__json__serialize__options_8h.html#a540f9f5ff0e23b938ec4d17dc95d4c29">options::OutputTrailingComma</a> output_trailing_comma</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        json_details::serialization::get_bits_for&lt;options::OutputTrailingComma&gt;(</div>
-<div class="line">          PolicyFlags )</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__serialize__policy_8h_source.html#l00087">87</a> of file <a class="el" href="daw__json__serialize__policy_8h_source.html">daw_json_serialize_policy.h</a>.</p>
-
-</div>
-</div>
-<a id="aa789effa17bbd38aec810f05b708a117"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa789effa17bbd38aec810f05b708a117">&#9670;&nbsp;</a></span>restricted_string_output</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr <a class="el" href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">options::RestrictedStringOutput</a> restricted_string_output</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= json_details::serialization::get_bits_for&lt;</div>
-<div class="line">          <a class="code" href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">options::RestrictedStringOutput</a>&gt;( PolicyFlags )</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__serialize__policy_8h_source.html#l00080">80</a> of file <a class="el" href="daw__json__serialize__policy_8h_source.html">daw_json_serialize_policy.h</a>.</p>
-
-</div>
-</div>
-<a id="a76e66fa39c0c116ff66f2d83151575db"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a76e66fa39c0c116ff66f2d83151575db">&#9670;&nbsp;</a></span>serialization_format</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr <a class="el" href="daw__json__serialize__options_8h.html#af920403e44d5a28925dc9cce3b641f66">options::SerializationFormat</a> serialization_format</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        json_details::serialization::get_bits_for&lt;options::SerializationFormat&gt;(</div>
-<div class="line">          PolicyFlags )</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__serialize__policy_8h_source.html#l00071">71</a> of file <a class="el" href="daw__json__serialize__policy_8h_source.html">daw_json_serialize_policy.h</a>.</p>
-
-</div>
-</div>
-<a id="a97bb2bb7c7399ab1d176c8c6ae471849"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97bb2bb7c7399ab1d176c8c6ae471849">&#9670;&nbsp;</a></span>space</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr daw::string_view space</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <a class="code" href="daw__json__serialize__policy_8h.html#a76e66fa39c0c116ff66f2d83151575db">serialization_format</a> != options::SerializationFormat::Minified</div>
-<div class="line">          ? <span class="stringliteral">&quot; &quot;</span></div>
-<div class="line">          : <span class="keyword">nullptr</span></div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__serialize__policy_8h_source.html#l00121">121</a> of file <a class="el" href="daw__json__serialize__policy_8h_source.html">daw_json_serialize_policy.h</a>.</p>
-
-</div>
-</div>
 </div><!-- contents -->
-<div class="ttc" id="adaw__json__serialize__policy_8h_html_a76e66fa39c0c116ff66f2d83151575db"><div class="ttname"><a href="daw__json__serialize__policy_8h.html#a76e66fa39c0c116ff66f2d83151575db">serialization_format</a></div><div class="ttdeci">static constexpr options::SerializationFormat serialization_format</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__policy_8h_source.html#l00071">daw_json_serialize_policy.h:71</a></div></div>
-<div class="ttc" id="adaw__json__serialize__options_8h_html_a4838acd0ff52b3a42a0d932b3df47f7d"><div class="ttname"><a href="daw__json__serialize__options_8h.html#a4838acd0ff52b3a42a0d932b3df47f7d">RestrictedStringOutput</a></div><div class="ttdeci">RestrictedStringOutput</div><div class="ttdoc">Allow for restricting the output of strings to 7bits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__serialize__options_8h_source.html#l00061">daw_json_serialize_options.h:61</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
