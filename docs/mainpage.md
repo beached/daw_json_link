@@ -1,4 +1,4 @@
-![logo image](json_link_logo_128.png)
+![logo image](images/json_link_logo_128.png)
 
 ##Fast JSON serialization and parsing in C++
 
