@@ -90,7 +90,7 @@ std::vector<std::string> uris = {
 };
 ```
 
-Contrasting with the (Escaped)[#escaped] example, the difference will be that the array element type is `json_string_raw`
+Contrasting with the [Escaped]("#Raw Strings") example, the difference will be that the array element type is `json_string_raw`
 
 ```c++
 struct WebData {
