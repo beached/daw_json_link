@@ -58,13 +58,13 @@ TYPEDEF_HIDES_STRUCT   = NO
 LOOKUP_CACHE_SIZE      = 0
 NUM_PROC_THREADS       = 1
 EXTRACT_ALL            = YES
-EXTRACT_PRIVATE        = NO
-EXTRACT_PRIV_VIRTUAL   = NO
+EXTRACT_PRIVATE        = YES 
+EXTRACT_PRIV_VIRTUAL   = YES
 EXTRACT_PACKAGE        = NO
 EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = YES
-EXTRACT_LOCAL_METHODS  = NO
-EXTRACT_ANON_NSPACES   = NO
+EXTRACT_LOCAL_METHODS  = YES
+EXTRACT_ANON_NSPACES   = YES
 RESOLVE_UNNAMED_PARAMS = YES
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = NO
@@ -156,31 +156,29 @@ HTML_HEADER            =
 HTML_FOOTER            =
 HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = docs/theme/doxygen-style.css
-HTML_EXTRA_FILES       = docs/theme/img/closed-folder.png \
-                         docs/theme/img/document.png \
-                         docs/theme/img/off_sync.png \
-                         docs/theme/img/on_sync.png \
-                         docs/theme/img/opened-folder.png \
-                         docs/mainpage.md \
-                         docs/images/json_link_logo_128.png \
-                         docs/cookbook/class.md \
-                         docs/cookbook/class_from_array.md \
-                         docs/cookbook/parser_policies.md \
-                         docs/cookbook/strings.md \
-                         docs/cookbook/key_values.md \
-                         docs/cookbook/variant.md \
-                         docs/cookbook/dates.md \
-                         docs/cookbook/array.md \
-                         docs/cookbook/graphs.md \
-                         docs/cookbook/unknown_types_and_raw_parsing.md \
-                         docs/cookbook/readme.md \
-                         docs/cookbook/mapping_deduction.md \
-                         docs/cookbook/optional_values.md \
-                         docs/cookbook/parsing_individual_members.md \
-                         docs/cookbook/automated_code_generation.md \
-                         docs/cookbook/enums.md \
-                         docs/cookbook/inserting_extracting_raw_json.md \
-                         docs/cookbook/numbers.md
+HTML_EXTRA_FILES       =	"docs/cookbook/aliases.md" \
+													"docs/cookbook/array.md" \
+													"docs/cookbook/automated_code_generation.md" \
+													"docs/cookbook/class_from_array.md" \
+													"docs/cookbook/class.md" \
+													"docs/cookbook/dates.md" \
+													"docs/cookbook/enums.md" \
+													"docs/cookbook/graphs.md" \
+													"docs/cookbook/inserting_extracting_raw_json.md" \
+													"docs/cookbook/json_lines.md" \
+													"docs/cookbook/json_schema.md" \
+													"docs/cookbook/key_values.md" \
+													"docs/cookbook/mapping_deduction.md" \
+													"docs/cookbook/member_options.md" \
+													"docs/cookbook/numbers.md" \
+													"docs/cookbook/nullable_value_concept.md" \
+													"docs/cookbook/json_nullable.md" \ 
+													"docs/cookbook/output_options.md" \
+													"docs/cookbook/parser_policies.md" \
+													"docs/cookbook/parsing_individual_members.md" \
+													"docs/cookbook/strings.md" \
+													"docs/cookbook/unknown_types_and_raw_parsing.md" \
+													"docs/cookbook/variant.md"
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80

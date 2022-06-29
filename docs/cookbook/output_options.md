@@ -8,7 +8,6 @@ Flags. All the enum's below are in the `daw::json::options` namespace
 The example below shows output with the defaults and with Pretty formatting enabled.
 To see a working example using this code, refer
 to [cookbook_output_flags1_test.cpp](../../tests/src/cookbook_output_flags1_test.cpp)
-.
 
 ```cpp
 struct OutputFlags1 {
@@ -104,8 +103,8 @@ Change how newlines are delimited
 
 ### Values
 
-* `n` - Use \n to delimit newlines
-* `rn` - Use \r\n to delimit newlines
+* `n` - Use `\n` to delimit newlines
+* `rn` - Use `\r\n` to delimit newlines
 
 ### Default
 

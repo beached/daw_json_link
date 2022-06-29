@@ -156,4 +156,4 @@ Custom JSON types can be Strings(default), unquoted Literals, or a mix.
 
 ### Default
 
-* `String`
+* String 
