@@ -302,7 +302,8 @@ namespace daw::json {
 		  BasicParsePolicy<PolicyFlags, Allocator> const & )
 		  -> basic_json_value_iterator<PolicyFlags, Allocator>;
 
-		basic_json_value_iterator( daw::string_view )->basic_json_value_iterator<>;
+		basic_json_value_iterator( daw::string_view )
+		  -> basic_json_value_iterator<>;
 
 		template<typename Allocator>
 		basic_json_value_iterator( daw::string_view, Allocator const & )
@@ -342,11 +343,9 @@ namespace daw::json {
 		/// movement/iteration through
 		/// @tparam ParseState see IteratorRange
 		template<json_options_t PolicyFlags, typename Allocator>
-		class basic_json_value {
+		struct basic_json_value {
 			using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
 			BasicParsePolicy<PolicyFlags, Allocator> m_parse_state{ };
-
-		public:
 			using CharT = typename ParseState::CharT;
 			using iterator = basic_json_value_iterator<PolicyFlags, Allocator>;
 			using value_type = basic_json_pair<PolicyFlags, Allocator>;
@@ -367,15 +366,21 @@ namespace daw::json {
 
 			/// @brief Construct from string_view
 			explicit inline constexpr basic_json_value( daw::string_view sv )
-			  : m_parse_state( std::data( sv ), daw::data_end( sv ) ) {}
+			  : m_parse_state( std::data( sv ), daw::data_end( sv ) ) {
+				m_parse_state.trim_left( );
+			}
 
 			/// @brief Construct from CharT *, std::size_t
 			explicit inline constexpr basic_json_value( CharT *first, std::size_t sz )
-			  : m_parse_state( first, first + static_cast<std::ptrdiff_t>( sz ) ) {}
+			  : m_parse_state( first, first + static_cast<std::ptrdiff_t>( sz ) ) {
+				m_parse_state.trim_left( );
+			}
 
 			/// @brief Construct from CharT *, CharT *
 			explicit inline constexpr basic_json_value( CharT *first, CharT *last )
-			  : m_parse_state( first, last ) {}
+			  : m_parse_state( first, last ) {
+				m_parse_state.trim_left( );
+			}
 
 			/// @brief Get a copy of the underlying parse state
 			/// @return IteratorRange containing values JSON data
@@ -669,11 +674,12 @@ namespace daw::json {
 		basic_json_value( BasicParsePolicy<PolicyFlags, Allocator> )
 		  -> basic_json_value<PolicyFlags, Allocator>;
 
-		basic_json_value( daw::string_view )->basic_json_value<>;
+		basic_json_value( daw::string_view ) -> basic_json_value<>;
 
-		basic_json_value( char const *first, std::size_t sz )->basic_json_value<>;
+		basic_json_value( char const *first, std::size_t sz ) -> basic_json_value<>;
 
-		basic_json_value( char const *first, char const *last )->basic_json_value<>;
+		basic_json_value( char const *first, char const *last )
+		  -> basic_json_value<>;
 
 		template<typename Result, json_options_t PolicyFlags, typename Allocator>
 		[[nodiscard]] constexpr Result
