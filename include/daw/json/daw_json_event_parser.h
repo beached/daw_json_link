@@ -25,7 +25,14 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		enum json_parse_handler_result { Continue, SkipClassArray, Complete };
+		enum json_parse_handler_result {
+			/// Continue parsing with next element/member
+			Continue,
+			/// Skip the rest of this class or array
+			SkipClassArray,
+			/// We are completed and do not wish to see any more
+			Complete
+		};
 
 		namespace json_details {
 			struct handler_result_holder {
@@ -364,12 +371,13 @@ namespace daw::json {
 			  typename BasicParsePolicy<P,
 			                            A>::template SetPolicyOptions<ParseFlags...>;
 
-			auto jvalue = basic_json_value<ParseState::policy_flags( ), A>( bjv );
 			using iterator =
 			  basic_json_value_iterator<ParseState::policy_flags( ), A>;
-			using json_value_t = basic_json_pair<ParseState::policy_flags( ), A>;
+			using json_value_t = typename iterator::json_pair;
 			using stack_value_t =
 			  JsonEventParserStackValue<ParseState::policy_flags( ), A>;
+			auto jvalue = basic_json_value( bjv );
+
 
 			auto parent_stack = [] {
 				if constexpr( std::is_same_v<StackContainerPolicy, use_default> ) {
