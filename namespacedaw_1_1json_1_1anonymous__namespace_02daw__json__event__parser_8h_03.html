@@ -97,10 +97,10 @@ Enumerations</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a8e3149fc82413fa4d9e238b86a00f3fa"><td class="memTemplParams" colspan="2">template&lt;json_options_t P, typename A , typename StackContainerPolicy  = use_default, typename Handler &gt; </td></tr>
-<tr class="memitem:a8e3149fc82413fa4d9e238b86a00f3fa"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03.html#a8e3149fc82413fa4d9e238b86a00f3fa">json_event_parser</a> (<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>&lt; P, A &gt; bjv, Handler &amp;&amp;handler)</td></tr>
+<tr class="memitem:a8e3149fc82413fa4d9e238b86a00f3fa"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03.html#a8e3149fc82413fa4d9e238b86a00f3fa">json_event_parser</a> (<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>&lt; P, A &gt; bjv, Handler &amp;&amp;handler)</td></tr>
 <tr class="separator:a8e3149fc82413fa4d9e238b86a00f3fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23995b83cd1c7ec677f9ff19a6935ab4"><td class="memTemplParams" colspan="2">template&lt;json_options_t P, typename A , typename StackContainerPolicy  = use_default, typename Handler , auto... ParseFlags&gt; </td></tr>
-<tr class="memitem:a23995b83cd1c7ec677f9ff19a6935ab4"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03.html#a23995b83cd1c7ec677f9ff19a6935ab4">json_event_parser</a> (<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>&lt; P, A &gt; bjv, Handler &amp;&amp;handler, options::parse_flags_t&lt; ParseFlags... &gt;)</td></tr>
+<tr class="memitem:a23995b83cd1c7ec677f9ff19a6935ab4"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03.html#a23995b83cd1c7ec677f9ff19a6935ab4">json_event_parser</a> (<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>&lt; P, A &gt; bjv, Handler &amp;&amp;handler, options::parse_flags_t&lt; ParseFlags... &gt;)</td></tr>
 <tr class="separator:a23995b83cd1c7ec677f9ff19a6935ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a867ec775ae91a27ae9c3eb51b592be3c"><td class="memTemplParams" colspan="2">template&lt;typename Handler &gt; </td></tr>
 <tr class="memitem:a867ec775ae91a27ae9c3eb51b592be3c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03.html#a867ec775ae91a27ae9c3eb51b592be3c">json_event_parser</a> (daw::string_view json_document, Handler &amp;&amp;handler)</td></tr>
@@ -122,9 +122,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a29be9aa018005547cac126b10a6bf36cabeea1409888719d86034e3ddf81da091"></a>Continue&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a29be9aa018005547cac126b10a6bf36ca9e880b16cba42acd99e9a397d4e99c92"></a>SkipClassArray&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a29be9aa018005547cac126b10a6bf36cae50e7e641032035a4dadf75b4c5b0fc2"></a>Complete&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a29be9aa018005547cac126b10a6bf36cabeea1409888719d86034e3ddf81da091"></a>Continue&#160;</td><td class="fielddoc"><p>Continue parsing with next element/member. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a29be9aa018005547cac126b10a6bf36ca9e880b16cba42acd99e9a397d4e99c92"></a>SkipClassArray&#160;</td><td class="fielddoc"><p>Skip the rest of this class or array. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a29be9aa018005547cac126b10a6bf36cae50e7e641032035a4dadf75b4c5b0fc2"></a>Complete&#160;</td><td class="fielddoc"><p>We are completed and do not wish to see any more. </p>
+</td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00028">28</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
@@ -155,7 +158,7 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a8f0e7c0563257eb042134502d4244e16a4410ec34d9e6c1a68100ca0ce033fb17"></a>Array&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00314">314</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00321">321</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
 
 </div>
 </div>
@@ -174,7 +177,7 @@ template&lt;json_options_t P, typename A , typename StackContainerPolicy  = use_
         <tr>
           <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_event_parser.h}::json_event_parser </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>&lt; P, A &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>&lt; P, A &gt;&#160;</td>
           <td class="paramname"><em>bjv</em>, </td>
         </tr>
         <tr>
@@ -196,7 +199,7 @@ template&lt;json_options_t P, typename A , typename StackContainerPolicy  = use_
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00567">567</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00575">575</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
 
 </div>
 </div>
@@ -214,7 +217,7 @@ template&lt;json_options_t P, typename A , typename StackContainerPolicy  = use_
         <tr>
           <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_event_parser.h}::json_event_parser </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>&lt; P, A &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>&lt; P, A &gt;&#160;</td>
           <td class="paramname"><em>bjv</em>, </td>
         </tr>
         <tr>
@@ -242,7 +245,7 @@ template&lt;json_options_t P, typename A , typename StackContainerPolicy  = use_
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00360">360</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00367">367</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
 
 </div>
 </div>
@@ -282,7 +285,7 @@ template&lt;typename Handler &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00583">583</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00591">591</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
 
 </div>
 </div>
@@ -328,7 +331,7 @@ template&lt;typename Handler , auto... ParseFlags&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00575">575</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__event__parser_8h_source.html#l00583">583</a> of file <a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>.</p>
 
 </div>
 </div>
