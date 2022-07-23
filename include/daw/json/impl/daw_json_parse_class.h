@@ -254,8 +254,13 @@ namespace daw::json {
 					using NeedClassPositions = std::bool_constant<(
 					  ( JsonMembers::must_be_class_member or ... ) )>;
 
+#if not defined( _MSC_VER ) or defined( __clang__ )
+					auto known_locations = DAW_AS_CONSTANT(
+					  ( make_locations_info<ParseState, JsonMembers...>( ) ) );
+#else
 					auto known_locations =
-					 DAW_AS_CONSTANT( (make_locations_info<ParseState, JsonMembers...>( )) );
+					  make_locations_info<ParseState, JsonMembers...>( );
+#endif
 
 					if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
 						auto const run_after_parse = class_cleanup<
