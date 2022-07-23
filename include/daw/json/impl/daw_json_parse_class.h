@@ -204,12 +204,6 @@ namespace daw::json {
 				}
 			};
 
-#if not defined( _MSC_VER ) or defined( __clang__ )
-			template<typename ParseState, typename... JsonMembers>
-			inline constexpr auto
-			  known_locations_v = make_locations_info<ParseState, JsonMembers...>( );
-#endif
-
 			///
 			/// @brief Parse to the user supplied class.  The parser will run
 			/// left->right if it can when the JSON document's order matches that of
@@ -260,11 +254,12 @@ namespace daw::json {
 					using NeedClassPositions = std::bool_constant<(
 					  ( JsonMembers::must_be_class_member or ... ) )>;
 
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if not defined( _MSC_VER ) or defined( __clang__ )
+					auto known_locations = DAW_AS_CONSTANT(
+					  ( make_locations_info<ParseState, JsonMembers...>( ) ) );
+#else
 					auto known_locations =
 					  make_locations_info<ParseState, JsonMembers...>( );
-#else
-					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
 #endif
 
 					if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
