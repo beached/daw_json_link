@@ -1611,7 +1611,7 @@ $(function() {
 <div class="line"><a name="l01539"></a><span class="lineno"> 1539</span>&#160;          <span class="keywordflow">if</span>( ( whole_dig &lt; -4 ) | ( whole_dig &gt; 6 ) ) {</div>
 <div class="line"><a name="l01540"></a><span class="lineno"> 1540</span>&#160;            <span class="keywordtype">char</span> buff[50]{ };</div>
 <div class="line"><a name="l01541"></a><span class="lineno"> 1541</span>&#160;            <span class="keywordtype">char</span> *ptr = buff;</div>
-<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;            daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );</div>
+<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;            ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );</div>
 <div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160;            out_it.copy_buffer( buff, ptr );</div>
 <div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
 <div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160;          }</div>
