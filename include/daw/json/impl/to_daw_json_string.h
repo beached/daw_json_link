@@ -1539,7 +1539,7 @@ namespace daw::json {
 					if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
 						char buff[50]{ };
 						char *ptr = buff;
-						daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );
+						ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );
 						out_it.copy_buffer( buff, ptr );
 						return out_it;
 					}
