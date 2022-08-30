@@ -160,7 +160,9 @@ int main( int, char ** )
 {
 	do_test( empty_class_empty_json_class( ) );
 	do_test( empty_class_nonempty_json_class( ) );
+#if not defined( _MSC_VER )
 	do_fail_test( missing_members_fail( ) );
+#endif
 	do_fail_test( wrong_member_type_fail( ) );
 	do_fail_test( wrong_member_number_type_fail( ) );
 	do_fail_test( unexpected_eof_in_class1_fail( ) );
