@@ -73,11 +73,11 @@ namespace daw::json {
 } // namespace daw::json
 
 bool operator==( MyClass2 const &lhs, MyClass2 const &rhs ) {
-	if( lhs.member0 != rhs.member0 or lhs.member1 != lhs.member1 ) {
+	if( lhs.member0 != rhs.member0 or lhs.member1 != rhs.member1 ) {
 		return false;
 	}
 	using namespace daw::json;
-	return from_json<MyDelayedClass>( rhs.member_later ) ==
+	return from_json<MyDelayedClass>( lhs.member_later ) ==
 	       from_json<MyDelayedClass>( rhs.member_later );
 }
 
