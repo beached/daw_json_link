@@ -15,7 +15,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
     endif()
     if( MSVC )
         message( STATUS "Clang-CL ${CMAKE_CXX_COMPILER_VERSION} detected" )
-        add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 )
+        add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 -D_CRT_SECURE_NO_WARNINGS )
         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc" )
         set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 -DNDEBUG /permissive- /EHsc" )
         if( DAW_WERROR )
