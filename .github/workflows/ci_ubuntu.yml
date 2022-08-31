@@ -142,4 +142,5 @@ jobs:
             /var/lib/systemd/coredump/*
             /var/crash/*
             !/var/crash/_usr_bin_do-release*
+            !/var/crash/_usr_lib_systemd*
           if-no-files-found: ignore
