@@ -2,12 +2,7 @@ name: Windows
 
 on:
   push:
-    branches: [ release, develop ]
-  pull_request:
-    push:
-      branches-ignore: develop
-    pull_request:
-      branches-ignore: develop
+    branches: [ v2 ]
 
 jobs:
   windows2019_msvc2019_x64_debug_17:

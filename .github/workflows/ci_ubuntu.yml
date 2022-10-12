@@ -2,12 +2,7 @@ name: Ubuntu
 
 on:
   push:
-    branches: [ release, develop ]
-  pull_request:
-    push:
-      branches-ignore: develop
-    pull_request:
-      branches-ignore: develop
+    branches: [ v2 ]
 
 jobs:
   ubuntu2004_clang12_debug_17:

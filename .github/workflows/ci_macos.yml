@@ -2,12 +2,7 @@ name: MacOS
 
 on:
   push:
-    branches: [ release, develop ]
-  pull_request:
-    push:
-      branches-ignore: develop
-    pull_request:
-      branches-ignore: develop
+    branches: [ v2 ]
 
 jobs:
   catalina_appleclang_debug_17:
