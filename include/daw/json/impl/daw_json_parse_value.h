@@ -158,8 +158,8 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
 
-		if constexpr( JsonMember::literal_as_string == LiteralAsStringOpt::Never and
-		              KnownBounds ) {
+		if constexpr( KnownBounds and
+		              JsonMember::literal_as_string == LiteralAsStringOpt::Never ) {
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak( parse_policy_details::is_number( rng.front( ) ),
 			                      ErrorReason::InvalidNumber, rng );
@@ -182,6 +182,11 @@ namespace daw::json::json_details {
 			if constexpr( not KnownBounds and JsonMember::literal_as_string !=
 			                                    LiteralAsStringOpt::Never ) {
 				skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			}
+			if constexpr( KnownBounds ) {
+				daw_json_assert_weak( rng.empty( ), ErrorReason::InvalidEndOfValue,
+				                      rng );
+			} else {
 				daw_json_assert_weak(
 				  parse_policy_details::at_end_of_item( rng.front( ) ),
 				  ErrorReason::InvalidEndOfValue, rng );
