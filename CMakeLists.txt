@@ -9,7 +9,7 @@
 cmake_minimum_required( VERSION 3.14 )
 
 project( "daw-json-link"
-         VERSION "3.0.5"
+         VERSION "3.1.0"
          DESCRIPTION "Static JSON parsing in C++"
          HOMEPAGE_URL "https://github.com/beached/daw_json_link"
          LANGUAGES C CXX )

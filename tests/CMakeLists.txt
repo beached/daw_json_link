@@ -804,6 +804,12 @@ add_test( NAME int_ptr_test COMMAND int_ptr_test WORKING_DIRECTORY "${CMAKE_SOUR
 add_dependencies( ci_tests int_ptr_test )
 add_dependencies( full int_ptr_test )
 
+add_executable( out_of_order_test src/out_of_order_test.cpp )
+target_link_libraries( out_of_order_test PRIVATE json_test )
+add_test( NAME out_of_order_test COMMAND out_of_order_test )
+add_dependencies( ci_tests out_of_order_test )
+add_dependencies( full out_of_order_test )
+
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13 )
     # Only clang is supported for fuzzing
     add_executable( daw_json_fuzzing EXCLUDE_FROM_ALL src/daw_json_fuzzing.cpp )
