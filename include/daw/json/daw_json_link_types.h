@@ -831,7 +831,7 @@ namespace daw::json {
 		} // namespace json_details
 
 		namespace json_base {
-			template<typename T, typename Constructor>
+			template<typename T, typename Constructor, json_options_t Options>
 			struct json_class {
 				using i_am_a_json_type = void;
 				using wrapped_type = T;
@@ -858,6 +858,10 @@ namespace daw::json {
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_class<NewName, T, Constructor>;
+
+				static constexpr options::AllMembersInOrder all_members_in_order =
+				  json_details::get_bits_for<options::AllMembersInOrder>( class_opts,
+				                                                          Options );
 			};
 		} // namespace json_base
 
@@ -869,32 +873,26 @@ namespace daw::json {
 		 * @tparam Constructor A callable used to construct T.  The
 		 * default supports normal and aggregate construction
 		 */
-		template<JSONNAMETYPE Name, typename T, typename Constructor>
-		struct json_class : json_base::json_class<T, Constructor> {
+		template<JSONNAMETYPE Name, typename T, typename Constructor,
+		         json_options_t Options>
+		struct json_class : json_base::json_class<T, Constructor, Options> {
 
 			static constexpr daw::string_view name = Name;
 
 			using without_name = json_base::json_class<T, Constructor>;
 		};
 
-		template<typename T, typename Constructor = use_default>
-		using json_class_no_name = json_base::json_class<T, Constructor>;
+		template<typename T, typename Constructor = use_default,
+		         json_options_t Options = class_opts_def>
+		using json_class_no_name = json_base::json_class<T, Constructor, Options>;
 
 		template<typename T, JsonNullable NullableType = JsonNullable::Nullable,
-		         typename Constructor = use_default>
+		         typename Constructor = use_default,
+		         json_options_t Options = class_opts_def>
 		using json_class_null_no_name = json_base::json_nullable<
-		  T, json_base::json_class<json_details::unwrapped_t<T>>, NullableType,
-		  Constructor>;
-
-		/***
-		 * A type to hold the types for parsing variants.
-		 * @tparam JsonElements Up to one of a JsonElement that is a JSON number,
-		 * string, object, or array
-		 */
-		template<typename... JsonElements>
-		using json_tagged_variant_type_list
-		  [[deprecated( "Use json_variant_type_list, removal in v4" )]] =
-		    json_variant_type_list<JsonElements...>;
+		  T,
+		  json_base::json_class<json_details::unwrapped_t<T>, use_default, Options>,
+		  NullableType, Constructor>;
 
 		template<typename>
 		struct non_discriminated_variant_base_map;

@@ -62,7 +62,7 @@ namespace daw::json {
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Custom> );
 
 			template<typename JsonMember, bool KnownBounds = false,

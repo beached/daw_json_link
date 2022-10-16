@@ -14,7 +14,7 @@ project( "daw-json-link"
          HOMEPAGE_URL "https://github.com/beached/daw_json_link"
          LANGUAGES C CXX )
 
-set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested." )
+set( CMAKE_CXX_STANDARD 20 CACHE STRING "The C++ standard whose features are requested." )
 
 # Options used. Those tagged with Define are also the name of the source definition
 set( DAW_JSON_VER_OVERRIDE OFF CACHE STRING "Override the default inline namespace name used for API versioning" )
@@ -124,7 +124,7 @@ if( NOT DAW_USE_PACKAGE_MANAGEMENT )
     target_link_libraries( ${PROJECT_NAME} INTERFACE daw::daw-header-libraries daw::daw-utf-range )
 endif()
 
-target_compile_features( ${PROJECT_NAME} INTERFACE cxx_std_17 )
+target_compile_features( ${PROJECT_NAME} INTERFACE cxx_std_20 )
 target_include_directories( ${PROJECT_NAME}
                             INTERFACE
                             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"

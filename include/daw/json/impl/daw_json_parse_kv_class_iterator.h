@@ -83,7 +83,7 @@ namespace daw::json {
 				using key_t = typename JsonMember::json_key_t;
 				using value_t = typename JsonMember::json_element_t;
 
-				inline constexpr json_parse_kv_class_iterator( ) = default;
+				json_parse_kv_class_iterator( ) = default;
 
 				inline constexpr explicit json_parse_kv_class_iterator(
 				  iterator_range_t &r )

@@ -67,7 +67,8 @@ namespace daw::json {
 		 * default supports normal and aggregate construction
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
-		template<JSONNAMETYPE Name, typename T, typename Constructor = use_default>
+		template<JSONNAMETYPE Name, typename T, typename Constructor = use_default,
+		         json_options_t Options = class_opts_def>
 		struct json_class;
 
 		/**
@@ -80,7 +81,8 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         JsonNullable NullableType = JsonNullable::Nullable,
-		         typename Constructor = use_default>
+		         typename Constructor = use_default,
+		         json_options_t Options = class_opts_def>
 		using json_class_null =
 		  json_nullable<Name, T,
 		                json_base::json_class<json_details::unwrapped_t<T>>,

@@ -69,7 +69,7 @@ namespace daw::json {
 					static_assert(
 					  std::is_invocable_v<Constructor, Args...>,
 					  "Unable to construct value with the supplied arguments" );
-					return Constructor{ }( DAW_FWD2( Args, args )... );
+					return Constructor{ }( DAW_FWD( args )... );
 				}
 			}
 
@@ -233,7 +233,8 @@ namespace daw::json {
 
 		namespace json_base {
 
-			template<typename T, typename Constructor = use_default>
+			template<typename T, typename Constructor = use_default,
+			         json_options_t Options = class_opts_def>
 			struct json_class;
 
 			template<typename T, JsonNullable NullableType = JsonNullable::Nullable,
@@ -376,8 +377,8 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			inline constexpr JsonParseTypes
-			  number_parse_type_impl_v = number_parse_type_impl_test<T>( );
+			inline constexpr JsonParseTypes number_parse_type_impl_v =
+			  number_parse_type_impl_test<T>( );
 
 			template<typename T>
 			constexpr auto number_parse_type_test( )
@@ -393,8 +394,8 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			inline constexpr JsonParseTypes
-			  number_parse_type_v = number_parse_type_test<T>( );
+			inline constexpr JsonParseTypes number_parse_type_v =
+			  number_parse_type_test<T>( );
 
 			template<typename, typename = void>
 			struct json_deduced_type_map {
@@ -849,7 +850,8 @@ Constructor{ }( std::declval<typename Members::parse_to_t &&>( )... ) );*/
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
 			construct_nullable_empty( ) {
 				if constexpr( std::is_invocable_v<
-				                Constructor, concepts::construct_nullable_with_empty_t> ) {
+				                Constructor,
+				                concepts::construct_nullable_with_empty_t> ) {
 					return Constructor{ }( concepts::construct_nullable_with_empty );
 				} else {
 					return Constructor{ }( );

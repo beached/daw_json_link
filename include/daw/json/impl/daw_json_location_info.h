@@ -216,7 +216,8 @@ namespace daw::json {
 			         bool from_start = false, std::size_t N, typename ParseState,
 			         bool B, typename CharT>
 			[[nodiscard]] inline constexpr std::pair<ParseState, bool>
-			find_class_member( ParseState &parse_state,
+			find_class_member( std::false_type /*all members in order*/,
+			                   ParseState &parse_state,
 			                   locations_info_t<N, CharT, B> &locations,
 			                   bool is_nullable, daw::string_view member_name ) {
 
@@ -270,7 +271,7 @@ namespace daw::json {
 						// OLDTODO:	use type knowledge to speed up skip
 						// OLDTODO:	on skipped classes see if way to store
 						// 				member positions so that we don't have to
-						//				re-parse them after
+						//				reparse them after
 						// RESULT: storing preparsed is slower, don't try 3 times
 						// it also limits the type of things we can parse potentially
 						// Using locations to switch on BaseType is slower too
@@ -300,6 +301,81 @@ namespace daw::json {
 					return std::pair<ParseState, bool>{
 					  locations[pos].get_range( template_arg<ParseState> ), known };
 				}
+			}
+
+			template<std::size_t pos, AllMembersMustExist must_exist,
+			         bool from_start = false, std::size_t N, typename ParseState,
+			         bool B, typename CharT>
+			[[nodiscard]] inline constexpr ParseState
+			find_class_member( std::true_type /*all members in order*/,
+			                   ParseState &parse_state,
+			                   locations_info_t<N, CharT, B> const &locations,
+			                   bool is_nullable, daw::string_view member_name ) {
+
+				// silencing gcc9 warning as these are selectively used
+				(void)is_nullable;
+				(void)member_name;
+
+				daw_json_assert_weak(
+				  nsc_or( is_nullable,
+				          ( not parse_state.is_closing_brace_checked( ) ) ),
+				  missing_member( member_name ), parse_state );
+
+				parse_state.trim_left_unchecked( );
+				while( parse_state.front( ) != '}' ) {
+					// TODO: fully unescape name
+					// parse_name checks if we have more and are quotes
+					auto const name = parse_name( parse_state );
+					auto const name_pos =
+					  locations.template find_name<ParseState::expect_long_strings>(
+					    template_vals<( from_start ? 0 : pos )>, name );
+					if constexpr( must_exist == AllMembersMustExist::yes ) {
+						daw_json_assert_weak( name_pos < std::size( locations ),
+						                      ErrorReason::UnknownMember, parse_state );
+					} else {
+#if defined( DAW_JSON_PARSER_DIAGNOSTICS )
+						std::cerr << "DEBUG: Unknown member '" << name << '\n';
+#endif
+						if( name_pos >= std::size( locations ) ) {
+							// This is not a member we are concerned with
+							(void)skip_value( parse_state );
+							parse_state.move_next_member_or_end( );
+							continue;
+						}
+					}
+					if( name_pos == pos ) {
+						return parse_state;
+					} else {
+#if defined( DAW_JSON_PARSER_DIAGNOSTICS )
+						std::cerr << "DEBUG:	Out of order member '"
+						          << locations.names[name_pos].name
+						          << "' found, looking for '" << locations.names[pos].name
+						          << ". It is "
+						          << std::abs( static_cast<long long>( pos ) -
+						                       static_cast<long long>( name_pos ) )
+						          << " members ahead in constructor\n";
+#endif
+						// We are out of order, store position for later
+						// OLDTODO:	use type knowledge to speed up skip
+						// OLDTODO:	on skipped classes see if way to store
+						// 				member positions so that we don't have to
+						//				reparse them after
+						// RESULT: storing preparsed is slower, don't try 3 times
+						// it also limits the type of things we can parse potentially
+						// Using locations to switch on BaseType is slower too
+
+						if constexpr( ParseState::is_unchecked_input ) {
+							if( name_pos + 1 < std::size( locations ) ) {
+								parse_state.move_next_member( );
+							} else {
+								parse_state.move_next_member_or_end( );
+							}
+						} else {
+							parse_state.move_next_member_or_end( );
+						}
+					}
+				}
+				return ParseState{ };
 			}
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER

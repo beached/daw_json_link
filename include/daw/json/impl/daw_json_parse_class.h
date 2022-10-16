@@ -98,7 +98,8 @@ namespace daw::json {
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
 			         typename ParseState, std::size_t N, typename CharT, bool B>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_class_member( ParseState &parse_state,
+			parse_class_member( std::false_type /*all_members_in_order*/,
+			                    ParseState &parse_state,
 			                    locations_info_t<N, CharT, B> &locations ) {
 				parse_state.move_next_member_or_end( );
 
@@ -107,10 +108,10 @@ namespace daw::json {
 				                      parse_state );
 
 				auto [loc, known] = find_class_member<member_position, must_exist>(
-				  parse_state, locations, is_json_nullable_v<JsonMember>,
-				  JsonMember::name );
+				  std::false_type{ }, parse_state, locations,
+				  is_json_nullable_v<JsonMember>, JsonMember::name );
 
-				// If the member was found loc will have it's position
+				// If the member was found loc will have its position
 				if( not known ) {
 					if constexpr( NeedsClassPositions ) {
 						auto const cf = parse_state.class_first;
@@ -152,6 +153,65 @@ namespace daw::json {
 				return parse_value<without_name<JsonMember>, true>(
 				  loc, ParseTag<JsonMember::expected_type>{ } );
 			}
+
+			/*
+			template<std::size_t member_position, typename JsonMember,
+			         AllMembersMustExist must_exist, bool NeedsClassPositions,
+			         typename ParseState, std::size_t N, typename CharT, bool B>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			parse_class_member( std::true_type, //all_members_in_order
+			                    ParseState &parse_state,
+			                    locations_info_t<N, CharT, B> const &locations ) {
+			  parse_state.move_next_member_or_end( );
+
+			  daw_json_assert_weak( parse_state.is_at_next_class_member( ),
+			                        ErrorReason::MissingMemberNameOrEndOfClass,
+			                        parse_state );
+
+			  auto loc = find_class_member<member_position, must_exist>(
+			    std::true_type{ }, parse_state, locations,
+			    is_json_nullable_v<JsonMember>, JsonMember::name );
+
+			  if constexpr( NeedsClassPositions ) {
+			    auto const cf = parse_state.class_first;
+			    auto const cl = parse_state.class_last;
+			    if constexpr( use_direct_construction_v<ParseState,
+			                                            without_name<JsonMember>> ) {
+			      auto const after_parse = daw::on_scope_exit( [&] {
+			        parse_state.class_first = cf;
+			        parse_state.class_last = cl;
+			      } );
+			      return parse_value<without_name<JsonMember>>(
+			        parse_state, ParseTag<JsonMember::expected_type>{ } );
+			    } else {
+			      auto result = parse_value<without_name<JsonMember>>(
+			        parse_state, ParseTag<JsonMember::expected_type>{ } );
+			      parse_state.class_first = cf;
+			      parse_state.class_last = cl;
+			      return result;
+			    }
+			  } else {
+			    return parse_value<without_name<JsonMember>>(
+			      parse_state, ParseTag<JsonMember::expected_type>{ } );
+			  }
+			  // We cannot find the member, check if the member is nullable
+			  if( loc.is_null( ) ) {
+			    if constexpr( is_json_nullable_v<JsonMember> ) {
+			      return parse_value<without_name<JsonMember>, true>(
+			        loc, ParseTag<JsonMember::expected_type>{ } );
+			    } else {
+			      daw_json_error( missing_member( std::string_view(
+			                        std::data( JsonMember::name ),
+			                        std::size( JsonMember::name ) ) ),
+			                      parse_state );
+			    }
+			  }
+
+			  // Member was previously skipped
+			  return parse_value<without_name<JsonMember>, true>(
+			    loc, ParseTag<JsonMember::expected_type>{ } );
+			}
+			*/
 
 			template<bool IsExactClass, typename ParseState, typename OldClassPos>
 			DAW_ATTRIB_INLINE constexpr void
@@ -204,12 +264,6 @@ namespace daw::json {
 				}
 			};
 
-#if not defined( _MSC_VER ) or defined( __clang__ )
-			template<typename ParseState, typename... JsonMembers>
-			inline constexpr auto
-			  known_locations_v = make_locations_info<ParseState, JsonMembers...>( );
-#endif
-
 			///
 			/// @brief Parse to the user supplied class.  The parser will run
 			/// left->right if it can when the JSON document's order matches that of
@@ -260,12 +314,17 @@ namespace daw::json {
 					using NeedClassPositions = std::bool_constant<(
 					  ( JsonMembers::must_be_class_member or ... ) )>;
 
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if not defined( _MSC_VER ) or defined( __clang__ )
+					auto known_locations = DAW_AS_CONSTANT(
+					  ( make_locations_info<ParseState, JsonMembers...>( ) ) );
+#else
 					auto known_locations =
 					  make_locations_info<ParseState, JsonMembers...>( );
-#else
-					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
 #endif
+
+					using members_in_order =
+					  std::bool_constant<( JsonClass::all_members_in_order ==
+					                       options::AllMembersInOrder::yes )>;
 
 					if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
 						auto const run_after_parse = class_cleanup<
@@ -273,27 +332,32 @@ namespace daw::json {
 						  ParseState, decltype( old_class_pos )>{ parse_state,
 						                                          old_class_pos };
 						(void)run_after_parse;
-
 						/*
 						 * Rather than call directly use apply/tuple to evaluate
 						 * left->right
 						 */
 						if constexpr( force_aggregate_construction_v<T> ) {
-							return T{ parse_class_member<
-							  Is, traits::nth_type<Is, JsonMembers...>, must_exist::value,
-							  NeedClassPositions::value>( parse_state, known_locations )... };
+							return T{
+							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
+							                     must_exist::value,
+							                     NeedClassPositions::value>(
+							    members_in_order{ }, parse_state, known_locations )... };
 						} else {
 							return construct_value_tp<T, Constructor>(
-							  parse_state, fwd_pack{ parse_class_member<
-							                 Is, traits::nth_type<Is, JsonMembers...>,
-							                 must_exist::value, NeedClassPositions::value>(
-							                 parse_state, known_locations )... } );
+							  parse_state,
+							  fwd_pack{
+							    parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
+							                       must_exist::value,
+							                       NeedClassPositions::value>(
+							      members_in_order{ }, parse_state, known_locations )... } );
 						}
 					} else {
 						if constexpr( force_aggregate_construction_v<T> ) {
-							auto result = T{ parse_class_member<
-							  Is, traits::nth_type<Is, JsonMembers...>, must_exist::value,
-							  NeedClassPositions::value>( parse_state, known_locations )... };
+							auto result =
+							  T{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
+							                        must_exist::value,
+							                        NeedClassPositions::value>(
+							    members_in_order{ }, parse_state, known_locations )... };
 
 							class_cleanup_now<
 							  json_details::all_json_members_must_exist_v<T, ParseState>>(
@@ -301,10 +365,12 @@ namespace daw::json {
 							return result;
 						} else {
 							auto result = construct_value_tp<T, Constructor>(
-							  parse_state, fwd_pack{ parse_class_member<
-							                 Is, traits::nth_type<Is, JsonMembers...>,
-							                 must_exist::value, NeedClassPositions::value>(
-							                 parse_state, known_locations )... } );
+							  parse_state,
+							  fwd_pack{
+							    parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
+							                       must_exist::value,
+							                       NeedClassPositions::value>(
+							      members_in_order{ }, parse_state, known_locations )... } );
 
 							class_cleanup_now<
 							  json_details::all_json_members_must_exist_v<T, ParseState>>(

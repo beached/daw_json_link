@@ -101,15 +101,19 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
         add_compile_options( -fprofile-instr-generate -fcoverage-mapping )
     endif()
     message( STATUS "g++ ${CMAKE_CXX_COMPILER_VERSION} detected" )
+    if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
+        add_compile_options( -ffold-simple-inlines )
+    endif()
     add_compile_options( --param max-gcse-memory=260000000
                          -Wall
                          -Wextra
                          -pedantic
-                         -Wpedantic
                          -Wconversion
                          -Wduplicated-cond
                          -Wlogical-op
+                         -Wno-unused-local-typedefs
                          -Wold-style-cast
+                         -Wpedantic
                          -Wshadow
                          -Wzero-as-null-pointer-constant
                          )
@@ -136,9 +140,9 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
     if( DAW_JSON_USE_SANITIZERS )
         message( STATUS "Using sanitizers" )
         #UBSAN makes constexpr code paths not constexpr	on gcc9-11
-        #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fsanitize=undefined")
+        set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fsanitize=undefined" )
         set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fsanitize=address" )
-        #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=undefined")
+        set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=undefined" )
         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address" )
     endif()
 elseif( MSVC )

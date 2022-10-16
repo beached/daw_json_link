@@ -127,6 +127,36 @@ namespace daw::json {
 				return number_opts_t::options( options... );
 			}
 		} // namespace options
+		// json_class
+		namespace options {
+			/// @brief All the members in the json document are in the same order as
+			/// the mapping. This allows less state to be carried and may offer
+			/// performance benefits.  If not true, the results are going to be as if
+			/// the member was not present in the json document for unspecified
+			/// members.
+			/// @def no
+			enum class AllMembersInOrder : unsigned {
+				/// @brief Members can be in any order in json document
+				no,
+				/// @brief Members are in the exact order specified in mapping
+				yes
+			};
+		} // namespace options
+		namespace json_details {
+			template<>
+			inline constexpr unsigned
+			  json_option_bits_width<options::AllMembersInOrder> = 1;
+
+			template<>
+			inline constexpr auto
+			  default_json_option_value<options::AllMembersInOrder> =
+			    options::AllMembersInOrder::no;
+		} // namespace json_details
+		using class_opts_t =
+		  json_details::JsonOptionList<options::AllMembersInOrder>;
+		inline constexpr auto class_opts = class_opts_t{ };
+		inline constexpr json_options_t class_opts_def =
+		  class_opts_t::default_option_flag;
 
 		// json_bool
 		using bool_opts_t =

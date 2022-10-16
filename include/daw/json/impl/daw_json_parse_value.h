@@ -81,8 +81,10 @@ namespace daw::json {
 
 				if constexpr( JsonMember::literal_as_string !=
 				              options::LiteralAsStringOpt::Never ) {
-					skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
-					  parse_state );
+					if constexpr( not KnownBounds ) {
+						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
+						  parse_state );
+					}
 					if constexpr( JsonMember::allow_number_errors ==
 					                options::JsonNumberErrors::AllowInf or
 					              JsonMember::allow_number_errors ==
@@ -105,10 +107,15 @@ namespace daw::json {
 							} else {
 								daw_json_error( ErrorReason::InvalidString, parse_state );
 							}
-							daw_json_assert_weak(
-							  not parse_state.has_more( ) or
-							    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-							  ErrorReason::InvalidEndOfValue, parse_state );
+							if constexpr( KnownBounds ) {
+								daw_json_assert_weak( parse_state.empty( ),
+								                      ErrorReason::InvalidNumber, parse_state );
+							} else {
+								daw_json_assert_weak(
+								  parse_state.empty( ) or parse_policy_details::at_end_of_item(
+								                            parse_state.front( ) ),
+								  ErrorReason::InvalidEndOfValue, parse_state );
+							}
 							return daw::cxmath::copy_sign(
 							  daw::numeric_limits<element_t>::infinity( ), sign );
 						} else if( sign < element_t( 0 ) ) {
@@ -122,15 +129,21 @@ namespace daw::json {
 						if( parse_state.starts_with( "NaN" ) ) {
 							parse_state.template move_to_next_of<'"'>( );
 							parse_state.remove_prefix( );
-							daw_json_assert_weak(
-							  not parse_state.has_more( ) or
-							    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-							  ErrorReason::InvalidEndOfValue, parse_state );
+							if constexpr( KnownBounds ) {
+								daw_json_assert_weak( parse_state.empty( ),
+								                      ErrorReason::InvalidNumber, parse_state );
+							} else {
+								daw_json_assert_weak(
+								  parse_state.empty( ) or parse_policy_details::at_end_of_item(
+								                            parse_state.front( ) ),
+								  ErrorReason::InvalidEndOfValue, parse_state );
+							}
 							return daw::numeric_limits<element_t>::quiet_NaN( );
 						}
 					}
 				}
-				if constexpr( KnownBounds ) {
+				if constexpr( KnownBounds and JsonMember::literal_as_string ==
+				                                options::LiteralAsStringOpt::Never ) {
 					return construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
 					  parse_real<element_t, true>( parse_state ) );
@@ -143,16 +156,23 @@ namespace daw::json {
 					auto result = construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
 					  parse_real<element_t, false>( parse_state ) );
-					if constexpr( JsonMember::literal_as_string !=
-					              options::LiteralAsStringOpt::Never ) {
-						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
-						  parse_state );
-					}
 
-					daw_json_assert_weak(
-					  not parse_state.has_more( ) or
-					    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-					  ErrorReason::InvalidEndOfValue, parse_state );
+					if constexpr( KnownBounds ) {
+						daw_json_assert_weak(
+						  parse_state.empty( ) or
+						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
+						  ErrorReason::InvalidEndOfValue, parse_state );
+					} else {
+						if constexpr( JsonMember::literal_as_string !=
+						              options::LiteralAsStringOpt::Never ) {
+							skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
+							  parse_state );
+						}
+						daw_json_assert_weak(
+						  parse_state.empty( ) or
+						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
+						  ErrorReason::InvalidEndOfValue, parse_state );
+					}
 					return result;
 				}
 			}
@@ -228,11 +248,6 @@ namespace daw::json {
 				                              daw::traits::identity<element_t>>::type;
 
 				if constexpr( KnownBounds ) {
-					if constexpr( JsonMember::literal_as_string !=
-					              options::LiteralAsStringOpt::Never ) {
-						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
-						  parse_state );
-					}
 					parse_policy_details::validate_unsigned_first( parse_state );
 
 					return construct_value(
@@ -527,7 +542,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Custom> ) {
 
 				auto const str = [&] {
