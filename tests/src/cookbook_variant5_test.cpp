@@ -44,12 +44,10 @@ namespace daw::cookbook_variant4 {
 	struct BasicConfig {
 		std::variant<VersionedConfigs...> data;
 
-		template<
-		  typename T,
-		  std::enable_if_t<std::disjunction<std::is_same<
-		                     daw::remove_cvref_t<T>, VersionedConfigs>...>::value,
-		                   std::nullptr_t> = nullptr>
-		constexpr BasicConfig( T &&value )
+		template<typename T>
+		requires( std::is_same_v<std::remove_cvref_t<T>, VersionedConfigs> or
+		          ... ) //
+		  constexpr BasicConfig( T &&value )
 		  : data( std::forward<T>( value ) ) {}
 	};
 	template<std::size_t Idx, typename... VersionedConfigs>

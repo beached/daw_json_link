@@ -49,13 +49,11 @@ namespace daw::json {
 					return opt;
 				}
 
-				template<typename... Args,
-				         std::enable_if_t<
-				           nullable_impl::is_nullable_value_type_constructible_v<
-				             value_type, Args...>,
-				           std::nullptr_t> = nullptr>
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     Args &&...args ) const
+				template<typename... Args>
+				requires( nullable_impl::is_nullable_value_type_constructible_v<
+				          value_type, Args...> ) //
+				  constexpr nullable_type
+				  operator( )( construct_nullable_with_value_t, Args &&...args ) const
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<value_type> and
@@ -99,13 +97,11 @@ namespace daw::json {
 					return opt;
 				}
 
-				template<typename... Args,
-				         std::enable_if_t<
-				           nullable_impl::is_nullable_value_type_constructible_v<
-				             value_type, Args...>,
-				           std::nullptr_t> = nullptr>
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     Args &&...args ) const
+				template<typename... Args>
+				requires( nullable_impl::is_nullable_value_type_constructible_v<
+				          value_type, Args...> ) //
+				  constexpr nullable_type
+				  operator( )( construct_nullable_with_value_t, Args &&...args ) const
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<value_type> and
@@ -153,13 +149,11 @@ namespace daw::json {
 					return opt;
 				}
 
-				template<typename... Args,
-				         std::enable_if_t<
-				           nullable_impl::is_nullable_value_type_constructible_v<
-				             value_type, Args...>,
-				           std::nullptr_t> = nullptr>
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     Args &&...args ) const
+				template<typename... Args>
+				requires( nullable_impl::is_nullable_value_type_constructible_v<
+				          value_type, Args...> ) //
+				  constexpr nullable_type
+				  operator( )( construct_nullable_with_value_t, Args &&...args ) const
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<value_type> and
@@ -202,13 +196,11 @@ namespace daw::json {
 					return ptr;
 				}
 
-				template<typename... Args,
-				         std::enable_if_t<
-				           nullable_impl::is_nullable_value_type_constructible_v<
-				             value_type, Args...>,
-				           std::nullptr_t> = nullptr>
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     Args &&...args ) const
+				template<typename... Args>
+				requires( nullable_impl::is_nullable_value_type_constructible_v<
+				          value_type, Args...> ) //
+				  constexpr nullable_type
+				  operator( )( construct_nullable_with_value_t, Args &&...args ) const
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<T> and

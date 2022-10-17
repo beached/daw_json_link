@@ -64,11 +64,9 @@ namespace daw::json {
 
 			/// @brief Specialization for character pointer
 			template<typename T>
-			struct writable_output_trait<
-			  T *, std::enable_if_t<(
-			         writeable_output_details::is_char_sized_character_v<T> or
-			         writeable_output_details::is_byte_type_v<T> )>>
-			  : std::true_type {
+			requires( writeable_output_details::is_char_sized_character_v<T> or
+			          writeable_output_details::is_byte_type_v<T> ) //
+			  struct writable_output_trait<T *> : std::true_type {
 
 				template<typename... StringViews>
 				static constexpr void write( T *&ptr, StringViews... svs ) {
@@ -93,9 +91,8 @@ namespace daw::json {
 
 			/// @brief Specialization for ostream &
 			template<typename T>
-			struct writable_output_trait<
-			  T, std::enable_if_t<std::is_base_of_v<std::ostream, T>>>
-			  : std::true_type {
+			requires( std::is_base_of_v<std::ostream, T> ) //
+			  struct writable_output_trait<T> : std::true_type {
 
 				template<typename... StringViews>
 				static inline void write( std::ostream &os, StringViews... svs ) {
@@ -146,26 +143,21 @@ namespace daw::json {
 
 			namespace writeable_output_details {
 				template<typename T, typename CharT>
-				using span_like_range_test =
-				  decltype( (void)( std::declval<T &>( ).subspan( 1 ) ),
-				            (void)( std::declval<std::size_t &>( ) =
-				                      std::declval<T &>( ).size( ) ),
-				            (void)( std::declval<bool &>( ) =
-				                      std::declval<T &>( ).empty( ) ),
-				            (void)( *std::declval<T &>( ).data( ) =
-				                      std::declval<CharT>( ) ) );
-				template<typename T, typename CharT>
-				inline constexpr bool is_span_like_range_v =
-				  daw::is_detected_v<span_like_range_test, T, CharT> and
-				  ( writeable_output_details::is_char_sized_character_v<CharT> or
-				    writeable_output_details::is_byte_type_v<CharT> );
+				inline constexpr bool is_span_like_range_v = requires( T & sp ) {
+					sp.subspan( 1 );
+					{ sp.size( ) } -> std::convertible_to<std::size_t>;
+					{ sp.empty( ) } -> std::convertible_to<bool>;
+					*sp.data( ) = CharT{ };
+				}
+				and( writeable_output_details::is_char_sized_character_v<CharT> or
+				     writeable_output_details::is_byte_type_v<CharT> );
 			} // namespace writeable_output_details
 
 			/// @brief Specialization for a span to a buffer with a fixed size
 			template<typename T>
-			struct writable_output_trait<
-			  T, std::enable_if_t<writeable_output_details::is_span_like_range_v<
-			       T, typename T::value_type>>> : std::true_type {
+			requires( writeable_output_details::is_span_like_range_v<
+			          T, typename T::value_type> ) //
+			  struct writable_output_trait<T> : std::true_type {
 				using CharT = typename T::value_type;
 
 				template<typename... StringViews>
@@ -193,20 +185,18 @@ namespace daw::json {
 			};
 
 			namespace writeable_output_details {
-				template<typename T, typename CharT>
-				using resizable_contiguous_range_test =
-				  decltype( (void)( std::declval<T &>( ).resize( std::size_t{ 0 } ) ),
-				            (void)( std::declval<T &>( ).size( ) ),
-				            (void)( *std::declval<T &>( ).data( ) ),
-				            (void)( *std::declval<T &>( ).data( ) =
-				                      std::declval<CharT>( ) ),
-				            (void)( std::declval<T &>( ).push_back(
-				              std::declval<CharT>( ) ) ),
-				            (void)( static_cast<CharT>( 'a' ) ) );
-
 				template<typename Container, typename CharT>
-				inline constexpr bool is_resizable_contiguous_range_v =
-				  daw::is_detected_v<resizable_contiguous_range_test, Container, CharT>;
+				inline constexpr bool is_resizable_contiguous_range_v = requires {
+					//  Extra requires requires{ is for clang-15 and prior, fixed in 16).
+					//  void will cause a compile failure not a false
+					requires requires( Container & c, CharT ch ) {
+						c.resize( std::size_t{ 0 } );
+						c.size( );
+						*c.data( ) = ch;
+						c.push_back( ch );
+						static_cast<CharT>( 'a' );
+					};
+				};
 
 				template<typename Container, typename CharT>
 				inline constexpr bool is_string_like_writable_output_v =
@@ -218,11 +208,9 @@ namespace daw::json {
 
 			/// @brief Specialization for a resizable continain like vector/string
 			template<typename Container>
-			struct writable_output_trait<
-			  Container, std::enable_if_t<
-			               writeable_output_details::is_string_like_writable_output_v<
-			                 Container, typename Container::value_type>>>
-			  : std::true_type {
+			requires( writeable_output_details::is_string_like_writable_output_v<
+			          Container, typename Container::value_type> ) //
+			  struct writable_output_trait<Container> : std::true_type {
 				using CharT = typename Container::value_type;
 
 				template<typename... StringViews>
@@ -250,21 +238,17 @@ namespace daw::json {
 
 			namespace writeable_output_details {
 				template<typename T>
-				using is_writable_output_iterator_test =
-				  decltype( *std::declval<T &>( ) = 'c', ++std::declval<T &>( ) );
-
-				template<typename T>
 				inline constexpr bool is_writable_output_iterator_v =
-				  not std::is_pointer_v<T> and
-				  daw::is_detected_v<is_writable_output_iterator_test, T>;
+				  not std::is_pointer_v<T> and requires( T & it ) {
+					*it = 'c';
+					++it;
+				};
 			} // namespace writeable_output_details
 
 			/// @brief Specialization for output iterators
 			template<typename T>
-			struct writable_output_trait<
-			  T, std::enable_if_t<
-			       writeable_output_details::is_writable_output_iterator_v<T>>>
-			  : std::true_type {
+			requires( writeable_output_details::is_writable_output_iterator_v<T> ) //
+			  struct writable_output_trait<T> : std::true_type {
 
 				template<typename... StringViews>
 				static constexpr void write( T &it, StringViews... svs ) {

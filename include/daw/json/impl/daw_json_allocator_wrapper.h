@@ -79,12 +79,9 @@ namespace daw::json {
 				};
 
 				template<typename A, typename T>
-				using has_allocator_type_as_rebind =
-				  typename std::allocator_traits<A>::template rebind_traits<T>::type;
-
-				template<typename A, typename T>
-				static inline constexpr bool has_rebind_v =
-				  daw::is_detected_v<has_allocator_type_as_rebind, A, T>;
+				static inline constexpr bool has_rebind_v = requires {
+					typename std::allocator_traits<A>::template rebind_traits<T>::type;
+				};
 
 				// DAW FIX
 				template<typename T>

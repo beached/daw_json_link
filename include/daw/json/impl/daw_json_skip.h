@@ -158,12 +158,11 @@ namespace daw::json {
 
 			// DAW TODO: This branch has a bug that shows up in twitter_test2
 #if false and defined( DAW_CX_BIT_CAST )
-			template<typename ParseState,
-			         std::enable_if_t<( ParseState::is_unchecked_input or
-			                            ParseState::is_zero_terminated_string( ) ),
-			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] constexpr ParseState
-			skip_number( ParseState &parse_state ) {
+			template<typename ParseState>
+			requires( ParseState::is_unchecked_input or
+			          ParseState::is_zero_terminated_string( ) ) //
+			  [[nodiscard]] constexpr ParseState
+			  skip_number( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 
 				auto result = parse_state;
@@ -202,10 +201,9 @@ namespace daw::json {
 				return result;
 			}
 
-			template<typename ParseState,
-			         std::enable_if_t<not( ParseState::is_unchecked_input or
-			                               ParseState::is_zero_terminated_string( ) ),
-			                          std::nullptr_t> = nullptr>
+			template<typename ParseState>
+			requires( not( ParseState::is_unchecked_input or
+			               ParseState::is_zero_terminated_string( ) ) ) //
 #else
 			template<typename ParseState>
 #endif

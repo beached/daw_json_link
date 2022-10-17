@@ -131,11 +131,9 @@ namespace daw::json {
 #endif
 		namespace json_details {
 			template<typename T>
-			using has_name_test = decltype( T::name );
-
-			template<typename T>
-			inline constexpr bool is_no_name_v =
-			  not daw::is_detected_v<has_name_test, T>;
+			inline constexpr bool is_no_name_v = not requires {
+				T::name;
+			};
 
 			template<typename T>
 			using is_no_name = std::bool_constant<is_no_name_v<T>>;

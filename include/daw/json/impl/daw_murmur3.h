@@ -42,9 +42,9 @@ namespace daw {
 	}
 
 	template<bool expect_long_strings, typename StringView>
-	[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr auto fnv1a_32( StringView key )
-	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
-	                      UInt32> {
+	requires( daw::traits::is_string_view_like_v<StringView> ) //
+	  [[nodiscard]] DAW_ATTRIB_FLATTEN constexpr UInt32
+	  fnv1a_32( StringView key ) {
 		std::size_t len = std::size( key );
 		auto *ptr = std::data( key );
 		auto hash = 0x811c'9dc5_u32;
@@ -84,10 +84,9 @@ namespace daw {
 	}
 
 	template<typename StringView>
-	[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr auto
-	murmur3_32( StringView key, std::uint32_t seed = 0 )
-	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
-	                      UInt32> {
+	requires( daw::traits::is_string_view_like_v<StringView> ) //
+	  [[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr UInt32
+	  murmur3_32( StringView key, std::uint32_t seed = 0 ) {
 		UInt32 h = to_uint32( seed );
 		UInt32 k = 0_u32;
 		char const *first = std::data( key );

@@ -22,21 +22,19 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace concepts {
-			namespace container_detect {
-				template<typename T>
-				using is_container_test =
-				  decltype( (void)( std::begin( std::declval<T &>( ) ) ),
-				            (void)( std::end( std::declval<T &>( ) ) ),
-				            (void)( std::declval<typename T::value_type>( ) ),
-				            (void)( std::declval<T &>( ).insert(
-				              std::end( std::declval<T &>( ) ),
-				              std::declval<typename T::value_type>( ) ) ) );
-			} // namespace container_detect
+			template<typename T>
+			concept Container = requires( T & t ) {
+				std::begin( t );
+				std::end( t );
+				typename T::value_type;
+				requires requires( typename T::value_type v ) {
+					t.insert( std::end( t ), v );
+				};
+			};
 
 			template<typename T>
-			struct container_traits<T, std::enable_if_t<daw::is_detected_v<
-			                             container_detect::is_container_test, T>>>
-			  : std::true_type {};
+			requires( Container<T> ) //
+			  struct container_traits<T> : std::true_type {};
 
 			template<typename T, std::size_t N>
 			struct container_traits<std::array<T, N>> : std::true_type {

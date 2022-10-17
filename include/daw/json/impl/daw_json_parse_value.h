@@ -467,18 +467,14 @@ namespace daw::json {
 			  can_single_allocation_string<json_base_type<JsonMember>>>;
 
 			template<typename T>
-			using json_member_constructor_t = typename T::constructor_t;
+			inline constexpr bool has_json_member_constructor_v = requires {
+				typename T::constructor_t;
+			};
 
 			template<typename T>
-			using json_member_parse_to_t = typename T::parse_to_t;
-
-			template<typename T>
-			inline constexpr bool has_json_member_constructor_v =
-			  daw::is_detected_v<json_member_constructor_t, T>;
-
-			template<typename T>
-			inline constexpr bool has_json_member_parse_to_v =
-			  daw::is_detected_v<json_member_constructor_t, T>;
+			inline constexpr bool has_json_member_parse_to_v = requires {
+				typename T::parse_to_t;
+			};
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
@@ -1068,11 +1064,9 @@ namespace daw::json {
 				}
 #endif
 				template<typename T>
-				using has_member_index_test = decltype( T::member_index );
-
-				template<typename T>
-				inline constexpr bool has_member_index_v =
-				  daw::is_detected_v<has_member_index_test, T>;
+				inline constexpr bool has_member_index_v = requires {
+					T::member_index;
+				};
 
 				template<typename T>
 				struct member_index_t {

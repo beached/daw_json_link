@@ -373,21 +373,19 @@ namespace daw::json {
 				}
 			}
 
-			template<bool is_unchecked_input, typename ExecTag, typename CharT,
-			         std::enable_if_t<std::is_base_of_v<runtime_exec_tag, ExecTag>,
-			                          std::nullptr_t> = nullptr>
-			DAW_ATTRIB_INLINE CharT *
-			mem_skip_string( ExecTag const &tag, CharT *first, CharT *const last ) {
+			template<bool is_unchecked_input, typename ExecTag, typename CharT>
+			requires( std::is_base_of_v<runtime_exec_tag, ExecTag> ) //
+			  DAW_ATTRIB_INLINE CharT *mem_skip_string( ExecTag const &tag,
+			                                            CharT *first,
+			                                            CharT *const last ) {
 				return mem_move_to_next_of<is_unchecked_input, '"', '\\'>( tag, first,
 				                                                           last );
 			}
 
-			template<bool is_unchecked_input, typename ExecTag, typename CharT,
-			         std::enable_if_t<std::is_base_of_v<runtime_exec_tag, ExecTag>,
-			                          std::nullptr_t> = nullptr>
-			DAW_ATTRIB_INLINE CharT *
-			mem_skip_until_end_of_string( ExecTag const &tag, CharT *first,
-			                              CharT *const last ) {
+			template<bool is_unchecked_input, typename ExecTag, typename CharT>
+			requires( std::is_base_of_v<runtime_exec_tag, ExecTag> ) //
+			  DAW_ATTRIB_INLINE CharT *mem_skip_until_end_of_string(
+			    ExecTag const &tag, CharT *first, CharT *const last ) {
 				if constexpr( not is_unchecked_input ) {
 					daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData );
 				}

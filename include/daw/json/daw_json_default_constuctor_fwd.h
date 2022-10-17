@@ -36,23 +36,21 @@ namespace daw::json {
 				return T{ };
 			}
 
-			template<typename... Args,
-			         std::enable_if_t<(sizeof...( Args ) > 0 and
-			                           std::is_constructible_v<T, Args...>),
-			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
-			operator( )( Args &&...args ) const {
+			template<typename... Args>
+			requires( sizeof...( Args ) > 0 and
+			          std::is_constructible_v<T, Args...> ) //
+			  [[nodiscard]] DAW_ATTRIB_INLINE constexpr T
+			  operator( )( Args &&...args ) const {
 
 				return T( DAW_FWD( args )... );
 			}
 
-			template<typename... Args,
-			         std::enable_if_t<(sizeof...( Args ) > 0 and
-			                           not std::is_constructible_v<T, Args...> and
-			                           traits::is_list_constructible_v<T, Args...>),
-			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
-			operator( )( Args &&...args ) const
+			template<typename... Args>
+			requires( sizeof...( Args ) > 0 and
+			          not std::is_constructible_v<T, Args...> and
+			          traits::is_list_constructible_v<T, Args...> ) //
+			  [[nodiscard]] DAW_ATTRIB_INLINE constexpr T
+			  operator( )( Args &&...args ) const
 			  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
 				return T{ DAW_FWD( args )... };
 			}
@@ -62,7 +60,7 @@ namespace daw::json {
 		/// Specializations must accept accept an operator( )( ) that signifies a
 		/// JSON null. Any other arguments only need to be valid to construct the
 		/// type.
-		template<typename T, typename = void>
+		template<typename T>
 		struct nullable_constructor : default_constructor<T> {
 			/// used for types like string_view that have an empty state
 		};

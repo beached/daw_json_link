@@ -21,7 +21,7 @@ namespace daw::json {
 			/// StringViews... ), static T put( T, char ), and static bool value.
 			/// StringViews work will have a .size( ) and .data( ) member function,
 			/// and have a character element type
-			template<typename, typename = void>
+			template<typename>
 			struct writable_output_trait : std::false_type {};
 
 			template<typename T>

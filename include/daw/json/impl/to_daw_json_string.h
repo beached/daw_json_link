@@ -60,49 +60,33 @@ namespace daw::json {
 				return to_string( *v );
 			}
 
-			namespace to_string_test {
-				template<typename T>
-				auto to_string_test( T &&v )
-				  -> decltype( to_string( DAW_FWD2( T, v ) ) );
-
-				template<typename T>
-				using to_string_result =
-				  decltype( to_string_test( std::declval<T>( ) ) );
-			} // namespace to_string_test
-
 			template<typename T>
-			inline constexpr bool has_to_string_v =
-			  daw::is_detected_v<to_string_test::to_string_result, T>;
+			inline constexpr bool has_to_string_v = requires( T && v ) {
+				to_string( DAW_FWD( v ) );
+			};
 
 			template<typename T>
 			using has_to_string = std::bool_constant<has_to_string_v<T>>;
-
 		} // namespace json_details::to_strings
+
 		namespace json_details {
 			template<typename T>
-			using from_string_test = decltype( from_string(
-			  std::declval<daw::tag_t<T>>( ), std::declval<std::string_view>( ) ) );
-
-			template<typename T>
 			inline constexpr bool has_from_string_v =
-			  daw::is_detected_v<from_string_test, T>;
-
-			template<typename T, typename U>
-			using has_lshift_test = decltype( operator<<(
-			  std::declval<T &>( ), std::declval<U const &>( ) ) );
-
-			template<typename T, typename U>
-			using has_rshift_test = decltype( operator>>(
-			  std::declval<T &>( ), std::declval<U const &>( ) ) );
+			  requires( daw::tag_t<T> tag, std::string_view sv ) {
+				from_string( tag, sv );
+			};
 
 			template<typename T>
 			inline constexpr bool has_ostream_op_v =
-			  daw::is_detected_v<has_lshift_test, std::stringstream, T>;
+			  requires( std::ostream & os, T const &value ) {
+				os << value;
+			};
 
 			template<typename T>
 			inline constexpr bool has_istream_op_v =
-			  daw::is_detected_v<has_rshift_test, std::stringstream, T>;
-
+			  requires( std::istream & is, T &value ) {
+				is >> value;
+			};
 		} // namespace json_details
 
 		/***
@@ -384,12 +368,10 @@ namespace daw::json {
 			template<
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
-			  typename WritableType, typename Container,
-			  std::enable_if_t<
-			    traits::is_container_like_v<daw::remove_cvref_t<Container>>,
-			    std::nullptr_t> = nullptr>
-			[[nodiscard]] constexpr WritableType
-			copy_to_iterator( WritableType it, Container const &container ) {
+			  typename WritableType, typename Container>
+			requires( traits::is_container_like_v<daw::remove_cvref_t<Container>> ) //
+			  [[nodiscard]] constexpr WritableType
+			  copy_to_iterator( WritableType it, Container const &container ) {
 				constexpr bool restrict_high =
 				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( WritableType::restricted_string_output ==
@@ -1116,14 +1098,11 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			using is_view_like_test =
-			  decltype( (void)( std::begin( std::declval<T &>( ) ) ),
-			            (void)( std::end( std::declval<T &>( ) ) ),
-			            (void)( std::declval<typename T::value_type>( ) ) );
-
-			template<typename T>
-			inline constexpr bool is_view_like_v =
-			  daw::is_detected_v<is_view_like_test, T>;
+			inline constexpr bool is_view_like_v = requires( T & value ) {
+				std::begin( value );
+				std::end( value );
+				typename T::value_type;
+			};
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
@@ -1365,26 +1344,24 @@ namespace daw::json {
 
 			template<std::size_t, typename JsonMember, typename /*NamePack*/,
 			         typename WriteableType, typename TpArgs, typename Value,
-			         typename VisitedMembers,
-			         std::enable_if_t<not has_dependent_member_v<JsonMember>,
-			                          std::nullptr_t> = nullptr>
-			DAW_ATTRIB_INLINE constexpr void
-			dependent_member_to_json_str( bool &, WriteableType const &,
-			                              TpArgs const &, Value const &,
-			                              VisitedMembers const & ) noexcept {
+			         typename VisitedMembers>
+			requires( not has_dependent_member_v<JsonMember> ) //
+			  DAW_ATTRIB_INLINE constexpr void dependent_member_to_json_str(
+			    bool &, WriteableType const &, TpArgs const &, Value const &,
+			    VisitedMembers const & ) noexcept {
 
 				// This is empty so that the call is able to be put into a pack
 			}
 
 			template<std::size_t pos, typename JsonMember, typename NamePack,
 			         typename WriteableType, json_options_t SerializationOptions,
-			         typename TpArgs, typename Value, typename VisitedMembers,
-			         std::enable_if_t<has_dependent_member_v<JsonMember>,
-			                          std::nullptr_t> = nullptr>
-			constexpr void dependent_member_to_json_str(
-			  bool &is_first,
-			  serialization_policy<WriteableType, SerializationOptions> it,
-			  TpArgs const &args, Value const &v, VisitedMembers &visited_members ) {
+			         typename TpArgs, typename Value, typename VisitedMembers>
+			requires( has_dependent_member_v<JsonMember> ) //
+			  constexpr void dependent_member_to_json_str(
+			    bool &is_first,
+			    serialization_policy<WriteableType, SerializationOptions> it,
+			    TpArgs const &args, Value const &v,
+			    VisitedMembers &visited_members ) {
 				using base_member_t = typename std::conditional_t<
 				  is_json_nullable_v<JsonMember>,
 				  ident_trait<json_nullable_member_type_t, JsonMember>,
@@ -1539,7 +1516,8 @@ namespace daw::json {
 					if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
 						char buff[50]{ };
 						char *ptr = buff;
-						ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );
+						ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr,
+						                                                      digits );
 						out_it.copy_buffer( buff, ptr );
 						return out_it;
 					}

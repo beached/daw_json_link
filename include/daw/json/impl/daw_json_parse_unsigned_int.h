@@ -126,10 +126,10 @@ namespace daw::json {
 			               "16 digit parser does not work on this platform" );
 
 			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
-			         bool KnownBounds, typename ParseState,
-			         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
-			[[nodiscard]] static constexpr Unsigned
-			unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
+			         bool KnownBounds, typename ParseState>
+			requires( KnownBounds ) //
+			  [[nodiscard]] static constexpr Unsigned
+			  unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				// We know how many digits are in the number
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
@@ -189,10 +189,10 @@ namespace daw::json {
 
 			//**************************
 			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
-			         bool KnownBounds, typename ParseState,
-			         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
-			[[nodiscard]] static constexpr Unsigned
-			unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
+			         bool KnownBounds, typename ParseState>
+			requires( not KnownBounds ) //
+			  [[nodiscard]] static constexpr Unsigned
+			  unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				// We do not know how long the string is
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;

@@ -163,8 +163,8 @@ namespace daw::json {
 
 		/// @brief Default constructor for readable nullable types.
 		template<typename T>
-		struct nullable_constructor<
-		  T, std::enable_if_t<concepts::is_nullable_value_v<T>>> {
+		requires( concepts::is_nullable_value_v<T> ) //
+		  struct nullable_constructor<T> {
 			using value_type = concepts::nullable_value_type_t<T>;
 			using rtraits_t = concepts::nullable_value_traits<T>;
 
@@ -175,13 +175,11 @@ namespace daw::json {
 				return rtraits_t{ }( concepts::construct_nullable_with_empty );
 			}
 
-			template<typename... Args,
-			         std::enable_if_t<
-			           concepts::is_nullable_value_constructible_v<T, Args...>,
-			           std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( Args &&...args ) const noexcept(
-			  concepts::is_nullable_value_nothrow_constructible_v<T, Args...> ) {
+			template<typename... Args>
+			requires( concepts::is_nullable_value_constructible_v<T, Args...> ) //
+			  [[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
+			  operator( )( Args &&...args ) const noexcept(
+			    concepts::is_nullable_value_nothrow_constructible_v<T, Args...> ) {
 				return rtraits_t{ }( concepts::construct_nullable_with_value,
 				                     DAW_FWD( args )... );
 			}

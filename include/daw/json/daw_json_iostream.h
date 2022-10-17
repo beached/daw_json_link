@@ -22,28 +22,25 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename T>
-			using is_opted_into_json_iostreams =
-			  typename json_data_contract<T>::opt_into_iostreams;
-
-			template<typename Container>
-			using is_container_opted_into_json_iostreams =
-			  is_opted_into_json_iostreams<typename Container::value_type>;
-
-			template<typename T>
-			inline constexpr bool is_opted_into_json_iostreams_v =
-			  daw::is_detected_v<is_opted_into_json_iostreams, T>;
+			inline constexpr bool is_opted_into_json_iostreams_v = requires {
+				typename json_data_contract<T>::opt_into_iostreams;
+			};
 
 			template<typename T>
 			inline constexpr bool is_container_opted_into_json_iostreams_v =
-			  daw::is_detected_v<is_container_opted_into_json_iostreams, T>;
+			  requires {
+				typename T::value_type;
+				requires( is_opted_into_json_iostreams_v<typename T::value_type> );
+			};
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json
 
 /// @brief An opt in ostream interface for types that have JSON mappings.
 template<typename T>
-auto operator<<( std::ostream &os, T const &value ) -> std::enable_if_t<
-  daw::json::json_details::is_opted_into_json_iostreams_v<T>, std::ostream &> {
+requires( daw::json::json_details::is_opted_into_json_iostreams_v<T> ) //
+  std::ostream &
+  operator<<( std::ostream &os, T const &value ) {
 
 	return daw::json::to_json( value, os );
 }
@@ -51,9 +48,10 @@ auto operator<<( std::ostream &os, T const &value ) -> std::enable_if_t<
 /// @brief An opt in ostream interface for containers of types that have JSON
 /// mappings.
 template<typename Container>
-auto operator<<( std::ostream &os, Container const &c ) -> std::enable_if_t<
-  daw::json::json_details::is_container_opted_into_json_iostreams_v<Container>,
-  std::ostream &> {
+requires( daw::json::json_details::is_container_opted_into_json_iostreams_v<
+          Container> ) //
+  std::ostream &
+  operator<<( std::ostream &os, Container const &c ) {
 
 	return daw::json::to_json_array( c, os );
 }

@@ -58,8 +58,9 @@ namespace daw::jkj::dragonbox {
 			  sizeof( T ) * std::numeric_limits<unsigned char>::digits;
 
 			template<class T>
-			inline constexpr std::size_t value_bits =
-			  std::numeric_limits<std::enable_if_t<std::is_unsigned_v<T>, T>>::digits;
+			requires( std::is_unsigned_v<T> ) //
+			  inline constexpr std::size_t value_bits =
+			    std::numeric_limits<T>::digits;
 		} // namespace detail
 
 		enum class ieee754_format { binary32, binary64 };

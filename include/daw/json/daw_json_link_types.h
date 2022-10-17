@@ -175,11 +175,9 @@ namespace daw::json {
 		};
 		namespace json_details {
 			template<typename T>
-			using is_a_json_map_alias_test = typename T::i_am_a_json_map_alias;
-
-			template<typename T>
-			inline constexpr bool is_a_json_map_alias_v =
-			  daw::is_detected_v<is_a_json_map_alias_test, T>;
+			inline constexpr bool is_a_json_map_alias_v = requires {
+				typename T::i_am_a_json_map_alias;
+			};
 		} // namespace json_details
 
 		template<typename JsonType>

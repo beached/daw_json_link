@@ -53,143 +53,97 @@ namespace daw::json {
 
 			namespace hnd_checks {
 				// On Next Value
-				template<typename Handler, typename JPair>
-				using has_on_value_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_value(
-				    std::declval<JPair>( ) ) );
-
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_value_handler_v =
-				  daw::is_detected_v<has_on_value_handler_detect, Handler,
-				                     basic_json_pair<P, A>>;
+				  requires( Handler & h, basic_json_pair<P, A> p ) {
+					h.handle_on_value( p );
+				};
 
 				// On Array Start
-				template<typename Handler, typename JValue>
-				using has_on_array_start_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_array_start(
-				    std::declval<JValue>( ) ) );
-
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_array_start_handler_v =
-				  daw::is_detected_v<has_on_array_start_handler_detect, Handler,
-				                     basic_json_value<P, A>>;
+				  requires( Handler & h, basic_json_pair<P, A> p ) {
+					h.handle_on_array_start( p );
+				};
 
 				// On Array End
 				template<typename Handler>
-				using has_on_array_end_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_array_end( ) );
-
-				template<typename Handler>
 				inline constexpr bool has_on_array_end_handler_v =
-				  daw::is_detected_v<has_on_array_end_handler_detect, Handler>;
+				  requires( Handler & h ) {
+					h.handle_on_array_end( );
+				};
 
 				// On Class Start
-				template<typename Handler, typename JValue>
-				using has_on_class_start_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_class_start(
-				    std::declval<JValue>( ) ) );
-
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_class_start_handler_v =
-				  daw::is_detected_v<has_on_class_start_handler_detect, Handler,
-				                     basic_json_value<P, A>>;
+				  requires( Handler & h, basic_json_value<P, A> jv ) {
+					h.handle_on_class_start( jv );
+				};
 
 				// On Class End
 				template<typename Handler>
-				using has_on_class_end_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_class_end( ) );
-
-				template<typename Handler>
 				inline constexpr bool has_on_class_end_handler_v =
-				  daw::is_detected_v<has_on_class_end_handler_detect, Handler>;
+				  requires( Handler & h ) {
+					h.handle_on_class_end( );
+				};
 
 				// On Number
-				template<typename Handler, typename JValue>
-				using has_on_number_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_number(
-				    std::declval<JValue>( ) ) );
-
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_number_handler_jv_v =
-				  daw::is_detected_v<has_on_number_handler_detect_jv, Handler,
-				                     basic_json_value<P, A>>;
-
-				template<typename Handler>
-				using has_on_number_handler_detect_dbl =
-				  decltype( std::declval<Handler>( ).handle_on_number( 0.0 ) );
+				  requires( Handler & h, basic_json_value<P, A> jv ) {
+					h.handle_on_number( jv );
+				};
 
 				template<typename Handler>
 				inline constexpr bool has_on_number_handler_dbl_v =
-				  daw::is_detected_v<has_on_number_handler_detect_dbl, Handler>;
+				  requires( Handler & h ) {
+					h.handle_on_number( 0.0 );
+				};
 
 				// On Bool
-				template<typename Handler, typename JValue>
-				using has_on_bool_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_bool(
-				    std::declval<JValue>( ) ) );
-
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_bool_handler_jv_v =
-				  daw::is_detected_v<has_on_bool_handler_detect_jv, Handler,
-				                     basic_json_value<P, A>>;
-
-				template<typename Handler>
-				using has_on_bool_handler_detect_bl =
-				  decltype( std::declval<Handler>( ).handle_on_bool( true ) );
+				  requires( Handler & h, basic_json_value<P, A> jv ) {
+					h.handle_on_bool( jv );
+				};
 
 				template<typename Handler>
 				inline constexpr bool has_on_bool_handler_bl_v =
-				  daw::is_detected_v<has_on_bool_handler_detect_bl, Handler>;
+				  requires( Handler & h ) {
+					h.handle_on_bool( true );
+				};
 
 				// On String
-				template<typename Handler, typename JValue>
-				using has_on_string_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_string(
-				    std::declval<JValue>( ) ) );
-
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_string_handler_jv_v =
-				  daw::is_detected_v<has_on_string_handler_detect_jv, Handler,
-				                     basic_json_value<P, A>>;
-
-				template<typename Handler>
-				using has_on_string_handler_detect_str =
-				  decltype( std::declval<Handler>( ).handle_on_string(
-				    std::declval<std::string>( ) ) );
+				  requires( Handler & h, basic_json_value<P, A> jv ) {
+					h.handle_on_string( jv );
+				};
 
 				template<typename Handler>
 				inline constexpr bool has_on_string_handler_str_v =
-				  daw::is_detected_v<has_on_string_handler_detect_str, Handler>;
+				  requires( Handler & h, std::string s ) {
+					h.handle_on_string( s );
+				};
 
 				// On Null
-				template<typename Handler, typename JValue>
-				using has_on_null_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_null(
-				    std::declval<JValue>( ) ) );
-
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_null_handler_jv_v =
-				  daw::is_detected_v<has_on_null_handler_detect_jv, Handler,
-				                     basic_json_value<P, A>>;
+				  requires( Handler & h, basic_json_value<P, A> jv ) {
+					h.handle_on_null( jv );
+				};
 
 				template<typename Handler>
-				using has_on_null_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_null( ) );
-
-				template<typename Handler>
-				inline constexpr bool has_on_null_handler_v =
-				  daw::is_detected_v<has_on_null_handler_detect, Handler>;
+				inline constexpr bool has_on_null_handler_v = requires( Handler & h ) {
+					h.handle_on_null( );
+				};
 
 				// On Error
-				template<typename Handler, typename JValue>
-				using has_on_error_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_error(
-				    std::declval<JValue>( ) ) );
-
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_error_handler_v =
-				  daw::is_detected_v<has_on_error_handler_detect, Handler,
-				                     basic_json_value<P, A>>;
+				  requires( Handler & h, basic_json_value<P, A> jv ) {
+					h.handle_on_error( jv );
+				};
 			} // namespace hnd_checks
 
 			template<typename T>

@@ -12,7 +12,7 @@
 /// name.
 #if not defined( DAW_JSON_VER_OVERRIDE )
 // Should be updated when a potential ABI break is anticipated
-#define DAW_JSON_VER v3_0_0
+#define DAW_JSON_VER v4_dev
 #else
 #define DAW_JSON_VER DAW_JSON_VER_OVERRIDE
 #endif
