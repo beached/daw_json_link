@@ -111,11 +111,10 @@ namespace daw::json {
 								daw_json_assert_weak( parse_state.empty( ),
 								                      ErrorReason::InvalidNumber, parse_state );
 							} else {
-								daw_json_assert_weak( not parse_state.has_more( ) or
-								                        parse_policy_details::at_end_of_item(
-								                          parse_state.front( ) ),
-								                      ErrorReason::InvalidEndOfValue,
-								                      parse_state );
+								daw_json_assert_weak(
+								  parse_state.empty( ) or parse_policy_details::at_end_of_item(
+								                            parse_state.front( ) ),
+								  ErrorReason::InvalidEndOfValue, parse_state );
 							}
 							return daw::cxmath::copy_sign(
 							  daw::numeric_limits<element_t>::infinity( ), sign );
@@ -134,11 +133,10 @@ namespace daw::json {
 								daw_json_assert_weak( parse_state.empty( ),
 								                      ErrorReason::InvalidNumber, parse_state );
 							} else {
-								daw_json_assert_weak( not parse_state.has_more( ) or
-								                        parse_policy_details::at_end_of_item(
-								                          parse_state.front( ) ),
-								                      ErrorReason::InvalidEndOfValue,
-								                      parse_state );
+								daw_json_assert_weak(
+								  parse_state.empty( ) or parse_policy_details::at_end_of_item(
+								                            parse_state.front( ) ),
+								  ErrorReason::InvalidEndOfValue, parse_state );
 							}
 							return daw::numeric_limits<element_t>::quiet_NaN( );
 						}
@@ -171,7 +169,7 @@ namespace daw::json {
 							  parse_state );
 						}
 						daw_json_assert_weak(
-						  not parse_state.has_more( ) or
+						  parse_state.empty( ) or
 						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
 						  ErrorReason::InvalidEndOfValue, parse_state );
 					}
