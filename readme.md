@@ -1,12 +1,6 @@
 ![logo image](docs/images/json_link_logo_128.png)
 # DAW JSON Link v3 
 
-[![Build Status Macos](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AMacOS)
-
-[![Build Status Ubuntu](https://github.com/beached/daw_json_link/workflows/Ubuntu/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AUbuntu)
-
-[![Build Status Windows - MSVC](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows)
-
 ## Content 
   * [Intro](#intro)
   * [Default Mapping of Types](#default-mapping-of-types)
