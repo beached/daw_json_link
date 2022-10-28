@@ -103,6 +103,7 @@ ipch/
 nbproject/*
 node_modules/
 obj/
+out/
 publish/
 sql/
 TestResult.xml
