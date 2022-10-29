@@ -38,10 +38,6 @@
 #include <type_traits>
 #include <variant>
 
-#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
-#include <iostream>
-#endif
-
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
@@ -1334,9 +1330,6 @@ namespace daw::json {
 #ifdef DAW_USE_EXCEPTIONS
 				throw missing_required_mapping_for<Name>{ };
 #else
-#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
-				std::cerr << "Error: " << json_exception( reason ).reason( ) << '\n';
-#endif
 				std::terminate( );
 #endif
 			}
