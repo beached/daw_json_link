@@ -16,6 +16,7 @@
 #include <daw/daw_attributes.h>
 #include <daw/daw_check_exceptions.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_move.h>
 #include <daw/daw_string_view.h>
 
 #include <algorithm>
@@ -45,7 +46,7 @@ namespace daw::json {
 			handle_error( json_exception &&jex ) {
 #ifdef DAW_USE_EXCEPTIONS
 				if constexpr( ShouldThrow ) {
-					throw jex;
+					throw DAW_MOVE( jex );
 				} else {
 #endif
 					(void)ShouldThrow;
