@@ -98,11 +98,11 @@ $(function() {
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;daw/daw_traits.h&gt;</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;daw/daw_utility.h&gt;</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;daw/daw_visit.h&gt;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;daw/utf8/unchecked.h&gt;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;array&gt;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;ciso646&gt;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;daw/third_party/dragonbox/dragonbox.h&gt;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;daw/third_party/dragonbox/dragonbox.h&gt;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;daw/utf8/unchecked.h&gt;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;ciso646&gt;</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;optional&gt;</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &lt;sstream&gt;</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
@@ -1398,7 +1398,7 @@ $(function() {
 <div class="line"><a name="l01326"></a><span class="lineno"> 1326</span>&#160;      <span class="comment">// This is only ever called in a constant expression. But will not</span></div>
 <div class="line"><a name="l01327"></a><span class="lineno"> 1327</span>&#160;      <span class="comment">// compile if exceptions are disabled and it tries to throw</span></div>
 <div class="line"><a name="l01328"></a><span class="lineno"> 1328</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Name&gt;</div>
-<div class="line"><a name="l01329"></a><span class="lineno"> 1329</span>&#160;      missing_required_mapping_for&lt;Name&gt; missing_required_mapping_error( ) {</div>
+<div class="line"><a name="l01329"></a><span class="lineno"> 1329</span>&#160;      DAW_ATTRIB_NOINLINE <span class="keywordtype">void</span> missing_required_mapping_error( ) {</div>
 <div class="line"><a name="l01330"></a><span class="lineno"> 1330</span>&#160;<span class="preprocessor">#ifdef DAW_USE_EXCEPTIONS</span></div>
 <div class="line"><a name="l01331"></a><span class="lineno"> 1331</span>&#160;        <span class="keywordflow">throw</span> missing_required_mapping_for&lt;Name&gt;{ };</div>
 <div class="line"><a name="l01332"></a><span class="lineno"> 1332</span>&#160;<span class="preprocessor">#else</span></div>
@@ -1611,51 +1611,52 @@ $(function() {
 <div class="line"><a name="l01539"></a><span class="lineno"> 1539</span>&#160;          <span class="keywordflow">if</span>( ( whole_dig &lt; -4 ) | ( whole_dig &gt; 6 ) ) {</div>
 <div class="line"><a name="l01540"></a><span class="lineno"> 1540</span>&#160;            <span class="keywordtype">char</span> buff[50]{ };</div>
 <div class="line"><a name="l01541"></a><span class="lineno"> 1541</span>&#160;            <span class="keywordtype">char</span> *ptr = buff;</div>
-<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;            ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );</div>
-<div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160;            out_it.copy_buffer( buff, ptr );</div>
-<div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160;          }</div>
-<div class="line"><a name="l01546"></a><span class="lineno"> 1546</span>&#160;        }</div>
-<div class="line"><a name="l01547"></a><span class="lineno"> 1547</span>&#160;        <span class="keywordflow">if</span>( br.is_negative( ) ) {</div>
-<div class="line"><a name="l01548"></a><span class="lineno"> 1548</span>&#160;          out_it.put( <span class="charliteral">&#39;-&#39;</span> );</div>
-<div class="line"><a name="l01549"></a><span class="lineno"> 1549</span>&#160;        }</div>
-<div class="line"><a name="l01550"></a><span class="lineno"> 1550</span>&#160;        <span class="keywordflow">if</span>( dec.significand == 0 ) {</div>
-<div class="line"><a name="l01551"></a><span class="lineno"> 1551</span>&#160;          out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a name="l01552"></a><span class="lineno"> 1552</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01553"></a><span class="lineno"> 1553</span>&#160;        }</div>
-<div class="line"><a name="l01554"></a><span class="lineno"> 1554</span>&#160;        <span class="keywordflow">if</span>( dec.exponent &lt; 0 ) {</div>
-<div class="line"><a name="l01555"></a><span class="lineno"> 1555</span>&#160;          <span class="keywordflow">if</span>( whole_dig &lt; 0 ) {</div>
-<div class="line"><a name="l01556"></a><span class="lineno"> 1556</span>&#160;            out_it.write( <span class="stringliteral">&quot;0.&quot;</span> );</div>
-<div class="line"><a name="l01557"></a><span class="lineno"> 1557</span>&#160;            <span class="keywordflow">do</span> {</div>
-<div class="line"><a name="l01558"></a><span class="lineno"> 1558</span>&#160;              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a name="l01559"></a><span class="lineno"> 1559</span>&#160;              ++whole_dig;</div>
-<div class="line"><a name="l01560"></a><span class="lineno"> 1560</span>&#160;            } <span class="keywordflow">while</span>( whole_dig &lt; 0 );</div>
-<div class="line"><a name="l01561"></a><span class="lineno"> 1561</span>&#160;            out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a3a9f10bbb9ab17d94ef2f02d5a049b32">utils::integer_to_string</a>( out_it, dec.significand );</div>
-<div class="line"><a name="l01562"></a><span class="lineno"> 1562</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01563"></a><span class="lineno"> 1563</span>&#160;          }</div>
-<div class="line"><a name="l01564"></a><span class="lineno"> 1564</span>&#160;          <span class="comment">// TODO allow for decimal output for all</span></div>
-<div class="line"><a name="l01565"></a><span class="lineno"> 1565</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p1pow =</div>
-<div class="line"><a name="l01566"></a><span class="lineno"> 1566</span>&#160;            daw::cxmath::pow10( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( -dec.exponent ) );</div>
-<div class="line"><a name="l01567"></a><span class="lineno"> 1567</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p1val = dec.significand / p1pow;</div>
-<div class="line"><a name="l01568"></a><span class="lineno"> 1568</span>&#160;          out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a3a9f10bbb9ab17d94ef2f02d5a049b32">utils::integer_to_string</a>( out_it, p1val );</div>
-<div class="line"><a name="l01569"></a><span class="lineno"> 1569</span>&#160;          <span class="keywordflow">if</span>( p1pow == 1 ) {</div>
-<div class="line"><a name="l01570"></a><span class="lineno"> 1570</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01571"></a><span class="lineno"> 1571</span>&#160;          }</div>
-<div class="line"><a name="l01572"></a><span class="lineno"> 1572</span>&#160;          out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
-<div class="line"><a name="l01573"></a><span class="lineno"> 1573</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p2val = dec.significand - ( p1val * p1pow );</div>
-<div class="line"><a name="l01574"></a><span class="lineno"> 1574</span>&#160;          out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a3a9f10bbb9ab17d94ef2f02d5a049b32">utils::integer_to_string</a>( out_it, p2val );</div>
-<div class="line"><a name="l01575"></a><span class="lineno"> 1575</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01576"></a><span class="lineno"> 1576</span>&#160;        }</div>
-<div class="line"><a name="l01577"></a><span class="lineno"> 1577</span>&#160;        out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a3a9f10bbb9ab17d94ef2f02d5a049b32">utils::integer_to_string</a>( out_it, dec.significand );</div>
-<div class="line"><a name="l01578"></a><span class="lineno"> 1578</span>&#160;        <span class="keywordflow">while</span>( dec.exponent &gt; 0 ) {</div>
-<div class="line"><a name="l01579"></a><span class="lineno"> 1579</span>&#160;          out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a name="l01580"></a><span class="lineno"> 1580</span>&#160;          --dec.exponent;</div>
-<div class="line"><a name="l01581"></a><span class="lineno"> 1581</span>&#160;        }</div>
-<div class="line"><a name="l01582"></a><span class="lineno"> 1582</span>&#160;        <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01583"></a><span class="lineno"> 1583</span>&#160;      }</div>
-<div class="line"><a name="l01584"></a><span class="lineno"> 1584</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l01585"></a><span class="lineno"> 1585</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l01586"></a><span class="lineno"> 1586</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;            ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr,</div>
+<div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160;                                                                  digits );</div>
+<div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160;            out_it.copy_buffer( buff, ptr );</div>
+<div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01546"></a><span class="lineno"> 1546</span>&#160;          }</div>
+<div class="line"><a name="l01547"></a><span class="lineno"> 1547</span>&#160;        }</div>
+<div class="line"><a name="l01548"></a><span class="lineno"> 1548</span>&#160;        <span class="keywordflow">if</span>( br.is_negative( ) ) {</div>
+<div class="line"><a name="l01549"></a><span class="lineno"> 1549</span>&#160;          out_it.put( <span class="charliteral">&#39;-&#39;</span> );</div>
+<div class="line"><a name="l01550"></a><span class="lineno"> 1550</span>&#160;        }</div>
+<div class="line"><a name="l01551"></a><span class="lineno"> 1551</span>&#160;        <span class="keywordflow">if</span>( dec.significand == 0 ) {</div>
+<div class="line"><a name="l01552"></a><span class="lineno"> 1552</span>&#160;          out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a name="l01553"></a><span class="lineno"> 1553</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01554"></a><span class="lineno"> 1554</span>&#160;        }</div>
+<div class="line"><a name="l01555"></a><span class="lineno"> 1555</span>&#160;        <span class="keywordflow">if</span>( dec.exponent &lt; 0 ) {</div>
+<div class="line"><a name="l01556"></a><span class="lineno"> 1556</span>&#160;          <span class="keywordflow">if</span>( whole_dig &lt; 0 ) {</div>
+<div class="line"><a name="l01557"></a><span class="lineno"> 1557</span>&#160;            out_it.write( <span class="stringliteral">&quot;0.&quot;</span> );</div>
+<div class="line"><a name="l01558"></a><span class="lineno"> 1558</span>&#160;            <span class="keywordflow">do</span> {</div>
+<div class="line"><a name="l01559"></a><span class="lineno"> 1559</span>&#160;              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a name="l01560"></a><span class="lineno"> 1560</span>&#160;              ++whole_dig;</div>
+<div class="line"><a name="l01561"></a><span class="lineno"> 1561</span>&#160;            } <span class="keywordflow">while</span>( whole_dig &lt; 0 );</div>
+<div class="line"><a name="l01562"></a><span class="lineno"> 1562</span>&#160;            out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a3a9f10bbb9ab17d94ef2f02d5a049b32">utils::integer_to_string</a>( out_it, dec.significand );</div>
+<div class="line"><a name="l01563"></a><span class="lineno"> 1563</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01564"></a><span class="lineno"> 1564</span>&#160;          }</div>
+<div class="line"><a name="l01565"></a><span class="lineno"> 1565</span>&#160;          <span class="comment">// TODO allow for decimal output for all</span></div>
+<div class="line"><a name="l01566"></a><span class="lineno"> 1566</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p1pow =</div>
+<div class="line"><a name="l01567"></a><span class="lineno"> 1567</span>&#160;            daw::cxmath::pow10( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( -dec.exponent ) );</div>
+<div class="line"><a name="l01568"></a><span class="lineno"> 1568</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p1val = dec.significand / p1pow;</div>
+<div class="line"><a name="l01569"></a><span class="lineno"> 1569</span>&#160;          out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a3a9f10bbb9ab17d94ef2f02d5a049b32">utils::integer_to_string</a>( out_it, p1val );</div>
+<div class="line"><a name="l01570"></a><span class="lineno"> 1570</span>&#160;          <span class="keywordflow">if</span>( p1pow == 1 ) {</div>
+<div class="line"><a name="l01571"></a><span class="lineno"> 1571</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01572"></a><span class="lineno"> 1572</span>&#160;          }</div>
+<div class="line"><a name="l01573"></a><span class="lineno"> 1573</span>&#160;          out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
+<div class="line"><a name="l01574"></a><span class="lineno"> 1574</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p2val = dec.significand - ( p1val * p1pow );</div>
+<div class="line"><a name="l01575"></a><span class="lineno"> 1575</span>&#160;          out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a3a9f10bbb9ab17d94ef2f02d5a049b32">utils::integer_to_string</a>( out_it, p2val );</div>
+<div class="line"><a name="l01576"></a><span class="lineno"> 1576</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01577"></a><span class="lineno"> 1577</span>&#160;        }</div>
+<div class="line"><a name="l01578"></a><span class="lineno"> 1578</span>&#160;        out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a3a9f10bbb9ab17d94ef2f02d5a049b32">utils::integer_to_string</a>( out_it, dec.significand );</div>
+<div class="line"><a name="l01579"></a><span class="lineno"> 1579</span>&#160;        <span class="keywordflow">while</span>( dec.exponent &gt; 0 ) {</div>
+<div class="line"><a name="l01580"></a><span class="lineno"> 1580</span>&#160;          out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a name="l01581"></a><span class="lineno"> 1581</span>&#160;          --dec.exponent;</div>
+<div class="line"><a name="l01582"></a><span class="lineno"> 1582</span>&#160;        }</div>
+<div class="line"><a name="l01583"></a><span class="lineno"> 1583</span>&#160;        <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01584"></a><span class="lineno"> 1584</span>&#160;      }</div>
+<div class="line"><a name="l01585"></a><span class="lineno"> 1585</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l01586"></a><span class="lineno"> 1586</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l01587"></a><span class="lineno"> 1587</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a03ce1a19bcc03c87524a09913907d38d"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">daw::json::anonymous_namespace{daw_json_enums.h}::to_string</a></div><div class="ttdeci">constexpr std::string_view to_string(JsonBaseParseTypes pt)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__enums_8h_source.html#l00063">daw_json_enums.h:63</a></div></div>
 <div class="ttc" id="adaw__json__value_8h_html"><div class="ttname"><a href="daw__json__value_8h.html">daw_json_value.h</a></div></div>
