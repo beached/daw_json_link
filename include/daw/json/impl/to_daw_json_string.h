@@ -26,11 +26,11 @@
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 #include <daw/daw_visit.h>
+#include <daw/third_party/dragonbox/dragonbox.h>
 #include <daw/utf8/unchecked.h>
 
 #include <array>
 #include <ciso646>
-#include <daw/third_party/dragonbox/dragonbox.h>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -1326,7 +1326,7 @@ namespace daw::json {
 			// This is only ever called in a constant expression. But will not
 			// compile if exceptions are disabled and it tries to throw
 			template<typename Name>
-			missing_required_mapping_for<Name> missing_required_mapping_error( ) {
+			DAW_ATTRIB_NOINLINE void missing_required_mapping_error( ) {
 #ifdef DAW_USE_EXCEPTIONS
 				throw missing_required_mapping_for<Name>{ };
 #else
@@ -1539,7 +1539,8 @@ namespace daw::json {
 					if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
 						char buff[50]{ };
 						char *ptr = buff;
-						ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );
+						ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr,
+						                                                      digits );
 						out_it.copy_buffer( buff, ptr );
 						return out_it;
 					}
