@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <optional>
 #include <string_view>
 #include <tuple>
 
@@ -61,16 +62,18 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( ) {
-	std::string_view json_doc =
-	  R"json({"b":"1.23456","a":"6.54321","d":"false","c":"true","f":"-123","e":"-321","h":"123","g":"321"})json";
-	auto const f = daw::json::from_json<Foo>( json_doc );
-	assert( f.a >= 6.54320 and f.a <= 6.54322 );
-	assert( f.b >= 1.23455 and f.b <= 1.23457 );
-	assert( f.c );
-	assert( not f.d );
-	assert( f.e == -321 );
-	assert( f.f == -123 );
-	assert( f.g == 321 );
-	assert( f.h == 123 );
-	std::cout << daw::json::to_json( f ) << '\n';
+	{
+		std::string_view json_doc =
+		  R"json({"b":"1.23456","a":"6.54321","d":"false","c":"true","f":"-123","e":"-321","h":"123","g":"321"})json";
+		auto const f = daw::json::from_json<Foo>( json_doc );
+		assert( f.a >= 6.54320 and f.a <= 6.54322 );
+		assert( f.b >= 1.23455 and f.b <= 1.23457 );
+		assert( f.c );
+		assert( not f.d );
+		assert( f.e == -321 );
+		assert( f.f == -123 );
+		assert( f.g == 321 );
+		assert( f.h == 123 );
+		std::cout << daw::json::to_json( f ) << '\n';
+	}
 }
