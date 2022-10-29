@@ -48,7 +48,7 @@ struct InlineClass {
 	template<typename... Ts>
 	requires( not daw::traits::is_first_type_v<InlineClass, Ts...> and
 	          ( std::is_convertible_v<Ts, Members> and ... ) ) //
-	  inline DAW_CONSTEXPR InlineClass( Ts &&...values )
+	inline DAW_CONSTEXPR InlineClass( Ts &&...values )
 	  : members{ std::forward<Ts>( values )... } {}
 };
 

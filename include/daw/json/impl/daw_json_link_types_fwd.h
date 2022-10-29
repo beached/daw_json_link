@@ -536,9 +536,8 @@ namespace daw::json {
 			  std::remove_reference_t<daw::detected_t<underlying_nullable_type, T>>;
 
 			template<typename T>
-			inline constexpr bool is_nullable_type_v = requires( T & value ) {
-				*value;
-			};
+			inline constexpr bool is_nullable_type_v =
+			  requires( T & value ) { *value; };
 
 			template<typename T>
 			using is_nullable_type = std::bool_constant<is_nullable_type_v<T>>;

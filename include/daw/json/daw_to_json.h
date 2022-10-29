@@ -28,11 +28,11 @@ namespace daw::json {
 
 		template<typename JsonClass, typename Value, typename WritableType,
 		         auto... PolicyFlags>
-		requires( concepts::is_writable_output_type_v<
-		          daw::remove_cvref_t<WritableType>> ) //
-		  constexpr daw::rvalue_to_value_t<WritableType> to_json(
-		    Value const &value, WritableType &&it,
-		    options::output_flags_t<PolicyFlags...> ) {
+		requires(
+		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
+		constexpr daw::rvalue_to_value_t<WritableType>
+		to_json( Value const &value, WritableType &&it,
+		         options::output_flags_t<PolicyFlags...> ) {
 			using json_class_t = typename std::conditional_t<
 			  std::is_same_v<use_default, JsonClass>,
 			  json_details::ident_trait<json_details::json_deduced_type, Value>,
@@ -77,11 +77,11 @@ namespace daw::json {
 
 		template<typename JsonElement, typename Container, typename WritableType,
 		         auto... PolicyFlags>
-		requires( concepts::is_writable_output_type_v<
-		          daw::remove_cvref_t<WritableType>> ) //
-		  constexpr daw::rvalue_to_value_t<WritableType> to_json_array(
-		    Container const &c, WritableType &&it,
-		    options::output_flags_t<PolicyFlags...> ) {
+		requires(
+		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
+		constexpr daw::rvalue_to_value_t<WritableType>
+		to_json_array( Container const &c, WritableType &&it,
+		               options::output_flags_t<PolicyFlags...> ) {
 			static_assert(
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			  "Supplied container must support begin( )/end( )" );

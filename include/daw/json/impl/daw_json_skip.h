@@ -35,7 +35,7 @@ namespace daw::json {
 			/***
 			 * Skip a string, after the initial quote has been skipped already
 			 */
-			template<typename ParseState>
+			template<ParseState ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
 			skip_string_nq( ParseState &parse_state ) {
 				auto result = parse_state;
@@ -52,7 +52,7 @@ namespace daw::json {
 			/***
 			 * Skip a string and store the first escaped element's position, if any
 			 */
-			template<typename ParseState>
+			template<ParseState ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
 			skip_string( ParseState &parse_state ) {
 				if( parse_state.empty( ) ) {
@@ -67,7 +67,7 @@ namespace daw::json {
 				return skip_string_nq( parse_state );
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			[[nodiscard]] inline constexpr ParseState
 			skip_true( ParseState &parse_state ) {
 				auto result = parse_state;
@@ -89,7 +89,7 @@ namespace daw::json {
 				return result;
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			[[nodiscard]] inline constexpr ParseState
 			skip_false( ParseState &parse_state ) {
 				auto result = parse_state;
@@ -111,7 +111,7 @@ namespace daw::json {
 				return result;
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			[[nodiscard]] inline constexpr ParseState
 			skip_null( ParseState &parse_state ) {
 				if constexpr( ( ParseState::is_zero_terminated_string( ) or
@@ -158,9 +158,9 @@ namespace daw::json {
 
 			// DAW TODO: This branch has a bug that shows up in twitter_test2
 #if false and defined( DAW_CX_BIT_CAST )
-			template<typename ParseState>
+			template<ParseState ParseState>
 			requires( ParseState::is_unchecked_input or
-			          ParseState::is_zero_terminated_string( ) ) //
+			          ParseState::is_zero_terminated_string( ) )
 			  [[nodiscard]] constexpr ParseState
 			  skip_number( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
@@ -201,11 +201,11 @@ namespace daw::json {
 				return result;
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			requires( not( ParseState::is_unchecked_input or
-			               ParseState::is_zero_terminated_string( ) ) ) //
+			               ParseState::is_zero_terminated_string( ) ) )
 #else
-			template<typename ParseState>
+			template<ParseState ParseState>
 #endif
 			[[nodiscard]] constexpr ParseState
 			skip_number( ParseState &parse_state ) {
@@ -301,7 +301,7 @@ namespace daw::json {
 			 * TODO: Investigate if there is a difference for the times we know what
 			 * the member should be if that can increase performance
 			 */
-			template<typename ParseState>
+			template<ParseState ParseState>
 			[[nodiscard]] constexpr ParseState skip_value( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
@@ -348,7 +348,7 @@ namespace daw::json {
 			 * Used in json_array_iterator::operator++( ) as we know the type we are
 			 * skipping
 			 */
-			template<typename JsonMember, typename ParseState>
+			template<typename JsonMember, ParseState ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
 			skip_known_value( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
@@ -390,7 +390,7 @@ namespace daw::json {
 				}
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			[[nodiscard]] inline constexpr ParseState
 			skip_literal( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),

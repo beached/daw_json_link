@@ -23,18 +23,18 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace concepts {
 			template<typename T>
-			concept Container = requires( T & t ) {
-				std::begin( t );
-				std::end( t );
-				typename T::value_type;
-				requires requires( typename T::value_type v ) {
-					t.insert( std::end( t ), v );
-				};
-			};
+			concept Container = requires( T &t ) {
+				                    std::begin( t );
+				                    std::end( t );
+				                    typename T::value_type;
+				                    requires requires( typename T::value_type v ) {
+					                             t.insert( std::end( t ), v );
+				                             };
+			                    };
 
 			template<typename T>
-			requires( Container<T> ) //
-			  struct container_traits<T> : std::true_type {};
+			requires( Container<T> )
+			struct container_traits<T> : std::true_type {};
 
 			template<typename T, std::size_t N>
 			struct container_traits<std::array<T, N>> : std::true_type {

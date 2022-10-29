@@ -20,9 +20,7 @@ namespace daw::json {
 			namespace nullable_impl {
 				template<typename T, typename... Args>
 				inline constexpr bool is_list_constructible_v =
-				  requires( Args... args ) {
-					T{ args... };
-				};
+				  requires( Args... args ) { T{ args... }; };
 
 				template<typename T, typename... Args>
 				inline constexpr bool is_nullable_value_type_constructible_v =
@@ -69,9 +67,9 @@ namespace daw::json {
 				/// @brief Return an empty nullable type
 				template<typename... Args>
 				requires( nullable_impl::is_nullable_value_type_constructible_v<
-				          nullable_type, Args...> ) //
-				  constexpr nullable_type
-				  operator( )( construct_nullable_with_empty_t, Args &&...args ) const
+				          nullable_type, Args...> )
+				constexpr nullable_type operator( )( construct_nullable_with_empty_t,
+				                                     Args &&...args ) const
 				  noexcept( std::is_nothrow_constructible_v<nullable_type, Args...> ) {
 					if constexpr( std::is_constructible_v<nullable_type, Args...> ) {
 						return T( DAW_FWD( args )... );

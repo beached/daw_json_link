@@ -58,7 +58,7 @@ namespace daw::jkj::dragonbox {
 			  sizeof( T ) * std::numeric_limits<unsigned char>::digits;
 
 			template<class T>
-			requires( std::is_unsigned_v<T> ) //
+			requires( std::is_unsigned_v<T> )
 			  inline constexpr std::size_t value_bits =
 			    std::numeric_limits<T>::digits;
 		} // namespace detail

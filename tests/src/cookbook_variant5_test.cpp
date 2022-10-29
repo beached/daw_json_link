@@ -47,7 +47,7 @@ namespace daw::cookbook_variant4 {
 		template<typename T>
 		requires( std::is_same_v<std::remove_cvref_t<T>, VersionedConfigs> or
 		          ... ) //
-		  constexpr BasicConfig( T &&value )
+		constexpr BasicConfig( T &&value )
 		  : data( std::forward<T>( value ) ) {}
 	};
 	template<std::size_t Idx, typename... VersionedConfigs>

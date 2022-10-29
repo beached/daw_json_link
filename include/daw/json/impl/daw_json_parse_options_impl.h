@@ -181,9 +181,10 @@ namespace daw::json {
 
 			template<typename PolicyFlag, typename... PolicyFlags>
 			requires( is_option_flag<PolicyFlag> and
-			          ( is_option_flag<PolicyFlags> and ... ) ) //
-			  DAW_CONSTEVAL json_options_t
-			  set_bits( json_options_t value, PolicyFlag pol, PolicyFlags... pols ) {
+			          ( is_option_flag<PolicyFlags> and ... ) )
+			DAW_CONSTEVAL json_options_t set_bits( json_options_t value,
+			                                       PolicyFlag pol,
+			                                       PolicyFlags... pols ) {
 				static_assert( ( is_option_flag<PolicyFlags> and ... ),
 				               "Only registered policy types are allowed" );
 

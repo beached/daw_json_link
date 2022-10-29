@@ -83,7 +83,7 @@ namespace daw::json {
 				return first;
 			}
 
-			template<typename ParseState, typename Result,
+			template<ParseState ParseState, typename Result,
 			         typename max_storage_digits, typename CharT>
 			inline constexpr bool
 			should_use_strtod( CharT *whole_first, CharT *whole_last,
@@ -104,10 +104,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename Result, bool KnownRange, typename ParseState>
-			requires( KnownRange ) //
-			  [[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
-			  parse_real( ParseState &parse_state ) {
+			template<typename Result, bool KnownRange, ParseState ParseState>
+			requires( KnownRange )
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
+			parse_real( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 				daw_json_assert_weak(
@@ -259,10 +259,10 @@ namespace daw::json {
 				                static_cast<Result>( significant_digits ), exponent );
 			}
 
-			template<typename Result, bool KnownRange, typename ParseState>
-			requires( not KnownRange ) //
-			  [[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
-			  parse_real( ParseState &parse_state ) {
+			template<typename Result, bool KnownRange, ParseState ParseState>
+			requires( not KnownRange )
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
+			parse_real( ParseState &parse_state ) {
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 				using CharT = typename ParseState::CharT;
 				daw_json_assert_weak(

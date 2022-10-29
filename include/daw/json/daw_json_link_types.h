@@ -83,7 +83,7 @@ namespace daw::json {
 			 * @param parse_state JSON data to parse
 			 * @return A T object
 			 */
-			template<typename JsonClass, typename ParseState>
+			template<typename JsonClass, ParseState ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
 			  json_result<JsonClass>
 			  parse_to_class( ParseState &parse_state,
@@ -148,7 +148,7 @@ namespace daw::json {
 			using result_type =
 			  json_details::json_class_parse_result_t<Constructor, json_member>;
 
-			template<typename JsonClass, typename ParseState>
+			template<typename JsonClass, ParseState ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATTEN static constexpr json_details::
 			  json_result<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
@@ -175,9 +175,8 @@ namespace daw::json {
 		};
 		namespace json_details {
 			template<typename T>
-			inline constexpr bool is_a_json_map_alias_v = requires {
-				typename T::i_am_a_json_map_alias;
-			};
+			inline constexpr bool is_a_json_map_alias_v =
+			  requires { typename T::i_am_a_json_map_alias; };
 		} // namespace json_details
 
 		template<typename JsonType>
@@ -298,7 +297,7 @@ namespace daw::json {
 			 * @param parse_state JSON data to parse
 			 * @return A T object
 			 */
-			template<typename JsonClass, typename ParseState>
+			template<typename JsonClass, ParseState ParseState>
 			[[nodiscard]] static inline constexpr json_details::json_result<JsonClass>
 			parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
@@ -371,7 +370,7 @@ namespace daw::json {
 			 * @param parse_state JSON data to parse
 			 * @return A T object
 			 */
-			template<typename JsonClass, typename ParseState>
+			template<typename JsonClass, ParseState ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
 			  from_json_result_t<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {

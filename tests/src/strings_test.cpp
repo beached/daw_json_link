@@ -37,14 +37,12 @@ constexpr void clear( Container &c ) {
 }
 
 template<typename T>
-inline constexpr bool can_ostream_v = requires( std::ostream & os, T v ) {
-	os << v;
-};
+inline constexpr bool can_ostream_v =
+  requires( std::ostream & os, T v ) { os << v; };
 
 template<typename T, typename A>
 requires( can_ostream_v<T> ) //
-  std::ostream &
-  operator<<( std::ostream &os, std::vector<T, A> const &rhs ) {
+std::ostream &operator<<( std::ostream &os, std::vector<T, A> const &rhs ) {
 	os << '[';
 	if( not rhs.empty( ) ) {
 		os << rhs.front( );

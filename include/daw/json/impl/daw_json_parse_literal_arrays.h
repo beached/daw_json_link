@@ -10,18 +10,18 @@
 
 #include "version.h"
 
-#include <cstddef>
+#include "daw_json_parse_common.h"
+
+#include <daw/daw_attributes.h>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			/***
-			 * When skip_string encounters escaping, it will note this as a non-zero
-			 * value
-			 */
-			template<ParseState ParseState>
-			inline constexpr bool needs_slow_path( ParseState const &parse_state ) {
-				return static_cast<std::ptrdiff_t>( parse_state.counter ) >= 0;
+			template<typename JsonMember, bool KnownBounds, ParseState ParseState>
+			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
+			parse_literal_array_value( ParseState &parse_state ) {
+				(void)parse_state;
+				return { };
 			}
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER

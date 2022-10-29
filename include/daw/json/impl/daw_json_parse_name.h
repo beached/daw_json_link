@@ -26,7 +26,7 @@ namespace daw::json {
 				 * end of string " -> name value separating : -> any white space
 				 * the string can be escaped too
 				 */
-				template<typename ParseState>
+				template<ParseState ParseState>
 				static constexpr void trim_end_of_name( ParseState &parse_state ) {
 					parse_state.trim_left( );
 					// TODO: should we check for end
@@ -36,7 +36,7 @@ namespace daw::json {
 					parse_state.trim_left( );
 				}
 
-				template<typename ParseState>
+				template<ParseState ParseState>
 				[[nodiscard]] DAW_ATTRIB_INLINE constexpr daw::string_view
 				parse_nq( ParseState &parse_state ) {
 					if constexpr( ParseState::allow_escaped_names( ) ) {
@@ -123,7 +123,7 @@ namespace daw::json {
 			// Assumes that the current item in stream is a double quote
 			// Ensures that the stream is left at the position of the associated
 			// value(e.g after the colon(:) and trimmed)
-			template<typename ParseState>
+			template<ParseState ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATTEN inline constexpr daw::string_view
 			parse_name( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.is_quotes_checked( ),
@@ -132,7 +132,7 @@ namespace daw::json {
 				return name::name_parser::parse_nq( parse_state );
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			constexpr bool find_range2( ParseState &parse_state,
 			                            daw::string_view path ) {
 

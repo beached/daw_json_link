@@ -486,10 +486,10 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonElement, typename Container, typename Constructor,
 		         bool KnownBounds, typename String, auto... PolicyFlags>
-		requires( json_details::is_string_view_like_v<String> ) //
-		  [[nodiscard]] constexpr Container
-		  from_json_array( String &&json_data,
-		                   options::parse_flags_t<PolicyFlags...> ) {
+		requires( json_details::is_string_view_like_v<String> )
+		[[nodiscard]] constexpr Container
+		from_json_array( String &&json_data,
+		                 options::parse_flags_t<PolicyFlags...> ) {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
@@ -560,8 +560,8 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonElement, typename Container, typename Constructor,
 		         bool KnownBounds, typename String>
-		requires( json_details::is_string_view_like_v<String> ) //
-		  [[nodiscard]] constexpr Container from_json_array( String &&json_data ) {
+		requires( json_details::is_string_view_like_v<String> )
+		[[nodiscard]] constexpr Container from_json_array( String &&json_data ) {
 
 			return from_json_array<JsonElement, Container, Constructor, KnownBounds>(
 			  DAW_FWD( json_data ), options::parse_flags<> );
@@ -582,10 +582,10 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonElement, typename Container, typename Constructor,
 		         bool KnownBounds, typename String, auto... PolicyFlags>
-		requires( json_details::is_string_view_like_v<String> ) //
-		  [[nodiscard]] constexpr Container
-		  from_json_array( String &&json_data, std::string_view member_path,
-		                   options::parse_flags_t<PolicyFlags...> ) {
+		requires( json_details::is_string_view_like_v<String> )
+		[[nodiscard]] constexpr Container
+		from_json_array( String &&json_data, std::string_view member_path,
+		                 options::parse_flags_t<PolicyFlags...> ) {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
@@ -671,9 +671,9 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonElement, typename Container, typename Constructor,
 		         bool KnownBounds, typename String>
-		requires( json_details::is_string_view_like_v<String> ) //
-		  [[nodiscard]] constexpr Container
-		  from_json_array( String &&json_data, std::string_view member_path ) {
+		requires( json_details::is_string_view_like_v<String> )
+		[[nodiscard]] constexpr Container
+		from_json_array( String &&json_data, std::string_view member_path ) {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );

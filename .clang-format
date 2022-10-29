@@ -29,9 +29,11 @@ DerivePointerAlignment: false
 DisableFormat: false
 ExperimentalAutoDetectBinPacking: false
 IndentCaseLabels: false
+IndentRequires: false 
 IndentWidth: 2
 IndentWrappedFunctionNames: false
 KeepEmptyLinesAtTheStartOfBlocks: true
+LambdaBodyIndentation: Signature
 Language: Cpp
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
@@ -45,6 +47,7 @@ PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Right
+RequiresClausePosition: OwnLine
 SpaceAfterCStyleCast: false
 SpaceAfterTemplateKeyword: false
 SpaceBeforeAssignmentOperators: true
@@ -56,7 +59,7 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: true
 SpacesInParentheses: true
 SpacesInSquareBrackets: false
-Standard: c++17
+Standard: c++20
 TabWidth: 2
 UseTab: ForIndentation
 AllowShortLambdasOnASingleLine: Empty

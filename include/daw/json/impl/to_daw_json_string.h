@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include "../../third_party/dragonbox/dragonbox.h"
 #include "../daw_json_data_contract.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_iso8601_utils.h"
@@ -30,7 +31,6 @@
 
 #include <array>
 #include <ciso646>
-#include <daw/third_party/dragonbox/dragonbox.h>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -61,9 +61,8 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			inline constexpr bool has_to_string_v = requires( T && v ) {
-				to_string( DAW_FWD( v ) );
-			};
+			inline constexpr bool has_to_string_v =
+			  requires( T && v ) { to_string( DAW_FWD( v ) ); };
 
 			template<typename T>
 			using has_to_string = std::bool_constant<has_to_string_v<T>>;
@@ -71,22 +70,16 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename T>
-			inline constexpr bool has_from_string_v =
-			  requires( daw::tag_t<T> tag, std::string_view sv ) {
-				from_string( tag, sv );
-			};
+			inline constexpr bool has_from_string_v = requires(
+			  daw::tag_t<T> tag, std::string_view sv ) { from_string( tag, sv ); };
 
 			template<typename T>
 			inline constexpr bool has_ostream_op_v =
-			  requires( std::ostream & os, T const &value ) {
-				os << value;
-			};
+			  requires( std::ostream & os, T const &value ) { os << value; };
 
 			template<typename T>
 			inline constexpr bool has_istream_op_v =
-			  requires( std::istream & is, T &value ) {
-				is >> value;
-			};
+			  requires( std::istream & is, T &value ) { is >> value; };
 		} // namespace json_details
 
 		/***
@@ -369,9 +362,9 @@ namespace daw::json {
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
 			  typename WritableType, typename Container>
-			requires( traits::is_container_like_v<daw::remove_cvref_t<Container>> ) //
-			  [[nodiscard]] constexpr WritableType
-			  copy_to_iterator( WritableType it, Container const &container ) {
+			requires( traits::is_container_like_v<daw::remove_cvref_t<Container>> )
+			[[nodiscard]] constexpr WritableType
+			copy_to_iterator( WritableType it, Container const &container ) {
 				constexpr bool restrict_high =
 				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( WritableType::restricted_string_output ==
@@ -1099,10 +1092,10 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool is_view_like_v = requires( T & value ) {
-				std::begin( value );
-				std::end( value );
-				typename T::value_type;
-			};
+				                                       std::begin( value );
+				                                       std::end( value );
+				                                       typename T::value_type;
+			                                       };
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
@@ -1303,9 +1296,9 @@ namespace daw::json {
 			struct missing_required_mapping_for {};
 
 			// This is only ever called in a constant expression. But will not
-			// compile if exceptions are disabled and it tries to throw
+			// compile if exceptions are disabled, and it tries to throw
 			template<typename Name>
-			missing_required_mapping_for<Name> missing_required_mapping_error( ) {
+			DAW_ATTRIB_NOINLINE static void missing_required_mapping_error( ) {
 #ifdef DAW_USE_EXCEPTIONS
 				throw missing_required_mapping_for<Name>{ };
 #else
@@ -1345,10 +1338,11 @@ namespace daw::json {
 			template<std::size_t, typename JsonMember, typename /*NamePack*/,
 			         typename WriteableType, typename TpArgs, typename Value,
 			         typename VisitedMembers>
-			requires( not has_dependent_member_v<JsonMember> ) //
-			  DAW_ATTRIB_INLINE constexpr void dependent_member_to_json_str(
-			    bool &, WriteableType const &, TpArgs const &, Value const &,
-			    VisitedMembers const & ) noexcept {
+			requires( not has_dependent_member_v<JsonMember> )
+			DAW_ATTRIB_INLINE constexpr void
+			dependent_member_to_json_str( bool &, WriteableType const &,
+			                              TpArgs const &, Value const &,
+			                              VisitedMembers const & ) noexcept {
 
 				// This is empty so that the call is able to be put into a pack
 			}
@@ -1356,12 +1350,11 @@ namespace daw::json {
 			template<std::size_t pos, typename JsonMember, typename NamePack,
 			         typename WriteableType, json_options_t SerializationOptions,
 			         typename TpArgs, typename Value, typename VisitedMembers>
-			requires( has_dependent_member_v<JsonMember> ) //
-			  constexpr void dependent_member_to_json_str(
-			    bool &is_first,
-			    serialization_policy<WriteableType, SerializationOptions> it,
-			    TpArgs const &args, Value const &v,
-			    VisitedMembers &visited_members ) {
+			requires( has_dependent_member_v<JsonMember> )
+			constexpr void dependent_member_to_json_str(
+			  bool &is_first,
+			  serialization_policy<WriteableType, SerializationOptions> it,
+			  TpArgs const &args, Value const &v, VisitedMembers &visited_members ) {
 				using base_member_t = typename std::conditional_t<
 				  is_json_nullable_v<JsonMember>,
 				  ident_trait<json_nullable_member_type_t, JsonMember>,

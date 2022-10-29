@@ -131,9 +131,7 @@ namespace daw::json {
 #endif
 		namespace json_details {
 			template<typename T>
-			inline constexpr bool is_no_name_v = not requires {
-				T::name;
-			};
+			inline constexpr bool is_no_name_v = not requires { T::name; };
 
 			template<typename T>
 			using is_no_name = std::bool_constant<is_no_name_v<T>>;

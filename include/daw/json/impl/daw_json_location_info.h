@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include "daw_json_assert.h"
+#include "daw_json_parse_policy_concept.h"
 #include "daw_murmur3.h"
 
 #include <daw/daw_algorithm.h>
@@ -49,7 +50,7 @@ namespace daw::json {
 					return first == nullptr;
 				}
 
-				template<typename ParseState>
+				template<ParseState ParseState>
 				constexpr void set_range( ParseState const &parse_state ) {
 					first = parse_state.first;
 					last = parse_state.last;
@@ -58,8 +59,9 @@ namespace daw::json {
 					counter = parse_state.counter;
 				}
 
-				template<typename ParseState>
-				constexpr auto get_range( template_param<ParseState> ) const {
+				template<ParseState ParseState>
+				[[nodiscard]] constexpr auto
+				get_range( template_param<ParseState> ) const {
 					using range_t = typename ParseState::without_allocator_type;
 					auto result = range_t( first, last, class_first, class_last );
 					result.counter = counter;
@@ -79,7 +81,7 @@ namespace daw::json {
 					return first == nullptr;
 				}
 
-				template<typename ParseState>
+				template<ParseState ParseState>
 				constexpr void set_range( ParseState const &parse_state ) {
 					first = parse_state.first;
 					last = parse_state.last;
@@ -88,8 +90,9 @@ namespace daw::json {
 					counter = parse_state.counter;
 				}
 
-				template<typename ParseState>
-				constexpr auto get_range( template_param<ParseState> ) const {
+				template<ParseState ParseState>
+				[[nodiscard]] constexpr auto
+				get_range( template_param<ParseState> ) const {
 					// Not copying allocator as it may contain state that needs copying in
 					using range_t = typename ParseState::without_allocator_type;
 					auto result = range_t( first, last, class_first, class_last );
@@ -171,7 +174,7 @@ namespace daw::json {
 #define DAW_JSON_MAKE_LOC_INFO_CONSTEVAL DAW_CONSTEVAL
 #endif
 			// Should never be called outside a consteval context
-			template<typename ParseState, typename... JsonMembers>
+			template<ParseState ParseState, typename... JsonMembers>
 			DAW_ATTRIB_FLATINLINE inline DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto
 			make_locations_info( ) {
 				using CharT = typename ParseState::CharT;
@@ -213,16 +216,16 @@ namespace daw::json {
 			 */
 			enum class AllMembersMustExist { yes, no };
 			template<std::size_t pos, AllMembersMustExist must_exist,
-			         bool from_start = false, std::size_t N, typename ParseState,
-			         bool B, typename CharT>
+			         bool from_start = false, std::size_t N, ParseState ParseState,
+			         bool B, typename CharT, bool is_nullable>
 			[[nodiscard]] inline constexpr std::pair<ParseState, bool>
 			find_class_member( std::false_type /*all members in order*/,
 			                   ParseState &parse_state,
 			                   locations_info_t<N, CharT, B> &locations,
-			                   bool is_nullable, daw::string_view member_name ) {
+			                   std::bool_constant<is_nullable>,
+			                   daw::string_view member_name ) {
 
 				// silencing gcc9 warning as these are selectively used
-				(void)is_nullable;
 				(void)member_name;
 
 				daw_json_assert_weak(
@@ -304,16 +307,14 @@ namespace daw::json {
 			}
 
 			template<std::size_t pos, AllMembersMustExist must_exist,
-			         bool from_start = false, std::size_t N, typename ParseState,
-			         bool B, typename CharT>
-			[[nodiscard]] inline constexpr ParseState
-			find_class_member( std::true_type /*all members in order*/,
-			                   ParseState &parse_state,
-			                   locations_info_t<N, CharT, B> const &locations,
-			                   bool is_nullable, daw::string_view member_name ) {
+			         bool from_start = false, std::size_t N, ParseState ParseState,
+			         bool B, typename CharT, bool is_nullable>
+			[[nodiscard]] inline constexpr ParseState find_class_member(
+			  std::true_type /*all members in order*/, ParseState &parse_state,
+			  locations_info_t<N, CharT, B> const &locations,
+			  std::bool_constant<is_nullable>, daw::string_view member_name ) {
 
 				// silencing gcc9 warning as these are selectively used
-				(void)is_nullable;
 				(void)member_name;
 
 				daw_json_assert_weak(

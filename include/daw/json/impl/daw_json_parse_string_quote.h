@@ -91,9 +91,9 @@ namespace daw::json {
 			}
 
 			struct string_quote_parser {
-				template<typename ParseState>
-				requires( ParseState::is_unchecked_input ) //
-				  [[nodiscard]] static constexpr std::size_t
+				template<ParseState ParseState>
+				requires( ParseState::is_unchecked_input )
+				[[nodiscard]] static constexpr std::size_t
 				  parse_nq( ParseState &parse_state ) {
 
 					using CharT = typename ParseState::CharT;
@@ -137,9 +137,9 @@ namespace daw::json {
 					return static_cast<std::size_t>( need_slow_path );
 				}
 
-				template<typename ParseState>
-				requires( not ParseState::is_unchecked_input ) //
-				  [[nodiscard]] static constexpr std::size_t
+				template<ParseState ParseState>
+				requires( not ParseState::is_unchecked_input )
+				[[nodiscard]] static constexpr std::size_t
 				  parse_nq( ParseState &parse_state ) {
 
 					using CharT = typename ParseState::CharT;

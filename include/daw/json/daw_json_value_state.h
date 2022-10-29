@@ -289,8 +289,8 @@ namespace daw::json {
 			 * @return The name of the member or an empty optional
 			 */
 			template<typename Integer>
-			requires( std::is_integral_v<Integer> ) //
-			  [[nodiscard]] std::optional<std::string_view> name_of( Integer index ) {
+			requires( std::is_integral_v<Integer> )
+			[[nodiscard]] std::optional<std::string_view> name_of( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {
 					if( index < 0 ) {
 						index = -index;
@@ -320,9 +320,9 @@ namespace daw::json {
 			 * @return A new basic_json_value for the indexed member
 			 */
 			template<typename Integer>
-			requires( std::is_integral_v<Integer> ) //
-			  [[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
-			  operator[]( Integer index ) {
+			requires( std::is_integral_v<Integer> )
+			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
+			operator[]( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {
 					if( index < 0 ) {
 						index = -index;
@@ -347,9 +347,10 @@ namespace daw::json {
 			 * @return A new basic_json_value for the indexed member
 			 */
 			template<typename Integer>
-			requires( std::is_integral_v<Integer> ) //
-			  [[nodiscard]] constexpr std::optional<
-			    basic_json_value<PolicyFlags, Allocator>> at( Integer index ) {
+			requires( std::is_integral_v<Integer> )
+			[[nodiscard]] constexpr std::optional<
+			  basic_json_value<PolicyFlags, Allocator>>
+			at( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {
 					if( index < 0 ) {
 						index = -index;

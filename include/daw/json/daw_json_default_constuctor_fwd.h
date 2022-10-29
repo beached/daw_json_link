@@ -37,10 +37,9 @@ namespace daw::json {
 			}
 
 			template<typename... Args>
-			requires( sizeof...( Args ) > 0 and
-			          std::is_constructible_v<T, Args...> ) //
-			  [[nodiscard]] DAW_ATTRIB_INLINE constexpr T
-			  operator( )( Args &&...args ) const {
+			requires( sizeof...( Args ) > 0 and std::is_constructible_v<T, Args...> )
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
+			operator( )( Args &&...args ) const {
 
 				return T( DAW_FWD( args )... );
 			}
@@ -48,9 +47,9 @@ namespace daw::json {
 			template<typename... Args>
 			requires( sizeof...( Args ) > 0 and
 			          not std::is_constructible_v<T, Args...> and
-			          traits::is_list_constructible_v<T, Args...> ) //
-			  [[nodiscard]] DAW_ATTRIB_INLINE constexpr T
-			  operator( )( Args &&...args ) const
+			          traits::is_list_constructible_v<T, Args...> )
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
+			operator( )( Args &&...args ) const
 			  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
 				return T{ DAW_FWD( args )... };
 			}

@@ -14,6 +14,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_options_impl.h"
+#include "daw_json_parse_policy_concept.h"
 #include "daw_json_parse_policy_cpp_comments.h"
 #include "daw_json_parse_policy_hash_comments.h"
 #include "daw_json_parse_policy_no_comments.h"
@@ -523,21 +524,25 @@ namespace daw::json {
 			}
 		};
 
-		BasicParsePolicy( )->BasicParsePolicy<>;
+		BasicParsePolicy( ) -> BasicParsePolicy<>;
 
-		BasicParsePolicy( char const *, char const * )->BasicParsePolicy<>;
+		BasicParsePolicy( char const *, char const * ) -> BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, Allocator const & )
 		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
 
 		BasicParsePolicy( char const *, char const *, char const *, char const * )
-		  ->BasicParsePolicy<>;
+		  -> BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, char const *, char const *,
 		                  Allocator const & )
 		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
+
+		template<json_options_t PolicyFlags, typename Allocator>
+		inline constexpr bool
+		  is_parse_state_v<BasicParsePolicy<PolicyFlags, Allocator>> = true;
 
 		namespace options {
 			/***
@@ -581,8 +586,8 @@ namespace daw::json {
 			/// parse_options.md
 			///
 			template<auto... PolicyFlags>
-			inline constexpr auto
-			  parse_flags = details::make_parse_flags<PolicyFlags...>( );
+			inline constexpr auto parse_flags =
+			  details::make_parse_flags<PolicyFlags...>( );
 		} // namespace options
 
 #define DAW_JSON_CONFORMANCE_FLAGS                       \

@@ -31,8 +31,8 @@ namespace daw::json {
 				char const *member_name;
 
 				template<typename StringView>
-				requires( traits::not_same_v<StringView, missing_member> ) //
-				  explicit constexpr missing_member( StringView name )
+				requires( traits::not_same_v<StringView, missing_member> )
+				explicit constexpr missing_member( StringView name )
 				  : member_name( std::data( name ) ) {
 					if( member_name and member_name[0] == '\a' ) {
 						member_name = "no_name";

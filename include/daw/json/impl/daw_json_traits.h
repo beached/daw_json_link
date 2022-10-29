@@ -47,14 +47,11 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			inline constexpr bool has_op_bool_v = requires( T value ) {
-				static_cast<bool>( value );
-			};
+			inline constexpr bool has_op_bool_v =
+			  requires( T value ) { static_cast<bool>( value ); };
 
 			template<typename T>
-			inline constexpr bool has_op_star_v = requires( T value ) {
-				*value;
-			};
+			inline constexpr bool has_op_star_v = requires( T value ) { *value; };
 
 			template<typename Constructor, typename... Args>
 			struct constructor_cannot_be_invoked;
@@ -81,14 +78,14 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename T>
-			inline constexpr bool is_json_map_alias_v = requires {
-				typename json_data_contract_trait_t<T>::i_am_a_json_map_alias;
-			};
+			inline constexpr bool is_json_map_alias_v =
+			  requires {
+				  typename json_data_contract_trait_t<T>::i_am_a_json_map_alias;
+			  };
 
 			template<typename JsonMember>
-			inline constexpr bool has_switcher_v = requires {
-				typename JsonMember::switcher;
-			};
+			inline constexpr bool has_switcher_v =
+			  requires { typename JsonMember::switcher; };
 		} // namespace json_details
 		/***
 		 * This trait can be specialized such that when class being returned has
@@ -99,12 +96,10 @@ namespace daw::json {
 		 * @tparam T type to specialize
 		 */
 		template<typename T>
-		inline constexpr bool force_aggregate_construction_v = requires {
-			typename json_data_contract<T>::force_aggregate_construction;
-		}
-		or requires {
-			T::force_aggregate_construction;
-		};
+		inline constexpr bool force_aggregate_construction_v =
+		  requires {
+			  typename json_data_contract<T>::force_aggregate_construction;
+		  } or requires { T::force_aggregate_construction; };
 
 		template<typename... Ts>
 		inline constexpr bool is_empty_pack_v = sizeof...( Ts ) == 0;
@@ -128,26 +123,23 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename T>
-			inline constexpr bool is_a_json_type_v = requires {
-				typename T::i_am_a_json_type;
-			};
+			inline constexpr bool is_a_json_type_v =
+			  requires { typename T::i_am_a_json_type; };
 
 			template<typename T>
 			using is_a_json_type = std::bool_constant<is_a_json_type_v<T>>;
 
 			template<typename T>
-			inline constexpr bool is_an_ordered_member_v = requires {
-				typename T::i_am_an_ordered_member;
-			};
+			inline constexpr bool is_an_ordered_member_v =
+			  requires { typename T::i_am_an_ordered_member; };
 
 			template<typename T>
 			using is_an_ordered_member =
 			  std::bool_constant<is_an_ordered_member_v<T>>;
 
 			template<typename T>
-			inline constexpr bool is_a_json_tagged_variant_v = requires {
-				typename T::i_am_a_json_tagged_variant;
-			};
+			inline constexpr bool is_a_json_tagged_variant_v =
+			  requires { typename T::i_am_a_json_tagged_variant; };
 
 			template<typename T>
 			using json_class_constructor_t_impl =
@@ -162,9 +154,9 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool is_string_view_like_v = requires( T & value ) {
-				std::data( value );
-				std::size( value );
-			};
+				                                              std::data( value );
+				                                              std::size( value );
+			                                              };
 
 			static_assert( is_string_view_like_v<std::string_view> );
 
@@ -235,9 +227,8 @@ namespace daw::json {
 
 		template<typename T>
 		inline constexpr bool ignore_unknown_members_v =
-		  ignore_unknown_members<T>::value or requires {
-			typename json_data_contract<T>::ignore_unknown_members;
-		};
+		  ignore_unknown_members<T>::value or
+		  requires { typename json_data_contract<T>::ignore_unknown_members; };
 
 		/***
 		 * A trait to specify that this class, when parsed, will describe all
@@ -247,12 +238,11 @@ namespace daw::json {
 		 * type
 		 */
 		template<typename T>
-		inline constexpr bool is_exact_class_mapping_v = requires {
-			typename json_data_contract<T>::exact_class_mapping;
-		};
+		inline constexpr bool is_exact_class_mapping_v =
+		  requires { typename json_data_contract<T>::exact_class_mapping; };
 
 		namespace json_details {
-			template<typename T, typename ParseState>
+			template<typename T, ParseState ParseState>
 			inline constexpr bool all_json_members_must_exist_v =
 			  not ignore_unknown_members_v<T> and
 			  ( is_exact_class_mapping_v<T> or
@@ -265,9 +255,8 @@ namespace daw::json {
 		 * The std
 		 */
 		template<typename T>
-		inline constexpr bool is_pointer_like_v = std::is_pointer_v<T> or requires {
-			typename T::element_type;
-		};
+		inline constexpr bool is_pointer_like_v =
+		  std::is_pointer_v<T> or requires { typename T::element_type; };
 
 		/// Allow tuple like types to be used in json_tuple
 		/// \tparam Tuple tuple like type to
@@ -308,9 +297,8 @@ namespace daw::json {
 			/// Detect if T follows the tuple protocol
 			/// \tparam T
 			template<typename T>
-			inline constexpr bool is_tuple_v = requires {
-				typename tuple_elements_pack<T>::type;
-			};
+			inline constexpr bool is_tuple_v =
+			  requires { typename tuple_elements_pack<T>::type; };
 
 			template<typename T>
 			using unwrapped_t = concepts::nullable_value_type_t<T>;

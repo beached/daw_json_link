@@ -32,7 +32,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_lines_details {
-			template<typename CharT, typename ParseState>
+			template<typename CharT, ParseState ParseState>
 			struct op_star_cleanup {
 				CharT *&m_can_skip;
 				ParseState &tmp;

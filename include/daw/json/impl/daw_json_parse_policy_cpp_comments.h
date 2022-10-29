@@ -27,7 +27,7 @@ namespace daw::json {
 		 * Allow skipping C++ style comments in JSON document
 		 */
 		class CppCommentSkippingPolicy final {
-			template<typename ParseState>
+			template<ParseState ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			skip_comments_unchecked( ParseState &parse_state ) {
 				while( parse_state.front( ) == '/' ) {
@@ -54,7 +54,7 @@ namespace daw::json {
 				}
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			skip_comments_checked( ParseState &parse_state ) {
 				while( parse_state.has_more( ) and parse_state.front( ) == '/' ) {
@@ -90,7 +90,7 @@ namespace daw::json {
 				}
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			skip_comments( ParseState &parse_state ) {
 				if constexpr( ParseState::is_unchecked_input ) {
@@ -101,7 +101,7 @@ namespace daw::json {
 			}
 
 		public:
-			template<typename ParseState>
+			template<ParseState ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_checked( ParseState &parse_state ) {
 				skip_comments_checked( parse_state );
@@ -111,7 +111,7 @@ namespace daw::json {
 				}
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_unchecked( ParseState &parse_state ) {
 				skip_comments_unchecked( parse_state );
@@ -120,13 +120,13 @@ namespace daw::json {
 				}
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_next_member_unchecked( ParseState &parse_state ) {
 				parse_state.move_next_member_or_end_unchecked( );
 			}
 
-			template<char... keys, typename ParseState>
+			template<char... keys, ParseState ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_to_next_of( ParseState &parse_state ) {
 				skip_comments( parse_state );
@@ -145,7 +145,7 @@ namespace daw::json {
 			}
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
-			         typename ParseState>
+			         ParseState ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
@@ -253,7 +253,7 @@ namespace daw::json {
 			}
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
-			         typename ParseState>
+			         ParseState ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already

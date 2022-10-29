@@ -36,14 +36,12 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 static_assert( DAW_NUM_RUNS > 0 );
 
 template<typename T>
-inline bool constexpr is_to_json_data_able_v = requires( T v ) {
-	to_json_data( v );
-};
+inline bool constexpr is_to_json_data_able_v =
+  requires( T v ) { to_json_data( v ); };
 
 template<typename T>
 requires( is_to_json_data_able_v<T> ) //
-  DAW_CONSTEXPR bool
-  operator==( T const &lhs, T const &rhs ) {
+DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	test_assert( to_json_data( lhs ) == to_json_data( rhs ),
 	             "Expected that values would be equal" );
 	return true;

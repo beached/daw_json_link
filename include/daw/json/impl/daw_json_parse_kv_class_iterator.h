@@ -25,14 +25,14 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename ParseState, bool>
+			template<ParseState ParseState, bool>
 			struct json_parse_kv_class_iterator_base {
 				using iterator_category = std::input_iterator_tag;
 				using difference_type = std::ptrdiff_t;
 				ParseState *parse_state = nullptr;
 			};
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			struct json_parse_kv_class_iterator_base<ParseState, true> {
 				// We have to lie so that std::distance uses O(1) instead of O(N)
 				using iterator_category = std::random_access_iterator_tag;
@@ -63,7 +63,7 @@ namespace daw::json {
 				                     T>;
 			} // namespace kv_class_iter_impl
 
-			template<typename JsonMember, typename ParseState, bool IsKnown>
+			template<typename JsonMember, ParseState ParseState, bool IsKnown>
 			struct json_parse_kv_class_iterator
 			  : json_parse_kv_class_iterator_base<ParseState, can_random_v<IsKnown>> {
 

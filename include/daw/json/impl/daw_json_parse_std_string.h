@@ -48,7 +48,7 @@ namespace daw::json {
 				return static_cast<char>( static_cast<unsigned char>( value ) );
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			[[nodiscard]] static constexpr char *
 			decode_utf16( ParseState &parse_state, char *it ) {
 				constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
@@ -121,7 +121,7 @@ namespace daw::json {
 				return it;
 			}
 
-			template<typename ParseState, typename Appender>
+			template<ParseState ParseState, typename Appender>
 			static constexpr void decode_utf16( ParseState &parse_state,
 			                                    Appender &app ) {
 				constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
@@ -192,7 +192,7 @@ namespace daw::json {
 			// Fast path for parsing escaped strings to a std::string with the default
 			// appender
 			template<bool AllowHighEight, typename JsonMember, bool KnownBounds,
-			         typename ParseState>
+			         ParseState ParseState>
 			[[nodiscard]] constexpr auto // json_result<JsonMember>
 			parse_string_known_stdstring( ParseState &parse_state ) {
 				using string_type = json_base_type<JsonMember>;

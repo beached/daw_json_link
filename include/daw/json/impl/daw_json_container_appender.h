@@ -24,15 +24,11 @@ namespace daw::json {
 		namespace json_details {
 			template<typename Container, typename Value>
 			inline constexpr bool has_push_back_v =
-			  requires( Container & c, Value v ) {
-				c.push_back( v );
-			};
+			  requires( Container & c, Value v ) { c.push_back( v ); };
 
 			template<typename Container, typename Value>
 			inline constexpr bool has_insert_end_v =
-			  requires( Container & c, Value v ) {
-				c.insert( std::end( c ), v );
-			};
+			  requires( Container & c, Value v ) { c.insert( std::end( c ), v ); };
 		} // namespace json_details
 		/***
 		 * @brief A generic output iterator that can push_back or insert depending
@@ -75,10 +71,8 @@ namespace daw::json {
 			}
 
 			template<typename Value>
-			requires(
-			  not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>> ) //
-			  inline constexpr basic_appender &
-			  operator=( Value &&v ) {
+			requires( not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>> )
+			inline constexpr basic_appender &operator=( Value &&v ) {
 				operator( )( DAW_FWD( v ) );
 				return *this;
 			}

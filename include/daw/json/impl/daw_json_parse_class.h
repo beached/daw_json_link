@@ -15,6 +15,7 @@
 #include "daw_json_location_info.h"
 #include "daw_json_name.h"
 #include "daw_json_parse_common.h"
+#include "daw_json_parse_policy_concept.h"
 #include "daw_json_parse_value.h"
 #include "daw_json_skip.h"
 
@@ -37,15 +38,15 @@ namespace daw::json {
 			/// Parse a class member in an ordered json class(class as array).  These
 			/// are often referred to as JSON tuples
 			/// @tparam JsonMember type mapping of member to parse
-			/// @tparam ParseState The state/policy type for current parse @link
-			/// daw_json_parse_policy.h @endlink
+			/// @tparam ParseState The state/policy type for current parse
+			/// @link daw_json_parse_policy.h @endlink
 			/// @param member_index current position in array
 			/// @param parse_state JSON data
 			/// @return A reified value of type JsonMember::parse_to_t
 			/// @pre parse_state.has_more( ) == true
 			/// @pre parse_state.front( ) == '['
 			///
-			template<typename JsonMember, typename ParseState>
+			template<typename JsonMember, ParseState ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_ordered_class_member( template_param<JsonMember>,
 			                            std::size_t &member_index,
@@ -96,7 +97,7 @@ namespace daw::json {
 			///
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
-			         typename ParseState, std::size_t N, typename CharT, bool B>
+			         ParseState ParseState, std::size_t N, typename CharT, bool B>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_class_member( std::false_type /*all_members_in_order*/,
 			                    ParseState &parse_state,
@@ -109,7 +110,8 @@ namespace daw::json {
 
 				auto [loc, known] = find_class_member<member_position, must_exist>(
 				  std::false_type{ }, parse_state, locations,
-				  is_json_nullable_v<JsonMember>, JsonMember::name );
+				  std::bool_constant<is_json_nullable_v<JsonMember>>{ },
+				  JsonMember::name );
 
 				// If the member was found loc will have its position
 				if( not known ) {
@@ -157,7 +159,7 @@ namespace daw::json {
 			/*
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
-			         typename ParseState, std::size_t N, typename CharT, bool B>
+			         ParseState ParseState, std::size_t N, typename CharT, bool B>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_class_member( std::true_type, //all_members_in_order
 			                    ParseState &parse_state,
@@ -170,7 +172,8 @@ namespace daw::json {
 
 			  auto loc = find_class_member<member_position, must_exist>(
 			    std::true_type{ }, parse_state, locations,
-			    is_json_nullable_v<JsonMember>, JsonMember::name );
+			    std::bool_constant<is_json_nullable_v<JsonMember>>{}, JsonMember::name
+			);
 
 			  if constexpr( NeedsClassPositions ) {
 			    auto const cf = parse_state.class_first;
@@ -213,10 +216,9 @@ namespace daw::json {
 			}
 			*/
 
-			template<bool IsExactClass, typename ParseState, typename OldClassPos>
+			template<bool IsExactClass, ParseState ParseState>
 			DAW_ATTRIB_INLINE constexpr void
-			class_cleanup_now( ParseState &parse_state,
-			                   OldClassPos const &old_class_pos ) {
+			class_cleanup_now( ParseState &parse_state, auto const &old_class_pos ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				parse_state.move_next_member_or_end( );
@@ -235,7 +237,7 @@ namespace daw::json {
 				parse_state.set_class_position( old_class_pos );
 			}
 
-			template<bool AllMembersMustExist, typename ParseState,
+			template<bool AllMembersMustExist, ParseState ParseState,
 			         typename OldClassPos>
 			struct class_cleanup {
 				ParseState &parse_state;
@@ -271,8 +273,8 @@ namespace daw::json {
 			/// mismatch, store the start/finish of JSON members we are interested in
 			/// and return that to the members parser when needed.
 			///
-			template<typename JsonClass, typename... JsonMembers, typename ParseState,
-			         std::size_t... Is>
+			template<typename JsonClass, typename... JsonMembers,
+			         ParseState ParseState, std::size_t... Is>
 			[[nodiscard]] constexpr json_result<JsonClass>
 			parse_json_class( ParseState &parse_state, std::index_sequence<Is...> ) {
 				static_assert( is_a_json_type_v<JsonClass> );
@@ -314,7 +316,8 @@ namespace daw::json {
 					using NeedClassPositions = std::bool_constant<(
 					  ( JsonMembers::must_be_class_member or ... ) )>;
 
-#if not defined( _MSC_VER ) or defined( __clang__ )
+#if( not defined( _MSC_VER ) or __cpp_constexpr <= 201700L ) or \
+  defined( __clang__ )
 					auto known_locations = DAW_AS_CONSTANT(
 					  ( make_locations_info<ParseState, JsonMembers...>( ) ) );
 #else
@@ -386,7 +389,8 @@ namespace daw::json {
 			/// values of a JSON array. Often this is used for geometric types like
 			/// Point
 			///
-			template<typename JsonClass, typename... JsonMembers, typename ParseState>
+			template<typename JsonClass, typename... JsonMembers,
+			         ParseState ParseState>
 			[[nodiscard]] static constexpr json_result<JsonClass>
 			parse_json_tuple_class( template_params<JsonClass, JsonMembers...>,
 			                        ParseState &parse_state ) {

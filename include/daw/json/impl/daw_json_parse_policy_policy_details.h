@@ -40,7 +40,7 @@ namespace daw::json {
 				                              static_cast<unsigned char>( '0' ) ) < 10U;
 			}
 
-			template<typename ParseState>
+			template<ParseState ParseState>
 			DAW_ATTRIB_FLATINLINE inline constexpr void
 			validate_unsigned_first( ParseState const &parse_state ) {
 				if constexpr( not ParseState::is_unchecked_input ) {
@@ -72,7 +72,7 @@ namespace daw::json {
 			 * not zero)
 			 * @return sign value
 			 */
-			template<typename ParseState>
+			template<ParseState ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr int
 			validate_signed_first( ParseState &parse_state ) {
 				daw_json_ensure( parse_state.has_more( ),
