@@ -37,26 +37,6 @@ inline constexpr bool use_daw_json_exceptions_v = true;
 inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
-#if defined( __has_cpp_attribute )
-#if __has_cpp_attribute( unlikely ) >= 201803L
-#define DAW_JSON_ATTRIB_UNLIKELY [[unlikely]]
-#else
-#define DAW_JSON_ATTRIB_UNLIKELY
-#endif
-#else
-#define DAW_JSON_ATTRIB_UNLIKELY
-#endif
-
-#if defined( __has_cpp_attribute )
-#if __has_cpp_attribute( likely ) >= 201803L
-#define DAW_JSON_ATTRIB_LIKELY [[likely]]
-#else
-#define DAW_JSON_ATTRIB_LIKELY
-#endif
-#else
-#define DAW_JSON_ATTRIB_LIKELY
-#endif
-
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
@@ -163,10 +143,7 @@ namespace daw::json {
 #define daw_json_ensure( Bool, ... )    \
 	do {                                  \
 		if( DAW_UNLIKELY( not( Bool ) ) ) { \
-			DAW_JSON_ATTRIB_UNLIKELY          \
 			daw_json_error( __VA_ARGS__ );    \
-		} else {                            \
-			DAW_JSON_ATTRIB_LIKELY;           \
 		}                                   \
 	} while( false )
 
@@ -176,10 +153,7 @@ namespace daw::json {
 	do {                                                   \
 		if constexpr( not ParseState::is_unchecked_input ) { \
 			if( DAW_UNLIKELY( not( Bool ) ) ) {                \
-				DAW_JSON_ATTRIB_UNLIKELY                         \
 				daw_json_error( __VA_ARGS__ );                   \
-			} else {                                           \
-				DAW_JSON_ATTRIB_LIKELY;                          \
 			}                                                  \
 		}                                                    \
 	} while( false )
