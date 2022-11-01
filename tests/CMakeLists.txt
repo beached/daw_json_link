@@ -871,6 +871,12 @@ add_test( NAME json_lines_test_test COMMAND json_lines_test )
 add_dependencies( ci_tests json_lines_test )
 add_dependencies( full json_lines_test )
 
+add_executable( issue_334_test src/issue_334_test.cpp )
+target_link_libraries( issue_334_test json_test )
+add_test( NAME issue_334_test_test COMMAND issue_334_test )
+add_dependencies( ci_tests issue_334_test )
+add_dependencies( full issue_334_test )
+
 if( Threads_FOUND )
     add_executable( json_lines_bench_test src/json_lines_bench_test.cpp )
     target_link_libraries( json_lines_bench_test json_test ${CMAKE_THREAD_LIBS_INIT} )

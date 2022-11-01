@@ -63,7 +63,7 @@ void test_lots_of_doubles( ) {
 		unsigned long long x2 = rnd( );
 		int x3 = std::uniform_int_distribution<>( -308, +308 )( rnd );
 		char buffer[128];
-		std::sprintf( buffer, "%llu.%llue%d", x1, x2, x3 );
+		std::snprintf( buffer, 128, "%llu.%llue%d", x1, x2, x3 );
 		numbers_str[i] = std::string( buffer );
 		bytes += numbers_str[i].size( );
 		auto rng = num_t( numbers_str[i].data( ),
