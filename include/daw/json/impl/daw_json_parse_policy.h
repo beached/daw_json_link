@@ -581,8 +581,8 @@ namespace daw::json {
 			/// parse_options.md
 			///
 			template<auto... PolicyFlags>
-			inline constexpr auto
-			  parse_flags = details::make_parse_flags<PolicyFlags...>( );
+			inline constexpr auto parse_flags =
+			  details::make_parse_flags<PolicyFlags...>( );
 		} // namespace options
 
 #define DAW_JSON_CONFORMANCE_FLAGS                       \
