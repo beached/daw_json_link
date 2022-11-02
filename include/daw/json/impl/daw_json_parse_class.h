@@ -255,7 +255,8 @@ namespace daw::json {
 					  ( JsonMembers::must_be_class_member or ... ) )>;
 
 					// MSVC in C++20 mode has a bug.  This works around it
-#if (not defined( _MSC_VER ) or __cpp_constexpr <= 201700L) or defined( __clang__ )
+#if( not defined( _MSC_VER ) or __cpp_constexpr <= 201700L ) or \
+  defined( __clang__ )
 					auto known_locations = DAW_AS_CONSTANT(
 					  ( make_locations_info<ParseState, JsonMembers...>( ) ) );
 #else
