@@ -65,6 +65,20 @@ namespace daw::json {
 		template<typename T, typename = void>
 		struct nullable_constructor : default_constructor<T> {
 			/// used for types like string_view that have an empty state
+			using default_constructor<T>::operator( );
+		};
+
+		template<typename T>
+		struct nullable_constructor<
+		  T,
+		  std::enable_if_t<( concepts::nullable_impl::is_list_constructible_v<T> and
+		                     not concepts::is_nullable_value_v<T> )>>
+		  : default_constructor<T> {
+			/// used for types like string_view that have an empty state
+			using default_constructor<T>::operator( );
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T operator( )( ) const {
+				return T{ };
+			}
 		};
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
