@@ -257,8 +257,8 @@ $(function() {
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160; </div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_string_view_like_v =</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        daw::is_detected_v&lt;is_string_like_impl::has_data_test, T&gt;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;          and daw::is_detected_v&lt;is_string_like_impl::has_size_test, T&gt;;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        daw::is_detected_v&lt;is_string_like_impl::has_data_test, T&gt; and</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        daw::is_detected_v&lt;is_string_like_impl::has_size_test, T&gt;;</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;      static_assert( is_string_view_like_v&lt;std::string_view&gt; );</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160; </div>

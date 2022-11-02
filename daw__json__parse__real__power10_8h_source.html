@@ -133,11 +133,11 @@ $(function() {
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        std::numeric_limits&lt;double&gt;::max_exponent10;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result&gt;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">int</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        max_exp = std::is_same_v&lt;Result, float&gt;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                    ? ( std::min )( max_dbl_exp,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                                    std::numeric_limits&lt;float&gt;::max_exponent10 )</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                    : max_dbl_exp;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">int</span> max_exp =</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        std::is_same_v&lt;Result, float&gt;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;          ? ( std::min )( max_dbl_exp,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                          std::numeric_limits&lt;float&gt;::max_exponent10 )</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;          : max_dbl_exp;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result, <span class="keyword">typename</span> Un<span class="keywordtype">signed</span>&gt;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr Result</div>

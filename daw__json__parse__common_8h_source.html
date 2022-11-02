@@ -442,8 +442,8 @@ $(function() {
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;      }</div>
 <div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160; </div>
 <div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;      <span class="keyword">inline</span> constexpr <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674">JsonParseTypes</a></div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        number_parse_type_impl_v = number_parse_type_impl_test&lt;T&gt;( );</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;      <span class="keyword">inline</span> constexpr <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674">JsonParseTypes</a> number_parse_type_impl_v =</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        number_parse_type_impl_test&lt;T&gt;( );</div>
 <div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160; </div>
 <div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;      constexpr <span class="keyword">auto</span> number_parse_type_test( )</div>
@@ -459,8 +459,8 @@ $(function() {
 <div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;      }</div>
 <div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160; </div>
 <div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;      <span class="keyword">inline</span> constexpr <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674">JsonParseTypes</a></div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        number_parse_type_v = number_parse_type_test&lt;T&gt;( );</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;      <span class="keyword">inline</span> constexpr <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674">JsonParseTypes</a> number_parse_type_v =</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        number_parse_type_test&lt;T&gt;( );</div>
 <div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160; </div>
 <div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;</div>
 <div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;      <span class="keyword">struct </span>json_deduced_type_map {</div>
@@ -913,15 +913,16 @@ $(function() {
 <div class="line"><a name="l00849"></a><span class="lineno">  849</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE constexpr <span class="keyword">auto</span></div>
 <div class="line"><a name="l00850"></a><span class="lineno">  850</span>&#160;      construct_nullable_empty( ) {</div>
 <div class="line"><a name="l00851"></a><span class="lineno">  851</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_invocable_v&lt;</div>
-<div class="line"><a name="l00852"></a><span class="lineno">  852</span>&#160;                        Constructor, concepts::construct_nullable_with_empty_t&gt; ) {</div>
-<div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#ac358c76413ad11a7fe392de12cc364f2">concepts::construct_nullable_with_empty</a> );</div>
-<div class="line"><a name="l00854"></a><span class="lineno">  854</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00855"></a><span class="lineno">  855</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( );</div>
-<div class="line"><a name="l00856"></a><span class="lineno">  856</span>&#160;        }</div>
-<div class="line"><a name="l00857"></a><span class="lineno">  857</span>&#160;      }</div>
-<div class="line"><a name="l00858"></a><span class="lineno">  858</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00859"></a><span class="lineno">  859</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00860"></a><span class="lineno">  860</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00852"></a><span class="lineno">  852</span>&#160;                        Constructor,</div>
+<div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;                        concepts::construct_nullable_with_empty_t&gt; ) {</div>
+<div class="line"><a name="l00854"></a><span class="lineno">  854</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#ac358c76413ad11a7fe392de12cc364f2">concepts::construct_nullable_with_empty</a> );</div>
+<div class="line"><a name="l00855"></a><span class="lineno">  855</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00856"></a><span class="lineno">  856</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( );</div>
+<div class="line"><a name="l00857"></a><span class="lineno">  857</span>&#160;        }</div>
+<div class="line"><a name="l00858"></a><span class="lineno">  858</span>&#160;      }</div>
+<div class="line"><a name="l00859"></a><span class="lineno">  859</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00860"></a><span class="lineno">  860</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00861"></a><span class="lineno">  861</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__common_8h_03_1_1json__base_1_1json__string__raw_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__common_8h_03_1_1json__base_1_1json__string__raw.html">daw::json::anonymous_namespace{daw_json_parse_common.h}::json_base::json_string_raw</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__common_8h_source.html#l00265">daw_json_parse_common.h:265</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts_html_ac358c76413ad11a7fe392de12cc364f2"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#ac358c76413ad11a7fe392de12cc364f2">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::construct_nullable_with_empty</a></div><div class="ttdeci">constexpr auto construct_nullable_with_empty</div><div class="ttdef"><b>Definition:</b> <a href="daw__nullable__value__fwd_8h_source.html#l00042">daw_nullable_value_fwd.h:42</a></div></div>
