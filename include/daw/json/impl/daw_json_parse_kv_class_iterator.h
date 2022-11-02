@@ -126,19 +126,17 @@ namespace daw::json {
 #ifndef NDEBUG
 						if constexpr( IsKnown ) {
 							if( base::parse_state ) {
-								daw_json_ensure( base::parse_state->counter > 0,
+								daw_json_ensure( base::parse_state->counter == 0,
 								                 ErrorReason::AttemptToAccessPastEndOfValue,
 								                 *base::parse_state );
 								base::parse_state->counter--;
 							}
 						}
 #endif
-						if constexpr( not IsKnown ) {
-							// Cleanup at end of value
-							base::parse_state->remove_prefix( );
-							base::parse_state->trim_left_checked( );
-							// Ensure we are equal to default
-						}
+						// Cleanup at end of value
+						base::parse_state->remove_prefix( );
+						base::parse_state->trim_left_checked( );
+						// Ensure we are equal to default
 						base::parse_state = nullptr;
 					}
 #ifndef NDEBUG

@@ -3,7 +3,11 @@
 cmake_policy( SET CMP0065 NEW )
 
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
-set( CMAKE_CXX_EXTENSIONS OFF )
+if( CYGWIN )
+    set( CMAKE_CXX_EXTENSIONS ON )
+else()
+    set( CMAKE_CXX_EXTENSIONS OFF )
+endif()
 
 # 1.71 has MP issues, seting to 1.72 hoping that fixes them.  At the least it prevents compiling on Ubuntu 20.04
 find_package( Boost 1.72.0 COMPONENTS container system )
@@ -870,6 +874,12 @@ target_link_libraries( json_lines_test json_test )
 add_test( NAME json_lines_test_test COMMAND json_lines_test )
 add_dependencies( ci_tests json_lines_test )
 add_dependencies( full json_lines_test )
+
+add_executable( issue_334_test src/issue_334_test.cpp )
+target_link_libraries( issue_334_test json_test )
+add_test( NAME issue_334_test_test COMMAND issue_334_test )
+add_dependencies( ci_tests issue_334_test )
+add_dependencies( full issue_334_test )
 
 if( Threads_FOUND )
     add_executable( json_lines_bench_test src/json_lines_bench_test.cpp )
