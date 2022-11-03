@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_exec_modes.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_not_const_ex_functions.h"
@@ -17,13 +19,6 @@
 #include <daw/daw_traits.h>
 
 #include <cstring>
-
-#if defined( __GNUC__ )
-#define DAW_CAN_CONSTANT_EVAL( ... ) \
-	( __builtin_constant_p( __VA_ARGS__ ) == 1 )
-#else
-#define DAW_CAN_CONSTANT_EVAL( ... ) true
-#endif
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

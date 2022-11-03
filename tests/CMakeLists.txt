@@ -537,11 +537,14 @@ add_test( NAME cookbook_dates4_test COMMAND cookbook_dates4_test ./cookbook_date
 add_dependencies( ci_tests cookbook_dates4_test )
 add_dependencies( full cookbook_dates4_test )
 
-add_executable( no_move_or_copy_cls_test src/no_move_or_copy_cls_test.cpp )
-target_link_libraries( no_move_or_copy_cls_test PRIVATE json_test )
-add_test( NAME no_move_or_copy_cls_test COMMAND no_move_or_copy_cls_test )
-add_dependencies( ci_tests no_move_or_copy_cls_test )
-add_dependencies( full no_move_or_copy_cls_test )
+# Cannot be used due to perf issue with uncaught_exceptions/MSVC's dtors that prevent this facility
+if( NOT DEFINED MSVC )
+	add_executable( no_move_or_copy_cls_test src/no_move_or_copy_cls_test.cpp )
+	target_link_libraries( no_move_or_copy_cls_test PRIVATE json_test )
+	add_test( NAME no_move_or_copy_cls_test COMMAND no_move_or_copy_cls_test )
+	add_dependencies( ci_tests no_move_or_copy_cls_test )
+	add_dependencies( full no_move_or_copy_cls_test )
+endif( )
 
 add_executable( cookbook_class_from_array1_test src/cookbook_class_from_array1_test.cpp )
 target_link_libraries( cookbook_class_from_array1_test PRIVATE json_test )
