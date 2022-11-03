@@ -165,11 +165,7 @@ namespace daw::json {
 					                                      return l == r;
 				                                      } ) != daw::data_end( hashes );
 			}
-#if defined( _MSC_VER ) and not defined( __clang__ )
-#define DAW_JSON_MAKE_LOC_INFO_CONSTEVAL constexpr
-#else
-#define DAW_JSON_MAKE_LOC_INFO_CONSTEVAL DAW_CONSTEVAL
-#endif
+
 			// Should never be called outside a consteval context
 			template<typename ParseState, typename... JsonMembers>
 			DAW_ATTRIB_FLATINLINE inline DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto

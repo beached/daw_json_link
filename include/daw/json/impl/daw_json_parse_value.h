@@ -35,11 +35,6 @@
 #include <iterator>
 #include <tuple>
 
-#if defined( __cpp_constexpr_dynamic_alloc )
-#define CPP20CONSTEXPR constexpr
-#else
-#define CPP20CONSTEXPR
-#endif
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

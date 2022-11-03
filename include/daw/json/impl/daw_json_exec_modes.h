@@ -18,7 +18,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		struct constexpr_exec_tag {
 			static constexpr std::string_view name = "constexpr";
-#if defined( DAW_JSON_ENABLE_ALWAYS_RVO )
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 			static constexpr bool always_rvo = true;
 #else
 			static constexpr bool always_rvo = false;
@@ -27,7 +27,7 @@ namespace daw::json {
 		};
 		struct runtime_exec_tag : constexpr_exec_tag {
 			static constexpr std::string_view name = "runtime";
-#if defined( DAW_JSON_DISABLE_ALWAYS_RVO )
+#if defined( DAW_NO_CONSTEXPR_SCOPE_GUARD )
 			static constexpr bool always_rvo = false;
 #else
 			static constexpr bool always_rvo = true;
@@ -37,7 +37,7 @@ namespace daw::json {
 #if defined( DAW_ALLOW_SSE42 )
 		struct sse42_exec_tag : runtime_exec_tag {
 			static constexpr std::string_view name = "sse4.2";
-#if defined( DAW_JSON_DISABLE_ALWAYS_RVO )
+#if defined( DAW_NO_CONSTEXPR_SCOPE_GUARD )
 			static constexpr bool always_rvo = false;
 #else
 			static constexpr bool always_rvo = true;

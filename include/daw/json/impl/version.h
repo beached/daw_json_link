@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "../daw_json_switches.h"
+
 /// The version string used in namespace definitions.  Must be a valid namespace
 /// name.
 #if not defined( DAW_JSON_VER_OVERRIDE )
@@ -16,5 +18,3 @@
 #else
 #define DAW_JSON_VER DAW_JSON_VER_OVERRIDE
 #endif
-
-#include "../daw_json_switches.h"

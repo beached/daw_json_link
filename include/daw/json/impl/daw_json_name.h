@@ -21,33 +21,6 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		// If the compiler supports CNTTP types allow for strings in json data
-		// contracts.  Both support passing local char const[], but the type is
-		// different.  To keep old behaviour when using C++20, define
-		// DAW_USE_CPP17_ABI
-#if not defined( DAW_USE_CPP17_ABI )
-#if defined( __cpp_nontype_template_parameter_class )
-#if not defined( DAW_JSON_CNTTP_JSON_NAME )
-#define DAW_JSON_CNTTP_JSON_NAME
-#endif
-#endif
-#if defined( __cpp_nontype_template_args )
-#if __cpp_nontype_template_args >= 201911L
-#if not defined( DAW_JSON_CNTTP_JSON_NAME )
-#define DAW_JSON_CNTTP_JSON_NAME
-#endif
-#endif
-#endif
-#if defined( __clang_major__ ) and __cplusplus >= 202002L
-#if __clang_major__ >= 12
-		// Clang 12 supports enough of CNTTP string literals and compiles the tests
-		// successfully, but does not define the feature macro
-#if not defined( DAW_JSON_CNTTP_JSON_NAME )
-#define DAW_JSON_CNTTP_JSON_NAME
-#endif
-#endif
-#endif
-#endif
 
 #if defined( DAW_JSON_CNTTP_JSON_NAME )
 		// C++ 20 Non-Type Class Template Arguments
