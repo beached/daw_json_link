@@ -17,23 +17,4 @@
 #define DAW_JSON_VER DAW_JSON_VER_OVERRIDE
 #endif
 
-#if defined( __GNUC__ ) and not defined( __clang__ ) and \
-  not defined( DAW_JSON_FLATTEN ) and not defined( DAW_NO_FLATTEN )
-#define DAW_NO_FLATTEN
-#endif
-
-#if defined( DAW_USE_EXCEPTIONS )
-#if defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-#error Conflicting defines DAW_USE_EXCEPTIONS and DAW_JSON_DONT_USE_EXCEPTIONS
-#endif
-#if defined( DAW_DONT_USE_EXCEPTIONS )
-#error Conflicting defines DAW_USE_EXCEPTIONS and DAW_DONT_USE_EXCEPTIONS
-#endif
-#else
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-#define DAW_JSON_DONT_USE_EXCEPTIONS
-#endif
-#if not defined( DAW_DONT_USE_EXCEPTIONS )
-#define DAW_JSON_DONT_USE_EXCEPTIONS
-#endif
-#endif
+#include "../daw_json_switches.h"
