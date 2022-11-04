@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "impl/version.h"
+
 #include <daw/daw_utility.h>
 
 #include "daw_json_link_types.h"

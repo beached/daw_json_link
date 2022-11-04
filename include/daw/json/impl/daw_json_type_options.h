@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_enums.h"
 #include "daw_json_option_bits.h"
 

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "../impl/version.h"
+
 #include <daw/cpp_17.h>
 
 #include <cstddef>

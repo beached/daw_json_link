@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include <daw/daw_do_n.h>
 #include <daw/daw_endian.h>
 #include <daw/daw_string_view.h>

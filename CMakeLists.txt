@@ -26,6 +26,8 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
     # gcc 11.20 has weird error "modification of '<anonymous>' is not a constant expression"
     add_compile_definitions( DAW_NO_CONSTEXPR_SCOPE_GUARD )
     # gcc has difficulty and takes too long to compile
+	else( )
+    add_compile_definitions( DAW_NO_CONSTEXPR_SCOPE_GUARD )
 endif()
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" )
