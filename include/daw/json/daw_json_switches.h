@@ -42,6 +42,9 @@
 // <daw/daw_scope_guard.h>
 // This has performance impacts on MSVC as on_exit_success calls
 // std::uncaught_exceptions( ) which is very slow there
+#if not defined( DAW_NO_CONSTEXPR_SCOPE_GUARD ) and not defined( DAW_JSON_ENABLE_FULL_RVO )
+#define DAW_NO_CONSTEXPR_SCOPE_GUARD 
+#endif
 
 // DAW_IS_CONSTANT_EVALUATED is defined when a builtin or
 // std::is_constant_evaluated( ) is available in

@@ -22,11 +22,10 @@ option( DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependenc
 option( DAW_ENABLE_TESTING "Build unit tests and examples" OFF )
 option( DAW_JSON_PARSER_DIAGNOSTICS "Define: Output debug info while parsing" OFF )
 
-if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
-    # gcc 11.20 has weird error "modification of '<anonymous>' is not a constant expression"
-    add_compile_definitions( DAW_NO_CONSTEXPR_SCOPE_GUARD )
-    # gcc has difficulty and takes too long to compile
-endif()
+option( DAW_JSON_ENABLE_FULL_RVO "Define: Enables RVO in places so that non-copy/moveable types can be returned.  This can cause perf issues as it forces a call to std::uncaught_exceptions( )" OFF )
+if( DAW_JSON_ENABLE_FULL_RVO )
+	add_compile_definitions( DAW_JSON_ENABLE_FULL_RVO )
+endif( )
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" )
     option( DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON )
