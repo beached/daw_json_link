@@ -51,7 +51,7 @@
 // <daw/daw_is_constant_evaluated.h>
 
 // Show extra diagnostic information like unmapped members when parsing
-// by definining DAW_JSON_PARSER_DIAGNOSTICS
+// by defining DAW_JSON_PARSER_DIAGNOSTICS
 
 #if defined( __GNUC__ )
 #define DAW_CAN_CONSTANT_EVAL( ... ) \

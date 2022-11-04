@@ -7,6 +7,9 @@
 //
 
 #pragma once
+
+#include "impl/version.h"
+
 #include "daw_from_json.h"
 #include "daw_json_exception.h"
 #include "daw_json_link_types.h"

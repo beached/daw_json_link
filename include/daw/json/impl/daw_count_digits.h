@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include <daw/daw_cxmath.h>
 #include <daw/daw_uint_buffer.h>
 

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_exec_modes.h"
 
 #include <daw/daw_arith_traits.h>
