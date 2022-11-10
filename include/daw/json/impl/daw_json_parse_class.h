@@ -115,8 +115,8 @@ namespace daw::json {
 					if constexpr( NeedsClassPositions ) {
 						auto const cf = parse_state.class_first;
 						auto const cl = parse_state.class_last;
-						if constexpr( use_direct_construction_v<
-						                ParseState, without_name<JsonMember>> ) {
+						if constexpr( is_pinned_type_v<
+						                typename without_name<JsonMember>::parse_to_t> ) {
 							auto const after_parse = daw::on_scope_exit( [&] {
 								parse_state.class_first = cf;
 								parse_state.class_last = cl;
@@ -154,7 +154,7 @@ namespace daw::json {
 			}
 
 			template<bool IsExactClass, typename ParseState, typename OldClassPos>
-			DAW_ATTRIB_INLINE constexpr void
+			DAW_ATTRIB_INLINE static constexpr void
 			class_cleanup_now( ParseState &parse_state,
 			                   OldClassPos const &old_class_pos ) {
 				daw_json_assert_weak( parse_state.has_more( ),
@@ -174,35 +174,6 @@ namespace daw::json {
 				parse_state.trim_left_checked( );
 				parse_state.set_class_position( old_class_pos );
 			}
-
-			template<bool AllMembersMustExist, typename ParseState,
-			         typename OldClassPos>
-			struct class_cleanup {
-				ParseState &parse_state;
-				OldClassPos const &old_class_pos;
-
-				DAW_ATTRIB_INLINE
-				CPP20CONSTEXPR ~class_cleanup( ) noexcept(
-				  not use_daw_json_exceptions_v ) {
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
-					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
-						class_cleanup_now<AllMembersMustExist>( parse_state,
-						                                        old_class_pos );
-					} else {
-#endif
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-						if( std::uncaught_exceptions( ) == 0 ) {
-#endif
-							class_cleanup_now<AllMembersMustExist>( parse_state,
-							                                        old_class_pos );
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-						}
-#endif
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
-					}
-#endif
-				}
-			};
 
 			///
 			/// @brief Parse to the user supplied class.  The parser will run
@@ -264,11 +235,12 @@ namespace daw::json {
 					  make_locations_info<ParseState, JsonMembers...>( );
 #endif
 
-					if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
-						auto const run_after_parse = class_cleanup<
-						  json_details::all_json_members_must_exist_v<T, ParseState>,
-						  ParseState, decltype( old_class_pos )>{ parse_state,
-						                                          old_class_pos };
+					if constexpr( is_pinned_type_v<typename JsonClass::parse_to_t> ) {
+						auto const run_after_parse = daw::on_exit_success( [&] {
+							class_cleanup_now<
+							  json_details::all_json_members_must_exist_v<T, ParseState>>(
+							  parse_state, old_class_pos );
+						} );
 						(void)run_after_parse;
 
 						/*
@@ -339,11 +311,13 @@ namespace daw::json {
 
 				size_t current_idx = 0;
 
-				if constexpr( use_direct_construction_v<ParseState, JsonClass> ) {
-					auto const run_after_parse = ordered_class_cleanup<
-					  json_details::all_json_members_must_exist_v<T, ParseState>,
-					  ParseState, decltype( old_class_pos )>{ parse_state,
-					                                          old_class_pos };
+				if constexpr( is_pinned_type_v<typename JsonClass::parse_to_t> ) {
+					auto const run_after_parse = daw::on_exit_success( [&] {
+						ordered_class_cleanup<
+						  json_details::all_json_members_must_exist_v<T, ParseState>,
+						  ParseState, decltype( old_class_pos )>( parse_state,
+						                                          old_class_pos );
+					} );
 					(void)run_after_parse;
 					if constexpr( force_aggregate_construction_v<T> ) {
 						return T{ parse_ordered_class_member(

@@ -107,9 +107,7 @@ namespace daw::json {
 				                      ErrorReason::UnexpectedEndOfData, m_state );
 
 				auto tmp = m_state;
-
-				if constexpr( json_details::use_direct_construction_v<ParsePolicy,
-				                                                      JsonElement> ) {
+				if constexpr( is_pinned_type_v<typename element_type::parse_to_t> ) {
 					auto const run_after_parse =
 					  json_lines_details::op_star_cleanup<CharT, ParseState>{ m_can_skip,
 					                                                          tmp };
@@ -198,7 +196,7 @@ namespace daw::json {
 				return std::string_view( m_state.first, m_state.size( ) );
 			}
 		};
-		json_lines_iterator( daw::string_view )->json_lines_iterator<>;
+		json_lines_iterator( daw::string_view ) -> json_lines_iterator<>;
 
 		/// @brief A range of json_lines_iterators
 		/// @tparam JsonElement Type of each element in array
@@ -241,7 +239,7 @@ namespace daw::json {
 				return m_first == m_last;
 			}
 		};
-		json_lines_range( daw::string_view )->json_lines_range<>;
+		json_lines_range( daw::string_view ) -> json_lines_range<>;
 
 		template<typename JsonElement, auto... PolicyFlags>
 		json_lines_range( json_lines_iterator<JsonElement, PolicyFlags...>,

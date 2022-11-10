@@ -134,8 +134,7 @@ namespace daw::json {
 
 				auto tmp = m_state;
 
-				if constexpr( json_details::use_direct_construction_v<ParseState,
-				                                                      JsonElement> ) {
+				if constexpr( is_pinned_type_v<typename element_type::parse_to_t> ) {
 					auto const run_after_parse =
 					  json_array_iterator_details::op_star_cleanup<CharT, ParseState>{
 					    m_can_skip, tmp };
