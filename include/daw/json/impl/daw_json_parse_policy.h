@@ -427,7 +427,7 @@ namespace daw::json {
 				return DAW_LIKELY( first < last ) and *first == '"';
 			}
 
-			inline constexpr void trim_left( ) {
+			DAW_ATTRIB_INLINE constexpr void trim_left( ) {
 				if constexpr( is_unchecked_input ) {
 					trim_left_unchecked( );
 				} else {
