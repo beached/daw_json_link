@@ -842,87 +842,75 @@ $(function() {
 <div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;      <span class="keyword">using</span> json_deduced_type =</div>
 <div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;        <span class="keyword">typename</span> DAW_TYPEOF( json_deduced_type_impl&lt;T&gt;( ) )::type;</div>
 <div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160; </div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;<span class="comment">      /***</span></div>
-<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;<span class="comment">       * Some types cannot use construct_value or dont needed it.</span></div>
-<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;<span class="comment">       */</span></div>
-<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParsePolicy, <span class="keyword">typename</span> JsonMember&gt;</div>
-<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> use_direct_construction_v =</div>
-<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;        ParsePolicy::exec_tag_t::always_rvo;</div>
-<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;      <span class="comment">// TODO DAW implement this so that it work</span></div>
-<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;      <span class="comment">/* or</span></div>
-<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;<span class="comment">        ( not ParsePolicy::has_allocator and</span></div>
-<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;<span class="comment">          is_default_constructor_v&lt;</span></div>
-<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;<span class="comment">            typename json_deduced_type&lt;JsonMember&gt;::constructor_t&gt; );*/</span></div>
-<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160; </div>
-<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> has_json_deduced_type_v =</div>
-<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;        not std::is_same_v&lt;json_deduced_type&lt;T&gt;,</div>
-<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;                           missing_json_data_contract_for_or_unknown_type&lt;T&gt;&gt;;</div>
-<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160; </div>
-<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;      <span class="keyword">using</span> has_json_deduced_type =</div>
-<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;        std::bool_constant&lt;has_json_deduced_type_v&lt;T&gt;&gt;;</div>
-<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160; </div>
-<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> has_unnamed_default_type_mapping_v =</div>
-<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;        has_json_deduced_type_v&lt;T&gt;;</div>
-<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160; </div>
-<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember&gt;</div>
-<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;      <span class="keyword">using</span> from_json_result_t = json_result&lt;json_deduced_type&lt;JsonMember&gt;&gt;;</div>
-<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160; </div>
-<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Constructor, <span class="keyword">typename</span>... Members&gt;</div>
-<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;      <span class="keyword">using</span> json_class_parse_result_impl2 =</div>
-<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;        std::invoke_result_t&lt;Constructor,</div>
-<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;                             <span class="keyword">typename</span> Members::parse_to_t...&gt;; <span class="comment">/* decltype(</span></div>
-<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;<span class="comment">Constructor{ }( std::declval&lt;typename Members::parse_to_t &amp;&amp;&gt;( )... ) );*/</span></div>
-<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160; </div>
-<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Constructor, <span class="keyword">typename</span>... Members&gt;</div>
-<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;      <span class="keyword">using</span> json_class_parse_result_impl =</div>
-<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;        daw::detected_t&lt;json_class_parse_result_impl2, Constructor, Members...&gt;;</div>
-<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160; </div>
-<div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Constructor, <span class="keyword">typename</span>... Members&gt;</div>
-<div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;      <span class="keyword">struct </span>could_not_construct_from_members_error;</div>
-<div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160; </div>
-<div class="line"><a name="l00822"></a><span class="lineno">  822</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Constructor, <span class="keyword">typename</span>... Members&gt;</div>
-<div class="line"><a name="l00823"></a><span class="lineno">  823</span>&#160;      <span class="keyword">using</span> json_class_parse_result_t = <span class="keyword">typename</span> std::conditional_t&lt;</div>
-<div class="line"><a name="l00824"></a><span class="lineno">  824</span>&#160;        std::is_invocable_v&lt;Constructor, <span class="keyword">typename</span> Members::parse_to_t...&gt;,</div>
-<div class="line"><a name="l00825"></a><span class="lineno">  825</span>&#160;        std::invoke_result&lt;Constructor, <span class="keyword">typename</span> Members::parse_to_t...&gt;,</div>
-<div class="line"><a name="l00826"></a><span class="lineno">  826</span>&#160;        traits::identity&lt;could_not_construct_from_members_error&lt;</div>
-<div class="line"><a name="l00827"></a><span class="lineno">  827</span>&#160;          Constructor, Members...&gt;&gt;&gt;::type;</div>
-<div class="line"><a name="l00828"></a><span class="lineno">  828</span>&#160; </div>
-<div class="line"><a name="l00829"></a><span class="lineno">  829</span>&#160;      <span class="comment">/*daw::remove_cvref_t&lt;</span></div>
-<div class="line"><a name="l00830"></a><span class="lineno">  830</span>&#160;<span class="comment">      json_class_parse_result_impl&lt;Constructor, Members...&gt;&gt;;*/</span></div>
-<div class="line"><a name="l00831"></a><span class="lineno">  831</span>&#160; </div>
-<div class="line"><a name="l00832"></a><span class="lineno">  832</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember&gt;</div>
-<div class="line"><a name="l00833"></a><span class="lineno">  833</span>&#160;      <span class="keyword">using</span> dependent_member_t = <span class="keyword">typename</span> JsonMember::dependent_member;</div>
-<div class="line"><a name="l00834"></a><span class="lineno">  834</span>&#160; </div>
-<div class="line"><a name="l00835"></a><span class="lineno">  835</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember&gt;</div>
-<div class="line"><a name="l00836"></a><span class="lineno">  836</span>&#160;      <span class="keyword">using</span> nullable_dependent_member_t =</div>
-<div class="line"><a name="l00837"></a><span class="lineno">  837</span>&#160;        <span class="keyword">typename</span> JsonMember::member_type::dependent_member;</div>
-<div class="line"><a name="l00838"></a><span class="lineno">  838</span>&#160; </div>
-<div class="line"><a name="l00839"></a><span class="lineno">  839</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;</div>
-<div class="line"><a name="l00840"></a><span class="lineno">  840</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> has_dependent_member_v =</div>
-<div class="line"><a name="l00841"></a><span class="lineno">  841</span>&#160;        daw::is_detected_v&lt;dependent_member_t, JsonMember&gt;;</div>
-<div class="line"><a name="l00842"></a><span class="lineno">  842</span>&#160; </div>
-<div class="line"><a name="l00843"></a><span class="lineno">  843</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember&gt;</div>
-<div class="line"><a name="l00844"></a><span class="lineno">  844</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> has_dependent_member_v&lt;</div>
-<div class="line"><a name="l00845"></a><span class="lineno">  845</span>&#160;        JsonMember, std::enable_if_t&lt;is_json_nullable_v&lt;JsonMember&gt;&gt;&gt; =</div>
-<div class="line"><a name="l00846"></a><span class="lineno">  846</span>&#160;        daw::is_detected_v&lt;nullable_dependent_member_t, JsonMember&gt;;</div>
-<div class="line"><a name="l00847"></a><span class="lineno">  847</span>&#160; </div>
-<div class="line"><a name="l00848"></a><span class="lineno">  848</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Constructor&gt;</div>
-<div class="line"><a name="l00849"></a><span class="lineno">  849</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE constexpr <span class="keyword">auto</span></div>
-<div class="line"><a name="l00850"></a><span class="lineno">  850</span>&#160;      construct_nullable_empty( ) {</div>
-<div class="line"><a name="l00851"></a><span class="lineno">  851</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_invocable_v&lt;</div>
-<div class="line"><a name="l00852"></a><span class="lineno">  852</span>&#160;                        Constructor,</div>
-<div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;                        concepts::construct_nullable_with_empty_t&gt; ) {</div>
-<div class="line"><a name="l00854"></a><span class="lineno">  854</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#ac358c76413ad11a7fe392de12cc364f2">concepts::construct_nullable_with_empty</a> );</div>
-<div class="line"><a name="l00855"></a><span class="lineno">  855</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00856"></a><span class="lineno">  856</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( );</div>
-<div class="line"><a name="l00857"></a><span class="lineno">  857</span>&#160;        }</div>
-<div class="line"><a name="l00858"></a><span class="lineno">  858</span>&#160;      }</div>
-<div class="line"><a name="l00859"></a><span class="lineno">  859</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00860"></a><span class="lineno">  860</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00861"></a><span class="lineno">  861</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> has_json_deduced_type_v =</div>
+<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;        not std::is_same_v&lt;json_deduced_type&lt;T&gt;,</div>
+<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;                           missing_json_data_contract_for_or_unknown_type&lt;T&gt;&gt;;</div>
+<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160; </div>
+<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;      <span class="keyword">using</span> has_json_deduced_type =</div>
+<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;        std::bool_constant&lt;has_json_deduced_type_v&lt;T&gt;&gt;;</div>
+<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160; </div>
+<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> has_unnamed_default_type_mapping_v =</div>
+<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;        has_json_deduced_type_v&lt;T&gt;;</div>
+<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160; </div>
+<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember&gt;</div>
+<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;      <span class="keyword">using</span> from_json_result_t = json_result&lt;json_deduced_type&lt;JsonMember&gt;&gt;;</div>
+<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160; </div>
+<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Constructor, <span class="keyword">typename</span>... Members&gt;</div>
+<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;      <span class="keyword">using</span> json_class_parse_result_impl2 =</div>
+<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;        std::invoke_result_t&lt;Constructor,</div>
+<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;                             <span class="keyword">typename</span> Members::parse_to_t...&gt;; <span class="comment">/* decltype(</span></div>
+<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;<span class="comment">Constructor{ }( std::declval&lt;typename Members::parse_to_t &amp;&amp;&gt;( )... ) );*/</span></div>
+<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160; </div>
+<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Constructor, <span class="keyword">typename</span>... Members&gt;</div>
+<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;      <span class="keyword">using</span> json_class_parse_result_impl =</div>
+<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;        daw::detected_t&lt;json_class_parse_result_impl2, Constructor, Members...&gt;;</div>
+<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160; </div>
+<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Constructor, <span class="keyword">typename</span>... Members&gt;</div>
+<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;      <span class="keyword">struct </span>could_not_construct_from_members_error;</div>
+<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160; </div>
+<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Constructor, <span class="keyword">typename</span>... Members&gt;</div>
+<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;      <span class="keyword">using</span> json_class_parse_result_t = <span class="keyword">typename</span> std::conditional_t&lt;</div>
+<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;        std::is_invocable_v&lt;Constructor, <span class="keyword">typename</span> Members::parse_to_t...&gt;,</div>
+<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;        std::invoke_result&lt;Constructor, <span class="keyword">typename</span> Members::parse_to_t...&gt;,</div>
+<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;        traits::identity&lt;could_not_construct_from_members_error&lt;</div>
+<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;          Constructor, Members...&gt;&gt;&gt;::type;</div>
+<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160; </div>
+<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;      <span class="comment">/*daw::remove_cvref_t&lt;</span></div>
+<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;<span class="comment">      json_class_parse_result_impl&lt;Constructor, Members...&gt;&gt;;*/</span></div>
+<div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160; </div>
+<div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember&gt;</div>
+<div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160;      <span class="keyword">using</span> dependent_member_t = <span class="keyword">typename</span> JsonMember::dependent_member;</div>
+<div class="line"><a name="l00822"></a><span class="lineno">  822</span>&#160; </div>
+<div class="line"><a name="l00823"></a><span class="lineno">  823</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember&gt;</div>
+<div class="line"><a name="l00824"></a><span class="lineno">  824</span>&#160;      <span class="keyword">using</span> nullable_dependent_member_t =</div>
+<div class="line"><a name="l00825"></a><span class="lineno">  825</span>&#160;        <span class="keyword">typename</span> JsonMember::member_type::dependent_member;</div>
+<div class="line"><a name="l00826"></a><span class="lineno">  826</span>&#160; </div>
+<div class="line"><a name="l00827"></a><span class="lineno">  827</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;</div>
+<div class="line"><a name="l00828"></a><span class="lineno">  828</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> has_dependent_member_v =</div>
+<div class="line"><a name="l00829"></a><span class="lineno">  829</span>&#160;        daw::is_detected_v&lt;dependent_member_t, JsonMember&gt;;</div>
+<div class="line"><a name="l00830"></a><span class="lineno">  830</span>&#160; </div>
+<div class="line"><a name="l00831"></a><span class="lineno">  831</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember&gt;</div>
+<div class="line"><a name="l00832"></a><span class="lineno">  832</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> has_dependent_member_v&lt;</div>
+<div class="line"><a name="l00833"></a><span class="lineno">  833</span>&#160;        JsonMember, std::enable_if_t&lt;is_json_nullable_v&lt;JsonMember&gt;&gt;&gt; =</div>
+<div class="line"><a name="l00834"></a><span class="lineno">  834</span>&#160;        daw::is_detected_v&lt;nullable_dependent_member_t, JsonMember&gt;;</div>
+<div class="line"><a name="l00835"></a><span class="lineno">  835</span>&#160; </div>
+<div class="line"><a name="l00836"></a><span class="lineno">  836</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Constructor&gt;</div>
+<div class="line"><a name="l00837"></a><span class="lineno">  837</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE constexpr <span class="keyword">auto</span></div>
+<div class="line"><a name="l00838"></a><span class="lineno">  838</span>&#160;      construct_nullable_empty( ) {</div>
+<div class="line"><a name="l00839"></a><span class="lineno">  839</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_invocable_v&lt;</div>
+<div class="line"><a name="l00840"></a><span class="lineno">  840</span>&#160;                        Constructor,</div>
+<div class="line"><a name="l00841"></a><span class="lineno">  841</span>&#160;                        concepts::construct_nullable_with_empty_t&gt; ) {</div>
+<div class="line"><a name="l00842"></a><span class="lineno">  842</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#ac358c76413ad11a7fe392de12cc364f2">concepts::construct_nullable_with_empty</a> );</div>
+<div class="line"><a name="l00843"></a><span class="lineno">  843</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00844"></a><span class="lineno">  844</span>&#160;          <span class="keywordflow">return</span> Constructor{ }( );</div>
+<div class="line"><a name="l00845"></a><span class="lineno">  845</span>&#160;        }</div>
+<div class="line"><a name="l00846"></a><span class="lineno">  846</span>&#160;      }</div>
+<div class="line"><a name="l00847"></a><span class="lineno">  847</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00848"></a><span class="lineno">  848</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00849"></a><span class="lineno">  849</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__common_8h_03_1_1json__base_1_1json__string__raw_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__common_8h_03_1_1json__base_1_1json__string__raw.html">daw::json::anonymous_namespace{daw_json_parse_common.h}::json_base::json_string_raw</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__common_8h_source.html#l00265">daw_json_parse_common.h:265</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts_html_ac358c76413ad11a7fe392de12cc364f2"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#ac358c76413ad11a7fe392de12cc364f2">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::construct_nullable_with_empty</a></div><div class="ttdeci">constexpr auto construct_nullable_with_empty</div><div class="ttdef"><b>Definition:</b> <a href="daw__nullable__value__fwd_8h_source.html#l00044">daw_nullable_value_fwd.h:44</a></div></div>
