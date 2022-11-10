@@ -28,6 +28,8 @@ struct A {
 	A &operator=( A && ) = delete;
 };
 
+static_assert( daw::json::is_pinned_type_v<A> );
+
 struct B {
 	A a;
 };

@@ -347,6 +347,11 @@ namespace daw::json {
 			}
 		};
 
+		template<typename T>
+		inline constexpr bool is_pinned_type_v = not(
+		  (std::is_copy_constructible_v<T> and std::is_copy_assignable_v<T>) or
+		  ( std::is_move_constructible_v<T> and std::is_move_assignable_v<T> ) );
+
 		namespace json_details {
 			template<typename T>
 			using tuple_test = typename tuple_elements_pack<T>::type;

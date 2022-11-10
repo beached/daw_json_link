@@ -778,18 +778,6 @@ namespace daw::json {
 			using json_deduced_type =
 			  typename DAW_TYPEOF( json_deduced_type_impl<T>( ) )::type;
 
-			/***
-			 * Some types cannot use construct_value or dont needed it.
-			 */
-			template<typename ParsePolicy, typename JsonMember>
-			inline constexpr bool use_direct_construction_v =
-			  ParsePolicy::exec_tag_t::always_rvo;
-			// TODO DAW implement this so that it work
-			/* or
-			  ( not ParsePolicy::has_allocator and
-			    is_default_constructor_v<
-			      typename json_deduced_type<JsonMember>::constructor_t> );*/
-
 			template<typename T>
 			inline constexpr bool has_json_deduced_type_v =
 			  not std::is_same_v<json_deduced_type<T>,
