@@ -145,16 +145,16 @@ namespace daw::json {
 			skip_bracketed_item_checked( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				// Not checking for Left as it is required to be skipped already
+				CharT *ptr_first = parse_state.first;
+				CharT *const ptr_last = parse_state.last;
+				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
+					return parse_state;
+				}
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
-				CharT *const ptr_last = parse_state.last;
 
-				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
-					return result;
-				}
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}
@@ -171,8 +171,8 @@ namespace daw::json {
 							if constexpr( traits::not_same<typename ParseState::exec_tag_t,
 							                               constexpr_exec_tag>::value ) {
 								ptr_first = json_details::mem_skip_until_end_of_string<
-								  ParseState::is_unchecked_input>(
-								  ParseState::exec_tag, ptr_first, parse_state.last );
+								  ParseState::is_unchecked_input>( ParseState::exec_tag,
+								                                   ptr_first, ptr_last );
 							} else {
 								char c = *ptr_first;
 								while( ( c != '\0' ) & ( c != '"' ) ) {
@@ -234,8 +234,8 @@ namespace daw::json {
 							if constexpr( traits::not_same<typename ParseState::exec_tag_t,
 							                               constexpr_exec_tag>::value ) {
 								ptr_first = json_details::mem_skip_until_end_of_string<
-								  ParseState::is_unchecked_input>(
-								  ParseState::exec_tag, ptr_first, parse_state.last );
+								  ParseState::is_unchecked_input>( ParseState::exec_tag,
+								                                   ptr_first, ptr_last );
 							} else {
 								while( DAW_LIKELY( ptr_first < ptr_last ) and
 								       *ptr_first != '"' ) {

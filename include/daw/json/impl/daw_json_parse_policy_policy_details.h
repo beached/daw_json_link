@@ -75,36 +75,34 @@ namespace daw::json {
 			template<typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr int
 			validate_signed_first( ParseState &parse_state ) {
-				daw_json_ensure( parse_state.has_more( ),
+				daw_json_assert_weak( parse_state.has_more( ),
 				                 ErrorReason::UnexpectedEndOfData, parse_state );
-				switch( parse_state.front( ) ) {
-				case '-':
+				auto const c = parse_state.front( );
+				if( c == '-' ) {
 					parse_state.remove_prefix( );
 					return -1;
-				case '0':
-					if( parse_state.size( ) > 1 ) {
-						auto const dig = static_cast<unsigned>(
-						  static_cast<unsigned char>( *( parse_state.first + 1 ) ) );
-						auto const tst = dig - static_cast<unsigned char>( '0' );
-						// Cannot be a digit
-						daw_json_ensure( tst >= 10U, ErrorReason::InvalidNumberStart,
-						                 parse_state );
-					}
-					break;
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
-					return 1;
-				default:
-					daw_json_error( ErrorReason::InvalidNumberStart, parse_state );
 				}
-				return 1;
+				if constexpr( ParseState::is_unchecked_input ) {
+					if( DAW_LIKELY( c >= '0' ) and DAW_LIKELY( c <= '9' ) ) {
+						return 1;
+					}
+				} else {
+					if( c >= '1' and c <= '9' ) {
+						return 1;
+					}
+					if( DAW_LIKELY( c == '0' ) ) {
+						if( parse_state.size( ) > 1 ) {
+							auto const next_dig = static_cast<unsigned>(
+							  static_cast<unsigned char>( *( parse_state.first + 1 ) ) );
+							auto const tst = next_dig - static_cast<unsigned char>( '0' );
+							// Cannot be a digit
+							daw_json_assert_weak( tst >= 10U, ErrorReason::InvalidNumberStart,
+							                      parse_state );
+						}
+						return 1;
+					}
+				}
+				daw_json_error( ErrorReason::InvalidNumberStart, parse_state );
 			}
 
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool
