@@ -94,38 +94,37 @@ $(function() {
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
 <div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__fp__fallback_8h_03.html">   23</a></span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Real, std::enable_if_t&lt;std::is_<span class="keywordtype">float</span>ing_po<span class="keywordtype">int</span>_v&lt;Real&gt;,</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                                               std::<span class="keywordtype">nullptr</span>_t&gt; = <span class="keywordtype">nullptr</span>&gt;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      DAW_ATTRIB_NOINLINE Real parse_with_strtod( <span class="keywordtype">char</span> <span class="keyword">const</span> *first,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                                                  <span class="keywordtype">char</span> <span class="keyword">const</span> *last ) {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#if not defined( DAW_JSON_USE_STRTOD ) and defined( __cpp_lib_to_chars )</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        Real result;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        std::from_chars_result fc_res = std::from_chars( first, last, result );</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keywordflow">if</span>( fc_res.ec == std::errc::result_out_of_range ) {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;          <span class="keywordflow">if</span>( *first == <span class="charliteral">&#39;-&#39;</span> ) {</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="keywordflow">return</span> -std::numeric_limits&lt;Real&gt;::infinity( );</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;          }</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;          <span class="keywordflow">return</span> std::numeric_limits&lt;Real&gt;::infinity( );</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        }</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( fc_res.ec == std::errc( ),</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                         ErrorReason::InvalidNumber );</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        (void)last;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordtype">char</span> **end = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_same_v&lt;Real, float&gt; ) {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( strtof( first, end ) );</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span>( std::is_same_v&lt;Real, double&gt; ) {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( strtod( first, end ) );</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( strtold( first, end ) );</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Real, std::enable_if_t&lt;std::is_<span class="keywordtype">float</span>ing_po<span class="keywordtype">int</span>_v&lt;Real&gt;,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                                               std::<span class="keywordtype">nullptr</span>_t&gt; = <span class="keywordtype">nullptr</span>&gt;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      DAW_ATTRIB_NOINLINE [[nodiscard]] Real</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      parse_with_strtod( <span class="keywordtype">char</span> <span class="keyword">const</span> *first, <span class="keywordtype">char</span> <span class="keyword">const</span> *last ) {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#if not defined( DAW_JSON_USE_STRTOD ) and defined( __cpp_lib_to_chars )</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        Real result;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        std::from_chars_result fc_res = std::from_chars( first, last, result );</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keywordflow">if</span>( fc_res.ec == std::errc::result_out_of_range ) {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;          <span class="keywordflow">if</span>( *first == <span class="charliteral">&#39;-&#39;</span> ) {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keywordflow">return</span> -std::numeric_limits&lt;Real&gt;::infinity( );</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;          }</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;          <span class="keywordflow">return</span> std::numeric_limits&lt;Real&gt;::infinity( );</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( fc_res.ec == std::errc( ),</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                         ErrorReason::InvalidNumber );</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        (void)last;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keywordtype">char</span> **end = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_same_v&lt;Real, float&gt; ) {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( strtof( first, end ) );</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span>( std::is_same_v&lt;Real, double&gt; ) {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( strtod( first, end ) );</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( strtold( first, end ) );</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>

@@ -198,10 +198,10 @@ $(function() {
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;                     <span class="stringliteral">&quot;16 digit parser does not work on this platform&quot;</span> );</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Unsigned, <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#a9c6bc0afa2ec7b3355fb4a7f6a47bf60">options::JsonRangeCheck</a> RangeChecked,</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;               <span class="keywordtype">bool</span> KnownBounds, <span class="keyword">typename</span> ParseState,</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;               std::enable_if_t&lt;KnownBounds, std::nullptr_t&gt; = <span class="keyword">nullptr</span>&gt;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr Unsigned</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;      unsigned_parser( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>, ParseState &amp;parse_state ) {</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;               <span class="keyword">typename</span> ParseState&gt;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr Unsigned</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      unsigned_parser_known( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">constexpr_exec_tag</a> <span class="keyword">const</span> &amp;,</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;                             ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        <span class="keyword">using</span> CharT = <span class="keyword">typename</span> ParseState::CharT;</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        <span class="comment">// We know how many digits are in the number</span></div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        <span class="keyword">using</span> result_t = max_unsigned_t&lt;RangeChecked, Unsigned, UInt64&gt;;</div>
@@ -261,10 +261,10 @@ $(function() {
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="stringliteral"></span> </div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="stringliteral">      //**************************</span></div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="stringliteral">      template&lt;typename Unsigned, options::JsonRangeCheck RangeChecked,</span></div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="stringliteral">               bool KnownBounds, typename ParseState,</span></div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="stringliteral">               std::enable_if_t&lt;not KnownBounds, std::nullptr_t&gt; = nullptr&gt;</span></div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="stringliteral">      [[nodiscard]] static constexpr Unsigned</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="stringliteral">      unsigned_parser( constexpr_exec_tag, ParseState &amp;parse_state ) {</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="stringliteral">               typename ParseState&gt;</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="stringliteral">      [[nodiscard]] static constexpr Unsigned</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="stringliteral">      unsigned_parser_not_known( constexpr_exec_tag const &amp;,</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="stringliteral">                                 ParseState &amp;parse_state ) {</span></div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="stringliteral">        using CharT = typename ParseState::CharT;</span></div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="stringliteral">        // We do not know how long the string is</span></div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="stringliteral">        using result_t = max_unsigned_t&lt;RangeChecked, Unsigned, UInt64&gt;;</span></div>
@@ -404,7 +404,7 @@ $(function() {
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;<span class="comment">      template&lt;typename Unsigned, options::JsonRangeCheck RangeChecked, bool, typename</span></div>
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="comment">      ParseState&gt;</span></div>
 <div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;<span class="comment">      [[nodiscard]] static inline Unsigned</span></div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="comment">      unsigned_parser( sse42_exec_tag , ParseState &amp;parse_state ) {</span></div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="comment">      unsigned_parser( sse42_exec_tag const &amp;, ParseState &amp;parse_state ) {</span></div>
 <div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="comment">        daw_json_assert_weak( parse_state.has_more( ),</span></div>
 <div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="comment">      ErrorRange::UnexpectedEndOfData, parse_state</span></div>
 <div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;<span class="comment">      ); using result_t = max_unsigned_t&lt;RangeChecked, Unsigned, UInt64&gt;;</span></div>
@@ -452,9 +452,23 @@ $(function() {
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="comment">      }</span></div>
 <div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="comment">       */</span></div>
 <div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160; </div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Unsigned, <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#a9c6bc0afa2ec7b3355fb4a7f6a47bf60">options::JsonRangeCheck</a> RangeChecked,</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;               <span class="keywordtype">bool</span> KnownBounds, <span class="keyword">typename</span> ParseState&gt;</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> constexpr Unsigned</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;      unsigned_parser( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">constexpr_exec_tag</a> <span class="keyword">const</span> &amp;tag,</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;                       ParseState &amp;parse_state ) {</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;        <span class="keywordflow">if</span> constexpr( KnownBounds ) {</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;          <span class="keywordflow">return</span> unsigned_parser_known&lt;Unsigned, RangeChecked&gt;( tag,</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;                                                                parse_state );</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;          <span class="keywordflow">return</span> unsigned_parser_not_known&lt;Unsigned, RangeChecked&gt;(</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;            tag, parse_state );</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        }</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;      }</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="adaw__json__parse__unsigned__int_8h_html"><div class="ttname"><a href="daw__json__parse__unsigned__int_8h.html">daw_json_parse_unsigned_int.h</a></div></div>
