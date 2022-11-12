@@ -90,11 +90,10 @@ namespace daw::json {
 				first -= *( first - 1 ) == '\\' ? 1 : 0;
 			}
 
-			struct string_quote_parser {
+			namespace string_quote_parser {
 				template<typename ParseState>
-				[[nodiscard]] static constexpr auto parse_nq( ParseState &parse_state )
-				  -> std::enable_if_t<ParseState::is_unchecked_input, std::size_t> {
-
+				[[nodiscard]] static constexpr std::size_t
+				parse_nq_uncheck( ParseState &parse_state ) {
 					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
 					CharT *first = parse_state.first;
@@ -137,8 +136,8 @@ namespace daw::json {
 				}
 
 				template<typename ParseState>
-				[[nodiscard]] static constexpr auto parse_nq( ParseState &parse_state )
-				  -> std::enable_if_t<not ParseState::is_unchecked_input, std::size_t> {
+				[[nodiscard]] static constexpr std::size_t
+				parse_nq_check( ParseState &parse_state ) {
 
 					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
@@ -268,7 +267,17 @@ namespace daw::json {
 					parse_state.first = first;
 					return static_cast<std::size_t>( need_slow_path );
 				}
-			};
-		} // namespace json_details::string_quote
-	}   // namespace DAW_JSON_VER
+
+				template<typename ParseState>
+				[[nodiscard]] DAW_ATTRIB_FLATTEN static constexpr std::size_t
+				parse_nq( ParseState &parse_state ) {
+					if constexpr( ParseState::is_unchecked_input ) {
+						return parse_nq_uncheck( parse_state );
+					} else {
+						return parse_nq_check( parse_state );
+					}
+				}
+			} // namespace string_quote_parser
+		}   // namespace json_details::string_quote
+	}     // namespace DAW_JSON_VER
 } // namespace daw::json

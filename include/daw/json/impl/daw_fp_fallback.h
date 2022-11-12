@@ -22,11 +22,14 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-
+			/// @brief When normal FP parsing cannot handle the value, this method
+			/// used as a fallback for std floating point types.  For others, it
+			/// provides either a customization point or will call the overload found
+			/// via ADL
 			template<typename Real, std::enable_if_t<std::is_floating_point_v<Real>,
 			                                         std::nullptr_t> = nullptr>
-			DAW_ATTRIB_NOINLINE Real parse_with_strtod( char const *first,
-			                                            char const *last ) {
+			DAW_ATTRIB_NOINLINE [[nodiscard]] Real
+			parse_with_strtod( char const *first, char const *last ) {
 #if not defined( DAW_JSON_USE_STRTOD ) and defined( __cpp_lib_to_chars )
 				Real result;
 				std::from_chars_result fc_res = std::from_chars( first, last, result );

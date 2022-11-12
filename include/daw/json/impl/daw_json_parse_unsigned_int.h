@@ -126,10 +126,10 @@ namespace daw::json {
 			               "16 digit parser does not work on this platform" );
 
 			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
-			         bool KnownBounds, typename ParseState,
-			         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
+			         typename ParseState>
 			[[nodiscard]] static constexpr Unsigned
-			unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
+			unsigned_parser_known( constexpr_exec_tag const &,
+			                       ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				// We know how many digits are in the number
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
@@ -189,10 +189,10 @@ namespace daw::json {
 
 			//**************************
 			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
-			         bool KnownBounds, typename ParseState,
-			         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
+			         typename ParseState>
 			[[nodiscard]] static constexpr Unsigned
-			unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
+			unsigned_parser_not_known( constexpr_exec_tag const &,
+			                           ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				// We do not know how long the string is
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
@@ -332,7 +332,7 @@ namespace daw::json {
 			template<typename Unsigned, options::JsonRangeCheck RangeChecked, bool, typename
 			ParseState>
 			[[nodiscard]] static inline Unsigned
-			unsigned_parser( sse42_exec_tag , ParseState &parse_state ) {
+			unsigned_parser( sse42_exec_tag const &, ParseState &parse_state ) {
 			  daw_json_assert_weak( parse_state.has_more( ),
 			ErrorRange::UnexpectedEndOfData, parse_state
 			); using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
@@ -380,6 +380,20 @@ namespace daw::json {
 			}
 			 */
 #endif
+
+			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
+			         bool KnownBounds, typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr Unsigned
+			unsigned_parser( constexpr_exec_tag const &tag,
+			                 ParseState &parse_state ) {
+				if constexpr( KnownBounds ) {
+					return unsigned_parser_known<Unsigned, RangeChecked>( tag,
+					                                                      parse_state );
+				} else {
+					return unsigned_parser_not_known<Unsigned, RangeChecked>(
+					  tag, parse_state );
+				}
+			}
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

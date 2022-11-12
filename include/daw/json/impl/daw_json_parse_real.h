@@ -55,7 +55,7 @@ namespace daw::json {
 			}
 
 			template<bool skip_end_check, typename Unsigned, typename CharT>
-			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr CharT *
 			parse_digits_while_number( CharT *first, CharT *const last,
 			                           Unsigned &v ) {
 
@@ -83,9 +83,11 @@ namespace daw::json {
 				return first;
 			}
 
+			/// @brief Check if we have more significant digits that can be stored in
+			/// the type, usually uint64_t
 			template<typename ParseState, typename Result,
 			         typename max_storage_digits, typename CharT>
-			inline constexpr bool
+			[[nodiscard]] inline constexpr bool
 			should_use_strtod( CharT *whole_first, CharT *whole_last,
 			                   CharT *fract_first, CharT *fract_last ) {
 				if constexpr( std::is_floating_point_v<Result> and
@@ -104,10 +106,9 @@ namespace daw::json {
 				}
 			}
 
-			template<typename Result, bool KnownRange, typename ParseState,
-			         std::enable_if_t<KnownRange, std::nullptr_t> = nullptr>
+			template<typename Result, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
-			parse_real( ParseState &parse_state ) {
+			parse_real_known( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 				daw_json_assert_weak(
@@ -213,7 +214,6 @@ namespace daw::json {
 					exponent += to_signed(
 					  [&] {
 						  unsigned_t exp_result = 0;
-						  // TODO use zstringopt
 						  if constexpr( ParseState::is_zero_terminated_string( ) ) {
 							  auto dig = parse_digit( *exp_first );
 							  while( dig < 10U ) {
@@ -245,13 +245,16 @@ namespace daw::json {
 				}
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754( ) ) {
-					use_strtod |= DAW_UNLIKELY( exponent > 22 );
-					use_strtod |= DAW_UNLIKELY( exponent < -22 );
-					use_strtod |=
-					  DAW_UNLIKELY( significant_digits > 9007199254740992ULL );
+					// On std floating point types, check for conditions that cannot be
+					// precisely calculated using the normal method and use the fallback
+					// method(usually strtod/from_chars)
+					use_strtod |= exponent > 22;
+					use_strtod |= exponent < -22;
+					use_strtod |= significant_digits > 9007199254740992ULL;
 					if( DAW_UNLIKELY( use_strtod ) ) {
-						return json_details::parse_with_strtod<Result>( parse_state.first,
-						                                                parse_state.last );
+						using json_details::parse_with_strtod;
+						return parse_with_strtod<Result>( parse_state.first,
+						                                  parse_state.last );
 					}
 				}
 				return sign * power10<Result>(
@@ -259,10 +262,9 @@ namespace daw::json {
 				                static_cast<Result>( significant_digits ), exponent );
 			}
 
-			template<typename Result, bool KnownRange, typename ParseState,
-			         std::enable_if_t<not KnownRange, std::nullptr_t> = nullptr>
+			template<typename Result, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
-			parse_real( ParseState &parse_state ) {
+			parse_real_unknown( ParseState &parse_state ) {
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 				using CharT = typename ParseState::CharT;
 				daw_json_assert_weak(
@@ -452,13 +454,23 @@ namespace daw::json {
 					use_strtod |=
 					  DAW_UNLIKELY( significant_digits > 9007199254740992ULL );
 					if( DAW_UNLIKELY( use_strtod ) ) {
-						return json_details::parse_with_strtod<Result>( orig_first,
-						                                                orig_last );
+						using json_details::parse_with_strtod;
+						return parse_with_strtod<Result>( orig_first, orig_last );
 					}
 				}
 				return sign * power10<Result>(
 				                ParseState::exec_tag,
 				                static_cast<Result>( significant_digits ), exponent );
+			}
+
+			template<typename Result, bool KnownRange, typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
+			parse_real( ParseState &parse_state ) {
+				if constexpr( KnownRange ) {
+					return parse_real_known<Result>( parse_state );
+				} else {
+					return parse_real_unknown<Result>( parse_state );
+				}
 			}
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER

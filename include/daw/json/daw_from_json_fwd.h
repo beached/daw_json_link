@@ -212,11 +212,9 @@ namespace daw::json {
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
 		         typename Constructor = use_default, bool KnownBounds = false,
 		         typename String, auto... PolicyFlags>
-		[[nodiscard]] constexpr auto
+		[[nodiscard]] constexpr Container
 		from_json_array( String &&json_data, std::string_view member_path,
-		                 options::parse_flags_t<PolicyFlags...> )
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
-		                      Container>;
+		                 options::parse_flags_t<PolicyFlags...> );
 
 		/// @brief Parse JSON data where the root item is an array
 		/// @tparam JsonElement The type of each element in array.  Must be one of
@@ -236,10 +234,8 @@ namespace daw::json {
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
 		         typename Constructor = use_default, bool KnownBounds = false,
 		         typename String>
-		[[nodiscard]] constexpr auto from_json_array( String &&json_data,
-		                                              std::string_view member_path )
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
-		                      Container>;
+		[[nodiscard]] constexpr Container
+		from_json_array( String &&json_data, std::string_view member_path );
 
 		/// @brief Parse JSON data where the root item is an array
 		/// @tparam JsonElement The type of each element in array.  Must be one of
@@ -256,11 +252,9 @@ namespace daw::json {
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
 		         typename Constructor = use_default, bool KnownBounds = false,
 		         typename String, auto... PolicyFlags>
-		[[nodiscard]] constexpr auto
+		[[nodiscard]] constexpr Container
 		from_json_array( String &&json_data,
-		                 options::parse_flags_t<PolicyFlags...> )
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
-		                      Container>;
+		                 options::parse_flags_t<PolicyFlags...> );
 
 		/// @brief Parse JSON data where the root item is an array
 		/// @tparam JsonElement The type of each element in array.  Must be one of
@@ -277,8 +271,6 @@ namespace daw::json {
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
 		         typename Constructor = use_default, bool KnownBounds = false,
 		         typename String>
-		[[nodiscard]] constexpr auto from_json_array( String &&json_data )
-		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
-		                      Container>;
+		[[nodiscard]] constexpr Container from_json_array( String &&json_data );
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
