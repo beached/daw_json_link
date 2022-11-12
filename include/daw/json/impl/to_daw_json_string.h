@@ -1363,72 +1363,69 @@ namespace daw::json {
 			inline static constexpr std::size_t find_names_in_pack_v =
 			  find_names_in_pack<Needle, Haystack...>::value;
 
-			template<std::size_t, typename JsonMember, typename /*NamePack*/,
-			         typename WriteableType, typename TpArgs, typename Value,
-			         typename VisitedMembers,
-			         std::enable_if_t<not has_dependent_member_v<JsonMember>,
-			                          std::nullptr_t> = nullptr>
-			DAW_ATTRIB_INLINE constexpr void
-			dependent_member_to_json_str( bool &, WriteableType const &,
-			                              TpArgs const &, Value const &,
-			                              VisitedMembers const & ) noexcept {
-
-				// This is empty so that the call is able to be put into a pack
-			}
-
 			template<std::size_t pos, typename JsonMember, typename NamePack,
 			         typename WriteableType, json_options_t SerializationOptions,
-			         typename TpArgs, typename Value, typename VisitedMembers,
-			         std::enable_if_t<has_dependent_member_v<JsonMember>,
-			                          std::nullptr_t> = nullptr>
+			         typename TpArgs, typename Value, typename VisitedMembers>
 			constexpr void dependent_member_to_json_str(
 			  bool &is_first,
 			  serialization_policy<WriteableType, SerializationOptions> it,
 			  TpArgs const &args, Value const &v, VisitedMembers &visited_members ) {
-				using base_member_t = typename std::conditional_t<
-				  is_json_nullable_v<JsonMember>,
-				  ident_trait<json_nullable_member_type_t, JsonMember>,
-				  traits::identity<JsonMember>>::type;
+				if constexpr( not has_dependent_member_v<JsonMember> ) {
+					(void)is_first;
+					(void)it;
+					(void)args;
+					(void)v;
+					(void)visited_members;
+					return;
+				} else {
+					using base_member_t = typename std::conditional_t<
+					  is_json_nullable_v<JsonMember>,
+					  ident_trait<json_nullable_member_type_t, JsonMember>,
+					  traits::identity<JsonMember>>::type;
 
-				using dependent_member = dependent_member_t<base_member_t>;
+					using dependent_member = dependent_member_t<base_member_t>;
 
-				using daw::get;
-				using std::get;
-				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
-				if constexpr( is_json_nullable_v<JsonMember> ) {
-					if constexpr( JsonMember::nullable == JsonNullable::Nullable ) {
-						// We have no requirement to output this member when it's null
-						if( not get<pos>( args ) ) {
-							return;
+					using daw::get;
+					using std::get;
+					static_assert( is_a_json_type_v<JsonMember>,
+					               "Unsupported data type" );
+					if constexpr( is_json_nullable_v<JsonMember> ) {
+						if constexpr( JsonMember::nullable == JsonNullable::Nullable ) {
+							// We have no requirement to output this member when it's null
+							if( not get<pos>( args ) ) {
+								return;
+							}
 						}
 					}
-				}
-				if( daw::algorithm::contains( std::data( visited_members ),
-				                              daw::data_end( visited_members ),
-				                              dependent_member::name ) ) {
-					// Already outputted this member
-					return;
-				}
-				visited_members.push_back( dependent_member::name );
-				if( not is_first ) {
-					it.put( ',' );
-				}
-				it.next_member( );
-				is_first = false;
-				it.put( '"' );
-				it = utils::copy_to_iterator<false, options::EightBitModes::AllowFull>(
-				  it, dependent_member::name );
-				it.write( "\":", it.space );
+					if( daw::algorithm::contains( std::data( visited_members ),
+					                              daw::data_end( visited_members ),
+					                              dependent_member::name ) ) {
+						// Already outputted this member
+						return;
+					}
+					visited_members.push_back( dependent_member::name );
+					if( not is_first ) {
+						it.put( ',' );
+					}
+					it.next_member( );
+					is_first = false;
+					it.put( '"' );
+					it =
+					  utils::copy_to_iterator<false, options::EightBitModes::AllowFull>(
+					    it, dependent_member::name );
+					it.write( "\":", it.space );
 
-				if constexpr( has_switcher_v<base_member_t> ) {
-					it = member_to_string( template_arg<dependent_member>, it,
-					                       typename base_member_t::switcher{ }( v ) );
-				} else {
-					constexpr auto idx = find_names_in_pack_v<dependent_member, NamePack>;
-					it = member_to_string( template_arg<dependent_member>, it,
-					                       get<idx>( args ) );
+					if constexpr( has_switcher_v<base_member_t> ) {
+						it = member_to_string( template_arg<dependent_member>, it,
+						                       typename base_member_t::switcher{ }( v ) );
+					} else {
+						constexpr auto idx =
+						  find_names_in_pack_v<dependent_member, NamePack>;
+						it = member_to_string( template_arg<dependent_member>, it,
+						                       get<idx>( args ) );
+					}
+					(void)it;
 				}
-				(void)it;
 			}
 
 			template<std::size_t pos, typename JsonMember, typename WriteableType,

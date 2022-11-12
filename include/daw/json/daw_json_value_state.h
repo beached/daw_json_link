@@ -288,9 +288,10 @@ namespace daw::json {
 			 * from one past last, e.g. -1 is last item
 			 * @return The name of the member or an empty optional
 			 */
-			template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
-			                                            std::nullptr_t> = nullptr>
+			template<typename Integer>
 			[[nodiscard]] std::optional<std::string_view> name_of( Integer index ) {
+				static_assert( std::is_integral_v<Integer>,
+				               "Only integer indices are allowed" );
 				if constexpr( std::is_signed_v<Integer> ) {
 					if( index < 0 ) {
 						index = -index;
@@ -378,13 +379,14 @@ namespace daw::json {
 			}
 		};
 
-		basic_stateful_json_value( )->basic_stateful_json_value<>;
+		basic_stateful_json_value( ) -> basic_stateful_json_value<>;
 
 		template<json_options_t PolicyFlags, typename Allocator>
 		basic_stateful_json_value( basic_json_value<PolicyFlags, Allocator> )
 		  -> basic_stateful_json_value<PolicyFlags, Allocator>;
 
-		basic_stateful_json_value( daw::string_view )->basic_stateful_json_value<>;
+		basic_stateful_json_value( daw::string_view )
+		  -> basic_stateful_json_value<>;
 
 		using json_value_state = basic_stateful_json_value<>;
 	} // namespace DAW_JSON_VER

@@ -22,7 +22,7 @@
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
-static inline constexpr std::size_t DAW_NUM_RUNS = 500;
+static inline constexpr std::size_t DAW_NUM_RUNS = 1000;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif

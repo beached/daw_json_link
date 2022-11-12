@@ -376,20 +376,12 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			inline constexpr JsonParseTypes number_parse_type_impl_v =
-			  number_parse_type_impl_test<T>( );
-
-			template<typename T>
-			constexpr auto number_parse_type_test( )
-			  -> std::enable_if_t<std::is_enum_v<T>, JsonParseTypes> {
-
-				return number_parse_type_impl_v<std::underlying_type_t<T>>;
-			}
-			template<typename T>
-			constexpr auto number_parse_type_test( )
-			  -> std::enable_if_t<not std::is_enum_v<T>, JsonParseTypes> {
-
-				return number_parse_type_impl_v<T>;
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL JsonParseTypes number_parse_type_test( ) {
+				if constexpr( std::is_enum_v<T> ) {
+					return number_parse_type_impl_test<std::underlying_type_t<T>>( );
+				} else {
+					return number_parse_type_impl_test<T>( );
+				}
 			}
 
 			template<typename T>
