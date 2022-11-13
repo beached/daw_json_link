@@ -1292,7 +1292,7 @@ namespace daw::json {
 					it = to_daw_json_string<typename JsonMember::json_key_t>(
 					  ParseTag<JsonMember::json_key_t::expected_type>{ }, it,
 					  json_get_key( v ) );
-					it.write( ":", it.space );
+					it.write( ':', it.space );
 					it = to_daw_json_string<typename JsonMember::json_element_t>(
 					  ParseTag<JsonMember::json_element_t::expected_type>{ }, it,
 					  json_get_value( v ) );
@@ -1412,11 +1412,7 @@ namespace daw::json {
 					}
 					it.next_member( );
 					is_first = false;
-					it.put( '"' );
-					it =
-					  utils::copy_to_iterator<false, options::EightBitModes::AllowFull>(
-					    it, dependent_member::name );
-					it.write( "\":", it.space );
+					it.write( '"', dependent_member::name, "\":", it.space );
 
 					if constexpr( has_switcher_v<base_member_t> ) {
 						it = member_to_string( template_arg<dependent_member>, it,
@@ -1457,10 +1453,8 @@ namespace daw::json {
 				}
 				it.next_member( );
 				is_first = false;
-				it.put( '"' );
-				it = utils::copy_to_iterator<false, options::EightBitModes::AllowFull>(
-				  it, JsonMember::name );
-				it.write( "\":", it.space );
+				it.write( '"', JsonMember::name, "\":", it.space );
+
 				it = member_to_string( template_arg<JsonMember>, DAW_MOVE( it ),
 				                       get<pos>( tp ) );
 			}
