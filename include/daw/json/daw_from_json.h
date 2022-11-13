@@ -535,15 +535,15 @@ namespace daw::json {
 			                      ErrorReason::InvalidArrayStart, parse_state );
 #endif
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
-				auto result = json_details::parse_value<parser_t, KnownBounds>(
-				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
+				auto result =
+				  json_details::parse_value_array<parser_t, KnownBounds>( parse_state );
 				parse_state.trim_left( );
 				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
-				return json_details::parse_value<parser_t, KnownBounds>(
-				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
+				return json_details::parse_value_array<parser_t, KnownBounds>(
+				  parse_state );
 			}
 		}
 
@@ -643,15 +643,15 @@ namespace daw::json {
 			                      ErrorReason::InvalidArrayStart, parse_state );
 #endif
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
-				auto result = json_details::parse_value<parser_t, KnownBounds>(
-				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
+				auto result =
+				  json_details::parse_value_array<parser_t, KnownBounds>( parse_state );
 				parse_state.trim_left( );
 				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
-				return json_details::parse_value<parser_t, KnownBounds>(
-				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
+				return json_details::parse_value_array<parser_t, KnownBounds>(
+				  parse_state );
 			}
 		}
 
