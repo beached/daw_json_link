@@ -87,8 +87,8 @@ namespace daw::json {
 			template<typename... JsonMembers, typename OutputIterator,
 			         json_options_t SerializationOptions, std::size_t... Is,
 			         typename Tuple, typename Value>
-			[[nodiscard]] inline constexpr serialization_policy<OutputIterator,
-			                                                    SerializationOptions>
+			[[nodiscard]] static inline constexpr serialization_policy<
+			  OutputIterator, SerializationOptions>
 			serialize_json_class(
 			  serialization_policy<OutputIterator, SerializationOptions> it,
 			  Tuple const &args, Value const &value, std::index_sequence<Is...> ) {
@@ -147,8 +147,8 @@ namespace daw::json {
 			template<typename... JsonMembers, typename OutputIterator,
 			         json_options_t SerializerOptions, typename Tuple, typename Value,
 			         std::size_t... Is>
-			[[nodiscard]] inline constexpr serialization_policy<OutputIterator,
-			                                                    SerializerOptions>
+			[[nodiscard]] static inline constexpr serialization_policy<
+			  OutputIterator, SerializerOptions>
 			serialize_ordered_json_class(
 			  serialization_policy<OutputIterator, SerializerOptions> it,
 			  Tuple const &args, Value const &value, std::index_sequence<Is...> ) {

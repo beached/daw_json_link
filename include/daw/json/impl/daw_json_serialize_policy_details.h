@@ -176,7 +176,7 @@ namespace daw::json {
 			  basic_policy_bits_start<Policy, policy_list>;
 
 			template<typename Policy>
-			constexpr void set_bits_in( json_options_t &value, Policy e ) {
+			static constexpr void set_bits_in( json_options_t &value, Policy e ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				auto new_bits = static_cast<unsigned>( e );
@@ -188,8 +188,8 @@ namespace daw::json {
 			}
 
 			template<typename Policy, typename... Policies>
-			constexpr json_options_t set_bits( json_options_t value, Policy pol,
-			                                   Policies... pols ) {
+			static constexpr json_options_t set_bits( json_options_t value,
+			                                          Policy pol, Policies... pols ) {
 				static_assert( ( is_option_flag<Policies> and ... ),
 				               "Only registered policy types are allowed" );
 
@@ -211,7 +211,7 @@ namespace daw::json {
 			}
 
 			template<typename Policy>
-			constexpr json_options_t set_bits_for( Policy e ) {
+			static constexpr json_options_t set_bits_for( Policy e ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				auto new_bits = static_cast<json_options_t>( e );
@@ -236,7 +236,7 @@ namespace daw::json {
 			  default_policy_flag_t<policy_list>::value;
 
 			template<typename Policy, typename Result = Policy>
-			constexpr Result get_bits_for( json_options_t value ) {
+			static constexpr Result get_bits_for( json_options_t value ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				constexpr unsigned mask = ( 1U << (policy_bits_start<Policy> +

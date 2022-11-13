@@ -33,7 +33,7 @@ namespace daw::json {
 			/// \return CharT * with position of first after search
 			/// \pre first can be read from(not null)
 			template<char c, typename ExecTag, bool expect_long, typename CharT>
-			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
+			DAW_ATTRIB_FLATINLINE static inline constexpr CharT *
 			memchr_unchecked( CharT *first, CharT *last ) {
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
 				if constexpr( expect_long ) {
@@ -80,7 +80,7 @@ namespace daw::json {
 			/// \return CharT * with position of first after search
 			/// \pre first can be read from(not null)
 			template<char c, typename ExecTag, bool expect_long, typename CharT>
-			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
+			DAW_ATTRIB_FLATINLINE static inline constexpr CharT *
 			memchr_checked( CharT *first, CharT *last ) {
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
 				if constexpr( expect_long ) {
@@ -122,7 +122,7 @@ namespace daw::json {
 
 			template<typename ExecTag, bool expect_long, char... chars,
 			         typename CharT>
-			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
+			DAW_ATTRIB_FLATINLINE static inline constexpr CharT *
 			mempbrk_unchecked( CharT *first, CharT * /*last*/ ) {
 #if DAW_HAS_BUILTIN( __builtin_strpbrk )
 				if constexpr( expect_long ) {
@@ -166,7 +166,7 @@ namespace daw::json {
 
 			template<typename ExecTag, bool expect_long, char... chars,
 			         typename CharT>
-			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
+			DAW_ATTRIB_FLATINLINE static inline constexpr CharT *
 			mempbrk_checked( CharT *first, CharT *last ) {
 				if constexpr( expect_long ) {
 #if defined( DAW_IS_CONSTANT_EVALUATED )
@@ -196,7 +196,7 @@ namespace daw::json {
 
 			template<bool is_unchecked_input, typename ExecTag, bool expect_long,
 			         char... chars, typename CharT>
-			DAW_ATTRIB_FLATINLINE inline constexpr CharT *mempbrk( CharT *first,
+			DAW_ATTRIB_FLATINLINE static inline constexpr CharT *mempbrk( CharT *first,
 			                                                       CharT *last ) {
 
 				if constexpr( is_unchecked_input ) {
