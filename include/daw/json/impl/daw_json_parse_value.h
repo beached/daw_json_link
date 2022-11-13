@@ -68,7 +68,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_real( ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
@@ -172,7 +172,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_signed( ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
@@ -231,7 +231,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_unsigned( ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
@@ -288,7 +288,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_null( ParseState &parse_state ) {
 
 				using constructor_t = typename JsonMember::constructor_t;
@@ -354,7 +354,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_bool( ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 
@@ -418,7 +418,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_string_raw( ParseState &parse_state ) {
 
 				using constructor_t = typename JsonMember::constructor_t;
@@ -473,7 +473,7 @@ namespace daw::json {
 			  daw::is_detected_v<json_member_constructor_t, T>;
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_string_escaped( ParseState &parse_state ) {
 				static_assert( has_json_member_constructor_v<JsonMember> );
 				static_assert( has_json_member_parse_to_v<JsonMember> );
@@ -520,7 +520,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_date( ParseState &parse_state ) {
 
 				daw_json_assert_weak( parse_state.has_more( ),
@@ -533,7 +533,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_custom( ParseState &parse_state ) {
 
 				auto const str = [&] {
@@ -579,7 +579,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_class( ParseState &parse_state ) {
 
 				using element_t = typename JsonMember::wrapped_type;
@@ -613,7 +613,7 @@ namespace daw::json {
 			 * @return Constructed key_value container
 			 */
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_keyvalue( ParseState &parse_state ) {
 
 				static_assert( JsonMember::expected_type == JsonParseTypes::KeyValue,
@@ -647,7 +647,7 @@ namespace daw::json {
 			 * @return Constructed key_value container
 			 */
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_keyvalue_array( ParseState &parse_state ) {
 
 				static_assert( JsonMember::expected_type ==
@@ -668,7 +668,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_array( ParseState &parse_state ) {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
@@ -687,7 +687,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_sz_array( ParseState &parse_state ) {
 
 				using size_member = dependent_member_t<JsonMember>;
@@ -748,7 +748,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_variant( ParseState &parse_state ) {
 				switch( parse_state.front( ) ) {
 				case '{':
@@ -839,7 +839,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_variant_tagged( ParseState &parse_state ) {
 				auto const index = find_index<JsonMember>( parse_state );
 				return parse_visit<json_result<JsonMember>,
@@ -848,7 +848,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_variant_intrusive( ParseState &parse_state ) {
 				auto const index = [&] {
 					using tag_submember = typename JsonMember::tag_submember;
@@ -1141,7 +1141,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
+			DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_tuple( ParseState &parse_state ) {
 				using element_pack =
 				  typename JsonMember::sub_member_list; // tuple_elements_pack<tuple_t>;
@@ -1152,7 +1152,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_unknown( ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( KnownBounds ) {
@@ -1169,7 +1169,7 @@ namespace daw::json {
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState,
 			         JsonParseTypes PTag>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_FLATTEN static constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<PTag> ) {
 				if constexpr( PTag == JsonParseTypes::Real ) {
 					return parse_value_real<JsonMember, KnownBounds>( parse_state );

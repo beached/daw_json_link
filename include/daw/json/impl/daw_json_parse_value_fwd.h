@@ -19,7 +19,7 @@ namespace daw::json {
 		namespace json_details {
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState, JsonParseTypes PTag>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_FLATTEN static constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<PTag> );
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
