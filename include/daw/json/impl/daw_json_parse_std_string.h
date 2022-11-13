@@ -23,7 +23,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			[[nodiscard]] inline constexpr UInt8 to_nibble( unsigned char chr ) {
+			[[nodiscard]] static inline constexpr UInt8 to_nibble( unsigned char chr ) {
 				int const b = static_cast<int>( chr );
 				int const maskLetter = ( ( '9' - b ) >> 31 );
 				int const maskSmall = ( ( 'Z' - b ) >> 31 );
@@ -34,7 +34,7 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input>
-			[[nodiscard]] inline constexpr UInt16
+			[[nodiscard]] static inline constexpr UInt16
 			byte_from_nibbles( char const *&first ) {
 				auto const n0 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				auto const n1 = to_nibble( static_cast<unsigned char>( *first++ ) );
@@ -44,7 +44,7 @@ namespace daw::json {
 				return to_uint16( ( n0 << 4U ) | n1 );
 			}
 
-			constexpr char u32toC( UInt32 value ) {
+			static constexpr char u32toC( UInt32 value ) {
 				return static_cast<char>( static_cast<unsigned char>( value ) );
 			}
 
@@ -193,7 +193,7 @@ namespace daw::json {
 			// appender
 			template<bool AllowHighEight, typename JsonMember, bool KnownBounds,
 			         typename ParseState>
-			[[nodiscard]] constexpr auto // json_result<JsonMember>
+			[[nodiscard]] static constexpr auto // json_result<JsonMember>
 			parse_string_known_stdstring( ParseState &parse_state ) {
 				using string_type = json_base_type<JsonMember>;
 				string_type result =

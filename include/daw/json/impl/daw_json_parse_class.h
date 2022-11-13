@@ -46,7 +46,7 @@ namespace daw::json {
 			/// @pre parse_state.front( ) == '['
 			///
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_ordered_class_member( template_param<JsonMember>,
 			                            std::size_t &member_index,
 			                            ParseState &parse_state ) {
@@ -97,7 +97,7 @@ namespace daw::json {
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
 			         typename ParseState, std::size_t N, typename CharT, bool B>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_class_member( ParseState &parse_state,
 			                    locations_info_t<N, CharT, B> &locations ) {
 				parse_state.move_next_member_or_end( );
@@ -184,7 +184,7 @@ namespace daw::json {
 			///
 			template<typename JsonClass, typename... JsonMembers, typename ParseState,
 			         std::size_t... Is>
-			[[nodiscard]] constexpr json_result<JsonClass>
+			[[nodiscard]] static inline constexpr json_result<JsonClass>
 			parse_json_class( ParseState &parse_state, std::index_sequence<Is...> ) {
 				static_assert( is_a_json_type_v<JsonClass> );
 				using T = typename JsonClass::parse_to_t;
@@ -290,7 +290,7 @@ namespace daw::json {
 			/// Point
 			///
 			template<typename JsonClass, typename... JsonMembers, typename ParseState>
-			[[nodiscard]] static constexpr json_result<JsonClass>
+			[[nodiscard]] static inline constexpr json_result<JsonClass>
 			parse_json_tuple_class( template_params<JsonClass, JsonMembers...>,
 			                        ParseState &parse_state ) {
 				static_assert( is_a_json_type_v<JsonClass> );

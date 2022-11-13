@@ -1906,6 +1906,5 @@ namespace daw::json {
 			using type = json_type_alias<
 			  json_base::json_raw<basic_json_value<PolicyFlags, Allocator>>>;
 		};
-
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

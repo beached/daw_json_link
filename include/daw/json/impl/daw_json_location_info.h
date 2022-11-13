@@ -154,7 +154,7 @@ namespace daw::json {
 
 			// Should never be called outside a consteval context
 			template<typename... MemberNames>
-			inline DAW_CONSTEVAL bool do_hashes_collide( ) {
+			static inline DAW_CONSTEVAL bool do_hashes_collide( ) {
 				daw::UInt32 hashes[sizeof...( MemberNames )]{
 				  name_hash<false>( MemberNames::name )... };
 
@@ -168,7 +168,7 @@ namespace daw::json {
 
 			// Should never be called outside a consteval context
 			template<typename ParseState, typename... JsonMembers>
-			DAW_ATTRIB_FLATINLINE inline DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto
+			DAW_ATTRIB_FLATINLINE static inline DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto
 			make_locations_info( ) {
 				using CharT = typename ParseState::CharT;
 #if defined( DAW_JSON_PARSER_DIAGNOSTICS ) or \
@@ -211,7 +211,8 @@ namespace daw::json {
 			template<std::size_t pos, AllMembersMustExist must_exist,
 			         bool from_start = false, std::size_t N, typename ParseState,
 			         bool B, typename CharT>
-			[[nodiscard]] inline constexpr std::pair<ParseState, bool>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr std::pair<ParseState,
+			                                                           bool>
 			find_class_member( ParseState &parse_state,
 			                   locations_info_t<N, CharT, B> &locations,
 			                   bool is_nullable, daw::string_view member_name ) {

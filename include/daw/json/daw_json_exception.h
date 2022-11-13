@@ -228,38 +228,34 @@ namespace daw::json {
 		public:
 			json_exception( ) = default;
 
-			DAW_ATTRIB_NOINLINE explicit inline json_exception( ErrorReason reason )
+			explicit inline json_exception( ErrorReason reason )
 			  : m_reason( reason ) {}
 
-			DAW_ATTRIB_NOINLINE explicit inline json_exception(
-			  json_details::missing_member mm )
+			explicit inline json_exception( json_details::missing_member mm )
 			  : m_reason( ErrorReason::MemberNotFound )
 			  , m_data( mm.member_name ) {}
 
-			DAW_ATTRIB_NOINLINE explicit inline json_exception(
-			  json_details::missing_token mt )
+			explicit inline json_exception( json_details::missing_token mt )
 			  : m_reason( ErrorReason::ExpectedTokenNotFound )
 			  , m_data( mt.token ) {}
 
-			DAW_ATTRIB_NOINLINE explicit inline json_exception(
-			  json_details::missing_member mm, std::string_view location )
+			explicit inline json_exception( json_details::missing_member mm,
+			                                std::string_view location )
 			  : m_reason( ErrorReason::MemberNotFound )
 			  , m_data( mm.member_name )
 			  , m_parse_loc( std::data( location ) ) {}
 
-			DAW_ATTRIB_NOINLINE explicit inline json_exception(
-			  json_details::missing_token mt, char const *location )
+			explicit inline json_exception( json_details::missing_token mt,
+			                                char const *location )
 			  : m_reason( ErrorReason::ExpectedTokenNotFound )
 			  , m_data( mt.token )
 			  , m_parse_loc( location ) {}
 
-			DAW_ATTRIB_NOINLINE explicit inline json_exception( ErrorReason reason,
-			                                                    char const *location )
+			explicit inline json_exception( ErrorReason reason, char const *location )
 			  : m_reason( reason )
 			  , m_parse_loc( location ) {}
 
-			DAW_ATTRIB_NOINLINE [[nodiscard]] inline ErrorReason
-			reason_type( ) const {
+			[[nodiscard]] inline ErrorReason reason_type( ) const {
 				return m_reason;
 			}
 
@@ -290,15 +286,17 @@ namespace daw::json {
 			parse_location( ) const {
 				return m_parse_loc;
 			}
-			inline char const *what( ) const noexcept override {
+			DAW_ATTRIB_INLINE char const *what( ) const noexcept override {
 				// reason_message returns a string_view to a literal
 				return reason_message( m_reason ).data( );
 			}
-			json_exception( json_exception const & ) = default;
-			json_exception( json_exception && ) noexcept = default;
-			json_exception &operator=( json_exception const & ) = default;
-			json_exception &operator=( json_exception && ) noexcept = default;
-			~json_exception( ) override = default;
+			DAW_ATTRIB_INLINE json_exception( json_exception const & ) = default;
+			DAW_ATTRIB_INLINE json_exception( json_exception && ) noexcept = default;
+			DAW_ATTRIB_INLINE json_exception &
+			operator=( json_exception const & ) = default;
+			DAW_ATTRIB_INLINE json_exception &
+			operator=( json_exception && ) noexcept = default;
+			DAW_ATTRIB_INLINE ~json_exception( ) override = default;
 		};
 
 		/***
@@ -306,7 +304,7 @@ namespace daw::json {
 		 * @param je json_exception to be formatted
 		 * @return string representation of json_exception
 		 */
-		inline std::string
+		DAW_ATTRIB_NOINLINE [[nodiscard]] inline std::string
 		to_formatted_string( json_exception const &je,
 		                     char const *json_document = nullptr ) {
 			using namespace std::string_literals;
