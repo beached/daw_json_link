@@ -21,7 +21,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace utils {
 			template<typename WriteableType>
-			inline constexpr WriteableType output_kv( WriteableType it,
+			static inline constexpr WriteableType output_kv( WriteableType it,
 			                                          std::string_view key,
 			                                          std::string_view value ) {
 				it.write( key, ":", it.space, value );
@@ -802,20 +802,19 @@ namespace daw::json {
 		/// @brief Generate a JSON Schema string based on the mappings for the type
 		/// specified
 		/// @tparam T Known or mapped type to generate JSON Schema for
-		/// @tparam Result Result type, must support std::back_inserter
+		/// @tparam Result Result type, must support WritableOutput concept
 		/// @tparam PolicyFlags Optional policy flags to control output
 		/// @param id JSON Schema identifier
 		/// @param title JSON Schema title
 		/// @return The result with JSON Schema written to it
 		///
 		template<typename T, typename Result = std::string, auto... PolicyFlags>
-		Result to_json_schema( std::string_view id, std::string_view title,
+		constexpr Result to_json_schema( std::string_view id, std::string_view title,
 		                       options::output_flags_t<PolicyFlags...> flags =
 		                         options::output_flags<> ) {
 			auto result = Result( );
-			using iter_t = std::back_insert_iterator<Result>;
 
-			(void)to_json_schema<T>( iter_t( result ), id, title, flags );
+			(void)to_json_schema<T>( result, id, title, flags );
 			return result;
 		}
 	} // namespace DAW_JSON_VER
