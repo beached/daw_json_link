@@ -758,7 +758,7 @@ namespace daw::json {
 		/// @return the Output iterator after writing JSON schema to it
 		template<typename T, typename WritableType, auto... PolicyFlags>
 		constexpr WritableType to_json_schema(
-		  WritableType it, std::string_view id, std::string_view title,
+		  WritableType & it, std::string_view id, std::string_view title,
 		  options::output_flags_t<PolicyFlags...> = options::output_flags<> ) {
 
 			auto out_it = [&] {
