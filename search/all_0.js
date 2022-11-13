@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['add_5findent_0',['add_indent',['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#ac2d13072b1031e9679b95d644bf06ac6',1,'daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serialization_policy']]],
+  ['add_5findent_0',['add_indent',['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a9a2381b82cd39f336027f8d8a2a62498',1,'daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serialization_policy']]],
   ['aliases_2emd_1',['aliases.md',['../aliases_8md.html',1,'']]],
   ['allow_2',['Allow',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#ad859eb5f9b4f915a0b07020dfc1a9833a45f0fb72a0defdfdb01de4b5a5a6876b',1,'daw::json::anonymous_namespace{daw_json_type_options.h}::options']]],
   ['allow_5fescape_5fcharacter_3',['allow_escape_character',['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__string__raw.html#a484a28737070e406eb9a226f82c3720f',1,'daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_string_raw']]],

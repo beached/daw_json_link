@@ -217,16 +217,16 @@ $(function() {
 <div class="line"><a name="l00145"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy__no__comments_8h_03_1_1_no_comment_skipping_policy.html#a1208d89996c736644c7261822a97f061">  145</a></span>&#160;      <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy__no__comments_8h_03_1_1_no_comment_skipping_policy.html#a1208d89996c736644c7261822a97f061">skip_bracketed_item_checked</a>( ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        <span class="keyword">using</span> CharT = <span class="keyword">typename</span> ParseState::CharT;</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;        <span class="comment">// Not checking for Left as it is required to be skipped already</span></div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        <span class="keyword">auto</span> result = parse_state;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        std::size_t cnt = 0;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        std::uint32_t prime_bracket_count = 1;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        std::uint32_t second_bracket_count = 0;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        CharT *ptr_first = parse_state.first;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        CharT *<span class="keyword">const</span> ptr_last = parse_state.last;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        <span class="keywordflow">if</span>( DAW_UNLIKELY( ptr_first &gt;= ptr_last ) ) {</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;          <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        }</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        CharT *ptr_first = parse_state.first;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        CharT *<span class="keyword">const</span> ptr_last = parse_state.last;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keywordflow">if</span>( DAW_UNLIKELY( ptr_first &gt;= ptr_last ) ) {</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;          <span class="keywordflow">return</span> parse_state;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        }</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        <span class="keyword">auto</span> result = parse_state;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        std::size_t cnt = 0;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        std::uint32_t prime_bracket_count = 1;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        std::uint32_t second_bracket_count = 0;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160; </div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        <span class="keywordflow">if</span>( *ptr_first == PrimLeft ) {</div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;          ++ptr_first;</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        }</div>
@@ -243,8 +243,8 @@ $(function() {
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;              <span class="keywordflow">if</span> constexpr( traits::not_same&lt;<span class="keyword">typename</span> ParseState::exec_tag_t,</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;                                             <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>&gt;::value ) {</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;                ptr_first = json_details::mem_skip_until_end_of_string&lt;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;                  ParseState::is_unchecked_input&gt;(</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;                  ParseState::exec_tag, ptr_first, parse_state.last );</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;                  ParseState::is_unchecked_input&gt;( ParseState::exec_tag,</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;                                                   ptr_first, ptr_last );</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;              } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;                <span class="keywordtype">char</span> c = *ptr_first;</div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;                <span class="keywordflow">while</span>( ( c != <span class="charliteral">&#39;\0&#39;</span> ) &amp; ( c != <span class="charliteral">&#39;&quot;&#39;</span> ) ) {</div>
@@ -306,8 +306,8 @@ $(function() {
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;              <span class="keywordflow">if</span> constexpr( traits::not_same&lt;<span class="keyword">typename</span> ParseState::exec_tag_t,</div>
 <div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;                                             <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>&gt;::value ) {</div>
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;                ptr_first = json_details::mem_skip_until_end_of_string&lt;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;                  ParseState::is_unchecked_input&gt;(</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;                  ParseState::exec_tag, ptr_first, parse_state.last );</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;                  ParseState::is_unchecked_input&gt;( ParseState::exec_tag,</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;                                                   ptr_first, ptr_last );</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;              } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;                <span class="keywordflow">while</span>( DAW_LIKELY( ptr_first &lt; ptr_last ) and</div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;                       *ptr_first != <span class="charliteral">&#39;&quot;&#39;</span> ) {</div>

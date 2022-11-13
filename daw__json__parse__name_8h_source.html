@@ -109,7 +109,7 @@ $(function() {
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        }</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        [[nodiscard]] DAW_ATTRIB_INLINE constexpr daw::string_view</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> constexpr daw::string_view</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        parse_nq( ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;          <span class="keywordflow">if</span> constexpr( ParseState::allow_escaped_names( ) ) {</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keyword">auto</span> r = skip_string_nq( parse_state );</div>
@@ -140,7 +140,7 @@ $(function() {
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="comment">// Paths are specified with dot separators, if the name has a dot in it,</span></div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      <span class="comment">// it must be escaped</span></div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      <span class="comment">// memberA.memberB.member\.C has 3 parts[&#39;memberA&#39;, &#39;memberB&#39;, &#39;member.C&#39;]</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      [[nodiscard]] constexpr pop_json_path_result</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr pop_json_path_result</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      pop_json_path( daw::string_view &amp;path ) {</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keyword">auto</span> result = pop_json_path_result{ };</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordflow">if</span>( path.empty( ) ) {</div>
@@ -171,7 +171,7 @@ $(function() {
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        <span class="keywordflow">return</span> result;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      }</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      [[nodiscard]] constexpr <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr <span class="keywordtype">bool</span></div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      json_path_compare( daw::string_view json_path_item,</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                         daw::string_view member_name ) {</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <span class="keywordflow">if</span>( json_path_item.front( ) == <span class="charliteral">&#39;\\&#39;</span> ) {</div>
@@ -196,7 +196,7 @@ $(function() {
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      <span class="comment">// Ensures that the stream is left at the position of the associated</span></div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      <span class="comment">// value(e.g after the colon(:) and trimmed)</span></div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      [[nodiscard]] DAW_ATTRIB_FLATTEN <span class="keyword">inline</span> constexpr daw::string_view</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      [[nodiscard]] DAW_ATTRIB_FLATTEN <span class="keyword">static</span> <span class="keyword">inline</span> constexpr daw::string_view</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      parse_name( ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.is_quotes_checked( ),</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                              ErrorReason::InvalidMemberName, parse_state );</div>
@@ -205,8 +205,8 @@ $(function() {
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      }</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      constexpr <span class="keywordtype">bool</span> find_range2( ParseState &amp;parse_state,</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;                                  daw::string_view path ) {</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      <span class="keyword">static</span> constexpr <span class="keywordtype">bool</span> find_range2( ParseState &amp;parse_state,</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;                                         daw::string_view path ) {</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        <span class="keyword">auto</span> pop_result = pop_json_path( path );</div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        <span class="keywordflow">while</span>( not pop_result.current.empty( ) ) {</div>
@@ -250,7 +250,7 @@ $(function() {
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;      }</div>
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160; </div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParsePolicy&gt;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;      [[nodiscard]] constexpr std::pair&lt;bool, ParsePolicy&gt;</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr std::pair&lt;bool, ParsePolicy&gt;</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      find_range( daw::string_view str, daw::string_view start_path ) {</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;        <span class="keyword">auto</span> parse_state =</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;          ParsePolicy( std::data( str ), daw::data_end( str ) );</div>
@@ -263,9 +263,9 @@ $(function() {
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      }</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160; </div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParsePolicy, <span class="keyword">typename</span> Allocator&gt;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      [[nodiscard]] constexpr <span class="keyword">auto</span> find_range( daw::string_view str,</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;                                               daw::string_view start_path,</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;                                               Allocator &amp;alloc ) {</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr <span class="keyword">auto</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      find_range( daw::string_view str, daw::string_view start_path,</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;                  Allocator &amp;alloc ) {</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        static_assert(</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;          std::is_same_v&lt;char const *, typename ParsePolicy::iterator&gt;,</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;          <span class="stringliteral">&quot;Only char const * ranges are currently supported&quot;</span> );</div>

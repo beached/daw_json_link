@@ -106,7 +106,7 @@ $(function() {
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember, <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result&lt;JsonMember&gt;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> constexpr json_result&lt;JsonMember&gt;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      parse_ordered_class_member( template_param&lt;JsonMember&gt;,</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                  std::size_t &amp;member_index,</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                                  ParseState &amp;parse_state ) {</div>
@@ -143,7 +143,7 @@ $(function() {
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      <span class="keyword">template</span>&lt;std::size_t member_position, <span class="keyword">typename</span> JsonMember,</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;               AllMembersMustExist must_exist, <span class="keywordtype">bool</span> NeedsClassPositions,</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;               <span class="keyword">typename</span> ParseState, std::size_t N, <span class="keyword">typename</span> CharT, <span class="keywordtype">bool</span> B&gt;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result&lt;JsonMember&gt;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> constexpr json_result&lt;JsonMember&gt;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;      parse_class_member( ParseState &amp;parse_state,</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                          locations_info_t&lt;N, CharT, B&gt; &amp;locations ) {</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        parse_state.move_next_member_or_end( );</div>
@@ -223,7 +223,7 @@ $(function() {
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonClass, <span class="keyword">typename</span>... JsonMembers, <span class="keyword">typename</span> ParseState,</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;               std::size_t... Is&gt;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;      [[nodiscard]] constexpr json_result&lt;JsonClass&gt;</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;      [[nodiscard]] <span class="keyword">static</span> <span class="keyword">inline</span> constexpr json_result&lt;JsonClass&gt;</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;      parse_json_class( ParseState &amp;parse_state, std::index_sequence&lt;Is...&gt; ) {</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        static_assert( is_a_json_type_v&lt;JsonClass&gt; );</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        <span class="keyword">using</span> T = <span class="keyword">typename</span> JsonClass::parse_to_t;</div>
@@ -324,7 +324,7 @@ $(function() {
 <div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;      }</div>
 <div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160; </div>
 <div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonClass, <span class="keyword">typename</span>... JsonMembers, <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr json_result&lt;JsonClass&gt;</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      [[nodiscard]] <span class="keyword">static</span> <span class="keyword">inline</span> constexpr json_result&lt;JsonClass&gt;</div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;      parse_json_tuple_class( template_params&lt;JsonClass, JsonMembers...&gt;,</div>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;                              ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        static_assert( is_a_json_type_v&lt;JsonClass&gt; );</div>

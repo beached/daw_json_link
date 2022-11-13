@@ -104,34 +104,34 @@ $(function() {
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="keyword">template</span>&lt;std::size_t... Is&gt;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      DAW_CONSTEVAL json_name( <span class="keywordtype">char</span> <span class="keyword">const</span> ( &amp;ptr )[N],</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                               std::index_sequence&lt;Is...&gt; )</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      <span class="keyword">inline</span> DAW_CONSTEVAL json_name( <span class="keywordtype">char</span> <span class="keyword">const</span> ( &amp;ptr )[N],</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                      std::index_sequence&lt;Is...&gt; ) noexcept</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        : m_data{ ptr[Is]... } {}</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      DAW_CONSTEVAL json_name( <span class="keywordtype">char</span> <span class="keyword">const</span> ( &amp;ptr )[N] )</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      <span class="keyword">inline</span> DAW_CONSTEVAL json_name( <span class="keywordtype">char</span> <span class="keyword">const</span> ( &amp;ptr )[N] ) noexcept</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        : json_name( ptr, std::make_index_sequence&lt;N&gt;{ } ) {}</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      constexpr <span class="keyword">operator</span> daw::string_view( )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      constexpr <span class="keyword">operator</span> daw::string_view( ) <span class="keyword">const</span> noexcept {</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keywordflow">return</span> { m_data, N - 1 };</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      }</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="comment">// Needed for copy_to_iterator</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      [[nodiscard]] constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> *begin( )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      [[nodiscard]] constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> *begin( ) <span class="keyword">const</span> noexcept {</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordflow">return</span> m_data;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      }</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      <span class="comment">// Needed for copy_to_iterator</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      [[nodiscard]] constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> *end( )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      [[nodiscard]] constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> *end( ) <span class="keyword">const</span> noexcept {</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">return</span> m_data + <span class="keyword">static_cast&lt;</span>ptrdiff_t<span class="keyword">&gt;</span>( size( ) );</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      }</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr std::size_t size( ) {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr std::size_t size( ) noexcept {</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keywordflow">return</span> N - 1;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      }</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      <span class="keyword">template</span>&lt;std::<span class="keywordtype">size_t</span> M&gt;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      constexpr <span class="keywordtype">bool</span> operator==( json_name&lt;M&gt; <span class="keyword">const</span> &amp;rhs )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      constexpr <span class="keywordtype">bool</span> operator==( json_name&lt;M&gt; <span class="keyword">const</span> &amp;rhs ) <span class="keyword">const</span> noexcept {</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keywordflow">if</span>( N != M ) {</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        }</div>
@@ -143,15 +143,15 @@ $(function() {
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      }</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      constexpr <span class="keywordtype">bool</span> operator==( daw::string_view rhs )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      constexpr <span class="keywordtype">bool</span> operator==( daw::string_view rhs ) <span class="keyword">const</span> noexcept {</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <span class="keywordflow">return</span> daw::string_view( m_data, N - 1 ) == rhs;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;      }</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;      constexpr <span class="keywordtype">bool</span> operator==( std::string_view rhs )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;      constexpr <span class="keywordtype">bool</span> operator==( std::string_view rhs ) <span class="keyword">const</span> noexcept {</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keywordflow">return</span> std::string_view( m_data, N - 1 ) == rhs;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      }</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      constexpr <span class="keyword">operator</span> std::string_view( )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      constexpr <span class="keyword">operator</span> std::string_view( ) <span class="keyword">const</span> noexcept {</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <span class="keywordflow">return</span> std::string_view( m_data, N - 1 );</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      }</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    };</div>

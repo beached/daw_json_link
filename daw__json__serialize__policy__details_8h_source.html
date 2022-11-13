@@ -248,7 +248,7 @@ $(function() {
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        basic_policy_bits_start&lt;Policy, policy_list&gt;;</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Policy&gt;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;      constexpr <span class="keywordtype">void</span> set_bits_in( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> &amp;value, Policy e ) {</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;      <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> set_bits_in( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> &amp;value, Policy e ) {</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        static_assert( is_option_flag&lt;Policy&gt;,</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;                       <span class="stringliteral">&quot;Only registered policy types are allowed&quot;</span> );</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        <span class="keyword">auto</span> new_bits = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( e );</div>
@@ -260,8 +260,8 @@ $(function() {
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;      }</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; </div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Policy, <span class="keyword">typename</span>... Policies&gt;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      constexpr <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> set_bits( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> value, Policy pol,</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;                                         Policies... pols ) {</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      <span class="keyword">static</span> constexpr <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> set_bits( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> value,</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;                                                Policy pol, Policies... pols ) {</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        static_assert( ( is_option_flag&lt;Policies&gt; and ... ),</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;                       <span class="stringliteral">&quot;Only registered policy types are allowed&quot;</span> );</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160; </div>
@@ -283,7 +283,7 @@ $(function() {
 <div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;      }</div>
 <div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160; </div>
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Policy&gt;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;      constexpr <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> set_bits_for( Policy e ) {</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;      <span class="keyword">static</span> constexpr <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> set_bits_for( Policy e ) {</div>
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;        static_assert( is_option_flag&lt;Policy&gt;,</div>
 <div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;                       <span class="stringliteral">&quot;Only registered policy types are allowed&quot;</span> );</div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;        <span class="keyword">auto</span> new_bits = <span class="keyword">static_cast&lt;</span><a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a><span class="keyword">&gt;</span>( e );</div>
@@ -308,7 +308,7 @@ $(function() {
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;        default_policy_flag_t&lt;policy_list&gt;::value;</div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Policy, <span class="keyword">typename</span> Result = Policy&gt;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      constexpr Result get_bits_for( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> value ) {</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      <span class="keyword">static</span> constexpr Result get_bits_for( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> value ) {</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        static_assert( is_option_flag&lt;Policy&gt;,</div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;                       <span class="stringliteral">&quot;Only registered policy types are allowed&quot;</span> );</div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        constexpr <span class="keywordtype">unsigned</span> mask = ( 1U &lt;&lt; (policy_bits_start&lt;Policy&gt; +</div>

@@ -471,15 +471,15 @@ $(function() {
 <div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;                            ErrorReason::InvalidArrayStart, parse_state );</div>
 <div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;      <span class="keywordflow">if</span> constexpr( ParseState::must_verify_end_of_data_is_valid ) {</div>
-<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;        <span class="keyword">auto</span> result = json_details::parse_value&lt;parser_t, KnownBounds&gt;(</div>
-<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;          parse_state, <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a90ac904856c64d7aa4d8b2327e56c680">ParseTag&lt;JsonParseTypes::Array&gt;</a>{ } );</div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;        <span class="keyword">auto</span> result =</div>
+<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;          json_details::parse_value_array&lt;parser_t, KnownBounds&gt;( parse_state );</div>
 <div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;        parse_state.trim_left( );</div>
 <div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;        <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( parse_state.empty( ), ErrorReason::InvalidEndOfValue,</div>
 <div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;                         parse_state );</div>
 <div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;        <span class="keywordflow">return</span> result;</div>
 <div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;      } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;        <span class="keywordflow">return</span> json_details::parse_value&lt;parser_t, KnownBounds&gt;(</div>
-<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;          parse_state, <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a90ac904856c64d7aa4d8b2327e56c680">ParseTag&lt;JsonParseTypes::Array&gt;</a>{ } );</div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;        <span class="keywordflow">return</span> json_details::parse_value_array&lt;parser_t, KnownBounds&gt;(</div>
+<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;          parse_state );</div>
 <div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;      }</div>
 <div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;    }</div>
 <div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160; </div>
@@ -552,15 +552,15 @@ $(function() {
 <div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;                            ErrorReason::InvalidArrayStart, parse_state );</div>
 <div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;      <span class="keywordflow">if</span> constexpr( ParseState::must_verify_end_of_data_is_valid ) {</div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;        <span class="keyword">auto</span> result = json_details::parse_value&lt;parser_t, KnownBounds&gt;(</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;          parse_state, <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a90ac904856c64d7aa4d8b2327e56c680">ParseTag&lt;JsonParseTypes::Array&gt;</a>{ } );</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;        <span class="keyword">auto</span> result =</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;          json_details::parse_value_array&lt;parser_t, KnownBounds&gt;( parse_state );</div>
 <div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;        parse_state.trim_left( );</div>
 <div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;        <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( parse_state.empty( ), ErrorReason::InvalidEndOfValue,</div>
 <div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;                         parse_state );</div>
 <div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;        <span class="keywordflow">return</span> result;</div>
 <div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;      } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;        <span class="keywordflow">return</span> json_details::parse_value&lt;parser_t, KnownBounds&gt;(</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;          parse_state, <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a90ac904856c64d7aa4d8b2327e56c680">ParseTag&lt;JsonParseTypes::Array&gt;</a>{ } );</div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;        <span class="keywordflow">return</span> json_details::parse_value_array&lt;parser_t, KnownBounds&gt;(</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;          parse_state );</div>
 <div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;      }</div>
 <div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;    }</div>
 <div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160; </div>

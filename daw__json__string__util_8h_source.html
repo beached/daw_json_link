@@ -96,7 +96,7 @@ $(function() {
 <div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__string__util_8h_03.html">   24</a></span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span> c, <span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_<span class="keywordtype">long</span>, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr CharT *</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr CharT *</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      memchr_unchecked( CharT *first, CharT *last ) {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#if DAW_HAS_BUILTIN( __builtin_char_memchr )</span></div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keywordflow">if</span> constexpr( expect_long ) {</div>
@@ -134,7 +134,7 @@ $(function() {
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      }</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span> c, <span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_<span class="keywordtype">long</span>, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr CharT *</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr CharT *</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      memchr_checked( CharT *first, CharT *last ) {</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#if DAW_HAS_BUILTIN( __builtin_char_memchr )</span></div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        <span class="keywordflow">if</span> constexpr( expect_long ) {</div>
@@ -176,7 +176,7 @@ $(function() {
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_long, <span class="keywordtype">char</span>... chars,</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;               <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr CharT *</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr CharT *</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      mempbrk_unchecked( CharT *first, CharT * <span class="comment">/*last*/</span> ) {</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="preprocessor">#if DAW_HAS_BUILTIN( __builtin_strpbrk )</span></div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordflow">if</span> constexpr( expect_long ) {</div>
@@ -220,7 +220,7 @@ $(function() {
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160; </div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_long, <span class="keywordtype">char</span>... chars,</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;               <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr CharT *</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr CharT *</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;      mempbrk_checked( CharT *first, CharT *last ) {</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keywordflow">if</span> constexpr( expect_long ) {</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
@@ -250,7 +250,7 @@ $(function() {
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160; </div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> is_unchecked_input, <span class="keyword">typename</span> ExecTag, <span class="keywordtype">bool</span> expect_long,</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;               <span class="keywordtype">char</span>... chars, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr CharT *mempbrk( CharT *first,</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr CharT *mempbrk( CharT *first,</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;                                                             CharT *last ) {</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160; </div>
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        <span class="keywordflow">if</span> constexpr( is_unchecked_input ) {</div>

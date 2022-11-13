@@ -94,7 +94,7 @@ $(function() {
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw.html">daw</a> {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">namespace </span>murmur3_details {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    [[nodiscard]] DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr UInt32</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    [[nodiscard]] DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">inline</span> constexpr UInt32</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    murmur3_32_scramble( UInt32 k ) {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      <span class="keyword">using</span> prime1 = daw::constant&lt;0xcc9e&#39;2d51_u32&gt;;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      <span class="keyword">using</span> prime2 = daw::constant&lt;0x1b87&#39;3593_u32&gt;;</div>
@@ -106,8 +106,8 @@ $(function() {
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  } <span class="comment">// namespace murmur3_details</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keyword">template</span>&lt;std::<span class="keywordtype">size_t</span> N, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  [[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32</div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="namespacedaw.html#a6676704c4ec0cedf7ebf25cd37bf8b6e">   38</a></span>&#160;  <a class="code" href="namespacedaw.html#a6676704c4ec0cedf7ebf25cd37bf8b6e">fnv1a_32_N</a>( CharT *first, UInt32 hash = 0x811c<span class="stringliteral">&#39;9dc5_u32 ) {</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> constexpr UInt32</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="namespacedaw.html#ad4b69854cff208bf721df5c209b9e537">   38</a></span>&#160;  <a class="code" href="namespacedaw.html#ad4b69854cff208bf721df5c209b9e537">fnv1a_32_N</a>( CharT *first, UInt32 hash = 0x811c<span class="stringliteral">&#39;9dc5_u32 ) {</span></div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="stringliteral">    daw::algorithm::do_n_arg&lt;N&gt;( [&amp;]( std::size_t n ) {</span></div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="stringliteral">      hash ^= static_cast&lt;UInt32&gt;( static_cast&lt;unsigned char&gt;( first[n] ) );</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="stringliteral">      hash *= 0x0100&#39;</span>0193_u32;</div>
@@ -116,7 +116,7 @@ $(function() {
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  }</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> expect_<span class="keywordtype">long</span>_<span class="keywordtype">string</span>s, <span class="keyword">typename</span> StringView&gt;</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="namespacedaw.html#ac6b75e11f962fd94e2990ddf6bd4d9aa">   47</a></span>&#160;  [[nodiscard]] constexpr UInt32 <a class="code" href="namespacedaw.html#ac6b75e11f962fd94e2990ddf6bd4d9aa">fnv1a_32</a>( StringView key ) {</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="namespacedaw.html#a9d1152fde81422ab173fec3b56b047e6">   47</a></span>&#160;  [[nodiscard]] <span class="keyword">static</span> constexpr UInt32 <a class="code" href="namespacedaw.html#a9d1152fde81422ab173fec3b56b047e6">fnv1a_32</a>( StringView key ) {</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    static_assert( daw::traits::is_string_view_like_v&lt;StringView&gt;,</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                   <span class="stringliteral">&quot;Can only pass contiguous character ranges to fnv1a&quot;</span> );</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    std::size_t len = std::size( key );</div>
@@ -142,8 +142,8 @@ $(function() {
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  }</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> expect_<span class="keywordtype">long</span>_<span class="keywordtype">string</span>s&gt;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  [[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32</div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="namespacedaw.html#a82efb7d61c01665a7fbaeba1c4c39232">   74</a></span>&#160;  <a class="code" href="namespacedaw.html#a82efb7d61c01665a7fbaeba1c4c39232">name_hash</a>( daw::string_view key ) {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> constexpr UInt32</div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="namespacedaw.html#af4eb469ebdb2ed4b3970d1281ace8321">   74</a></span>&#160;  <a class="code" href="namespacedaw.html#af4eb469ebdb2ed4b3970d1281ace8321">name_hash</a>( daw::string_view key ) {</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordflow">if</span>( <span class="keyword">auto</span> <span class="keyword">const</span> Sz = std::size( key );</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        DAW_LIKELY( Sz &lt;= <span class="keyword">sizeof</span>( UInt32 ) ) ) {</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      <span class="keyword">auto</span> result = 0_u32;</div>
@@ -158,8 +158,8 @@ $(function() {
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  }</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> StringView&gt;</div>
-<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="namespacedaw.html#ae382e2ed441538df42e84ca4d3553bed">   89</a></span>&#160;  [[nodiscard]] constexpr UInt32 <a class="code" href="namespacedaw.html#ae382e2ed441538df42e84ca4d3553bed">murmur3_32</a>( StringView key,</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                                             std::uint32_t seed = 0 ) {</div>
+<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="namespacedaw.html#a0fc025577840b7e0e6012e6997451a39">   89</a></span>&#160;  [[nodiscard]] <span class="keyword">static</span> constexpr UInt32 <a class="code" href="namespacedaw.html#a0fc025577840b7e0e6012e6997451a39">murmur3_32</a>( StringView key,</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                                                    std::uint32_t seed = 0 ) {</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    static_assert( daw::traits::is_string_view_like_v&lt;StringView&gt;,</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                   <span class="stringliteral">&quot;Can only pass contiguous character ranges to fnv1a&quot;</span> );</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    UInt32 h = to_uint32( seed );</div>
@@ -195,12 +195,12 @@ $(function() {
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="stringliteral">  }</span></div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="stringliteral">} // namespace daw</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="anamespacedaw_html_a6676704c4ec0cedf7ebf25cd37bf8b6e"><div class="ttname"><a href="namespacedaw.html#a6676704c4ec0cedf7ebf25cd37bf8b6e">daw::fnv1a_32_N</a></div><div class="ttdeci">constexpr DAW_ATTRIB_INLINE UInt32 fnv1a_32_N(CharT *first, UInt32 hash=0x811c '9dc5_u32)</div><div class="ttdef"><b>Definition:</b> <a href="daw__murmur3_8h_source.html#l00038">daw_murmur3.h:38</a></div></div>
-<div class="ttc" id="anamespacedaw_html_a82efb7d61c01665a7fbaeba1c4c39232"><div class="ttname"><a href="namespacedaw.html#a82efb7d61c01665a7fbaeba1c4c39232">daw::name_hash</a></div><div class="ttdeci">constexpr DAW_ATTRIB_INLINE UInt32 name_hash(daw::string_view key)</div><div class="ttdef"><b>Definition:</b> <a href="daw__murmur3_8h_source.html#l00074">daw_murmur3.h:74</a></div></div>
+<div class="ttc" id="anamespacedaw_html_a0fc025577840b7e0e6012e6997451a39"><div class="ttname"><a href="namespacedaw.html#a0fc025577840b7e0e6012e6997451a39">daw::murmur3_32</a></div><div class="ttdeci">static constexpr UInt32 murmur3_32(StringView key, std::uint32_t seed=0)</div><div class="ttdef"><b>Definition:</b> <a href="daw__murmur3_8h_source.html#l00089">daw_murmur3.h:89</a></div></div>
+<div class="ttc" id="anamespacedaw_html_ad4b69854cff208bf721df5c209b9e537"><div class="ttname"><a href="namespacedaw.html#ad4b69854cff208bf721df5c209b9e537">daw::fnv1a_32_N</a></div><div class="ttdeci">static constexpr DAW_ATTRIB_INLINE UInt32 fnv1a_32_N(CharT *first, UInt32 hash=0x811c '9dc5_u32)</div><div class="ttdef"><b>Definition:</b> <a href="daw__murmur3_8h_source.html#l00038">daw_murmur3.h:38</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
-<div class="ttc" id="anamespacedaw_html_ac6b75e11f962fd94e2990ddf6bd4d9aa"><div class="ttname"><a href="namespacedaw.html#ac6b75e11f962fd94e2990ddf6bd4d9aa">daw::fnv1a_32</a></div><div class="ttdeci">constexpr UInt32 fnv1a_32(StringView key)</div><div class="ttdef"><b>Definition:</b> <a href="daw__murmur3_8h_source.html#l00047">daw_murmur3.h:47</a></div></div>
 <div class="ttc" id="anamespacedaw_html"><div class="ttname"><a href="namespacedaw.html">daw</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
-<div class="ttc" id="anamespacedaw_html_ae382e2ed441538df42e84ca4d3553bed"><div class="ttname"><a href="namespacedaw.html#ae382e2ed441538df42e84ca4d3553bed">daw::murmur3_32</a></div><div class="ttdeci">constexpr UInt32 murmur3_32(StringView key, std::uint32_t seed=0)</div><div class="ttdef"><b>Definition:</b> <a href="daw__murmur3_8h_source.html#l00089">daw_murmur3.h:89</a></div></div>
+<div class="ttc" id="anamespacedaw_html_af4eb469ebdb2ed4b3970d1281ace8321"><div class="ttname"><a href="namespacedaw.html#af4eb469ebdb2ed4b3970d1281ace8321">daw::name_hash</a></div><div class="ttdeci">static constexpr DAW_ATTRIB_INLINE UInt32 name_hash(daw::string_view key)</div><div class="ttdef"><b>Definition:</b> <a href="daw__murmur3_8h_source.html#l00074">daw_murmur3.h:74</a></div></div>
+<div class="ttc" id="anamespacedaw_html_a9d1152fde81422ab173fec3b56b047e6"><div class="ttname"><a href="namespacedaw.html#a9d1152fde81422ab173fec3b56b047e6">daw::fnv1a_32</a></div><div class="ttdeci">static constexpr UInt32 fnv1a_32(StringView key)</div><div class="ttdef"><b>Definition:</b> <a href="daw__murmur3_8h_source.html#l00047">daw_murmur3.h:47</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
