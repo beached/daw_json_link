@@ -124,7 +124,7 @@ namespace daw::json {
 	struct json_data_contract<Bar> {
 		using type = json_tuple_member_list<int, int>;
 
-		static inline auto to_json_data( Bar const &b ) {
+		static constexpr auto to_json_data( Bar const &b ) {
 			return std::forward_as_tuple( b.a, b.type );
 		}
 	};
@@ -133,7 +133,7 @@ namespace daw::json {
 	struct json_data_contract<Umm> {
 		using type = json_tuple_member_list<double, int>;
 
-		static inline auto to_json_data( Umm const &b ) {
+		static constexpr auto to_json_data( Umm const &b ) {
 			return std::forward_as_tuple( b.a, b.type );
 		}
 	};

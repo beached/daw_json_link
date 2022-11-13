@@ -43,8 +43,8 @@ namespace daw::json {
 		namespace json_details {
 			template<options::FPOutputFormat fp_output_format, typename WriteableType,
 			         typename Real>
-			constexpr WriteableType to_chars( Real const &value,
-			                                  WriteableType out_it );
+			static constexpr WriteableType to_chars( Real const &value,
+			                                         WriteableType out_it );
 		} // namespace json_details
 
 		namespace json_details::to_strings {
@@ -52,7 +52,7 @@ namespace daw::json {
 			// Need to use ADL to_string in unevaluated contexts.  Limiting to it's
 			// own namespace
 			template<typename T>
-			[[nodiscard]] constexpr auto to_string( std::optional<T> const &v )
+			[[nodiscard]] static constexpr auto to_string( std::optional<T> const &v )
 			  -> decltype( to_string( *v ) ) {
 				if( not has_value( v ) ) {
 					return { "null" };
@@ -62,7 +62,7 @@ namespace daw::json {
 
 			namespace to_string_test {
 				template<typename T>
-				auto to_string_test( T &&v )
+				static auto to_string_test( T &&v )
 				  -> decltype( to_string( DAW_FWD2( T, v ) ) );
 
 				template<typename T>
@@ -192,7 +192,7 @@ namespace daw::json {
 
 		namespace from_json_conv_details {
 			template<typename T>
-			[[nodiscard]] inline auto use_stream( std::string_view sv ) {
+			[[nodiscard]] static inline auto use_stream( std::string_view sv ) {
 				std::stringstream ss{ };
 				ss << sv;
 				T result;
@@ -230,28 +230,28 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] inline WriteableType constexpr to_daw_json_string(
+			[[nodiscard]] static inline WriteableType constexpr to_daw_json_string(
 			  ParseTag<JsonParseTypes::Null>, WriteableType it,
 			  parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
-			[[nodiscard]] constexpr serialization_policy<WriteableType,
-			                                             SerializationOptions>
+			[[nodiscard]] static constexpr serialization_policy<WriteableType,
+			                                                    SerializationOptions>
 			to_daw_json_string(
 			  ParseTag<JsonParseTypes::Array>,
 			  serialization_policy<WriteableType, SerializationOptions> it,
 			  parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::SizedArray>,
 			                    WriteableType it, parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
-			[[nodiscard]] constexpr serialization_policy<WriteableType,
-			                                             SerializationOptions>
+			[[nodiscard]] static constexpr serialization_policy<WriteableType,
+			                                                    SerializationOptions>
 			to_daw_json_string(
 			  ParseTag<JsonParseTypes::KeyValueArray>,
 			  serialization_policy<WriteableType, SerializationOptions> it,
@@ -259,70 +259,70 @@ namespace daw::json {
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
-			[[nodiscard]] constexpr serialization_policy<WriteableType,
-			                                             SerializationOptions>
+			[[nodiscard]] static constexpr serialization_policy<WriteableType,
+			                                                    SerializationOptions>
 			to_daw_json_string(
 			  ParseTag<JsonParseTypes::KeyValue>,
 			  serialization_policy<WriteableType, SerializationOptions> it,
 			  parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Custom>, WriteableType it,
 			                    parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Variant>, WriteableType it,
 			                    parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Class>, WriteableType it,
 			                    parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Real>, WriteableType it,
 			                    parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Signed>, WriteableType it,
 			                    parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Unsigned>, WriteableType it,
 			                    parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::StringRaw>, WriteableType it,
 			                    parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::StringEscaped>,
 			                    WriteableType it, parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Date>, WriteableType it,
 			                    parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Bool>, WriteableType it,
 			                    parse_to_t const &value );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Unknown>, WriteableType it,
 			                    parse_to_t const &value );
 
 			template<typename Char>
-			constexpr char to_nibble_char( Char c ) {
+			static constexpr char to_nibble_char( Char c ) {
 				auto const u = static_cast<unsigned>( static_cast<unsigned char>( c ) );
 				daw_json_ensure( u < 16, ErrorReason::InvalidUTFEscape );
 				if( u < 10 ) {
@@ -334,7 +334,8 @@ namespace daw::json {
 			}
 
 			template<typename WritableType>
-			constexpr WritableType output_hex( std::uint16_t c, WritableType it ) {
+			static constexpr WritableType output_hex( std::uint16_t c,
+			                                          WritableType it ) {
 				char const nibbles[] = { '\\',
 				                         'u',
 				                         to_nibble_char( ( c >> 12U ) & 0xFU ),
@@ -347,7 +348,8 @@ namespace daw::json {
 			}
 
 			template<typename WritableType>
-			constexpr void utf32_to_utf8( std::uint32_t cp, WritableType &it ) {
+			static constexpr void utf32_to_utf8( std::uint32_t cp,
+			                                     WritableType &it ) {
 				if( cp <= 0x7FU ) {
 					it.put( static_cast<char>( cp ) );
 					return;
@@ -388,7 +390,7 @@ namespace daw::json {
 			  std::enable_if_t<
 			    traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			    std::nullptr_t> = nullptr>
-			[[nodiscard]] constexpr WritableType
+			[[nodiscard]] static constexpr WritableType
 			copy_to_iterator( WritableType it, Container const &container ) {
 				constexpr bool restrict_high =
 				  EightBitMode != options::EightBitModes::AllowFull or
@@ -465,7 +467,7 @@ namespace daw::json {
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
 			  typename WriteableType>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			copy_to_iterator( WriteableType it, char const *ptr ) {
 				if( ptr == nullptr ) {
 					return it;
@@ -544,7 +546,7 @@ namespace daw::json {
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
 			  typename WriteableType, json_options_t P, typename A>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			copy_to_iterator( WriteableType it, basic_json_value<P, A> const &jv ) {
 				if( jv.is_null( ) ) {
 					return copy_to_iterator<do_escape, EightBitMode>( it, "null" );
@@ -557,7 +559,7 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Bool>, WriteableType it,
 			                    parse_to_t const &value ) {
 
@@ -580,8 +582,8 @@ namespace daw::json {
 
 			template<std::size_t idx, typename JsonMembers, typename WriteableType,
 			         typename parse_to_t>
-			constexpr void to_variant_string( WriteableType &it,
-			                                  parse_to_t const &value ) {
+			static constexpr void to_variant_string( WriteableType &it,
+			                                         parse_to_t const &value ) {
 				if constexpr( idx < std::variant_size_v<parse_to_t> ) {
 					if( value.index( ) != idx ) {
 						to_variant_string<idx + 1, JsonMembers>( it, value );
@@ -597,7 +599,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Variant>, WriteableType it,
 			                    parse_to_t const &value ) {
 
@@ -607,7 +609,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::VariantTagged>,
 			                    WriteableType it, parse_to_t const &value ) {
 
@@ -616,7 +618,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::VariantIntrusive>,
 			                    WriteableType it, parse_to_t const &value ) {
 
@@ -625,7 +627,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename Optional>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Null>, WriteableType it,
 			                    Optional const &value ) {
 
@@ -654,7 +656,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Real>, WriteableType it,
 			                    parse_to_t const &value ) {
 
@@ -734,7 +736,7 @@ namespace daw::json {
 			}( );
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Signed>, WriteableType it,
 			                    parse_to_t const &value ) {
 
@@ -810,7 +812,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Unsigned>, WriteableType it,
 			                    parse_to_t const &value ) {
 
@@ -873,8 +875,8 @@ namespace daw::json {
 			} // namespace utils_details
 
 			template<typename Integer, typename WriteableType>
-			inline constexpr WriteableType integer_to_string( WriteableType it,
-			                                                  Integer const &value ) {
+			static inline constexpr WriteableType
+			integer_to_string( WriteableType it, Integer const &value ) {
 				static_assert( daw::is_integral_v<Integer> );
 
 				if constexpr( daw::is_unsigned_v<Integer> ) {
@@ -891,7 +893,7 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::StringRaw>, WriteableType it,
 			                    parse_to_t const &value ) {
 
@@ -911,7 +913,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::StringEscaped>,
 			                    WriteableType it, parse_to_t const &value ) {
 
@@ -924,17 +926,18 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			[[nodiscard]] inline constexpr bool is_null( std::optional<T> const &v ) {
+			[[nodiscard]] static inline constexpr bool
+			is_null( std::optional<T> const &v ) {
 				return not static_cast<bool>( v );
 			}
 
 			template<typename T>
-			[[nodiscard]] inline constexpr bool is_null( T const & ) {
+			[[nodiscard]] static inline constexpr bool is_null( T const & ) {
 				return false;
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Date>, WriteableType it,
 			                    parse_to_t const &value ) {
 
@@ -985,7 +988,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Unknown>, WriteableType it,
 			                    parse_to_t const &value ) {
 
@@ -993,7 +996,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Class>, WriteableType it,
 			                    parse_to_t const &value ) {
 
@@ -1020,7 +1023,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::Custom>, WriteableType it,
 			                    parse_to_t const &value ) {
 
@@ -1051,7 +1054,7 @@ namespace daw::json {
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t,
 			         std::size_t... Is>
-			serialization_policy<WriteableType, SerializationOptions>
+			static serialization_policy<WriteableType, SerializationOptions>
 			to_daw_json_string_tuple(
 			  serialization_policy<WriteableType, SerializationOptions> it,
 			  parse_to_t const &value, std::index_sequence<Is...> ) {
@@ -1082,8 +1085,8 @@ namespace daw::json {
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
-			[[nodiscard]] constexpr serialization_policy<WriteableType,
-			                                             SerializationOptions>
+			[[nodiscard]] static constexpr serialization_policy<WriteableType,
+			                                                    SerializationOptions>
 			to_daw_json_string(
 			  ParseTag<JsonParseTypes::Tuple>,
 			  serialization_policy<WriteableType, SerializationOptions> it,
@@ -1127,8 +1130,8 @@ namespace daw::json {
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
-			[[nodiscard]] constexpr serialization_policy<WriteableType,
-			                                             SerializationOptions>
+			[[nodiscard]] static constexpr serialization_policy<WriteableType,
+			                                                    SerializationOptions>
 			to_daw_json_string(
 			  ParseTag<JsonParseTypes::Array>,
 			  serialization_policy<WriteableType, SerializationOptions> it,
@@ -1184,7 +1187,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_daw_json_string( ParseTag<JsonParseTypes::SizedArray>,
 			                    WriteableType it, parse_to_t const &value ) {
 				return to_daw_json_string<JsonMember>(
@@ -1192,21 +1195,21 @@ namespace daw::json {
 			}
 
 			template<typename Key, typename Value>
-			inline constexpr Key const &
+			static inline constexpr Key const &
 			json_get_key( std::pair<Key, Value> const &kv ) {
 				return kv.first;
 			}
 
 			template<typename Key, typename Value>
-			inline constexpr Value const &
+			static inline constexpr Value const &
 			json_get_value( std::pair<Key, Value> const &kv ) {
 				return kv.second;
 			}
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializeOptions, typename parse_to_t>
-			[[nodiscard]] constexpr serialization_policy<WriteableType,
-			                                             SerializeOptions>
+			[[nodiscard]] static constexpr serialization_policy<WriteableType,
+			                                                    SerializeOptions>
 			to_daw_json_string(
 			  ParseTag<JsonParseTypes::KeyValueArray>,
 			  serialization_policy<WriteableType, SerializeOptions> it,
@@ -1271,8 +1274,8 @@ namespace daw::json {
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
-			[[nodiscard]] constexpr serialization_policy<WriteableType,
-			                                             SerializationOptions>
+			[[nodiscard]] static constexpr serialization_policy<WriteableType,
+			                                                    SerializationOptions>
 			to_daw_json_string(
 			  ParseTag<JsonParseTypes::KeyValue>,
 			  serialization_policy<WriteableType, SerializationOptions> it,
@@ -1289,7 +1292,7 @@ namespace daw::json {
 					it = to_daw_json_string<typename JsonMember::json_key_t>(
 					  ParseTag<JsonMember::json_key_t::expected_type>{ }, it,
 					  json_get_key( v ) );
-					it.write( ":", it.space );
+					it.write( ':', it.space );
 					it = to_daw_json_string<typename JsonMember::json_element_t>(
 					  ParseTag<JsonMember::json_element_t::expected_type>{ }, it,
 					  json_get_value( v ) );
@@ -1313,7 +1316,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename T>
-			[[nodiscard]] inline constexpr WriteableType
+			[[nodiscard]] static inline constexpr WriteableType
 			member_to_string( template_param<JsonMember>, WriteableType it,
 			                  T const &value ) {
 				return to_daw_json_string<JsonMember>(
@@ -1326,7 +1329,7 @@ namespace daw::json {
 			// This is only ever called in a constant expression. But will not
 			// compile if exceptions are disabled and it tries to throw
 			template<typename Name>
-			DAW_ATTRIB_NOINLINE void missing_required_mapping_error( ) {
+			[[noreturn]] DAW_ATTRIB_NOINLINE void missing_required_mapping_error( ) {
 #ifdef DAW_USE_EXCEPTIONS
 				throw missing_required_mapping_for<Name>{ };
 #else
@@ -1366,7 +1369,7 @@ namespace daw::json {
 			template<std::size_t pos, typename JsonMember, typename NamePack,
 			         typename WriteableType, json_options_t SerializationOptions,
 			         typename TpArgs, typename Value, typename VisitedMembers>
-			constexpr void dependent_member_to_json_str(
+			static constexpr void dependent_member_to_json_str(
 			  bool &is_first,
 			  serialization_policy<WriteableType, SerializationOptions> it,
 			  TpArgs const &args, Value const &v, VisitedMembers &visited_members ) {
@@ -1409,11 +1412,7 @@ namespace daw::json {
 					}
 					it.next_member( );
 					is_first = false;
-					it.put( '"' );
-					it =
-					  utils::copy_to_iterator<false, options::EightBitModes::AllowFull>(
-					    it, dependent_member::name );
-					it.write( "\":", it.space );
+					it.write( '"', dependent_member::name, "\":", it.space );
 
 					if constexpr( has_switcher_v<base_member_t> ) {
 						it = member_to_string( template_arg<dependent_member>, it,
@@ -1431,7 +1430,7 @@ namespace daw::json {
 			template<std::size_t pos, typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename Tuple,
 			         typename Value, typename Visited>
-			inline constexpr void to_json_str(
+			static inline constexpr void to_json_str(
 			  bool &is_first,
 			  serialization_policy<WriteableType, SerializationOptions> &it,
 			  Tuple const &tp, Value const &, Visited &visited_members ) {
@@ -1454,10 +1453,8 @@ namespace daw::json {
 				}
 				it.next_member( );
 				is_first = false;
-				it.put( '"' );
-				it = utils::copy_to_iterator<false, options::EightBitModes::AllowFull>(
-				  it, JsonMember::name );
-				it.write( "\":", it.space );
+				it.write( '"', JsonMember::name, "\":", it.space );
+
 				it = member_to_string( template_arg<JsonMember>, DAW_MOVE( it ),
 				                       get<pos>( tp ) );
 			}
@@ -1465,7 +1462,7 @@ namespace daw::json {
 			template<size_t TupleIdx, typename JsonMember, typename WriteableType,
 			         json_options_t SerializerOptions, template<class...> class Tuple,
 			         typename... Args>
-			constexpr void to_json_ordered_str(
+			static constexpr void to_json_ordered_str(
 			  std::size_t &array_idx, std::size_t array_size,
 			  serialization_policy<WriteableType, SerializerOptions> &it,
 			  Tuple<Args...> const &tp ) {
@@ -1498,8 +1495,8 @@ namespace daw::json {
 
 			template<options::FPOutputFormat fp_output_fmt, typename WriteableType,
 			         typename Real>
-			constexpr WriteableType to_chars( Real const &value,
-			                                  WriteableType out_it ) {
+			static constexpr WriteableType to_chars( Real const &value,
+			                                         WriteableType out_it ) {
 				daw::jkj::dragonbox::unsigned_fp_t<Real> dec =
 				  daw::jkj::dragonbox::to_decimal(
 				    value, daw::jkj::dragonbox::policy::sign::ignore );

@@ -52,19 +52,20 @@ namespace daw::json {
 			using i_am_a_serialization_policy = void;
 			WritableType *m_writable;
 
-			static constexpr json_options_t policy_flags( ) {
+			DAW_ATTRIB_INLINE static DAW_CONSTEVAL json_options_t policy_flags( ) {
 				return PolicyFlags;
 			}
 
 			std::size_t indentation_level = 0;
 
-			constexpr WritableType const &get( ) const {
+			DAW_ATTRIB_INLINE constexpr WritableType const &get( ) const {
 				return *m_writable;
 			}
 
-			constexpr WritableType &get( ) {
+			DAW_ATTRIB_INLINE constexpr WritableType &get( ) {
 				return *m_writable;
 			}
+
 			constexpr serialization_policy( WritableType &writable )
 			  : m_writable( std::addressof( writable ) ) {}
 
@@ -88,33 +89,41 @@ namespace daw::json {
 			  json_details::serialization::get_bits_for<options::OutputTrailingComma>(
 			    PolicyFlags );
 
-			inline constexpr void add_indent( ) {
-				++indentation_level;
+			DAW_ATTRIB_INLINE constexpr void add_indent( ) {
+				if constexpr( serialization_format !=
+				              options::SerializationFormat::Minified ) {
+					++indentation_level;
+				}
 			}
 
-			inline constexpr void del_indent( ) {
-				--indentation_level;
+			DAW_ATTRIB_INLINE constexpr void del_indent( ) {
+				if constexpr( serialization_format !=
+				              options::SerializationFormat::Minified ) {
+					--indentation_level;
+				}
 			}
 
 			inline constexpr void output_indent( ) {
-				constexpr std::string_view indent =
-				  json_details::serialization::generate_indent<serialization_format,
-				                                               indentation_type>;
-				if( not indent.empty( ) ) {
-					for( std::size_t n = 0; n < indentation_level; ++n ) {
-						write( indent );
+				if constexpr( serialization_format !=
+				              options::SerializationFormat::Minified ) {
+					constexpr std::string_view indent =
+					  json_details::serialization::generate_indent<serialization_format,
+					                                               indentation_type>;
+					if( not indent.empty( ) ) {
+						for( std::size_t n = 0; n < indentation_level; ++n ) {
+							write_output( *m_writable, indent );
+						}
 					}
 				}
 			}
 
-			inline constexpr void output_newline( ) {
+			static constexpr std::string_view newline =
+			  newline_delimiter == options::NewLineDelimiter::n ? "\n" : "\r\n";
+
+			DAW_ATTRIB_INLINE constexpr void output_newline( ) {
 				if constexpr( serialization_format !=
 				              options::SerializationFormat::Minified ) {
-					if constexpr( newline_delimiter == options::NewLineDelimiter::n ) {
-						put( '\n' );
-					} else {
-						write( "\r\n" );
-					}
+					write_output( *m_writable, newline );
 				}
 			}
 
@@ -123,41 +132,49 @@ namespace daw::json {
 			    ? " "
 			    : nullptr;
 
-			inline constexpr void next_member( ) {
+			DAW_ATTRIB_INLINE constexpr void next_member( ) {
 				output_newline( );
 				output_indent( );
 			}
 
 			template<typename... ContiguousCharRanges>
-			constexpr void write( ContiguousCharRanges &&...chrs ) {
+			DAW_ATTRIB_INLINE constexpr void
+			write( ContiguousCharRanges const &...chrs ) {
 				static_assert( sizeof...( ContiguousCharRanges ) > 0 );
-				concepts::writable_output_trait<WritableType>::write(
-				  *m_writable, daw::string_view( chrs )... );
+				constexpr auto as_sv = []( auto const &value ) {
+					if constexpr( std::is_same_v<char, DAW_TYPEOF( value )> ) {
+						return daw::string_view( &value, 1 );
+					} else {
+						return daw::string_view( value );
+					}
+				};
+				write_output( *m_writable, as_sv( chrs )... );
 			}
 
-			constexpr void copy_buffer( char const *first, char const *last ) {
+			DAW_ATTRIB_INLINE constexpr void copy_buffer( char const *first,
+			                                              char const *last ) {
 				write(
 				  daw::string_view( first, static_cast<std::size_t>( last - first ) ) );
 			}
 
-			constexpr void put( char c ) {
-				concepts::writable_output_trait<WritableType>::put( *m_writable, c );
+			DAW_ATTRIB_INLINE constexpr void put( char c ) {
+				put_output( *m_writable, c );
 			}
 
-			constexpr serialization_policy &operator=( char c ) {
-				put( c );
+			DAW_ATTRIB_INLINE constexpr serialization_policy &operator=( char c ) {
+				put_output( *m_writable, c );
 				return *this;
 			}
 
-			constexpr serialization_policy &operator*( ) {
+			DAW_ATTRIB_INLINE constexpr serialization_policy &operator*( ) {
 				return *this;
 			}
 
-			constexpr serialization_policy &operator++( ) {
+			DAW_ATTRIB_INLINE constexpr serialization_policy &operator++( ) {
 				return *this;
 			}
 
-			constexpr serialization_policy operator++( int ) & {
+			DAW_ATTRIB_INLINE constexpr serialization_policy operator++( int ) & {
 				return *this;
 			}
 		};

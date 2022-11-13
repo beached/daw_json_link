@@ -39,7 +39,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename Signed, typename Unsigned>
-			constexpr Signed to_signed( Unsigned &&u, Signed sign ) {
+			static constexpr Signed to_signed( Unsigned &&u, Signed sign ) {
 				using unsigned_t = daw::remove_cvref_t<Unsigned>;
 				if constexpr( sizeof( Signed ) >= sizeof( intmax_t ) and
 				              daw::is_system_integral_v<unsigned_t> and
@@ -89,7 +89,7 @@ namespace daw::json {
 
 			// Constexpr'ified version from
 			// https://kholdstare.github.io/technical/2020/05/26/faster-integer-parsing.html
-			inline constexpr UInt64 parse_8_digits( const char *const str ) {
+			static inline constexpr UInt64 parse_8_digits( const char *const str ) {
 				auto const chunk = daw::to_uint64_buffer( str );
 				// 1-byte mask trick (works on 4 pairs of single digits)
 				auto const lower_digits =
@@ -114,13 +114,16 @@ namespace daw::json {
 
 				return chunk4 & 0xFFFF'FFFF_u64;
 			}
+
 			static_assert( parse_8_digits( "12345678" ) == 1234'5678_u64,
 			               "8 digit parser does not work on this platform" );
-			inline constexpr UInt64 parse_16_digits( const char *const str ) {
+
+			static inline constexpr UInt64 parse_16_digits( const char *const str ) {
 				auto const upper = parse_8_digits( str );
 				auto const lower = parse_8_digits( str + 8 );
 				return upper * 100'000'000_u64 + lower;
 			}
+
 			static_assert( parse_16_digits( "1234567890123456" ) ==
 			                 1234567890123456_u64,
 			               "16 digit parser does not work on this platform" );

@@ -22,7 +22,7 @@
 
 namespace daw {
 	namespace murmur3_details {
-		[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr UInt32
+		[[nodiscard]] DAW_ATTRIB_FLATINLINE static inline constexpr UInt32
 		murmur3_32_scramble( UInt32 k ) {
 			using prime1 = daw::constant<0xcc9e'2d51_u32>;
 			using prime2 = daw::constant<0x1b87'3593_u32>;
@@ -34,7 +34,7 @@ namespace daw {
 	} // namespace murmur3_details
 
 	template<std::size_t N, typename CharT>
-	[[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32
+	[[nodiscard]] DAW_ATTRIB_INLINE static constexpr UInt32
 	fnv1a_32_N( CharT *first, UInt32 hash = 0x811c'9dc5_u32 ) {
 		daw::algorithm::do_n_arg<N>( [&]( std::size_t n ) {
 			hash ^= static_cast<UInt32>( static_cast<unsigned char>( first[n] ) );
@@ -44,7 +44,7 @@ namespace daw {
 	}
 
 	template<bool expect_long_strings, typename StringView>
-	[[nodiscard]] constexpr UInt32 fnv1a_32( StringView key ) {
+	[[nodiscard]] static constexpr UInt32 fnv1a_32( StringView key ) {
 		static_assert( daw::traits::is_string_view_like_v<StringView>,
 		               "Can only pass contiguous character ranges to fnv1a" );
 		std::size_t len = std::size( key );
@@ -70,7 +70,7 @@ namespace daw {
 	}
 
 	template<bool expect_long_strings>
-	[[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32
+	[[nodiscard]] DAW_ATTRIB_INLINE static constexpr UInt32
 	name_hash( daw::string_view key ) {
 		if( auto const Sz = std::size( key );
 		    DAW_LIKELY( Sz <= sizeof( UInt32 ) ) ) {
@@ -86,8 +86,8 @@ namespace daw {
 	}
 
 	template<typename StringView>
-	[[nodiscard]] constexpr UInt32 murmur3_32( StringView key,
-	                                           std::uint32_t seed = 0 ) {
+	[[nodiscard]] static constexpr UInt32 murmur3_32( StringView key,
+	                                                  std::uint32_t seed = 0 ) {
 		static_assert( daw::traits::is_string_view_like_v<StringView>,
 		               "Can only pass contiguous character ranges to fnv1a" );
 		UInt32 h = to_uint32( seed );

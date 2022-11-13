@@ -20,6 +20,7 @@
 
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_restrict.h>
 #include <daw/daw_utility.h>
 
 #include <ciso646>
@@ -33,8 +34,9 @@ namespace daw::json {
 		namespace json_details {
 			template<bool skip_end_check, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE inline constexpr void
-			parse_digits_until_last( char const *first, char const *const last,
-			                         Unsigned &v ) {
+			parse_digits_until_last( char const *DAW_RESTRICT first,
+			                         char const *const DAW_RESTRICT last,
+			                         Unsigned &DAW_RESTRICT v ) {
 				Unsigned value = v;
 				if constexpr( skip_end_check ) {
 					auto dig = parse_digit( *first );
@@ -56,8 +58,9 @@ namespace daw::json {
 
 			template<bool skip_end_check, typename Unsigned, typename CharT>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr CharT *
-			parse_digits_while_number( CharT *first, CharT *const last,
-			                           Unsigned &v ) {
+			parse_digits_while_number( CharT *DAW_RESTRICT first,
+			                           CharT *const DAW_RESTRICT last,
+			                           Unsigned &DAW_RESTRICT v ) {
 
 				// silencing gcc9 unused warning.  last is used inside if constexpr
 				// blocks
@@ -71,12 +74,17 @@ namespace daw::json {
 						value += dig;
 					}
 				} else {
-					unsigned dig = 0;
-					for( ; DAW_LIKELY( first < last ) and
-					       ( dig = parse_digit( *first ) ) < 10U;
-					     ++first ) {
-						value *= 10U;
-						value += dig;
+					if( first < last ) {
+						unsigned dig = parse_digit( *first );
+						while( dig < 10U ) {
+							++first;
+							value *= 10U;
+							value += dig;
+							if( DAW_UNLIKELY( first == last ) ) {
+								break;
+							}
+							dig = parse_digit( *first );
+						}
 					}
 				}
 				v = value;
@@ -87,9 +95,9 @@ namespace daw::json {
 			/// the type, usually uint64_t
 			template<typename ParseState, typename Result,
 			         typename max_storage_digits, typename CharT>
-			[[nodiscard]] inline constexpr bool
-			should_use_strtod( CharT *whole_first, CharT *whole_last,
-			                   CharT *fract_first, CharT *fract_last ) {
+			[[nodiscard]] inline constexpr bool should_use_strtod(
+			  CharT * whole_first, CharT * whole_last,
+			  CharT * fract_first, CharT * fract_last ) {
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754( ) ) {
 					return DAW_UNLIKELY(

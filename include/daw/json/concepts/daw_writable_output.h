@@ -72,7 +72,7 @@ namespace daw::json {
 			  : std::true_type {
 
 				template<typename... StringViews>
-				static constexpr void write( T *&ptr, StringViews... svs ) {
+				static constexpr void write( T *&ptr, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					daw_json_ensure( ptr, daw::json::ErrorReason::OutputError );
 					constexpr auto writer = []( T *&p, auto sv ) {
@@ -99,7 +99,8 @@ namespace daw::json {
 			  : std::true_type {
 
 				template<typename... StringViews>
-				static inline void write( std::ostream &os, StringViews... svs ) {
+				static inline void write( std::ostream &os,
+				                          StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					constexpr auto writer = []( std::ostream &o, auto sv ) {
 						if( sv.empty( ) ) {
@@ -125,7 +126,7 @@ namespace daw::json {
 			struct writable_output_trait<std::FILE *> : std::true_type {
 
 				template<typename... StringViews>
-				static inline void write( std::FILE *fp, StringViews... svs ) {
+				static inline void write( std::FILE *fp, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					constexpr auto writer = []( std::FILE *f, auto sv ) {
 						if( sv.empty( ) ) {
@@ -170,7 +171,7 @@ namespace daw::json {
 				using CharT = typename T::value_type;
 
 				template<typename... StringViews>
-				static constexpr void write( T &out, StringViews... svs ) {
+				static constexpr void write( T &out, StringViews const &... svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					daw_json_ensure( out.size( ) >= ( std::size( svs ) + ... ),
 					                 daw::json::ErrorReason::OutputError );
@@ -227,7 +228,7 @@ namespace daw::json {
 				using CharT = typename Container::value_type;
 
 				template<typename... StringViews>
-				static inline void write( Container &out, StringViews... svs ) {
+				static inline void write( Container &out, StringViews const &... svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					auto const start_pos = out.size( );
 					auto const total_size = ( std::size( svs ) + ... );
@@ -268,7 +269,7 @@ namespace daw::json {
 			  : std::true_type {
 
 				template<typename... StringViews>
-				static constexpr void write( T &it, StringViews... svs ) {
+				static constexpr void write( T &it, StringViews const &... svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 
 					constexpr auto writer = []( T &i, auto sv ) {

@@ -37,7 +37,7 @@ namespace daw::json {
 				}
 
 				template<typename ParseState>
-				[[nodiscard]] DAW_ATTRIB_INLINE constexpr daw::string_view
+				[[nodiscard]] DAW_ATTRIB_INLINE static constexpr daw::string_view
 				parse_nq( ParseState &parse_state ) {
 					if constexpr( ParseState::allow_escaped_names( ) ) {
 						auto r = skip_string_nq( parse_state );
@@ -68,7 +68,7 @@ namespace daw::json {
 			// Paths are specified with dot separators, if the name has a dot in it,
 			// it must be escaped
 			// memberA.memberB.member\.C has 3 parts['memberA', 'memberB', 'member.C']
-			[[nodiscard]] constexpr pop_json_path_result
+			[[nodiscard]] static constexpr pop_json_path_result
 			pop_json_path( daw::string_view &path ) {
 				auto result = pop_json_path_result{ };
 				if( path.empty( ) ) {
@@ -99,7 +99,7 @@ namespace daw::json {
 				return result;
 			}
 
-			[[nodiscard]] constexpr bool
+			[[nodiscard]] static constexpr bool
 			json_path_compare( daw::string_view json_path_item,
 			                   daw::string_view member_name ) {
 				if( json_path_item.front( ) == '\\' ) {
@@ -124,7 +124,7 @@ namespace daw::json {
 			// Ensures that the stream is left at the position of the associated
 			// value(e.g after the colon(:) and trimmed)
 			template<typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN inline constexpr daw::string_view
+			[[nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr daw::string_view
 			parse_name( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.is_quotes_checked( ),
 				                      ErrorReason::InvalidMemberName, parse_state );
@@ -133,8 +133,8 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			constexpr bool find_range2( ParseState &parse_state,
-			                            daw::string_view path ) {
+			static constexpr bool find_range2( ParseState &parse_state,
+			                                   daw::string_view path ) {
 
 				auto pop_result = pop_json_path( path );
 				while( not pop_result.current.empty( ) ) {
@@ -178,7 +178,7 @@ namespace daw::json {
 			}
 
 			template<typename ParsePolicy>
-			[[nodiscard]] constexpr std::pair<bool, ParsePolicy>
+			[[nodiscard]] static constexpr std::pair<bool, ParsePolicy>
 			find_range( daw::string_view str, daw::string_view start_path ) {
 				auto parse_state =
 				  ParsePolicy( std::data( str ), daw::data_end( str ) );
@@ -191,9 +191,9 @@ namespace daw::json {
 			}
 
 			template<typename ParsePolicy, typename Allocator>
-			[[nodiscard]] constexpr auto find_range( daw::string_view str,
-			                                         daw::string_view start_path,
-			                                         Allocator &alloc ) {
+			[[nodiscard]] static constexpr auto
+			find_range( daw::string_view str, daw::string_view start_path,
+			            Allocator &alloc ) {
 				static_assert(
 				  std::is_same_v<char const *, typename ParsePolicy::iterator>,
 				  "Only char const * ranges are currently supported" );

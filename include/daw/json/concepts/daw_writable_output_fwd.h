@@ -28,5 +28,18 @@ namespace daw::json {
 			inline constexpr bool is_writable_output_type_v =
 			  writable_output_trait<T>::value;
 		} // namespace concepts
-	}   // namespace DAW_JSON_VER
+
+		template<typename WritableOutput, typename... StringViews>
+		WritableOutput &write_output( WritableOutput &out,
+		                              StringViews const &...svs ) {
+			concepts::writable_output_trait<WritableOutput>::write( out, svs... );
+			return out;
+		}
+
+		template<typename WritableOutput, typename CharT>
+		WritableOutput &put_output( WritableOutput &out, CharT c ) {
+			concepts::writable_output_trait<WritableOutput>::put( out, c );
+			return out;
+		}
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -84,7 +84,7 @@ namespace daw::json {
 			 * @return A T object
 			 */
 			template<typename JsonClass, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
 			  json_result<JsonClass>
 			  parse_to_class( ParseState &parse_state,
 			                  template_param<JsonClass> = template_arg<JsonClass> ) {
@@ -149,7 +149,7 @@ namespace daw::json {
 			  json_details::json_class_parse_result_t<Constructor, json_member>;
 
 			template<typename JsonClass, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN static constexpr json_details::
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
 			  json_result<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
@@ -301,8 +301,9 @@ namespace daw::json {
 			 * @return A T object
 			 */
 			template<typename JsonClass, typename ParseState>
-			[[nodiscard]] static inline constexpr json_details::json_result<JsonClass>
-			parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
+			  json_result<JsonClass>
+			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
@@ -374,7 +375,7 @@ namespace daw::json {
 			 * @return A T object
 			 */
 			template<typename JsonClass, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
 			  from_json_result_t<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
@@ -385,8 +386,8 @@ namespace daw::json {
 
 				std::size_t const idx = [parse_state]( ) mutable {
 					return Switcher{ }( std::get<0>(
-					  json_details::parse_value<json_base::json_class<tag_class_t>>(
-					    parse_state, ParseTag<JsonParseTypes::Class>{ } )
+					  json_details::parse_value_class<json_base::json_class<tag_class_t>>(
+					    parse_state )
 					    .members ) );
 				}( );
 				daw_json_assert_weak( idx < sizeof...( JsonClasses ),
@@ -1905,6 +1906,5 @@ namespace daw::json {
 			using type = json_type_alias<
 			  json_base::json_raw<basic_json_value<PolicyFlags, Allocator>>>;
 		};
-
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

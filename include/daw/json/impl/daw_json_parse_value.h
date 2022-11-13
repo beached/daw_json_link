@@ -67,9 +67,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Real> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value_real( ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
 
@@ -171,9 +172,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Signed> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value_signed( ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
 				using int_type =
@@ -230,10 +232,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::Unsigned> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value_unsigned( ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
 				using uint_type =
@@ -288,9 +290,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Null> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value_null( ParseState &parse_state ) {
 
 				using constructor_t = typename JsonMember::constructor_t;
 				auto const construct_empty = [&] {
@@ -354,9 +357,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Bool> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value_bool( ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 
 				if constexpr( KnownBounds ) {
@@ -418,10 +422,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::StringRaw> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value_string_raw( ParseState &parse_state ) {
 
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( KnownBounds ) {
@@ -474,10 +478,10 @@ namespace daw::json {
 			inline constexpr bool has_json_member_parse_to_v =
 			  daw::is_detected_v<json_member_constructor_t, T>;
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::StringEscaped> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value_string_escaped( ParseState &parse_state ) {
 				static_assert( has_json_member_constructor_v<JsonMember> );
 				static_assert( has_json_member_parse_to_v<JsonMember> );
 
@@ -522,9 +526,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Date> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value_date( ParseState &parse_state ) {
 
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
@@ -535,9 +540,10 @@ namespace daw::json {
 				  std::data( str ), std::size( str ) );
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Custom> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value_custom( ParseState &parse_state ) {
 
 				auto const str = [&] {
 					if constexpr( JsonMember::custom_json_type ==
@@ -581,9 +587,10 @@ namespace daw::json {
 				  std::string_view( std::data( str ), std::size( str ) ) );
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Class> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] static constexpr json_result<JsonMember>
+			parse_value_class( ParseState &parse_state ) {
 
 				using element_t = typename JsonMember::wrapped_type;
 				daw_json_assert_weak( parse_state.has_more( ),
@@ -615,10 +622,10 @@ namespace daw::json {
 			 * @param parse_state ParseState of input to parse
 			 * @return Constructed key_value container
 			 */
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::KeyValue> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] static constexpr json_result<JsonMember>
+			parse_value_keyvalue( ParseState &parse_state ) {
 
 				static_assert( JsonMember::expected_type == JsonParseTypes::KeyValue,
 				               "Expected a json_key_value" );
@@ -650,10 +657,10 @@ namespace daw::json {
 			 * @param parse_state ParseState of input to parse
 			 * @return Constructed key_value container
 			 */
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::KeyValueArray> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] static constexpr json_result<JsonMember>
+			parse_value_keyvalue_array( ParseState &parse_state ) {
 
 				static_assert( JsonMember::expected_type ==
 				                 JsonParseTypes::KeyValueArray,
@@ -672,9 +679,10 @@ namespace daw::json {
 				  iter_t( parse_state ), iter_t( ) );
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] static constexpr json_result<JsonMember>
+			parse_value_array( ParseState &parse_state ) {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, parse_state );
@@ -691,10 +699,10 @@ namespace daw::json {
 				  iterator_t( parse_state ), iterator_t( ) );
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::SizedArray> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] static constexpr json_result<JsonMember>
+			parse_value_sz_array( ParseState &parse_state ) {
 
 				using size_member = dependent_member_t<JsonMember>;
 
@@ -732,7 +740,8 @@ namespace daw::json {
 
 			template<JsonBaseParseTypes BPT, typename JsonMembers,
 			         typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMembers>
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr json_result<
+			  JsonMembers>
 			parse_variant_value( ParseState &parse_state ) {
 				using element_t = typename JsonMembers::json_elements;
 				using idx = daw::constant<(
@@ -753,10 +762,9 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool /*KnownBounds*/, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::Variant> ) {
+			template<typename JsonMember, typename ParseState>
+			[[nodiscard]] static constexpr json_result<JsonMember>
+			parse_value_variant( ParseState &parse_state ) {
 				switch( parse_state.front( ) ) {
 				case '{':
 					return parse_variant_value<JsonBaseParseTypes::Class, JsonMember>(
@@ -795,7 +803,7 @@ namespace daw::json {
 
 			template<typename Result, typename TypeList, std::size_t pos = 0,
 			         typename ParseState>
-			DAW_ATTRIB_INLINE constexpr Result
+			DAW_ATTRIB_INLINE static constexpr Result
 			parse_visit( std::size_t idx, ParseState &parse_state ) {
 				if( idx == pos ) {
 					using JsonMember = pack_element_t<pos, TypeList>;
@@ -820,7 +828,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename ParseState>
-			constexpr auto find_index( ParseState parse_state ) {
+			static constexpr auto find_index( ParseState parse_state ) {
 				using tag_member = typename JsonMember::tag_member;
 				using class_wrapper_t = typename JsonMember::tag_member_class_wrapper;
 
@@ -845,20 +853,18 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool /*KnownBounds*/, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::VariantTagged> ) {
+			template<typename JsonMember, typename ParseState>
+			[[nodiscard]] static constexpr json_result<JsonMember>
+			parse_value_variant_tagged( ParseState &parse_state ) {
 				auto const index = find_index<JsonMember>( parse_state );
 				return parse_visit<json_result<JsonMember>,
 				                   typename JsonMember::json_elements::element_map_t>(
 				  index, parse_state );
 			}
 
-			template<typename JsonMember, bool /*KnownBounds*/, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::VariantIntrusive> ) {
+			template<typename JsonMember, typename ParseState>
+			[[nodiscard]] static constexpr json_result<JsonMember>
+			parse_value_variant_intrusive( ParseState &parse_state ) {
 				auto const index = [&] {
 					using tag_submember = typename JsonMember::tag_submember;
 					using class_wrapper_t =
@@ -908,7 +914,7 @@ namespace daw::json {
 				 * @param desired_position desired member index
 				 */
 				template<bool Nullable, typename ParseState>
-				DAW_ATTRIB_INLINE constexpr void
+				DAW_ATTRIB_INLINE static constexpr void
 				maybe_skip_members( ParseState &parse_state,
 				                    std::size_t &current_position,
 				                    std::size_t desired_position ) {
@@ -948,7 +954,7 @@ namespace daw::json {
 				 * @param desired_position desired member index
 				 */
 				template<bool Nullable, typename ParseState, std::size_t N>
-				DAW_ATTRIB_INLINE constexpr ParseState maybe_skip_members(
+				DAW_ATTRIB_INLINE static constexpr ParseState maybe_skip_members(
 				  ParseState &parse_state, std::size_t &current_position,
 				  std::size_t desired_position,
 				  std::array<position_info<ParseState>, N> &parse_locations ) {
@@ -1007,7 +1013,7 @@ namespace daw::json {
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState,
 			         std::size_t... Is>
-			DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
+			DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_tuple_value( ParseState &parse_state, std::index_sequence<Is...> ) {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
@@ -1149,9 +1155,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Tuple> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			static constexpr json_result<JsonMember>
+			parse_value_tuple( ParseState &parse_state ) {
 				using element_pack =
 				  typename JsonMember::sub_member_list; // tuple_elements_pack<tuple_t>;
 
@@ -1160,10 +1167,10 @@ namespace daw::json {
 				  std::make_index_sequence<std::tuple_size_v<element_pack>>{ } );
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state,
-			             ParseTag<JsonParseTypes::Unknown> ) {
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value_unknown( ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( KnownBounds ) {
 					return construct_value(
@@ -1174,6 +1181,55 @@ namespace daw::json {
 					return construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
 					  std::data( value_parse_state ), std::size( value_parse_state ) );
+				}
+			}
+
+			template<typename JsonMember, bool KnownBounds, typename ParseState,
+			         JsonParseTypes PTag>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			parse_value( ParseState &parse_state, ParseTag<PTag> ) {
+				if constexpr( PTag == JsonParseTypes::Real ) {
+					return parse_value_real<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Signed ) {
+					return parse_value_signed<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Unsigned ) {
+					return parse_value_unsigned<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Null ) {
+					return parse_value_null<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Bool ) {
+					return parse_value_bool<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::StringRaw ) {
+					return parse_value_string_raw<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::StringEscaped ) {
+					return parse_value_string_escaped<JsonMember, KnownBounds>(
+					  parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Date ) {
+					return parse_value_date<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Custom ) {
+					return parse_value_custom<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Class ) {
+					return parse_value_class<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::KeyValue ) {
+					return parse_value_keyvalue<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::KeyValueArray ) {
+					return parse_value_keyvalue_array<JsonMember, KnownBounds>(
+					  parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Array ) {
+					return parse_value_array<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::SizedArray ) {
+					return parse_value_sz_array<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Variant ) {
+					return parse_value_variant<JsonMember>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::VariantTagged ) {
+					return parse_value_variant_tagged<JsonMember>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::VariantIntrusive ) {
+					return parse_value_variant_intrusive<JsonMember>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Tuple ) {
+					return parse_value_tuple<JsonMember, KnownBounds>( parse_state );
+				} else /*if constexpr( PTag == JsonParseTypes::Unknown )*/ {
+					static_assert( PTag == JsonParseTypes::Unknown,
+					               "Unexpected JsonParseType" );
+					return parse_value_unknown<JsonMember, KnownBounds>( parse_state );
 				}
 			}
 

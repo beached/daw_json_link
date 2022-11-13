@@ -36,34 +36,34 @@ namespace daw::json {
 
 		private:
 			template<std::size_t... Is>
-			DAW_CONSTEVAL json_name( char const ( &ptr )[N],
-			                         std::index_sequence<Is...> )
+			inline DAW_CONSTEVAL json_name( char const ( &ptr )[N],
+			                                std::index_sequence<Is...> ) noexcept
 			  : m_data{ ptr[Is]... } {}
 
 		public:
-			DAW_CONSTEVAL json_name( char const ( &ptr )[N] )
+			inline DAW_CONSTEVAL json_name( char const ( &ptr )[N] ) noexcept
 			  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
 
-			constexpr operator daw::string_view( ) const {
+			constexpr operator daw::string_view( ) const noexcept {
 				return { m_data, N - 1 };
 			}
 
 			// Needed for copy_to_iterator
-			[[nodiscard]] constexpr char const *begin( ) const {
+			[[nodiscard]] constexpr char const *begin( ) const noexcept {
 				return m_data;
 			}
 
 			// Needed for copy_to_iterator
-			[[nodiscard]] constexpr char const *end( ) const {
+			[[nodiscard]] constexpr char const *end( ) const noexcept {
 				return m_data + static_cast<ptrdiff_t>( size( ) );
 			}
 
-			[[nodiscard]] static constexpr std::size_t size( ) {
+			[[nodiscard]] static constexpr std::size_t size( ) noexcept {
 				return N - 1;
 			}
 
 			template<std::size_t M>
-			constexpr bool operator==( json_name<M> const &rhs ) const {
+			constexpr bool operator==( json_name<M> const &rhs ) const noexcept {
 				if( N != M ) {
 					return false;
 				}
@@ -75,15 +75,15 @@ namespace daw::json {
 				return true;
 			}
 
-			constexpr bool operator==( daw::string_view rhs ) const {
+			constexpr bool operator==( daw::string_view rhs ) const noexcept {
 				return daw::string_view( m_data, N - 1 ) == rhs;
 			}
 
-			constexpr bool operator==( std::string_view rhs ) const {
+			constexpr bool operator==( std::string_view rhs ) const noexcept {
 				return std::string_view( m_data, N - 1 ) == rhs;
 			}
 
-			constexpr operator std::string_view( ) const {
+			constexpr operator std::string_view( ) const noexcept {
 				return std::string_view( m_data, N - 1 );
 			}
 		};
