@@ -761,7 +761,8 @@ namespace daw::json {
 						++num_start;
 					}
 					if( v < 0 ) {
-						it.put( '-' );
+						*ptr++ = '-';
+						++num_start;
 						// Do 1 round here just in case we are
 						// daw::numeric_limits<intmax_t>::min( ) and cannot negate
 						// This is a subtraction because v < 0 % 10 is negative

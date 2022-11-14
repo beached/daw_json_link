@@ -33,9 +33,10 @@
 #include <tuple>
 #include <vector>
 
-#define AS_CONSTEXPR( ... )                \
-	[&]( ) constexpr { return __VA_ARGS__; } \
-	( )
+#define AS_CONSTEXPR( ... ) \
+	[&]( ) constexpr {        \
+		return __VA_ARGS__;     \
+	}( )
 
 /***
 Temporarily disable the constexpr tests in MSVC when C++20
@@ -607,7 +608,7 @@ void test_lots_of_doubles( ) {
 		unsigned long long x2 = rng( );
 		int x3 = std::uniform_int_distribution<>( exp_min, exp_max )( rng );
 		char buffer[128];
-		std::sprintf( buffer, "%llu.%llue%d", x1, x2, x3 );
+		std::snprintf( buffer, 128, "%llu.%llue%d", x1, x2, x3 );
 
 		char *nend = nullptr;
 		double const strod_parse_dbl = std::strtod( buffer, &nend );
@@ -639,7 +640,7 @@ void test_show_lots_of_doubles( ) {
 		  */
 		int x3 = std::uniform_int_distribution<>( exp_min, exp_max )( rng );
 		char buffer[128]{ };
-		std::sprintf( buffer, "%llu.%llue%d", x1, x2, x3 );
+		std::snprintf( buffer, 128, "%llu.%llue%d", x1, x2, x3 );
 
 		char *nend = nullptr;
 		double const strod_parse_dbl = std::strtod( buffer, &nend );
@@ -1259,6 +1260,12 @@ int main( int, char ** ) {
 		auto opt_int5 =
 		  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.bar" );
 		ensure( not opt_int5 );
+
+		using strsigned_t = json_number_no_name<
+		  std::int64_t, options::number_opt( options::LiteralAsStringOpt::Always )>;
+
+		std::string negnumber_str = to_json<strsigned_t>( -1234567890LL );
+		ensure( negnumber_str == R"("-1234567890")" );
 
 #if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L

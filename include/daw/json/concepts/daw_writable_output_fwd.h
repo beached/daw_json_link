@@ -30,14 +30,14 @@ namespace daw::json {
 		} // namespace concepts
 
 		template<typename WritableOutput, typename... StringViews>
-		WritableOutput &write_output( WritableOutput &out,
+		constexpr WritableOutput &write_output( WritableOutput &out,
 		                              StringViews const &...svs ) {
 			concepts::writable_output_trait<WritableOutput>::write( out, svs... );
 			return out;
 		}
 
 		template<typename WritableOutput, typename CharT>
-		WritableOutput &put_output( WritableOutput &out, CharT c ) {
+		constexpr WritableOutput &put_output( WritableOutput &out, CharT c ) {
 			concepts::writable_output_trait<WritableOutput>::put( out, c );
 			return out;
 		}
