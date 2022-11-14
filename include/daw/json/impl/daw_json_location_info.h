@@ -171,7 +171,8 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static inline DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto
 			make_locations_info( ) {
 				using CharT = typename ParseState::CharT;
-#if defined( DAW_JSON_PARSER_DIAGNOSTICS ) or \
+#if not defined( _NDEBUG ) or defined( DEBUG ) or \
+  defined( DAW_JSON_PARSER_DIAGNOSTICS ) or       \
   ( defined( __MSC_VER ) and not defined( __clang__ ) )
 				constexpr bool do_full_name_match = true;
 				return locations_info_t<sizeof...( JsonMembers ), CharT,
