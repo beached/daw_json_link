@@ -240,7 +240,7 @@ $(function() {
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160; </div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Policy, <span class="keyword">typename</span> Policies&gt;</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">unsigned</span> basic_policy_bits_start =</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        option_bits_start_impl&lt;Policy, Policies&gt;::template calc(</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        option_bits_start_impl&lt;Policy, Policies&gt;::template calc&lt;&gt;(</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;          std::make_index_sequence&lt;pack_size_v&lt;Policies&gt;&gt;{ } );</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160; </div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Policy&gt;</div>
