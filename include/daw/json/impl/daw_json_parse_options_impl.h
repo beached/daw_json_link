@@ -168,7 +168,7 @@ namespace daw::json {
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =
-			  option_bits_start_impl<Policy, Policies>::template calc(
+			  option_bits_start_impl<Policy, Policies>::template calc<>(
 			    std::make_index_sequence<pack_size_v<Policies>>{ } );
 
 			template<typename Policy>

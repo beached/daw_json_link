@@ -72,7 +72,7 @@ namespace daw::json {
 
 			template<typename Option, typename Options>
 			inline constexpr unsigned basic_option_bits_start =
-			  option_bits_start_impl<Option, Options>::template calc(
+			  option_bits_start_impl<Option, Options>::template calc<>(
 			    std::make_index_sequence<pack_size_v<Options>>{ } );
 
 			template<typename... JsonOptions>
