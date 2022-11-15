@@ -646,6 +646,19 @@ namespace daw::json {
 				return result;
 			}( );
 
+			template<typename T>
+			static constexpr void reverse( T *first, T *last ) {
+				auto rpos = ( last - first ) - 1;
+				auto lpos = 0;
+				while( lpos < rpos ) {
+					--rpos;
+					auto tmp = DAW_MOVE( first[lpos] );
+					first[lpos] = DAW_MOVE( first[rpos] );
+					first[rpos] = DAW_MOVE( tmp );
+					++lpos;
+				}
+			}
+
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
 			[[nodiscard]] static constexpr WriteableType
 			to_json_string_signed( WriteableType it, parse_to_t const &value ) {
@@ -700,7 +713,8 @@ namespace daw::json {
 					if( v > 0 ) {
 						*ptr++ = static_cast<char>( '0' + static_cast<char>( v ) );
 					}
-					daw::algorithm::reverse( num_start, ptr );
+
+					reverse( num_start, ptr );
 					if constexpr( JsonMember::literal_as_string ==
 					              options::LiteralAsStringOpt::Always ) {
 						*ptr++ = '"';
@@ -749,8 +763,9 @@ namespace daw::json {
 						char buff[daw::numeric_limits<under_type>::digits10 + 10]{ };
 						char *ptr = buff;
 						while( v >= 10 ) {
-							auto const tmp = static_cast<std::size_t>( v % 100 );
-							v /= 100;
+							auto const t = v / 100U;
+							auto const tmp = v - ( t * 100U );
+							v = t;
 							ptr[0] = digits100[tmp][0];
 							ptr[1] = digits100[tmp][1];
 							ptr += 2;
@@ -758,7 +773,7 @@ namespace daw::json {
 						if( v > 0 ) {
 							*ptr++ = static_cast<char>( '0' + static_cast<char>( v ) );
 						}
-						daw::algorithm::reverse( buff, ptr );
+						reverse( buff, ptr );
 						it.copy_buffer( buff, ptr );
 					}
 				} else {

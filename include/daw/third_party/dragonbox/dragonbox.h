@@ -44,6 +44,7 @@
 #include "dragonbox_to_chars.h"
 
 #include <daw/daw_algorithm.h>
+#include <daw/daw_likely.h>
 
 namespace daw::jkj::dragonbox {
 	inline namespace DAW_JSON_VER {
@@ -103,53 +104,53 @@ namespace daw::jkj::dragonbox {
 					// The average output length is 16.38 digits, so we check high-to-low.
 					// Function precondition: v is not an 18, 19, or 20-digit number.
 					// (17 digits are sufficient for round-tripping.)
-					assert( v < 100000000000000000L );
+					assert( v < 100000000000000000ULL );
 					if( v >= 10000000000000000L ) {
 						return 17;
 					}
-					if( v >= 1000000000000000L ) {
+					if( DAW_LIKELY( v >= 1000000000000000ULL ) ) {
 						return 16;
 					}
-					if( v >= 100000000000000L ) {
+					if( v >= 100000000000000ULL ) {
 						return 15;
 					}
-					if( v >= 10000000000000L ) {
+					if( v >= 10000000000000ULL ) {
 						return 14;
 					}
-					if( v >= 1000000000000L ) {
+					if( v >= 1000000000000ULL ) {
 						return 13;
 					}
-					if( v >= 100000000000L ) {
+					if( v >= 100000000000ULL ) {
 						return 12;
 					}
-					if( v >= 10000000000L ) {
+					if( v >= 10000000000ULL ) {
 						return 11;
 					}
-					if( v >= 1000000000L ) {
+					if( v >= 1000000000ULL ) {
 						return 10;
 					}
-					if( v >= 100000000L ) {
+					if( v >= 100000000ULL ) {
 						return 9;
 					}
-					if( v >= 10000000L ) {
+					if( v >= 10000000ULL ) {
 						return 8;
 					}
-					if( v >= 1000000L ) {
+					if( v >= 1000000ULL ) {
 						return 7;
 					}
-					if( v >= 100000L ) {
+					if( v >= 100000ULL ) {
 						return 6;
 					}
-					if( v >= 10000L ) {
+					if( v >= 10000ULL ) {
 						return 5;
 					}
-					if( v >= 1000L ) {
+					if( v >= 1000ULL ) {
 						return 4;
 					}
-					if( v >= 100L ) {
+					if( v >= 100ULL ) {
 						return 3;
 					}
-					if( v >= 10L ) {
+					if( v >= 10ULL ) {
 						return 2;
 					}
 					return 1;
