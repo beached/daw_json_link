@@ -44,7 +44,7 @@ inline constexpr auto checked_policy_v =
                                              : options::ExpectLongNames::no )>;
 
 template<options::ExecModeTypes ExecMode>
-void test( char **argv ) {
+void test( char **argv, bool do_asserts ) {
 	auto const json_opt1 = daw::read_file( argv[1] );
 	if( not json_opt1 or json_opt1->empty( ) ) {
 		std::cerr << "Could not open " << argv[1] << " or it is empty\n";
@@ -94,13 +94,16 @@ void test( char **argv ) {
 		std::cerr << to_formatted_string( jex ) << '\n';
 	}
 #endif
-	test_assert( twitter_result, "Missing value -> twitter_result" );
-	test_assert( not twitter_result->statuses.empty( ),
-	             "Expected values: twitter_result is empty" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             std::string( "Expected values: user_id had wrong value, "
-	                          "expected 1186275104.  Got " ) +
-	               std::to_string( twitter_result->statuses.front( ).user.id ) );
+	if( do_asserts ) {
+		test_assert( twitter_result, "Missing value -> twitter_result" );
+		test_assert( not twitter_result->statuses.empty( ),
+		             "Expected values: twitter_result is empty" );
+		test_assert(
+		  twitter_result->statuses.front( ).user.id == 1186275104,
+		  std::string( "Expected values: user_id had wrong value, "
+		               "expected 1186275104.  Got " ) +
+		    std::to_string( twitter_result->statuses.front( ).user.id ) );
+	}
 	twitter_result.reset( );
 
 	std::cout << std::flush;
@@ -115,10 +118,12 @@ void test( char **argv ) {
 		  json_sv1 );
 		twitter_result = ret.get( );
 	}
-	test_assert( not twitter_result->statuses.empty( ),
-	             "Expected values: twitter_result is empty" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Expected values" );
+	if( do_asserts ) {
+		test_assert( not twitter_result->statuses.empty( ),
+		             "Expected values: twitter_result is empty" );
+		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+		             "Expected values" );
+	}
 	twitter_result.reset( );
 
 	std::cout << std::flush;
@@ -133,12 +138,14 @@ void test( char **argv ) {
 		  json_sv2 );
 		citm_result = ret.get( );
 	}
-	test_assert( citm_result, "Missing value" );
-	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
-	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
+	if( do_asserts ) {
+		test_assert( citm_result, "Missing value" );
+		test_assert( not citm_result->areaNames.empty( ), "Expected values" );
+		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
+		             "Expected value" );
+		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+		             "Incorrect value" );
+	}
 	citm_result.reset( );
 
 	std::cout << std::flush;
@@ -153,11 +160,13 @@ void test( char **argv ) {
 		  json_sv2 );
 		citm_result = ret.get( );
 	}
-	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
-	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
+	if( do_asserts ) {
+		test_assert( not citm_result->areaNames.empty( ), "Expected values" );
+		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
+		             "Expected value" );
+		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+		             "Incorrect value" );
+	}
 	citm_result.reset( );
 
 	std::cout << std::flush;
@@ -172,7 +181,9 @@ void test( char **argv ) {
 		  json_sv3 );
 		canada_result = ret.get( );
 	}
-	test_assert( canada_result, "Missing value" );
+	if( do_asserts ) {
+		test_assert( canada_result, "Missing value" );
+	}
 	canada_result.reset( );
 
 	std::cout << std::flush;
@@ -187,7 +198,9 @@ void test( char **argv ) {
 		  json_sv3 );
 		canada_result = ret.get( );
 	}
-	test_assert( canada_result, "Missing value" );
+	if( do_asserts ) {
+		test_assert( canada_result, "Missing value" );
+	}
 	canada_result.reset( );
 
 	std::cout << std::flush;
@@ -213,18 +226,20 @@ void test( char **argv ) {
 	daw::do_not_optimize( twitter_result );
 	daw::do_not_optimize( citm_result );
 	daw::do_not_optimize( canada_result );
-	test_assert( twitter_result, "Missing value" );
-	test_assert( not twitter_result->statuses.empty( ),
-	             "Expected values: twitter_result is empty" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
-	test_assert( citm_result, "Missing value" );
-	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
-	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
-	test_assert( canada_result, "Missing value" );
+	if( do_asserts ) {
+		test_assert( twitter_result, "Missing value" );
+		test_assert( not twitter_result->statuses.empty( ),
+		             "Expected values: twitter_result is empty" );
+		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+		             "Missing value" );
+		test_assert( citm_result, "Missing value" );
+		test_assert( not citm_result->areaNames.empty( ), "Expected values" );
+		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
+		             "Expected value" );
+		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+		             "Incorrect value" );
+		test_assert( canada_result, "Missing value" );
+	}
 	twitter_result.reset( );
 	citm_result.reset( );
 	canada_result.reset( );
@@ -251,17 +266,19 @@ void test( char **argv ) {
 	daw::do_not_optimize( citm_result );
 	daw::do_not_optimize( canada_result );
 
-	test_assert( twitter_result, "Missing value" );
-	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
-	test_assert( citm_result, "Missing value" );
-	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
-	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
-	test_assert( canada_result, "Missing value" );
+	if( do_asserts ) {
+		test_assert( twitter_result, "Missing value" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+		             "Missing value" );
+		test_assert( citm_result, "Missing value" );
+		test_assert( not citm_result->areaNames.empty( ), "Expected values" );
+		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
+		             "Expected value" );
+		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+		             "Incorrect value" );
+		test_assert( canada_result, "Missing value" );
+	}
 }
 
 int main( int argc, char **argv )
@@ -279,12 +296,19 @@ int main( int argc, char **argv )
 		std::cerr << "twitter citm canada\n";
 		exit( 1 );
 	}
-	test<options::ExecModeTypes::compile_time>( argv );
+	bool const do_asserts = [&] {
+		if( argc > 4 ) {
+			std::string_view arg2 = argv[4];
+			return arg2 != "noassert";
+		}
+		return true;
+	}( );
+	test<options::ExecModeTypes::compile_time>( argv, do_asserts );
 
 	if constexpr( not std::is_same_v<simd_exec_tag, runtime_exec_tag> ) {
-		test<options::ExecModeTypes::runtime>( argv );
+		test<options::ExecModeTypes::runtime>( argv, do_asserts );
 	}
-	test<options::ExecModeTypes::simd>( argv );
+	test<options::ExecModeTypes::simd>( argv, do_asserts );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

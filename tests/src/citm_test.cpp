@@ -34,7 +34,7 @@ static_assert( DAW_NUM_RUNS > 0 );
 using namespace daw::json::options;
 
 template<ExecModeTypes ExecMode>
-void test( std::string_view json_sv1 ) {
+void test( std::string_view json_sv1, bool do_asserts ) {
 	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( );
@@ -47,12 +47,14 @@ void test( std::string_view json_sv1 ) {
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( citm_result2 );
-		test_assert( citm_result2, "Missing value" );
-		test_assert( not citm_result2->areaNames.empty( ), "Expected values" );
-		test_assert( citm_result2->areaNames.count( 205706005 ) == 1,
-		             "Expected value" );
-		test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
-		             "Incorrect value" );
+		if( do_asserts ) {
+			test_assert( citm_result2, "Missing value" );
+			test_assert( not citm_result2->areaNames.empty( ), "Expected values" );
+			test_assert( citm_result2->areaNames.count( 205706005 ) == 1,
+			             "Expected value" );
+			test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
+			             "Incorrect value" );
+		}
 	}
 	{
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -63,12 +65,14 @@ void test( std::string_view json_sv1 ) {
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( citm_result2 );
-		test_assert( citm_result2, "Missing value" );
-		test_assert( not citm_result2->areaNames.empty( ), "Expected values" );
-		test_assert( citm_result2->areaNames.count( 205706005 ) == 1,
-		             "Expected value" );
-		test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
-		             "Incorrect value" );
+		if( do_asserts ) {
+			test_assert( citm_result2, "Missing value" );
+			test_assert( not citm_result2->areaNames.empty( ), "Expected values" );
+			test_assert( citm_result2->areaNames.count( 205706005 ) == 1,
+			             "Expected value" );
+			test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
+			             "Incorrect value" );
+		}
 	}
 }
 
@@ -82,6 +86,13 @@ int main( int argc, char **argv )
 		std::cerr << "Must supply a filenames to open\n";
 		exit( 1 );
 	}
+	bool const do_asserts = [&] {
+		if( argc > 2 ) {
+			std::string_view arg2 = argv[2];
+			return arg2 != "noassert";
+		}
+		return true;
+	}( );
 
 	auto const json_data1 = *daw::read_file( argv[1] );
 	auto const json_sv1 =
@@ -90,11 +101,11 @@ int main( int argc, char **argv )
 	auto const sz = json_sv1.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
-	test<ExecModeTypes::compile_time>( json_sv1 );
-	test<ExecModeTypes::runtime>( json_sv1 );
+	test<ExecModeTypes::compile_time>( json_sv1, do_asserts );
+	test<ExecModeTypes::runtime>( json_sv1, do_asserts );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<ExecModeTypes::simd>( json_sv1 );
+		test<ExecModeTypes::simd>( json_sv1, do_asserts );
 	}
 
 	std::cout

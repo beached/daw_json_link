@@ -117,6 +117,11 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
                          -Wshadow
                          -Wzero-as-null-pointer-constant
                          )
+    if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
+        add_compile_options(
+                -ffold-simple-inlines
+        )
+    endif()
     #-Wno-deprecated-declarations
     if( DAW_WERROR )
         add_compile_options( -Werror -pedantic-errors -ftrapv )

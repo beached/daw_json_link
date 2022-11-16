@@ -49,38 +49,62 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	return true;
 }
 
+template<daw::json::options::ExecModeTypes ExecMode =
+           daw::json::options::ExecModeTypes::compile_time>
+inline auto get_canada_check( std::string_view f1 ) {
+	/*return daw::json::from_json<daw::geojson::Polygon>(
+	  f1, "features[0].geometry", daw::json::options::parse_flags<ExecMode> );
+	  */
+	return daw::json::from_json<daw::geojson::FeatureCollection>(
+	  f1, daw::json::options::parse_flags<ExecMode> );
+}
+
 template<daw::json::options::ExecModeTypes ExecMode>
-void test( std::string_view json_sv1 ) {
+inline auto get_canada_nocheck( std::string_view f1 ) {
+	/*return daw::json::from_json<daw::geojson::Polygon>(
+	  f1, "features[0].geometry",
+	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+	  ExecMode> );
+	  */
+	return daw::json::from_json<daw::geojson::FeatureCollection>(
+	  f1,
+	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
+	                                  ExecMode> );
+}
+template<daw::json::options::ExecModeTypes ExecMode>
+void test( std::string_view json_sv1, bool do_asserts ) {
 	std::cout << "Using " << to_string( ExecMode )
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( );
 	//**************************
-	std::optional<daw::geojson::Polygon> canada_result;
+
+	// std::optional<daw::geojson::Polygon> canada_result;
+	std::optional<daw::geojson::FeatureCollection> canada_result;
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(checked)", sz,
-	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
-		    f1, "features[0].geometry", daw::json::options::parse_flags<ExecMode> );
+	  [&]( auto f1 ) {
+		  canada_result = get_canada_check<ExecMode>( f1 );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( canada_result );
-	test_assert( canada_result, "Missing value" );
+	if( do_asserts ) {
+		test_assert( canada_result, "Missing value" );
+	}
 	canada_result = std::nullopt;
 	//**************************
 	canada_result = std::nullopt;
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(unchecked)", sz,
-	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
-		    f1, "features[0].geometry",
-		    daw::json::options::parse_flags<
-		      daw::json::options::CheckedParseMode::no, ExecMode> );
+	  [&]( auto f1 ) {
+		  canada_result = get_canada_nocheck<ExecMode>( f1 );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( canada_result );
-	test_assert( canada_result, "Missing value" );
+	if( do_asserts ) {
+		test_assert( canada_result, "Missing value" );
+	}
 }
 
 int main( int argc, char **argv )
@@ -94,29 +118,35 @@ int main( int argc, char **argv )
 		exit( 1 );
 	}
 
+	bool const do_asserts = [&] {
+		if( argc > 2 ) {
+			std::string_view arg2 = argv[2];
+			return arg2 != "noassert";
+		}
+		return true;
+	}( );
+
 	auto const json_data1 = *daw::read_file( argv[1] );
 	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
-	auto const json_sv1 =
-	  std::string_view( json_data1.data( ), json_data1.size( ) );
 
-	auto const sz = json_sv1.size( );
+	auto const sz = json_data1.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	test<daw::json::options::ExecModeTypes::compile_time>( json_sv1 );
-	test<daw::json::options::ExecModeTypes::runtime>( json_sv1 );
+	test<daw::json::options::ExecModeTypes::compile_time>( json_data1,
+	                                                       do_asserts );
+	test<daw::json::options::ExecModeTypes::runtime>( json_data1, do_asserts );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::options::ExecModeTypes::simd>( json_sv1 );
+		test<daw::json::options::ExecModeTypes::simd>( json_data1, do_asserts );
 	}
 
 	std::cout
 	  << "to_json testing\n*********************************************\n";
-	auto const canada_result = daw::json::from_json<daw::geojson::Polygon>(
-	  json_sv1, "features[0].geometry" );
+	auto const canada_result = get_canada_check( json_data1 );
 	std::string str{ };
 	{
-		str.reserve( json_sv1.size( ) );
+		str.reserve( json_data1.size( ) );
 		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "canada bench(to_json_string)", sz,
 		  [&]( auto const &tr ) {
@@ -128,8 +158,7 @@ int main( int argc, char **argv )
 	}
 	test_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
-	auto const canada_result2 =
-	  daw::json::from_json<daw::geojson::Polygon>( str );
+	auto const canada_result2 = get_canada_check( str );
 	daw::do_not_optimize( canada_result2 );
 	{
 		auto const str_sz = str.size( );
@@ -143,7 +172,9 @@ int main( int argc, char **argv )
 			  daw::do_not_optimize( str );
 		  },
 		  canada_result );
+		daw::do_not_optimize( str );
 	}
+
 	// Removing for now as it will do a float compare and fail
 	/*
 	test_assert( canada_result == canada_result2,

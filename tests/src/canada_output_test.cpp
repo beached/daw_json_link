@@ -49,6 +49,13 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	return true;
 }
 
+template<daw::json::options::ExecModeTypes ExecMode =
+           daw::json::options::ExecModeTypes::compile_time>
+inline auto get_canada_check( std::string_view f1 ) {
+	return daw::json::from_json<daw::geojson::FeatureCollection>(
+	  f1, daw::json::options::parse_flags<ExecMode> );
+}
+
 int main( int argc, char **argv )
 #ifdef DAW_USE_EXCEPTIONS
   try
@@ -69,8 +76,7 @@ int main( int argc, char **argv )
 
 	std::cout
 	  << "to_json testing\n*********************************************\n";
-	auto const canada_result = daw::json::from_json<daw::geojson::Polygon>(
-	  json_data, "features[0].geometry" );
+	auto const canada_result = get_canada_check( json_data );
 	std::string str{ };
 	{
 		str.reserve( json_data.size( ) );
@@ -85,8 +91,7 @@ int main( int argc, char **argv )
 	}
 	test_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
-	daw::geojson::Polygon const canada_result2 =
-	  daw::json::from_json<daw::geojson::Polygon>( str );
+	auto canada_result2 = get_canada_check( str );
 	daw::do_not_optimize( canada_result2 );
 	{
 		auto const str_sz = str.size( );
