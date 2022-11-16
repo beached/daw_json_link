@@ -765,7 +765,7 @@ namespace daw::json {
 						while( v >= 10 ) {
 							auto const t = v / 100U;
 							auto const tmp = v - ( t * 100U );
-							v = t;
+							v = static_cast<under_type>( t );
 							ptr[0] = digits100[tmp][0];
 							ptr[1] = digits100[tmp][1];
 							ptr += 2;
