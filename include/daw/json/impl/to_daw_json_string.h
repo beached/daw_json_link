@@ -648,7 +648,7 @@ namespace daw::json {
 
 			template<typename T>
 			static constexpr void reverse( T *first, T *last ) {
-				auto rpos = ( last - first ) - 1;
+				auto rpos = last - first;
 				auto lpos = 0;
 				while( lpos < rpos ) {
 					--rpos;

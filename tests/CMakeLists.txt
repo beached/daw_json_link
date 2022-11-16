@@ -908,6 +908,13 @@ add_test( NAME issue_336_test_test COMMAND issue_336_test )
 add_dependencies( ci_tests issue_336_test )
 add_dependencies( full issue_336_test )
 
+add_executable( issue_unknown_001_test src/issue_unknown_001_test.cpp )
+target_link_libraries( issue_unknown_001_test json_test )
+add_test( NAME issue_unknown_001_test_test COMMAND issue_unknown_001_test )
+add_dependencies( ci_tests issue_unknown_001_test )
+add_dependencies( full issue_unknown_001_test )
+
+
 if( Threads_FOUND )
     add_executable( json_lines_bench_test src/json_lines_bench_test.cpp )
     target_link_libraries( json_lines_bench_test json_test ${CMAKE_THREAD_LIBS_INIT} )
