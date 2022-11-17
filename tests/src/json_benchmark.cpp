@@ -566,7 +566,7 @@ int main( int argc, char **argv )
 		out_data = daw::json::to_json_array( old_results );
 	}
 
-	std::ofstream out_file( argv[5], std::ios::out | std::ios::trunc );
+	auto out_file = std::ofstream( argv[5], std::ios::out | std::ios::trunc );
 	assert( out_file );
 	out_file.write( out_data.data( ),
 	                static_cast<std::streamsize>( out_data.size( ) ) );

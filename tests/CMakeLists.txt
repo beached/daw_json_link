@@ -914,6 +914,9 @@ add_test( NAME issue_unknown_001_test_test COMMAND issue_unknown_001_test )
 add_dependencies( ci_tests issue_unknown_001_test )
 add_dependencies( full issue_unknown_001_test )
 
+add_executable( json_bench_viewer src/json_bench_viewer.cpp )
+target_link_libraries( json_bench_viewer json_test )
+
 
 if( Threads_FOUND )
     add_executable( json_lines_bench_test src/json_lines_bench_test.cpp )

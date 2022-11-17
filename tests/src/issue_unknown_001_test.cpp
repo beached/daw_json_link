@@ -5,6 +5,7 @@
 //
 // Official repository: https://github.com/beached/
 //
+#include <daw/daw_memory_mapped_file.h>
 #include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
 
@@ -20,11 +21,16 @@ struct arg_t {
 	std::string instId;
 }; // arg_t
 
+struct price_t {
+	double price;
+	double quantity;
+	double dummy;
+	double orderCount;
+};
+
 struct data_element_t {
-	std::vector<std::vector<std::string>> asks;
-	std::vector<std::vector<std::string>> bids;
-	std::string ts;
-	int64_t checksum;
+	std::vector<price_t> asks;
+	std::vector<price_t> bids;
 }; // data_element_t
 
 struct root_object_t {
@@ -47,23 +53,33 @@ namespace daw::json {
 	};
 
 	template<>
+	struct json_data_contract<price_t> {
+		using PriceStr =
+		  json_number_no_name<double, options::number_opt(
+		                                options::LiteralAsStringOpt::Always )>;
+		using QuantityStr =
+		  json_number_no_name<double, options::number_opt(
+		                                options::LiteralAsStringOpt::Always )>;
+		using type =
+		  json_tuple_member_list<PriceStr, QuantityStr, QuantityStr, QuantityStr>;
+
+		static auto to_json_data( price_t const &p ) {
+			return std::forward_as_tuple( p.price, p.quantity, p.dummy,
+			                              p.orderCount );
+		}
+	};
+
+	template<>
 	struct json_data_contract<data_element_t> {
 		static constexpr char const mem_asks[] = "asks";
 		static constexpr char const mem_bids[] = "bids";
 		static constexpr char const mem_ts[] = "ts";
 		static constexpr char const mem_checksum[] = "checksum";
-		using type = json_member_list<
-		  json_array<mem_asks,
-		             json_array_no_name<std::string, std::vector<std::string>>,
-		             std::vector<std::vector<std::string>>>,
-		  json_array<mem_bids,
-		             json_array_no_name<std::string, std::vector<std::string>>,
-		             std::vector<std::vector<std::string>>>,
-		  json_string<mem_ts>, json_number<mem_checksum, int64_t>>;
+		using type = json_member_list<json_array<mem_asks, price_t>,
+		                              json_array<mem_bids, price_t>>;
 
 		static inline auto to_json_data( data_element_t const &value ) {
-			return std::forward_as_tuple( value.asks, value.bids, value.ts,
-			                              value.checksum );
+			return std::forward_as_tuple( value.asks, value.bids );
 		}
 	};
 
@@ -201,10 +217,18 @@ static constexpr daw::string_view json_doc = R"json(
 }
 )json";
 
-int main( ) {
-	auto val = daw::json::from_json<root_object_t>( json_doc );
+int main( int argc, char **argv ) {
+	auto const json_str = [&]( ) -> std::string {
+		if( argc > 1 ) {
+			auto mmf = daw::filesystem::memory_mapped_file_t<char>(
+			  daw::string_view( argv[1] ) );
+			return std::string( std::data( mmf ), std::size( mmf ) );
+		}
+		return static_cast<std::string>( json_doc );
+	}( );
+	auto val = daw::json::from_json<root_object_t>( json_str );
 	auto json_doc2 = daw::json::to_json( val );
 	auto val2 = daw::json::from_json<root_object_t>( json_doc2 );
-	assert( val.data[0].checksum == val2.data[0].checksum );
+	(void)val2;
 	return 0;
 }
