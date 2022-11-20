@@ -648,9 +648,10 @@ namespace daw::json {
 
 			template<typename T>
 			static constexpr void reverse( T *first, T *last ) {
-				// Assume precondition of not null This helps on CE in codegen but may
+				// Assume preconditions. This helps on CE in codegen but may
 				// not matter here with inlining
 				DAW_ASSUME( first and last );
+				DAW_ASSUME( first <= last );
 				auto rpos = last - first;
 				auto lpos = 0;
 				while( lpos < rpos ) {
