@@ -98,10 +98,10 @@ $(function() {
 <div class="line">    using type = json_member_list&lt;</div>
 <div class="line">      json_variant&lt;&quot;member0&quot;, std::variant&lt;int, std::string&gt;,</div>
 <div class="line">        json_variant_type_list&lt;int,</div>
-<div class="line">          json_string&lt;no_name&gt;&gt;&gt;,</div>
+<div class="line">          json_string_no_name&lt;&gt;&gt;&gt;,</div>
 <div class="line">      json_variant&lt;</div>
 <div class="line">        &quot;member1&quot;, std::variant&lt;std::string, bool&gt;,</div>
-<div class="line">        json_variant_type_list&lt;std::string, json_bool&lt;no_name&gt;&gt;&gt;&gt;;</div>
+<div class="line">        json_variant_type_list&lt;std::string, json_bool_no_name&lt;&gt;&gt;&gt;&gt;;</div>
 <div class="line"> </div>
 <div class="line">    static inline auto</div>
 <div class="line">    to_json_data( MyVariantStuff1 const &amp;value ) {</div>
@@ -217,8 +217,8 @@ Tagged Variants</h1>
 <div class="line">      MyClassSwitcher,</div>
 <div class="line">      json_tagged_variant_type_list&lt;</div>
 <div class="line">        std::string,</div>
-<div class="line">        json_number&lt;no_name, int&gt;,</div>
-<div class="line">        json_bool&lt;no_name&gt;    </div>
+<div class="line">        json_number_no_name&lt;int&gt;,</div>
+<div class="line">        json_bool_no_name&lt;&gt;    </div>
 <div class="line">      &gt;</div>
 <div class="line">    &gt;</div>
 <div class="line">  &gt;;</div>

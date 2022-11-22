@@ -101,7 +101,7 @@ namespace daw::json {
   template<>  
   json_data_contract<WebData> {
     using type = json_member_list<
-      json_array<"uris", json_string_raw<no_name>>
+      json_array<"uris", json_string_raw_no_name<>>
     >;
 
     static inline auto to_json_data( WebData const & value ) {

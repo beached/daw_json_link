@@ -44,10 +44,10 @@ namespace daw::json {
     using type = json_member_list<
       json_variant<"member0", std::variant<int, std::string>,
         json_variant_type_list<int,
-          json_string<no_name>>>,
+          json_string_no_name<>>>,
       json_variant<
         "member1", std::variant<std::string, bool>,
-        json_variant_type_list<std::string, json_bool<no_name>>>>;
+        json_variant_type_list<std::string, json_bool_no_name<>>>>;
 
     static inline auto
     to_json_data( MyVariantStuff1 const &value ) {
@@ -191,8 +191,8 @@ to [cookbook_variant3_test.cpp](../tests/src/cookbook_variant3_test.cpp)
        MyClassSwitcher,
        json_tagged_variant_type_list<
          std::string,
-         json_number<no_name, int>,
-         json_bool<no_name>    
+         json_number_no_name<int>,
+         json_bool_no_name<>    
        >
      >
    >;
