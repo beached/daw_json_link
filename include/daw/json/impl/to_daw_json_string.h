@@ -648,6 +648,10 @@ namespace daw::json {
 
 			template<typename T>
 			static constexpr void reverse( T *first, T *last ) {
+				// Assume preconditions. This helps on CE in codegen but may
+				// not matter here with inlining
+				DAW_ASSUME( first and last );
+				DAW_ASSUME( first <= last );
 				auto rpos = last - first;
 				auto lpos = 0;
 				while( lpos < rpos ) {
@@ -688,9 +692,10 @@ namespace daw::json {
 						++num_start;
 						// Do 1 round here just in case we are
 						// daw::numeric_limits<intmax_t>::min( ) and cannot negate
-						// This is a subtraction because v < 0 % 10 is negative
-						*ptr++ = static_cast<char>( '0' - static_cast<char>( v % 10 ) );
+						// This is a subtraction because when v < 0, v % 100 is negative
+						auto const tmp = -static_cast<std::size_t>( v % 10 );
 						v /= -10;
+						*ptr++ = digits100[tmp][0];
 						if( v == 0 ) {
 							if constexpr( JsonMember::literal_as_string ==
 							              options::LiteralAsStringOpt::Always ) {
@@ -700,6 +705,7 @@ namespace daw::json {
 							return it;
 						}
 					}
+
 					if( v == 0 ) {
 						*ptr++ = '0';
 					}
@@ -763,9 +769,8 @@ namespace daw::json {
 						char buff[daw::numeric_limits<under_type>::digits10 + 10]{ };
 						char *ptr = buff;
 						while( v >= 10 ) {
-							auto const t = v / 100U;
-							auto const tmp = v - ( t * 100U );
-							v = static_cast<under_type>( t );
+							auto const tmp = v % 100U;
+							v /= 100U;
 							ptr[0] = digits100[tmp][0];
 							ptr[1] = digits100[tmp][1];
 							ptr += 2;

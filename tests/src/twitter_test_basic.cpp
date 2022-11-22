@@ -26,6 +26,13 @@ int main( int argc, char **argv )
 		std::cerr << "Must supply a file name\n";
 		exit( 1 );
 	}
+	bool const do_asserts = [&] {
+		if( argc > 2 ) {
+			std::string_view arg2 = argv[2];
+			return arg2 != "noassert";
+		}
+		return true;
+	}( );
 	using namespace daw::json;
 	std::string const json_data = [argv] {
 		auto const mmf = *daw::read_file( argv[1] );
@@ -39,9 +46,11 @@ int main( int argc, char **argv )
 		  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
 		daw::do_not_optimize( twitter_result );
 	}
-	test_assert( not twitter_result.statuses.empty( ), "Expected values" );
-	test_assert( twitter_result.statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	if( do_asserts ) {
+		test_assert( not twitter_result.statuses.empty( ), "Expected values" );
+		test_assert( twitter_result.statuses.front( ).user.id == 1186275104,
+		             "Missing value" );
+	}
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

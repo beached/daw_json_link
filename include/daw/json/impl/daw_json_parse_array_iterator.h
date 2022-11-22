@@ -75,8 +75,22 @@ namespace daw::json {
 				using difference_type = typename base::difference_type;
 				using size_type = std::size_t;
 
-				inline constexpr json_parse_array_iterator( ) = default;
-
+				json_parse_array_iterator( ) = default;
+#ifndef NDEBUG
+				json_parse_array_iterator( json_parse_array_iterator const & ) =
+				  default;
+				json_parse_array_iterator &
+				operator=( json_parse_array_iterator const & ) = default;
+				json_parse_array_iterator( json_parse_array_iterator && ) = default;
+				json_parse_array_iterator &
+				operator=( json_parse_array_iterator && ) = default;
+				~json_parse_array_iterator( ) {
+					if constexpr( base::has_counter ) {
+						daw_json_assert_weak( base::counter == 0,
+						                      ErrorReason::AttemptToAccessPastEndOfValue );
+					}
+				}
+#endif
 				inline constexpr explicit json_parse_array_iterator( parse_state_t &r )
 				  : base{ &r } {
 					if( DAW_UNLIKELY( base::parse_state->front( ) == ']' ) ) {

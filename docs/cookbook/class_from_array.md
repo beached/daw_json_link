@@ -71,7 +71,7 @@ struct Point {
 namespace daw::json {
   template<>
   struct json_data_contract<Point> {
-    using type = json_ordered_member_list<double, ordered_json_member<5,json_number<no_name>>>;
+    using type = json_ordered_member_list<double, ordered_json_member<5,json_number_no_name<>>>;
 
     static constexpr auto to_json_data( Point const &p ) {
       return std::forward_as_tuple( Point.x, Point.y );
