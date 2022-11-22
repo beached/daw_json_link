@@ -42,8 +42,9 @@
 // <daw/daw_scope_guard.h>
 // This has performance impacts on MSVC as on_exit_success calls
 // std::uncaught_exceptions( ) which is very slow there
-#if not defined( DAW_NO_CONSTEXPR_SCOPE_GUARD ) and not defined( DAW_JSON_ENABLE_FULL_RVO )
-#define DAW_NO_CONSTEXPR_SCOPE_GUARD 
+#if not defined( DAW_NO_CONSTEXPR_SCOPE_GUARD ) and \
+  not defined( DAW_JSON_ENABLE_FULL_RVO )
+#define DAW_NO_CONSTEXPR_SCOPE_GUARD
 #endif
 
 // DAW_IS_CONSTANT_EVALUATED is defined when a builtin or
@@ -104,3 +105,9 @@
 
 // Allow experimental SIMD paths, if available
 // by defining DAW_ALLOW_SSE42 and using the parser policy ExecModeType simd
+
+// Use strtod instead of from_chars when avialable by defining
+// DAW_JSON_USE_STRTOD
+#if not defined( DAW_JSON_USE_STRTOD ) and not defined( __cpp_lib_to_chars )
+#define DAW_JSON_USE_STRTOD
+#endif

@@ -15,7 +15,7 @@
 #include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>
 
-#if not defined( DAW_JSON_USE_STRTOD ) and defined( __cpp_lib_to_chars )
+#if not defined( DAW_JSON_USE_STRTOD )
 #include <charconv>
 #endif
 
@@ -26,11 +26,22 @@ namespace daw::json {
 			/// used as a fallback for std floating point types.  For others, it
 			/// provides either a customization point or will call the overload found
 			/// via ADL
-			template<typename Real, std::enable_if_t<std::is_floating_point_v<Real>,
-			                                         std::nullptr_t> = nullptr>
+			template<typename Real>
 			DAW_ATTRIB_NOINLINE [[nodiscard]] Real
 			parse_with_strtod( char const *first, char const *last ) {
-#if not defined( DAW_JSON_USE_STRTOD ) and defined( __cpp_lib_to_chars )
+				static_assert( std::is_floating_point_v<Real>,
+				               "Execpected type passed to parse_with_strtod" );
+#if defined( DAW_JSON_USE_STRTOD )
+				(void)last;
+				char **end = nullptr;
+				if constexpr( std::is_same_v<Real, float> ) {
+					return static_cast<Real>( strtof( first, end ) );
+				} else if( std::is_same_v<Real, double> ) {
+					return static_cast<Real>( strtod( first, end ) );
+				} else {
+					return static_cast<Real>( strtold( first, end ) );
+				}
+#else
 				Real result;
 				std::from_chars_result fc_res = std::from_chars( first, last, result );
 				if( fc_res.ec == std::errc::result_out_of_range ) {
@@ -42,16 +53,6 @@ namespace daw::json {
 				daw_json_ensure( fc_res.ec == std::errc( ),
 				                 ErrorReason::InvalidNumber );
 				return result;
-#else
-				(void)last;
-				char **end = nullptr;
-				if constexpr( std::is_same_v<Real, float> ) {
-					return static_cast<Real>( strtof( first, end ) );
-				} else if( std::is_same_v<Real, double> ) {
-					return static_cast<Real>( strtod( first, end ) );
-				} else {
-					return static_cast<Real>( strtold( first, end ) );
-				}
 #endif
 			}
 		} // namespace json_details

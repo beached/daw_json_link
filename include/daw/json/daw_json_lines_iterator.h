@@ -64,8 +64,8 @@ namespace daw::json {
 		/// heterogeneous, a basic_json_value_iterator may be more appropriate
 		template<typename JsonElement = json_value, auto... PolicyFlags>
 		class json_lines_iterator {
-			using ParsePolicy = BasicParsePolicy<
-			  options::details::make_parse_flags<PolicyFlags...>( ).value>;
+			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
+			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using CharT = typename ParsePolicy::CharT;
 
 		public:
@@ -203,8 +203,8 @@ namespace daw::json {
 		/// @tparam ParsePolicy parsing policy type
 		template<typename JsonElement = json_value, auto... PolicyFlags>
 		struct json_lines_range {
-			using ParsePolicy = BasicParsePolicy<
-			  options::details::make_parse_flags<PolicyFlags...>( ).value>;
+			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
+			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using iterator = json_lines_iterator<JsonElement, PolicyFlags...>;
 			using CharT = typename ParsePolicy::CharT;
 

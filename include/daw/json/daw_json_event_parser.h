@@ -367,9 +367,8 @@ namespace daw::json {
 		json_event_parser( basic_json_value<P, A> bjv, Handler &&handler,
 		                   options::parse_flags_t<ParseFlags...> ) {
 
-			using ParseState =
-			  typename BasicParsePolicy<P,
-			                            A>::template SetPolicyOptions<ParseFlags...>;
+			using ParseState = TryDefaultParsePolicy<typename BasicParsePolicy<
+			  P, A>::template SetPolicyOptions<ParseFlags...>>;
 
 			using iterator =
 			  basic_json_value_iterator<ParseState::policy_flags( ), A>;
