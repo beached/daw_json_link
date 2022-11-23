@@ -121,6 +121,21 @@ namespace daw::json {
 		  daw::is_detected_v<json_details::force_aggregate_construction_test, T> or
 		  daw::is_detected_v<json_details::force_aggregate_construction_test2, T>;
 
+		namespace json_details {
+			template<typename T>
+			using is_default_default_constructor_type_test =
+			  typename T::i_am_the_default_default_constructor_type;
+
+			template<typename T>
+			inline constexpr bool is_default_default_constructor_type_v =
+			  daw::is_detected_v<is_default_default_constructor_type_test, T>;
+		} // namespace json_details
+
+		template<typename Constructor, typename T>
+		inline constexpr bool should_construct_explicitly_v =
+		  force_aggregate_construction_v<T> or
+		  json_details::is_default_default_constructor_type_v<Constructor>;
+
 		template<typename... Ts>
 		inline constexpr bool is_empty_pack_v = sizeof...( Ts ) == 0;
 

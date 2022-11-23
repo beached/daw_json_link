@@ -86,6 +86,7 @@
 // contracts.  Both support passing local char const[], but the type is
 // different.  To keep old behaviour when using C++20, define
 // DAW_USE_CPP17_ABI
+#define DAW_USE_CPP17_ABI
 #if not defined( DAW_USE_CPP17_ABI )
 #if defined( __cpp_nontype_template_parameter_class )
 #if not defined( DAW_JSON_CNTTP_JSON_NAME )
@@ -180,5 +181,13 @@
   defined( DAW_JSON_PARSER_DIAGNOSTICS ) or defined( DAW_JSON_COMPILER_MSVC )
 #if not defined( DAW_JSON_ALWAYS_FULL_NAME_MATCH )
 #define DAW_JSON_ALWAYS_FULL_NAME_MATCH
+#endif
+#endif
+
+// Allows pack expansions with get<Is> without separate methods.  This should
+// improve symbol sizes
+#if defined( __cpp_generic_lambdas )
+#if __cpp_generic_lambdas >= 201707L
+#define DAW_JSON_USE_GENERIC_LAMBDAS
 #endif
 #endif
