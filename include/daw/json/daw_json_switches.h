@@ -111,3 +111,13 @@
 #if not defined( DAW_JSON_USE_STRTOD ) and not defined( __cpp_lib_to_chars )
 #define DAW_JSON_USE_STRTOD
 #endif
+
+// define DAW_JSON_DISABLE_RANDOM to disable creating random iterators when the
+// size is known up front.  This is playing to the implementations prior to
+// C++23 when range constructors are added to containers.  It is disabled on
+// MSVC as that impl does not work with it
+#if defined( _MSC_VER ) and not defined( __clang__ )
+#if not defined( DAW_JSON_DISABLE_RANDOM )
+#define DAW_JSON_DISABLE_RANDOM
+#endif
+#endif

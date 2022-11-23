@@ -455,6 +455,11 @@ namespace daw::json {
 
 		} // namespace json_base
 
+		template<char const *Name, typename Base>
+		struct json_named_member : Base {
+			static constexpr daw::string_view name = Name;
+			using without_name = Base;
+		};
 		/**
 		 * The member is a range checked number
 		 * @tparam Name name of json member
