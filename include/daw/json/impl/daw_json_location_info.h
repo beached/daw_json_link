@@ -131,9 +131,7 @@ namespace daw::json {
 				find_name( daw::template_vals_t<start_pos>,
 				           daw::string_view key ) const {
 					UInt32 const hash = name_hash<expect_long_strings>( key );
-#if defined( _MSC_VER ) and not defined( __clang__ )
-					// MSVC has a bug where the list initialization isn't sequenced in
-					// order of appearance.
+#if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 					(void)start_pos;
 					for( std::size_t n = 0; n < MemberCount; ++n ) {
 #else
@@ -171,9 +169,7 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static inline DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto
 			make_locations_info( ) {
 				using CharT = typename ParseState::CharT;
-#if not defined( _NDEBUG ) or defined( DEBUG ) or \
-  defined( DAW_JSON_PARSER_DIAGNOSTICS ) or       \
-  ( defined( __MSC_VER ) and not defined( __clang__ ) )
+#if defined( DAW_JSON_ALWAYS_FULL_NAME_MATCH )
 				constexpr bool do_full_name_match = true;
 				return locations_info_t<sizeof...( JsonMembers ), CharT,
 				                        do_full_name_match>{

@@ -28,7 +28,7 @@
 #include <tmmintrin.h>
 #include <wmmintrin.h>
 #include <xmmintrin.h>
-#ifdef _MSC_VER
+#ifdef DAW_JSON_COMPILER_MSVC_COMPAT
 #include <intrin.h>
 #endif
 #endif
@@ -72,7 +72,7 @@ namespace daw::json {
 			inline std::ptrdiff_t find_lsb_set( runtime_exec_tag, UInt32 value ) {
 #if DAW_HAS_BUILTIN( __builtin_ffs )
 				return __builtin_ffs( static_cast<int>( value ) ) - 1;
-#elif defined( _MSC_VER )
+#elif defined( DAW_JSON_COMPILER_MSVC_COMPAT )
 				unsigned long index;
 				_BitScanForward( &index, static_cast<int>( value ) );
 				return static_cast<std::ptrdiff_t>( index );
@@ -184,10 +184,7 @@ namespace daw::json {
 			                                     U32 &result ) {
 				static_assert( sizeof( U32 ) <= sizeof( unsigned long long ) );
 				static_assert( sizeof( U32 ) == 4 );
-#if( defined( __GNUC__ ) and __GNUC__ >= 8 ) or defined( __clang__ ) or \
-  ( DAW_HAS_BUILTIN( __builtin_uadd_overflow ) and                      \
-    DAW_HAS_BUILTIN( __builtin_uaddl_overflow ) and                     \
-    DAW_HAS_BUILTIN( __builtin_uaddll_overflow ) )
+#if defined( DAW_JSON_HAS_BUILTIN_UADD )
 				if constexpr( sizeof( unsigned ) == sizeof( U32 ) ) {
 					return __builtin_uadd_overflow(
 					  static_cast<unsigned>( value1 ), static_cast<unsigned>( value2 ),

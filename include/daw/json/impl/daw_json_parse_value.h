@@ -636,13 +636,10 @@ namespace daw::json {
 				parse_state.remove_prefix( );
 				parse_state.trim_left( );
 
-#if defined( __GNUC__ ) or defined( __clang__ )
 				using iter_t =
-				  json_parse_kv_class_iterator<JsonMember, ParseState, KnownBounds>;
-#else
-				using iter_t =
-				  json_parse_kv_class_iterator<JsonMember, ParseState, false>;
-#endif
+				  json_parse_kv_class_iterator<JsonMember, ParseState,
+				                               can_be_random_iterator_v<KnownBounds>>;
+
 				using constructor_t = typename JsonMember::constructor_t;
 				return construct_value(
 				  template_args<json_result<JsonMember>, constructor_t>, parse_state,
@@ -935,7 +932,7 @@ namespace daw::json {
 					}
 				}
 
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 				template<typename ParseState>
 				struct position_info {
 					std::size_t index;
@@ -1026,7 +1023,7 @@ namespace daw::json {
 				using tuple_t = typename JsonMember::base_type;
 				using tuple_members = typename JsonMember::sub_member_list;
 
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 				using position_info_t = pocm_details::position_info<ParseState>;
 				std::size_t parse_locations_last_index = 0U;
 				std::array<position_info_t, sizeof...( Is )> parse_locations{
@@ -1049,7 +1046,7 @@ namespace daw::json {
 
 					using json_member_t = ordered_member_subtype_t<CurrentMember>;
 
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 					ParseState parse_state2 =
 					  pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
 					    parse_state, ClassIdx, /*index_t::value*/
@@ -1102,7 +1099,7 @@ namespace daw::json {
 							parse_state.move_next_member_or_end( );
 							return result;
 						}
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 					}
 #endif
 				};

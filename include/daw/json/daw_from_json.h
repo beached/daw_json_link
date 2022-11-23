@@ -538,8 +538,7 @@ namespace daw::json {
 			  ParseState{ std::data( json_data ), daw::data_end( json_data ) };
 
 			parse_state.trim_left_unchecked( );
-#if defined( _MSC_VER ) and not defined( __clang__ )
-			// Work around MSVC ICE
+#if defined( DAW_JSON_BUGFIX_FROM_JSON_001 )
 			daw_json_ensure( parse_state.is_opening_bracket_checked( ),
 			                 ErrorReason::InvalidArrayStart, parse_state );
 #else
@@ -648,8 +647,7 @@ namespace daw::json {
 			}
 			auto parse_state = jv.get_raw_state( );
 			parse_state.trim_left_unchecked( );
-#if defined( _MSC_VER ) and not defined( __clang__ )
-			// Work around MSVC ICE
+#if defined( DAW_JSON_BUGFIX_FROM_JSON_001 )
 			daw_json_ensure( parse_state.is_opening_bracket_checked( ),
 			                 ErrorReason::InvalidArrayStart, parse_state );
 #else
