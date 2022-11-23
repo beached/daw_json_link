@@ -70,6 +70,7 @@ $(function() {
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -105,6 +106,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy_1_1class__pos__t.html">daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;::class_pos_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_default_parse_policy.html">daw::json::anonymous_namespace{daw_json_parse_policy.h}::DefaultParsePolicy</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1options_1_1parse__flags__t.html">daw::json::anonymous_namespace{daw_json_parse_policy.h}::options::parse_flags_t&lt; PolicyFlags &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1options_1_1parse__flags__t_3_4.html">daw::json::anonymous_namespace{daw_json_parse_policy.h}::options::parse_flags_t&lt;&gt;</a></td></tr>
@@ -128,6 +131,15 @@ Namespaces</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:af420c44ec0e0e64154e34df206734fa4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__parse__policy_8h.html#af420c44ec0e0e64154e34df206734fa4">DAW_JSON_CONFORMANCE_FLAGS</a></td></tr>
 <tr class="separator:af420c44ec0e0e64154e34df206734fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:afdecf68282defee16c0d145a9180a9d3"><td class="memTemplParams" colspan="2">template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, typename Allocator  = json_details::NoAllocator&gt; </td></tr>
+<tr class="memitem:afdecf68282defee16c0d145a9180a9d3"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03.html#afdecf68282defee16c0d145a9180a9d3">daw::json::anonymous_namespace{daw_json_parse_policy.h}::GetParsePolicy</a> = std::conditional_t&lt;(PolicyFlags==json_details::default_policy_flag and std::is_same_v&lt; Allocator, json_details::NoAllocator &gt;), DefaultParsePolicy, BasicParsePolicy&lt; PolicyFlags, Allocator &gt; &gt;</td></tr>
+<tr class="separator:afdecf68282defee16c0d145a9180a9d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade381ecca8b19216026d5aa0fe80f9f1"><td class="memTemplParams" colspan="2">template&lt;typename ParsePolicy &gt; </td></tr>
+<tr class="memitem:ade381ecca8b19216026d5aa0fe80f9f1"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03.html#ade381ecca8b19216026d5aa0fe80f9f1">daw::json::anonymous_namespace{daw_json_parse_policy.h}::TryDefaultParsePolicy</a> = std::conditional_t&lt; ParsePolicy::is_default_parse_policy, DefaultParsePolicy, ParsePolicy &gt;</td></tr>
+<tr class="separator:ade381ecca8b19216026d5aa0fe80f9f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -179,7 +191,7 @@ Variables</h2></td></tr>
 <div class="line">    daw::json::options::IEEE754Precise::yes,             \</div>
 <div class="line">    daw::json::options::ExcludeSpecialEscapes::yes</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00588">588</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00615">615</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>

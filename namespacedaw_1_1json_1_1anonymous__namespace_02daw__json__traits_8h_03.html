@@ -115,6 +115,7 @@ Variables</h2></td></tr>
 <tr class="separator:adfaccc235033f85a0ef2e8a82e51fe42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e86d3cf0b7e1d884067672674ed66b9"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a4e86d3cf0b7e1d884067672674ed66b9"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#a4e86d3cf0b7e1d884067672674ed66b9">is_pinned_type_v</a></td></tr>
+<tr class="memdesc:a4e86d3cf0b7e1d884067672674ed66b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is the type pinned in memory and unable to be copied/moved after construction(e.g. std::mutex). These types require using RVO in order to be used but that can have a penalty as std::current_exceptions( ) must be checked which is quite noticeable on MSVC.  <a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#a4e86d3cf0b7e1d884067672674ed66b9">More...</a><br /></td></tr>
 <tr class="separator:a4e86d3cf0b7e1d884067672674ed66b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a514b0b181bdad6d0b195bf99522ad7c3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a514b0b181bdad6d0b195bf99522ad7c3"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#a514b0b181bdad6d0b195bf99522ad7c3">is_pointer_like_v</a></td></tr>
@@ -309,7 +310,15 @@ template&lt;typename T &gt; </div>
 <div class="line">      (std::is_copy_constructible_v&lt;T&gt; and std::is_copy_assignable_v&lt;T&gt;) or</div>
 <div class="line">      ( std::is_move_constructible_v&lt;T&gt; and std::is_move_assignable_v&lt;T&gt; ) )</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00357">357</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
+<p>Is the type pinned in memory and unable to be copied/moved after construction(e.g. std::mutex). These types require using RVO in order to be used but that can have a penalty as std::current_exceptions( ) must be checked which is quite noticeable on MSVC. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>type to check </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00362">362</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
 
 </div>
 </div>

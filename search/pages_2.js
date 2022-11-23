@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['dates_20and_20times_1650',['Dates and Times',['../md_docs_cookbook_dates.html',1,'']]],
-  ['deduction_20concepts_1651',['Deduction concepts',['../md_include_daw_json_concepts_readme.html',1,'']]]
+  ['dates_20and_20times_1659',['Dates and Times',['../md_docs_cookbook_dates.html',1,'']]],
+  ['deduction_20concepts_1660',['Deduction concepts',['../md_include_daw_json_concepts_readme.html',1,'']]]
 ];
