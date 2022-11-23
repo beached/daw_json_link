@@ -47,6 +47,10 @@ namespace daw::json {
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 
+			static constexpr bool is_default_parse_policy =
+			  PolicyFlags == json_details::default_policy_flag and
+			  std::is_same_v<Allocator, json_details::NoAllocator>;
+
 			static DAW_CONSTEVAL json_options_t policy_flags( ) {
 				return PolicyFlags;
 			}
@@ -523,21 +527,44 @@ namespace daw::json {
 			}
 		};
 
-		BasicParsePolicy( )->BasicParsePolicy<>;
+		BasicParsePolicy( ) -> BasicParsePolicy<>;
 
-		BasicParsePolicy( char const *, char const * )->BasicParsePolicy<>;
+		BasicParsePolicy( char const *, char const * ) -> BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, Allocator const & )
 		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
 
 		BasicParsePolicy( char const *, char const *, char const *, char const * )
-		  ->BasicParsePolicy<>;
+		  -> BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, char const *, char const *,
 		                  Allocator const & )
 		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
+
+		struct DefaultParsePolicy
+		  : BasicParsePolicy<json_details::default_policy_flag,
+		                     json_details::NoAllocator> {
+			using BasicParsePolicy::BasicParsePolicy;
+
+			constexpr DefaultParsePolicy( BasicParsePolicy const &other ) noexcept
+			  : BasicParsePolicy( other ) {}
+			constexpr DefaultParsePolicy( BasicParsePolicy &&other ) noexcept
+			  : BasicParsePolicy( DAW_MOVE( other ) ) {}
+		};
+
+		template<json_options_t PolicyFlags = json_details::default_policy_flag,
+		         typename Allocator = json_details::NoAllocator>
+		using GetParsePolicy =
+		  std::conditional_t<(PolicyFlags == json_details::default_policy_flag and
+		                      std::is_same_v<Allocator, json_details::NoAllocator>),
+		                     DefaultParsePolicy,
+		                     BasicParsePolicy<PolicyFlags, Allocator>>;
+		template<typename ParsePolicy>
+		using TryDefaultParsePolicy =
+		  std::conditional_t<ParsePolicy::is_default_parse_policy,
+		                     DefaultParsePolicy, ParsePolicy>;
 
 		namespace options {
 			/***

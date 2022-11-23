@@ -347,6 +347,11 @@ namespace daw::json {
 			}
 		};
 
+		/// @brief Is the type pinned in memory and unable to be copied/moved after
+		/// construction(e.g. std::mutex).  These types require using RVO in order
+		/// to be used but that can have a penalty as std::current_exceptions( )
+		/// must be checked which is quite noticeable on MSVC.
+		/// @tparam T type to check
 		template<typename T>
 		inline constexpr bool is_pinned_type_v = not(
 		  (std::is_copy_constructible_v<T> and std::is_copy_assignable_v<T>) or
@@ -371,14 +376,12 @@ namespace daw::json {
 			template<typename T>
 			using key_type_t = typename T::key_type;
 
-#if defined( _MSC_VER ) and not defined( __clang__ )
-			// Lying to MSVC about being a random iterator causes issues I have not
-			// found yet
+#if defined( DAW_JSON_DISABLE_RANDOM )
 			template<bool>
-			inline constexpr bool can_random_v = false;
+			inline constexpr bool can_be_random_iterator_v = false;
 #else
 			template<bool IsKnown>
-			inline constexpr bool can_random_v = IsKnown;
+			inline constexpr bool can_be_random_iterator_v = IsKnown;
 #endif
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER

@@ -13,9 +13,29 @@
 
 #include <daw/daw_consteval.h>
 
-#if defined( __GNUC__ ) and not defined( __clang__ ) and \
-  not defined( DAW_JSON_FLATTEN ) and not defined( DAW_NO_FLATTEN )
+#if defined( _MSC_VER ) and not defined( __clang__ )
+#define DAW_JSON_COMPILER_MSVC
+#define DAW_JSON_COMPILER_MSVC_COMPAT
+#elif defined( _MSC_VER ) and defined( __clang__ )
+#define DAW_JSON_COMPILER_CLANG
+#define DAW_JSON_COMPILER_CLANGCL
+#define DAW_JSON_COMPILER_MSVC_COMPAT
+#define DAW_JSON_COMPILER_CLANG_COMPAT
+#elif defined( __GNUC__ ) and not defined( __clang__ )
+#define DAW_JSON_COMPILER_GCC
+#define DAW_JSON_COMPILER_GCC_COMPAT
+#elif defined( __clang__ )
+#define DAW_JSON_COMPILER_CLANG
+#define DAW_JSON_COMPILER_CLANG_COMPAT
+#define DAW_JSON_COMPILER_GCC_COMPAT
+#endif
+
+/// DAW_NO_FLATTEN disables any flatten attributes in code.  This is disabled in
+/// GCC by default as it cannot handle it
+#if defined( DAW_JSON_COMPILER_GCC ) and not defined( DAW_JSON_FLATTEN )
+#if not defined( DAW_NO_FLATTEN )
 #define DAW_NO_FLATTEN
+#endif
 #endif
 
 // Does json_link throw itself.  Other things like constructors for the user
@@ -42,8 +62,9 @@
 // <daw/daw_scope_guard.h>
 // This has performance impacts on MSVC as on_exit_success calls
 // std::uncaught_exceptions( ) which is very slow there
-#if not defined( DAW_NO_CONSTEXPR_SCOPE_GUARD ) and not defined( DAW_JSON_ENABLE_FULL_RVO )
-#define DAW_NO_CONSTEXPR_SCOPE_GUARD 
+#if not defined( DAW_NO_CONSTEXPR_SCOPE_GUARD ) and \
+  not defined( DAW_JSON_ENABLE_FULL_RVO )
+#define DAW_NO_CONSTEXPR_SCOPE_GUARD
 #endif
 
 // DAW_IS_CONSTANT_EVALUATED is defined when a builtin or
@@ -53,7 +74,8 @@
 // Show extra diagnostic information like unmapped members when parsing
 // by defining DAW_JSON_PARSER_DIAGNOSTICS
 
-#if defined( __GNUC__ )
+// DAW_CAN_CONSTANT_EVAL is used to test if we are in a constant expression
+#if defined( DAW_JSON_COMPILER_GCC_COMPAT )
 #define DAW_CAN_CONSTANT_EVAL( ... ) \
 	( __builtin_constant_p( __VA_ARGS__ ) == 1 )
 #else
@@ -96,7 +118,7 @@
 #endif
 
 // Fix bug in MSVC
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if defined( DAW_JSON_COMPILER_MSVC )
 #define DAW_JSON_MAKE_LOC_INFO_CONSTEVAL constexpr
 #else
 #define DAW_JSON_MAKE_LOC_INFO_CONSTEVAL DAW_CONSTEVAL
@@ -104,3 +126,59 @@
 
 // Allow experimental SIMD paths, if available
 // by defining DAW_ALLOW_SSE42 and using the parser policy ExecModeType simd
+
+// Use strtod instead of from_chars when avialable by defining
+// DAW_JSON_USE_STRTOD
+#if not defined( DAW_JSON_USE_STRTOD ) and not defined( __cpp_lib_to_chars )
+#define DAW_JSON_USE_STRTOD
+#endif
+
+// define DAW_JSON_DISABLE_RANDOM to disable creating random iterators when the
+// size is known up front.  This is playing to the implementations prior to
+// C++23 when range constructors are added to containers.  It is disabled on
+// MSVC as that impl does not work with it
+#if defined( DAW_JSON_COMPILER_MSVC )
+#if not defined( DAW_JSON_DISABLE_RANDOM )
+#define DAW_JSON_DISABLE_RANDOM
+#endif
+#endif
+
+// DAW_JSON_HAS_BUILTIN_UADD is used to switch to a constexpr method of overflow
+// addition when available
+#if( defined( __GNUC__ ) and __GNUC__ >= 8 ) or defined( __clang__ ) or \
+  ( DAW_HAS_BUILTIN( __builtin_uadd_overflow ) and                      \
+    DAW_HAS_BUILTIN( __builtin_uaddl_overflow ) and                     \
+    DAW_HAS_BUILTIN( __builtin_uaddll_overflow ) )
+#define DAW_JSON_HAS_BUILTIN_UADD
+#endif
+
+// DAW_JSON_BUGFIX_FROM_JSON_001
+// Defined for MSVC as it has been ICE'ing on daw_json_ensure in from_json
+#if defined( DAW_JSON_COMPILER_MSVC )
+#define DAW_JSON_BUGFIX_FROM_JSON_001
+#endif
+
+// DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002
+// MSVC cannot always evaluate in the correct order as defined by the standard.
+// JSON Link uses the left->right guarantees in places like constructors so that
+// less state is needed.  In MSVC one must keep more state in places like
+// parse_tuple_value
+#if defined( DAW_JSON_COMPILER_MSVC )
+#define DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002
+#endif
+
+// DAW_JSON_BUGFIX_MSVC_KNOWN_LOC_ICE_003
+// MSVC in C++20 mode will ICE when known locations is evaluated at compile time
+#if( defined( DAW_JSON_COMPILER_MSVC ) and __cpp_constexpr > 201700L )
+#define DAW_JSON_BUGFIX_MSVC_KNOWN_LOC_ICE_003
+#endif
+
+/// This is in addition to the parse policy.  Always do a full name match
+/// instead of sometimes relying on the hash.  This was enabled in MSVC due to
+/// an issue that should be rechecked
+#if not defined( NDEBUG ) or defined( DEBUG ) or \
+  defined( DAW_JSON_PARSER_DIAGNOSTICS ) or defined( DAW_JSON_COMPILER_MSVC )
+#if not defined( DAW_JSON_ALWAYS_FULL_NAME_MATCH )
+#define DAW_JSON_ALWAYS_FULL_NAME_MATCH
+#endif
+#endif

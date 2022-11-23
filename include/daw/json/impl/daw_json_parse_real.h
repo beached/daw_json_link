@@ -95,9 +95,9 @@ namespace daw::json {
 			/// the type, usually uint64_t
 			template<typename ParseState, typename Result,
 			         typename max_storage_digits, typename CharT>
-			[[nodiscard]] inline constexpr bool should_use_strtod(
-			  CharT * whole_first, CharT * whole_last,
-			  CharT * fract_first, CharT * fract_last ) {
+			[[nodiscard]] inline constexpr bool
+			should_use_strtod( CharT *whole_first, CharT *whole_last,
+			                   CharT *fract_first, CharT *fract_last ) {
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754( ) ) {
 					return DAW_UNLIKELY(
@@ -115,7 +115,7 @@ namespace daw::json {
 			}
 
 			template<typename Result, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr Result
 			parse_real_known( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
@@ -260,9 +260,8 @@ namespace daw::json {
 					use_strtod |= exponent < -22;
 					use_strtod |= significant_digits > 9007199254740992ULL;
 					if( DAW_UNLIKELY( use_strtod ) ) {
-						using json_details::parse_with_strtod;
-						return parse_with_strtod<Result>( parse_state.first,
-						                                  parse_state.last );
+						return json_details::parse_with_strtod<Result>( parse_state.first,
+						                                                parse_state.last );
 					}
 				}
 				return sign * power10<Result>(
@@ -271,7 +270,7 @@ namespace daw::json {
 			}
 
 			template<typename Result, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr Result
 			parse_real_unknown( ParseState &parse_state ) {
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 				using CharT = typename ParseState::CharT;
@@ -472,7 +471,7 @@ namespace daw::json {
 			}
 
 			template<typename Result, bool KnownRange, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
+			[[nodiscard]] static constexpr Result
 			parse_real( ParseState &parse_state ) {
 				if constexpr( KnownRange ) {
 					return parse_real_known<Result>( parse_state );

@@ -32,7 +32,7 @@ namespace daw::json {
 			template<json_options_t PolicyFlags = json_details::default_policy_flag,
 			         typename Allocator = json_details::NoAllocator>
 			class basic_stateful_json_value_state {
-				using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
+				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<PolicyFlags, Allocator>>;
 
 			public:
 				daw::string_view name;
@@ -78,7 +78,7 @@ namespace daw::json {
 		template<json_options_t PolicyFlags = json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		class basic_stateful_json_value {
-			using ParseState = BasicParsePolicy<PolicyFlags, Allocator>;
+			using ParseState = TryDefaultParsePolicy<BasicParsePolicy<PolicyFlags, Allocator>>;
 
 			basic_json_value<PolicyFlags, Allocator> m_value;
 			std::vector<

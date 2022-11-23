@@ -225,14 +225,12 @@ namespace daw::json {
 					using NeedClassPositions = std::bool_constant<(
 					  ( JsonMembers::must_be_class_member or ... ) )>;
 
-					// MSVC in C++20 mode has a bug.  This works around it
-#if( not defined( _MSC_VER ) or __cpp_constexpr <= 201700L ) or \
-  defined( __clang__ )
-					auto known_locations = DAW_AS_CONSTANT(
-					  ( make_locations_info<ParseState, JsonMembers...>( ) ) );
-#else
+#if defined( DAW_JSON_BUGFIX_MSVC_KNOWN_LOC_ICE_003 )
 					auto known_locations =
 					  make_locations_info<ParseState, JsonMembers...>( );
+#else
+					auto known_locations = DAW_AS_CONSTANT(
+					  ( make_locations_info<ParseState, JsonMembers...>( ) ) );
 #endif
 
 					if constexpr( is_pinned_type_v<typename JsonClass::parse_to_t> ) {

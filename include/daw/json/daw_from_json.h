@@ -58,9 +58,13 @@ namespace daw::json {
 
 			/// In cases where we own the buffer or when requested and can, allow
 			/// temporarily mutating it to reduce search costs
-			using ParseState = json_details::apply_mutable_policy<
-			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
-			  options::TemporarilyMutateBuffer::no>;
+			/*using parse_state_mutate_t = json_details::apply_mutable_policy<
+			  policy_zstring_t, std::add_const_t<String>,
+			  options::TemporarilyMutateBuffer::yes,
+			  options::TemporarilyMutateBuffer::no>;*/
+			using ParseState =
+			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
+			                     DefaultParsePolicy, policy_zstring_t>;
 			auto parse_state =
 			  ParseState( std::data( json_data ), daw::data_end( json_data ) );
 
@@ -215,10 +219,12 @@ namespace daw::json {
 
 			/// @brief In cases where we own the buffer or when requested and can,
 			/// allow temporarily mutating it to reduce search costs
-			using ParseState = json_details::apply_mutable_policy<
-			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
-			  options::TemporarilyMutateBuffer::no>;
-
+			/*			using policy_mutate_t = json_details::apply_mutable_policy<
+			        policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
+			        options::TemporarilyMutateBuffer::no>;*/
+			using ParseState =
+			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
+			                     DefaultParsePolicy, policy_zstring_t>;
 			auto jv = basic_json_value(
 			  ParseState( std::data( json_data ), daw::data_end( json_data ) ) );
 			jv = jv.find_member( member_path );
@@ -384,12 +390,14 @@ namespace daw::json {
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using ParsePolicy = typename BasicParsePolicy<
 			  P, Allocator>::template SetPolicyOptions<PolicyFlags...>;
-
+			using ParseState =
+			  std::conditional_t<ParsePolicy::is_default_parse_policy,
+			                     DefaultParsePolicy, ParsePolicy>;
 			auto const old_parse_state = value.get_raw_state( );
 			auto parse_state =
-			  ParsePolicy( old_parse_state.first, old_parse_state.last,
-			               old_parse_state.class_first, old_parse_state.class_last,
-			               old_parse_state.get_allocator( ) );
+			  ParseState( old_parse_state.first, old_parse_state.last,
+			              old_parse_state.class_first, old_parse_state.class_last,
+			              old_parse_state.get_allocator( ) );
 
 			return json_details::parse_value<json_member, KnownBounds>(
 			  parse_state, ParseTag<json_member::expected_type>{ } );
@@ -435,11 +443,13 @@ namespace daw::json {
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
 			auto const old_parse_state = value.get_raw_state( );
-
+			using ParseState =
+			  std::conditional_t<ParsePolicy::is_default_parse_policy,
+			                     DefaultParsePolicy, ParsePolicy>;
 			auto jv = basic_json_value(
-			  ParsePolicy( old_parse_state.first, old_parse_state.last,
-			               old_parse_state.class_first, old_parse_state.class_last,
-			               old_parse_state.get_allocator( ) ) );
+			  ParseState( old_parse_state.first, old_parse_state.last,
+			              old_parse_state.class_first, old_parse_state.class_last,
+			              old_parse_state.get_allocator( ) ) );
 
 			jv = jv.find_member( member_path );
 
@@ -518,16 +528,17 @@ namespace daw::json {
 
 			/// @brief In cases where we own the buffer or when requested and can,
 			/// allow temporarily mutating it to reduce search costs
-			using ParseState = json_details::apply_mutable_policy<
+			/*using policy_mutate_t = json_details::apply_mutable_policy<
 			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
-			  options::TemporarilyMutateBuffer::no>;
-
+			  options::TemporarilyMutateBuffer::no>;*/
+			using ParseState =
+			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
+			                     DefaultParsePolicy, policy_zstring_t>;
 			auto parse_state =
 			  ParseState{ std::data( json_data ), daw::data_end( json_data ) };
 
 			parse_state.trim_left_unchecked( );
-#if defined( _MSC_VER ) and not defined( __clang__ )
-			// Work around MSVC ICE
+#if defined( DAW_JSON_BUGFIX_FROM_JSON_001 )
 			daw_json_ensure( parse_state.is_opening_bracket_checked( ),
 			                 ErrorReason::InvalidArrayStart, parse_state );
 #else
@@ -616,10 +627,12 @@ namespace daw::json {
 
 			/// @brief In cases where we own the buffer or when requested and can,
 			/// allow temporarily mutating it to reduce search costs
-			using ParseState = json_details::apply_mutable_policy<
+			/*using ParseState = json_details::apply_mutable_policy<
 			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
-			  options::TemporarilyMutateBuffer::no>;
-
+			  options::TemporarilyMutateBuffer::no>;*/
+			using ParseState =
+			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
+			                     DefaultParsePolicy, policy_zstring_t>;
 			auto jv = basic_json_value(
 			  ParseState( std::data( json_data ), daw::data_end( json_data ) ) );
 			jv = jv.find_member( member_path );
@@ -634,8 +647,7 @@ namespace daw::json {
 			}
 			auto parse_state = jv.get_raw_state( );
 			parse_state.trim_left_unchecked( );
-#if defined( _MSC_VER ) and not defined( __clang__ )
-			// Work around MSVC ICE
+#if defined( DAW_JSON_BUGFIX_FROM_JSON_001 )
 			daw_json_ensure( parse_state.is_opening_bracket_checked( ),
 			                 ErrorReason::InvalidArrayStart, parse_state );
 #else

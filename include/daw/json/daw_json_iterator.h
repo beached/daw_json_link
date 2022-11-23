@@ -65,8 +65,8 @@ namespace daw::json {
 		 */
 		template<typename JsonElement, auto... PolicyFlags>
 		class json_array_iterator {
-			using ParseState = BasicParsePolicy<
-			  options::details::make_parse_flags<PolicyFlags...>( ).value>;
+			using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
+			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using CharT = typename ParseState::CharT;
 
 			static inline constexpr ParseState
@@ -232,8 +232,8 @@ namespace daw::json {
 		/// @tparam ParsePolicy parsing policy type
 		template<typename JsonElement, auto... PolicyFlags>
 		struct json_array_range {
-			using ParsePolicy = BasicParsePolicy<
-			  options::details::make_parse_flags<PolicyFlags...>( ).value>;
+			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
+			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using iterator = json_array_iterator<JsonElement, PolicyFlags...>;
 			using CharT = typename ParsePolicy::CharT;
 

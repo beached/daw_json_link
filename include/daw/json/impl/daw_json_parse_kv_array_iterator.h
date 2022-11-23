@@ -58,12 +58,10 @@ namespace daw::json {
 
 			template<typename JsonMember, typename ParseState, bool KnownBounds>
 			struct json_parse_kv_array_iterator
-			  : json_parse_kv_array_iterator_base<ParseState,
-			                                      can_random_v<KnownBounds>> {
+			  : json_parse_kv_array_iterator_base<ParseState, can_be_random_iterator_v<KnownBounds>> {
 
 				using base =
-				  json_parse_kv_array_iterator_base<ParseState,
-				                                    can_random_v<KnownBounds>>;
+				  json_parse_kv_array_iterator_base<ParseState, can_be_random_iterator_v<KnownBounds>>;
 				using iterator_category = typename base::iterator_category;
 				using json_key_t = typename JsonMember::json_key_t;
 				using json_element_t = typename JsonMember::json_value_t;

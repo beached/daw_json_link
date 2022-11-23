@@ -96,10 +96,12 @@ namespace daw::json {
 		 * @tparam RangeCheck Check if the value will fit in the result
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
-		template<JSONNAMETYPE Name, typename T = double,
-		         json_options_t Options = number_opts_def,
-		         typename Constructor = use_default>
-		struct json_number;
+
+	 template<JSONNAMETYPE Name, typename T = double,
+		        json_options_t Options = number_opts_def,
+		        typename Constructor = use_default>
+	 struct json_number;
+
 		/**
 		 * The member is a nullable number
 		 * @tparam Name name of json member
