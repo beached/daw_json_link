@@ -211,15 +211,12 @@ namespace daw::json {
 					  json_details::all_json_members_must_exist_v<T, ParseState>>(
 					  parse_state, old_class_pos );
 
-					if constexpr( force_aggregate_construction_v<T> ) {
+					if constexpr( should_construct_explicitly_v<Constructor, T,
+					                                            ParseState> ) {
 						return T{ };
 					} else {
 						return construct_value_tp<T, Constructor>( parse_state,
 						                                           fwd_pack{ } );
-						/*
-						            return construct_value( template_args<T, Constructor>,
-						                                    parse_state );
-						                                    */
 					}
 				} else {
 					using NeedClassPositions = std::bool_constant<(
@@ -245,7 +242,8 @@ namespace daw::json {
 						 * Rather than call directly use apply/tuple to evaluate
 						 * left->right
 						 */
-						if constexpr( force_aggregate_construction_v<T> ) {
+						if constexpr( should_construct_explicitly_v<Constructor, T,
+						                                            ParseState> ) {
 							return T{ parse_class_member<
 							  Is, traits::nth_type<Is, JsonMembers...>, must_exist::value,
 							  NeedClassPositions::value>( parse_state, known_locations )... };
@@ -257,7 +255,8 @@ namespace daw::json {
 							                 parse_state, known_locations )... } );
 						}
 					} else {
-						if constexpr( force_aggregate_construction_v<T> ) {
+						if constexpr( should_construct_explicitly_v<Constructor, T,
+						                                            ParseState> ) {
 							auto result = T{ parse_class_member<
 							  Is, traits::nth_type<Is, JsonMembers...>, must_exist::value,
 							  NeedClassPositions::value>( parse_state, known_locations )... };
@@ -317,7 +316,8 @@ namespace daw::json {
 						                                          old_class_pos );
 					} );
 					(void)run_after_parse;
-					if constexpr( force_aggregate_construction_v<T> ) {
+					if constexpr( should_construct_explicitly_v<Constructor, T,
+					                                            ParseState> ) {
 						return T{ parse_ordered_class_member(
 						  template_arg<JsonMembers>, current_idx, parse_state )... };
 					} else {
@@ -328,7 +328,8 @@ namespace daw::json {
 					}
 				} else {
 					auto result = [&] {
-						if constexpr( force_aggregate_construction_v<T> ) {
+						if constexpr( should_construct_explicitly_v<Constructor, T,
+						                                            ParseState> ) {
 							return T{ parse_ordered_class_member(
 							  template_arg<JsonMembers>, current_idx, parse_state )... };
 						} else {

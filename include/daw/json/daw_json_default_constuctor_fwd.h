@@ -31,14 +31,10 @@ namespace daw::json {
 		/// @tparam T type to construct
 		template<typename T, typename = void>
 		struct default_constructor {
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T operator( )( ) const
-			  noexcept( std::is_nothrow_default_constructible_v<T> ) {
-				return T{ };
-			}
+			using i_am_the_default_default_constructor_type = void;
 
 			template<typename... Args,
-			         std::enable_if_t<(sizeof...( Args ) > 0 and
-			                           std::is_constructible_v<T, Args...>),
+			         std::enable_if_t<std::is_constructible_v<T, Args...>,
 			                          std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
 			operator( )( Args &&...args ) const {
@@ -47,8 +43,7 @@ namespace daw::json {
 			}
 
 			template<typename... Args,
-			         std::enable_if_t<(sizeof...( Args ) > 0 and
-			                           not std::is_constructible_v<T, Args...> and
+			         std::enable_if_t<(not std::is_constructible_v<T, Args...> and
 			                           traits::is_list_constructible_v<T, Args...>),
 			                          std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T

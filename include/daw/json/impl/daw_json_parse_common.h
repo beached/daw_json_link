@@ -73,6 +73,7 @@ namespace daw::json {
 				}
 			}
 
+#if not defined( DAW_JSON_USE_GENERIC_LAMBDAS )
 			template<typename Constructor>
 			struct construct_value_tp_invoke_t {
 				template<typename... TArgs, std::size_t... Is>
@@ -87,7 +88,7 @@ namespace daw::json {
 				operator( )( fwd_pack<TArgs...> &&tp, Allocator &alloc,
 				             std::index_sequence<Is...> ) const {
 					return Constructor{ }( get<Is>( DAW_MOVE( tp ) )...,
-					                       DAW_FWD2( Allocator, alloc ) );
+					                       DAW_FWD( alloc ) );
 				}
 
 				template<typename Alloc, typename... TArgs, std::size_t... Is>
@@ -96,20 +97,57 @@ namespace daw::json {
 				             fwd_pack<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
 
-					return Constructor{ }( std::allocator_arg, DAW_FWD2( Alloc, alloc ),
+					return Constructor{ }( std::allocator_arg, DAW_FWD( alloc ),
 					                       get<Is>( DAW_MOVE( tp ) )... );
 				}
 			};
-
 			template<typename Constructor>
 			inline constexpr auto construct_value_tp_invoke =
 			  construct_value_tp_invoke_t<Constructor>{ };
+#endif
 
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
 			DAW_ATTRIB_FLATINLINE static inline constexpr auto
 			construct_value_tp( ParseState &parse_state,
 			                    fwd_pack<Args...> &&tp_args ) {
+
+#if defined( DAW_JSON_USE_GENERIC_LAMBDAS )
+				if constexpr( ParseState::has_allocator ) {
+					using alloc_t =
+					  typename ParseState::template allocator_type_as<Value>;
+					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
+					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
+						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
+							return Constructor{ }( get<Is>( DAW_MOVE( tp_args ) )...,
+							                       DAW_MOVE( alloc ) );
+						}( std::make_index_sequence<sizeof...( Args )>{ } );
+					} else if constexpr( std::is_invocable_v<Constructor,
+					                                         std::allocator_arg_t,
+					                                         alloc_t, Args...> ) {
+						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
+							return Constructor{ }( std::allocator_arg, DAW_MOVE( alloc ),
+							                       get<Is>( DAW_MOVE( tp_args ) )... );
+						}( std::make_index_sequence<sizeof...( Args )>{ } );
+					} else {
+						static_assert(
+						  std::is_invocable_v<Constructor, Args...>,
+						  "Unable to construct value with the supplied arguments" );
+						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
+							return Constructor{ }( get<Is>( DAW_MOVE( tp_args ) )... );
+						}( std::make_index_sequence<sizeof...( Args )>{ } );
+					}
+				} else {
+					// Silence MSVC warning, used in other if constexpr case
+					(void)parse_state;
+					static_assert(
+					  std::is_invocable_v<Constructor, Args...>,
+					  "Unable to construct value with the supplied arguments" );
+					return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
+						return Constructor{ }( get<Is>( DAW_MOVE( tp_args ) )... );
+					}( std::make_index_sequence<sizeof...( Args )>{ } );
+				}
+#else
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
@@ -140,6 +178,7 @@ namespace daw::json {
 					return construct_value_tp_invoke<Constructor>(
 					  DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
 				}
+#endif
 			}
 
 			template<typename T>

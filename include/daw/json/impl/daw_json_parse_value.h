@@ -1118,7 +1118,8 @@ namespace daw::json {
 						  parse_state, old_class_pos );
 					} );
 					(void)run_after_parse;
-					if constexpr( force_aggregate_construction_v<JsonMember> ) {
+					if constexpr( should_construct_explicitly_v<Constructor, tuple_t,
+					                                            ParseState> ) {
 						return tuple_t{
 						  parse_value_help( daw::constant<Is>{ }, class_idx )... };
 					} else {
@@ -1128,7 +1129,8 @@ namespace daw::json {
 					}
 				} else {
 					auto result = [&] {
-						if constexpr( force_aggregate_construction_v<JsonMember> ) {
+						if constexpr( should_construct_explicitly_v<Constructor, tuple_t,
+						                                            ParseState> ) {
 							return tuple_t{
 							  parse_value_help( daw::constant<Is>{ }, class_idx )... };
 						} else {

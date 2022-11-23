@@ -121,6 +121,30 @@ namespace daw::json {
 		  daw::is_detected_v<json_details::force_aggregate_construction_test, T> or
 		  daw::is_detected_v<json_details::force_aggregate_construction_test2, T>;
 
+		namespace json_details {
+			template<typename T>
+			using is_default_default_constructor_type_test =
+			  typename T::i_am_the_default_default_constructor_type;
+
+			template<typename T>
+			inline constexpr bool is_default_default_constructor_type_v =
+			  daw::is_detected_v<is_default_default_constructor_type_test, T>;
+
+			template<typename T>
+			using has_stateless_allocator_test = typename T::has_stateless_allocator;
+
+			template<typename T>
+			inline constexpr bool has_stateless_allocator_v =
+			  daw::is_detected_v<has_stateless_allocator_test, T>;
+
+		} // namespace json_details
+
+		template<typename Constructor, typename T, typename ParseState>
+		inline constexpr bool should_construct_explicitly_v =
+		  force_aggregate_construction_v<T> or
+		  json_details::is_default_default_constructor_type_v<Constructor> or
+		  not json_details::has_stateless_allocator_v<ParseState>;
+
 		template<typename... Ts>
 		inline constexpr bool is_empty_pack_v = sizeof...( Ts ) == 0;
 

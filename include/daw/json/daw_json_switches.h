@@ -182,3 +182,11 @@
 #define DAW_JSON_ALWAYS_FULL_NAME_MATCH
 #endif
 #endif
+
+// Allows pack expansions with get<Is> without separate methods.  This should
+// improve symbol sizes
+#if defined( __cpp_generic_lambdas )
+#if __cpp_generic_lambdas >= 201707L
+#define DAW_JSON_USE_GENERIC_LAMBDAS
+#endif
+#endif
