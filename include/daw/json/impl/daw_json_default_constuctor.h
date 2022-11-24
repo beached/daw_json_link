@@ -92,15 +92,16 @@ namespace daw::json {
 			}
 
 			DAW_ATTRIB_INLINE
-			DAW_JSON_CPP23_STATIC_CALL_OP constexpr std::array<T, Sz>
-			operator( )( std::array<T, Sz> &&v ) const noexcept {
+			DAW_JSON_CPP23_STATIC_CALL_OP constexpr std::array<T, Sz> operator( )(
+			  std::array<T, Sz> &&v ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
 				return DAW_MOVE( v );
 			}
 
 			template<typename Iterator>
 			DAW_ATTRIB_INLINE
 			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr std::array<T, Sz>
-			  operator( )( Iterator first, Iterator last ) const {
+			  operator( )( Iterator first,
+			               Iterator last ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				return construct_array( first, last, std::make_index_sequence<Sz>{ } );
 			}
 		};
@@ -111,7 +112,8 @@ namespace daw::json {
 		struct default_constructor<std::vector<T, Alloc>> {
 
 			DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP std::vector<T, Alloc>
-			operator( )( std::vector<T, Alloc> &&v ) const
+			operator( )( std::vector<T, Alloc> &&v )
+			  DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 			  noexcept( noexcept( std::vector<T, Alloc>( v ) ) ) {
 				return DAW_MOVE( v );
 			}
@@ -119,7 +121,8 @@ namespace daw::json {
 			template<typename Iterator>
 			DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP std::vector<T, Alloc>
 			operator( )( Iterator first, Iterator last,
-			             Alloc const &alloc = Alloc{ } ) const {
+			             Alloc const &alloc = Alloc{ } )
+			  DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				if constexpr( std::is_same_v<std::random_access_iterator_tag,
 				                             typename std::iterator_traits<
 				                               Iterator>::iterator_category> or
@@ -149,7 +152,7 @@ namespace daw::json {
 			DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP
 			  std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
 			  operator( )( std::unordered_map<Key, T, Hash, CompareEqual, Alloc> &&v )
-			    const noexcept( noexcept(
+			    DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept( noexcept(
 			      std::unordered_map<Key, T, Hash, CompareEqual, Alloc>( v ) ) ) {
 				return DAW_MOVE( v );
 			}
@@ -159,7 +162,8 @@ namespace daw::json {
 			DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP
 			  std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
 			  operator( )( Iterator first, Iterator last,
-			               Alloc const &alloc = Alloc{ } ) const {
+			               Alloc const &alloc = Alloc{ } )
+			    DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				return std::unordered_map<Key, T, Hash, CompareEqual, Alloc>(
 				  first, last, count, Hash{ }, CompareEqual{ }, alloc );
 			}
@@ -174,7 +178,8 @@ namespace daw::json {
 
 			[[nodiscard]] DAW_ATTRIB_INLINE
 			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
-			  operator( )( concepts::construct_nullable_with_empty_t ) const
+			  operator( )( concepts::construct_nullable_with_empty_t )
+			    DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 			  noexcept( concepts::is_nullable_empty_nothrow_constructible_v<T> ) {
 				static_assert( concepts::is_nullable_empty_constructible_v<T> );
 				return rtraits_t{ }( concepts::construct_nullable_with_empty );
@@ -186,7 +191,8 @@ namespace daw::json {
 			           std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_INLINE
 			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
-			  operator( )( Args &&...args ) const noexcept(
+			  operator( )( Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
+			  noexcept(
 			    concepts::is_nullable_value_nothrow_constructible_v<T, Args...> ) {
 				return rtraits_t{ }( concepts::construct_nullable_with_value,
 				                     DAW_FWD( args )... );
