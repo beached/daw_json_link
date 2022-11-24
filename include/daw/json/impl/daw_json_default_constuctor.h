@@ -91,14 +91,16 @@ namespace daw::json {
 				return std::array<T, Sz>{ get_result( Is )... };
 			}
 
-			DAW_ATTRIB_INLINE constexpr std::array<T, Sz>
+			DAW_ATTRIB_INLINE
+			DAW_JSON_CPP23_STATIC_CALL_OP constexpr std::array<T, Sz>
 			operator( )( std::array<T, Sz> &&v ) const noexcept {
 				return DAW_MOVE( v );
 			}
 
 			template<typename Iterator>
-			DAW_ATTRIB_INLINE constexpr std::array<T, Sz>
-			operator( )( Iterator first, Iterator last ) const {
+			DAW_ATTRIB_INLINE
+			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr std::array<T, Sz>
+			  operator( )( Iterator first, Iterator last ) const {
 				return construct_array( first, last, std::make_index_sequence<Sz>{ } );
 			}
 		};
@@ -108,14 +110,14 @@ namespace daw::json {
 		template<typename T, typename Alloc>
 		struct default_constructor<std::vector<T, Alloc>> {
 
-			DAW_ATTRIB_INLINE std::vector<T, Alloc>
+			DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP std::vector<T, Alloc>
 			operator( )( std::vector<T, Alloc> &&v ) const
 			  noexcept( noexcept( std::vector<T, Alloc>( v ) ) ) {
 				return DAW_MOVE( v );
 			}
 
 			template<typename Iterator>
-			DAW_ATTRIB_INLINE std::vector<T, Alloc>
+			DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP std::vector<T, Alloc>
 			operator( )( Iterator first, Iterator last,
 			             Alloc const &alloc = Alloc{ } ) const {
 				if constexpr( std::is_same_v<std::random_access_iterator_tag,
@@ -144,18 +146,20 @@ namespace daw::json {
 		struct default_constructor<
 		  std::unordered_map<Key, T, Hash, CompareEqual, Alloc>> {
 
-			DAW_ATTRIB_INLINE std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
-			operator( )( std::unordered_map<Key, T, Hash, CompareEqual, Alloc> &&v )
-			  const noexcept( noexcept(
-			    std::unordered_map<Key, T, Hash, CompareEqual, Alloc>( v ) ) ) {
+			DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP
+			  std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
+			  operator( )( std::unordered_map<Key, T, Hash, CompareEqual, Alloc> &&v )
+			    const noexcept( noexcept(
+			      std::unordered_map<Key, T, Hash, CompareEqual, Alloc>( v ) ) ) {
 				return DAW_MOVE( v );
 			}
 
 			static constexpr std::size_t count = 1;
 			template<typename Iterator>
-			DAW_ATTRIB_INLINE std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
-			operator( )( Iterator first, Iterator last,
-			             Alloc const &alloc = Alloc{ } ) const {
+			DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP
+			  std::unordered_map<Key, T, Hash, CompareEqual, Alloc>
+			  operator( )( Iterator first, Iterator last,
+			               Alloc const &alloc = Alloc{ } ) const {
 				return std::unordered_map<Key, T, Hash, CompareEqual, Alloc>(
 				  first, last, count, Hash{ }, CompareEqual{ }, alloc );
 			}
@@ -168,8 +172,9 @@ namespace daw::json {
 			using value_type = concepts::nullable_value_type_t<T>;
 			using rtraits_t = concepts::nullable_value_traits<T>;
 
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( concepts::construct_nullable_with_empty_t ) const
+			[[nodiscard]] DAW_ATTRIB_INLINE
+			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
+			  operator( )( concepts::construct_nullable_with_empty_t ) const
 			  noexcept( concepts::is_nullable_empty_nothrow_constructible_v<T> ) {
 				static_assert( concepts::is_nullable_empty_constructible_v<T> );
 				return rtraits_t{ }( concepts::construct_nullable_with_empty );
@@ -179,9 +184,10 @@ namespace daw::json {
 			         std::enable_if_t<
 			           concepts::is_nullable_value_constructible_v<T, Args...>,
 			           std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
-			operator( )( Args &&...args ) const noexcept(
-			  concepts::is_nullable_value_nothrow_constructible_v<T, Args...> ) {
+			[[nodiscard]] DAW_ATTRIB_INLINE
+			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
+			  operator( )( Args &&...args ) const noexcept(
+			    concepts::is_nullable_value_nothrow_constructible_v<T, Args...> ) {
 				return rtraits_t{ }( concepts::construct_nullable_with_value,
 				                     DAW_FWD( args )... );
 			}

@@ -190,3 +190,18 @@
 #define DAW_JSON_USE_GENERIC_LAMBDAS
 #endif
 #endif
+
+// Use static operator( ) when supported
+#if defined( __cpp_static_call_operator )
+#if __cpp_static_call_operator >= 202207L
+#define DAW_JSON_HAS_STATIC_CALL_OP
+#endif
+#endif
+
+#if defined( DAW_JSON_HAS_STATIC_CALL_OP )
+#define DAW_JSON_CPP23_STATIC_CALL_OP static
+#define DAW_JSON_CPP23_STATIC_CALL_OP_CONST
+#else
+#define DAW_JSON_CPP23_STATIC_CALL_OP
+#define DAW_JSON_CPP23_STATIC_CALL_OP_CONST const
+#endif

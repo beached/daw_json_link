@@ -38,13 +38,16 @@ namespace daw::json {
 					return *val;
 				}
 
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     nullable_type const &opt ) const
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
+				operator( )( construct_nullable_with_value_t, nullable_type const &opt )
+				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_copy_constructible_v<nullable_type> ) {
 					return opt;
 				}
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     nullable_type &&opt ) const
+
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
+				operator( )( construct_nullable_with_value_t,
+				             nullable_type &&opt ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_move_constructible_v<nullable_type> ) {
 					return opt;
 				}
@@ -54,8 +57,9 @@ namespace daw::json {
 				           nullable_impl::is_nullable_value_type_constructible_v<
 				             value_type, Args...>,
 				           std::nullptr_t> = nullptr>
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     Args &&...args ) const
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
+				operator( )( construct_nullable_with_value_t,
+				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<value_type> and
@@ -72,8 +76,9 @@ namespace daw::json {
 #endif
 				}
 
-				constexpr nullable_type
-				operator( )( construct_nullable_with_empty_t ) const noexcept {
+				constexpr nullable_type DAW_JSON_CPP23_STATIC_CALL_OP
+				operator( )( construct_nullable_with_empty_t )
+				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
 					return nullable_type( );
 				}
 
@@ -93,8 +98,9 @@ namespace daw::json {
 					return *val;
 				}
 
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     nullable_type &&opt ) const
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
+				operator( )( construct_nullable_with_value_t,
+				             nullable_type &&opt ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_move_constructible_v<nullable_type> ) {
 					return opt;
 				}
@@ -104,8 +110,9 @@ namespace daw::json {
 				           nullable_impl::is_nullable_value_type_constructible_v<
 				             value_type, Args...>,
 				           std::nullptr_t> = nullptr>
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     Args &&...args ) const
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
+				operator( )( construct_nullable_with_value_t,
+				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<value_type> and
@@ -121,8 +128,9 @@ namespace daw::json {
 #endif
 				}
 
-				constexpr nullable_type
-				operator( )( construct_nullable_with_empty_t ) const noexcept {
+				constexpr nullable_type DAW_JSON_CPP23_STATIC_CALL_OP
+				operator( )( construct_nullable_with_empty_t )
+				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
 					return nullable_type( );
 				}
 
@@ -142,13 +150,16 @@ namespace daw::json {
 					return *val;
 				}
 
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     nullable_type const &opt ) const
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
+				operator( )( construct_nullable_with_value_t, nullable_type const &opt )
+				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_copy_constructible_v<nullable_type> ) {
 					return opt;
 				}
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     nullable_type &&opt ) const
+
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
+				operator( )( construct_nullable_with_value_t,
+				             nullable_type &&opt ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_move_constructible_v<nullable_type> ) {
 					return opt;
 				}
@@ -158,8 +169,9 @@ namespace daw::json {
 				           nullable_impl::is_nullable_value_type_constructible_v<
 				             value_type, Args...>,
 				           std::nullptr_t> = nullptr>
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     Args &&...args ) const
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
+				operator( )( construct_nullable_with_value_t,
+				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<value_type> and
@@ -175,8 +187,9 @@ namespace daw::json {
 #endif
 				}
 
-				constexpr nullable_type
-				operator( )( construct_nullable_with_empty_t ) const noexcept {
+				constexpr nullable_type DAW_JSON_CPP23_STATIC_CALL_OP
+				operator( )( construct_nullable_with_empty_t )
+				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
 					return nullable_type( );
 				}
 
@@ -196,9 +209,9 @@ namespace daw::json {
 					return *val;
 				}
 
-				constexpr nullable_type
-				operator( )( construct_nullable_with_value_t,
-				             nullable_type ptr ) const noexcept {
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type operator( )(
+				  construct_nullable_with_value_t,
+				  nullable_type ptr ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
 					return ptr;
 				}
 
@@ -207,8 +220,9 @@ namespace daw::json {
 				           nullable_impl::is_nullable_value_type_constructible_v<
 				             value_type, Args...>,
 				           std::nullptr_t> = nullptr>
-				constexpr nullable_type operator( )( construct_nullable_with_value_t,
-				                                     Args &&...args ) const
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
+				operator( )( construct_nullable_with_value_t,
+				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_constructible_v<value_type, Args...> ) {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					if constexpr( std::is_aggregate_v<T> and
@@ -222,8 +236,9 @@ namespace daw::json {
 #endif
 				}
 
-				constexpr nullable_type
-				operator( )( construct_nullable_with_empty_t ) const noexcept {
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
+				operator( )( construct_nullable_with_empty_t )
+				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
 					return nullptr;
 				}
 
