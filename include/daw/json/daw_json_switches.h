@@ -12,6 +12,7 @@
 #pragma once
 
 #include <daw/daw_consteval.h>
+#include <daw/daw_cpp_feature_check.h>
 
 #if defined( _MSC_VER ) and not defined( __clang__ )
 #define DAW_JSON_COMPILER_MSVC
