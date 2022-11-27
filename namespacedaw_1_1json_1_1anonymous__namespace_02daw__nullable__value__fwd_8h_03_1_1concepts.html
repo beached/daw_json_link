@@ -144,7 +144,7 @@ template&lt;typename T &gt; </div>
 
 <p>Determines the type stored inside T. </p>
 
-<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00097">97</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00099">99</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -177,7 +177,7 @@ template&lt;typename T &gt; </div>
 
 <p>Check if nullable value has a value. </p>
 
-<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00106">106</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00108">108</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -210,7 +210,7 @@ template&lt;typename T &gt; </div>
 <p>Read value from a non-empty nullable value. </p>
 <dl class="section pre"><dt>Precondition</dt><dd><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts_1_1nullable__value__traits.html#a968fd92ae13f376a3ad28c7174b0ed64" title="Check the state of the nullable type for a value.">nullable_value_traits&lt;T&gt;::has_value( )</a> == true </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00113">113</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00115">115</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -289,10 +289,11 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        is_nullable_value_v&lt;T&gt; and std::is_invocable_v&lt;</div>
-<div class="line">          nullable_value_traits&lt;T&gt;, construct_nullable_with_empty_t&gt;</div>
+<div class="line">        is_nullable_value_v&lt;T&gt; and</div>
+<div class="line">        std::is_invocable_v&lt;nullable_value_traits&lt;T&gt;,</div>
+<div class="line">                            construct_nullable_with_empty_t&gt;</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00129">129</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00132">132</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -318,10 +319,11 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        is_nullable_empty_constructible_v&lt;T&gt; and std::is_nothrow_invocable_v&lt;</div>
-<div class="line">          nullable_value_traits&lt;T&gt;, construct_nullable_with_empty_t&gt;</div>
+<div class="line">        is_nullable_empty_constructible_v&lt;T&gt; and</div>
+<div class="line">        std::is_nothrow_invocable_v&lt;nullable_value_traits&lt;T&gt;,</div>
+<div class="line">                                    construct_nullable_with_empty_t&gt;</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00134">134</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00138">138</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -347,10 +349,11 @@ template&lt;typename T , typename... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        is_nullable_value_v&lt;T&gt; and std::is_invocable_v&lt;</div>
-<div class="line">          nullable_value_traits&lt;T&gt;, construct_nullable_with_value_t, Args...&gt;</div>
+<div class="line">        is_nullable_value_v&lt;T&gt; and</div>
+<div class="line">        std::is_invocable_v&lt;nullable_value_traits&lt;T&gt;,</div>
+<div class="line">                            construct_nullable_with_value_t, Args...&gt;</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00118">118</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00120">120</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -377,10 +380,10 @@ template&lt;typename T , typename... Args&gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">        <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a096c141ae57a27611b63cd107eb18ac0">is_nullable_value_constructible_v</a>&lt;T, Args...&gt; and</div>
-<div class="line">          std::is_nothrow_invocable_v&lt;nullable_value_traits&lt;T&gt;,</div>
-<div class="line">                                      construct_nullable_with_value_t, Args...&gt;</div>
+<div class="line">        std::is_nothrow_invocable_v&lt;nullable_value_traits&lt;T&gt;,</div>
+<div class="line">                                    construct_nullable_with_value_t, Args...&gt;</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00123">123</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00126">126</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -410,12 +413,12 @@ template&lt;typename T &gt; </div>
 </div><!-- fragment -->
 <p>Is T a nullable type. </p>
 
-<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00101">101</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__nullable__value__fwd_8h_source.html#l00103">103</a> of file <a class="el" href="daw__nullable__value__fwd_8h_source.html">daw_nullable_value_fwd.h</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts_html_a096c141ae57a27611b63cd107eb18ac0"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a096c141ae57a27611b63cd107eb18ac0">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_value_constructible_v</a></div><div class="ttdeci">constexpr bool is_nullable_value_constructible_v</div><div class="ttdef"><b>Definition:</b> <a href="daw__nullable__value__fwd_8h_source.html#l00118">daw_nullable_value_fwd.h:118</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts_html_a096c141ae57a27611b63cd107eb18ac0"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a096c141ae57a27611b63cd107eb18ac0">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_value_constructible_v</a></div><div class="ttdeci">constexpr bool is_nullable_value_constructible_v</div><div class="ttdef"><b>Definition:</b> <a href="daw__nullable__value__fwd_8h_source.html#l00120">daw_nullable_value_fwd.h:120</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

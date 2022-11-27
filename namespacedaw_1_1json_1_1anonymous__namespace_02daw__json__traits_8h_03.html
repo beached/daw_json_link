@@ -142,7 +142,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00172">172</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00180">180</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
 
 </div>
 </div>
@@ -171,7 +171,7 @@ template&lt;typename &gt; </div>
 
 <p>Can use the fast, pseudo random string iterators. They are InputIterators with an operator- that allows for O(1) distance calculations as we often know the length but cannot provide random access. For types that only use InputIterator operations and last - first for distance calc. </p>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00164">164</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00172">172</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
 
 </div>
 </div>
@@ -230,7 +230,7 @@ template&lt;typename T &gt; </div>
 <div class="line">      daw::is_detected&lt;</div>
 <div class="line">        json_details::has_ignore_unknown_members_trait_in_class_map, T&gt;&gt;</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00306">306</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00317">317</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
 
 </div>
 </div>
@@ -256,7 +256,7 @@ template&lt;typename... Ts&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00155">155</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00163">163</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
 
 </div>
 </div>
@@ -284,7 +284,7 @@ template&lt;typename T &gt; </div>
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">      daw::is_detected_v&lt;json_details::has_exact_mapping_trait_in_class_map, T&gt;</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00319">319</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00330">330</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
 
 </div>
 </div>
@@ -321,7 +321,7 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00386">386</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00397">397</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
 
 </div>
 </div>
@@ -349,7 +349,7 @@ template&lt;typename T &gt; </div>
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">      std::disjunction_v&lt;std::is_pointer&lt;T&gt;, json_details::has_element_type&lt;T&gt;&gt;</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00342">342</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00353">353</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
 
 </div>
 </div>
@@ -375,7 +375,7 @@ template&lt;typename &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00237">237</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00248">248</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
 
 </div>
 </div>
@@ -401,11 +401,12 @@ template&lt;typename Constructor , typename T , typename ParseState &gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">      force_aggregate_construction_v&lt;T&gt; or</div>
-<div class="line">      json_details::is_default_default_constructor_type_v&lt;Constructor&gt; or</div>
-<div class="line">      not json_details::has_stateless_allocator_v&lt;ParseState&gt;</div>
+<div class="line">      not json_details::has_data_contract_constructor_v&lt;T&gt; and</div>
+<div class="line">      ( force_aggregate_construction_v&lt;T&gt; or</div>
+<div class="line">        json_details::is_default_default_constructor_type_v&lt;Constructor&gt; or</div>
+<div class="line">        not json_details::has_stateless_allocator_v&lt;ParseState&gt; )</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00149">149</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__traits_8h_source.html#l00156">156</a> of file <a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>.</p>
 
 </div>
 </div>
