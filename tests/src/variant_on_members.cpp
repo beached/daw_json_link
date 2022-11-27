@@ -82,7 +82,6 @@ struct FooConstructor {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Foo> {
-		using constructor_t = FooConstructor;
 		static constexpr char const member[] = "member";
 		using type = json_member_list<
 		  json_nullable<member, std::optional<std::variant<A, B>>,
