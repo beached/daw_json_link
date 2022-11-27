@@ -137,13 +137,26 @@ namespace daw::json {
 			inline constexpr bool has_stateless_allocator_v =
 			  daw::is_detected_v<has_stateless_allocator_test, T>;
 
+			template<typename T>
+			struct data_contract_constructor {
+				using type = typename json_data_contract<T>::constructor_t;
+			};
+
+			template<typename T>
+			using data_contract_constructor_t =
+			  typename data_contract_constructor<T>::type;
+
+			template<typename T>
+			inline constexpr bool has_data_contract_constructor_v =
+			  daw::is_detected_v<data_contract_constructor_t, T>;
 		} // namespace json_details
 
 		template<typename Constructor, typename T, typename ParseState>
 		inline constexpr bool should_construct_explicitly_v =
+		  not json_details::has_data_contract_constructor_v<T> and (
 		  force_aggregate_construction_v<T> or
 		  json_details::is_default_default_constructor_type_v<Constructor> or
-		  not json_details::has_stateless_allocator_v<ParseState>;
+		  not json_details::has_stateless_allocator_v<ParseState>);
 
 		template<typename... Ts>
 		inline constexpr bool is_empty_pack_v = sizeof...( Ts ) == 0;
@@ -201,9 +214,12 @@ namespace daw::json {
 
 			template<typename T, typename Default>
 			using json_class_constructor_t = daw::detected_or_t<
-			  typename std::conditional_t<std::is_same_v<use_default, Default>,
-			                              ident_trait<default_constructor, T>,
-			                              traits::identity<Default>>::type,
+			  typename std::conditional_t<
+			    std::is_same_v<use_default, Default>,
+			    std::conditional_t<has_data_contract_constructor_v<T>,
+			                       data_contract_constructor<T>,
+			                       ident_trait<default_constructor, T>>,
+			    traits::identity<Default>>::type,
 			  json_class_constructor_t_impl, T>;
 
 			namespace is_string_like_impl {

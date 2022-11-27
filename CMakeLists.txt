@@ -9,7 +9,7 @@
 cmake_minimum_required( VERSION 3.14 )
 
 project( "daw-json-link"
-         VERSION "3.8.1"
+         VERSION "3.9.0"
          DESCRIPTION "Static JSON parsing in C++"
          HOMEPAGE_URL "https://github.com/beached/daw_json_link"
          LANGUAGES C CXX )
@@ -21,6 +21,11 @@ set( DAW_JSON_VER_OVERRIDE OFF CACHE STRING "Override the default inline namespa
 option( DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF )
 option( DAW_ENABLE_TESTING "Build unit tests and examples" OFF )
 option( DAW_JSON_PARSER_DIAGNOSTICS "Define: Output debug info while parsing" OFF )
+
+option( DAW_USE_CPP17_NAMES "Define: Use the C++17 names instead of CNTTP/Static Strings" )
+if( DAW_USE_CPP17_NAMES )
+    add_compile_definitions( DAW_USE_CPP17_ABI )
+endif()
 
 option( DAW_JSON_ENABLE_FULL_RVO "Define: Enables RVO in places so that non-copy/moveable types can be returned.  This can cause perf issues as it forces a call to std::uncaught_exceptions( )" OFF )
 if( DAW_JSON_ENABLE_FULL_RVO )

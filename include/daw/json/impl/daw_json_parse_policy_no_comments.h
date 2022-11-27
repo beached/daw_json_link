@@ -56,7 +56,7 @@ namespace daw::json {
 						  DAW_LIKELY( first < last ) and
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 						    1U ) <= 0x1FU ) {
-							++first;
+						  ++first;
 						}
 					}
 					parse_state.first = first;
