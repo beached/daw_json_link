@@ -467,16 +467,17 @@ $(function() {
 <div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;      <span class="keyword">using</span> key_type_t = <span class="keyword">typename</span> T::key_type;</div>
 <div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160; </div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;<span class="preprocessor">#if defined( DAW_JSON_DISABLE_RANDOM )</span></div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span>&gt;</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> can_be_random_iterator_v = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> IsKnown&gt;</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> can_be_random_iterator_v = IsKnown;</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;<span class="comment">// DAW disabling to fix #357</span></div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;<span class="preprocessor">#if true or defined( DAW_JSON_DISABLE_RANDOM )</span></div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span>&gt;</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> can_be_random_iterator_v = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> IsKnown&gt;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> can_be_random_iterator_v = IsKnown;</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="adaw__json__default__constuctor_8h_html"><div class="ttname"><a href="daw__json__default__constuctor_8h.html">daw_json_default_constuctor.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03_html_a3a3b50491bd2f3ad05f3be3a4efa0db5"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#a3a3b50491bd2f3ad05f3be3a4efa0db5">daw::json::anonymous_namespace{daw_json_traits.h}::is_zero_terminated_string_v</a></div><div class="ttdeci">constexpr bool is_zero_terminated_string_v</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__traits_8h_source.html#l00248">daw_json_traits.h:248</a></div></div>
