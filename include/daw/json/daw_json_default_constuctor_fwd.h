@@ -36,8 +36,8 @@ namespace daw::json {
 			template<typename... Args,
 			         std::enable_if_t<std::is_constructible_v<T, Args...>,
 			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
-			operator( )( Args &&...args ) const {
+			[[nodiscard]] DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr T
+			operator( )( Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 
 				return T( DAW_FWD( args )... );
 			}
@@ -46,8 +46,8 @@ namespace daw::json {
 			         std::enable_if_t<(not std::is_constructible_v<T, Args...> and
 			                           traits::is_list_constructible_v<T, Args...>),
 			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T
-			operator( )( Args &&...args ) const
+			[[nodiscard]] DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr T
+			operator( )( Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 			  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
 				return T{ DAW_FWD( args )... };
 			}
@@ -71,7 +71,8 @@ namespace daw::json {
 		  : default_constructor<T> {
 			/// used for types like string_view that have an empty state
 			using default_constructor<T>::operator( );
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T operator( )( ) const {
+			[[nodiscard]] DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr T
+			operator( )( ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				return T{ };
 			}
 		};

@@ -122,7 +122,8 @@ namespace daw::json {
 			}
 
 			template<typename U>
-			[[nodiscard]] inline constexpr auto operator( )( U const &value ) const {
+			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr auto
+			operator( )( U const &value ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				if constexpr( json_details::is_string_view_like_v<U> ) {
 					return std::string_view( std::data( value ), std::size( value ) );
 				} else if constexpr( json_details::to_strings::has_to_string_v<U> ) {
@@ -203,8 +204,8 @@ namespace daw::json {
 
 		template<typename T>
 		struct default_from_json_converter_t {
-			[[nodiscard]] inline constexpr decltype( auto )
-			operator( )( std::string_view sv ) const {
+			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr decltype( auto )
+			operator( )( std::string_view sv ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				if constexpr( std::disjunction<
 				                std::is_same<T, std::string_view>,
 				                std::is_same<T, std::optional<std::string_view>>>::

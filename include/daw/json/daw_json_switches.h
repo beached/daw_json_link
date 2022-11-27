@@ -12,6 +12,7 @@
 #pragma once
 
 #include <daw/daw_consteval.h>
+#include <daw/daw_cpp_feature_check.h>
 
 #if defined( _MSC_VER ) and not defined( __clang__ )
 #define DAW_JSON_COMPILER_MSVC
@@ -189,4 +190,19 @@
 #if __cpp_generic_lambdas >= 201707L
 #define DAW_JSON_USE_GENERIC_LAMBDAS
 #endif
+#endif
+
+// Use static operator( ) when supported
+#if defined( __cpp_static_call_operator )
+#if __cpp_static_call_operator >= 202207L
+#define DAW_JSON_HAS_STATIC_CALL_OP
+#endif
+#endif
+
+#if defined( DAW_JSON_HAS_STATIC_CALL_OP )
+#define DAW_JSON_CPP23_STATIC_CALL_OP static
+#define DAW_JSON_CPP23_STATIC_CALL_OP_CONST
+#else
+#define DAW_JSON_CPP23_STATIC_CALL_OP
+#define DAW_JSON_CPP23_STATIC_CALL_OP_CONST const
 #endif
