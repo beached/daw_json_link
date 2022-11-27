@@ -8,6 +8,7 @@
 
 #include <daw/json/daw_json_link.h>
 
+#include <iostream>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -100,7 +101,6 @@ int main( ) {
 	std::string_view json_doc = R"json(
 {
 	"name": "foo",
-	"version": null,
 	"b": [{
 		"id": 1234
 	}],
