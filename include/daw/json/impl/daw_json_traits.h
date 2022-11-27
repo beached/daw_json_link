@@ -411,7 +411,8 @@ namespace daw::json {
 			template<typename T>
 			using key_type_t = typename T::key_type;
 
-#if defined( DAW_JSON_DISABLE_RANDOM )
+// DAW disabling to fix #357
+#if true or defined( DAW_JSON_DISABLE_RANDOM )
 			template<bool>
 			inline constexpr bool can_be_random_iterator_v = false;
 #else

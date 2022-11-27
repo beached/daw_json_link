@@ -669,7 +669,8 @@ namespace daw::json {
 				parse_state.remove_prefix( );
 
 				using iter_t =
-				  json_parse_kv_array_iterator<JsonMember, ParseState, KnownBounds>;
+				  json_parse_kv_array_iterator<JsonMember, ParseState,
+				                               can_be_random_iterator_v<KnownBounds>>;
 				using constructor_t = typename JsonMember::constructor_t;
 				return construct_value(
 				  template_args<json_result<JsonMember>, constructor_t>, parse_state,
@@ -689,7 +690,8 @@ namespace daw::json {
 				// coding to the implementations
 
 				using iterator_t =
-				  json_parse_array_iterator<JsonMember, ParseState, KnownBounds>;
+				  json_parse_array_iterator<JsonMember, ParseState,
+				                            can_be_random_iterator_v<KnownBounds>>;
 				using constructor_t = typename JsonMember::constructor_t;
 				return construct_value(
 				  template_args<json_result<JsonMember>, constructor_t>, parse_state,
