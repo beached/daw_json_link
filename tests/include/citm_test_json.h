@@ -35,7 +35,7 @@ namespace daw::json {
 		                   json_link<subTopicIds, std::vector<std::int64_t>>,
 		                   json_link<topicIds, std::vector<std::int64_t>>>;
 
-		[[nodiscard]] static inline auto
+		[[nodiscard]] static inline DAW_JSON_CX_VECTOR auto
 		to_json_data( daw::citm::events_value_t const &value ) {
 			return std::forward_as_tuple( value.id, value.logo, value.name,
 			                              value.subTopicIds, value.topicIds );
@@ -53,7 +53,7 @@ namespace daw::json {
 		                   json_link<audienceSubCategoryId, std::int64_t>,
 		                   json_link<seatCategoryId, std::int64_t>>;
 
-		[[nodiscard]] static inline auto
+		[[nodiscard]] static inline constexpr auto
 		to_json_data( daw::citm::prices_element_t const &value ) {
 			return std::forward_as_tuple( value.amount, value.audienceSubCategoryId,
 			                              value.seatCategoryId );
@@ -67,7 +67,7 @@ namespace daw::json {
 		static inline constexpr char const areaId[] = "areaId";
 		using type = json_member_list<json_link<areaId, std::int64_t>>;
 
-		[[nodiscard]] static inline auto
+		[[nodiscard]] static inline constexpr auto
 		to_json_data( daw::citm::areas_element_t const &value ) {
 			return std::forward_as_tuple( value.areaId );
 		}
@@ -81,7 +81,7 @@ namespace daw::json {
 		  json_link<areas, std::vector<daw::citm::areas_element_t>>,
 		  json_link<seatCategoryId, std::int64_t>>;
 
-		[[nodiscard]] static inline auto
+		[[nodiscard]] static inline DAW_JSON_CX_VECTOR auto
 		to_json_data( daw::citm::seatCategories_element_t const &value ) {
 			return std::forward_as_tuple( value.areas, value.seatCategoryId );
 		}
@@ -105,7 +105,7 @@ namespace daw::json {
 		            std::vector<daw::citm::seatCategories_element_t>>,
 		  json_link<start, std::int64_t>, json_link<venueCode, std::string_view>>;
 
-		[[nodiscard]] static inline auto
+		[[nodiscard]] static inline DAW_JSON_CX_VECTOR auto
 		to_json_data( daw::citm::performances_element_t const &value ) {
 			return std::forward_as_tuple( value.eventId, value.id, value.logo,
 			                              value.prices, value.seatCategories,

@@ -9,7 +9,7 @@ else()
     set( CMAKE_CXX_EXTENSIONS OFF )
 endif()
 
-# 1.71 has MP issues, seting to 1.72 hoping that fixes them.  At the least it prevents compiling on Ubuntu 20.04
+# 1.71 has MP issues, setting to 1.72 hoping that fixes them.  At the least it prevents compiling on Ubuntu 20.04
 find_package( Boost 1.72.0 COMPONENTS container system )
 find_package( Threads )
 add_subdirectory( extern )

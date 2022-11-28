@@ -206,3 +206,43 @@
 #define DAW_JSON_CPP23_STATIC_CALL_OP
 #define DAW_JSON_CPP23_STATIC_CALL_OP_CONST const
 #endif
+
+#if defined( __cpp_constexpr_dynamic_alloc )
+#if __cpp_constexpr_dynamic_alloc >= 201907L
+#define DAW_JSON_HAS_CPP20_CX_ALLOC
+#endif
+#endif
+
+#if defined( DAW_JSON_HAS_CPP20_CX_ALLOC ) and \
+  defined( __cpp_lib_constexpr_vector )
+#if __cpp_lib_constexpr_vector >= 201907L
+#define DAW_JSON_HAS_CPP20_CX_VECTOR
+#endif
+#endif
+
+#if defined( DAW_JSON_HAS_CPP20_CX_VECTOR )
+#define DAW_JSON_CX_VECTOR constexpr
+#else
+#define DAW_JSON_CX_VECTOR
+#endif
+
+#if defined( DAW_JSON_HAS_CPP20_CX_ALLOC ) and \
+  defined( __cpp_lib_constexpr_string )
+#if __cpp_lib_constexpr_string >= 201907L
+#define DAW_JSON_HAS_CPP20_CX_STRING
+#endif
+#endif
+
+#if defined( DAW_JSON_HAS_CPP20_CX_STRING )
+#define DAW_JSON_CX_STRING constexpr
+#else
+#define DAW_JSON_CX_STRING
+#endif
+
+#if defined( DAW_JSON_HAS_CPP20_CX_STRING ) and \
+  defined( DAW_JSON_HAS_CPP20_CX_VECTOR )
+#define DAW_JSON_HAS_CPP20_CX_STRVEC
+#define DAW_JSON_CX_STRVEC constexpr
+#else
+#define DAW_JSON_CX_STRVEC
+#endif
