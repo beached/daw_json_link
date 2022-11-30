@@ -12,7 +12,6 @@ endif()
 # 1.71 has MP issues, setting to 1.72 hoping that fixes them.  At the least it prevents compiling on Ubuntu 20.04
 find_package( Boost 1.72.0 COMPONENTS container system )
 find_package( Threads )
-add_subdirectory( extern )
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
     if( CLANG_VERSION_MAJOR VERSION_LESS 13 )
@@ -61,6 +60,7 @@ if( DAW_JSON_NO_INT128 )
 endif()
 
 include( cmake/test_compiler_options.cmake )
+add_subdirectory( extern )
 
 add_library( json_test INTERFACE )
 
@@ -945,7 +945,7 @@ if( GIT_FOUND )
     message( STATUS "Git revision: ${SOURCE_CONTROL_REVISION}" )
     add_executable( json_benchmark src/json_benchmark.cpp )
     target_compile_definitions( json_benchmark PRIVATE -DSOURCE_CONTROL_REVISION="${BUILD_VERSION}" )
-    target_link_libraries( json_benchmark PRIVATE json_test )
+    target_link_libraries( json_benchmark PRIVATE json_test fmt::fmt-header-only )
     if( DEFINED MSVC AND NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
         add_compile_options( "/bigobj" )
     endif()
