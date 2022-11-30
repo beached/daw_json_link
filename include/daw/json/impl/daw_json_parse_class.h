@@ -138,8 +138,7 @@ namespace daw::json {
 				// We cannot find the member, check if the member is nullable
 				if( loc.is_null( ) ) {
 					if constexpr( is_json_nullable_v<JsonMember> ) {
-						return parse_value<without_name<JsonMember>, true>(
-						  loc, ParseTag<JsonMember::expected_type>{ } );
+						return parse_value_null<without_name<JsonMember>, true>( loc );
 					} else {
 						daw_json_error( missing_member( std::string_view(
 						                  std::data( JsonMember::name ),

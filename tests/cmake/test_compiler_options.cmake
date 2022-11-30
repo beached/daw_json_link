@@ -51,6 +51,12 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                     -Wno-c++20-compat
             )
         endif()
+        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
+            AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16 )
+            add_compile_options(
+                    -Wno-c++2b-extensions
+            )
+        endif()
         if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR
             CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
             add_compile_options( -Wno-poison-system-directories )

@@ -754,13 +754,19 @@ namespace daw::json {
 				using std::to_string;
 				using to_strings::to_string;
 				using under_type = base_int_type_t<parse_to_t>;
-
 				if constexpr( JsonMember::literal_as_string ==
 				              options::LiteralAsStringOpt::Always ) {
 					it.put( '"' );
 				}
-				if constexpr( std::disjunction_v<std::is_enum<parse_to_t>,
-				                                 daw::is_integral<parse_to_t>> ) {
+				if constexpr( std::is_same_v<under_type, bool> ) {
+					if( static_cast<bool>( value ) ) {
+						it.put( '1' );
+					} else {
+						it.put( '0' );
+					}
+				} else if constexpr( std::disjunction_v<
+				                       std::is_enum<parse_to_t>,
+				                       daw::is_integral<parse_to_t>> ) {
 					auto v = static_cast<under_type>( value );
 
 					if( DAW_UNLIKELY( v == 0 ) ) {

@@ -128,6 +128,18 @@ namespace daw::json {
 			                 1234567890123456_u64,
 			               "16 digit parser does not work on this platform" );
 
+			template<typename T>
+			struct make_unsigned_with_bool : daw::make_unsigned<T> {};
+
+			template<>
+			struct make_unsigned_with_bool<bool> {
+				using type = bool;
+			};
+
+			template<typename T>
+			using make_unsigned_with_bool_t =
+			  typename make_unsigned_with_bool<T>::type;
+
 			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
 			         typename ParseState>
 			[[nodiscard]] static constexpr Unsigned
@@ -137,7 +149,8 @@ namespace daw::json {
 				// We know how many digits are in the number
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 				using uresult_t =
-				  max_unsigned_t<RangeChecked, daw::make_unsigned_t<Unsigned>, UInt64>;
+				  max_unsigned_t<RangeChecked, make_unsigned_with_bool_t<Unsigned>,
+				                 UInt64>;
 				static_assert(
 				  not static_cast<bool>( RangeChecked ) or
 				    std::is_same_v<uresult_t, UInt64>,
@@ -200,7 +213,8 @@ namespace daw::json {
 				// We do not know how long the string is
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 				using uresult_t =
-				  max_unsigned_t<RangeChecked, daw::make_unsigned_t<Unsigned>, UInt64>;
+				  max_unsigned_t<RangeChecked, make_unsigned_with_bool_t<Unsigned>,
+				                 UInt64>;
 				static_assert(
 				  not static_cast<bool>( RangeChecked ) or
 				    std::is_same_v<uresult_t, UInt64>,

@@ -737,7 +737,7 @@ namespace daw::json {
 				  static_cast<std::size_t>( sz ) );
 			}
 
-			template<JsonBaseParseTypes BPT, typename JsonMembers,
+			template<JsonBaseParseTypes BPT, typename JsonMembers, bool KnownBounds,
 			         typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr json_result<
 			  JsonMembers>
@@ -750,7 +750,7 @@ namespace daw::json {
 				              pack_size_v<typename element_t::element_map_t> ) {
 					using JsonMember =
 					  pack_element_t<idx::value, typename element_t::element_map_t>;
-					return parse_value<JsonMember>(
+					return parse_value<JsonMember, KnownBounds>(
 					  parse_state, ParseTag<JsonMember::expected_type>{ } );
 				} else {
 					if constexpr( ParseState::is_unchecked_input ) {
@@ -761,23 +761,32 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, typename ParseState>
+			template<typename JsonMember, bool KnownBounds, typename ParseState>
 			[[nodiscard]] static constexpr json_result<JsonMember>
 			parse_value_variant( ParseState &parse_state ) {
+				if constexpr( KnownBounds ) {
+					// We are only in this branch when a member has been skipped.  This
+					// means we can look backwards
+					if( *( parse_state.first - 1 ) == '"' ) {
+						// We are a string, the skipper trims them
+						return parse_variant_value<JsonBaseParseTypes::String, JsonMember,
+						                           KnownBounds>( parse_state );
+					}
+				}
 				switch( parse_state.front( ) ) {
 				case '{':
-					return parse_variant_value<JsonBaseParseTypes::Class, JsonMember>(
-					  parse_state );
+					return parse_variant_value<JsonBaseParseTypes::Class, JsonMember,
+					                           KnownBounds>( parse_state );
 				case '[':
-					return parse_variant_value<JsonBaseParseTypes::Array, JsonMember>(
-					  parse_state );
+					return parse_variant_value<JsonBaseParseTypes::Array, JsonMember,
+					                           KnownBounds>( parse_state );
 				case 't':
 				case 'f':
-					return parse_variant_value<JsonBaseParseTypes::Bool, JsonMember>(
-					  parse_state );
+					return parse_variant_value<JsonBaseParseTypes::Bool, JsonMember,
+					                           KnownBounds>( parse_state );
 				case '"':
-					return parse_variant_value<JsonBaseParseTypes::String, JsonMember>(
-					  parse_state );
+					return parse_variant_value<JsonBaseParseTypes::String, JsonMember,
+					                           KnownBounds>( parse_state );
 				case '0':
 				case '1':
 				case '2':
@@ -790,8 +799,8 @@ namespace daw::json {
 				case '9':
 				case '+':
 				case '-':
-					return parse_variant_value<JsonBaseParseTypes::Number, JsonMember>(
-					  parse_state );
+					return parse_variant_value<JsonBaseParseTypes::Number, JsonMember,
+					                           KnownBounds>( parse_state );
 				}
 				if constexpr( ParseState::is_unchecked_input ) {
 					DAW_UNREACHABLE( );
@@ -1220,7 +1229,7 @@ namespace daw::json {
 				} else if constexpr( PTag == JsonParseTypes::SizedArray ) {
 					return parse_value_sz_array<JsonMember, KnownBounds>( parse_state );
 				} else if constexpr( PTag == JsonParseTypes::Variant ) {
-					return parse_value_variant<JsonMember>( parse_state );
+					return parse_value_variant<JsonMember, KnownBounds>( parse_state );
 				} else if constexpr( PTag == JsonParseTypes::VariantTagged ) {
 					return parse_value_variant_tagged<JsonMember>( parse_state );
 				} else if constexpr( PTag == JsonParseTypes::VariantIntrusive ) {
