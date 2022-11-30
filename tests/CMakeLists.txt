@@ -914,6 +914,12 @@ add_test( NAME issue_357_test_test COMMAND issue_357_test )
 add_dependencies( ci_tests issue_357_test )
 add_dependencies( full issue_357_test )
 
+add_executable( issue_359_test src/issue_359_test.cpp )
+target_link_libraries( issue_359_test json_test )
+add_test( NAME issue_359_test_test COMMAND issue_359_test )
+add_dependencies( ci_tests issue_359_test )
+add_dependencies( full issue_359_test )
+
 add_executable( carray_test src/carray_test.cpp )
 target_link_libraries( carray_test json_test )
 add_test( NAME carray_test_test COMMAND carray_test )
