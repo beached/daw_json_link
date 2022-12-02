@@ -475,9 +475,19 @@ $(function() {
 <div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> IsKnown&gt;</div>
 <div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> can_be_random_iterator_v = IsKnown;</div>
 <div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160; </div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_literal_json_type_v = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160; </div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember&gt;</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_literal_json_type_v&lt;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;        JsonMember, std::void_t&lt;typename JsonMember::as_string&gt;&gt; = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160; </div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember&gt;</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;      <span class="keyword">using</span> literal_json_type_as_string = <span class="keyword">typename</span> JsonMember::as_string;</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="adaw__json__default__constuctor_8h_html"><div class="ttname"><a href="daw__json__default__constuctor_8h.html">daw_json_default_constuctor.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03_html_a3a3b50491bd2f3ad05f3be3a4efa0db5"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#a3a3b50491bd2f3ad05f3be3a4efa0db5">daw::json::anonymous_namespace{daw_json_traits.h}::is_zero_terminated_string_v</a></div><div class="ttdeci">constexpr bool is_zero_terminated_string_v</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__traits_8h_source.html#l00248">daw_json_traits.h:248</a></div></div>

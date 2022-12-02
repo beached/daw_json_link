@@ -160,7 +160,8 @@ var menudata={children:[
 {text:"v",url:"functions_vars.html#index_v"},
 {text:"y",url:"functions_vars.html#index_y"}]},
 {text:"Typedefs",url:"functions_type.html",children:[
-{text:"b",url:"functions_type.html#index_b"},
+{text:"a",url:"functions_type.html#index_a"},
+{text:"b",url:"functions_type_b.html#index_b"},
 {text:"c",url:"functions_type_c.html#index_c"},
 {text:"d",url:"functions_type_d.html#index_d"},
 {text:"e",url:"functions_type_e.html#index_e"},
