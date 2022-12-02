@@ -920,6 +920,12 @@ add_test( NAME issue_359_test_test COMMAND issue_359_test )
 add_dependencies( ci_tests issue_359_test )
 add_dependencies( full issue_359_test )
 
+add_executable( issue_361_test src/issue_361_test.cpp )
+target_link_libraries( issue_361_test PRIVATE json_test )
+add_test( NAME issue_361_test COMMAND issue_361_test ./issue_361.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests issue_361_test )
+add_dependencies( full issue_361_test )
+
 add_executable( carray_test src/carray_test.cpp )
 target_link_libraries( carray_test json_test )
 add_test( NAME carray_test_test COMMAND carray_test )

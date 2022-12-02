@@ -39,7 +39,7 @@ namespace daw::json {
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
 			daw_json_ensure( std::data( json_data ) != nullptr,
-			                 ErrorReason::EmptyJSONPath );
+			                 ErrorReason::EmptyJSONDocument );
 			daw_json_ensure( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
 
