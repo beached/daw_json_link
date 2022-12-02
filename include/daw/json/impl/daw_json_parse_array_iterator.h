@@ -60,7 +60,8 @@ namespace daw::json {
 
 			template<typename JsonMember, typename ParseState, bool KnownBounds>
 			struct json_parse_array_iterator
-			  : json_parse_array_iterator_base<ParseState, can_be_random_iterator_v<KnownBounds>> {
+			  : json_parse_array_iterator_base<
+			      ParseState, can_be_random_iterator_v<KnownBounds>> {
 
 				using base =
 				  json_parse_array_iterator_base<ParseState,
@@ -84,7 +85,7 @@ namespace daw::json {
 				json_parse_array_iterator( json_parse_array_iterator && ) = default;
 				json_parse_array_iterator &
 				operator=( json_parse_array_iterator && ) = default;
-				~json_parse_array_iterator( ) {
+				DAW_JSON_CPP20_CX_DTOR ~json_parse_array_iterator( ) {
 					if constexpr( base::has_counter ) {
 						daw_json_assert_weak( base::counter == 0,
 						                      ErrorReason::AttemptToAccessPastEndOfValue );

@@ -213,6 +213,13 @@
 #endif
 #endif
 
+#if defined( DAW_JSON_HAS_CPP20_CX_ALLOC )
+#define DAW_JSON_HAS_CPP20_CX_DTOR
+#define DAW_JSON_CPP20_CX_DTOR constexpr
+#else
+#define DAW_JSON_CPP20_CX_DTOR
+#endif
+
 #if defined( DAW_JSON_HAS_CPP20_CX_ALLOC ) and \
   defined( __cpp_lib_constexpr_vector )
 #if __cpp_lib_constexpr_vector >= 201907L

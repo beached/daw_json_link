@@ -37,9 +37,9 @@ namespace daw::json {
 				ParseState &tmp;
 
 				DAW_ATTRIB_INLINE
-				DAW_SG_CXDTOR ~op_star_cleanup( ) noexcept(
+				DAW_JSON_CPP20_CX_DTOR ~op_star_cleanup( ) noexcept(
 				  not use_daw_json_exceptions_v ) {
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+#if defined( DAW_JSON_HAS_CPP20_CX_DTOR )
 					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 						m_can_skip = tmp.first;
 					} else {
@@ -51,7 +51,7 @@ namespace daw::json {
 #if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
 						}
 #endif
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+#if defined( DAW_JSON_HAS_CPP20_CX_DTOR )
 					}
 #endif
 				}
