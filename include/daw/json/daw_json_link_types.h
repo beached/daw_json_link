@@ -114,6 +114,33 @@ namespace daw::json {
 		using json_link_no_name =
 		  json_details::ensure_mapped_t<json_details::json_deduced_type<T>>;
 
+		namespace json_details {
+			/// @brief This adapts the default mapping of KV pairs so that literal
+			/// types like json_number/json_bool are mapped as always quoted.
+			/// The key for json_key_value must be a string
+			template<typename JsonMember>
+			using json_key_lit_fix_t = typename std::conditional_t<
+			  json_details::is_literal_json_type_v<
+			    json_details::json_deduced_type<JsonMember>>,
+			  json_details::ident_trait<json_details::literal_json_type_as_string,
+			                            json_link_no_name<JsonMember>>,
+			  daw::traits::identity<JsonMember>>::type;
+
+			template<typename T, typename = void>
+			struct key_type_if_avail {
+				using type = json_base::json_string<std::string>;
+			};
+
+			template<typename T>
+			struct key_type_if_avail<
+			  T, std::void_t<json_link_no_name<typename T::key_type>>> {
+				using type = json_link_no_name<typename T::key_type>;
+			};
+			template<typename T>
+			using key_type_if_avail_t = typename key_type_if_avail<T>::type;
+
+		} // namespace json_details
+
 		/***
 		 * @brief Allow the JsonMember type to parse like JsonMember.  This is
 		 * required to be aliased to type in a json_data_contract specialization.
@@ -451,6 +478,12 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_number<NewName, T, Options, Constructor>;
+
+				using as_string =
+				  json_number<T,
+				              json_details::number_opts_set<
+				                Options, options::LiteralAsStringOpt::Always>,
+				              Constructor>;
 			};
 
 		} // namespace json_base
@@ -552,6 +585,12 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_bool<NewName, T, Options, Constructor>;
+
+				using as_string =
+				  json_bool<T,
+				            json_details::bool_opts_set<
+				              Options, options::LiteralAsStringOpt::Always>,
+				            Constructor>;
 			};
 		} // namespace json_base
 
@@ -615,6 +654,8 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_string_raw<NewName, String, Options, Constructor>;
+
+				using as_string = json_string_raw;
 			};
 		} // namespace json_base
 
@@ -684,6 +725,8 @@ namespace daw::json {
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_string<NewName, String, Options, Constructor>;
+
+				using as_string = json_string;
 			};
 		} // namespace json_base
 
@@ -1398,9 +1441,13 @@ namespace daw::json {
 				  json_details::ident_trait<json_details::mapped_type_t, Container>,
 				  traits::identity<JsonValueType>>::type;
 
-				using key_type_t =
-				  std::conditional_t<std::is_same_v<use_default, JsonKeyType>,
-				                     json_string<std::string>, JsonKeyType>;
+				using key_type_t = typename std::conditional_t<
+				  std::is_same_v<use_default, JsonKeyType>,
+				  json_details::ident_trait<
+				    json_details::json_key_lit_fix_t,
+				    json_details::key_type_if_avail_t<Container>>,
+				  json_details::ident_trait<json_details::json_key_lit_fix_t,
+				                            JsonKeyType>>::type;
 
 				using constructor_t =
 				  std::conditional_t<std::is_same_v<use_default, Constructor>,

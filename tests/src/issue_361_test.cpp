@@ -34,9 +34,10 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_kv1b::MyKeyValue1> {
 		static constexpr char const kv[] = "kv";
 		using type = json_member_list<json_key_value<
-		  kv, std::unordered_map<int, double>, double,
-		  json_number_no_name<int, options::number_opt(
-		                             options::LiteralAsStringOpt::Always )>>>;
+		  kv, std::unordered_map<int, double>>>; /*, double,
+		   json_number_no_name<int, options::number_opt(
+		                              options::LiteralAsStringOpt::Always
+		   )>>>;*/
 
 		static inline auto
 		to_json_data( daw::cookbook_kv1b::MyKeyValue1 const &value ) {
