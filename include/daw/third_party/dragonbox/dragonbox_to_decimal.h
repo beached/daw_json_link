@@ -3329,17 +3329,14 @@ namespace daw::jkj::dragonbox {
 
 					template<typename TypeProvider>
 					DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
-					operator( )( TypeProvider interval_type_provider )
+					operator( )( TypeProvider )
 					  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
 						using namespace detail::policy_impl;
-						constexpr auto tag_tmp =
-						  TypeProvider::tag; // decltype( interval_type_provider )::tag;
+						constexpr auto tag_tmp = TypeProvider::tag;
 
 						if constexpr( tag_tmp == rounding_mode::tag_t::to_nearest ) {
 							return detail::impl<Float>::template compute_nearest<
-							  return_type,
-							  TypeProvider /*decltype( interval_type_provider )*/,
-							  typename policy_holder::sign_policy,
+							  return_type, TypeProvider, typename policy_holder::sign_policy,
 							  typename policy_holder::trailing_zero_policy,
 							  typename policy_holder::correct_rounding_policy,
 							  typename policy_holder::cache_policy>( br );
