@@ -3328,9 +3328,7 @@ namespace daw::jkj::dragonbox {
 					Br br;
 
 					template<typename TypeProvider>
-					DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
-					operator( )( TypeProvider )
-					  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
+					constexpr auto operator( )( TypeProvider ) const noexcept {
 						using namespace detail::policy_impl;
 						constexpr auto tag_tmp = TypeProvider::tag;
 
