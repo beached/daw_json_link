@@ -97,10 +97,10 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 
-	 template<JSONNAMETYPE Name, typename T = double,
-		        json_options_t Options = number_opts_def,
-		        typename Constructor = use_default>
-	 struct json_number;
+		template<JSONNAMETYPE Name, typename T = double,
+		         json_options_t Options = number_opts_def,
+		         typename Constructor = use_default>
+		struct json_number;
 
 		/**
 		 * The member is a nullable number
@@ -714,6 +714,7 @@ namespace daw::json {
 
 			template<typename T>
 			using ensure_mapped_t = typename ensure_mapped<T>::type;
+
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

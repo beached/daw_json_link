@@ -419,6 +419,16 @@ namespace daw::json {
 			template<bool IsKnown>
 			inline constexpr bool can_be_random_iterator_v = IsKnown;
 #endif
+
+			template<typename, typename = void>
+			inline constexpr bool is_literal_json_type_v = false;
+
+			template<typename JsonMember>
+			inline constexpr bool is_literal_json_type_v<
+			  JsonMember, std::void_t<typename JsonMember::as_string>> = true;
+
+			template<typename JsonMember>
+			using literal_json_type_as_string = typename JsonMember::as_string;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

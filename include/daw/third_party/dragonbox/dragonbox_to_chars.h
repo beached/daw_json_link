@@ -43,7 +43,7 @@ namespace daw::jkj::dragonbox {
 			    base_default_pair<cache::base, cache::normal>>{ },
 			  policies... ) );
 
-			static_assert( !policy_holder::report_trailing_zeros,
+			static_assert( not policy_holder::report_trailing_zeros,
 			               "jkj::dragonbox::policy::trailing_zeros::report is not "
 			               "valid for to_chars & to_chars_n" );
 
