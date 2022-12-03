@@ -119,7 +119,7 @@ namespace daw::json {
 					daw_json_assert_weak( base::parse_state->has_more( ),
 					                      ErrorReason::UnexpectedEndOfData );
 					if( DAW_UNLIKELY( base::parse_state->front( ) == ']' ) ) {
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 						if constexpr( base::has_counter ) {
 							daw_json_assert_weak( base::counter == 0,
 							                      ErrorReason::UnexpectedEndOfData );
@@ -133,7 +133,7 @@ namespace daw::json {
 						}
 						base::parse_state = nullptr;
 					}
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 					if constexpr( base::has_counter ) {
 						daw_json_assert_weak( base::counter > 0,
 						                      ErrorReason::UnexpectedEndOfData );

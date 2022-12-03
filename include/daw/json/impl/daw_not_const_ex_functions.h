@@ -28,7 +28,7 @@
 #include <tmmintrin.h>
 #include <wmmintrin.h>
 #include <xmmintrin.h>
-#ifdef DAW_JSON_COMPILER_MSVC_COMPAT
+#if defined( DAW_JSON_COMPILER_MSVC_COMPAT )
 #include <intrin.h>
 #endif
 #endif

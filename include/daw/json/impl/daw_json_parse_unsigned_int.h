@@ -25,12 +25,12 @@
 #include <cstdint>
 #include <utility>
 
-#ifdef DAW_ALLOW_SSE42
+#if defined( DAW_ALLOW_SSE42 )
 #include <emmintrin.h>
 #include <smmintrin.h>
 #include <tmmintrin.h>
 #include <xmmintrin.h>
-#ifdef DAW_JSON_COMPILER_MSVC_COMPAT
+#if defined( DAW_JSON_COMPILER_MSVC_COMPAT )
 #include <intrin.h>
 #endif
 #endif
