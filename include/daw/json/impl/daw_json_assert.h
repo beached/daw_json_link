@@ -44,7 +44,7 @@ namespace daw::json {
 			template<bool ShouldThrow = use_daw_json_exceptions_v>
 			[[noreturn]] DAW_ATTRIB_NOINLINE void
 			handle_error( json_exception &&jex ) {
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 				if constexpr( ShouldThrow ) {
 					throw DAW_MOVE( jex );
 				} else {
@@ -55,7 +55,7 @@ namespace daw::json {
 					std::cerr << "Error: " << jex.reason( ) << '\n';
 #endif
 					std::terminate( );
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 				}
 #endif
 			}

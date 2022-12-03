@@ -77,7 +77,7 @@ namespace daw::json {
 				using size_type = std::size_t;
 
 				json_parse_array_iterator( ) = default;
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 				json_parse_array_iterator( json_parse_array_iterator const & ) =
 				  default;
 				json_parse_array_iterator &
@@ -131,7 +131,7 @@ namespace daw::json {
 					                      ErrorReason::UnexpectedEndOfData,
 					                      *base::parse_state );
 					if( base::parse_state->front( ) == ']' ) {
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 						if constexpr( base::has_counter ) {
 							daw_json_assert_weak( base::counter == 0,
 							                      ErrorReason::AttemptToAccessPastEndOfValue,
@@ -146,7 +146,7 @@ namespace daw::json {
 						}
 						base::parse_state = nullptr;
 					} else {
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 						if constexpr( base::has_counter ) {
 							daw_json_assert_weak( base::counter > 0,
 							                      ErrorReason::AttemptToAccessPastEndOfValue,

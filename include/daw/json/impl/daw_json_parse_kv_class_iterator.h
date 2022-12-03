@@ -125,7 +125,7 @@ namespace daw::json {
 					                      ErrorReason::UnexpectedEndOfData,
 					                      *base::parse_state );
 					if( base::parse_state->front( ) == '}' ) {
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 						if constexpr( IsKnown ) {
 							if( base::parse_state ) {
 								daw_json_ensure( base::parse_state->counter == 0,
@@ -141,7 +141,7 @@ namespace daw::json {
 						// Ensure we are equal to default
 						base::parse_state = nullptr;
 					}
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 					if constexpr( IsKnown ) {
 						if( base::parse_state ) {
 							daw_json_ensure( base::parse_state->counter > 0,

@@ -1305,7 +1305,7 @@ namespace daw::json {
 			// compile if exceptions are disabled and it tries to throw
 			template<typename Name>
 			[[noreturn]] DAW_ATTRIB_NOINLINE void missing_required_mapping_error( ) {
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 				throw missing_required_mapping_for<Name>{ };
 #else
 				std::terminate( );
