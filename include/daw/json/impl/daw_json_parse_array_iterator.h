@@ -77,7 +77,9 @@ namespace daw::json {
 				using size_type = std::size_t;
 
 				json_parse_array_iterator( ) = default;
-#if not defined( NDEBUG )
+#if defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
+				// This code requires C++ 20 to be useful in a constant expression as it
+				// requires a non-trivial destructor
 				json_parse_array_iterator( json_parse_array_iterator const & ) =
 				  default;
 				json_parse_array_iterator &

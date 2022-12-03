@@ -1146,7 +1146,11 @@ int main( int, char ** ) {
 		assert( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
 		assert( ( from_json<json_array_no_name<char, std::string>>(
 		            "[97,98,99]"s ) == "abc" ) );
+#if not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
 		static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
+#else
+		assert( (from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2) );
+#endif
 
 		auto const test_bad_float = []( ) -> bool {
 #ifdef DAW_USE_EXCEPTIONS

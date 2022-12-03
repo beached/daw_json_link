@@ -253,3 +253,18 @@
 #else
 #define DAW_JSON_CX_STRVEC
 #endif
+
+// Many of the iterators used offer some extra checking when this is set.  By
+// default in debug mode they are enabled. Prior to C++20 affects the triviality
+// of their destructors and can prevent their use in constexpr code.  Setting
+// DAW_JSON_NO_FULL_DEBUG_ITERATORS disables the destructor checks when compiler
+// support for constexpr destructors is unavailable
+#if defined( DAW_JSON_HAS_CPP20_CX_DTOR )
+#if not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
+#define DAW_JSON_USE_FULL_DEBUG_ITERATORS
+#endif
+#elif not defined( NDEBUG ) and not defined( DAW_JSON_NO_FULL_DEBUG_ITERATORS )
+#if not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
+#define DAW_JSON_USE_FULL_DEBUG_ITERATORS
+#endif
+#endif
