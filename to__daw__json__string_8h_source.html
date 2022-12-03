@@ -1377,7 +1377,7 @@ $(function() {
 <div class="line"><a name="l01305"></a><span class="lineno"> 1305</span>&#160;      <span class="comment">// compile if exceptions are disabled and it tries to throw</span></div>
 <div class="line"><a name="l01306"></a><span class="lineno"> 1306</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Name&gt;</div>
 <div class="line"><a name="l01307"></a><span class="lineno"> 1307</span>&#160;      [[noreturn]] DAW_ATTRIB_NOINLINE <span class="keywordtype">void</span> missing_required_mapping_error( ) {</div>
-<div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;<span class="preprocessor">#ifdef DAW_USE_EXCEPTIONS</span></div>
+<div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l01309"></a><span class="lineno"> 1309</span>&#160;        <span class="keywordflow">throw</span> missing_required_mapping_for&lt;Name&gt;{ };</div>
 <div class="line"><a name="l01310"></a><span class="lineno"> 1310</span>&#160;<span class="preprocessor">#else</span></div>
 <div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160;        std::terminate( );</div>

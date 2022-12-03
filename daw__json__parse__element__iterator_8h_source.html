@@ -188,7 +188,7 @@ $(function() {
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                                ErrorReason::UnexpectedEndOfData,</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                                *base::parse_state );</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;          <span class="keywordflow">if</span>( base::parse_state-&gt;front( ) == <span class="charliteral">&#39;]&#39;</span> ) {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#ifndef NDEBUG</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#if not defined( NDEBUG )</span></div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            <span class="keywordflow">if</span> constexpr( base::has_counter ) {</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;              <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( base::counter == 0,</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;                                    ErrorReason::AttemptToAccessPastEndOfValue,</div>
@@ -203,7 +203,7 @@ $(function() {
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            }</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;            base::parse_state = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor">#ifndef NDEBUG</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor">#if not defined( NDEBUG )</span></div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;            <span class="keywordflow">if</span> constexpr( base::has_counter ) {</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;              <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( base::counter &gt; 0,</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;                                    ErrorReason::AttemptToAccessPastEndOfValue,</div>
