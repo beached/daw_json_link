@@ -753,11 +753,7 @@ namespace daw::json {
 					return parse_value<JsonMember, KnownBounds>(
 					  parse_state, ParseTag<JsonMember::expected_type>{ } );
 				} else {
-					if constexpr( ParseState::is_unchecked_input ) {
-						DAW_UNREACHABLE( );
-					} else {
 						daw_json_error( ErrorReason::UnexpectedJSONVariantType );
-					}
 				}
 			}
 

@@ -96,7 +96,7 @@ int main( int argc, char **argv )
 	{
 		auto const str_sz = str.size( );
 		str.clear( );
-		str.resize( str_sz * 2 );
+		str.resize( str_sz * 20 );
 		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "canada bench(to_json_string2 - char * output)", sz,
 		  [&]( auto const &tr ) {
