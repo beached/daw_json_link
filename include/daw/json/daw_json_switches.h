@@ -268,3 +268,10 @@
 #define DAW_JSON_USE_FULL_DEBUG_ITERATORS
 #endif
 #endif
+
+
+#if defined( __cpp_lib_containers_ranges )
+#define DAW_JSON_HAS_CPP23_RANGE_CTOR
+#if __cpp_lib_containers_ranges > 202202L
+#endif
+#endif

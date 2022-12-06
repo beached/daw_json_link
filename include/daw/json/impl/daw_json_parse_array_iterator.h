@@ -28,13 +28,16 @@ namespace daw::json {
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = false;
 
-				ParseState *parse_state = nullptr;
+				mutable ParseState *parse_state = nullptr;
 			};
 
 			template<typename ParseState>
 			struct json_parse_array_iterator_base<ParseState, true> {
-				// We have to lie so that std::distance uses O(1) instead of O(N)
+#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+				using iterator_category = std::input_iterator_tag;
+#else
 				using iterator_category = std::random_access_iterator_tag;
+#endif
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = true;
 
@@ -108,7 +111,7 @@ namespace daw::json {
 				}
 
 				DAW_ATTRIB_INLINE
-				constexpr value_type operator*( ) {
+				constexpr value_type operator*( ) const {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
@@ -158,6 +161,10 @@ namespace daw::json {
 #endif
 					}
 					return *this;
+				}
+
+				DAW_ATTRIB_INLINE constexpr void operator++( int ) {
+					(void)operator++( );
 				}
 
 				friend inline constexpr bool

@@ -28,13 +28,17 @@ namespace daw::json {
 				using iterator_category = std::input_iterator_tag;
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = false;
-				ParseState *parse_state = nullptr;
+				mutable ParseState *parse_state = nullptr;
 			};
 
 			template<typename ParseState>
 			struct json_parse_kv_array_iterator_base<ParseState, true> {
+#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+				using iterator_category = std::input_iterator_tag;
+#else
 				// We have to lie so that std::distance uses O(1) instead of O(N)
 				using iterator_category = std::random_access_iterator_tag;
+#endif
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = true;
 				ParseState *parse_state = nullptr;
@@ -58,10 +62,11 @@ namespace daw::json {
 
 			template<typename JsonMember, typename ParseState, bool KnownBounds>
 			struct json_parse_kv_array_iterator
-			  : json_parse_kv_array_iterator_base<ParseState, can_be_random_iterator_v<KnownBounds>> {
+			  : json_parse_kv_array_iterator_base<
+			      ParseState, can_be_random_iterator_v<KnownBounds>> {
 
-				using base =
-				  json_parse_kv_array_iterator_base<ParseState, can_be_random_iterator_v<KnownBounds>>;
+				using base = json_parse_kv_array_iterator_base<
+				  ParseState, can_be_random_iterator_v<KnownBounds>>;
 				using iterator_category = typename base::iterator_category;
 				using json_key_t = typename JsonMember::json_key_t;
 				using json_element_t = typename JsonMember::json_value_t;
@@ -95,7 +100,7 @@ namespace daw::json {
 					                   std::get<1>( DAW_MOVE( v.members ) ) );
 				}
 
-				DAW_ATTRIB_INLINE constexpr value_type operator*( ) {
+				DAW_ATTRIB_INLINE constexpr value_type operator*( ) const {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
@@ -141,6 +146,10 @@ namespace daw::json {
 					}
 #endif
 					return *this;
+				}
+
+				DAW_ATTRIB_INLINE constexpr void operator++( int ) {
+					(void)operator++( );
 				}
 
 				friend inline constexpr bool
