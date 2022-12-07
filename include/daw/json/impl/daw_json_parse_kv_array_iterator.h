@@ -28,7 +28,7 @@ namespace daw::json {
 				using iterator_category = std::input_iterator_tag;
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = false;
-				mutable ParseState *parse_state = nullptr;
+				ParseState *parse_state = nullptr;
 			};
 
 			template<typename ParseState>
@@ -100,7 +100,12 @@ namespace daw::json {
 					                   std::get<1>( DAW_MOVE( v.members ) ) );
 				}
 
-				DAW_ATTRIB_INLINE constexpr value_type operator*( ) const {
+				DAW_ATTRIB_NOINLINE value_type operator*( ) const {
+					// This is hear to satisfy indirectly_readable
+					daw_json_error( ErrorReason::UnexpectedEndOfData );
+				}
+
+				DAW_ATTRIB_INLINE constexpr value_type operator*( ) {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );

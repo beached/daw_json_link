@@ -111,7 +111,8 @@ namespace daw::json {
 			ExpectedMemberNotFound,
 			ExpectedTokenNotFound,
 			UnexpectedJSONVariantType,
-			TrailingComma
+			TrailingComma,
+			AttemptToCallOpStarOnConstIterator
 		};
 
 		constexpr std::string_view reason_message( ErrorReason er ) {
@@ -211,6 +212,8 @@ namespace daw::json {
 				return "Unexpected JSON Variant Type"sv;
 			case ErrorReason::TrailingComma:
 				return "Trailing comma"sv;
+			case ErrorReason::AttemptToCallOpStarOnConstIterator:
+				return "Use of operator*( ) on const iterator";
 			}
 			DAW_UNREACHABLE( );
 		}

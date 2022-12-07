@@ -260,15 +260,10 @@
 // DAW_JSON_NO_FULL_DEBUG_ITERATORS disables the destructor checks when compiler
 // support for constexpr destructors is unavailable
 #if defined( DAW_JSON_HAS_CPP20_CX_DTOR )
-#if not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
-#define DAW_JSON_USE_FULL_DEBUG_ITERATORS
-#endif
-#elif not defined( NDEBUG ) and not defined( DAW_JSON_NO_FULL_DEBUG_ITERATORS )
-#if not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
+#if not defined( NDEBUG ) and not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
 #define DAW_JSON_USE_FULL_DEBUG_ITERATORS
 #endif
 #endif
-
 
 #if defined( __cpp_lib_containers_ranges )
 #define DAW_JSON_HAS_CPP23_RANGE_CTOR
