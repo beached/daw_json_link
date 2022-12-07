@@ -108,7 +108,7 @@ struct MyClassSwitcher {
   }     
   // Get value for Tag from class value
   int operator( )( MyClass const & v ) const {
-    return (int)v.index( );
+    return (int)v.value.index( );
   }
 };
 
