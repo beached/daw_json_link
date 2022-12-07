@@ -44,6 +44,10 @@ jobs:
           - { cpp_version: 17, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 20, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
           - { cpp_version: 20, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 23, build_type: Debug, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 23, build_type: Release, arch: Win32, os: windows-2022, toolset: MSVC, cmake_flags: "-GNinja" }
+          - { cpp_version: 23, build_type: Debug, arch: Win32, os: windows-2022, toolset: ClangCL, cmake_flags: "-GNinja" }
+          - { cpp_version: 23, build_type: Release, arch: Win32, os: windows-2022, toolset: ClangCL, cmake_flags: "-GNinja" }
     runs-on: ${{ matrix.config.os }}
     name: "${{ matrix.config.os }} ${{ matrix.config.toolset }} ${{ matrix.config.cpp_version }} ${{ matrix.config.arch }} ${{ matrix.config.build_type }}"
     env:

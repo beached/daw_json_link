@@ -33,8 +33,12 @@ namespace daw::json {
 
 			template<typename ParseState>
 			struct json_parse_array_iterator_base<ParseState, true> {
+#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+				using iterator_category = std::input_iterator_tag;
+#else
 				// We have to lie so that std::distance uses O(1) instead of O(N)
 				using iterator_category = std::random_access_iterator_tag;
+#endif
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = true;
 

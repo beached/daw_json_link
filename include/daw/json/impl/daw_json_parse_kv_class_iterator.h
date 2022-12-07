@@ -34,8 +34,12 @@ namespace daw::json {
 
 			template<typename ParseState>
 			struct json_parse_kv_class_iterator_base<ParseState, true> {
+#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+				using iterator_category = std::input_iterator_tag;
+#else
 				// We have to lie so that std::distance uses O(1) instead of O(N)
 				using iterator_category = std::random_access_iterator_tag;
+#endif
 				using difference_type = std::ptrdiff_t;
 				ParseState *parse_state = nullptr;
 
@@ -101,6 +105,11 @@ namespace daw::json {
 					}
 				}
 
+				DAW_ATTRIB_NOINLINE value_type operator*( ) const {
+					// This is hear to satisfy indirectly_readable
+					daw_json_error( ErrorReason::UnexpectedEndOfData );
+				}
+
 				inline constexpr value_type operator*( ) {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
@@ -152,6 +161,10 @@ namespace daw::json {
 					}
 #endif
 					return *this;
+				}
+
+				DAW_ATTRIB_INLINE constexpr void operator++( int ) {
+					(void)operator++( );
 				}
 
 				friend inline constexpr bool
