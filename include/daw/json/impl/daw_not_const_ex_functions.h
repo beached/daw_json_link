@@ -28,7 +28,7 @@
 #include <tmmintrin.h>
 #include <wmmintrin.h>
 #include <xmmintrin.h>
-#if defined( DAW_JSON_COMPILER_MSVC_COMPAT )
+#if defined( DAW_HAS_MSVC_LIKE )
 #include <intrin.h>
 #endif
 #endif
@@ -72,7 +72,7 @@ namespace daw::json {
 			inline std::ptrdiff_t find_lsb_set( runtime_exec_tag, UInt32 value ) {
 #if DAW_HAS_BUILTIN( __builtin_ffs )
 				return __builtin_ffs( static_cast<int>( value ) ) - 1;
-#elif defined( DAW_JSON_COMPILER_MSVC_COMPAT )
+#elif defined( DAW_HAS_MSVC_LIKE )
 				unsigned long index;
 				_BitScanForward( &index, static_cast<int>( value ) );
 				return static_cast<std::ptrdiff_t>( index );

@@ -30,7 +30,7 @@
 #include <smmintrin.h>
 #include <tmmintrin.h>
 #include <xmmintrin.h>
-#if defined( DAW_JSON_COMPILER_MSVC_COMPAT )
+#if defined( DAW_HAS_MSVC_LIKE )
 #include <intrin.h>
 #endif
 #endif
