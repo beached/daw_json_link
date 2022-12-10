@@ -14,7 +14,7 @@
 #include <daw/daw_consteval.h>
 #include <daw/daw_cpp_feature_check.h>
 
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if defined( DAW_HAS_MSVC )
 #define DAW_JSON_COMPILER_MSVC
 #define DAW_JSON_COMPILER_MSVC_COMPAT
 #elif defined( _MSC_VER ) and defined( __clang__ )
@@ -22,10 +22,10 @@
 #define DAW_JSON_COMPILER_CLANGCL
 #define DAW_JSON_COMPILER_MSVC_COMPAT
 #define DAW_JSON_COMPILER_CLANG_COMPAT
-#elif defined( __GNUC__ ) and not defined( __clang__ )
+#elif defined( DAW_HAS_GCC )
 #define DAW_JSON_COMPILER_GCC
 #define DAW_JSON_COMPILER_GCC_COMPAT
-#elif defined( __clang__ )
+#elif defined( DAW_HAS_CLANG )
 #define DAW_JSON_COMPILER_CLANG
 #define DAW_JSON_COMPILER_CLANG_COMPAT
 #define DAW_JSON_COMPILER_GCC_COMPAT
@@ -100,13 +100,11 @@
 #endif
 #endif
 #endif
-#if defined( __clang_major__ ) and __cplusplus >= 202002L
-#if __clang_major__ >= 12
+#if DAW_HAS_CLANG_VER( 12, 0 ) and __cplusplus >= 202002L
 // Clang 12 supports enough of CNTTP string literals and compiles the tests
 // successfully, but does not define the feature macro
 #if not defined( DAW_JSON_CNTTP_JSON_NAME )
 #define DAW_JSON_CNTTP_JSON_NAME
-#endif
 #endif
 #endif
 #endif
