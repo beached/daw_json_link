@@ -230,6 +230,9 @@ namespace daw::json {
 #endif
 
 					if constexpr( is_pinned_type_v<typename JsonClass::parse_to_t> ) {
+						/// Because the return type is pinned(no copy/move).  We cannot rely
+						/// on NRVO. This requires on_exit_success that on some platforms
+						/// can cost a bunch because it checks std::uncaught_exceptions
 						auto const run_after_parse = daw::on_exit_success( [&] {
 							class_cleanup_now<
 							  json_details::all_json_members_must_exist_v<T, ParseState>>(
@@ -237,10 +240,6 @@ namespace daw::json {
 						} );
 						(void)run_after_parse;
 
-						/*
-						 * Rather than call directly use apply/tuple to evaluate
-						 * left->right
-						 */
 						if constexpr( should_construct_explicitly_v<Constructor, T,
 						                                            ParseState> ) {
 							return T{ parse_class_member<
