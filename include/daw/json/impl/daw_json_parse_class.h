@@ -24,7 +24,6 @@
 #include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 
-#include <ciso646>
 #include <cstddef>
 #include <exception>
 #include <type_traits>

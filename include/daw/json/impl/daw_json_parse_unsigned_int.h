@@ -20,7 +20,6 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_uint_buffer.h>
 
-#include <ciso646>
 #include <cstddef>
 #include <cstdint>
 #include <utility>

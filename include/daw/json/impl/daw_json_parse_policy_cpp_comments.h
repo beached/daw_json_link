@@ -19,8 +19,6 @@
 #include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 
-#include <ciso646>
-
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		/***

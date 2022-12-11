@@ -26,7 +26,6 @@
 #include <daw/daw_traits.h>
 
 #include <cassert>
-#include <ciso646>
 #include <cstddef>
 #include <iterator>
 #include <type_traits>

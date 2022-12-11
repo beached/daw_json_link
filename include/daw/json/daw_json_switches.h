@@ -83,7 +83,7 @@
 #endif
 #endif
 #endif
-#if DAW_HAS_CLANG_VER( 12, 0 ) and __cplusplus >= 202002L
+#if DAW_HAS_CLANG_VER_GTE( 12, 0 ) and DAW_CPP_VERSION >= 202002L
 // Clang 12 supports enough of CNTTP string literals and compiles the tests
 // successfully, but does not define the feature macro
 #if not defined( DAW_JSON_CNTTP_JSON_NAME )
@@ -127,7 +127,7 @@
 
 // DAW_JSON_HAS_BUILTIN_UADD is used to switch to a constexpr method of overflow
 // addition when available
-#if DAW_HAS_GCC_VER( 8, 0 ) or defined( DAW_HAS_CLANG ) or \
+#if DAW_HAS_GCC_VER_GTE( 8, 0 ) or defined( DAW_HAS_CLANG ) or \
   ( DAW_HAS_BUILTIN( __builtin_uadd_overflow ) and         \
     DAW_HAS_BUILTIN( __builtin_uaddl_overflow ) and        \
     DAW_HAS_BUILTIN( __builtin_uaddll_overflow ) )

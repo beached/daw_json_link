@@ -23,7 +23,6 @@
 #include <daw/daw_restrict.h>
 #include <daw/daw_utility.h>
 
-#include <ciso646>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
