@@ -128,6 +128,12 @@ namespace daw::json {
 #endif
 				}
 
+				constexpr nullable_type DAW_JSON_CPP23_STATIC_CALL_OP operator( )(
+				  construct_nullable_with_pointer_t,
+				  value_type *ptr ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
+					return nullable_type( ptr );
+				}
+
 				constexpr nullable_type DAW_JSON_CPP23_STATIC_CALL_OP
 				operator( )( construct_nullable_with_empty_t )
 				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
@@ -187,6 +193,12 @@ namespace daw::json {
 #endif
 				}
 
+				constexpr nullable_type DAW_JSON_CPP23_STATIC_CALL_OP operator( )(
+				  construct_nullable_with_pointer_t,
+				  value_type *ptr ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
+					return nullable_type( ptr );
+				}
+
 				constexpr nullable_type DAW_JSON_CPP23_STATIC_CALL_OP
 				operator( )( construct_nullable_with_empty_t )
 				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
@@ -234,6 +246,12 @@ namespace daw::json {
 #if not defined( DAW_HAS_AGG_PAREN_INIT )
 					}
 #endif
+				}
+
+				constexpr nullable_type DAW_JSON_CPP23_STATIC_CALL_OP operator( )(
+				  construct_nullable_with_pointer_t,
+				  value_type *ptr ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
+					return ptr;
 				}
 
 				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type

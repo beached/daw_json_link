@@ -35,12 +35,21 @@ namespace daw::json {
 
 			} // namespace nullable_impl
 
-			struct construct_nullable_with_value_t {};
-
+			struct construct_nullable_with_value_t {
+				explicit construct_nullable_with_value_t( ) = default;
+			};
 			inline constexpr auto construct_nullable_with_value =
 			  construct_nullable_with_value_t{ };
 
-			struct construct_nullable_with_empty_t {};
+			struct construct_nullable_with_pointer_t {
+				explicit construct_nullable_with_pointer_t( ) = default;
+			};
+			inline constexpr auto construct_nullable_with_pointer =
+			  construct_nullable_with_pointer_t{ };
+
+			struct construct_nullable_with_empty_t {
+				explicit construct_nullable_with_empty_t( ) = default;
+			};
 			inline constexpr auto construct_nullable_with_empty =
 			  construct_nullable_with_empty_t{ };
 
@@ -121,6 +130,12 @@ namespace daw::json {
 			  is_nullable_value_v<T> and
 			  std::is_invocable_v<nullable_value_traits<T>,
 			                      construct_nullable_with_value_t, Args...>;
+
+			template<typename T, typename... Args>
+			inline constexpr bool is_nullable_pointer_constructible_v =
+			  is_nullable_value_v<T> and
+			  std::is_invocable_v<nullable_value_traits<T>,
+			                      construct_nullable_with_pointer_t, Args...>;
 
 			template<typename T, typename... Args>
 			inline constexpr bool is_nullable_value_nothrow_constructible_v =

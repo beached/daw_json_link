@@ -29,7 +29,6 @@
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 
-#include <ciso646>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -350,10 +349,24 @@ namespace daw::json {
 						parse_state.trim_left_checked( );
 						return construct_empty( );
 					}
-					return construct_value(
-					  template_args<base_member_type, constructor_t>, parse_state,
-					  parse_value<base_member_type>(
-					    parse_state, ParseTag<base_member_type::expected_type>{ } ) );
+					using parse_to_t = typename base_member_type::parse_to_t;
+					if constexpr( not std::is_move_constructible_v<parse_to_t> and
+					              not std::is_copy_constructible_v<parse_to_t> ) {
+						static_assert(
+						  std::is_invocable_v<
+						    concepts::nullable_value_traits<json_result<JsonMember>>,
+						    concepts::construct_nullable_with_pointer_t, parse_to_t *> );
+						return construct_value(
+						  template_args<base_member_type, constructor_t>, parse_state,
+						  concepts::construct_nullable_with_pointer,
+						  new parse_to_t{ parse_value<base_member_type>(
+						    parse_state, ParseTag<base_member_type::expected_type>{ } ) } );
+					} else {
+						return construct_value(
+						  template_args<base_member_type, constructor_t>, parse_state,
+						  parse_value<base_member_type>(
+						    parse_state, ParseTag<base_member_type::expected_type>{ } ) );
+					}
 				}
 			}
 
@@ -753,7 +766,7 @@ namespace daw::json {
 					return parse_value<JsonMember, KnownBounds>(
 					  parse_state, ParseTag<JsonMember::expected_type>{ } );
 				} else {
-						daw_json_error( ErrorReason::UnexpectedJSONVariantType );
+					daw_json_error( ErrorReason::UnexpectedJSONVariantType );
 				}
 			}
 

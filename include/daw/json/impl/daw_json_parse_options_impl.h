@@ -19,7 +19,6 @@
 #include <daw/daw_traits.h>
 #include <daw/daw_unreachable.h>
 
-#include <ciso646>
 #include <climits>
 #include <cstddef>
 #include <cstdint>

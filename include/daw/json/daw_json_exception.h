@@ -15,7 +15,6 @@
 #include <daw/daw_unreachable.h>
 
 #include <algorithm>
-#include <ciso646>
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
@@ -272,7 +271,7 @@ namespace daw::json {
 			}
 
 			DAW_ATTRIB_NOINLINE [[nodiscard]] inline std::string reason( ) const {
-#if defined( DAW_JSON_COMPILER_CLANG_COMPAT )
+#if defined( DAW_HAS_CLANG )
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch-enum"
 #endif
@@ -289,7 +288,7 @@ namespace daw::json {
 				default:
 					return std::string( ( reason_message( m_reason ) ) );
 				}
-#if defined( DAW_JSON_COMPILER_CLANG_COMPAT )
+#if defined( DAW_HAS_CLANG )
 #pragma clang diagnostic pop
 #endif
 			}

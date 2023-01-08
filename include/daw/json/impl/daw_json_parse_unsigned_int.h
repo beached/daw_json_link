@@ -20,7 +20,6 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_uint_buffer.h>
 
-#include <ciso646>
 #include <cstddef>
 #include <cstdint>
 #include <utility>
@@ -30,7 +29,7 @@
 #include <smmintrin.h>
 #include <tmmintrin.h>
 #include <xmmintrin.h>
-#if defined( DAW_JSON_COMPILER_MSVC_COMPAT )
+#if defined( DAW_HAS_MSVC_LIKE )
 #include <intrin.h>
 #endif
 #endif

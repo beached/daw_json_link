@@ -16,7 +16,6 @@
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
 
-#include <ciso646>
 #include <cstddef>
 #include <type_traits>
 

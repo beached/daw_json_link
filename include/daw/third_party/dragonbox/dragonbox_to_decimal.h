@@ -26,7 +26,6 @@
 #include <daw/daw_likely.h>
 
 #include <cassert>
-#include <ciso646>
 #include <climits>
 #include <cstdint>
 #include <cstring>

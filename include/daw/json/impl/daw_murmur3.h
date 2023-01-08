@@ -15,7 +15,6 @@
 #include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
 
-#include <ciso646>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -51,12 +50,12 @@ namespace daw {
 		auto *ptr = std::data( key );
 		auto hash = 0x811c'9dc5_u32;
 		if constexpr( expect_long_strings ) {
-			while( len >= 8 ) {
+			while( DAW_UNLIKELY( len >= 8 ) ) {
 				hash = fnv1a_32_N<8>( ptr, hash );
 				len -= 8;
 				ptr += 8;
 			}
-			while( len >= 4 ) {
+			if( len >= 4 ) {
 				hash = fnv1a_32_N<4>( ptr, hash );
 				len -= 4;
 				ptr += 4;
@@ -80,7 +79,7 @@ namespace daw {
 				result <<= 8U;
 				result |= static_cast<unsigned char>( ptr[n] );
 			}
-			return result;
+			return result * 0xCC9E'2d51UL; // mix it up with an fnv1a prime
 		}
 		return fnv1a_32<expect_long_strings>( key );
 	}

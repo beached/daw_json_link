@@ -10,6 +10,8 @@
 
 #include "../daw_json_switches.h"
 
+#include <daw/ciso646.h>
+
 /// The version string used in namespace definitions.  Must be a valid namespace
 /// name.
 #if not defined( DAW_JSON_VER_OVERRIDE )

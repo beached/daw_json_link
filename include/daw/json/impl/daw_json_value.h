@@ -26,7 +26,6 @@
 #include <daw/daw_utility.h>
 
 #include <cassert>
-#include <ciso646>
 #include <cstddef>
 #include <optional>
 #include <string_view>
@@ -117,7 +116,7 @@ namespace daw::json {
 			using mapped_type = basic_json_value<PolicyFlags, Allocator>;
 
 			using json_pair = basic_json_pair<PolicyFlags, Allocator>;
-			using value_type = basic_json_pair<PolicyFlags, Allocator>;
+			using value_type = json_pair;
 			using reference = value_type;
 			using pointer = json_details::arrow_proxy<value_type>;
 			using difference_type = std::ptrdiff_t;

@@ -23,7 +23,6 @@
 #include <daw/daw_uint_buffer.h>
 #include <daw/daw_utility.h>
 
-#include <ciso646>
 #include <cstddef>
 #include <iterator>
 #include <utility>
