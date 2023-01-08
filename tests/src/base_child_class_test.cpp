@@ -6,9 +6,11 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/daw_json_link.h>
 
-#include <cassert>
+#include <iostream>
 #include <memory>
 #include <string_view>
 
@@ -22,75 +24,90 @@ struct Base {
 
 	[[nodiscard]] virtual int type( ) const = 0;
 	[[nodiscard]] virtual int value( ) const = 0;
+	[[nodiscard]] virtual std::string to_json( ) const = 0;
 };
 
 struct Child0 : Base {
+	int t;
 	int v;
 
-	explicit Child0( int V ) noexcept
-	  : v( V ) {}
+	explicit Child0( int Type, int V ) noexcept
+	  : t( Type )
+	  , v( V ) {}
 
 	[[nodiscard]] int type( ) const override {
-		return 0;
+		return t;
 	}
 
 	[[nodiscard]] int value( ) const override {
 		return v;
 	}
+
+	[[nodiscard]] std::string to_json( ) const override;
 };
 
 namespace daw::json {
 	template<>
 	struct json_data_contract<Child0> {
+		static constexpr char const type_mem[] = "type";
 		static constexpr char const v[] = "v";
-		using type = json_member_list<json_number<v, int>>;
+		using type =
+		  json_member_list<json_number<type_mem, int>, json_number<v, int>>;
 
 		static constexpr auto to_json_data( Child0 const &c0 ) {
-			return std::forward_as_tuple( c0.v );
+			return std::forward_as_tuple( c0.t, c0.v );
 		}
 	};
 } // namespace daw::json
 
+[[nodiscard]] std::string Child0::to_json( ) const {
+	return daw::json::to_json( *this );
+}
+
 struct Child1 : Base {
+	int t;
 	int d;
 
-	explicit Child1( int D ) noexcept
-	  : d( D ) {}
+	explicit Child1( int Type, int D ) noexcept
+	  : t( Type )
+	  , d( D ) {}
 
 	[[nodiscard]] int type( ) const override {
-		return 1;
+		return t;
 	}
 
 	[[nodiscard]] int value( ) const override {
 		return d;
 	}
+
+	[[nodiscard]] std::string to_json( ) const override;
 };
 
 namespace daw::json {
 	template<>
 	struct json_data_contract<Child1> {
 		static constexpr char const d[] = "d";
-		using type = json_member_list<json_number<d, int>>;
+		static constexpr char const type_mem[] = "type";
+		using type =
+		  json_member_list<json_number<type_mem, int>, json_number<d, int>>;
 
 		static constexpr auto to_json_data( Child1 const &c1 ) {
-			return std::forward_as_tuple( c1.d );
+			return std::forward_as_tuple( c1.t, c1.d );
 		}
 	};
 } // namespace daw::json
 
-struct Switcher {
-	// Convert JSON tag member to type index
-	constexpr size_t operator( )( int type ) const {
-		return static_cast<std::size_t>( type );
-	}
-	// Get value for Tag from class value
-	int operator( )( Base const &b ) const {
-		return static_cast<int>( b.type( ) );
-	}
-};
+[[nodiscard]] std::string Child1::to_json( ) const {
+	return daw::json::to_json( *this );
+}
 
 struct Foo {
 	std::unique_ptr<Base> value;
+
+	[[nodiscard]] bool operator==( Foo const &rhs ) const noexcept {
+		return value->type( ) == rhs.value->type( ) and
+		       value->value( ) == rhs.value->value( );
+	}
 };
 
 struct FooMaker {
@@ -115,6 +132,10 @@ namespace daw::json {
 		static constexpr char const value[] = "value";
 		using type =
 		  json_member_list<json_raw<value, std::unique_ptr<Base>, FooMaker>>;
+
+		[[nodiscard]] static auto to_json_data( Foo const &foo ) {
+			return std::tuple{ foo.value->to_json( ) };
+		}
 	};
 } // namespace daw::json
 
@@ -128,10 +149,15 @@ constexpr std::string_view json_doc = R"json(
 
 int main( ) {
 	auto foo = daw::json::from_json<std::vector<Foo>>( json_doc );
-	assert( foo[0].value->type( ) == 0 );
-	assert( foo[0].value->value( ) == 42 );
-	assert( foo[1].value->type( ) == 1 );
-	assert( foo[1].value->value( ) == 66 );
-	assert( foo[2].value->type( ) == 0 );
-	assert( foo[2].value->value( ) == 77 );
+	ensure( foo[0].value->type( ) == 0 );
+	ensure( foo[0].value->value( ) == 42 );
+	ensure( foo[1].value->type( ) == 1 );
+	ensure( foo[1].value->value( ) == 66 );
+	ensure( foo[2].value->type( ) == 0 );
+	ensure( foo[2].value->value( ) == 77 );
+
+	auto str = daw::json::to_json( foo );
+	std::cout << str << '\n';
+	auto foo2 = daw::json::from_json<std::vector<Foo>>( str );
+	ensure( foo == foo2 );
 }

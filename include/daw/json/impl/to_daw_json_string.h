@@ -933,7 +933,8 @@ namespace daw::json {
 			to_json_string_class( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t> or
+				    std::is_same_v<parse_to_t, typename JsonMember::parse_to_t>, // This is for not-copy/movable types
 				  "value must be convertible to specified type in class contract" );
 
 				if constexpr( has_json_to_json_data_v<parse_to_t> ) {
