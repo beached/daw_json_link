@@ -94,6 +94,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa5189bafee0b7e5a40c9b8818d258e80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26e28a8a4af12e1370698856260ecc81"><td class="memItemLeft" align="right" valign="top">DAW_ATTRIB_INLINE constexpr <a class="el" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__default__constuctor_8h_03_1_1nullable__co45cac628368a3078ab031d104263c7f6.html#a26e28a8a4af12e1370698856260ecc81">operator()</a> (concepts::construct_nullable_with_empty_t) <a class="el" href="daw__json__switches_8h.html#a3311e700c0ddc4417661e1c50510e996">DAW_JSON_CPP23_STATIC_CALL_OP_CONST</a> noexcept(concepts::is_nullable_empty_nothrow_constructible_v&lt; T &gt;)</td></tr>
 <tr class="separator:a26e28a8a4af12e1370698856260ecc81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4fbb51890f2ec3395d9c8c43cc34274"><td class="memTemplParams" colspan="2">template&lt;typename Pointer , std::enable_if_t&lt; concepts::is_nullable_pointer_constructible_v&lt; T, Pointer * &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
+<tr class="memitem:ad4fbb51890f2ec3395d9c8c43cc34274"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_INLINE constexpr <a class="el" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__default__constuctor_8h_03_1_1nullable__co45cac628368a3078ab031d104263c7f6.html#ad4fbb51890f2ec3395d9c8c43cc34274">operator()</a> (concepts::construct_nullable_with_pointer_t, Pointer *ptr) <a class="el" href="daw__json__switches_8h.html#a3311e700c0ddc4417661e1c50510e996">DAW_JSON_CPP23_STATIC_CALL_OP_CONST</a> noexcept(concepts::is_nullable_value_nothrow_constructible_v&lt; T, Pointer &gt;)</td></tr>
+<tr class="separator:ad4fbb51890f2ec3395d9c8c43cc34274"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename T&gt;<br />
@@ -141,7 +144,7 @@ template&lt;typename T &gt; </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="aa5189bafee0b7e5a40c9b8818d258e80"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa5189bafee0b7e5a40c9b8818d258e80">&#9670;&nbsp;</a></span>operator()() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5189bafee0b7e5a40c9b8818d258e80">&#9670;&nbsp;</a></span>operator()() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -173,7 +176,7 @@ template&lt;typename... Args, std::enable_if_t&lt; concepts::is_nullable_value_c
 </div>
 </div>
 <a id="a26e28a8a4af12e1370698856260ecc81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a26e28a8a4af12e1370698856260ecc81">&#9670;&nbsp;</a></span>operator()() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a26e28a8a4af12e1370698856260ecc81">&#9670;&nbsp;</a></span>operator()() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -199,6 +202,48 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="daw__json__default__constuctor_8h_source.html#l00241">241</a> of file <a class="el" href="daw__json__default__constuctor_8h_source.html">daw_json_default_constuctor.h</a>.</p>
+
+</div>
+</div>
+<a id="ad4fbb51890f2ec3395d9c8c43cc34274"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4fbb51890f2ec3395d9c8c43cc34274">&#9670;&nbsp;</a></span>operator()() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<div class="memtemplate">
+template&lt;typename Pointer , std::enable_if_t&lt; concepts::is_nullable_pointer_constructible_v&lt; T, Pointer * &gt;, std::nullptr_t &gt;  = nullptr&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr <a class="el" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> auto daw::json::anonymous_namespace{daw_json_default_constuctor.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__default__constuctor__fwd_8h_03_1_1nullable__constructor.html">nullable_constructor</a>&lt; T, std::enable_if_t&lt; concepts::is_nullable_value_v&lt; T &gt; &gt; &gt;::operator() </td>
+          <td>(</td>
+          <td class="paramtype">concepts::construct_nullable_with_pointer_t&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Pointer *&#160;</td>
+          <td class="paramname"><em>ptr</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__default__constuctor_8h_source.html#l00267">267</a> of file <a class="el" href="daw__json__default__constuctor_8h_source.html">daw_json_default_constuctor.h</a>.</p>
 
 </div>
 </div>

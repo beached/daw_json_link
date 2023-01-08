@@ -66,74 +66,74 @@ $(function() {
 <div class="title">Parser Options </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md90"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md91"></a>
 &lt;tt&gt;ExecModeTypes&lt;/tt&gt;</h1>
 <p>There are 3 levels of execution modes; compile time, runtime, and simd. The default and currently supported mode is ' compile_time'. The others are often not faster or as well tested.</p>
-<h2><a class="anchor" id="autotoc_md91"></a>
+<h2><a class="anchor" id="autotoc_md92"></a>
 Values</h2>
 <ul>
 <li><code>compile_time</code> - This option allows constexpr parsing. In the future the other modes maybe faster and better supported. It may use builtins and runtime only methods when appropriate when detection of the current evaluation mode is available (e.g <code>is_constant_evaluated</code>)</li>
 <li><code>runtime</code> - This mode includes <code>compile_time</code> methods along with using methods only available at runtime ( e.g <code>memchr</code>).</li>
 <li><code>simd</code> - This mode includes <code>runtime</code> methods along with some simd enhanced methods (e.g. in number parsing).</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md92"></a>
+<h2><a class="anchor" id="autotoc_md93"></a>
 Default</h2>
 <ul>
 <li><code>compile_time</code></li>
 </ul>
-<h1><a class="anchor" id="autotoc_md93"></a>
+<h1><a class="anchor" id="autotoc_md94"></a>
 &lt;tt&gt;ZeroTerminatedString&lt;/tt&gt;</h1>
 <p>The string data passed to <code>from_json</code> is zero terminated. This allows some potential optimizations around bounds checking. If the type passed to <code>from_json</code> has a specialization of <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03_1_1is__zero__terminated__string.html">daw::json::is_zero_terminated_string</a></code> it will be assumed to be zero terminated. By default, std::basic_string evaluates to being a zero terminated string.</p>
-<h2><a class="anchor" id="autotoc_md94"></a>
+<h2><a class="anchor" id="autotoc_md95"></a>
 Values</h2>
 <ul>
 <li><code>no</code> - Bounds checking does not take advantage of assuming a terminated string</li>
 <li><code>yes</code> - The string passed to <code>from_json</code> is zero terminated</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md95"></a>
+<h2><a class="anchor" id="autotoc_md96"></a>
 Default</h2>
 <ul>
 <li><code>no</code> or the value of the <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03_1_1is__zero__terminated__string.html">daw::json::is_zero_terminated_string</a></code> specialization for the String input type</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md96"></a>
+<h1><a class="anchor" id="autotoc_md97"></a>
 &lt;tt&gt;PolicyCommentTypes&lt;/tt&gt;</h1>
 <p>Are comments in whitespace allowed(defaults to no) and, if so, what kind</p>
-<h2><a class="anchor" id="autotoc_md97"></a>
+<h2><a class="anchor" id="autotoc_md98"></a>
 Values</h2>
 <ul>
 <li><code>none</code> - Comments are not allowed. This is conformant with JSON and the fastest</li>
 <li><code>cpp</code> - Allow C++ style comments, both <code>/* comment */</code> and <code>// comment until newline</code> are allowed in places where whitespace is allowed/required</li>
 <li><code>hash</code> - Allow <code># comment until newline</code> hash style line comments (e.g <code># comment</code>)</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md98"></a>
+<h2><a class="anchor" id="autotoc_md99"></a>
 Default</h2>
 <ul>
 <li><code>none</code></li>
 </ul>
-<h1><a class="anchor" id="autotoc_md99"></a>
+<h1><a class="anchor" id="autotoc_md100"></a>
 &lt;tt&gt;CheckedParseMode&lt;/tt&gt;</h1>
 <p>Do a checked parse or not. If the data is known to be trustworthy and generated correctly, one can disable checking of a parse and gain performance(measured 15% in some documents).</p>
-<h2><a class="anchor" id="autotoc_md100"></a>
+<h2><a class="anchor" id="autotoc_md101"></a>
 Values</h2>
 <ul>
 <li><code>yes</code> - All checks are performed</li>
 <li><code>no</code> - Disable many parse time checks, assumes perfect input</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md101"></a>
+<h2><a class="anchor" id="autotoc_md102"></a>
 Default</h2>
 <ul>
 <li><code>yes</code></li>
 </ul>
-<h1><a class="anchor" id="autotoc_md102"></a>
+<h1><a class="anchor" id="autotoc_md103"></a>
 &lt;tt&gt;MinifiedDocument&lt;/tt&gt;</h1>
 <p>Assume the document in minified and there is no whitespace. This may offer performance benefits( measured 5% in some minified documents). This option is incompatible with comments.</p>
-<h2><a class="anchor" id="autotoc_md103"></a>
+<h2><a class="anchor" id="autotoc_md104"></a>
 Values</h2>
 <ul>
 <li><code>no</code> - Assumes there is whitespace in document.</li>
 <li><code>yes</code> - Does not skip whitespace in documents, assumes a minified document.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md104"></a>
+<h2><a class="anchor" id="autotoc_md105"></a>
 Default</h2>
 <ul>
 <li><code>no</code> </li>

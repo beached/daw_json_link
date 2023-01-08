@@ -109,10 +109,10 @@ $(function() {
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">} </div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md116"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md117"></a>
 Important note:</h1>
 <p>The elements in the <code>json_variant_type_list</code> must have matching types in the variant alternatives. (e.g. std::string -&gt; json_string, bool -&gt; json_bool )</p>
-<h1><a class="anchor" id="autotoc_md117"></a>
+<h1><a class="anchor" id="autotoc_md118"></a>
 Tagged Variants</h1>
 <p>It is common to have a tag discriminator in JSON data. The <code>json_tagged_variant</code> member type allows using another parsed member to return an index in a member list to parse. This allows any number of types to be inside the variant.</p>
 <p>Below is a JSON array, containing a variant element where the <code>"type"</code> member determines the type of the <code>"value"</code> member. In many JSON documents, the discriminator will be a string.</p>
@@ -228,7 +228,7 @@ Tagged Variants</h1>
 <div class="line">  }</div>
 <div class="line">};</div>
 </div><!-- fragment --><p>As you can see, the json_variant_type_list can use terse type names for some, or the full names.</p>
-<h1><a class="anchor" id="autotoc_md118"></a>
+<h1><a class="anchor" id="autotoc_md119"></a>
 Submember as tag for tagged_variant</h1>
 <p>There are cases where a classes structure is determined by one of it's submembers. This comes up with file versioning.</p>
 <p>In our example we have two versions of a config file. The tag member <code>"version"</code> determines the layout of the other members in the example.</p>
@@ -322,7 +322,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line">  };</div>
 <div class="line">}</div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
-<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value_8h_source.html#l00090">daw_json_value.h:90</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value_8h_source.html#l00089">daw_json_value.h:89</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__data__contract_8h_source.html#l00039">daw_json_data_contract.h:39</a></div></div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
