@@ -257,6 +257,19 @@ namespace daw::json {
 				return rtraits_t{ }( concepts::construct_nullable_with_value,
 				                     DAW_FWD( args )... );
 			}
+
+			template<typename Pointer,
+			         std::enable_if_t<
+			           concepts::is_nullable_pointer_constructible_v<T, Pointer *>,
+			           std::nullptr_t> = nullptr>
+			[[nodiscard]] DAW_ATTRIB_INLINE
+			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
+			  operator( )( concepts::construct_nullable_with_pointer_t,
+			               Pointer *ptr ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
+			  noexcept(
+			    concepts::is_nullable_value_nothrow_constructible_v<T, Pointer> ) {
+				return rtraits_t{ }( concepts::construct_nullable_with_pointer, ptr );
+			}
 		};
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

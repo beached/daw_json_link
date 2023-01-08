@@ -932,6 +932,12 @@ add_test( NAME carray_test_test COMMAND carray_test )
 add_dependencies( ci_tests carray_test )
 add_dependencies( full carray_test )
 
+add_executable( base_child_class_test src/base_child_class_test.cpp )
+target_link_libraries( base_child_class_test json_test )
+add_test( NAME base_child_class_test_test COMMAND base_child_class_test )
+add_dependencies( ci_tests base_child_class_test )
+add_dependencies( full base_child_class_test )
+
 add_executable( json_bench_viewer src/json_bench_viewer.cpp )
 target_link_libraries( json_bench_viewer json_test )
 
