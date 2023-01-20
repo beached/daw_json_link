@@ -115,7 +115,7 @@ $(function() {
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        ParseState *parse_state = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        difference_type counter = 0;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        constexpr json_parse_array_iterator_base( ) noexcept = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <span class="keyword">explicit</span> json_parse_array_iterator_base( ) = <span class="keywordflow">default</span>;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keyword">explicit</span> <span class="keyword">inline</span> constexpr json_parse_array_iterator_base(</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;          ParseState *pd ) noexcept</div>
