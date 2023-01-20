@@ -43,7 +43,7 @@ namespace daw::json {
 				ParseState *parse_state = nullptr;
 				difference_type counter = 0;
 
-				constexpr json_parse_array_iterator_base( ) noexcept = default;
+				explicit json_parse_array_iterator_base( ) = default;
 
 				explicit inline constexpr json_parse_array_iterator_base(
 				  ParseState *pd ) noexcept
