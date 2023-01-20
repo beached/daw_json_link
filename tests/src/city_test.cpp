@@ -132,7 +132,7 @@ int main( int argc, char **argv )
 	  "Find Toronto", json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
-		    std::find_if( iterator_t( sv ), iterator_t( ), []( City &&city ) {
+		    std::find_if( iterator_t( sv ), iterator_t( ), []( City const &city ) {
 			    return city.name == "Toronto";
 		    } );
 		  if( pos != iterator_t( ) ) {
@@ -151,7 +151,7 @@ int main( int argc, char **argv )
 	  "Find Chitungwiza(last item)", json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
-		    std::find_if( iterator_t( sv ), iterator_t( ), []( City &&city ) {
+		    std::find_if( iterator_t( sv ), iterator_t( ), []( City const &city ) {
 			    return city.name == "Chitungwiza";
 		    } );
 		  if( pos != iterator_t( ) ) {
@@ -223,7 +223,7 @@ int main( int argc, char **argv )
 		  uint32_t tot = 0;
 		  auto result =
 		    daw::algorithm::accumulate( iterator_t( jstr ), iterator_t( ), 0.0f,
-		                                [&tot]( float cur, City &&city ) {
+		                                [&tot]( float cur, City const &city ) {
 			                                ++tot;
 			                                return cur + city.lat;
 		                                } );
