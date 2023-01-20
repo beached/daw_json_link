@@ -35,8 +35,12 @@ namespace daw::cookbook_optional_values1 {
 		std::unique_ptr<bool> member2{ };
 
 		bool operator==( MyOptionalStuff1 const &rhs ) const {
-			return std::tie( member0, member1, member2 ) ==
-			       std::tie( rhs.member0, rhs.member1, rhs.member2 );
+			bool result = member0 == rhs.member0;
+			result = result and ( member1 == rhs.member1 );
+			result =
+			  result and ( member2 and rhs.member2 and ( *member2 == *rhs.member2 ) );
+			result = result or ( not rhs.member2 );
+			return result;
 		}
 
 		bool operator!=( MyOptionalStuff1 const &rhs ) const {
