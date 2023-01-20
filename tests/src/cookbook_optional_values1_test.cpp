@@ -20,6 +20,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <vector>
 
@@ -32,16 +33,20 @@ namespace daw::cookbook_optional_values1 {
 		std::optional<int> member0{ };
 		std::string member1{ };
 		std::unique_ptr<bool> member2{ };
-	};
 
-	bool operator==( MyOptionalStuff1 const &lhs, MyOptionalStuff1 const &rhs ) {
-		bool result = lhs.member0 == rhs.member0;
-		result = result and ( lhs.member1 == rhs.member1 );
-		result = result and ( lhs.member2 and rhs.member2 and
-		                      ( *lhs.member2 == *rhs.member2 ) );
-		result = result or ( not rhs.member2 );
-		return result;
-	}
+		bool operator==( MyOptionalStuff1 const &rhs ) const {
+			bool result = member0 == rhs.member0;
+			result = result and ( member1 == rhs.member1 );
+			result =
+			  result and ( member2 and rhs.member2 and ( *member2 == *rhs.member2 ) );
+			result = result or ( not rhs.member2 );
+			return result;
+		}
+
+		bool operator!=( MyOptionalStuff1 const &rhs ) const {
+			return not( *this == rhs );
+		}
+	};
 } // namespace daw::cookbook_optional_values1
 
 namespace daw::json {
@@ -74,7 +79,7 @@ int main( int argc, char **argv )
 	}
 	auto data = *daw::read_file( argv[1] );
 	puts( "Original" );
-	puts( std::string( data.data( ), data.size( ) ).c_str( ) );
+	puts( data.c_str( ) );
 
 	auto stuff = daw::json::from_json_array<
 	  daw::cookbook_optional_values1::MyOptionalStuff1>( data );
