@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DAW JSON Link: Parsing Individual Members</title>
+<title>DAW JSON Link: exact_class_mappings</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -63,39 +63,44 @@ $(function() {
 </div><!-- top -->
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Parsing Individual Members </div>  </div>
+<div class="title">exact_class_mappings </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Parsing single members from the JSON data is common. This can be to discriminate on a single member or when only a single member is needed.</p>
-<div class="fragment"><div class="line">{</div>
-<div class="line">  &quot;member0&quot;: 55,</div>
-<div class="line">  &quot;member1&quot;: [</div>
-<div class="line">    1,</div>
-<div class="line">    2,</div>
-<div class="line">    3,</div>
-<div class="line">    4,</div>
-<div class="line">    5</div>
-<div class="line">  ],</div>
-<div class="line">  &quot;member2&quot;: {</div>
-<div class="line">    &quot;a&quot;: 123.4,</div>
-<div class="line">    &quot;b&quot;: &quot;found me&quot;</div>
-<div class="line">  }</div>
+<div class="textblock"><p>By default unmapped members in a JSON document are skipped. There are a few ways to turn this into an error.</p>
+<h1><a class="anchor" id="autotoc_md24"></a>
+Global parser option</h1>
+<p>One can change the default for all classes as a parser option. For example with <code>from_json</code> it would loook similar to:</p>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">daw::json::from_json&lt;Foo&gt;( </div>
+<div class="line">   json_doc1, </div>
+<div class="line">   daw::json::options::parse_flags&lt;</div>
+<div class="line">       daw::json::options::UseExactMappingsByDefault::yes&gt;</div>
+<div class="line">   );</div>
+</div><!-- fragment --><p>When the value is set to <code>yes</code>, you can exclude a class from this by adding a type alias to it's class mapping called <code>ignore_unknown_members</code>. For example:</p>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">namespace daw::json {</div>
+<div class="line">    template&lt;&gt;</div>
+<div class="line">    struct json_data_contract&lt;Foo&gt; {</div>
+<div class="line">        using ignore_unknown_members = void;</div>
+<div class="line">        </div>
+<div class="line">        using type = json_member_list&lt;json_number&lt;&quot;bar&quot;, int&gt;&gt;;</div>
+<div class="line">        </div>
+<div class="line">        //...</div>
+<div class="line">    };</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>With the previous JSON data, the next example will extract the member <code>"a.b"</code>, the <code>"b"</code> member of the <code>"a"</code> member of the root object.</p>
-<p>To see a working example using this code, refer to <a href="../../tests/src/cookbook_parsing_individual_members1_test.cpp">cookbook_parsing_individual_members1_test.cpp</a>.</p>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md25"></a>
+Enabling per class</h1>
+<p>To enable errors for unknown members per class, add a type alias to the mapping called <code>exact_class_mapping</code></p>
 <div class="fragment"><div class="line"> {c++}</div>
-<div class="line">std::string b_value = daw::json::from_json&lt;std::string&gt;( json_data, &quot;a.b&quot; );</div>
-</div><!-- fragment --><p><code>b_value</code> should have a value of <code>"found me"</code></p>
-<p>Below shows when member is known to be an array and full control of the resulting collection is needed.</p>
-<p>Too see a working example using this code, refer to <a href="../../tests/src/cookbook_parsing_individual_members2_test.cpp">cookbook_parsing_individual_members2_test.cpp</a>.</p>
-<div class="fragment"><div class="line"> {c++}</div>
-<div class="line">std::vector&lt;int&gt; values = daw::json::from_json_array&lt;int&gt;( json_data, &quot;member1&quot; );</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md111"></a>
-Specifying array indexes</h1>
-<p>In the member path array indexes are specified inside square brackets <code>[</code> and <code>]</code>. Below the 3rd item of <code>"member1"</code> will be extracted</p>
-<p>Too see a working example using this code, refer to <a href="../../tests/src/cookbook_parsing_individual_members3_test.cpp">cookbook_parsing_individual_members3_test.cpp</a>.</p>
-<div class="fragment"><div class="line"> {c++}</div>
-<div class="line">int third_value = daw::json::from_json&lt;int&gt;( json_data, &quot;member1[2]&quot; );</div>
+<div class="line">namespace daw::json {</div>
+<div class="line">    template&lt;&gt;</div>
+<div class="line">    struct json_data_contract&lt;Zaz&gt; {</div>
+<div class="line">        using exact_class_mapping = void;</div>
+<div class="line">        </div>
+<div class="line">        using type = json_member_list&lt;json_number&lt;&quot;foo&quot;, int&gt;&gt;;</div>
+<div class="line">        //...</div>
+<div class="line">    };</div>
+<div class="line">}</div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

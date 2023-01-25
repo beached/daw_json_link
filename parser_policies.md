@@ -76,3 +76,12 @@ measured 5% in some minified documents). This option is incompatible with commen
 ### Default
 
 * `no`
+
+## `UseExactMappingsByDefault`
+
+* 'no' - Extra members in JSON document are not an error by default
+* `yes` - By default, Any non-mapped member is an error
+
+### Default
+
+* 'no'

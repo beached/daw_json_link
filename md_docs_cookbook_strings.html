@@ -67,7 +67,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>JSON natively encodes strings. There are two options for mapping them to C++ data structures, fully processed and raw strings. Raw strings only find the end of the string and do not change the underlying values.</p>
-<h1><a class="anchor" id="autotoc_md110"></a>
+<h1><a class="anchor" id="autotoc_md114"></a>
 Escaped</h1>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;uris&quot;: [</div>
@@ -113,7 +113,7 @@ Escaped</h1>
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">} </div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md111"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md115"></a>
 Raw strings</h1>
 <p>Raw strings are useful where we don't want to process the strings, we know they will never be escaped, or we do not require processing. A raw string, is also simpler in that it only requires a constructor that requires a pointer and size, like <code>std::string_view</code> or <code>std::string</code>. <br  />
  </p><div class="fragment"><div class="line">{</div>
