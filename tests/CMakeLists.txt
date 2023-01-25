@@ -926,6 +926,12 @@ add_test( NAME issue_361_test COMMAND issue_361_test ./issue_361.json WORKING_DI
 add_dependencies( ci_tests issue_361_test )
 add_dependencies( full issue_361_test )
 
+add_executable( issue_370_exact_class_mapping_test src/issue_370_exact_class_mapping_test.cpp )
+target_link_libraries( issue_370_exact_class_mapping_test json_test )
+add_test( NAME issue_370_exact_class_mapping_test_test COMMAND issue_370_exact_class_mapping_test )
+add_dependencies( ci_tests issue_370_exact_class_mapping_test )
+add_dependencies( full issue_370_exact_class_mapping_test )
+
 add_executable( carray_test src/carray_test.cpp )
 target_link_libraries( carray_test json_test )
 add_test( NAME carray_test_test COMMAND carray_test )
