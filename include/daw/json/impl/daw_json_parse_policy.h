@@ -58,13 +58,15 @@ namespace daw::json {
 			 * Allow temporarily setting a sentinel in the buffer to reduce range
 			 * checking costs
 			 */
-			static DAW_CONSTEVAL bool allow_temporarily_mutating_buffer( ) {
-				return json_details::get_bits_for<options::TemporarilyMutateBuffer>(
-				         PolicyFlags ) == options::TemporarilyMutateBuffer::yes;
-			}
+			/*
+		 static DAW_CONSTEVAL bool allow_temporarily_mutating_buffer( ) {
+			 return json_details::get_bits_for<options::TemporarilyMutateBuffer>(
+			          PolicyFlags ) == options::TemporarilyMutateBuffer::yes;
+		 }
+			 */
 
-			using CharT = std::conditional_t<allow_temporarily_mutating_buffer( ),
-			                                 char, char const>;
+			using CharT = char const; /*std::conditional_t<allow_temporarily_mutating_buffer(
+			                             ), char, char const>;*/
 			using iterator = CharT *;
 
 			/***

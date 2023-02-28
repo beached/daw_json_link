@@ -277,6 +277,7 @@ namespace daw::json {
 			  not is_rvalue_string<String> and
 			  std::is_const_v<std::remove_reference_t<String>>;
 
+			/*
 			template<typename ParsePolicy, typename String, auto OptionMutable,
 			         auto OptionImmutable>
 			using apply_mutable_policy = std::conditional_t<
@@ -288,6 +289,7 @@ namespace daw::json {
 			    (is_rvalue_string<String> and is_mutable_string_v<String>),
 			    apply_policy_option_t<ParsePolicy, OptionMutable>,
 			    apply_policy_option_t<ParsePolicy, OptionImmutable>>>;
+			    */
 		} // namespace json_details
 
 		/***

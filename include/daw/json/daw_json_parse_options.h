@@ -140,7 +140,10 @@ namespace daw::json {
 				///
 				/// default: no
 				///
-				enum class TemporarilyMutateBuffer : unsigned { no, yes }; // 1bit
+
+				enum class [[deprecated(
+				  "This is not used" )]] TemporarilyMutateBuffer : unsigned{
+				  no, yes }; // 1bit
 
 				///
 				/// @brief Exclude characters under 0x20 that are not explicitly

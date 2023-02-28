@@ -498,7 +498,7 @@ namespace daw::json {
 		 * @tparam Name name of json member
 		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
 		 * Constructor
-		 * @tparam LiteralAsString Could this number be embedded in a string
+		 * @tparam Options set options for this number parser
 		 * @tparam Constructor Callable used to construct result
 		 */
 		template<JSONNAMETYPE Name, typename T, json_options_t Options,

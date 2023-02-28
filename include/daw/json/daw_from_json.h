@@ -56,12 +56,6 @@ namespace daw::json {
 			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
 			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
-			/// In cases where we own the buffer or when requested and can, allow
-			/// temporarily mutating it to reduce search costs
-			/*using parse_state_mutate_t = json_details::apply_mutable_policy<
-			  policy_zstring_t, std::add_const_t<String>,
-			  options::TemporarilyMutateBuffer::yes,
-			  options::TemporarilyMutateBuffer::no>;*/
 			using ParseState =
 			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
@@ -135,14 +129,8 @@ namespace daw::json {
 
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
-			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
+			using ParseState = json_details::apply_zstring_policy_option_t<
 			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
-
-			/// @brief In cases where we own the buffer or when requested and can,
-			/// allow temporarily mutating it to reduce search costs
-			using ParseState = json_details::apply_mutable_policy<
-			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
-			  options::TemporarilyMutateBuffer::no>;
 
 			auto parse_state = ParseState::with_allocator( f, l, a );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
@@ -217,11 +205,6 @@ namespace daw::json {
 			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
 			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
-			/// @brief In cases where we own the buffer or when requested and can,
-			/// allow temporarily mutating it to reduce search costs
-			/*			using policy_mutate_t = json_details::apply_mutable_policy<
-			        policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
-			        options::TemporarilyMutateBuffer::no>;*/
 			using ParseState =
 			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
@@ -310,14 +293,8 @@ namespace daw::json {
 
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
-			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
+			using ParseState = json_details::apply_zstring_policy_option_t<
 			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
-
-			/// @brief In cases where we own the buffer or when requested and can,
-			/// allow temporarily mutating it to reduce search costs
-			using ParseState = json_details::apply_mutable_policy<
-			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
-			  options::TemporarilyMutateBuffer::no>;
 
 			auto first = std::data( json_data );
 			auto last = daw::data_end( json_data );
@@ -526,11 +503,6 @@ namespace daw::json {
 			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
 			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
-			/// @brief In cases where we own the buffer or when requested and can,
-			/// allow temporarily mutating it to reduce search costs
-			/*using policy_mutate_t = json_details::apply_mutable_policy<
-			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
-			  options::TemporarilyMutateBuffer::no>;*/
 			using ParseState =
 			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
@@ -625,11 +597,6 @@ namespace daw::json {
 			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
 			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
-			/// @brief In cases where we own the buffer or when requested and can,
-			/// allow temporarily mutating it to reduce search costs
-			/*using ParseState = json_details::apply_mutable_policy<
-			  policy_zstring_t, String, options::TemporarilyMutateBuffer::yes,
-			  options::TemporarilyMutateBuffer::no>;*/
 			using ParseState =
 			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
