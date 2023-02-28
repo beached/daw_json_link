@@ -97,13 +97,13 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a550419762ee03a54fab5c349c18e985e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a550419762ee03a54fab5c349c18e985e">CharT</a> = std::conditional_t&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a454732de7261cdef596f368936053e9b">allow_temporarily_mutating_buffer</a>(), char, char const  &gt;</td></tr>
-<tr class="separator:a550419762ee03a54fab5c349c18e985e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe1f2c395c56bfeb4cec6ad1121887ab"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#afe1f2c395c56bfeb4cec6ad1121887ab">CharT</a> = char const</td></tr>
+<tr class="separator:afe1f2c395c56bfeb4cec6ad1121887ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad860e1bac9c6e4d46531f17a8b0d046a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#ad860e1bac9c6e4d46531f17a8b0d046a">CommentPolicy</a> = switch_t&lt; json_details::get_bits_for&lt; options::PolicyCommentTypes, std::size_t &gt;(PolicyFlags), <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy__no__comments_8h_03_1_1_no_comment_skipping_policy.html">NoCommentSkippingPolicy</a>, <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy__cpp__comments_8h_03_1_1_cpp_comment_skipping_policy.html">CppCommentSkippingPolicy</a>, <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy__hash__comments_8h_03_1_1_hash_comment_skipping_policy.html">HashCommentSkippingPolicy</a> &gt;</td></tr>
 <tr class="separator:ad860e1bac9c6e4d46531f17a8b0d046a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29800082f133ed56bae7e51caeb5af0b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a29800082f133ed56bae7e51caeb5af0b">exec_tag_t</a> = switch_t&lt; json_details::get_bits_for&lt; options::ExecModeTypes, std::size_t &gt;(PolicyFlags), <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">runtime_exec_tag</a>, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1simd__exec__tag.html">simd_exec_tag</a> &gt;</td></tr>
 <tr class="separator:a29800082f133ed56bae7e51caeb5af0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12e93005b67c8f1b5574a02af750997d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a12e93005b67c8f1b5574a02af750997d">iterator</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a550419762ee03a54fab5c349c18e985e">CharT</a> *</td></tr>
+<tr class="memitem:a12e93005b67c8f1b5574a02af750997d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a12e93005b67c8f1b5574a02af750997d">iterator</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#afe1f2c395c56bfeb4cec6ad1121887ab">CharT</a> *</td></tr>
 <tr class="separator:a12e93005b67c8f1b5574a02af750997d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8e3270688e2ea47d0797cbc2e396ae2"><td class="memTemplParams" colspan="2">template&lt;auto... PolicyOptions&gt; </td></tr>
 <tr class="memitem:af8e3270688e2ea47d0797cbc2e396ae2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#af8e3270688e2ea47d0797cbc2e396ae2">SetPolicyOptions</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; json_details::set_bits(PolicyFlags, PolicyOptions...), Allocator &gt;</td></tr>
@@ -230,8 +230,6 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a2739467afd9cdec281da92fa662de5a8"><td class="memItemLeft" align="right" valign="top">static DAW_CONSTEVAL bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a2739467afd9cdec281da92fa662de5a8">allow_leading_zero_plus</a> ()</td></tr>
 <tr class="memdesc:a2739467afd9cdec281da92fa662de5a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allow numbers with leading zeros and pluses when parsing.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a2739467afd9cdec281da92fa662de5a8">More...</a><br /></td></tr>
 <tr class="separator:a2739467afd9cdec281da92fa662de5a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a454732de7261cdef596f368936053e9b"><td class="memItemLeft" align="right" valign="top">static DAW_CONSTEVAL bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a454732de7261cdef596f368936053e9b">allow_temporarily_mutating_buffer</a> ()</td></tr>
-<tr class="separator:a454732de7261cdef596f368936053e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa658fb5faa21269aecc7aa1e0b19c133"><td class="memItemLeft" align="right" valign="top">static DAW_CONSTEVAL bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#aa658fb5faa21269aecc7aa1e0b19c133">exclude_special_escapes</a> ()</td></tr>
 <tr class="separator:aa658fb5faa21269aecc7aa1e0b19c133"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb50daa19036b6d1173ee758d77c7a1b"><td class="memItemLeft" align="right" valign="top">static DAW_CONSTEVAL bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#afb50daa19036b6d1173ee758d77c7a1b">force_name_equal_check</a> ()</td></tr>
@@ -299,8 +297,8 @@ struct daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy
 
 <p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00047">47</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a550419762ee03a54fab5c349c18e985e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a550419762ee03a54fab5c349c18e985e">&#9670;&nbsp;</a></span>CharT</h2>
+<a id="afe1f2c395c56bfeb4cec6ad1121887ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe1f2c395c56bfeb4cec6ad1121887ab">&#9670;&nbsp;</a></span>CharT</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -308,12 +306,12 @@ struct daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy
 template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_json_parse_policy.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; PolicyFlags, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a550419762ee03a54fab5c349c18e985e">CharT</a> =  std::conditional_t&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a454732de7261cdef596f368936053e9b">allow_temporarily_mutating_buffer</a>( ), char, char const&gt;</td>
+          <td class="memname">using daw::json::anonymous_namespace{daw_json_parse_policy.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; PolicyFlags, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#afe1f2c395c56bfeb4cec6ad1121887ab">CharT</a> =  char const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00066">66</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00068">68</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -331,7 +329,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00152">152</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00154">154</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -349,7 +347,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00080">80</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00082">82</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -362,12 +360,12 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_json_parse_policy.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; PolicyFlags, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a12e93005b67c8f1b5574a02af750997d">iterator</a> =  <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a550419762ee03a54fab5c349c18e985e">CharT</a> *</td>
+          <td class="memname">using daw::json::anonymous_namespace{daw_json_parse_policy.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; PolicyFlags, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a12e93005b67c8f1b5574a02af750997d">iterator</a> =  <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#afe1f2c395c56bfeb4cec6ad1121887ab">CharT</a> *</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00068">68</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00070">70</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -387,7 +385,7 @@ template&lt;auto... PolicyOptions&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00165">165</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00167">167</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -407,7 +405,7 @@ template&lt;typename Alloc &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00223">223</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00225">225</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -425,7 +423,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00265">265</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00267">267</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -493,7 +491,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00170">170</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00172">172</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -539,7 +537,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00176">176</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00178">178</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -591,7 +589,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00184">184</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00186">186</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -649,7 +647,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00191">191</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00193">193</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -679,7 +677,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00090">90</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00092">92</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -710,36 +708,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 
 <p>Allow numbers with leading zeros and pluses when parsing. </p>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00136">136</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
-
-</div>
-</div>
-<a id="a454732de7261cdef596f368936053e9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a454732de7261cdef596f368936053e9b">&#9670;&nbsp;</a></span>allow_temporarily_mutating_buffer()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, typename Allocator  = json_details::NoAllocator&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static DAW_CONSTEVAL bool daw::json::anonymous_namespace{daw_json_parse_policy.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; PolicyFlags, Allocator &gt;::allow_temporarily_mutating_buffer </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00061">61</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00138">138</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -768,7 +737,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00292">292</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00294">294</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -820,7 +789,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00200">200</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00202">202</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -849,7 +818,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00282">282</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00284">284</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -878,7 +847,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00287">287</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00289">289</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -907,7 +876,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00301">301</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00303">303</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -936,7 +905,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00297">297</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00299">299</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -965,7 +934,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00130">130</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00132">132</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -994,7 +963,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00098">98</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00100">100</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1023,7 +992,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00353">353</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00355">355</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1052,7 +1021,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00357">357</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00359">359</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1081,7 +1050,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00395">395</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00397">397</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1110,7 +1079,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00313">313</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00315">315</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1139,7 +1108,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00490">490</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00492">492</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1168,7 +1137,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00486">486</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00488">488</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1197,7 +1166,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00494">494</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00496">496</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1226,7 +1195,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00425">425</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00427">427</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1255,7 +1224,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00407">407</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00409">409</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1284,7 +1253,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00368">368</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00370">370</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1313,7 +1282,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00421">421</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00423">423</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1342,7 +1311,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00417">417</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00419">419</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1371,7 +1340,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00429">429</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00431">431</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1400,7 +1369,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00412">412</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00414">414</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1429,7 +1398,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00106">106</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00108">108</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1458,7 +1427,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00122">122</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00124">124</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1487,7 +1456,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00473">473</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00475">475</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1516,7 +1485,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00465">465</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00467">467</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1545,7 +1514,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00450">450</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00452">452</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1574,7 +1543,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00441">441</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00443">443</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1603,7 +1572,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00482">482</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00484">484</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1634,7 +1603,7 @@ template&lt;char c&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00345">345</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00347">347</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1665,7 +1634,7 @@ template&lt;char c&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00338">338</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00340">340</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1696,7 +1665,7 @@ template&lt;char c&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00331">331</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00333">333</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1754,7 +1723,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00114">114</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00116">116</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1783,7 +1752,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00372">372</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00374">374</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1813,7 +1782,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00376">376</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00378">378</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1842,7 +1811,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00380">380</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00382">382</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1872,7 +1841,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00390">390</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00392">392</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1901,7 +1870,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00363">363</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00365">365</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1930,7 +1899,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00520">520</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00522">522</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1961,7 +1930,7 @@ template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00500">500</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00502">502</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -1992,7 +1961,7 @@ template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00507">507</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00509">509</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2021,7 +1990,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00512">512</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00514">514</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2053,7 +2022,7 @@ template&lt;std::size_t N&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00318">318</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00320">320</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2082,7 +2051,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00433">433</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00435">435</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2111,7 +2080,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00399">399</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00401">401</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2140,7 +2109,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00403">403</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00405">405</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2172,7 +2141,7 @@ template&lt;typename Alloc &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00253">253</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00255">255</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2204,7 +2173,7 @@ template&lt;typename Alloc &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00240">240</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00242">242</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2252,7 +2221,7 @@ template&lt;typename Alloc &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00270">270</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00272">272</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2312,7 +2281,7 @@ template&lt;typename Alloc &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00227">227</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00229">229</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2370,7 +2339,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00233">233</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00235">235</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2418,7 +2387,7 @@ template&lt;typename Alloc &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00276">276</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00278">278</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2448,7 +2417,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00261">261</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00263">263</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2467,7 +2436,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00160">160</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00162">162</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2485,7 +2454,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00161">161</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00163">163</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2503,7 +2472,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00162">162</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00164">164</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2529,7 +2498,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00085">85</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00087">87</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2558,7 +2527,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 <div class="line">        json_details::get_bits_for&lt;options::ExpectLongNames&gt;( PolicyFlags ) ==</div>
 <div class="line">        options::ExpectLongNames::yes</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00148">148</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00150">150</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2576,7 +2545,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00158">158</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00160">160</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2634,7 +2603,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 <div class="line">        json_details::get_bits_for&lt;options::CheckedParseMode&gt;( PolicyFlags ) ==</div>
 <div class="line">        options::CheckedParseMode::no</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00073">73</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00075">75</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2652,7 +2621,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00159">159</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00161">161</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2681,7 +2650,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 <div class="line">        json_details::get_bits_for&lt;options::MustVerifyEndOfDataIsValid&gt;(</div>
 <div class="line">          PolicyFlags ) == options::MustVerifyEndOfDataIsValid::yes</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00144">144</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00146">146</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>
@@ -2710,7 +2679,7 @@ template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, type
 <div class="line">        json_details::get_bits_for&lt;options::UseExactMappingsByDefault&gt;(</div>
 <div class="line">          PolicyFlags ) == options::UseExactMappingsByDefault::yes</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00140">140</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__policy_8h_source.html#l00142">142</a> of file <a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>.</p>
 
 </div>
 </div>

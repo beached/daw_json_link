@@ -322,6 +322,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__data__contractdc4f5059c370e3042383e52e5666b4b7.html">json_data_contract&lt; basic_json_value&lt; PolicyFlags, Allocator &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1json__data__contract_3_01_t_00_01std_1_1enable__if__t_3_01boost_1_1describe1b05cf2d72f22848697320082fca67ef.html">json_data_contract&lt; T, std::enable_if_t&lt; boost::describe::has_describe_members&lt; T &gt;::value and use_boost_describe_v&lt; T &gt; &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__data__contract1aa47136fd585e8399187f74a42906c1.html">json_data_contract&lt; tuple_json_mapping&lt; Members... &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__date.html">json_date</a></td></tr>
@@ -1056,10 +1058,43 @@ Variables</h2></td></tr>
 <tr class="separator:a6f15cab3f7b85b6588b1a3e8deec4e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a862752c4c5c111b788ae5bd023ae2b44"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03.html#a862752c4c5c111b788ae5bd023ae2b44">string_raw_opts_def</a></td></tr>
 <tr class="separator:a862752c4c5c111b788ae5bd023ae2b44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed237f364bc953fa92084bc1bc3c0025"><td class="memTemplParams" colspan="2">template&lt;typename , typename  = void&gt; </td></tr>
+<tr class="memitem:aed237f364bc953fa92084bc1bc3c0025"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#aed237f364bc953fa92084bc1bc3c0025">use_boost_describe_v</a> = true</td></tr>
+<tr class="memdesc:aed237f364bc953fa92084bc1bc3c0025"><td class="mdescLeft">&#160;</td><td class="mdescRight">Types that use Boost.Describe need to specialize use_boost_describe_v for their type with a bool value of true. This defaults to on, all described structs, but can be opted-out of if one wants to do a custom mapping of a Boost.Described struct.  <a href="namespacedaw_1_1json.html#aed237f364bc953fa92084bc1bc3c0025">More...</a><br /></td></tr>
+<tr class="separator:aed237f364bc953fa92084bc1bc3c0025"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Customization point traits. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Variable Documentation</h2>
+<a id="aed237f364bc953fa92084bc1bc3c0025"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed237f364bc953fa92084bc1bc3c0025">&#9670;&nbsp;</a></span>use_boost_describe_v</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename , typename  = void&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool daw::json::use_boost_describe_v = true</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Types that use Boost.Describe need to specialize use_boost_describe_v for their type with a bool value of true. This defaults to on, all described structs, but can be opted-out of if one wants to do a custom mapping of a Boost.Described struct. </p>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__link__describe_8h_source.html#l00032">32</a> of file <a class="el" href="daw__json__link__describe_8h_source.html">daw_json_link_describe.h</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
