@@ -9,8 +9,7 @@ else()
     set( CMAKE_CXX_EXTENSIONS OFF )
 endif()
 
-# 1.71 has MP issues, setting to 1.72 hoping that fixes them.  At the least it prevents compiling on Ubuntu 20.04
-find_package( Boost 1.72.0 COMPONENTS container system )
+find_package( Boost 1.78.0 COMPONENTS container system )
 find_package( Threads )
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
@@ -239,6 +238,11 @@ if( Boost_FOUND )
     add_executable( twitter_test_pmr EXCLUDE_FROM_ALL src/twitter_test_pmr.cpp )
     target_link_libraries( twitter_test_pmr PRIVATE json_test Boost::headers Boost::container )
     add_dependencies( full twitter_test_pmr )
+
+    add_executable( daw_json_link_describe_bin src/daw_json_link_describe_test.cpp )
+    target_link_libraries( daw_json_link_describe_bin PRIVATE json_test Boost::headers )
+    target_compile_features( daw_json_link_describe_bin INTERFACE cxx_std_20 )
+    add_test( NAME daw_json_link_describe_test COMMAND daw_json_link_describe_bin )
 endif()
 
 if( DAW_JSON_FULL_TESTS )
@@ -557,12 +561,12 @@ add_dependencies( full cookbook_dates4_test )
 
 # Cannot be used due to perf issue with uncaught_exceptions/MSVC's dtors that prevent this facility
 if( NOT DEFINED MSVC )
-	add_executable( no_move_or_copy_cls_test src/no_move_or_copy_cls_test.cpp )
-	target_link_libraries( no_move_or_copy_cls_test PRIVATE json_test )
-	add_test( NAME no_move_or_copy_cls_test COMMAND no_move_or_copy_cls_test )
-	add_dependencies( ci_tests no_move_or_copy_cls_test )
-	add_dependencies( full no_move_or_copy_cls_test )
-endif( )
+    add_executable( no_move_or_copy_cls_test src/no_move_or_copy_cls_test.cpp )
+    target_link_libraries( no_move_or_copy_cls_test PRIVATE json_test )
+    add_test( NAME no_move_or_copy_cls_test COMMAND no_move_or_copy_cls_test )
+    add_dependencies( ci_tests no_move_or_copy_cls_test )
+    add_dependencies( full no_move_or_copy_cls_test )
+endif()
 
 add_executable( cookbook_class_from_array1_test src/cookbook_class_from_array1_test.cpp )
 target_link_libraries( cookbook_class_from_array1_test PRIVATE json_test )
@@ -932,6 +936,12 @@ add_test( NAME issue_370_exact_class_mapping_test_test COMMAND issue_370_exact_c
 add_dependencies( ci_tests issue_370_exact_class_mapping_test )
 add_dependencies( full issue_370_exact_class_mapping_test )
 
+#add_executable( issue_373_empty_string_nullable_test src/issue_373_empty_string_nullable_test.cpp )
+#target_link_libraries( issue_373_empty_string_nullable_test PRIVATE json_test )
+#add_test( NAME issue_373_empty_string_nullable_test COMMAND issue_373_empty_string_nullable_test ./issue_373_empty_string_nullable.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+#add_dependencies( ci_tests issue_373_empty_string_nullable_test )
+#add_dependencies( full issue_373_empty_string_nullable_test )
+
 add_executable( carray_test src/carray_test.cpp )
 target_link_libraries( carray_test json_test )
 add_test( NAME carray_test_test COMMAND carray_test )
@@ -946,7 +956,6 @@ add_dependencies( full base_child_class_test )
 
 add_executable( json_bench_viewer src/json_bench_viewer.cpp )
 target_link_libraries( json_bench_viewer json_test )
-
 
 if( Threads_FOUND )
     add_executable( json_lines_bench_test src/json_lines_bench_test.cpp )

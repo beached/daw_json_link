@@ -845,7 +845,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename ParseState>
-			static constexpr auto find_index( ParseState parse_state ) {
+			static constexpr auto find_index( ParseState const & parse_state ) {
 				using tag_member = typename JsonMember::tag_member;
 				using class_wrapper_t = typename JsonMember::tag_member_class_wrapper;
 

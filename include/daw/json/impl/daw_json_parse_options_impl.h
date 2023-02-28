@@ -138,6 +138,7 @@ namespace daw::json {
 			  default_json_option_value<options::ExpectLongNames> =
 			    options::ExpectLongNames::no;
 
+			/*
 			template<>
 			inline constexpr unsigned
 			  json_option_bits_width<options::TemporarilyMutateBuffer> = 1;
@@ -146,6 +147,7 @@ namespace daw::json {
 			inline constexpr auto
 			  default_json_option_value<options::TemporarilyMutateBuffer> =
 			    options::TemporarilyMutateBuffer::no;
+			    */
 
 			template<>
 			inline constexpr unsigned
@@ -161,9 +163,8 @@ namespace daw::json {
 			  options::PolicyCommentTypes, options::CheckedParseMode,
 			  options::AllowEscapedNames, options::IEEE754Precise,
 			  options::ForceFullNameCheck, options::MinifiedDocument,
-			  options::UseExactMappingsByDefault, options::TemporarilyMutateBuffer,
-			  options::MustVerifyEndOfDataIsValid, options::ExcludeSpecialEscapes,
-			  options::ExpectLongNames>::type;
+			  options::UseExactMappingsByDefault, options::MustVerifyEndOfDataIsValid,
+			  options::ExcludeSpecialEscapes, options::ExpectLongNames>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =
