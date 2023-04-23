@@ -76,7 +76,9 @@ bool test_real_untrusted( ) {
 
 #define do_test( ... )                                                   \
 	try {                                                                  \
-		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );              \
+		auto result = ( __VA_ARGS__ );                                       \
+		daw::expecting_message( result, "" #__VA_ARGS__ );                   \
+		daw::do_not_optimize( result );                                      \
 	} catch( daw::json::json_exception const &jex ) {                      \
 		std::cerr << "Unexpected exception thrown by parser in test '"       \
 		          << "" #__VA_ARGS__ << "': " << jex.reason( ) << std::endl; \

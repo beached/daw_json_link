@@ -775,7 +775,7 @@ namespace daw::json {
 						char buff[daw::numeric_limits<under_type>::digits10 + 10]{ };
 						char *ptr = buff;
 						while( v >= 10 ) {
-							auto const tmp = v % 100U;
+							auto const tmp = static_cast<std::size_t>( v % 100U );
 							v /= 100U;
 							ptr[0] = digits100[tmp][0];
 							ptr[1] = digits100[tmp][1];
