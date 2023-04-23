@@ -847,7 +847,7 @@ $(function() {
 <div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;            <span class="keywordtype">char</span> buff[daw::numeric_limits&lt;under_type&gt;::digits10 + 10]{ };</div>
 <div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;            <span class="keywordtype">char</span> *ptr = buff;</div>
 <div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;            <span class="keywordflow">while</span>( v &gt;= 10 ) {</div>
-<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;              <span class="keyword">auto</span> <span class="keyword">const</span> tmp = v % 100U;</div>
+<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;              <span class="keyword">auto</span> <span class="keyword">const</span> tmp = <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( v % 100U );</div>
 <div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;              v /= 100U;</div>
 <div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;              ptr[0] = digits100[tmp][0];</div>
 <div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;              ptr[1] = digits100[tmp][1];</div>
