@@ -4,7 +4,7 @@
 ## Content 
   * [Intro](#intro)
   * [Default Mapping of Types](#default-mapping-of-types)
-  * [API Documentation](https://beached.github.io/daw_json_link/html/) - Member mapping classes and methods
+  * [API Documentation](https://beached.github.io/daw_json_link/) - Member mapping classes and methods
   * [Cookbook](docs/cookbook/readme.md) Get cooking and putting it all together 
     * [Aliases](docs/cookbook/aliases.md)
     * [Arrays](docs/cookbook/array.md)
