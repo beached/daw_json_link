@@ -31,6 +31,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -pedantic
                 -Weverything
                 -ftemplate-backtrace-limit=0
+								-Wincompatible-pointer-types-discards-qualifiers
                 -Wno-c++98-compat
                 -Wno-c++98-compat-pedantic
                 -Wno-covered-switch-default

@@ -886,7 +886,7 @@ namespace daw::json {
 					return it;
 				}
 				it.put( '"' );
-				datetime::ymdhms const civil = datetime::time_point_to_civil( value );
+				datetime::ymdhms civil = datetime::time_point_to_civil( value );
 				it = utils::integer_to_string( it, civil.year );
 				it.put( '-' );
 				if( civil.month < 10 ) {
@@ -913,9 +913,12 @@ namespace daw::json {
 					it.put( '0' );
 				}
 				it = utils::integer_to_string( it, civil.second );
-				if( civil.millisecond > 0 ) {
+				if( civil.nanosecond > 0 ) {
+					while( civil.nanosecond != 0 and civil.nanosecond % 10 == 0 ) {
+						civil.nanosecond /= 10;
+					}
 					it.put( '.' );
-					it = utils::integer_to_string( it, civil.millisecond );
+					it = utils::integer_to_string( it, civil.nanosecond );
 				}
 				it.write( "Z\"" );
 				return it;
@@ -934,7 +937,10 @@ namespace daw::json {
 
 				static_assert(
 				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t> or
-				    std::is_same_v<parse_to_t, typename JsonMember::parse_to_t>, // This is for not-copy/movable types
+				    std::is_same_v<parse_to_t,
+				                   typename JsonMember::parse_to_t>, // This is for
+				                                                     // not-copy/movable
+				                                                     // types
 				  "value must be convertible to specified type in class contract" );
 
 				if constexpr( has_json_to_json_data_v<parse_to_t> ) {

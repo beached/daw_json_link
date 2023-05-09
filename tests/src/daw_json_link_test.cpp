@@ -1149,7 +1149,7 @@ int main( int, char ** ) {
 #if not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
 		static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 #else
-		assert( (from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2) );
+	assert( ( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 ) );
 #endif
 
 		auto const test_bad_float = []( ) -> bool {
@@ -1270,6 +1270,32 @@ int main( int, char ** ) {
 
 		std::string negnumber_str = to_json<strsigned_t>( -1234567890LL );
 		ensure( negnumber_str == R"("-1234567890")" );
+
+		constexpr std::string_view ts = "\"2016-12-31T01:02:03.343Z\"";
+		using tp_t = std::chrono::time_point<std::chrono::system_clock,
+		                                     std::chrono::nanoseconds>;
+		constexpr auto parsed_dte =
+		  daw::json::from_json<daw::json::json_date_no_name<tp_t>>( ts );
+		(void)parsed_dte;
+#if defined( __cpp_lib_chrono ) and __cpp_lib_chrono >= 201907
+		std::cout << ts << " parsed as " << parsed_dte << '\n';
+#endif
+		constexpr std::string_view ts2 = "\"2016-12-31T01:02:03.123456789Z\"";
+		constexpr auto parsed_dte2 =
+		  daw::json::from_json<daw::json::json_date_no_name<tp_t>>( ts2 );
+		(void)parsed_dte;
+#if defined( __cpp_lib_chrono ) and __cpp_lib_chrono >= 201907
+		std::cout << ts2 << " parsed as " << parsed_dte2 << '\n';
+#endif
+		auto const parsed_dte_str =
+		  daw::json::to_json<daw::json::json_date_no_name<tp_t>>( parsed_dte );
+		std::cout << "round trip of " << ts << " became " << parsed_dte_str << '\n';
+		ensure( ts == parsed_dte_str );
+		auto const parsed_dte2_str =
+		  daw::json::to_json<daw::json::json_date_no_name<tp_t>>( parsed_dte2 );
+		std::cout << "round trip of " << ts2 << " became " << parsed_dte2_str
+		          << '\n';
+		ensure( ts2 == parsed_dte2_str );
 
 #if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L

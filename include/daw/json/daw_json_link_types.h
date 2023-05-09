@@ -763,10 +763,12 @@ namespace daw::json {
 		namespace json_base {
 			template<typename T, typename Constructor>
 			struct json_date {
+				using clock_type = typename T::clock;
+				using duration_type = typename T::duration;
 				using i_am_a_json_type = void;
 				using constructor_t =
 				  std::conditional_t<std::is_same_v<use_default, Constructor>,
-				                     construct_from_iso8601_timestamp, Constructor>;
+				                     construct_from_iso8601_timestamp<T>, Constructor>;
 
 				using wrapped_type = T;
 				static constexpr bool must_be_class_member = false;

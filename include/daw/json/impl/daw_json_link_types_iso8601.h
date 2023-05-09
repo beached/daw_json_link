@@ -18,14 +18,19 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		struct construct_from_iso8601_timestamp {
-			using result_type = std::chrono::time_point<std::chrono::system_clock,
-			                                            std::chrono::milliseconds>;
+		template<typename TP>
+		struct construct_from_iso8601_timestamp;
+
+		template<typename Clock, typename Duration>
+		struct construct_from_iso8601_timestamp<
+		  std::chrono::time_point<Clock, Duration>> {
+			using result_type = std::chrono::time_point<Clock, Duration>;
 
 			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr result_type
 			operator( )( char const *ptr,
 			             std::size_t sz ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
-				return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
+				return datetime::parse_iso8601_timestamp<result_type>(
+				  daw::string_view( ptr, sz ) );
 			}
 		};
 	} // namespace DAW_JSON_VER
