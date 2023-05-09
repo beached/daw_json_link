@@ -1503,6 +1503,9 @@ namespace daw::json {
 					out_it.put( '0' );
 					return out_it;
 				}
+				if( br.is_negative( ) ) {
+					out_it.put( '-' );
+				}
 				if( fp_output_fmt == options::FPOutputFormat::Scientific ) {
 					char buff[50]{ };
 					char *ptr = buff;
@@ -1519,9 +1522,6 @@ namespace daw::json {
 						out_it.copy_buffer( buff, ptr );
 						return out_it;
 					}
-				}
-				if( br.is_negative( ) ) {
-					out_it.put( '-' );
 				}
 				if( dec.significand == 0 ) {
 					out_it.put( '0' );
