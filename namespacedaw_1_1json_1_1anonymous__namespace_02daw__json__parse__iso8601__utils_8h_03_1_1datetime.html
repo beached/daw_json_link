@@ -85,14 +85,14 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a8fa17cc705c5a7a3ca0482ec63e3d937"><td class="memTemplParams" colspan="2">template&lt;typename Clock  = std::chrono::system_clock, typename Duration  = std::chrono::milliseconds&gt; </td></tr>
-<tr class="memitem:a8fa17cc705c5a7a3ca0482ec63e3d937"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::chrono::time_point&lt; Clock, Duration &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime.html#a8fa17cc705c5a7a3ca0482ec63e3d937">civil_to_time_point</a> (std::int_least32_t yr, std::uint_least32_t mo, std::uint_least32_t dy, std::uint_least32_t hr, std::uint_least32_t mn, std::uint_least32_t se, std::uint_least32_t ms)</td></tr>
-<tr class="separator:a8fa17cc705c5a7a3ca0482ec63e3d937"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8e316a58118c09e3c2b27f4ec3a9939"><td class="memTemplParams" colspan="2">template&lt;typename TP  = std::chrono::time_point&lt;std::chrono::system_clock,			                                               std::chrono::milliseconds&gt;&gt; </td></tr>
+<tr class="memitem:ab8e316a58118c09e3c2b27f4ec3a9939"><td class="memTemplItemLeft" align="right" valign="top">constexpr TP&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime.html#ab8e316a58118c09e3c2b27f4ec3a9939">civil_to_time_point</a> (std::int_least32_t yr, std::uint_least32_t mo, std::uint_least32_t dy, std::uint_least32_t hr, std::uint_least32_t mn, std::uint_least32_t se, std::uint64_t ns)</td></tr>
+<tr class="separator:ab8e316a58118c09e3c2b27f4ec3a9939"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1138a2e0d51d0c2cf8d6a8a520274732"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime.html#a1138a2e0d51d0c2cf8d6a8a520274732">month_short_name</a> (unsigned m)</td></tr>
 <tr class="separator:a1138a2e0d51d0c2cf8d6a8a520274732"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fb72dd94049c443fc2c5afc610fcacd"><td class="memTemplParams" colspan="2">template&lt;string_view_bounds_type Bounds&gt; </td></tr>
-<tr class="memitem:a5fb72dd94049c443fc2c5afc610fcacd"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::chrono::time_point&lt; std::chrono::system_clock, std::chrono::milliseconds &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime.html#a5fb72dd94049c443fc2c5afc610fcacd">parse_iso8601_timestamp</a> (daw::basic_string_view&lt; char, Bounds &gt; ts)</td></tr>
-<tr class="separator:a5fb72dd94049c443fc2c5afc610fcacd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a153a9de324bb4f4d062d148b2527dd8c"><td class="memTemplParams" colspan="2">template&lt;typename TP , string_view_bounds_type Bounds&gt; </td></tr>
+<tr class="memitem:a153a9de324bb4f4d062d148b2527dd8c"><td class="memTemplItemLeft" align="right" valign="top">constexpr TP&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime.html#a153a9de324bb4f4d062d148b2527dd8c">parse_iso8601_timestamp</a> (daw::basic_string_view&lt; char, Bounds &gt; ts)</td></tr>
+<tr class="separator:a153a9de324bb4f4d062d148b2527dd8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64d968ed80f1f4244532b35125592252"><td class="memTemplParams" colspan="2">template&lt;string_view_bounds_type Bounds&gt; </td></tr>
 <tr class="memitem:a64d968ed80f1f4244532b35125592252"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime_1_1date__parts.html">date_parts</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime.html#a64d968ed80f1f4244532b35125592252">parse_iso_8601_date</a> (daw::basic_string_view&lt; char, Bounds &gt; timestamp_str)</td></tr>
 <tr class="separator:a64d968ed80f1f4244532b35125592252"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -109,19 +109,19 @@ Functions</h2></td></tr>
 <tr class="separator:ad238a433bee2fc7f0fcb3d6070135cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a8fa17cc705c5a7a3ca0482ec63e3d937"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8fa17cc705c5a7a3ca0482ec63e3d937">&#9670;&nbsp;</a></span>civil_to_time_point()</h2>
+<a id="ab8e316a58118c09e3c2b27f4ec3a9939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8e316a58118c09e3c2b27f4ec3a9939">&#9670;&nbsp;</a></span>civil_to_time_point()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Clock  = std::chrono::system_clock, typename Duration  = std::chrono::milliseconds&gt; </div>
+template&lt;typename TP  = std::chrono::time_point&lt;std::chrono::system_clock,			                                               std::chrono::milliseconds&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr std::chrono::time_point&lt;Clock, Duration&gt; daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::datetime::civil_to_time_point </td>
+          <td class="memname">constexpr TP daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::datetime::civil_to_time_point </td>
           <td>(</td>
           <td class="paramtype">std::int_least32_t&#160;</td>
           <td class="paramname"><em>yr</em>, </td>
@@ -159,8 +159,8 @@ template&lt;typename Clock  = std::chrono::system_clock, typename Duration  = st
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::uint_least32_t&#160;</td>
-          <td class="paramname"><em>ms</em>&#160;</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>ns</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -175,7 +175,7 @@ template&lt;typename Clock  = std::chrono::system_clock, typename Duration  = st
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00088">88</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00089">89</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
 
 </div>
 </div>
@@ -203,23 +203,23 @@ template&lt;typename Clock  = std::chrono::system_clock, typename Duration  = st
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00327">327</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00328">328</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
 
 </div>
 </div>
-<a id="a5fb72dd94049c443fc2c5afc610fcacd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5fb72dd94049c443fc2c5afc610fcacd">&#9670;&nbsp;</a></span>parse_iso8601_timestamp()</h2>
+<a id="a153a9de324bb4f4d062d148b2527dd8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a153a9de324bb4f4d062d148b2527dd8c">&#9670;&nbsp;</a></span>parse_iso8601_timestamp()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;string_view_bounds_type Bounds&gt; </div>
+template&lt;typename TP , string_view_bounds_type Bounds&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr std::chrono::time_point&lt;std::chrono::system_clock, std::chrono::milliseconds&gt; daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::datetime::parse_iso8601_timestamp </td>
+          <td class="memname">constexpr TP daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::datetime::parse_iso8601_timestamp </td>
           <td>(</td>
           <td class="paramtype">daw::basic_string_view&lt; char, Bounds &gt;&#160;</td>
           <td class="paramname"><em>ts</em></td><td>)</td>
@@ -263,7 +263,7 @@ template&lt;string_view_bounds_type Bounds&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00169">169</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00168">168</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
 
 </div>
 </div>
@@ -293,7 +293,7 @@ template&lt;string_view_bounds_type Bounds&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00195">195</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00194">194</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
 
 </div>
 </div>
@@ -321,7 +321,7 @@ template&lt;string_view_bounds_type Bounds&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00405">405</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00406">406</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
 
 </div>
 </div>
@@ -351,7 +351,7 @@ template&lt;typename Duration &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00361">361</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00362">362</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
 
 </div>
 </div>
@@ -381,7 +381,7 @@ template&lt;typename Clock , typename Duration &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00282">282</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html#l00283">283</a> of file <a class="el" href="daw__json__parse__iso8601__utils_8h_source.html">daw_json_parse_iso8601_utils.h</a>.</p>
 
 </div>
 </div>
