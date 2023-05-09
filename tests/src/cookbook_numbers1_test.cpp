@@ -24,10 +24,12 @@ namespace daw::cookbook_numbers1 {
 		double member1;
 		double member2;
 		double member3;
+		double member4;
 
 		DAW_CONSTEXPR bool operator==( MyClass1 const &rhs ) const {
 			return member0 == rhs.member0 and member1 == rhs.member1 and
-			       member2 == rhs.member2 and member3 == rhs.member3;
+			       member2 == rhs.member2 and member3 == rhs.member3 and
+			       member4 == rhs.member4;
 		}
 	};
 } // namespace daw::cookbook_numbers1
@@ -38,19 +40,22 @@ namespace daw::json {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
 		using type =
 		  json_member_list<json_number<"member0">, json_number<"member1">,
-		                   json_number<"member2">, json_number<"member3">>;
+		                   json_number<"member2">, json_number<"member3">,
+		                   json_number<"member4">>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 		static constexpr char const member3[] = "member3";
+		static constexpr char const member4[] = "member4";
 		using type = json_member_list<json_number<member0>, json_number<member1>,
-		                              json_number<member2>, json_number<member3>>;
+		                              json_number<member2>, json_number<member3>,
+		                              json_number<member4>>;
 #endif
 		static inline auto
 		to_json_data( cookbook_numbers1::MyClass1 const &value ) {
 			return std::forward_as_tuple( value.member0, value.member1, value.member2,
-			                              value.member3 );
+			                              value.member3, value.member4 );
 		}
 	};
 } // namespace daw::json
@@ -73,6 +78,7 @@ int main( int argc, char **argv )
 	test_assert( cls.member1 == 1, "Unexpected value" );
 	test_assert( cls.member2 == 1200, "Unexpected value" );
 	test_assert( cls.member3 == 3000, "Unexpected value" );
+	test_assert( cls.member4 == -3e10, "Unexpected value" );
 	std::string const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
