@@ -1520,10 +1520,6 @@ namespace daw::json {
 						return out_it;
 					}
 				}
-				if( dec.significand == 0 ) {
-					out_it.put( '0' );
-					return out_it;
-				}
 				if( dec.exponent < 0 ) {
 					if( whole_dig < 0 ) {
 						out_it.write( "0." );
