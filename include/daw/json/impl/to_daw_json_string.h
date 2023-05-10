@@ -1497,9 +1497,6 @@ namespace daw::json {
 					}
 				}( );
 				if( dec.significand == 0 ) {
-					if( br.is_negative( ) ) {
-						out_it.put( '-' );
-					}
 					out_it.put( '0' );
 					return out_it;
 				}
