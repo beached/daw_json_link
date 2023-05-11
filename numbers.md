@@ -9,11 +9,12 @@ There is direct support for numbers in JSON of the form `integer`[.`fraction`][e
   "member0": 1.23,
   "member1": 1,
   "member2": 1.2e3,
-  "member3": 3e3
+  "member3": 3e3,
+  "member4": -3e10
 }
 ```
 
-The above JSON object has 4 members, each of which are numbers.
+The above JSON object has five members, each of which are numbers.
 
 Below is the C++ data structure and trait to map the structure to the JSON object.
 To see a working example using this code, refer to [cookbook_numbers1_test.cpp](../../tests/src/cookbook_numbers1_test.cpp)
@@ -24,6 +25,7 @@ struct MyClass1 {
   double member1;
   double member2;
   double member3;
+  double member4;
 };
 namespace daw::json {
   template<>
@@ -32,7 +34,8 @@ namespace daw::json {
     json_number<"member0">, 
     json_number<"member1">, 
     json_number<"member2">,
-    json_number<"member3">
+    json_number<"member3">,
+    json_number<"member4">
   >;
 
   static inline auto to_json_data( MyClass1 const &value ) {
@@ -40,7 +43,8 @@ namespace daw::json {
     value.member0, 
     value.member1,
     value.member2,
-    value.member3 );
+    value.member3,
+    value.member4 );
   }
   };
 }
