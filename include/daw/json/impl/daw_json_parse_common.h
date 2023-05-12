@@ -778,7 +778,7 @@ namespace daw::json {
 					               "Detection failure" );
 					static_assert( not is_nonesuch_v<rcvref_type>, "Detection failure" );
 					return daw::traits::identity<type>{ };
-				} else if constexpr( json_details::is_a_json_type_v<T> ) {
+				} else if constexpr( is_a_json_type_v<T> ) {
 					static_assert( not std::is_same_v<T, void> );
 					using type =
 					  typename std::conditional_t<is_json_class_map_v<T>,

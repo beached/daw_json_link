@@ -401,8 +401,7 @@ namespace daw::json {
 			/// Detect if T follows the tuple protocol
 			/// \tparam T
 			template<typename T>
-			inline constexpr bool is_tuple_v =
-			  daw::is_detected_v<json_details::tuple_test, T>;
+			inline constexpr bool is_tuple_v = daw::is_detected_v<tuple_test, T>;
 
 			template<typename T>
 			using unwrapped_t = concepts::nullable_value_type_t<T>;

@@ -11,7 +11,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
     if( MSVC )
         message( STATUS "Clang-CL ${CMAKE_CXX_COMPILER_VERSION} detected" )
         add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 -D_CRT_SECURE_NO_WARNINGS )
-				set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc -D_LIBCPP_ENABLE_ASSERTIONS=1" )
+        set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc -D_LIBCPP_ENABLE_ASSERTIONS=1" )
         set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 -DNDEBUG /permissive- /EHsc" )
         set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /O2 -DNDEBUG /permissive- /EHsc" )
         if( DAW_WERROR )
@@ -31,7 +31,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -pedantic
                 -Weverything
                 -ftemplate-backtrace-limit=0
-								-Wincompatible-pointer-types-discards-qualifiers
+                -Wincompatible-pointer-types-discards-qualifiers
                 -Wno-c++98-compat
                 -Wno-c++98-compat-pedantic
                 -Wno-covered-switch-default

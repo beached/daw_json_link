@@ -845,7 +845,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename ParseState>
-			static constexpr auto find_index( ParseState const & parse_state ) {
+			static constexpr auto find_index( ParseState const &parse_state ) {
 				using tag_member = typename JsonMember::tag_member;
 				using class_wrapper_t = typename JsonMember::tag_member_class_wrapper;
 
@@ -1132,10 +1132,9 @@ namespace daw::json {
 				std::size_t class_idx = 0;
 				if constexpr( is_pinned_type_v<typename JsonMember::parse_to_t> ) {
 					auto const run_after_parse = daw::on_exit_success( [&] {
-						ordered_class_cleanup<json_details::all_json_members_must_exist_v<
-						                        JsonMember, ParseState>,
-						                      ParseState, decltype( old_class_pos )>(
-						  parse_state, old_class_pos );
+						ordered_class_cleanup<
+						  all_json_members_must_exist_v<JsonMember, ParseState>, ParseState,
+						  decltype( old_class_pos )>( parse_state, old_class_pos );
 					} );
 					(void)run_after_parse;
 					if constexpr( should_construct_explicitly_v<Constructor, tuple_t,
@@ -1159,8 +1158,7 @@ namespace daw::json {
 							                                           class_idx )... } );
 						}
 					}( );
-					if constexpr( json_details::all_json_members_must_exist_v<
-					                tuple_t, ParseState> ) {
+					if constexpr( all_json_members_must_exist_v<tuple_t, ParseState> ) {
 						parse_state.trim_left( );
 						daw_json_assert_weak( parse_state.front( ) == ']',
 						                      ErrorReason::UnknownMember, parse_state );
