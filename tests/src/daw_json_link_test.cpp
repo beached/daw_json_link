@@ -1296,6 +1296,16 @@ int main( int, char ** ) {
 		std::cout << "round trip of " << ts2 << " became " << parsed_dte2_str
 		          << '\n';
 		ensure( ts2 == parsed_dte2_str );
+#if DAW_HAS_CLANG_VER_GTE( 9, 0 )
+		static_assert( daw::json::datetime::short_day_of_week(
+		                 std::chrono::time_point<std::chrono::system_clock,
+		                                         std::chrono::milliseconds>( ) ) ==
+		               "Thu" );
+#else
+	ensure( daw::json::datetime::short_day_of_week(
+	          std::chrono::time_point<std::chrono::system_clock,
+	                                  std::chrono::milliseconds>( ) ) == "Thu" );
+#endif
 
 #if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L

@@ -113,7 +113,7 @@ bool test_bad_real_untrusted2( ) {
 #define do_fail_test( ... )                                   \
 	do {                                                        \
 		try {                                                     \
-			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ ); \
+			daw::expecting_message( (__VA_ARGS__), "" #__VA_ARGS__ ); \
 		} catch( daw::json::json_exception const & ) { break; }   \
 		std::cerr << "Expected exception, but none thrown in '"   \
 		          << "" #__VA_ARGS__ << "'\n";                    \

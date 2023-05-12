@@ -384,10 +384,6 @@ namespace daw::json {
 					daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid month
 				}
 			}
-			static_assert(
-			  short_day_of_week(
-			    std::chrono::time_point<std::chrono::system_clock,
-			                            std::chrono::milliseconds>( ) ) == "Thu" );
 
 			namespace datetime_details {
 				constexpr std::uint_least32_t month2num( std::string_view ts ) {
