@@ -1306,6 +1306,25 @@ int main( int, char ** ) {
 	          std::chrono::time_point<std::chrono::system_clock,
 	                                  std::chrono::milliseconds>( ) ) == "Thu" );
 #endif
+		constexpr auto dbl_007 = -1.7e100;
+		std::cout << "Large negative double " << dbl_007 << '\n';
+		auto dbl_007_str = to_json<json_base::json_number<
+		  double, options::number_opt( options::FPOutputFormat::Decimal )>>(
+		  dbl_007 );
+		ensure( dbl_007_str ==
+		        "-17000000000000000000000000000000000000000000000000000000000000000"
+		        "000000000000000000000000000000000000" );
+		std::cout << dbl_007_str << '\n';
+		auto dbl_007_str1 = to_json<json_base::json_number<
+		  double, options::number_opt( options::FPOutputFormat::Scientific )>>(
+		  dbl_007 );
+		std::cout << dbl_007_str1 << '\n';
+		ensure( dbl_007_str1 == "-1.7e100" );
+
+		auto dbl_007_str2 = to_json<json_base::json_number<
+		  double, options::number_opt( options::FPOutputFormat::Auto )>>( dbl_007 );
+		ensure( dbl_007_str2 == "-1.7e100" );
+		std::cout << dbl_007_str2 << '\n';
 
 #if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L
