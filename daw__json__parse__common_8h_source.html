@@ -842,7 +842,7 @@ $(function() {
 <div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;                         <span class="stringliteral">&quot;Detection failure&quot;</span> );</div>
 <div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;          static_assert( not is_nonesuch_v&lt;rcvref_type&gt;, <span class="stringliteral">&quot;Detection failure&quot;</span> );</div>
 <div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;          <span class="keywordflow">return</span> daw::traits::identity&lt;type&gt;{ };</div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> constexpr( json_details::is_a_json_type_v&lt;T&gt; ) {</div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> constexpr( is_a_json_type_v&lt;T&gt; ) {</div>
 <div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;          static_assert( not std::is_same_v&lt;T, void&gt; );</div>
 <div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;          <span class="keyword">using</span> type =</div>
 <div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;            <span class="keyword">typename</span> std::conditional_t&lt;is_json_class_map_v&lt;T&gt;,</div>
