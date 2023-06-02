@@ -185,8 +185,9 @@ namespace daw::json {
 						use_strtod |= DAW_UNLIKELY( fract_exponent_available >
 						                            whole_exponent_available );
 					}
-					fract_exponent_available =
-					  ( std::min )( fract_exponent_available, whole_exponent_available );
+					if( whole_exponent_available < fract_exponent_available ) {
+						fract_exponent_available = whole_exponent_available;
+					}
 					exponent = -fract_exponent_available;
 					fract_last = fract_first + fract_exponent_available;
 				}

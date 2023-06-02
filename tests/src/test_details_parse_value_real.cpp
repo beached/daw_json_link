@@ -12,10 +12,15 @@
 #include <daw/json/impl/daw_json_parse_common.h>
 
 #include <daw/daw_benchmark.h>
+#include <daw/daw_cpp_feature_check.h>
 
 #include <iostream>
 #include <optional>
 #include <string_view>
+
+#if defined( DAW_HAS_MSVC )
+#pragma warning (disable : 4702)
+#endif
 
 bool test_zero_untrusted( ) {
 	using namespace daw::json;
