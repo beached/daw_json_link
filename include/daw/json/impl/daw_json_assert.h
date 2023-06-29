@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
+#include <functional>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -31,32 +32,38 @@
 #include <iostream>
 #endif
 
+namespace daw::json {
 #if defined( DAW_USE_EXCEPTIONS )
-inline constexpr bool use_daw_json_exceptions_v = true;
+	inline constexpr bool use_daw_json_exceptions_v = true;
 #else
-inline constexpr bool use_daw_json_exceptions_v = false;
+	inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
-namespace daw::json {
+	using daw_json_error_handler_t = void ( * )( json_exception &&, void * );
+	static thread_local void *daw_json_error_handler_data = nullptr;
+#if defined( DAW_USE_EXCEPTIONS )
+	static thread_local daw_json_error_handler_t daw_json_error_handler =
+	  []( json_exception &&jex, void * ) {
+		  throw std::move( jex );
+	  };
+#else
+	static thread_local daw_json_error_handler_t daw_json_error_handler =
+	  []( json_exception &&jex, void * ) {
+#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
+		  std::cerr << "Error: " << jex.reason( ) << '\n';
+#else
+		  (void)jex;
+#endif
+		  std::terminate( );
+	  };
+#endif
+
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<bool ShouldThrow = use_daw_json_exceptions_v>
 			[[noreturn]] DAW_ATTRIB_NOINLINE void
 			handle_error( json_exception &&jex ) {
-#if defined( DAW_USE_EXCEPTIONS )
-				if constexpr( ShouldThrow ) {
-					throw DAW_MOVE( jex );
-				} else {
-#endif
-					(void)ShouldThrow;
-					(void)jex;
-#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
-					std::cerr << "Error: " << jex.reason( ) << '\n';
-#endif
-					std::terminate( );
-#if defined( DAW_USE_EXCEPTIONS )
-				}
-#endif
+				daw_json_error_handler( std::move( jex ), daw_json_error_handler_data );
+				DAW_UNREACHABLE( );
 			}
 		} // namespace json_details
 
