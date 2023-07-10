@@ -40,9 +40,10 @@ namespace daw::json {
 	inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
+	static thread_local void *daw_json_error_handler_data = nullptr;
+
 	using daw_json_error_handler_t =
 	  daw::not_null<void ( * )( json_exception &&, void * )>;
-	static thread_local void *daw_json_error_handler_data = nullptr;
 #if defined( DAW_USE_EXCEPTIONS )
 	static thread_local daw_json_error_handler_t daw_json_error_handler =
 	  +[]( json_exception &&jex, void * ) {
