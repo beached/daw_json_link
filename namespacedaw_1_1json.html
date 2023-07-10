@@ -425,6 +425,8 @@ Typedefs</h2></td></tr>
 <tr class="memitem:afba4c67c5b8ba9a4e0798104f608ca57"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:afba4c67c5b8ba9a4e0798104f608ca57"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#afba4c67c5b8ba9a4e0798104f608ca57">can_single_allocation_string</a> = std::bool_constant&lt; <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#a0ef98e116467b5349393b6c333fd1ab9">can_single_allocation_string_v</a>&lt; T &gt; &gt;</td></tr>
 <tr class="separator:afba4c67c5b8ba9a4e0798104f608ca57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0821395b3cf887226f5ffe4365209664"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a0821395b3cf887226f5ffe4365209664">daw_json_error_handler_t</a> = daw::not_null&lt; void(*)(json_exception &amp;&amp;, void *)&gt;</td></tr>
+<tr class="separator:a0821395b3cf887226f5ffe4365209664"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09db62d882cb768457b59c894415797c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03.html#a09db62d882cb768457b59c894415797c">default_exec_tag</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">constexpr_exec_tag</a></td></tr>
 <tr class="separator:a09db62d882cb768457b59c894415797c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdecf68282defee16c0d145a9180a9d3"><td class="memTemplParams" colspan="2">template&lt;json_options_t PolicyFlags = json_details::default_policy_flag, typename Allocator  = json_details::NoAllocator&gt; </td></tr>
@@ -994,6 +996,10 @@ Variables</h2></td></tr>
 <tr class="separator:a0ef98e116467b5349393b6c333fd1ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec30cb813528586bd282e658d7b9d076"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03.html#aec30cb813528586bd282e658d7b9d076">ConformancePolicy</a></td></tr>
 <tr class="separator:aec30cb813528586bd282e658d7b9d076"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cc287783d7fbd6596f36ec8c4e1750a"><td class="memItemLeft" align="right" valign="top">static thread_local <a class="el" href="namespacedaw_1_1json.html#a0821395b3cf887226f5ffe4365209664">daw_json_error_handler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a8cc287783d7fbd6596f36ec8c4e1750a">daw_json_error_handler</a></td></tr>
+<tr class="separator:a8cc287783d7fbd6596f36ec8c4e1750a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab71ec45457c6c72b7c127f5c13e8047b"><td class="memItemLeft" align="right" valign="top">static thread_local void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ab71ec45457c6c72b7c127f5c13e8047b">daw_json_error_handler_data</a> = nullptr</td></tr>
+<tr class="separator:ab71ec45457c6c72b7c127f5c13e8047b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe3d30b0798e5f9bfe476c745ccc02eb"><td class="memItemLeft" align="right" valign="top">constexpr char const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__name_8h_03.html#abe3d30b0798e5f9bfe476c745ccc02eb">default_key_name</a> [] = &quot;key&quot;</td></tr>
 <tr class="separator:abe3d30b0798e5f9bfe476c745ccc02eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a283b1718eef2df6be84510547c4d1363"><td class="memItemLeft" align="right" valign="top">constexpr char const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__name_8h_03.html#a283b1718eef2df6be84510547c4d1363">default_value_name</a> [] = &quot;value&quot;</td></tr>
@@ -1064,10 +1070,86 @@ Variables</h2></td></tr>
 <tr class="memitem:aed237f364bc953fa92084bc1bc3c0025"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#aed237f364bc953fa92084bc1bc3c0025">use_boost_describe_v</a> = true</td></tr>
 <tr class="memdesc:aed237f364bc953fa92084bc1bc3c0025"><td class="mdescLeft">&#160;</td><td class="mdescRight">Types that use Boost.Describe need to specialize use_boost_describe_v for their type with a bool value of true. This defaults to on, all described structs, but can be opted-out of if one wants to do a custom mapping of a Boost.Described struct.  <a href="namespacedaw_1_1json.html#aed237f364bc953fa92084bc1bc3c0025">More...</a><br /></td></tr>
 <tr class="separator:aed237f364bc953fa92084bc1bc3c0025"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a384b28defa2d7b2359769252a5917c95"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a384b28defa2d7b2359769252a5917c95">use_daw_json_exceptions_v</a> = false</td></tr>
+<tr class="separator:a384b28defa2d7b2359769252a5917c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Customization point traits. </p>
-</div><h2 class="groupheader">Variable Documentation</h2>
+</div><h2 class="groupheader">Typedef Documentation</h2>
+<a id="a0821395b3cf887226f5ffe4365209664"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0821395b3cf887226f5ffe4365209664">&#9670;&nbsp;</a></span>daw_json_error_handler_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacedaw_1_1json.html#a0821395b3cf887226f5ffe4365209664">daw::json::daw_json_error_handler_t</a> = typedef daw::not_null&lt;void ( * )( json_exception &amp;&amp;, void * )&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00045">45</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a8cc287783d7fbd6596f36ec8c4e1750a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cc287783d7fbd6596f36ec8c4e1750a">&#9670;&nbsp;</a></span>daw_json_error_handler</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">thread_local <a class="el" href="namespacedaw_1_1json.html#a0821395b3cf887226f5ffe4365209664">daw_json_error_handler_t</a> daw::json::daw_json_error_handler</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">    +[]( json_exception &amp;&amp;jex, <span class="keywordtype">void</span> * ) {</div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line"> </div>
+<div class="line">      (void)jex;</div>
+<div class="line"> </div>
+<div class="line">      std::terminate( );</div>
+<div class="line">    }</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00053">53</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+
+</div>
+</div>
+<a id="ab71ec45457c6c72b7c127f5c13e8047b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab71ec45457c6c72b7c127f5c13e8047b">&#9670;&nbsp;</a></span>daw_json_error_handler_data</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">thread_local void* daw::json::daw_json_error_handler_data = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00043">43</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+
+</div>
+</div>
 <a id="aed237f364bc953fa92084bc1bc3c0025"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aed237f364bc953fa92084bc1bc3c0025">&#9670;&nbsp;</a></span>use_boost_describe_v</h2>
 
@@ -1093,6 +1175,30 @@ template&lt;typename , typename  = void&gt; </div>
 <p>Types that use Boost.Describe need to specialize use_boost_describe_v for their type with a bool value of true. This defaults to on, all described structs, but can be opted-out of if one wants to do a custom mapping of a Boost.Described struct. </p>
 
 <p class="definition">Definition at line <a class="el" href="daw__json__link__describe_8h_source.html#l00032">32</a> of file <a class="el" href="daw__json__link__describe_8h_source.html">daw_json_link_describe.h</a>.</p>
+
+</div>
+</div>
+<a id="a384b28defa2d7b2359769252a5917c95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a384b28defa2d7b2359769252a5917c95">&#9670;&nbsp;</a></span>use_daw_json_exceptions_v</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool daw::json::use_daw_json_exceptions_v = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00040">40</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
 
 </div>
 </div>

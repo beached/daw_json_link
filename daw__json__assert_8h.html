@@ -69,6 +69,7 @@ $(function() {
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -82,10 +83,12 @@ $(function() {
 <code>#include &lt;daw/daw_check_exceptions.h&gt;</code><br />
 <code>#include &lt;daw/daw_likely.h&gt;</code><br />
 <code>#include &lt;daw/daw_move.h&gt;</code><br />
+<code>#include &lt;daw/daw_not_null.h&gt;</code><br />
 <code>#include &lt;daw/daw_string_view.h&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;cstdio&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;numeric&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
@@ -112,6 +115,11 @@ Macros</h2></td></tr>
 <tr class="memdesc:aa08d5b456f511ea5d387f849f8764643"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure that Bool is true. If false pass rest of args to daw_json_error.  <a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">More...</a><br /></td></tr>
 <tr class="separator:aa08d5b456f511ea5d387f849f8764643"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a0821395b3cf887226f5ffe4365209664"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a0821395b3cf887226f5ffe4365209664">daw::json::daw_json_error_handler_t</a> = daw::not_null&lt; void(*)(json_exception &amp;&amp;, void *)&gt;</td></tr>
+<tr class="separator:a0821395b3cf887226f5ffe4365209664"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:addf5e51921956f9b5038d68a1bec1292"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#addf5e51921956f9b5038d68a1bec1292">daw::json::anonymous_namespace{daw_json_assert.h}::daw_json_error</a> (ErrorReason reason)</td></tr>
@@ -132,8 +140,12 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a236cef0d7e6c40781c19e4ebcd63aa5b"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a236cef0d7e6c40781c19e4ebcd63aa5b">use_daw_json_exceptions_v</a> = false</td></tr>
-<tr class="separator:a236cef0d7e6c40781c19e4ebcd63aa5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cc287783d7fbd6596f36ec8c4e1750a"><td class="memItemLeft" align="right" valign="top">static thread_local daw_json_error_handler_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a8cc287783d7fbd6596f36ec8c4e1750a">daw::json::daw_json_error_handler</a></td></tr>
+<tr class="separator:a8cc287783d7fbd6596f36ec8c4e1750a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab71ec45457c6c72b7c127f5c13e8047b"><td class="memItemLeft" align="right" valign="top">static thread_local void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ab71ec45457c6c72b7c127f5c13e8047b">daw::json::daw_json_error_handler_data</a> = nullptr</td></tr>
+<tr class="separator:ab71ec45457c6c72b7c127f5c13e8047b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a384b28defa2d7b2359769252a5917c95"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a384b28defa2d7b2359769252a5917c95">daw::json::use_daw_json_exceptions_v</a> = false</td></tr>
+<tr class="separator:a384b28defa2d7b2359769252a5917c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a728389a742b837d2170f62d34d78ddf4"></a>
@@ -171,7 +183,7 @@ Variables</h2></td></tr>
 </div><!-- fragment -->
 <p>Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error. </p>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00152">152</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00162">162</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
 
 </div>
 </div>
@@ -208,32 +220,7 @@ Variables</h2></td></tr>
 </div><!-- fragment -->
 <p>Ensure that Bool is true. If false pass rest of args to daw_json_error. </p>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00143">143</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="a236cef0d7e6c40781c19e4ebcd63aa5b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a236cef0d7e6c40781c19e4ebcd63aa5b">&#9670;&nbsp;</a></span>use_daw_json_exceptions_v</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr bool use_daw_json_exceptions_v = false</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00037">37</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00153">153</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
 
 </div>
 </div>
