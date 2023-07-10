@@ -17,6 +17,7 @@
 #include <daw/daw_check_exceptions.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_move.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_string_view.h>
 
 #include <algorithm>
@@ -39,16 +40,17 @@ namespace daw::json {
 	inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
-	using daw_json_error_handler_t = void ( * )( json_exception &&, void * );
+	using daw_json_error_handler_t =
+	  daw::not_null<void ( * )( json_exception &&, void * )>;
 	static thread_local void *daw_json_error_handler_data = nullptr;
 #if defined( DAW_USE_EXCEPTIONS )
 	static thread_local daw_json_error_handler_t daw_json_error_handler =
-	  []( json_exception &&jex, void * ) {
+	  +[]( json_exception &&jex, void * ) {
 		  throw std::move( jex );
 	  };
 #else
 	static thread_local daw_json_error_handler_t daw_json_error_handler =
-	  []( json_exception &&jex, void * ) {
+	  +[]( json_exception &&jex, void * ) {
 #if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
 		  std::cerr << "Error: " << jex.reason( ) << '\n';
 #else
