@@ -30,13 +30,19 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( ) {
-	std::cout << "Building New Request..." << std::endl;
-
 	constexpr std::string_view const test_string = "\x0D\x0ATEST\xFETEST\x0D\x0A";
 	constexpr auto document = test_document{ test_string };
 	std::string buff;
-	auto request_json_payload = daw::json::to_json( document, buff );
+	try {
+		auto request_json_payload = daw::json::to_json( document, buff );
+		std::cerr << "Expected error\n";
+		return 1;
+	} catch( daw::json::json_exception const & jex ) {
+		if( jex.reason_type()	!= daw::json::ErrorReason::InvalidStringHighASCII ) {
+			std::cerr << "Unexpected JSON error " << to_formatted_string( jex ) << '\n';
+			return 1;
+		}
+	}
 
-	std::cout << "Request JSON: " << request_json_payload << std::endl;
 	return 0;
 }
