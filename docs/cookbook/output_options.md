@@ -92,10 +92,11 @@ Allow for a JSON document that is ASCII only and each byte has a value <= 0x7F
 
 * `None` - Do not restrict to 7bit ASCII
 * `OnlyAllow7bitStrings` - Restrict all string member values and all member names to 7bits, escaping all values >= 0x7F.
+* `ErrorInvalidUTF8` - Throw an error when invalid UTF8 is encountered
 
 ### Default
 
-* `None`
+* `ErrorInvalidUTF8`
 
 ## `NewLineDelimiter`
 

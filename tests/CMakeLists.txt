@@ -945,6 +945,12 @@ add_dependencies( full issue_370_exact_class_mapping_test )
 #add_dependencies( ci_tests issue_373_empty_string_nullable_test )
 #add_dependencies( full issue_373_empty_string_nullable_test )
 
+add_executable( issue_389_test src/issue_389_test.cpp )
+target_link_libraries( issue_389_test PRIVATE json_test )
+add_test( NAME issue_389_test COMMAND issue_389_test ./issue_389.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests issue_389_test )
+add_dependencies( full issue_389_test )
+
 add_executable( carray_test src/carray_test.cpp )
 target_link_libraries( carray_test json_test )
 add_test( NAME carray_test_test COMMAND carray_test )

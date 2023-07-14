@@ -50,12 +50,12 @@ namespace daw::json {
 
 			template<>
 			inline constexpr unsigned
-			  json_option_bits_width<options::RestrictedStringOutput> = 1;
+			  json_option_bits_width<options::RestrictedStringOutput> = 2;
 
 			template<>
 			inline constexpr auto
 			  default_json_option_value<options::RestrictedStringOutput> =
-			    options::RestrictedStringOutput::None;
+			    options::RestrictedStringOutput::ErrorInvalidUTF8;
 
 			template<>
 			inline constexpr bool is_output_option_v<options::NewLineDelimiter> =
