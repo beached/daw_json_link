@@ -141,7 +141,7 @@ namespace daw::json {
 				return "Invalid or corrupt string"sv;
 			case ErrorReason::InvalidStringHighASCII:
 				return "String support limited to 0x20 < chr <= 0x7F when "
-				       "DisallowHighEightBit is true"sv;
+				       "DisallowHighEightBit or InvalidStringHighASCII is true"sv;
 			case ErrorReason::ExpectedKeyValueToStartWithBrace:
 				return "Expected key/value's JSON type to be of class type and "
 				       "beginning "

@@ -62,6 +62,8 @@ namespace daw::json {
 					/* Do not impose any extra restrictions on string output during
 					   serialization */
 					None,
+					/// When invalid UTF8 is encountered, throw an error
+					ErrorInvalidUTF8,
 					/* Restrict all string member values and all member names to 7bits.
 					   This will result in escaping all values >= 0x7F.  This can affect
 					   round trips where the name contains high bits set*/

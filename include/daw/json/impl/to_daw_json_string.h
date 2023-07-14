@@ -311,7 +311,18 @@ namespace daw::json {
 					auto first = it_t( std::begin( container ) );
 					auto const last = it_t( std::end( container ) );
 					while( first != last ) {
+						auto const last_it = first;
 						auto const cp = *first++;
+						if( last_it == first ) {
+							// Not a valid unicode cp
+							if constexpr( WritableType::restricted_string_output ==
+							              options::RestrictedStringOutput::
+							                ErrorInvalidUTF8 ) {
+								daw_json_error( ErrorReason::InvalidStringHighASCII );
+							} else {
+								first = it_t( std::next( first.base( ) ) );
+							}
+						}
 						switch( cp ) {
 						case '"':
 							it.write( "\\\"" );

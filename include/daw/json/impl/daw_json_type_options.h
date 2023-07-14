@@ -155,6 +155,7 @@ namespace daw::json {
 				/// encountered
 				/// during parse
 				DisallowHigh,
+
 				/// Allow the full 8bits in output without escaping
 				AllowFull
 			}; // 1bit
