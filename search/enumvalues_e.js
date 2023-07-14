@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['unknown_1696',['Unknown',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674a88183b946cc5f0e8c96b2e66e1c74a7e',1,'daw::json::anonymous_namespace{daw_json_enums.h}']]],
-  ['unsigned_1697',['Unsigned',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aa1a914735b205424ba6c40b85528d78a',1,'daw::json::anonymous_namespace{daw_json_enums.h}']]]
+  ['tab_1696',['Tab',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a6524859eba3fea6a480f2d27a850c752a5c6ba25104401c9ee0650230fc6ba413',1,'daw::json::anonymous_namespace{daw_json_serialize_options.h}::options::serialize_options']]],
+  ['tuple_1697',['Tuple',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b',1,'daw::json::anonymous_namespace{daw_json_enums.h}']]]
 ];
