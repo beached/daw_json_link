@@ -297,7 +297,7 @@ namespace daw::json {
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
 			         typename ParseState>
-			DAW_ATTRIB_FLATTEN static inline ParseState
+			DAW_ATTRIB_NOINLINE static inline ParseState
 			skip_bracketed_item_unchecked_rt( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
 				using CharT = typename ParseState::CharT;
@@ -310,28 +310,40 @@ namespace daw::json {
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}
-				static auto dispatch_tbl = std::array<void *, 256>{ };
-				static bool dispatch_setup = false;
-				if( DAW_UNLIKELY( not dispatch_setup ) ) {
-					dispatch_tbl.fill( &&lbl_error );
-					dispatch_tbl[0] = &&lbl_unexpected_null;
-					dispatch_tbl[static_cast<std::size_t>( '\\' )] = &&lbl_back_slash;
-					dispatch_tbl[static_cast<std::size_t>( '"' )] = &&lbl_dbl_quote;
-					dispatch_tbl[static_cast<std::size_t>( ',' )] = &&lbl_comma;
-					dispatch_tbl[static_cast<std::size_t>( PrimLeft )] = &&lbl_PrimLeft;
-					dispatch_tbl[static_cast<std::size_t>( PrimRight )] = &&lbl_PrimRight;
-					dispatch_tbl[static_cast<std::size_t>( SecLeft )] = &&lbl_SecLeft;
-					dispatch_tbl[static_cast<std::size_t>( SecRight )] = &&lbl_SecRight;
-					dispatch_setup = true;
-				}
-#define DAW_JSON_DISPATCH( ) goto *dispatch_tbl[*ptr_first++]
-				goto *dispatch_tbl[*ptr_first];
+				static constexpr void *loc_lbl_whitespace = &&lbl_whitespace;
+				static constexpr void *loc_lbl_unexpected_null = &&lbl_unexpected_null;
+				static constexpr void *loc_lbl_back_slash = &&lbl_back_slash;
+				static constexpr void *loc_lbl_dbl_quote = &&lbl_dbl_quote;
+				static constexpr void *loc_lbl_comma = &&lbl_comma;
+				static constexpr void *loc_lbl_PrimLeft = &&lbl_PrimLeft;
+				static constexpr void *loc_lbl_PrimRight = &&lbl_PrimRight;
+				static constexpr void *loc_lbl_SecLeft = &&lbl_SecLeft;
+				static constexpr void *loc_lbl_SecRight = &&lbl_SecRight;
+
+				static constexpr auto dispatch_tbl = [] {
+					auto disp_res = std::array<void *, 256>{ };
+					for( std::size_t n = 0; n < disp_res.size( ); ++n ) {
+						disp_res[n] = loc_lbl_whitespace;
+					}
+					disp_res[0] = loc_lbl_unexpected_null;
+					disp_res[static_cast<std::size_t>( '\\' )] = loc_lbl_back_slash;
+					disp_res[static_cast<std::size_t>( '"' )] = loc_lbl_dbl_quote;
+					disp_res[static_cast<std::size_t>( ',' )] = loc_lbl_comma;
+					disp_res[static_cast<std::size_t>( PrimLeft )] = loc_lbl_PrimLeft;
+					disp_res[static_cast<std::size_t>( PrimRight )] = loc_lbl_PrimRight;
+					disp_res[static_cast<std::size_t>( SecLeft )] = loc_lbl_SecLeft;
+					disp_res[static_cast<std::size_t>( SecRight )] = loc_lbl_SecRight;
+					return disp_res;
+				}( );
+#define DAW_JSON_DISPATCH( ) \
+	goto *dispatch_tbl[static_cast<std::size_t>( *(++ptr_first) )]
+
+				goto *dispatch_tbl[static_cast<std::size_t>( *ptr_first )];
 			lbl_unexpected_null:
 				parse_state.first = ptr_first;
 				daw_json_error( ErrorReason::UnexpectedNull, parse_state );
-			lbl_error:
-				parse_state.first = ptr_first;
-				daw_json_error( ErrorReason::Unknown, parse_state );
+			lbl_whitespace:
+				DAW_JSON_DISPATCH( );
 			lbl_back_slash:
 				++ptr_first;
 				DAW_JSON_DISPATCH( );
@@ -344,8 +356,12 @@ namespace daw::json {
 					                                   parse_state.last );
 				} else {
 					while( *ptr_first != '"' ) {
-						ptr_first += 1 + static_cast<std::ptrdiff_t>( *ptr_first == '\\' );
+						if( *ptr_first == '\\' ) {
+							++ptr_first;
+						}
+						++ptr_first;
 					}
+					++ptr_first;
 				}
 				DAW_JSON_DISPATCH( );
 			lbl_comma:
@@ -380,7 +396,7 @@ namespace daw::json {
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
 			         typename ParseState>
-			DAW_ATTRIB_FLATTEN static constexpr ParseState
+			DAW_ATTRIB_NOINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked_cx( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
 				using CharT = typename ParseState::CharT;
@@ -407,8 +423,10 @@ namespace daw::json {
 							                                   ptr_first, parse_state.last );
 						} else {
 							while( *ptr_first != '"' ) {
-								ptr_first +=
-								  1 + static_cast<std::ptrdiff_t>( *ptr_first == '\\' );
+								if( *ptr_first == '\\' ) {
+									++ptr_first;
+								}
+								++ptr_first;
 							}
 						}
 						break;
@@ -449,7 +467,7 @@ namespace daw::json {
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
 			         typename ParseState>
-			DAW_ATTRIB_FLATTEN static constexpr ParseState
+			DAW_ATTRIB_INLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				if( DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
 					return skip_bracketed_item_unchecked_cx<PrimLeft, PrimRight, SecLeft,
