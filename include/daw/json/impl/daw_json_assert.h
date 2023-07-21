@@ -42,23 +42,29 @@ namespace daw::json {
 
 	static thread_local void *daw_json_error_handler_data = nullptr;
 
+	[[noreturn, maybe_unused]] DAW_ATTRIB_NOINLINE inline void
+	default_error_handler_throwing( json_exception &&jex, void * ) {
+		throw std::move( jex );
+	}
+
+	[[noreturn, maybe_unused]] DAW_ATTRIB_NOINLINE inline void
+	default_error_handler_terminating( json_exception &&jex, void * ) {
+#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
+		std::cerr << "Error: " << jex.reason( ) << '\n';
+#else
+		(void)jex;
+#endif
+	}
+
 	using daw_json_error_handler_t =
 	  daw::not_null<void ( * )( json_exception &&, void * )>;
+
 #if defined( DAW_USE_EXCEPTIONS )
 	static thread_local daw_json_error_handler_t daw_json_error_handler =
-	  +[]( json_exception &&jex, void * ) {
-		  throw std::move( jex );
-	  };
+	  default_error_handler_throwing;
 #else
 	static thread_local daw_json_error_handler_t daw_json_error_handler =
-	  +[]( json_exception &&jex, void * ) {
-#if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
-		  std::cerr << "Error: " << jex.reason( ) << '\n';
-#else
-		  (void)jex;
-#endif
-		  std::terminate( );
-	  };
+	  default_error_handler_terminating;
 #endif
 
 	inline namespace DAW_JSON_VER {
