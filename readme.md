@@ -364,10 +364,13 @@ std::string my_json_data = to_json_array( arry );
 # Error Handling
 
 ## Exceptions
-The supported way to handle parsing errors is to throw a `daw::json::json_exception` that includes information about the reason and location of failure.
+Parsing errors default to throwing a `daw::json::json_exception` that includes information about the reason and location of failure.
 
 ## -fno-exception
-If exceptions are disabled the library will terminate upon a parse error.
+If exceptions are disabled the library will call `std::terminate` upon a parse error by default.
+
+## Custom Error Handling
+While, the error handling defaults to throwing a `daw::json::json_exception` on errors, or calling `std::terminate` if exceptions are disabled.  One can change this behaviour by setting the function pointer `daw::json::daw_json_error_handler`.  The only requirement is that the function does not return.  An example that utilizes this is in [error_handling_bench_test.cpp](tests/src/error_handling_bench_test.cpp) 
 
 ## Parsing call
 ###### [Top](#content)
@@ -376,8 +379,7 @@ Error checking can be modified on a per-parse basis.  `from_json`, `from_json_ar
 
 ## Global
 ###### [Top](#content)
-
-There are two possible ways of handling errors. The default is to throw a `daw::json::json_exception` on an error in the data. `json_exception` has a member function `std::string_view reason( ) const` akin to `std::exception`'s `what( )`.  Second, calling `std::terminate( );` on an error in data. If you want to disable exceptions in an environment that has them, you can define `DAW_JSON_DONT_USE_EXCEPTIONS` to disable exception throwing by the library. 
+`daw::json::json_exception` has a member function `std::string_view reason( ) const` akin to `std::exception`'s `what( )` but returns a `std::string` with more context than `what( )` does. If you want to disable exceptions in an environment that has them, you can define `DAW_JSON_DONT_USE_EXCEPTIONS` to disable exception throwing by the library or set the handler, this is no longer recommended as the handler can be set to one of the two defaults `daw::json::default_error_handling_throwing` or `daw::json::default_error_handling_terminating`. 
 
 # Deserializing/Parsing
 ###### [Top](#content)
