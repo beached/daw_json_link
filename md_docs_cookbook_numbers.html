@@ -67,7 +67,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>There is direct support for numbers in JSON of the form <code>integer</code>[.<code>fraction</code>][e<code>exponent</code>] . Often we know the number we are parsing is more limited in form such as an unsigned integer, a signed integer, or a real number.</p>
-<h1><a class="anchor" id="autotoc_md71"></a>
+<h1><a class="anchor" id="autotoc_md74"></a>
 Default, full parsing of JSON numbers (eg real numbers).</h1>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;member0&quot;: 1.23,</div>
@@ -107,7 +107,7 @@ Default, full parsing of JSON numbers (eg real numbers).</h1>
 <div class="line">  }</div>
 <div class="line">  };</div>
 <div class="line">}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md72"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md75"></a>
 Specific numeric type parsing</h1>
 <p>The parser supports parsing to specific types such as int32_t and uin64_t with range checking, if possible.</p>
 <div class="fragment"><div class="line">{</div>
@@ -137,7 +137,7 @@ Specific numeric type parsing</h1>
 <div class="line">  }</div>
 <div class="line">  };</div>
 <div class="line">}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md73"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md76"></a>
 Big Numbers, Rationals, ...</h1>
 <p>The parser supports parsing big numbers that model arithmetic types directly. However, some types have built in serialization/deserialization and that is often more efficient.</p>
 <p>The json_type_alias lets us parse as if it was another json type. Often this is json_string via std::string, but there is no restriction on it. The result is passed to the constructor of the type being mapped.</p>

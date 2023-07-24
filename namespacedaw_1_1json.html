@@ -765,6 +765,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a93a65f1ecba6ff48a25a8bde85a0196e"><td class="memTemplParams" colspan="2">template&lt;typename ParseState &gt; </td></tr>
 <tr class="memitem:a93a65f1ecba6ff48a25a8bde85a0196e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#a93a65f1ecba6ff48a25a8bde85a0196e">daw_json_error</a> (json_details::missing_token reason, ParseState const &amp;location)</td></tr>
 <tr class="separator:a93a65f1ecba6ff48a25a8bde85a0196e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cac1bd8a9e4ec80ad8e36c5f10d0384"><td class="memItemLeft" align="right" valign="top">DAW_ATTRIB_NOINLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a3cac1bd8a9e4ec80ad8e36c5f10d0384">default_error_handler_terminating</a> (json_exception &amp;&amp;jex, void *)</td></tr>
+<tr class="separator:a3cac1bd8a9e4ec80ad8e36c5f10d0384"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63d40aa5415274019c57eabe7c045cc8"><td class="memItemLeft" align="right" valign="top">DAW_ATTRIB_NOINLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a63d40aa5415274019c57eabe7c045cc8">default_error_handler_throwing</a> (json_exception &amp;&amp;jex, void *)</td></tr>
+<tr class="separator:a63d40aa5415274019c57eabe7c045cc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ea5ba65b6f9e3957ea5e0c036a7f5d8"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__find__path_8h_03.html#a5ea5ba65b6f9e3957ea5e0c036a7f5d8">find_column_number_of</a> (char const *doc_pos, char const *doc_start)</td></tr>
 <tr class="separator:a5ea5ba65b6f9e3957ea5e0c036a7f5d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73b987696aec80f56fcd99db67eda937"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__find__path_8h_03.html#a73b987696aec80f56fcd99db67eda937">find_column_number_of</a> (<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__find__path_8h_03_1_1json__path__node.html">json_path_node</a> const &amp;node, char const *doc_start)</td></tr>
@@ -1088,7 +1092,84 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00045">45</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00059">59</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a3cac1bd8a9e4ec80ad8e36c5f10d0384"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cac1bd8a9e4ec80ad8e36c5f10d0384">&#9670;&nbsp;</a></span>default_error_handler_terminating()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">DAW_ATTRIB_NOINLINE void daw::json::default_error_handler_terminating </td>
+          <td>(</td>
+          <td class="paramtype">json_exception &amp;&amp;&#160;</td>
+          <td class="paramname"><em>jex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00051">51</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+
+</div>
+</div>
+<a id="a63d40aa5415274019c57eabe7c045cc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63d40aa5415274019c57eabe7c045cc8">&#9670;&nbsp;</a></span>default_error_handler_throwing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">DAW_ATTRIB_NOINLINE void daw::json::default_error_handler_throwing </td>
+          <td>(</td>
+          <td class="paramtype">json_exception &amp;&amp;&#160;</td>
+          <td class="paramname"><em>jex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00046">46</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
 
 </div>
 </div>
@@ -1113,16 +1194,10 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">    +[]( json_exception &amp;&amp;jex, <span class="keywordtype">void</span> * ) {</div>
-<div class="line"> </div>
-<div class="line"> </div>
-<div class="line"> </div>
-<div class="line">      (void)jex;</div>
-<div class="line"> </div>
-<div class="line">      std::terminate( );</div>
-<div class="line">    }</div>
+<div class="line">    <a class="code" href="namespacedaw_1_1json.html#a3cac1bd8a9e4ec80ad8e36c5f10d0384">default_error_handler_terminating</a></div>
+<div class="ttc" id="anamespacedaw_1_1json_html_a3cac1bd8a9e4ec80ad8e36c5f10d0384"><div class="ttname"><a href="namespacedaw_1_1json.html#a3cac1bd8a9e4ec80ad8e36c5f10d0384">daw::json::default_error_handler_terminating</a></div><div class="ttdeci">DAW_ATTRIB_NOINLINE void default_error_handler_terminating(json_exception &amp;&amp;jex, void *)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00051">daw_json_assert.h:51</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00053">53</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00066">66</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
 
 </div>
 </div>

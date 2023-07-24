@@ -187,6 +187,29 @@ Alternate Class Mappings</h1>
 <div class="line">//...</div>
 <div class="line">Thing a = daw::json::from_json&lt;Thing&gt;( json_string_a );</div>
 <div class="line">Thing b = daw::json::from_json&lt;daw::json::json_alt&lt;Thing&gt;&gt;( json_string_b );</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md15"></a>
+Class construction</h1>
+<p>If constructing the class requires extra steps than passing the parsed members to it's constructor one can provide a custom Constructor callable as the default for that type or for a specific <code>json_class</code> mapping.</p>
+<h2><a class="anchor" id="autotoc_md16"></a>
+Specifying the classes default</h2>
+<p>If one wants to change the default Constructor type of a specific type they can add a type alias in that classes <code>json_data_contract</code>. For instance, if a member needs extra checking that the types constructor does not provide:</p>
+<div class="fragment"><div class="line"><span class="keyword">struct </span>FooConstructor {</div>
+<div class="line">  constexpr Foo operator( )( std::string name, .... ) <span class="keyword">const</span> {</div>
+<div class="line">    <span class="keywordflow">if</span>( name != <span class="stringliteral">&quot;bobfred&quot;</span> ) { <span class="keywordflow">throw</span> badname{}; }</div>
+<div class="line">    <span class="keywordflow">return</span> Foo{ name, .... };</div>
+<div class="line">  }</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><span class="keyword">struct </span>json_data_constract&lt;Foo&gt; {</div>
+<div class="line">  <span class="keyword">using</span> constructor_t = FooConstructor;</div>
+<div class="line">  <span class="keyword">using</span> type = json_member_list&lt;json_string&lt;<span class="stringliteral">&quot;name&quot;</span>&gt;,...&gt;;</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>Here the type <code>Foo</code> will use a callable of type <code>FooConstructor</code> to create all <code>Foo</code>'s in the library unless overridden by a mapping.</p>
+<h2><a class="anchor" id="autotoc_md17"></a>
+Per mapping</h2>
+<p>The <code>json_class</code> mapping's second parameter is that of a Constructor type to call to construct that class and override the default. It can be specified like</p>
+<div class="fragment"><div class="line">json_class&lt;<span class="stringliteral">&quot;name&quot;</span>, FooConstructor&gt;</div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
