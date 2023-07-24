@@ -152,3 +152,34 @@ Thing a = daw::json::from_json<Thing>( json_string_a );
 Thing b = daw::json::from_json<daw::json::json_alt<Thing>>( json_string_b );
 ```
 
+## Class construction
+If constructing the class requires extra steps than passing the parsed members to it's constructor one can provide a custom Constructor callable as the default for that type or for a specific `json_class` mapping.
+
+### Specifying the classes default
+
+If one wants to change the default Constructor type of a specific type they can add a type alias in that classes `json_data_contract`.  For instance, if a member needs extra checking that the types constructor does not provide:
+
+```cpp
+struct FooConstructor {
+  constexpr Foo operator( )( std::string name, .... ) const {
+    if( name != "bobfred" ) { throw badname{}; }
+    return Foo{ name, .... };
+  }
+};
+
+template<>
+struct json_data_constract<Foo> {
+  using constructor_t = FooConstructor;
+  using type = json_member_list<json_string<"name">,...>;
+};
+```
+
+Here the type `Foo` will use a callable of type `FooConstructor` to create all `Foo`'s in the library unless overridden by a mapping. 
+
+### Per mapping 
+
+The `json_class` mapping's second parameter is that of a Constructor type to call to construct that class and override the default.  It can be specified like
+
+```cpp
+  json_class<"name", FooConstructor>
+```

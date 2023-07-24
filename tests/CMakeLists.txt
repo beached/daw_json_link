@@ -963,6 +963,13 @@ add_test( NAME base_child_class_test_test COMMAND base_child_class_test )
 add_dependencies( ci_tests base_child_class_test )
 add_dependencies( full base_child_class_test )
 
+add_executable( error_handling_bench_test src/error_handling_bench_test.cpp )
+target_link_libraries( error_handling_bench_test json_test )
+add_test( NAME error_handling_bench_test_test COMMAND error_handling_bench_test )
+add_dependencies( full error_handling_bench_test )
+
+
+
 add_executable( json_bench_viewer src/json_bench_viewer.cpp )
 target_link_libraries( json_bench_viewer json_test )
 
