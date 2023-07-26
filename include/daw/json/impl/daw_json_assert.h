@@ -42,10 +42,12 @@ namespace daw::json {
 
 	static thread_local void *daw_json_error_handler_data = nullptr;
 
+#if defined( DAW_USE_EXCEPTIONS )
 	[[noreturn, maybe_unused]] DAW_ATTRIB_NOINLINE inline void
 	default_error_handler_throwing( json_exception &&jex, void * ) {
 		throw std::move( jex );
 	}
+#endif
 
 	[[noreturn, maybe_unused]] DAW_ATTRIB_NOINLINE inline void
 	default_error_handler_terminating( json_exception &&jex, void * ) {
@@ -54,6 +56,7 @@ namespace daw::json {
 #else
 		(void)jex;
 #endif
+		std::terminate( );
 	}
 
 	using daw_json_error_handler_t =

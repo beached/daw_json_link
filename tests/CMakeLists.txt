@@ -766,6 +766,18 @@ if( DAW_USE_EXCEPTIONS )
     add_test( test_details_parse_value_real_test test_details_parse_value_real )
     add_dependencies( ci_tests test_details_parse_value_real )
     add_dependencies( full test_details_parse_value_real )
+
+		add_executable( issue_370_exact_class_mapping_test src/issue_370_exact_class_mapping_test.cpp )
+		target_link_libraries( issue_370_exact_class_mapping_test json_test )
+		add_test( NAME issue_370_exact_class_mapping_test_test COMMAND issue_370_exact_class_mapping_test )
+		add_dependencies( ci_tests issue_370_exact_class_mapping_test )
+		add_dependencies( full issue_370_exact_class_mapping_test )
+
+		add_executable( issue_389_test src/issue_389_test.cpp )
+		target_link_libraries( issue_389_test PRIVATE json_test )
+		add_test( NAME issue_389_test COMMAND issue_389_test ./issue_389.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+		add_dependencies( ci_tests issue_389_test )
+		add_dependencies( full issue_389_test )
 endif()
 
 add_executable( test_details_skip_number src/test_details_skip_number.cpp )
@@ -933,23 +945,11 @@ add_test( NAME issue_361_test COMMAND issue_361_test ./issue_361.json WORKING_DI
 add_dependencies( ci_tests issue_361_test )
 add_dependencies( full issue_361_test )
 
-add_executable( issue_370_exact_class_mapping_test src/issue_370_exact_class_mapping_test.cpp )
-target_link_libraries( issue_370_exact_class_mapping_test json_test )
-add_test( NAME issue_370_exact_class_mapping_test_test COMMAND issue_370_exact_class_mapping_test )
-add_dependencies( ci_tests issue_370_exact_class_mapping_test )
-add_dependencies( full issue_370_exact_class_mapping_test )
-
 #add_executable( issue_373_empty_string_nullable_test src/issue_373_empty_string_nullable_test.cpp )
 #target_link_libraries( issue_373_empty_string_nullable_test PRIVATE json_test )
 #add_test( NAME issue_373_empty_string_nullable_test COMMAND issue_373_empty_string_nullable_test ./issue_373_empty_string_nullable.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
 #add_dependencies( ci_tests issue_373_empty_string_nullable_test )
 #add_dependencies( full issue_373_empty_string_nullable_test )
-
-add_executable( issue_389_test src/issue_389_test.cpp )
-target_link_libraries( issue_389_test PRIVATE json_test )
-add_test( NAME issue_389_test COMMAND issue_389_test ./issue_389.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
-add_dependencies( ci_tests issue_389_test )
-add_dependencies( full issue_389_test )
 
 add_executable( carray_test src/carray_test.cpp )
 target_link_libraries( carray_test json_test )
@@ -965,10 +965,7 @@ add_dependencies( full base_child_class_test )
 
 add_executable( error_handling_bench_test src/error_handling_bench_test.cpp )
 target_link_libraries( error_handling_bench_test json_test )
-add_test( NAME error_handling_bench_test_test COMMAND error_handling_bench_test )
 add_dependencies( full error_handling_bench_test )
-
-
 
 add_executable( json_bench_viewer src/json_bench_viewer.cpp )
 target_link_libraries( json_bench_viewer json_test )
