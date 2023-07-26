@@ -117,7 +117,7 @@ jobs:
         run: cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -Bbuild/ .
       - name: Build Dependencies No Exceptions
         if: endsWith( matrix.except_type, '_off' )
-        run: cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_JSON_DONT_USE_EXCEPTIONS=OFF -Bbuild/ .
+        run: cmake -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_NO_FLATTEN=ON -DCMAKE_CXX_STANDARD=${{ matrix.cpp_version }} -DDAW_USE_EXCEPTIONS=OFF -Bbuild/ .
       - name: Build
         run: cmake --build build/ --target ci_tests -- -k 0
         continue-on-error: true

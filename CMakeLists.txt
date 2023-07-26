@@ -32,11 +32,6 @@ if( DAW_JSON_ENABLE_FULL_RVO )
 	add_compile_definitions( DAW_JSON_ENABLE_FULL_RVO )
 endif( )
 
-option( DAW_JSON_DONT_USE_EXCEPTIONS "Disable exceptions in parser/serializer" OFF )
-if( DAW_JSON_DONT_USE_EXCEPTIONS )
-	add_compile_definitions( DAW_JSON_DONT_USE_EXCEPTIONS )
-endif( )
-
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" )
     option( DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON )
 elseif( DEFINED ( CMAKE_BUILD_TYPE ))
