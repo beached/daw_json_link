@@ -30,18 +30,6 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		namespace json_array_iterator_details {
-			template<typename CharT, typename ParseState>
-			struct op_star_cleanup {
-				CharT *&m_can_skip;
-				ParseState &tmp;
-
-				DAW_ATTRIB_INLINE
-				DAW_JSON_CPP20_CX_DTOR ~op_star_cleanup( ) {
-					m_can_skip = tmp.first;
-				}
-			};
-		} // namespace json_array_iterator_details
 		/***
 		 * Iterator for iterating over JSON array's
 		 * @tparam JsonElement type under underlying element in array. If
@@ -119,9 +107,9 @@ namespace daw::json {
 
 				auto tmp = m_state;
 
-				auto const run_after_parse =
-				  json_array_iterator_details::op_star_cleanup<CharT, ParseState>{
-				    m_can_skip, tmp };
+				auto const run_after_parse = daw::on_scope_exit( [&] {
+					m_can_skip = tmp.first;
+				} );
 				(void)run_after_parse;
 				return json_details::parse_value<element_type>(
 				  tmp, ParseTag<element_type::expected_type>{ } );

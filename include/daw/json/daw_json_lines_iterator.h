@@ -31,34 +31,6 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		namespace json_lines_details {
-			template<typename CharT, typename ParseState>
-			struct op_star_cleanup {
-				CharT *&m_can_skip;
-				ParseState &tmp;
-
-				DAW_ATTRIB_INLINE
-				DAW_SG_CXDTOR ~op_star_cleanup( ) noexcept(
-				  not use_daw_json_exceptions_v ) {
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
-					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
-						m_can_skip = tmp.first;
-					} else {
-#endif
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-						if( std::uncaught_exceptions( ) == 0 ) {
-#endif
-							m_can_skip = tmp.first;
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-						}
-#endif
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
-					}
-#endif
-				}
-			};
-		} // namespace json_lines_details
-
 		/// @brief Iterator for iterating over JSON array's
 		/// @tparam JsonElement type under underlying element in array. If
 		/// heterogeneous, a basic_json_value_iterator may be more appropriate
@@ -107,20 +79,12 @@ namespace daw::json {
 				                      ErrorReason::UnexpectedEndOfData, m_state );
 
 				auto tmp = m_state;
-				if constexpr( is_pinned_type_v<typename element_type::parse_to_t> ) {
-					auto const run_after_parse =
-					  json_lines_details::op_star_cleanup<CharT, ParseState>{ m_can_skip,
-					                                                          tmp };
-					(void)run_after_parse;
-					return json_details::parse_value<element_type>(
-					  tmp, ParseTag<element_type::expected_type>{ } );
-				} else {
-					auto result = json_details::parse_value<element_type>(
-					  tmp, ParseTag<element_type::expected_type>{ } );
-
+				auto const run_after_parse = daw::on_scope_exit( [&] {
 					m_can_skip = tmp.first;
-					return result;
-				}
+				} );
+				(void)run_after_parse;
+				return json_details::parse_value<element_type>(
+				  tmp, ParseTag<element_type::expected_type>{ } );
 			}
 
 			/// @brief A dereferencable value proxy holding the result of operator* .
