@@ -37,23 +37,8 @@ namespace daw::json {
 				ParseState &tmp;
 
 				DAW_ATTRIB_INLINE
-				DAW_JSON_CPP20_CX_DTOR ~op_star_cleanup( ) noexcept(
-				  not use_daw_json_exceptions_v ) {
-#if defined( DAW_JSON_HAS_CPP20_CX_DTOR )
-					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
-						m_can_skip = tmp.first;
-					} else {
-#endif
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-						if( std::uncaught_exceptions( ) == 0 ) {
-#endif
-							m_can_skip = tmp.first;
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-						}
-#endif
-#if defined( DAW_JSON_HAS_CPP20_CX_DTOR )
-					}
-#endif
+				DAW_JSON_CPP20_CX_DTOR ~op_star_cleanup( ) {
+					m_can_skip = tmp.first;
 				}
 			};
 		} // namespace json_array_iterator_details
@@ -134,20 +119,12 @@ namespace daw::json {
 
 				auto tmp = m_state;
 
-				if constexpr( is_pinned_type_v<typename element_type::parse_to_t> ) {
-					auto const run_after_parse =
-					  json_array_iterator_details::op_star_cleanup<CharT, ParseState>{
-					    m_can_skip, tmp };
-					(void)run_after_parse;
-					return json_details::parse_value<element_type>(
-					  tmp, ParseTag<element_type::expected_type>{ } );
-				} else {
-					auto result = json_details::parse_value<element_type>(
-					  tmp, ParseTag<element_type::expected_type>{ } );
-
-					m_can_skip = tmp.first;
-					return result;
-				}
+				auto const run_after_parse =
+				  json_array_iterator_details::op_star_cleanup<CharT, ParseState>{
+				    m_can_skip, tmp };
+				(void)run_after_parse;
+				return json_details::parse_value<element_type>(
+				  tmp, ParseTag<element_type::expected_type>{ } );
 			}
 
 			/// @brief A dereferencable value proxy holding the result of operator*
