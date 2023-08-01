@@ -47,7 +47,7 @@ namespace daw::json {
 
 			DAW_ATTRIB_INLINE
 			DAW_SG_CXDTOR ~construct_array_cleanup( ) noexcept(
-			  not use_daw_json_exceptions_v ) {
+			  not use_daw_json_exceptions_v or noexcept( ++it ) ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 				if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 					++it;
