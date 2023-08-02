@@ -75,6 +75,9 @@ jobs:
         run: |
           sudo wget -O /etc/apt/trusted.gpg.d/llvm.asc https://apt.llvm.org/llvm-snapshot.gpg.key
           sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main'
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-13 main'
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main'
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-15 main'
           sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main'
           sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-17 main'
           sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
@@ -85,6 +88,9 @@ jobs:
         run: |
           sudo wget -O /etc/apt/trusted.gpg.d/llvm.asc https://apt.llvm.org/llvm-snapshot.gpg.key
           sudo apt-add-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main'
+          sudo apt-add-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-13 main'
+          sudo apt-add-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-14 main'
+          sudo apt-add-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main'
           sudo apt-add-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main'
           sudo apt-add-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-17 main'
           sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
