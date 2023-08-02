@@ -53,13 +53,17 @@ namespace daw::json {
 					++it;
 				} else {
 #endif
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-					if( std::uncaught_exceptions( ) == 0 ) {
-#endif
+					if constexpr( noexcept( ++it ) ) {
 						++it;
+					} else {
 #if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-					}
+						if( std::uncaught_exceptions( ) == 0 ) {
 #endif
+							++it;
+#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
+						}
+#endif
+					}
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 				}
 #endif
