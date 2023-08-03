@@ -108,7 +108,11 @@ jobs:
           echo "CXXFLAGS=${CXXFLASGS} -stdlib=libc++" >> $GITHUB_ENV
           echo "UBSAN_OPTIONS='halt_on_errors=1'" >> $GITHUB_ENV
       - name: Install Clang Environment
-        if: startsWith( matrix.toolset, 'clang' )
+        if: startsWith( matrix.toolset, 'clang-11' )
+        run: |
+          sudo apt install ${{ env.CC }} libc++-dev libc++abi-dev
+      - name: Install Clang Environment
+        if: startsWith( matrix.toolset, 'clang' ) && !startsWith( matrix.toolset, 'clang-11' )
         run: |
           sudo apt install ${{ env.CC }} libc++-${{ env.DAW_CLANG_VER }}-dev libc++abi-${{ env.DAW_CLANG_VER }}-dev
       - name: Get GCC version
