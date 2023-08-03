@@ -29,7 +29,7 @@ jobs:
         build_type: [ Debug, Release ]
         except_type: [ exceptions_on, exceptions_off ]  
         os: [ ubuntu-20.04, ubuntu-22.04 ]
-        toolset: [ g++-9, g++-10, g++-11, g++-12, clang++-8, clang++-9, clang++-10, clang++-11, clang++-12, clang++-13, clang++-14, clang++-15, clang++-16, clang++17 ]
+        toolset: [ g++-9, g++-10, g++-11, g++-12, clang++-8, clang++-9, clang++-10, clang++-11, clang++-12, clang++-13, clang++-14, clang++-15, clang++-16, clang++-17 ]
         exclude:
           - toolset: clang++-8
             cpp_version: 20
