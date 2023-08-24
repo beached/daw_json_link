@@ -251,19 +251,3 @@
 #define DAW_JSON_HAS_CPP23_RANGE_CTOR
 #endif
 #endif
-
-// Allow for source location in json_exception
-#if defined( DAW_JSON_SOURCE_LOCATION_TYPE )
-#if not defined( DAW_JSON_SOURCE_LOCATION_HEADER )
-#error \
-  "In order to use a custom source location type, define the header in DAW_JSON_SOURCE_LOCATION_HEADER"
-#endif
-#define DAW_JSON_HAS_SOURCE_LOCATION
-#elif defined( __cpp_lib_source_location ) and \
-  not defined( DAW_JSON_NO_SOURCE_LOCATION )
-#if __cpp_lib_source_location >= 201907L
-#define DAW_JSON_HAS_SOURCE_LOCATION
-#define DAW_JSON_SOURCE_LOCATION_TYPE std::source_location
-#define DAW_JSON_SOURCE_LOCATION_HEADER <source_location>
-#endif
-#endif

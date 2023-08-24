@@ -6,9 +6,6 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#define DAW_JSON_SOURCE_LOCATION_TYPE boost::source_location
-#define DAW_JSON_SOURCE_LOCATION_HEADER <boost/assert/source_location.hpp>
-
 #include "defines.h"
 
 #include "daw/json/daw_json_exception.h"
