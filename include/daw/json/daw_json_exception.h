@@ -23,23 +23,15 @@
 #include <string>
 #include <string_view>
 
+#if defined( DAW_JSON_HAS_SOURCE_LOCATION )
+#include DAW_JSON_SOURCE_LOCATION_HEADER
+#endif
+
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			struct missing_member {
 				char const *member_name;
-
-				/*
-				template<
-				  typename StringView,
-				  std::enable_if_t<traits::not_same_v<StringView, missing_member>,
-				                   std::nullptr_t> = nullptr>
-				explicit constexpr missing_member( StringView name )
-				  : member_name( std::data( name ) ) {
-				  if( member_name and member_name[0] == '\a' ) {
-				    member_name = "no_name";
-				  }
-				}*/
 
 				explicit constexpr missing_member( daw::string_view name )
 				  : member_name( std::data( name ) ) {
@@ -47,15 +39,6 @@ namespace daw::json {
 						member_name = "no_name";
 					}
 				}
-
-				/*
-				template<std::size_t N>
-				explicit constexpr missing_member( char const ( &s )[N] )
-				  : member_name( s ) {
-				  if( member_name and member_name[0] == '\a' ) {
-				    member_name = "no_name";
-				  }
-				}*/
 			};
 
 			struct missing_token {
@@ -235,9 +218,64 @@ namespace daw::json {
 				  : token( t ) {}
 			} m_data{ nullptr };
 			char const *m_parse_loc = nullptr;
+#if defined( DAW_JSON_HAS_SOURCE_LOCATION )
+			DAW_JSON_SOURCE_LOCATION_TYPE m_location;
 
 		public:
-			json_exception( ) = default;
+			explicit inline json_exception(
+			  DAW_JSON_SOURCE_LOCATION_TYPE loc =
+			    DAW_JSON_SOURCE_LOCATION_TYPE{ } ) noexcept
+			  : m_location( std::move( loc ) ) {}
+			explicit inline json_exception(
+			  ErrorReason reason,
+			  DAW_JSON_SOURCE_LOCATION_TYPE loc = DAW_JSON_SOURCE_LOCATION_TYPE{ } )
+			  : m_reason( reason )
+			  , m_location( std::move( loc ) ) {}
+
+			explicit inline json_exception(
+			  json_details::missing_member mm,
+			  DAW_JSON_SOURCE_LOCATION_TYPE loc = DAW_JSON_SOURCE_LOCATION_TYPE{ } )
+			  : m_reason( ErrorReason::MemberNotFound )
+			  , m_data( mm.member_name )
+			  , m_location( std::move( loc ) ) {}
+
+			explicit inline json_exception(
+			  json_details::missing_token mt,
+			  DAW_JSON_SOURCE_LOCATION_TYPE loc = DAW_JSON_SOURCE_LOCATION_TYPE{ } )
+			  : m_reason( ErrorReason::ExpectedTokenNotFound )
+			  , m_data( mt.token )
+			  , m_location( std::move( loc ) ) {}
+
+			explicit inline json_exception(
+			  json_details::missing_member mm, std::string_view location,
+			  DAW_JSON_SOURCE_LOCATION_TYPE loc = DAW_JSON_SOURCE_LOCATION_TYPE{ } )
+			  : m_reason( ErrorReason::MemberNotFound )
+			  , m_data( mm.member_name )
+			  , m_parse_loc( std::data( location ) )
+			  , m_location( std::move( loc ) ) {}
+
+			explicit inline json_exception(
+			  json_details::missing_token mt, char const *location,
+			  DAW_JSON_SOURCE_LOCATION_TYPE loc = DAW_JSON_SOURCE_LOCATION_TYPE{ } )
+			  : m_reason( ErrorReason::ExpectedTokenNotFound )
+			  , m_data( mt.token )
+			  , m_parse_loc( location )
+			  , m_location( std::move( loc ) ) {}
+
+			explicit inline json_exception(
+			  ErrorReason reason, char const *location,
+			  DAW_JSON_SOURCE_LOCATION_TYPE loc = DAW_JSON_SOURCE_LOCATION_TYPE{ } )
+			  : m_reason( reason )
+			  , m_parse_loc( location )
+			  , m_location( std::move( loc ) ) {}
+
+			[[nodiscard]] inline DAW_JSON_SOURCE_LOCATION_TYPE const &
+			source_location( ) const {
+				return m_location;
+			}
+#else
+		public:
+			explicit json_exception( ) = default;
 
 			explicit inline json_exception( ErrorReason reason )
 			  : m_reason( reason ) {}
@@ -265,6 +303,7 @@ namespace daw::json {
 			explicit inline json_exception( ErrorReason reason, char const *location )
 			  : m_reason( reason )
 			  , m_parse_loc( location ) {}
+#endif
 
 			[[nodiscard]] inline ErrorReason reason_type( ) const {
 				return m_reason;
