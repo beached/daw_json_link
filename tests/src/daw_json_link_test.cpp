@@ -1158,7 +1158,10 @@ int main( int, char ** ) {
 #endif
 				(void)from_json<double>( "0e "sv );
 #ifdef DAW_USE_EXCEPTIONS
-			} catch( daw::json::json_exception const & ) { return true; }
+			} catch( daw::json::json_exception const &ex ) {
+				(void)ex;
+				return true;
+			}
 #endif
 			return false;
 		};

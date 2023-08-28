@@ -128,8 +128,8 @@
 // DAW_JSON_HAS_BUILTIN_UADD is used to switch to a constexpr method of overflow
 // addition when available
 #if DAW_HAS_GCC_VER_GTE( 8, 0 ) or defined( DAW_HAS_CLANG ) or \
-  ( DAW_HAS_BUILTIN( __builtin_uadd_overflow ) and         \
-    DAW_HAS_BUILTIN( __builtin_uaddl_overflow ) and        \
+  ( DAW_HAS_BUILTIN( __builtin_uadd_overflow ) and             \
+    DAW_HAS_BUILTIN( __builtin_uaddl_overflow ) and            \
     DAW_HAS_BUILTIN( __builtin_uaddll_overflow ) )
 #define DAW_JSON_HAS_BUILTIN_UADD
 #endif
@@ -247,7 +247,7 @@
 #endif
 
 #if defined( __cpp_lib_containers_ranges )
-#define DAW_JSON_HAS_CPP23_RANGE_CTOR
 #if __cpp_lib_containers_ranges > 202202L
+#define DAW_JSON_HAS_CPP23_RANGE_CTOR
 #endif
 #endif

@@ -105,13 +105,13 @@ jobs:
         run: |
           echo "CC=$(echo clang-${{ env.DAW_CLANG_VER }})" >> $GITHUB_ENV
           echo "CXX=$(echo clang++-${{ env.DAW_CLANG_VER }})" >> $GITHUB_ENV
-          echo "CXXFLAGS=${CXXFLASGS} -stdlib=libc++" >> $GITHUB_ENV
+          #echo "CXXFLAGS=${CXXFLASGS} -stdlib=libc++" >> $GITHUB_ENV
           echo "UBSAN_OPTIONS='halt_on_errors=1'" >> $GITHUB_ENV
       - name: Install Clang Environment
         if: startsWith( matrix.toolset, 'clang' )
         run: |
-          sudo apt install ${{ env.CC }} libc++-dev libc++abi-dev
-          #sudo apt install ${{ env.CC }} libc++-${{ env.DAW_CLANG_VER }}-dev libc++abi-${{ env.DAW_CLANG_VER }}-dev
+          sudo apt-get install --ignore-missing \
+            ${{ env.CC }}
       - name: Get GCC version
         if: startsWith( matrix.toolset, 'g++' )
         run: |

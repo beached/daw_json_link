@@ -72,7 +72,7 @@ namespace daw::json {
 
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			[[noreturn]] DAW_ATTRIB_NOINLINE void
+			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 			handle_error( json_exception &&jex ) {
 				daw_json_error_handler( std::move( jex ), daw_json_error_handler_data );
 				DAW_UNREACHABLE( );

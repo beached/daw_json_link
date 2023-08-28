@@ -29,33 +29,12 @@ namespace daw::json {
 			struct missing_member {
 				char const *member_name;
 
-				/*
-				template<
-				  typename StringView,
-				  std::enable_if_t<traits::not_same_v<StringView, missing_member>,
-				                   std::nullptr_t> = nullptr>
-				explicit constexpr missing_member( StringView name )
-				  : member_name( std::data( name ) ) {
-				  if( member_name and member_name[0] == '\a' ) {
-				    member_name = "no_name";
-				  }
-				}*/
-
 				explicit constexpr missing_member( daw::string_view name )
 				  : member_name( std::data( name ) ) {
 					if( member_name and member_name[0] == '\a' ) {
 						member_name = "no_name";
 					}
 				}
-
-				/*
-				template<std::size_t N>
-				explicit constexpr missing_member( char const ( &s )[N] )
-				  : member_name( s ) {
-				  if( member_name and member_name[0] == '\a' ) {
-				    member_name = "no_name";
-				  }
-				}*/
 			};
 
 			struct missing_token {
@@ -237,7 +216,7 @@ namespace daw::json {
 			char const *m_parse_loc = nullptr;
 
 		public:
-			json_exception( ) = default;
+			explicit json_exception( ) = default;
 
 			explicit inline json_exception( ErrorReason reason )
 			  : m_reason( reason ) {}

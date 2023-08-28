@@ -38,6 +38,7 @@ int main( ) {
 			  throw std::move( jex );
 		  };
 		for( std::size_t n = 0; n < total; ++n ) {
+			daw::do_not_optimize( total );
 			daw::do_not_optimize( numbers_str_bad );
 			[&]( daw::string_view json_doc ) {
 				try {
@@ -74,6 +75,7 @@ int main( ) {
 		  std::longjmp( s.jmp_buff, true );
 	  };
 	for( std::size_t n = 0; n < total; ++n ) {
+		daw::do_not_optimize( total );
 		state.jex = std::nullopt;
 		daw::do_not_optimize( numbers_str_bad );
 		[&]( daw::string_view json_doc ) {
