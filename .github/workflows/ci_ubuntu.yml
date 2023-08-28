@@ -110,8 +110,10 @@ jobs:
       - name: Install Clang Environment
         if: startsWith( matrix.toolset, 'clang' )
         run: |
-          sudo apt install ${{ env.CC }} libc++-dev libc++abi-dev g++ gcc
-          #sudo apt install ${{ env.CC }} libc++-${{ env.DAW_CLANG_VER }}-dev libc++abi-${{ env.DAW_CLANG_VER }}-dev
+          sudo apt install ${{ env.CC }} 
+            libc++-${{ env.DAW_CLANG_VER }}-dev \
+            libc++abi-${{ env.DAW_CLANG_VER }}-dev
+          #sudo apt install ${{ env.CC }} libc++-dev libc++abi-dev
       - name: Get GCC version
         if: startsWith( matrix.toolset, 'g++' )
         run: |
