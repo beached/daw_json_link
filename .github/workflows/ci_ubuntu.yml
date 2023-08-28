@@ -110,7 +110,7 @@ jobs:
       - name: Install Clang Environment
         if: startsWith( matrix.toolset, 'clang' )
         run: |
-          sudo apt install \
+          sudo apt-get install --ignore-missing \
             ${{ env.CC }} \
             libc++-dev \
             libc++abi-dev \
