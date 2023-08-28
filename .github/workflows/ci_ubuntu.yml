@@ -111,10 +111,7 @@ jobs:
         if: startsWith( matrix.toolset, 'clang' )
         run: |
           sudo apt-get install --ignore-missing \
-            ${{ env.CC }} \
-            libc++-dev \
-            libc++abi-dev \
-            libfuzzer-dev
+            ${{ env.CC }}
       - name: Get GCC version
         if: startsWith( matrix.toolset, 'g++' )
         run: |
