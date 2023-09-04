@@ -425,8 +425,28 @@ namespace daw::json {
 				auto pos =
 				  daw::algorithm::find_if( begin( ), end( ), [name]( auto const &jp ) {
 					  assert( jp.name );
-					  return *jp.name == name;
+					  if constexpr( ParseState::allow_escaped_names( ) ) {
+						  auto f0 = std::data( name );
+						  auto const l0 = daw::data_end( name );
+						  auto f1 = std::data( *jp.name );
+						  auto const l1 = daw::data_end( *jp.name );
+						  while( f0 != l0 and f1 != l1 ) {
+							  if( *f0 == '\\' ) {
+								  ++f0;
+								  continue;
+							  }
+							  if( *f0 != *f1 ) {
+								  return false;
+							  }
+							  ++f0;
+							  ++f1;
+						  }
+						  return f0 == l0 and f1 == l1;
+					  } else {
+						  return *jp.name == name;
+					  }
 				  } );
+
 				if( pos == end( ) ) {
 					return basic_json_value( );
 				}

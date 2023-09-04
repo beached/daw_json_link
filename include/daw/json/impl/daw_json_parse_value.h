@@ -506,9 +506,6 @@ namespace daw::json {
 					                     options::EightBitModes::DisallowHigh>;
 					auto parse_state2 =
 					  KnownBounds ? parse_state : skip_string( parse_state );
-					daw_json_ensure( not parse_state2.empty( ),
-					                 ErrorReason::UnexpectedNull );
-					// FIXME this needs std::string, fix
 					if( not AllowHighEightbits::value or
 					    needs_slow_path( parse_state2 ) ) {
 						// There are escapes in the string
