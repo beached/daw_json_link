@@ -497,7 +497,8 @@ namespace daw::json {
 			parse_value_string_escaped( ParseState &parse_state ) {
 				static_assert( has_json_member_constructor_v<JsonMember> );
 				static_assert( has_json_member_parse_to_v<JsonMember> );
-
+				daw_json_ensure( not parse_state.empty( ),
+				                 ErrorReason::UnexpectedNull );
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( can_parse_to_stdstring_fast_v<JsonMember> ) {
 					using AllowHighEightbits =
@@ -505,6 +506,8 @@ namespace daw::json {
 					                     options::EightBitModes::DisallowHigh>;
 					auto parse_state2 =
 					  KnownBounds ? parse_state : skip_string( parse_state );
+					daw_json_ensure( not parse_state2.empty( ),
+					                 ErrorReason::UnexpectedNull );
 					// FIXME this needs std::string, fix
 					if( not AllowHighEightbits::value or
 					    needs_slow_path( parse_state2 ) ) {
