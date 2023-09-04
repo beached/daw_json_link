@@ -12,10 +12,7 @@
 
 int main( ) {
 	using namespace daw::json;
-	auto json =
-	  basic_json_value<parse_options( options::AllowEscapedNames::yes )>{
-	    R"({"example.com":"justanormalstring"})" };
-	json = json["example\\.com"];
-	auto const parsed_value = as<std::string>( json );
+	auto const json = json_value{ R"({"example.com":"justanormalstring"})" };
+	auto const parsed_value = as<std::string>( json["example\\.com"] );
 	ensure( parsed_value == "justanormalstring" );
 }
