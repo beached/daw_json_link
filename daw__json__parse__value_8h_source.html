@@ -569,15 +569,15 @@ $(function() {
 <div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;      parse_value_string_escaped( ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;        static_assert( has_json_member_constructor_v&lt;JsonMember&gt; );</div>
 <div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;        static_assert( has_json_member_parse_to_v&lt;JsonMember&gt; );</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160; </div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;        <span class="keyword">using</span> constructor_t = <span class="keyword">typename</span> JsonMember::constructor_t;</div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;        <span class="keywordflow">if</span> constexpr( can_parse_to_stdstring_fast_v&lt;JsonMember&gt; ) {</div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;          <span class="keyword">using</span> AllowHighEightbits =</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;            std::bool_constant&lt;JsonMember::eight_bit_mode !=</div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;                               options::EightBitModes::DisallowHigh&gt;;</div>
-<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;          <span class="keyword">auto</span> parse_state2 =</div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;            KnownBounds ? parse_state : skip_string( parse_state );</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;          <span class="comment">// FIXME this needs std::string, fix</span></div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;        <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( not parse_state.empty( ),</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;                         ErrorReason::UnexpectedNull );</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;        <span class="keyword">using</span> constructor_t = <span class="keyword">typename</span> JsonMember::constructor_t;</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;        <span class="keywordflow">if</span> constexpr( can_parse_to_stdstring_fast_v&lt;JsonMember&gt; ) {</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;          <span class="keyword">using</span> AllowHighEightbits =</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;            std::bool_constant&lt;JsonMember::eight_bit_mode !=</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;                               options::EightBitModes::DisallowHigh&gt;;</div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;          <span class="keyword">auto</span> parse_state2 =</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;            KnownBounds ? parse_state : skip_string( parse_state );</div>
 <div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;          <span class="keywordflow">if</span>( not AllowHighEightbits::value or</div>
 <div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;              needs_slow_path( parse_state2 ) ) {</div>
 <div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;            <span class="comment">// There are escapes in the string</span></div>
