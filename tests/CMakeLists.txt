@@ -963,6 +963,12 @@ add_dependencies( full issue_361_test )
 #add_dependencies( ci_tests issue_373_empty_string_nullable_test )
 #add_dependencies( full issue_373_empty_string_nullable_test )
 
+add_executable( multi_tu_test src/multi_tu_p0_test.cpp src/multi_tu_p1_test.cpp )
+target_link_libraries( multi_tu_test json_test )
+add_test( NAME multi_tu_test_test COMMAND multi_tu_test )
+add_dependencies( ci_tests multi_tu_test )
+add_dependencies( full multi_tu_test )
+
 add_executable( carray_test src/carray_test.cpp )
 target_link_libraries( carray_test json_test )
 add_test( NAME carray_test_test COMMAND carray_test )
