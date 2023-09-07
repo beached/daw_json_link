@@ -15,7 +15,6 @@
 
 #include <daw/daw_cxmath.h>
 #include <daw/daw_move.h>
-#include <daw/daw_scope_guard.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
@@ -25,6 +24,7 @@
 #include <cstdlib>
 #include <iterator>
 #include <limits>
+#include <optional>
 #include <string>
 #include <type_traits>
 
@@ -241,8 +241,6 @@ namespace daw::json {
 			using reference = value_type;
 			using pointer = json_details::arrow_proxy<value_type>;
 			using difference_type = std::ptrdiff_t;
-			// Can do forward iteration and be stored
-			using iterator_category = std::input_iterator_tag;
 
 		private:
 			mutable ParseState m_state = ParseState( );
@@ -282,15 +280,6 @@ namespace daw::json {
 
 				return json_details::parse_value<element_type>(
 				  m_state, ParseTag<element_type::expected_type>{ } );
-			}
-
-			/// @brief A dereferencable value proxy holding the result of operator*
-			/// This is for compatibility with the Iterator concepts and should be
-			/// avoided
-			/// @pre good( ) returns true
-			/// @return an arrow_proxy of the operator* result
-			[[nodiscard]] inline pointer operator->( ) const {
-				return pointer{ operator*( ) };
 			}
 
 			/***
