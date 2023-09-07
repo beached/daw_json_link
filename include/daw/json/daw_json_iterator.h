@@ -30,6 +30,26 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			template<typename T>
+			struct assign_on_dtor {
+				T &lhs;
+				T const &rhs;
+
+				DAW_ATTRIB_INLINE constexpr assign_on_dtor( T &Lhs,
+				                                            T const &Rhs ) noexcept
+				  : lhs( Lhs )
+				  , rhs( Rhs ) {}
+
+				DAW_ATTRIB_INLINE DAW_JSON_CPP20_CX_DTOR ~assign_on_dtor( ) noexcept {
+					lhs = rhs;
+				}
+			};
+
+			template<typename T>
+			assign_on_dtor( T const &, T const & ) -> assign_on_dtor<T>;
+
+		} // namespace json_details
 		/***
 		 * Iterator for iterating over JSON array's
 		 * @tparam JsonElement type under underlying element in array. If
@@ -107,9 +127,8 @@ namespace daw::json {
 
 				auto tmp = m_state;
 
-				auto const run_after_parse = daw::on_scope_exit( [&] {
-					m_can_skip = tmp.first;
-				} );
+				auto const run_after_parse =
+				  json_details::assign_on_dtor{ m_can_skip, tmp.first };
 				(void)run_after_parse;
 				return json_details::parse_value<element_type>(
 				  tmp, ParseTag<element_type::expected_type>{ } );
@@ -194,8 +213,8 @@ namespace daw::json {
 
 		/// Iterator for iterating over JSON array's. Requires that op
 		/// op++ be called in that sequence one time until end is reached
-		/// @tparam JsonElement type under underlying element in array.If *heterogeneous,
-		/// a basic_json_value_iterator may be more appropriate
+		/// @tparam JsonElement type under underlying element in array.If
+		/// *heterogeneous, a basic_json_value_iterator may be more appropriate
 		/// @tparam ParsePolicy Parsing policy type
 		template<typename JsonElement, auto... PolicyFlags>
 		class json_array_iterator_once {
