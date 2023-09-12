@@ -557,7 +557,7 @@ namespace daw::json {
 			/// @brief Get the type of JSON value
 			/// @return a JSONBaseParseTypes enum value with the type of this JSON
 			/// value
-			[[nodiscard]] constexpr JsonBaseParseTypes type( ) const noexcept {
+			[[nodiscard]] constexpr JsonBaseParseTypes type( ) const {
 				if( not m_parse_state.has_more( ) ) {
 					return JsonBaseParseTypes::None;
 				}
@@ -641,37 +641,37 @@ namespace daw::json {
 
 			/// @brief Is the JSON value a null literal
 			/// @return true if the value is a null literal
-			[[nodiscard]] constexpr bool is_null( ) const noexcept {
+			[[nodiscard]] constexpr bool is_null( ) const {
 				return type( ) == JsonBaseParseTypes::Null;
 			}
 
 			/// @brief Is the JSON value a class
 			/// @return true if the value is a class
-			[[nodiscard]] constexpr bool is_class( ) const noexcept {
+			[[nodiscard]] constexpr bool is_class( ) const {
 				return type( ) == JsonBaseParseTypes::Class;
 			}
 
 			/// @brief Is the JSON value a array
 			/// @return true if the value is a array
-			[[nodiscard]] constexpr bool is_array( ) const noexcept {
+			[[nodiscard]] constexpr bool is_array( ) const {
 				return type( ) == JsonBaseParseTypes::Array;
 			}
 
 			/// @brief Is the JSON value a number literal
 			/// @return true if the value is a number literal
-			[[nodiscard]] constexpr bool is_number( ) const noexcept {
+			[[nodiscard]] constexpr bool is_number( ) const {
 				return type( ) == JsonBaseParseTypes::Number;
 			}
 
 			/// @brief Is the JSON value a string
 			/// @return true if the value is a string
-			[[nodiscard]] inline constexpr bool is_string( ) const noexcept {
+			[[nodiscard]] inline constexpr bool is_string( ) const {
 				return type( ) == JsonBaseParseTypes::String;
 			}
 
 			/// @brief Is the JSON value a boolean
 			/// @return true if the value is a boolean
-			[[nodiscard]] constexpr bool is_bool( ) const noexcept {
+			[[nodiscard]] constexpr bool is_bool( ) const {
 				return type( ) == JsonBaseParseTypes::Bool;
 			}
 
@@ -679,7 +679,7 @@ namespace daw::json {
 			/// one of ",[,{,0,1,2,3,4,5,6,7,8,9,-,t,f, or n.  This is generally an
 			/// error
 			/// @return true if the parser is unsure what the data is
-			[[nodiscard]] inline constexpr bool is_unknown( ) const noexcept {
+			[[nodiscard]] inline constexpr bool is_unknown( ) const {
 				return type( ) == JsonBaseParseTypes::None;
 			}
 
@@ -695,7 +695,7 @@ namespace daw::json {
 			}
 
 			/// @brief Check if state is known or not in error
-			[[nodiscard]] explicit constexpr operator bool( ) const noexcept {
+			[[nodiscard]] explicit constexpr operator bool( ) const {
 				return type( ) != JsonBaseParseTypes::None;
 			}
 		};
