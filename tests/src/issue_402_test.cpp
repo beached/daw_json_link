@@ -16,6 +16,6 @@ int main( ) {
 		auto value = json_value{ "name:, 4d2}" };
 		if( value ) {}
 		if( value.is_null( ) ) {}
-	} catch( json_exception const &jex ) { return 0; }
+	} catch( json_exception const & ) { return 0; }
 	return 1;
 }
