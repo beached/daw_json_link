@@ -446,8 +446,8 @@ namespace daw::json {
 						         static_cast<unsigned_t>( exponent_p2 );
 						if( DAW_UNLIKELY( r >
 						                  static_cast<unsigned_t>(
-						                    daw::numeric_limits<signed_t>::max( ) ) ) ) {
-							return daw::numeric_limits<signed_t>::max( );
+						                    (daw::numeric_limits<signed_t>::max)( ) ) ) ) {
+							return (daw::numeric_limits<signed_t>::max)( );
 						}
 						return static_cast<signed_t>( r );
 					}
