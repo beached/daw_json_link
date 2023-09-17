@@ -516,8 +516,8 @@ $(function() {
 <div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;                     <span class="keyword">static_cast&lt;</span>unsigned_t<span class="keyword">&gt;</span>( exponent_p2 );</div>
 <div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;            <span class="keywordflow">if</span>( DAW_UNLIKELY( r &gt;</div>
 <div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;                              <span class="keyword">static_cast&lt;</span>unsigned_t<span class="keyword">&gt;</span>(</div>
-<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;                                daw::numeric_limits&lt;signed_t&gt;::max( ) ) ) ) {</div>
-<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;              <span class="keywordflow">return</span> daw::numeric_limits&lt;signed_t&gt;::max( );</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;                                (daw::numeric_limits&lt;signed_t&gt;::max)( ) ) ) ) {</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;              <span class="keywordflow">return</span> (daw::numeric_limits&lt;signed_t&gt;::max)( );</div>
 <div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;            }</div>
 <div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>signed_t<span class="keyword">&gt;</span>( r );</div>
 <div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;          }</div>
