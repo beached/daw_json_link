@@ -46,14 +46,6 @@ jobs:
             cpp_version: 20
           - os: ubuntu-20.04
             toolset: g++-12
-          - os: ubuntu-22.04
-            toolset: g++-9
-          - os: ubuntu-22.04
-            toolset: g++-10
-          - os: ubuntu-22.04
-            toolset: g++-11
-          - os: ubuntu-22.04
-            toolset: clang++-8
           - os: ubuntu-20.04
             toolset: clang++-9
           - os: ubuntu-20.04
@@ -66,6 +58,24 @@ jobs:
             toolset: clang++-13
           - os: ubuntu-20.04
             toolset: clang++-14
+          - os: ubuntu-20.04
+            toolset: clang++-15
+          - os: ubuntu-20.04
+            toolset: clang++-16
+          - os: ubuntu-20.04
+            toolset: clang++-17
+          - os: ubuntu-22.04
+            toolset: g++-9
+          - os: ubuntu-22.04
+            toolset: g++-10
+          - os: ubuntu-22.04
+            toolset: g++-11
+          - os: ubuntu-22.04
+            toolset: clang++-8
+          - os: ubuntu-22.04
+            toolset: clang++-9
+          - os: ubuntu-22.04
+            toolset: clang++-10
     runs-on: ${{ matrix.os }}
     name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.build_type }} ${{ matrix.except_type}}"
     steps:
