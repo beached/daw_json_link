@@ -798,6 +798,11 @@ namespace daw::json {
 					  typename decltype( json_deduced_type_impl<value_type>( ) )::type;
 					using type = json_base::json_nullable<T, sub_type>;
 					return daw::traits::identity<type>{ };
+				} else if constexpr( std::is_empty_v<T> and
+				                     std::is_default_constructible_v<T> ) {
+					// Allow empty/default constructible types to work without mapping
+					using type = json_base::json_tuple<T, std::tuple<>>;
+					return daw::traits::identity<type>{ };
 				} else {
 					static_assert( daw::deduced_false_v<T>,
 					               "Could not deduced data contract type" );
@@ -826,9 +831,7 @@ namespace daw::json {
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_impl2 =
-			  std::invoke_result_t<Constructor,
-			                       typename Members::parse_to_t...>; /* decltype(
-Constructor{ }( std::declval<typename Members::parse_to_t &&>( )... ) );*/
+			  std::invoke_result_t<Constructor, typename Members::parse_to_t...>;
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_impl =
