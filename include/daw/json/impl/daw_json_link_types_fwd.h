@@ -687,7 +687,7 @@ namespace daw::json {
 		/// @tparam Constructor A callable used to construct Tuple. The default
 		/// supports normal and aggregate construction
 		/// @tparam Options
-		/// @tparam JsonTupleTypesList either deduced or a rjson_tuple_type_list
+		/// @tparam JsonTupleTypesList either deduced or a json_tuple_type_list
 		template<JSONNAMETYPE Name, typename Tuple,
 		         typename JsonTupleTypesList = use_default,
 		         typename Constructor = use_default>

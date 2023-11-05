@@ -969,6 +969,12 @@ add_dependencies( full issue_361_test )
 #add_dependencies( ci_tests issue_373_empty_string_nullable_test )
 #add_dependencies( full issue_373_empty_string_nullable_test )
 
+add_executable( issue_406_test src/issue_406_test.cpp )
+target_link_libraries( issue_406_test PRIVATE json_test )
+add_test( NAME issue_406_test COMMAND issue_406_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests issue_406_test )
+add_dependencies( full issue_406_test )
+
 add_executable( multi_tu_test src/multi_tu_p0_test.cpp src/multi_tu_p1_test.cpp )
 target_link_libraries( multi_tu_test json_test )
 add_test( NAME multi_tu_test_test COMMAND multi_tu_test )
