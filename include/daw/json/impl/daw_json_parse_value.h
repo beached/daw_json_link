@@ -619,6 +619,9 @@ namespace daw::json {
 					(void)run_after_parse;
 					return json_data_contract_trait_t<element_t>::parse_to_class(
 					  parse_state, template_arg<JsonMember> );
+				} else if constexpr( is_deduced_empty_class_v<JsonMember> ) {
+					parse_state.trim_left_checked( );
+					return json_result<JsonMember>{ };
 				} else {
 					auto result = json_data_contract_trait_t<element_t>::parse_to_class(
 					  parse_state, template_arg<JsonMember> );

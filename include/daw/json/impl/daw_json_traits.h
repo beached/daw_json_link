@@ -430,6 +430,9 @@ namespace daw::json {
 
 			template<typename JsonMember>
 			using literal_json_type_as_string = typename JsonMember::as_string;
+
+			template<typename, typename = void>
+			inline constexpr bool is_deduced_empty_class_v = false;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

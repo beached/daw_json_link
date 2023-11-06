@@ -964,6 +964,11 @@ namespace daw::json {
 				} else if constexpr( is_json_map_alias_v<parse_to_t> ) {
 					return json_data_contract_trait_t<parse_to_t>::serialize( it, value,
 					                                                          value );
+				} else if constexpr( std::is_empty_v<parse_to_t> and
+				                     std::is_default_constructible_v<parse_to_t> and
+				                     not has_json_data_contract_trait_v<parse_to_t> ) {
+					it.write( "{}" );
+					return it;
 				} else {
 					static_assert( is_submember_tagged_variant_v<parse_to_t>,
 					               "Could not find appropriate mapping or to_json_data "

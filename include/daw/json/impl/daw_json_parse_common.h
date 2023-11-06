@@ -267,7 +267,29 @@ namespace daw::json {
 			inline constexpr bool is_json_nullable_v<
 			  json_base::json_nullable<T, JsonMember, NullableType, Constructor>> =
 			  true;
-		} // namespace json_details
+
+			template<typename T>
+			struct json_empty_class {
+				static_assert( std::is_empty_v<T>, "T is expected to empty" );
+				using i_am_a_json_type = void;
+				using i_am_a_deduced_empty_class = void;
+				using wrapped_type = T;
+				static constexpr bool must_be_class_member = false;
+
+				using constructor_t = default_constructor<T>;
+				using parse_to_t = T;
+				using base_type = T;
+
+				static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
+
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::Class;
+			};
+
+			template<typename T>
+			inline constexpr bool is_deduced_empty_class_v<
+			  T, std::void_t<typename T::i_am_a_deduced_empty_class>> = true;
+		}; // namespace json_details
 
 		namespace json_base {
 
@@ -801,7 +823,7 @@ namespace daw::json {
 				} else if constexpr( std::is_empty_v<T> and
 				                     std::is_default_constructible_v<T> ) {
 					// Allow empty/default constructible types to work without mapping
-					using type = json_base::json_tuple<T, std::tuple<>>;
+					using type = json_details::json_empty_class<T>;
 					return daw::traits::identity<type>{ };
 				} else {
 					static_assert( daw::deduced_false_v<T>,
