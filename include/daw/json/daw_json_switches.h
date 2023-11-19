@@ -151,7 +151,7 @@
 
 // DAW_JSON_BUGFIX_MSVC_KNOWN_LOC_ICE_003
 // MSVC in C++20 mode will ICE when known locations is evaluated at compile time
-#if( defined( DAW_HAS_MSVC ) and __cpp_constexpr > 201700L )
+#if defined( DAW_HAS_MSVC ) and __cpp_constexpr > 201700L
 #define DAW_JSON_BUGFIX_MSVC_KNOWN_LOC_ICE_003
 #endif
 

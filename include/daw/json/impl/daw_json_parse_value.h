@@ -497,8 +497,10 @@ namespace daw::json {
 			parse_value_string_escaped( ParseState &parse_state ) {
 				static_assert( has_json_member_constructor_v<JsonMember> );
 				static_assert( has_json_member_parse_to_v<JsonMember> );
-				daw_json_ensure( not parse_state.empty( ),
-				                 ErrorReason::UnexpectedNull );
+				if constexpr( not KnownBounds ) {
+					daw_json_ensure( not parse_state.empty( ),
+					                 ErrorReason::UnexpectedNull );
+				}
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( can_parse_to_stdstring_fast_v<JsonMember> ) {
 					using AllowHighEightbits =

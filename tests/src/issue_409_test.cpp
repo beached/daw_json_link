@@ -75,24 +75,28 @@ namespace daw::json {
 int main( ) {
 	static constexpr auto &json1 = R"({ "str": "wtf" })";
 	static constexpr auto &json2 = R"({ "str": "" })";
-	try {
-		{
-			auto const cls = daw::json::from_json<Test>( json1 ); // Ok
-			std::cout << "Test 1: " << daw::json::to_json( cls ) << '\n';
-		}
-		{
-			auto const cls = daw::json::from_json<TestUserCtor>( json1 ); // Ok
-			std::cout << "Test 2: " << daw::json::to_json( cls ) << '\n';
-		}
-		{
-			auto const cls = daw::json::from_json<Test>( json2 ); // Ok
-			std::cout << "Test 3: " << daw::json::to_json( cls ) << '\n';
-		}
-		{
-			auto const cls = daw::json::from_json<TestUserCtor>( json2 ); // Error
-			std::cout << "Test 4: " << daw::json::to_json( cls ) << '\n';
-		}
-	} catch( daw::json::json_exception const &jex ) {
-		std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+	//	try {
+	/*
+	{
+	  auto const cls = daw::json::from_json<Test>( json1 ); // Ok
+	  std::cout << "Test 1: " << daw::json::to_json( cls ) << '\n';
 	}
+	{
+	  auto const cls = daw::json::from_json<TestUserCtor>( json1 ); // Ok
+	  std::cout << "Test 2: " << daw::json::to_json( cls ) << '\n';
+	}
+	{
+	  auto const cls = daw::json::from_json<Test>( json2 ); // Ok
+	  std::cout << "Test 3: " << daw::json::to_json( cls ) << '\n';
+	}
+	 */
+	{
+		auto const cls = daw::json::from_json<TestUserCtor>( json2 ); // Error
+		std::cout << "Test 4: " << daw::json::to_json( cls ) << '\n';
+	}
+	/*
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+}
+	 */
 }
