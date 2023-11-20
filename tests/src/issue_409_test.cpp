@@ -73,8 +73,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( ) {
-	static constexpr auto &json1 = R"({ "str": "wtf" })";
-	static constexpr auto &json2 = R"({ "str": "" })";
+	static constexpr daw::string_view json1 = R"({ "str": "wtf" })";
 	try {
 		{
 			auto const cls = daw::json::from_json<Test>( json1 ); // Ok
@@ -84,6 +83,7 @@ int main( ) {
 			auto const cls = daw::json::from_json<TestUserCtor>( json1 ); // Ok
 			std::cout << "Test 2: " << daw::json::to_json( cls ) << '\n';
 		}
+		static constexpr daw::string_view json2 = R"({ "str": "" })";
 		{
 			auto const cls = daw::json::from_json<Test>( json2 ); // Ok
 			std::cout << "Test 3: " << daw::json::to_json( cls ) << '\n';
