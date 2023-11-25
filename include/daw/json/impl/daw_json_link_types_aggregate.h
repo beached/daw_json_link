@@ -14,20 +14,12 @@
 #include <daw/daw_tuple_forward.h>
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_traits.h>
 
+#include <cstddef>
 #include <tuple>
-
-#if defined( __cpp_concepts )
-#if __cpp_concepts >= 201907L
-#define DAW_JSON_HAS_CPP20_CONCEPTS
-#endif
-#endif
-// TODO find feature flag for lambdas in unevaluated contexts
-#if defined( __cpp_lambdas )
-// #if __cpp_lambdas >= 201907L
-#define DAW_JSON_HAS_CPP20_UNEVAL_LAMBDAS
-// #endif
-#endif
+#include <type_traits>
+#include <utility>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -56,9 +48,16 @@ namespace daw::json {
 
 			template<typename T>
 			constexpr auto tp_from_struct_binding( T &&value ) {
-				using type = std::remove_cvref_t<T>;
-				if constexpr( not std::is_class_v<type> or not std::is_aggregate_v<type> ) {
+				using type = daw::remove_cvref_t<T>;
+				if constexpr( not std::is_class_v<type> or
+				              not std::is_aggregate_v<type> ) {
 					return;
+				} else if constexpr( is_aggregate_constructible_from_n_v<type, 9> ) {
+					auto &&[x0, x1, x2, x3, x4, x5, x6, x7, x8] = DAW_FWD( value );
+					return daw::forward_nonrvalue_as_tuple(
+					  DAW_FWD( x0 ), DAW_FWD( x1 ), DAW_FWD( x2 ), DAW_FWD( x3 ),
+					  DAW_FWD( x4 ), DAW_FWD( x5 ), DAW_FWD( x6 ), DAW_FWD( x7 ),
+					  DAW_FWD( x8 ) );
 				} else if constexpr( is_aggregate_constructible_from_n_v<type, 8> ) {
 					auto &&[x0, x1, x2, x3, x4, x5, x6, x7] = DAW_FWD( value );
 					return daw::forward_nonrvalue_as_tuple(
@@ -104,7 +103,7 @@ namespace daw::json {
 
 			template<typename T>
 			using tp_from_struct_binding_result_t =
-			  std::remove_cvref_t<decltype( tp_from_struct_binding(
+			  daw::remove_cvref_t<decltype( tp_from_struct_binding(
 			    std::declval<T>( ) ) )>;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER

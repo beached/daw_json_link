@@ -578,7 +578,7 @@ namespace daw::json {
 
 			template<typename T>
 			struct tuple_types_list<T, std::enable_if_t<can_convert_to_tuple_v<T>>> {
-				using tp_type_t = std::remove_cvref_t<decltype( tp_from_struct_binding(
+				using tp_type_t = daw::remove_cvref_t<decltype( tp_from_struct_binding(
 				  std::declval<T>( ) ) )>;
 				using jt_types_list = tuple_types_list<tp_type_t>;
 				using types = typename jt_types_list::types;

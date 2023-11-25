@@ -1047,7 +1047,7 @@ namespace daw::json {
 
 				using tuple_t = typename JsonMember::parse_to_t;
 				using element_pack = tuple_elements_pack<typename std::conditional_t<
-				  is_tuple_v<tuple_t>, std::type_identity<tuple_t>,
+				  is_tuple_v<tuple_t>, daw::traits::identity<tuple_t>,
 				  json_details::identity_parts<tp_from_struct_binding_result_t,
 				                               parse_to_t>>::type>;
 
