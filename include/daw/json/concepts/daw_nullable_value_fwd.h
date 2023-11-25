@@ -20,10 +20,16 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace concepts {
 			namespace nullable_impl {
+#if not defined( DAW_HAS_GCC ) or DAW_HAS_GCC_VER_GTE( 12, 0 )
 				template<typename T, typename... Args>
 				using is_list_constructible_test =
 				  decltype( T{ std::declval<Args>( )... } );
-
+#else
+				template<typename T, typename... Args>
+				using is_list_constructible_test =
+				  decltype( std::declval<void ( * )( T )>( )(
+				    { std::declval<Args>( )... } ) );
+#endif
 				template<typename T, typename... Args>
 				inline constexpr bool is_list_constructible_v =
 				  is_detected_v<is_list_constructible_test, T, Args...>;

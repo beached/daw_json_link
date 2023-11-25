@@ -308,8 +308,7 @@ namespace daw::json {
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::Class;
 			};
-
-		}; // namespace json_details
+		} // namespace json_details
 
 		namespace json_base {
 
