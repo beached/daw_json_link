@@ -50,7 +50,39 @@ namespace daw::json {
 			constexpr auto tp_from_struct_binding( T &&value ) {
 				using type = daw::remove_cvref_t<T>;
 				static_assert( std::is_class_v<type> and std::is_aggregate_v<type> );
-				if constexpr( is_aggregate_constructible_from_n_v<type, 12> ) {
+				if constexpr( is_aggregate_constructible_from_n_v<type, 16> ) {
+					auto &&[x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13,
+					        x14, x15] = DAW_FWD( value );
+					return daw::forward_nonrvalue_as_tuple(
+					  DAW_FWD( x0 ), DAW_FWD( x1 ), DAW_FWD( x2 ), DAW_FWD( x3 ),
+					  DAW_FWD( x4 ), DAW_FWD( x5 ), DAW_FWD( x6 ), DAW_FWD( x7 ),
+					  DAW_FWD( x8 ), DAW_FWD( x9 ), DAW_FWD( x10 ), DAW_FWD( x11 ),
+					  DAW_FWD( x12 ), DAW_FWD( x13 ), DAW_FWD( x14 ), DAW_FWD( x15 ) );
+				} else if constexpr( is_aggregate_constructible_from_n_v<type, 15> ) {
+					auto &&[x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13,
+					        x14] = DAW_FWD( value );
+					return daw::forward_nonrvalue_as_tuple(
+					  DAW_FWD( x0 ), DAW_FWD( x1 ), DAW_FWD( x2 ), DAW_FWD( x3 ),
+					  DAW_FWD( x4 ), DAW_FWD( x5 ), DAW_FWD( x6 ), DAW_FWD( x7 ),
+					  DAW_FWD( x8 ), DAW_FWD( x9 ), DAW_FWD( x10 ), DAW_FWD( x11 ),
+					  DAW_FWD( x12 ), DAW_FWD( x13 ), DAW_FWD( x14 ) );
+				} else if constexpr( is_aggregate_constructible_from_n_v<type, 14> ) {
+					auto &&[x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] =
+					  DAW_FWD( value );
+					return daw::forward_nonrvalue_as_tuple(
+					  DAW_FWD( x0 ), DAW_FWD( x1 ), DAW_FWD( x2 ), DAW_FWD( x3 ),
+					  DAW_FWD( x4 ), DAW_FWD( x5 ), DAW_FWD( x6 ), DAW_FWD( x7 ),
+					  DAW_FWD( x8 ), DAW_FWD( x9 ), DAW_FWD( x10 ), DAW_FWD( x11 ),
+					  DAW_FWD( x12 ), DAW_FWD( x13 ) );
+				} else if constexpr( is_aggregate_constructible_from_n_v<type, 13> ) {
+					auto &&[x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12] =
+					  DAW_FWD( value );
+					return daw::forward_nonrvalue_as_tuple(
+					  DAW_FWD( x0 ), DAW_FWD( x1 ), DAW_FWD( x2 ), DAW_FWD( x3 ),
+					  DAW_FWD( x4 ), DAW_FWD( x5 ), DAW_FWD( x6 ), DAW_FWD( x7 ),
+					  DAW_FWD( x8 ), DAW_FWD( x9 ), DAW_FWD( x10 ), DAW_FWD( x11 ),
+					  DAW_FWD( x12 ) );
+				} else if constexpr( is_aggregate_constructible_from_n_v<type, 12> ) {
 					auto &&[x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11] =
 					  DAW_FWD( value );
 					return daw::forward_nonrvalue_as_tuple(
