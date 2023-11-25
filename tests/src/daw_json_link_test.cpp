@@ -1343,13 +1343,19 @@ int main( int, char ** ) {
 		  << '\n';
 #endif
 #endif
+		struct Unmapped0 {};
+		constexpr auto um0 = daw::json::from_json<Unmapped0>( "{}" );
+		auto um0_str = daw::json::to_json( um0 );
+		ensure( um0_str == "{}" );
+
 		struct Unmapped1 {
 			int x;
 		};
 		static_assert(
-		  daw::json::json_details::is_aggregate_constructible_from_n_v<Unmapped1, 1>,
+		  daw::json::json_details::is_aggregate_constructible_from_n_v<Unmapped1,
+		                                                               1>,
 		  "Expcted Unmapped1 to be aggregate constructible from 1 parameter" );
-		auto um1 = daw::json::from_json<Unmapped1>( "[5]" );
+		constexpr auto um1 = daw::json::from_json<Unmapped1>( "[5]" );
 		auto um1_str = daw::json::to_json( um1 );
 		ensure( um1_str == "[5]" );
 
@@ -1364,7 +1370,12 @@ int main( int, char ** ) {
 			int a7;
 			int a8;
 		};
-		auto um9 = daw::json::from_json<Unmapped9>( "[0,1,2,3,4,5,6,7,8]" );
+		static_assert(
+		  daw::json::json_details::is_aggregate_constructible_from_n_v<Unmapped9,
+		                                                               9>,
+		  "Expcted Unmapped1 to be aggregate constructible from 2 parameters" );
+
+		constexpr auto um9 = daw::json::from_json<Unmapped9>( "[0,1,2,3,4,5,6,7,8]" );
 		auto um9_str = daw::json::to_json( um9 );
 		ensure( um9_str == "[0,1,2,3,4,5,6,7,8]" );
 

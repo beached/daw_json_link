@@ -49,9 +49,27 @@ namespace daw::json {
 			template<typename T>
 			constexpr auto tp_from_struct_binding( T &&value ) {
 				using type = daw::remove_cvref_t<T>;
-				if constexpr( not std::is_class_v<type> or
-				              not std::is_aggregate_v<type> ) {
-					return;
+				static_assert( std::is_class_v<type> and std::is_aggregate_v<type> );
+				if constexpr( is_aggregate_constructible_from_n_v<type, 12> ) {
+					auto &&[x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11] =
+					  DAW_FWD( value );
+					return daw::forward_nonrvalue_as_tuple(
+					  DAW_FWD( x0 ), DAW_FWD( x1 ), DAW_FWD( x2 ), DAW_FWD( x3 ),
+					  DAW_FWD( x4 ), DAW_FWD( x5 ), DAW_FWD( x6 ), DAW_FWD( x7 ),
+					  DAW_FWD( x8 ), DAW_FWD( x9 ), DAW_FWD( x10 ), DAW_FWD( x11 ) );
+				} else if constexpr( is_aggregate_constructible_from_n_v<type, 11> ) {
+					auto &&[x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10] =
+					  DAW_FWD( value );
+					return daw::forward_nonrvalue_as_tuple(
+					  DAW_FWD( x0 ), DAW_FWD( x1 ), DAW_FWD( x2 ), DAW_FWD( x3 ),
+					  DAW_FWD( x4 ), DAW_FWD( x5 ), DAW_FWD( x6 ), DAW_FWD( x7 ),
+					  DAW_FWD( x8 ), DAW_FWD( x9 ), DAW_FWD( x10 ) );
+				} else if constexpr( is_aggregate_constructible_from_n_v<type, 10> ) {
+					auto &&[x0, x1, x2, x3, x4, x5, x6, x7, x8, x9] = DAW_FWD( value );
+					return daw::forward_nonrvalue_as_tuple(
+					  DAW_FWD( x0 ), DAW_FWD( x1 ), DAW_FWD( x2 ), DAW_FWD( x3 ),
+					  DAW_FWD( x4 ), DAW_FWD( x5 ), DAW_FWD( x6 ), DAW_FWD( x7 ),
+					  DAW_FWD( x8 ), DAW_FWD( x9 ) );
 				} else if constexpr( is_aggregate_constructible_from_n_v<type, 9> ) {
 					auto &&[x0, x1, x2, x3, x4, x5, x6, x7, x8] = DAW_FWD( value );
 					return daw::forward_nonrvalue_as_tuple(
