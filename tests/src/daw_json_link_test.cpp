@@ -1343,6 +1343,15 @@ int main( int, char ** ) {
 		  << '\n';
 #endif
 #endif
+		struct Unmapped1 {
+			int x;
+		};
+		static_assert(
+		  daw::json::json_details::is_aggregate_constructible_from_n_v<Unmapped1, 1>,
+		  "Expcted Unmapped1 to be aggregate constructible from 1 parameter" );
+		auto um1 = daw::json::from_json<Unmapped1>( "[5]" );
+		auto um1_str = daw::json::to_json( um1 );
+		ensure( um1_str == "[5]" );
 
 		std::cout << "\n\nJSON Link Version: " << json_link_version( ) << '\n';
 		std::cout << "done\n\n";

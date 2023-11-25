@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../impl/version.h"
+#include <daw/json/impl/version.h>
 
 #include <daw/daw_traits.h>
 

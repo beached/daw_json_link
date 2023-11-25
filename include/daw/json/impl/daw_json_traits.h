@@ -10,11 +10,12 @@
 
 #include "version.h"
 
-#include "../concepts/daw_nullable_value.h"
-#include "../daw_json_data_contract.h"
 #include "daw_json_default_constuctor.h"
 #include "daw_json_enums.h"
+#include "daw_json_link_types_aggregate.h"
 #include "daw_json_name.h"
+#include <daw/json/concepts/daw_nullable_value.h>
+#include <daw/json/daw_json_data_contract.h>
 
 #include <daw/cpp_17.h>
 #include <daw/daw_fwd_pack_apply.h>
@@ -338,6 +339,11 @@ namespace daw::json {
 
 			template<typename T>
 			using has_element_type = daw::is_detected<element_type_t, T>;
+
+			template<template<typename...> typename T, typename... Params>
+			struct identity_parts {
+				using type = T<Params...>;
+			};
 		} // namespace json_details
 
 		/***
@@ -351,7 +357,7 @@ namespace daw::json {
 
 		/// Allow tuple like types to be used in json_tuple
 		/// \tparam Tuple tuple like type to
-		template<typename Tuple>
+		template<typename Tuple, typename = void>
 		struct tuple_elements_pack;
 
 		template<typename... Ts>

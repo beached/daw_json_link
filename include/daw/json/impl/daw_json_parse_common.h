@@ -10,16 +10,17 @@
 
 #include "version.h"
 
-#include "../../daw_allocator_construct.h"
-#include "../concepts/daw_container_traits.h"
 #include "daw_json_assert.h"
 #include "daw_json_enums.h"
 #include "daw_json_exec_modes.h"
+#include "daw_json_link_types_aggregate.h"
 #include "daw_json_name.h"
 #include "daw_json_option_bits.h"
 #include "daw_json_traits.h"
 #include "daw_json_type_options.h"
 #include "daw_json_value_fwd.h"
+#include <daw/daw_allocator_construct.h>
+#include <daw/json/concepts/daw_container_traits.h>
 
 #include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>
@@ -289,6 +290,25 @@ namespace daw::json {
 			template<typename T>
 			inline constexpr bool is_deduced_empty_class_v<
 			  T, std::void_t<typename T::i_am_a_deduced_empty_class>> = true;
+
+			template<typename T>
+			struct json_ordered_class {
+				static_assert( can_convert_to_tuple_v<T>, "T is expected to empty" );
+				using i_am_a_json_type = void;
+				using i_am_a_deduced_ordered_class = void;
+				using wrapped_type = T;
+				static constexpr bool must_be_class_member = false;
+
+				using constructor_t = default_constructor<T>;
+				using parse_to_t = T;
+				using base_type = T;
+
+				static constexpr JsonParseTypes expected_type = JsonParseTypes::Tuple;
+
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::Class;
+			};
+
 		}; // namespace json_details
 
 		namespace json_base {
@@ -824,6 +844,9 @@ namespace daw::json {
 				                     std::is_default_constructible_v<T> ) {
 					// Allow empty/default constructible types to work without mapping
 					using type = json_details::json_empty_class<T>;
+					return daw::traits::identity<type>{ };
+				} else if constexpr( can_convert_to_tuple_v<T> ) {
+					using type = json_base::json_tuple<T>;
 					return daw::traits::identity<type>{ };
 				} else {
 					static_assert( daw::deduced_false_v<T>,

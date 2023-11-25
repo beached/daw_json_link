@@ -10,12 +10,12 @@
 
 #include "version.h"
 
-#include "../daw_json_data_contract.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_iso8601_utils.h"
 #include "daw_json_serialize_options_impl.h"
 #include "daw_json_serialize_policy.h"
 #include "daw_json_value.h"
+#include <daw/json/daw_json_data_contract.h>
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
@@ -1046,9 +1046,11 @@ namespace daw::json {
 			  parse_to_t const &value ) {
 
 				using tuple_t = typename JsonMember::parse_to_t;
-				using element_pack = tuple_elements_pack<tuple_t>;
+				using element_pack = tuple_elements_pack<typename std::conditional_t<
+				  is_tuple_v<tuple_t>, std::type_identity<tuple_t>,
+				  json_details::identity_parts<tp_from_struct_binding_result_t,
+				                               parse_to_t>>::type>;
 
-				static_assert( is_tuple_v<tuple_t>, "Expected tuple like type" );
 				static_assert(
 				  std::is_convertible_v<parse_to_t, tuple_t>,
 				  "value must be convertible to specified type in class contract" );
@@ -1056,8 +1058,15 @@ namespace daw::json {
 				it.put( '[' );
 				it.add_indent( );
 				it.next_member( );
-				it = to_daw_json_string_tuple<JsonMember>(
-				  it, value, std::make_index_sequence<element_pack::size>{ } );
+				if constexpr( is_tuple_v<tuple_t> ) {
+					it = to_daw_json_string_tuple<JsonMember>(
+					  it, value, std::make_index_sequence<element_pack::size>{ } );
+				} else {
+					auto value2 = tp_from_struct_binding( DAW_FWD( value ) );
+					using value2_t = tp_from_struct_binding_result_t<parse_to_t>;
+					it = to_daw_json_string_tuple<json_base::json_tuple<value2_t>>(
+					  it, value2, std::make_index_sequence<element_pack::size>{ } );
+				}
 				it.del_indent( );
 				if constexpr( element_pack::size > 0 ) {
 					if constexpr( element_pack::size > 0 and

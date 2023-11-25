@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../daw_json_switches.h"
+#include <daw/json/daw_json_switches.h>
 
 #include <daw/ciso646.h>
 

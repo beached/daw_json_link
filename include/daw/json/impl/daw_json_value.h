@@ -10,7 +10,6 @@
 
 #include "version.h"
 
-#include "../daw_json_data_contract.h"
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_name.h"
@@ -20,6 +19,7 @@
 #include "daw_json_skip.h"
 #include "daw_json_traits.h"
 #include "daw_json_value_fwd.h"
+#include <daw/json/daw_json_data_contract.h>
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_move.h>
