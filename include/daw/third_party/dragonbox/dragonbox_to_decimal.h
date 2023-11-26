@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "../../json/impl/version.h"
+#include <daw/json/impl/version.h>
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_attributes.h>
@@ -343,7 +343,7 @@ namespace daw::jkj::dragonbox {
 						return std::uint64_t( internal_ );
 					}
 
-					constexpr uint128 &operator+=( std::uint64_t n ) &noexcept {
+					constexpr uint128 &operator+=( std::uint64_t n ) & noexcept {
 						internal_ += n;
 						return *this;
 					}
@@ -363,7 +363,7 @@ namespace daw::jkj::dragonbox {
 						return low_;
 					}
 
-					constexpr uint128 &operator+=( std::uint64_t n ) &noexcept {
+					constexpr uint128 &operator+=( std::uint64_t n ) & noexcept {
 #if defined( DAW_IS_CONSTANT_EVALUATED ) and defined( _MSC_VER ) and \
   defined( _M_X64 )
 						if( not DAW_IS_CONSTANT_EVALUATED( ) ) {

@@ -1658,9 +1658,9 @@ namespace daw::json {
 
 				using sub_member_list = typename std::conditional_t<
 				  std::is_same_v<JsonTupleTypesList, use_default>,
-				  daw::traits::identity<json_details::tuple_types_list<Tuple>>,
-				  daw::traits::identity<
-				    json_details::tuple_types_list<JsonTupleTypesList>>>::type::types;
+				  json_details::identity_parts<json_details::tuple_types_list, Tuple>,
+				  json_details::identity_parts<json_details::tuple_types_list,
+				                               JsonTupleTypesList>>::type::types;
 
 				using constructor_t =
 				  json_details::json_class_constructor_t<Tuple, Constructor>;

@@ -10,12 +10,12 @@
 
 #include "version.h"
 
-#include "../daw_json_exception.h"
 #include "daw_json_assert.h"
 #include "daw_json_enums.h"
 #include "daw_json_parse_digit.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_json_parse_string_quote.h"
+#include <daw/json/daw_json_exception.h>
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_cast.h>
@@ -303,7 +303,8 @@ namespace daw::json {
 			 * the member should be if that can increase performance
 			 */
 			template<typename ParseState>
-			[[nodiscard]] static constexpr ParseState skip_value( ParseState &parse_state ) {
+			[[nodiscard]] static constexpr ParseState
+			skip_value( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 

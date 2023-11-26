@@ -10,8 +10,8 @@
 
 #include "version.h"
 
-#include "../daw_json_serialize_options.h"
 #include "daw_json_option_bits.h"
+#include <daw/json/daw_json_serialize_options.h>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "../impl/version.h"
+#include <daw/json/impl/version.h>
 
-#include "../impl/daw_json_assert.h"
 #include "daw_writable_output_fwd.h"
+#include <daw/json/impl/daw_json_assert.h>
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_character_traits.h>
@@ -171,7 +171,7 @@ namespace daw::json {
 				using CharT = typename T::value_type;
 
 				template<typename... StringViews>
-				static constexpr void write( T &out, StringViews const &... svs ) {
+				static constexpr void write( T &out, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					daw_json_ensure( out.size( ) >= ( std::size( svs ) + ... ),
 					                 daw::json::ErrorReason::OutputError );
@@ -228,7 +228,7 @@ namespace daw::json {
 				using CharT = typename Container::value_type;
 
 				template<typename... StringViews>
-				static inline void write( Container &out, StringViews const &... svs ) {
+				static inline void write( Container &out, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					auto const start_pos = out.size( );
 					auto const total_size = ( std::size( svs ) + ... );
@@ -269,7 +269,7 @@ namespace daw::json {
 			  : std::true_type {
 
 				template<typename... StringViews>
-				static constexpr void write( T &it, StringViews const &... svs ) {
+				static constexpr void write( T &it, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 
 					constexpr auto writer = []( T &i, auto sv ) {

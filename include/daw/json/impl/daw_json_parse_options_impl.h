@@ -10,8 +10,8 @@
 
 #include "version.h"
 
-#include "../daw_json_parse_options.h"
 #include "daw_json_option_bits.h"
+#include <daw/json/daw_json_parse_options.h>
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
