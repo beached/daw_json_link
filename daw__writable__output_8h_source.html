@@ -80,10 +80,10 @@ $(function() {
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;../impl/version.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="version_8h.html">daw/json/impl/version.h</a>&gt;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../impl/daw_json_assert.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__writable__output__fwd_8h.html">daw_writable_output_fwd.h</a>&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__writable__output__fwd_8h.html">daw_writable_output_fwd.h</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="daw__json__assert_8h.html">daw/json/impl/daw_json_assert.h</a>&gt;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;daw/daw_algorithm.h&gt;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;daw/daw_character_traits.h&gt;</span></div>
@@ -239,7 +239,7 @@ $(function() {
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keyword">using</span> CharT = <span class="keyword">typename</span> T::value_type;</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160; </div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... StringViews&gt;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> write( T &amp;out, StringViews <span class="keyword">const</span> &amp;... svs ) {</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> write( T &amp;out, StringViews <span class="keyword">const</span> &amp;...svs ) {</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;          static_assert( <span class="keyword">sizeof</span>...( StringViews ) &gt; 0 );</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( out.size( ) &gt;= ( std::size( svs ) + ... ),</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;                           daw::json::ErrorReason::OutputError );</div>
@@ -295,7 +295,7 @@ $(function() {
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        <span class="keyword">using</span> CharT = <span class="keyword">typename</span> Container::value_type;</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160; </div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... StringViews&gt;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> write( Container &amp;out, StringViews <span class="keyword">const</span> &amp;... svs ) {</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> write( Container &amp;out, StringViews <span class="keyword">const</span> &amp;...svs ) {</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;          static_assert( <span class="keyword">sizeof</span>...( StringViews ) &gt; 0 );</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> start_pos = out.size( );</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> total_size = ( std::size( svs ) + ... );</div>
@@ -335,7 +335,7 @@ $(function() {
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        : std::true_type {</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160; </div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... StringViews&gt;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> write( T &amp;it, StringViews <span class="keyword">const</span> &amp;... svs ) {</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> write( T &amp;it, StringViews <span class="keyword">const</span> &amp;...svs ) {</div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;          static_assert( <span class="keyword">sizeof</span>...( StringViews ) &gt; 0 );</div>
 <div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160; </div>
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;          constexpr <span class="keyword">auto</span> writer = []( T &amp;i, <span class="keyword">auto</span> sv ) {</div>
@@ -356,6 +356,7 @@ $(function() {
 <div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    } <span class="comment">// namespace concepts</span></div>
 <div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00162">daw_json_assert.h:162</a></div></div>
 <div class="ttc" id="adaw__writable__output__fwd_8h_html"><div class="ttname"><a href="daw__writable__output__fwd_8h.html">daw_writable_output_fwd.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
@@ -364,6 +365,7 @@ $(function() {
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts_1_1writable_1f8898fb07afbc8a99d6efdcb858752b_html_addb3bf01f801e96c9a581b8842558783"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts_1_1writable_1f8898fb07afbc8a99d6efdcb858752b.html#addb3bf01f801e96c9a581b8842558783">daw::json::anonymous_namespace{daw_writable_output.h}::concepts::writable_output_trait&lt; T, std::enable_if_t&lt; std::is_base_of_v&lt; std::ostream, T &gt; &gt; &gt;::write</a></div><div class="ttdeci">static void write(std::ostream &amp;os, StringViews const &amp;...svs)</div><div class="ttdef"><b>Definition:</b> <a href="daw__writable__output_8h_source.html#l00102">daw_writable_output.h:102</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts_1_1writable_d984ec084d0ca8a046f968d3fab77978_html_a0aff84f67b753d544e002946498f1323"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts_1_1writable_d984ec084d0ca8a046f968d3fab77978.html#a0aff84f67b753d544e002946498f1323">daw::json::anonymous_namespace{daw_writable_output.h}::concepts::writable_output_trait&lt; std::FILE * &gt;::put</a></div><div class="ttdeci">static void put(std::FILE *f, char c)</div><div class="ttdef"><b>Definition:</b> <a href="daw__writable__output_8h_source.html#l00143">daw_writable_output.h:143</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts_1_1writable_d984ec084d0ca8a046f968d3fab77978_html_aa535c1b1166ed08f6a67a43fb58e386f"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts_1_1writable_d984ec084d0ca8a046f968d3fab77978.html#aa535c1b1166ed08f6a67a43fb58e386f">daw::json::anonymous_namespace{daw_writable_output.h}::concepts::writable_output_trait&lt; std::FILE * &gt;::write</a></div><div class="ttdeci">static void write(std::FILE *fp, StringViews const &amp;...svs)</div><div class="ttdef"><b>Definition:</b> <a href="daw__writable__output_8h_source.html#l00129">daw_writable_output.h:129</a></div></div>
+<div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00025">version.h:25</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

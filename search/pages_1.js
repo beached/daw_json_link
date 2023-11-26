@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['classes_1734',['Classes',['../md_docs_cookbook_class.html',1,'']]],
-  ['classes_20from_20array_27s_1735',['Classes from array&apos;s',['../md_docs_cookbook_class_from_array.html',1,'']]],
-  ['cookbook_1736',['CookBook',['../md_docs_cookbook_readme.html',1,'']]]
+  ['classes_1737',['Classes',['../md_docs_cookbook_class.html',1,'']]],
+  ['classes_20from_20array_27s_1738',['Classes from array&apos;s',['../md_docs_cookbook_class_from_array.html',1,'']]],
+  ['cookbook_1739',['CookBook',['../md_docs_cookbook_readme.html',1,'']]]
 ];
