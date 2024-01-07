@@ -19,14 +19,12 @@
 
 #include <cstddef>
 #include <tuple>
-
 #include <type_traits>
 #include <utility>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-
 			DAW_JSON_MAKE_REQ_TRAIT( has_to_tuple_v,
 			                         to_tuple( std::declval<T const &>( ) ) );
 

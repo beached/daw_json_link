@@ -1379,6 +1379,7 @@ int main( int, char ** ) {
 
 		constexpr auto um9 =
 		  daw::json::from_json<Unmapped9>( "[0,1,2,3,4,5,6,7,8]" );
+
 		auto um9_str = daw::json::to_json( um9 );
 		ensure( um9_str == "[0,1,2,3,4,5,6,7,8]" );
 

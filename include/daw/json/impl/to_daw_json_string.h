@@ -1022,6 +1022,7 @@ namespace daw::json {
 			  parse_to_t const &value ) {
 
 				using tuple_t = typename JsonMember::parse_to_t;
+
 				using element_pack = tuple_elements_pack<typename daw::conditional_t<
 				  is_tuple_v<tuple_t>, daw::traits::identity<tuple_t>,
 				  json_details::identity_parts<tp_from_struct_binding_result_t,
@@ -1039,6 +1040,7 @@ namespace daw::json {
 					  it, value, std::make_index_sequence<element_pack::size>{ } );
 				} else {
 					auto value2 = to_tuple_impl( DAW_FWD( value ) );
+
 					using value2_t = tp_from_struct_binding_result_t<parse_to_t>;
 					it = to_daw_json_string_tuple<json_base::json_tuple<value2_t>>(
 					  it, value2, std::make_index_sequence<element_pack::size>{ } );

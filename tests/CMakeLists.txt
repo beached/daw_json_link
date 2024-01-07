@@ -808,6 +808,7 @@ if( DAW_USE_EXCEPTIONS )
     add_test( NAME issue_413_test COMMAND issue_413_test )
     add_dependencies( ci_tests issue_413_test )
     add_dependencies( full issue_413_test )
+    
 endif()
 
 add_executable( test_details_skip_number src/test_details_skip_number.cpp )
