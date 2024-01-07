@@ -38,13 +38,13 @@ namespace daw::json {
 
 		private:
 			template<std::size_t... Is>
-			DAW_CONSTEVAL DAW_ATTRIB_INLINE
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL
 			json_name( char const ( &ptr )[N], std::index_sequence<Is...> ) noexcept
 			  : m_data{ ptr[Is]... } {}
 
 		public:
-			DAW_CONSTEVAL
-			DAW_ATTRIB_INLINE json_name( char const ( &ptr )[N] ) noexcept
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL
+			json_name( char const ( &ptr )[N] ) noexcept
 			  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr
