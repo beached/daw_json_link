@@ -20,12 +20,10 @@
 
 #include <daw/daw_consteval.h>
 #include <daw/daw_constinit.h>
-#include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 
 #include <cstddef>
-#include <exception>
 #include <type_traits>
 
 namespace daw::json {
@@ -96,7 +94,8 @@ namespace daw::json {
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
 			         typename ParseState, std::size_t N, typename CharT, bool B>
-			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr json_result<
+			  JsonMember>
 			parse_class_member( ParseState &parse_state,
 			                    locations_info_t<N, CharT, B> &locations ) {
 				parse_state.move_next_member_or_end( );
@@ -217,7 +216,7 @@ namespace daw::json {
 					}
 				} else {
 					using NeedClassPositions = std::bool_constant<(
-					  ( JsonMembers::must_be_class_member or ... ) )>;
+					  ( JsonMembers::without_name::must_be_class_member or ... ) )>;
 
 #if defined( DAW_JSON_BUGFIX_MSVC_KNOWN_LOC_ICE_003 )
 					auto known_locations =

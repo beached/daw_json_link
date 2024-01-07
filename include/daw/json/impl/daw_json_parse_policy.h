@@ -516,16 +516,16 @@ namespace daw::json {
 			}
 		};
 
-		BasicParsePolicy( ) -> BasicParsePolicy<>;
+		BasicParsePolicy( )->BasicParsePolicy<>;
 
-		BasicParsePolicy( char const *, char const * ) -> BasicParsePolicy<>;
+		BasicParsePolicy( char const *, char const * )->BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, Allocator const & )
 		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
 
 		BasicParsePolicy( char const *, char const *, char const *, char const * )
-		  -> BasicParsePolicy<>;
+		  ->BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, char const *, char const *,

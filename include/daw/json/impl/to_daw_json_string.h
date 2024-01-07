@@ -1549,5 +1549,5 @@ namespace daw::json {
 				return out_it;
 			}
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

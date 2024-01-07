@@ -107,7 +107,7 @@ namespace daw::json {
 					    5 +
 					  static_cast<std::int_least32_t>( d ) - 1 ); // [0, 365]
 					std::uint_least32_t const doe =
-					  yoe * 365 + yoe / 4 - yoe / 100 + doy;      // [0, 146096]
+					  yoe * 365 + yoe / 4 - yoe / 100 + doy; // [0, 146096]
 					std::int_least32_t const days_since_epoch =
 					  era * 146097 + static_cast<std::int_least32_t>( doe ) - 719468;
 

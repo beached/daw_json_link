@@ -380,14 +380,13 @@ namespace daw::json {
 			}
 		};
 
-		basic_stateful_json_value( ) -> basic_stateful_json_value<>;
+		basic_stateful_json_value( )->basic_stateful_json_value<>;
 
 		template<json_options_t PolicyFlags, typename Allocator>
 		basic_stateful_json_value( basic_json_value<PolicyFlags, Allocator> )
 		  -> basic_stateful_json_value<PolicyFlags, Allocator>;
 
-		basic_stateful_json_value( daw::string_view )
-		  -> basic_stateful_json_value<>;
+		basic_stateful_json_value( daw::string_view )->basic_stateful_json_value<>;
 
 		using json_value_state = basic_stateful_json_value<>;
 	} // namespace DAW_JSON_VER

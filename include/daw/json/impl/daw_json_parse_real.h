@@ -313,14 +313,13 @@ namespace daw::json {
 				                static_cast<std::ptrdiff_t>( max_exponent::value ) );
 
 				unsigned_t significant_digits = 0;
-				CharT *last_char = parse_digits_while_number<(
-				  ParseState::is_zero_terminated_string or
-				  ParseState::is_unchecked_input )>( first, whole_last,
-				                                     significant_digits );
+				CharT *last_char =
+				  parse_digits_while_number<( ParseState::is_zero_terminated_string or
+				                              ParseState::is_unchecked_input )>(
+				    first, whole_last, significant_digits );
 				std::ptrdiff_t sig_digit_count = last_char - parse_state.first;
 				bool use_strtod =
-				  std::is_floating_point_v<Result> and
-				  ParseState::precise_ieee754 and
+				  std::is_floating_point_v<Result> and ParseState::precise_ieee754 and
 				  DAW_UNLIKELY( sig_digit_count > max_storage_digits::value );
 				signed_t exponent_p1 = [&] {
 					if( DAW_UNLIKELY( last_char >= whole_last ) ) {
@@ -330,10 +329,9 @@ namespace daw::json {
 						}
 						// We have sig digits we cannot parse because there isn't enough
 						// room in a std::uint64_t
-						CharT *ptr =
-						  skip_digits<( ParseState::is_zero_terminated_string or
-						                ParseState::is_unchecked_input )>(
-						    last_char, parse_state.last );
+						CharT *ptr = skip_digits<( ParseState::is_zero_terminated_string or
+						                           ParseState::is_unchecked_input )>(
+						  last_char, parse_state.last );
 						auto const diff = ptr - last_char;
 
 						last_char = ptr;
@@ -390,10 +388,10 @@ namespace daw::json {
 					    ( ( *first | 0x20 ) == 'e' ) ) {
 						++first;
 						signed_t const exp_sign = [&] {
-							daw_json_assert_weak(
-							  ( ParseState::is_zero_terminated_string or
-							    first < parse_state.last ),
-							  ErrorReason::UnexpectedEndOfData, parse_state.copy( first ) );
+							daw_json_assert_weak( ( ParseState::is_zero_terminated_string or
+							                        first < parse_state.last ),
+							                      ErrorReason::UnexpectedEndOfData,
+							                      parse_state.copy( first ) );
 							switch( *first ) {
 							case '+':
 								++first;
@@ -449,10 +447,10 @@ namespace daw::json {
 						}
 						auto r = static_cast<unsigned_t>( exponent_p1 ) +
 						         static_cast<unsigned_t>( exponent_p2 );
-						if( DAW_UNLIKELY( r >
-						                  static_cast<unsigned_t>(
-						                    (daw::numeric_limits<signed_t>::max)( ) ) ) ) {
-							return (daw::numeric_limits<signed_t>::max)( );
+						if( DAW_UNLIKELY(
+						      r > static_cast<unsigned_t>(
+						            ( daw::numeric_limits<signed_t>::max )( ) ) ) ) {
+							return ( daw::numeric_limits<signed_t>::max )( );
 						}
 						return static_cast<signed_t>( r );
 					}
@@ -485,5 +483,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -27,7 +27,6 @@
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_move.h>
-#include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_scope_guard.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -121,21 +120,24 @@ namespace daw::json {
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 							return Constructor{ }( get<Is>( DAW_MOVE( tp_args ) )...,
 							                       DAW_MOVE( alloc ) );
-						}( std::make_index_sequence<sizeof...( Args )>{ } );
+						}
+						( std::make_index_sequence<sizeof...( Args )>{ } );
 					} else if constexpr( std::is_invocable_v<Constructor,
 					                                         std::allocator_arg_t,
 					                                         alloc_t, Args...> ) {
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 							return Constructor{ }( std::allocator_arg, DAW_MOVE( alloc ),
 							                       get<Is>( DAW_MOVE( tp_args ) )... );
-						}( std::make_index_sequence<sizeof...( Args )>{ } );
+						}
+						( std::make_index_sequence<sizeof...( Args )>{ } );
 					} else {
 						static_assert(
 						  std::is_invocable_v<Constructor, Args...>,
 						  "Unable to construct value with the supplied arguments" );
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 							return Constructor{ }( get<Is>( DAW_MOVE( tp_args ) )... );
-						}( std::make_index_sequence<sizeof...( Args )>{ } );
+						}
+						( std::make_index_sequence<sizeof...( Args )>{ } );
 					}
 				} else {
 					// Silence MSVC warning, used in other if constexpr case
@@ -145,7 +147,8 @@ namespace daw::json {
 					  "Unable to construct value with the supplied arguments" );
 					return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 						return Constructor{ }( get<Is>( DAW_MOVE( tp_args ) )... );
-					}( std::make_index_sequence<sizeof...( Args )>{ } );
+					}
+					( std::make_index_sequence<sizeof...( Args )>{ } );
 				}
 #else
 				if constexpr( ParseState::has_allocator ) {
@@ -878,9 +881,6 @@ namespace daw::json {
 			  traits::identity<could_not_construct_from_members_error<
 			    Constructor, Members...>>>::type;
 
-			/*daw::remove_cvref_t<
-			json_class_parse_result_impl<Constructor, Members...>>;*/
-
 			template<typename JsonMember>
 			using dependent_member_t = typename JsonMember::dependent_member;
 
@@ -911,5 +911,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

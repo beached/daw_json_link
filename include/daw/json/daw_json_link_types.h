@@ -51,7 +51,7 @@ namespace daw::json {
 			 * @param it OutputIterator to append string data to
 			 * @param args members from C++ class
 			 * @param v value to be serialized as JSON object
-			 * @return the OutputIterator it at final position
+			 * @return the OutputIterator it atposition
 			 */
 			template<typename OutputIterator, typename Value,
 			         template<class...> class Tuple, typename... Ts>
@@ -207,7 +207,7 @@ namespace daw::json {
 		}
 
 		template<typename JsonType>
-		struct json_details::is_json_class_map<json_type_alias<JsonType>>
+		struct json_details::is_json_class_map<json_type_alias<JsonType>> final
 		  : std::true_type {};
 
 		/***
@@ -669,7 +669,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename String, json_options_t Options,
 		         typename Constructor>
-		struct json_string_raw
+		struct json_string_raw final
 		  : json_base::json_string_raw<String, Options, Constructor> {
 			using i_am_a_json_type = void;
 
@@ -739,7 +739,8 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename String, json_options_t Options,
 		         typename Constructor>
-		struct json_string : json_base::json_string<String, Options, Constructor> {
+		struct json_string final
+		  : json_base::json_string<String, Options, Constructor> {
 			static constexpr daw::string_view name = Name;
 
 			using without_name = json_base::json_string<String, Options, Constructor>;
@@ -860,7 +861,7 @@ namespace daw::json {
 
 		template<JSONNAMETYPE Name, typename T, typename JsonMember,
 		         JsonNullable NullableType, typename Constructor>
-		struct json_nullable
+		struct json_nullable final
 		  : json_base::json_nullable<T, JsonMember, NullableType, Constructor> {
 
 			static constexpr daw::string_view name = Name;
@@ -1025,7 +1026,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename Variant, typename JsonElements,
 		         typename Constructor>
-		struct json_variant
+		struct json_variant final
 		  : json_base::json_variant<Variant, JsonElements, Constructor> {
 			static constexpr daw::string_view name = Name;
 
@@ -1125,7 +1126,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T, typename TagMember,
 		         typename Switcher, typename JsonElements, typename Constructor>
-		struct json_tagged_variant
+		struct json_tagged_variant final
 		  : json_base::json_tagged_variant<T, TagMember, Switcher, JsonElements,
 		                                   Constructor> {
 
@@ -1210,7 +1211,7 @@ namespace daw::json {
 		/// @tparam JsonRawType JSON type value is encoded as literal/string
 		template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
 		         typename ToJsonConverter, json_options_t Options>
-		struct json_custom
+		struct json_custom final
 		  : json_base::json_custom<T, FromJsonConverter, ToJsonConverter, Options> {
 
 			static constexpr daw::string_view name = Name;
@@ -1318,7 +1319,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename JsonElement, typename Container,
 		         typename Constructor>
-		struct json_array
+		struct json_array final
 		  : json_base::json_array<JsonElement, Container, Constructor> {
 
 			static constexpr daw::string_view name = Name;
@@ -1401,7 +1402,7 @@ namespace daw::json {
 
 		template<JSONNAMETYPE Name, typename JsonElement, typename SizeMember,
 		         typename Container, typename Constructor>
-		struct json_sized_array
+		struct json_sized_array final
 		  : json_base::json_sized_array<JsonElement, SizeMember, Container,
 		                                Constructor> {
 
@@ -1507,7 +1508,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType, typename Constructor>
-		struct json_key_value
+		struct json_key_value final
 		  : json_base::json_key_value<Container, JsonValueType, JsonKeyType,
 		                              Constructor> {
 
@@ -1614,7 +1615,7 @@ namespace daw::json {
 		///
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType, typename Constructor>
-		struct json_key_value_array
+		struct json_key_value_array final
 		  : json_base::json_key_value_array<Container, JsonValueType, JsonKeyType,
 		                                    Constructor> {
 
@@ -1681,7 +1682,7 @@ namespace daw::json {
 
 		template<JSONNAMETYPE Name, typename Tuple, typename JsonTupleTypesList,
 		         typename Constructor>
-		struct json_tuple
+		struct json_tuple final
 		  : json_base::json_tuple<Tuple, JsonTupleTypesList, Constructor> {
 			static constexpr daw::string_view name = Name;
 
@@ -1785,7 +1786,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T, typename TagMember,
 		         typename Switcher, typename JsonElements, typename Constructor>
-		struct json_intrusive_variant
+		struct json_intrusive_variant final
 		  : json_base::json_intrusive_variant<T, TagMember, Switcher, JsonElements,
 		                                      Constructor> {
 

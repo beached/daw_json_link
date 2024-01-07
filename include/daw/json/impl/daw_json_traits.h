@@ -369,5 +369,5 @@ namespace daw::json {
 			template<typename, typename = void>
 			inline constexpr bool is_deduced_empty_class_v = false;
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

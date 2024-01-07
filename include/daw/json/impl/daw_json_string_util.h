@@ -196,8 +196,8 @@ namespace daw::json {
 
 			template<bool is_unchecked_input, typename ExecTag, bool expect_long,
 			         char... chars, typename CharT>
-			DAW_ATTRIB_FLATINLINE static inline constexpr CharT *mempbrk( CharT *first,
-			                                                       CharT *last ) {
+			DAW_ATTRIB_FLATINLINE static inline constexpr CharT *
+			mempbrk( CharT *first, CharT *last ) {
 
 				if constexpr( is_unchecked_input ) {
 					return mempbrk_unchecked<ExecTag, expect_long, chars...>( first,

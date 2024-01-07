@@ -125,11 +125,141 @@ namespace daw::json::benchmark {
 		ss << ( static_cast<double>( val * 100.0 ) / 100 ) << 'P';
 		return ss.str( );
 	}
+	/*
+	  template<typename Func, typename... Args>
+	  auto benchmark( std::size_t min_num_runs, std::size_t data_size,
+	                  daw::string_view title, Func &&func, Args const &...args ) {
+	    if( min_num_runs < 2 ) {
+	      min_num_runs = 2;
+	    } else {
+	      min_num_runs += min_num_runs % 2;
+	    }
 
-	template<typename Func, typename... Args>
-	daw::expected_t<std::invoke_result_t<Func, Args...>>
-	benchmark( std::size_t min_num_runs, std::size_t data_size,
-	           daw::string_view title, Func &&func, Args const &...args ) {
+	    using ns_duration_t = std::chrono::nanoseconds;
+	    using namespace std::chrono_literals;
+	    using func_result_t = DAW_TYPEOF( func( args... ) );
+	    auto result = daw::expected_t<func_result_t>( );
+
+	    ns_duration_t min_duration = 4'611'686'018'427'387'904ns;
+	    ns_duration_t max_duration = 0ns;
+	    auto const base_start = std::chrono::steady_clock::now( );
+	    for( std::size_t n = 0; n < min_num_runs; ++n ) {
+	      auto const run_start = std::chrono::steady_clock::now( );
+	      daw::do_not_optimize( args... );
+	#if defined( DAW_USE_EXCEPTIONS )
+	      try {
+	#endif
+	        if constexpr( not std::is_same_v<void, func_result_t> ) {
+	          daw::do_not_optimize( func( args... ) );
+	        } else {
+	          func( args... );
+	        }
+	#if defined( DAW_USE_EXCEPTIONS )
+	      } catch( ... ) {}
+	#endif
+	      auto const run_finish = std::chrono::steady_clock::now( );
+	      auto const run_duration = run_finish - run_start;
+	      if( run_duration < min_duration ) {
+	        min_duration = run_duration;
+	      }
+	      if( run_duration > max_duration ) {
+	        max_duration = run_duration;
+	      }
+	    }
+	    auto const base_finish = std::chrono::steady_clock::now( );
+
+	    daw::do_not_optimize( min_duration );
+	    min_duration = 4'611'686'018'427'387'904ns;
+	    daw::do_not_optimize( max_duration );
+	    max_duration = 0ns;
+	    auto const full_start = std::chrono::steady_clock::now( );
+	    for( std::size_t n = 0; n < min_num_runs * 2; ++n ) {
+	      auto const run_start = std::chrono::steady_clock::now( );
+	      daw::do_not_optimize( args... );
+	#if defined( DAW_USE_EXCEPTIONS )
+	      try {
+	#endif
+	        if constexpr( not std::is_same_v<void, func_result_t> ) {
+	          daw::do_not_optimize( func( args... ) );
+	        } else {
+	          func( args... );
+	        }
+	#if defined( DAW_USE_EXCEPTIONS )
+	      } catch( ... ) {}
+	#endif
+	      auto const run_finish = std::chrono::steady_clock::now( );
+	      auto const run_duration = run_finish - run_start;
+	      if( run_duration < min_duration ) {
+	        min_duration = run_duration;
+	      }
+	      if( run_duration > max_duration ) {
+	        max_duration = run_duration;
+	      }
+	    }
+	    auto const full_finish = std::chrono::steady_clock::now( );
+
+	    auto const base_duration = base_finish - base_start;
+	    auto const run_duration = ( full_finish - full_start ) - base_duration;
+	    auto const avg_duration = run_duration / min_num_runs;
+	    using dsec_t = std::chrono::duration<double, std::ratio<1>>;
+	    auto const max_per_second = static_cast<std::uint64_t>(
+	      static_cast<double>( min_num_runs ) /
+	      std::chrono::duration_cast<dsec_t>( min_duration ).count( ) );
+	    auto const max_throughput =
+	      static_cast<double>( data_size ) /
+	      std::chrono::duration_cast<dsec_t>( min_duration ).count( );
+	    auto const min_throughput =
+	      static_cast<double>( data_size ) /
+	      std::chrono::duration_cast<dsec_t>( max_duration ).count( );
+	    auto const min_per_second = static_cast<std::uint64_t>(
+	      static_cast<double>( min_num_runs ) /
+	      std::chrono::duration_cast<dsec_t>( max_duration ).count( ) );
+	    auto const avg_throughput =
+	      static_cast<double>( data_size ) /
+	      std::chrono::duration_cast<dsec_t>( avg_duration ).count( );
+	    auto const avg_per_second = static_cast<std::uint64_t>(
+	      static_cast<double>( min_num_runs ) /
+	      std::chrono::duration_cast<dsec_t>( avg_duration ).count( ) );
+
+	    std::cout << "Benchmark Run: " << title << '\n';
+	    std::cout << "min time: " << ns_to_string( min_duration, 2 )
+	              << "\tthroughput: " << to_min_SI_unit( max_throughput, 2 )
+	              << "B/s\titems/s: " << to_min_SI_unit_full( max_per_second, 2 )
+	              << " items/s\n";
+	    std::cout << "avg time: " << ns_to_string( avg_duration, 2 )
+	              << "\tthroughput: " << to_min_SI_unit( avg_throughput, 2 )
+	              << "B/s\titems/s: " << to_min_SI_unit_full( avg_per_second, 2 )
+	              << " items/s\n";
+	    std::cout << "max time: " << ns_to_string( max_duration, 2 )
+	              << "\tthroughput: " << to_min_SI_unit( min_throughput, 2 )
+	              << "B/s\titems/s: " << to_min_SI_unit_full( min_per_second )
+	              << " items/s\n";
+	    std::cout << "total time: " << ns_to_string( run_duration, 2 )
+	              << "\tdata size: " << to_min_SI_unit( data_size )
+	              << "B\tnumber of runs: " << min_num_runs << "\n\n";
+
+	#if defined( DAW_USE_EXCEPTIONS )
+	    try {
+	#endif
+	      if constexpr( std::is_same_v<void, func_result_t> ) {
+	        func( args... );
+	        result.set_value( );
+	      } else {
+	        result.set_value( func( args... ) );
+	      }
+	#if defined( DAW_USE_EXCEPTIONS )
+	    } catch( ... ) {
+	      std::cerr << "Error during benchmark run: " << title << '\n';
+	      result.set_exception( std::current_exception( ) );
+	    }
+	#endif
+	    return result;
+	  }
+	*/
+	DAW_ATTRIB_NOINLINE
+	inline bool benchmark_nr( std::size_t min_num_runs, std::size_t data_size,
+	                          daw::string_view title, void ( *fnc )( void * ),
+	                          void *data ) {
 		if( min_num_runs < 2 ) {
 			min_num_runs = 2;
 		} else {
@@ -138,23 +268,17 @@ namespace daw::json::benchmark {
 
 		using ns_duration_t = std::chrono::nanoseconds;
 		using namespace std::chrono_literals;
-		using func_result_t = std::invoke_result_t<Func, Args...>;
-		auto result = daw::expected_t<func_result_t>( );
 
 		ns_duration_t min_duration = 4'611'686'018'427'387'904ns;
 		ns_duration_t max_duration = 0ns;
 		auto const base_start = std::chrono::steady_clock::now( );
 		for( std::size_t n = 0; n < min_num_runs; ++n ) {
 			auto const run_start = std::chrono::steady_clock::now( );
-			daw::do_not_optimize( args... );
+			daw::do_not_optimize( data );
 #if defined( DAW_USE_EXCEPTIONS )
 			try {
 #endif
-				if constexpr( not std::is_same_v<void, func_result_t> ) {
-					daw::do_not_optimize( func( args... ) );
-				} else {
-					func( args... );
-				}
+				fnc( data );
 #if defined( DAW_USE_EXCEPTIONS )
 			} catch( ... ) {}
 #endif
@@ -177,15 +301,11 @@ namespace daw::json::benchmark {
 		auto const full_start = std::chrono::steady_clock::now( );
 		for( std::size_t n = 0; n < min_num_runs * 2; ++n ) {
 			auto const run_start = std::chrono::steady_clock::now( );
-			daw::do_not_optimize( args... );
+			daw::do_not_optimize( data );
 #if defined( DAW_USE_EXCEPTIONS )
 			try {
 #endif
-				if constexpr( not std::is_same_v<void, func_result_t> ) {
-					daw::do_not_optimize( func( args... ) );
-				} else {
-					func( args... );
-				}
+				fnc( data );
 #if defined( DAW_USE_EXCEPTIONS )
 			} catch( ... ) {}
 #endif
@@ -243,19 +363,31 @@ namespace daw::json::benchmark {
 #if defined( DAW_USE_EXCEPTIONS )
 		try {
 #endif
-			if constexpr( std::is_same_v<void, func_result_t> ) {
-				func( args... );
-				result.set_value( );
-			} else {
-				result.set_value( func( args... ) );
-			}
+			fnc( data );
+			return true;
 #if defined( DAW_USE_EXCEPTIONS )
 		} catch( ... ) {
 			std::cerr << "Error during benchmark run: " << title << '\n';
-			result.set_exception( std::current_exception( ) );
+			return false;
 		}
 #endif
-		return result;
+	}
+
+	template<typename Func, typename... Args>
+	inline auto benchmark( std::size_t min_num_runs, std::size_t data_size,
+	                       daw::string_view title, Func &&func,
+	                       Args const &...args ) {
+
+		auto data_fn = [&]( ) {
+			return func( args... );
+		};
+		using data_fn_t = DAW_TYPEOF( data_fn );
+		void ( *fnc )( void * ) = []( void *d ) {
+			data_fn_t &f = *reinterpret_cast<data_fn_t *>( d );
+			(void)f( );
+		};
+		(void)benchmark_nr( min_num_runs, data_size, title, fnc, &data_fn );
+		return daw::expected_from_code( DAW_FWD( func ), DAW_FWD( args )... );
 	}
 
 } // namespace daw::json::benchmark

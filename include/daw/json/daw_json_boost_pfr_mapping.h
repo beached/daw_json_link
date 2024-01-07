@@ -8,8 +8,4 @@
 
 #pragma once
 
-namespace daw {
-
-}
-
-
+namespace daw {}

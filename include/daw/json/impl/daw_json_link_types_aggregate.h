@@ -41,5 +41,5 @@ namespace daw::json {
 			using tp_from_struct_binding_result_t =
 			  daw::remove_cvref_t<decltype( to_tuple_impl( std::declval<T>( ) ) )>;
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

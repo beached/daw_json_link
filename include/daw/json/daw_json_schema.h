@@ -21,9 +21,9 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace utils {
 			template<typename WriteableType>
-			static inline constexpr WriteableType output_kv( WriteableType it,
-			                                          std::string_view key,
-			                                          std::string_view value ) {
+			static inline constexpr WriteableType
+			output_kv( WriteableType it, std::string_view key,
+			           std::string_view value ) {
 				it.write( key, ":", it.space, value );
 				return it;
 			}
@@ -758,7 +758,7 @@ namespace daw::json {
 		/// @return the Output iterator after writing JSON schema to it
 		template<typename T, typename WritableType, auto... PolicyFlags>
 		constexpr WritableType to_json_schema(
-		  WritableType & it, std::string_view id, std::string_view title,
+		  WritableType &it, std::string_view id, std::string_view title,
 		  options::output_flags_t<PolicyFlags...> = options::output_flags<> ) {
 
 			auto out_it = [&] {
@@ -809,9 +809,10 @@ namespace daw::json {
 		/// @return The result with JSON Schema written to it
 		///
 		template<typename T, typename Result = std::string, auto... PolicyFlags>
-		constexpr Result to_json_schema( std::string_view id, std::string_view title,
-		                       options::output_flags_t<PolicyFlags...> flags =
-		                         options::output_flags<> ) {
+		constexpr Result
+		to_json_schema( std::string_view id, std::string_view title,
+		                options::output_flags_t<PolicyFlags...> flags =
+		                  options::output_flags<> ) {
 			auto result = Result( );
 
 			(void)to_json_schema<T>( result, id, title, flags );

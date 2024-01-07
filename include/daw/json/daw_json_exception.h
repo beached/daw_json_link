@@ -10,10 +10,10 @@
 
 #include "impl/version.h"
 
-#include <daw/daw_algorithm.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_unreachable.h>
+#include <daw/impl/daw_algorithm_accumulate.h>
 
 #include <algorithm>
 #include <cstdio>

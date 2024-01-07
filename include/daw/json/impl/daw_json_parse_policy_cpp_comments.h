@@ -24,7 +24,7 @@ namespace daw::json {
 		/***
 		 * Allow skipping C++ style comments in JSON document
 		 */
-		class CppCommentSkippingPolicy final {
+		class CppCommentSkippingPolicy {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			skip_comments_unchecked( ParseState &parse_state ) {

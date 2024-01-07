@@ -43,12 +43,6 @@
 #define JKJ_SAFEBUFFERS
 #endif
 
-#if( defined( __GNUC__ ) or defined( __clang__ ) ) and defined( __x86_64__ )
-#include <immintrin.h>
-#elif defined( _MSC_VER ) and defined( _M_X64 )
-#include <intrin.h> // this includes immintrin.h as well
-#endif
-
 namespace daw::jkj::dragonbox {
 	inline namespace DAW_JSON_VER {
 		namespace detail {

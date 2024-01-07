@@ -27,7 +27,7 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		struct NoCommentSkippingPolicy final {
+		struct NoCommentSkippingPolicy {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_checked( ParseState &parse_state ) {

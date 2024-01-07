@@ -25,7 +25,7 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		class HashCommentSkippingPolicy final {
+		class HashCommentSkippingPolicy {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			skip_comments_unchecked( ParseState &parse_state ) {

@@ -741,5 +741,5 @@ namespace daw::json {
 			using ensure_mapped_t = typename ensure_mapped<T>::type;
 
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

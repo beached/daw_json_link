@@ -549,7 +549,7 @@ namespace daw::json {
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			[[nodiscard]] static constexpr json_result<JsonMember>
 			parse_value_custom( ParseState &parse_state ) {
 
 				auto const str = [&] {
@@ -596,7 +596,7 @@ namespace daw::json {
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
-			[[nodiscard]] static constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
 			parse_value_class( ParseState &parse_state ) {
 
 				using element_t = typename JsonMember::wrapped_type;
@@ -1533,5 +1533,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

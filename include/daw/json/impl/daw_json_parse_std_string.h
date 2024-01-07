@@ -22,7 +22,8 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			[[nodiscard]] static inline constexpr UInt8 to_nibble( unsigned char chr ) {
+			[[nodiscard]] static inline constexpr UInt8
+			to_nibble( unsigned char chr ) {
 				int const b = static_cast<int>( chr );
 				int const maskLetter = ( ( '9' - b ) >> 31 );
 				int const maskSmall = ( ( 'Z' - b ) >> 31 );
@@ -236,10 +237,11 @@ namespace daw::json {
 								                      parse_state );
 							}
 						} else {
-							first = mem_move_to_next_of<
-							  ( ParseState::is_unchecked_input or
-							    ParseState::is_zero_terminated_string ),
-							  '"', '\\'>( ParseState::exec_tag, first, last );
+							first =
+							  mem_move_to_next_of<( ParseState::is_unchecked_input or
+							                        ParseState::is_zero_terminated_string ),
+							                      '"', '\\'>( ParseState::exec_tag, first,
+							                                  last );
 						}
 						it = daw::algorithm::copy( parse_state.first, first, it );
 						parse_state.first = first;

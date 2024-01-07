@@ -121,5 +121,5 @@ namespace daw::json {
 			template<typename T>
 			using is_no_name = std::bool_constant<is_no_name_v<T>>;
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -81,7 +81,7 @@ namespace daw::json {
 			 * @param it an Output Iterator to write char data to
 			 * @param args A tuple of the member values
 			 * @param value class to serialize
-			 * @return The OutputIterator it at the final position
+			 * @return The OutputIterator it at theposition
 			 */
 			template<typename... JsonMembers, typename OutputIterator,
 			         json_options_t SerializationOptions, std::size_t... Is,

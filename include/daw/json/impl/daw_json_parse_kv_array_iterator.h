@@ -59,7 +59,7 @@ namespace daw::json {
 			};
 
 			template<typename JsonMember, typename ParseState, bool KnownBounds>
-			struct json_parse_kv_array_iterator
+			struct json_parse_kv_array_iterator final
 			  : json_parse_kv_array_iterator_base<
 			      ParseState, can_be_random_iterator_v<KnownBounds>> {
 
@@ -167,5 +167,5 @@ namespace daw::json {
 				}
 			};
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

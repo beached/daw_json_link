@@ -37,4 +37,3 @@
 	template<typename T>                                                     \
 	inline constexpr bool Name<T, std::void_t<typename __VA_ARGS__>> = true
 #endif
-

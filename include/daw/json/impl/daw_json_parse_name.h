@@ -117,6 +117,24 @@ namespace daw::json {
 				return std::size( json_path_item ) == std::size( member_name );
 			}
 
+			template<typename Result, typename ForwardIterator>
+			constexpr Result parse_unsigned_int( ForwardIterator first,
+			                                     ForwardIterator last ) {
+				size_t count = std::numeric_limits<Result>::digits;
+
+				daw_json_ensure( '-' != *first, ErrorReason::InvalidNumber );
+
+				Result result = 0;
+				for( ; first != last and count > 0; ++first, --count ) {
+					result *= static_cast<Result>( 10 );
+					Result val =
+					  static_cast<Result>( *first ) - static_cast<Result>( '0' );
+					result += val;
+				}
+				daw_json_ensure( first == last, ErrorReason::InvalidNumber );
+				return result;
+			}
+
 			// Get the next member name
 			// Assumes that the current item in stream is a double quote
 			// Ensures that the stream is left at the position of the associated
@@ -142,8 +160,8 @@ namespace daw::json {
 						                      ErrorReason::InvalidJSONPath, parse_state );
 						parse_state.remove_prefix( );
 						parse_state.trim_left_unchecked( );
-						auto idx = daw::parser::parse_unsigned_int<std::size_t>(
-						  pop_result.current );
+						auto idx = parse_unsigned_int<std::size_t>(
+						  pop_result.current.data( ), pop_result.current.data_end( ) );
 
 						while( idx > 0 ) {
 							--idx;
@@ -206,5 +224,5 @@ namespace daw::json {
 				return std::pair{ true, parse_state };
 			}
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

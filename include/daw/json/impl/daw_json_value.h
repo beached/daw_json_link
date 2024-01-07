@@ -304,8 +304,7 @@ namespace daw::json {
 		  BasicParsePolicy<PolicyFlags, Allocator> const & )
 		  -> basic_json_value_iterator<PolicyFlags, Allocator>;
 
-		basic_json_value_iterator( daw::string_view )
-		  -> basic_json_value_iterator<>;
+		basic_json_value_iterator( daw::string_view )->basic_json_value_iterator<>;
 
 		template<typename Allocator>
 		basic_json_value_iterator( daw::string_view, Allocator const & )
@@ -705,12 +704,11 @@ namespace daw::json {
 		basic_json_value( BasicParsePolicy<PolicyFlags, Allocator> )
 		  -> basic_json_value<PolicyFlags, Allocator>;
 
-		basic_json_value( daw::string_view ) -> basic_json_value<>;
+		basic_json_value( daw::string_view )->basic_json_value<>;
 
-		basic_json_value( char const *first, std::size_t sz ) -> basic_json_value<>;
+		basic_json_value( char const *first, std::size_t sz )->basic_json_value<>;
 
-		basic_json_value( char const *first, char const *last )
-		  -> basic_json_value<>;
+		basic_json_value( char const *first, char const *last )->basic_json_value<>;
 
 		template<typename Result, json_options_t PolicyFlags, typename Allocator>
 		[[nodiscard]] constexpr Result
@@ -730,5 +728,5 @@ namespace daw::json {
 			inline constexpr bool
 			  is_string_view_like_v<basic_json_value<PolicyFlags, Allocator>> = false;
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json
