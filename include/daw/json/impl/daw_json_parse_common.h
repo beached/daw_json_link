@@ -56,7 +56,7 @@ namespace daw::json {
 
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
-			DAW_ATTRIB_FLATINLINE static inline constexpr auto
+			DAW_ATTRIB_INLINE static constexpr auto
 			construct_value( template_params<Value, Constructor>,
 			                 ParseState &parse_state, Args &&...args ) {
 				// Silence MSVC warning, used in other if constexpr case
@@ -77,14 +77,14 @@ namespace daw::json {
 			template<typename Constructor>
 			struct construct_value_tp_invoke_t {
 				template<typename... TArgs, std::size_t... Is>
-				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
+				DAW_ATTRIB_INLINE constexpr auto
 				operator( )( fwd_pack<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
 					return Constructor{ }( get<Is>( DAW_MOVE( tp ) )... );
 				}
 
 				template<typename... TArgs, typename Allocator, std::size_t... Is>
-				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
+				DAW_ATTRIB_INLINE constexpr auto
 				operator( )( fwd_pack<TArgs...> &&tp, Allocator &alloc,
 				             std::index_sequence<Is...> ) const {
 					return Constructor{ }( get<Is>( DAW_MOVE( tp ) )...,
@@ -92,7 +92,7 @@ namespace daw::json {
 				}
 
 				template<typename Alloc, typename... TArgs, std::size_t... Is>
-				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
+				DAW_ATTRIB_INLINE constexpr auto
 				operator( )( std::allocator_arg_t, Alloc &&alloc,
 				             fwd_pack<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
@@ -196,21 +196,13 @@ namespace daw::json {
 			template<typename JsonMember>
 			using json_base_type = typename JsonMember::base_type;
 
-			template<typename T>
-			using json_parser_to_json_data_t =
-			  decltype( json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  has_json_to_json_data_v,
+			  json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
 
-			template<typename T>
-			inline constexpr bool has_json_to_json_data_v =
-			  daw::is_detected_v<json_parser_to_json_data_t, T>;
-
-			template<typename T>
-			using is_submember_tagged_variant_t =
-			  typename json_data_contract<T>::type::i_am_a_submember_tagged_variant;
-
-			template<typename T>
-			inline constexpr bool is_submember_tagged_variant_v =
-			  daw::is_detected_v<is_submember_tagged_variant_t, T>;
+			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT(
+			  is_submember_tagged_variant_v,
+			  json_data_contract<T>::type::i_am_a_submember_tagged_variant );
 
 			template<typename T>
 			using json_nullable_member_type_t = typename T::member_type;
@@ -604,19 +596,13 @@ namespace daw::json {
 			inline constexpr bool is_string_v = std::is_convertible_v<
 			  char, daw::detected_t<container_detect::is_string_test, String>>;
 
-			namespace container_detect {
-				template<typename T>
-				using is_associative_container_test =
-				  decltype( (void)( std::begin( std::declval<T &>( ) ) ),
-				            (void)( std::end( std::declval<T &>( ) ) ),
-				            (void)( std::declval<typename T::value_type>( ) ),
-				            (void)( std::declval<typename T::key_type>( ) ),
-				            (void)( std::declval<typename T::mapped_type>( ) ) );
-			} // namespace container_detect
-
-			template<typename T>
-			inline constexpr bool is_associative_container_v =
-			  daw::is_detected_v<container_detect::is_associative_container_test, T>;
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  is_associative_container_v,
+			  ( (void)( std::begin( std::declval<T &>( ) ) ),
+			    (void)( std::end( std::declval<T &>( ) ) ),
+			    (void)( std::declval<typename T::value_type>( ) ),
+			    (void)( std::declval<typename T::key_type>( ) ),
+			    (void)( std::declval<typename T::mapped_type>( ) ) ) );
 
 			template<typename T>
 			using is_associative_container =
@@ -672,10 +658,11 @@ namespace daw::json {
 
 			template<typename T>
 			using has_deduced_type_mapping =
-			  bool_constant<has_deduced_type_mapping_v<T>>;
+			  std::bool_constant<has_deduced_type_mapping_v<T>>;
 
 			template<typename Mapped, bool Found = true>
-			struct json_link_quick_map_type : std::bool_constant<Found> {
+			struct json_link_quick_map_type {
+				static constexpr bool value = Found;
 				using mapped_type = Mapped;
 			};
 
@@ -822,7 +809,7 @@ namespace daw::json {
 				} else if constexpr( is_a_json_type_v<T> ) {
 					static_assert( not std::is_same_v<T, void> );
 					using type =
-					  typename std::conditional_t<is_json_class_map_v<T>,
+					  typename daw::conditional_t<is_json_class_map_v<T>,
 					                              json_class_map_type<T>,
 					                              daw::traits::identity<T>>::type;
 					static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
@@ -885,7 +872,7 @@ namespace daw::json {
 			struct could_not_construct_from_members_error;
 
 			template<typename Constructor, typename... Members>
-			using json_class_parse_result_t = typename std::conditional_t<
+			using json_class_parse_result_t = typename daw::conditional_t<
 			  std::is_invocable_v<Constructor, typename Members::parse_to_t...>,
 			  std::invoke_result<Constructor, typename Members::parse_to_t...>,
 			  traits::identity<could_not_construct_from_members_error<
@@ -897,18 +884,20 @@ namespace daw::json {
 			template<typename JsonMember>
 			using dependent_member_t = typename JsonMember::dependent_member;
 
-			template<typename JsonMember>
-			using nullable_dependent_member_t =
-			  typename JsonMember::member_type::dependent_member;
-
 			template<typename JsonMember, typename = void>
-			inline constexpr bool has_dependent_member_v =
-			  daw::is_detected_v<dependent_member_t, JsonMember>;
+			inline constexpr bool has_dependent_member_v = false;
+
+			template<typename JsonMember>
+			inline constexpr bool has_dependent_member_v<
+			  JsonMember, std::void_t<dependent_member_t<JsonMember>>> = true;
+
+			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT( has_nullable_dependent_member_v,
+			                                    T::member_type::dependent_member );
 
 			template<typename JsonMember>
 			inline constexpr bool has_dependent_member_v<
 			  JsonMember, std::enable_if_t<is_json_nullable_v<JsonMember>>> =
-			  daw::is_detected_v<nullable_dependent_member_t, JsonMember>;
+			  has_nullable_dependent_member_v<JsonMember>;
 
 			template<typename Constructor>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
@@ -922,5 +911,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

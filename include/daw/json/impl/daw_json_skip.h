@@ -70,7 +70,7 @@ namespace daw::json {
 			[[nodiscard]] static inline constexpr ParseState
 			skip_true( ParseState &parse_state ) {
 				auto result = parse_state;
-				if constexpr( ( ParseState::is_zero_terminated_string( ) or
+				if constexpr( ( ParseState::is_zero_terminated_string or
 				                ParseState::is_unchecked_input ) ) {
 					parse_state.remove_prefix( 4 );
 				} else {
@@ -92,7 +92,7 @@ namespace daw::json {
 			[[nodiscard]] static inline constexpr ParseState
 			skip_false( ParseState &parse_state ) {
 				auto result = parse_state;
-				if constexpr( ( ParseState::is_zero_terminated_string( ) or
+				if constexpr( ( ParseState::is_zero_terminated_string or
 				                ParseState::is_unchecked_input ) ) {
 					parse_state.remove_prefix( 5 );
 				} else {
@@ -113,7 +113,7 @@ namespace daw::json {
 			template<typename ParseState>
 			[[nodiscard]] static inline constexpr ParseState
 			skip_null( ParseState &parse_state ) {
-				if constexpr( ( ParseState::is_zero_terminated_string( ) or
+				if constexpr( ( ParseState::is_zero_terminated_string or
 				                ParseState::is_unchecked_input ) ) {
 					parse_state.remove_prefix( 4 );
 				} else {
@@ -159,7 +159,7 @@ namespace daw::json {
 #if false and defined( DAW_CX_BIT_CAST )
 			template<typename ParseState,
 			         std::enable_if_t<( ParseState::is_unchecked_input or
-			                            ParseState::is_zero_terminated_string( ) ),
+			                            ParseState::is_zero_terminated_string ),
 			                          std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr ParseState
 			skip_number( ParseState &parse_state ) {
@@ -203,7 +203,7 @@ namespace daw::json {
 
 			template<typename ParseState,
 			         std::enable_if_t<not( ParseState::is_unchecked_input or
-			                               ParseState::is_zero_terminated_string( ) ),
+			                               ParseState::is_zero_terminated_string ),
 			                          std::nullptr_t> = nullptr>
 #else
 			template<typename ParseState>
@@ -217,7 +217,7 @@ namespace daw::json {
 				auto result = parse_state;
 				CharT *first = parse_state.first;
 				CharT *const last = parse_state.last;
-				if constexpr( ParseState::allow_leading_zero_plus( ) ) {
+				if constexpr( ParseState::allow_leading_zero_plus ) {
 					if( *first == '-' ) {
 						++first;
 					}
@@ -240,12 +240,12 @@ namespace daw::json {
 
 				if( DAW_LIKELY( first < last ) ) {
 					first =
-					  skip_digits<( ParseState::is_zero_terminated_string( ) or
+					  skip_digits<( ParseState::is_zero_terminated_string or
 					                ParseState::is_unchecked_input )>( first, last );
 				}
 
 				CharT *decimal = nullptr;
-				if( ( ( ParseState::is_zero_terminated_string( ) or
+				if( ( ( ParseState::is_zero_terminated_string or
 				        ParseState::is_unchecked_input ) or
 				      first < last ) and
 				    ( *first == '.' ) ) {
@@ -253,12 +253,12 @@ namespace daw::json {
 					++first;
 					if( DAW_LIKELY( first < last ) ) {
 						first =
-						  skip_digits<( ParseState::is_zero_terminated_string( ) or
+						  skip_digits<( ParseState::is_zero_terminated_string or
 						                ParseState::is_unchecked_input )>( first, last );
 					}
 				}
 				CharT *exp = nullptr;
-				if constexpr( not( ParseState::is_zero_terminated_string( ) or
+				if constexpr( not( ParseState::is_zero_terminated_string or
 				                   ParseState::is_unchecked_input ) ) {
 					daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData,
 					                 parse_state );
@@ -284,7 +284,7 @@ namespace daw::json {
 
 					if( DAW_LIKELY( first < last ) ) {
 						first =
-						  skip_digits<( ParseState::is_zero_terminated_string( ) or
+						  skip_digits<( ParseState::is_zero_terminated_string or
 						                ParseState::is_unchecked_input )>( first, last );
 					}
 				}

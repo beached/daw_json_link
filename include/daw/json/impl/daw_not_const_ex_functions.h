@@ -407,6 +407,28 @@ namespace daw::json {
 
 			template<bool is_unchecked_input, typename CharT>
 			DAW_ATTRIB_INLINE CharT *
+			mem_skip_until_end_of_string( constexpr_exec_tag const &, CharT *first,
+			                              CharT *const last ) {
+				char c = *first;
+				while( ( c != '\0' ) & ( c != '"' ) ) {
+					if( c == '\\' ) {
+						if( first + 1 < last ) {
+							first += 2;
+							c = *first;
+							continue;
+						} else {
+							first = last;
+							break;
+						}
+					}
+					++first;
+					c = *first;
+				}
+				return first;
+			}
+
+			template<bool is_unchecked_input, typename CharT>
+			DAW_ATTRIB_INLINE CharT *
 			mem_skip_until_end_of_string( runtime_exec_tag tag, CharT *first,
 			                              CharT *const last,
 			                              std::ptrdiff_t &first_escape ) {
@@ -438,5 +460,5 @@ namespace daw::json {
 				return first;
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

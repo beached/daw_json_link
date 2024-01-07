@@ -59,49 +59,25 @@ namespace daw::json {
 				return to_string( *v );
 			}
 
-			namespace to_string_test {
-				template<typename T>
-				static auto to_string_test( T &&v )
-				  -> decltype( to_string( DAW_FWD2( T, v ) ) );
-
-				template<typename T>
-				using to_string_result =
-				  decltype( to_string_test( std::declval<T>( ) ) );
-			} // namespace to_string_test
-
-			template<typename T>
-			inline constexpr bool has_to_string_v =
-			  daw::is_detected_v<to_string_test::to_string_result, T>;
+			DAW_JSON_MAKE_REQ_TRAIT( has_to_string_v,
+			                         to_string( std::declval<T>( ) ) );
 
 			template<typename T>
 			using has_to_string = std::bool_constant<has_to_string_v<T>>;
 
 		} // namespace json_details::to_strings
 		namespace json_details {
-			template<typename T>
-			using from_string_test = decltype( from_string(
-			  std::declval<daw::tag_t<T>>( ), std::declval<std::string_view>( ) ) );
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  has_from_string_v, from_string( std::declval<daw::tag_t<T>>( ),
+			                                  std::declval<std::string_view>( ) ) );
 
-			template<typename T>
-			inline constexpr bool has_from_string_v =
-			  daw::is_detected_v<from_string_test, T>;
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  has_ostream_op_v, operator<<( std::declval<std::stringstream &>( ),
+			                                std::declval<T const &>( ) ) );
 
-			template<typename T, typename U>
-			using has_lshift_test = decltype( operator<<(
-			  std::declval<T &>( ), std::declval<U const &>( ) ) );
-
-			template<typename T, typename U>
-			using has_rshift_test = decltype( operator>>(
-			  std::declval<T &>( ), std::declval<U const &>( ) ) );
-
-			template<typename T>
-			inline constexpr bool has_ostream_op_v =
-			  daw::is_detected_v<has_lshift_test, std::stringstream, T>;
-
-			template<typename T>
-			inline constexpr bool has_istream_op_v =
-			  daw::is_detected_v<has_rshift_test, std::stringstream, T>;
-
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  has_istream_op_v, operator>>( std::declval<std::stringstream &>( ),
+			                                std::declval<T const &>( ) ) );
 		} // namespace json_details
 
 		/***
@@ -643,7 +619,7 @@ namespace daw::json {
 
 			template<typename T>
 			using base_int_type_t =
-			  typename std::conditional_t<std::is_enum_v<T>, base_int_type_impl<T>,
+			  typename daw::conditional_t<std::is_enum_v<T>, base_int_type_impl<T>,
 			                              daw::traits::identity<T>>::type;
 
 			inline constexpr auto digits100 = [] {
@@ -1046,7 +1022,7 @@ namespace daw::json {
 			  parse_to_t const &value ) {
 
 				using tuple_t = typename JsonMember::parse_to_t;
-				using element_pack = tuple_elements_pack<typename std::conditional_t<
+				using element_pack = tuple_elements_pack<typename daw::conditional_t<
 				  is_tuple_v<tuple_t>, daw::traits::identity<tuple_t>,
 				  json_details::identity_parts<tp_from_struct_binding_result_t,
 				                               parse_to_t>>::type>;
@@ -1062,7 +1038,7 @@ namespace daw::json {
 					it = to_daw_json_string_tuple<JsonMember>(
 					  it, value, std::make_index_sequence<element_pack::size>{ } );
 				} else {
-					auto value2 = tp_from_struct_binding( DAW_FWD( value ) );
+					auto value2 = to_tuple_impl( DAW_FWD( value ) );
 					using value2_t = tp_from_struct_binding_result_t<parse_to_t>;
 					it = to_daw_json_string_tuple<json_base::json_tuple<value2_t>>(
 					  it, value2, std::make_index_sequence<element_pack::size>{ } );
@@ -1080,15 +1056,10 @@ namespace daw::json {
 				return it;
 			}
 
-			template<typename T>
-			using is_view_like_test =
-			  decltype( (void)( std::begin( std::declval<T &>( ) ) ),
-			            (void)( std::end( std::declval<T &>( ) ) ),
-			            (void)( std::declval<typename T::value_type>( ) ) );
-
-			template<typename T>
-			inline constexpr bool is_view_like_v =
-			  daw::is_detected_v<is_view_like_test, T>;
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  is_view_like_v, ( (void)( std::begin( std::declval<T &>( ) ) ),
+			                    (void)( std::end( std::declval<T &>( ) ) ),
+			                    (void)( std::declval<typename T::value_type>( ) ) ) );
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
@@ -1387,7 +1358,7 @@ namespace daw::json {
 					(void)visited_members;
 					return;
 				} else {
-					using base_member_t = typename std::conditional_t<
+					using base_member_t = typename daw::conditional_t<
 					  is_json_nullable_v<JsonMember>,
 					  ident_trait<json_nullable_member_type_t, JsonMember>,
 					  traits::identity<JsonMember>>::type;
@@ -1576,5 +1547,5 @@ namespace daw::json {
 				return out_it;
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

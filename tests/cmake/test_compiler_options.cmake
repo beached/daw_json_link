@@ -41,6 +41,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-missing-prototypes
                 -Wno-newline-eof
                 -Wno-padded
+                -Wno-switch-default
                 -Wno-unused-template
                 -Wno-weak-vtables
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class

@@ -34,7 +34,7 @@ namespace daw::json {
 		constexpr daw::rvalue_to_value_t<WritableType>
 		to_json( Value const &value, WritableType &&it,
 		         options::output_flags_t<PolicyFlags...> ) {
-			using json_class_t = typename std::conditional_t<
+			using json_class_t = typename daw::conditional_t<
 			  std::is_same_v<use_default, JsonClass>,
 			  json_details::ident_trait<json_details::json_deduced_type, Value>,
 			  json_details::ident_trait<json_details::json_deduced_type,
@@ -119,7 +119,7 @@ namespace daw::json {
 			while( first != last ) {
 				(void)[&out_it]( auto &&v ) {
 					using v_type = DAW_TYPEOF( v );
-					using JsonMember = typename std::conditional_t<
+					using JsonMember = typename daw::conditional_t<
 					  std::is_same_v<JsonElement, use_default>,
 					  json_details::ident_trait<json_details::json_deduced_type, v_type>,
 					  json_details::ident_trait<json_details::json_deduced_type,

@@ -37,7 +37,7 @@ namespace daw::json {
 				template<typename ParseState>
 				[[nodiscard]] DAW_ATTRIB_INLINE static constexpr daw::string_view
 				parse_nq( ParseState &parse_state ) {
-					if constexpr( ParseState::allow_escaped_names( ) ) {
+					if constexpr( ParseState::allow_escaped_names ) {
 						auto r = skip_string_nq( parse_state );
 						trim_end_of_name( parse_state );
 						return daw::string_view( std::data( r ), std::size( r ) );
@@ -206,5 +206,5 @@ namespace daw::json {
 				return std::pair{ true, parse_state };
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

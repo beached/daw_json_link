@@ -238,7 +238,7 @@ namespace daw::json {
 						} else {
 							first = mem_move_to_next_of<
 							  ( ParseState::is_unchecked_input or
-							    ParseState::is_zero_terminated_string( ) ),
+							    ParseState::is_zero_terminated_string ),
 							  '"', '\\'>( ParseState::exec_tag, first, last );
 						}
 						it = daw::algorithm::copy( parse_state.first, first, it );

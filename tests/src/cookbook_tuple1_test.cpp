@@ -20,7 +20,7 @@
 struct Foo {
 	std::tuple<int, std::string_view, bool, int> a;
 
-	inline bool operator==( Foo const &rhs ) const {
+	constexpr bool operator==( Foo const &rhs ) const {
 		return a == rhs.a;
 	}
 };
@@ -32,7 +32,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_tuple<a, std::tuple<int, std::string_view, bool, int>>>;
 
-		static inline auto to_json_data( Foo const &f ) {
+		static constexpr auto to_json_data( Foo const &f ) {
 			return std::forward_as_tuple( f.a );
 		}
 	};

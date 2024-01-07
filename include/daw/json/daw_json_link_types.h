@@ -119,7 +119,7 @@ namespace daw::json {
 			/// types like json_number/json_bool are mapped as always quoted.
 			/// The key for json_key_value must be a string
 			template<typename JsonMember>
-			using json_key_lit_fix_t = typename std::conditional_t<
+			using json_key_lit_fix_t = typename daw::conditional_t<
 			  json_details::is_literal_json_type_v<
 			    json_details::json_deduced_type<JsonMember>>,
 			  json_details::ident_trait<json_details::literal_json_type_as_string,
@@ -200,14 +200,11 @@ namespace daw::json {
 				    */
 			}
 		};
-		namespace json_details {
-			template<typename T>
-			using is_a_json_map_alias_test = typename T::i_am_a_json_map_alias;
 
-			template<typename T>
-			inline constexpr bool is_a_json_map_alias_v =
-			  daw::is_detected_v<is_a_json_map_alias_test, T>;
-		} // namespace json_details
+		namespace json_details {
+			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT( is_a_json_map_alias_v,
+			                                    T::i_am_a_json_map_alias );
+		}
 
 		template<typename JsonType>
 		struct json_details::is_json_class_map<json_type_alias<JsonType>>
@@ -265,7 +262,7 @@ namespace daw::json {
 		namespace json_details {
 			template<typename JsonMember>
 			using json_tuple_member_wrapper =
-			  std::conditional_t<is_an_ordered_member_v<JsonMember>, JsonMember,
+			  daw::conditional_t<is_an_ordered_member_v<JsonMember>, JsonMember,
 			                     json_deduced_type<JsonMember>>;
 		} // namespace json_details
 
@@ -441,7 +438,7 @@ namespace daw::json {
 				               "json_number requires an arithmetic type" );
 
 				using constructor_t =
-				  std::conditional_t<std::is_same_v<use_default, Constructor>,
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     default_constructor<T>, Constructor>;
 				using parse_to_t =
 				  typename json_details::construction_result<constructor_t, T>::type;
@@ -564,7 +561,7 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 
 				using constructor_t =
-				  std::conditional_t<std::is_same_v<use_default, Constructor>,
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     default_constructor<T>, Constructor>;
 
 				static_assert(
@@ -629,7 +626,7 @@ namespace daw::json {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
 				using constructor_t =
-				  std::conditional_t<std::is_same_v<use_default, Constructor>,
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     default_constructor<String>, Constructor>;
 
 				static_assert(
@@ -703,7 +700,7 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 
 				using constructor_t =
-				  std::conditional_t<std::is_same_v<use_default, Constructor>,
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     default_constructor<String>, Constructor>;
 
 				static_assert(
@@ -767,7 +764,7 @@ namespace daw::json {
 				using duration_type = typename T::duration;
 				using i_am_a_json_type = void;
 				using constructor_t =
-				  std::conditional_t<std::is_same_v<use_default, Constructor>,
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     construct_from_iso8601_timestamp<T>, Constructor>;
 
 				using wrapped_type = T;
@@ -824,16 +821,16 @@ namespace daw::json {
 				static constexpr JsonNullable nullable = NullableType;
 				using wrapped_type = T;
 				using parse_to_t = T;
-				using raw_member_type = typename std::conditional_t<
+				using raw_member_type = typename daw::conditional_t<
 				  not std::is_same_v<JsonMember, use_default>,
 				  traits::identity<JsonMember>,
-				  std::conditional_t<
+				  daw::conditional_t<
 				    concepts::is_nullable_value_v<T>,
 				    json_details::ident_trait<concepts::nullable_value_type_t, T>,
 				    std::conditional<json_details::has_op_star_v<T>,
 				                     json_details::unwrapped_t<T>, T>>>::type;
 
-				using member_type = typename std::conditional_t<
+				using member_type = typename daw::conditional_t<
 				  json_details::is_a_json_type_v<raw_member_type>,
 				  traits::identity<raw_member_type>,
 				  json_details::ident_trait<json_details::json_deduced_type,
@@ -843,7 +840,7 @@ namespace daw::json {
 				               "JsonMember template paramater must be noname type" );
 				using base_type = json_details::json_result<member_type>;
 				using constructor_t =
-				  std::conditional_t<std::is_same_v<use_default, Constructor>,
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     nullable_constructor<T>, Constructor>;
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Null;
@@ -888,7 +885,7 @@ namespace daw::json {
 				using wrapped_type = T;
 				static constexpr bool must_be_class_member = false;
 
-				using constructor_t = std::conditional_t<
+				using constructor_t = daw::conditional_t<
 				  json_details::is_a_json_map_alias_v<T>, daw::construct_a_t<T>,
 				  json_details::json_class_constructor_t<T, Constructor>>;
 
@@ -896,7 +893,7 @@ namespace daw::json {
 
 				using data_contract = json_data_contract_trait_t<T>;
 
-				using parse_to_t = typename std::conditional_t<
+				using parse_to_t = typename daw::conditional_t<
 				  force_aggregate_construction_v<T>, daw::traits::identity<T>,
 				  daw::traits::identity<
 				    typename data_contract::template result_type<constructor_t>>>::type;
@@ -991,7 +988,7 @@ namespace daw::json {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
 
-				using json_elements = typename std::conditional_t<
+				using json_elements = typename daw::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,
 				  json_details::variant_alternatives_list<Variant>,
 				  traits::identity<JsonElements>>::type;
@@ -1057,7 +1054,7 @@ namespace daw::json {
 				using i_am_a_tagged_variant = void;
 				static constexpr bool must_be_class_member = false;
 
-				using json_elements = typename std::conditional_t<
+				using json_elements = typename daw::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,
 				  json_details::variant_alternatives_list<T>,
 				  daw::traits::identity<JsonElements>>::type;
@@ -1081,13 +1078,13 @@ namespace daw::json {
 				  "Must specify the location in tuple or name of member "
 				  "for TagMember" );
 
-				using tag_member = typename std::conditional_t<
+				using tag_member = typename daw::conditional_t<
 				  json_details::is_a_json_type_v<TagMember>,
 				  daw::traits::identity<TagMember>,
 				  daw::traits::identity<json_details::json_deduced_type<TagMember>>>::
 				  type;
 
-				using tag_member_class_wrapper = std::conditional_t<
+				using tag_member_class_wrapper = daw::conditional_t<
 				  json_details::is_an_ordered_member_v<tag_member>,
 				  json_tuple<std::tuple<typename tag_member::parse_to_t>,
 				             json_tuple_types_list<tag_member>>,
@@ -1162,12 +1159,12 @@ namespace daw::json {
 			struct json_custom {
 				using i_am_a_json_type = void;
 
-				using from_converter_t = typename std::conditional_t<
+				using from_converter_t = typename daw::conditional_t<
 				  std::is_same_v<use_default, FromJsonConverter>,
 				  json_details::ident_trait<default_from_json_converter_t, T>,
 				  traits::identity<FromJsonConverter>>::type;
 
-				using to_converter_t = typename std::conditional_t<
+				using to_converter_t = typename daw::conditional_t<
 				  std::is_same_v<use_default, ToJsonConverter>,
 				  json_details::ident_trait<default_to_json_converter_t, T>,
 				  traits::identity<ToJsonConverter>>::type;
@@ -1280,11 +1277,11 @@ namespace daw::json {
 				static_assert( json_details::is_a_json_type_v<json_element_t>,
 				               "Error determining element type" );
 				using container_t =
-				  std::conditional_t<std::is_same_v<Container, use_default>,
+				  daw::conditional_t<std::is_same_v<Container, use_default>,
 				                     std::vector<json_element_parse_to_t>, Container>;
 
 				using constructor_t =
-				  std::conditional_t<std::is_same_v<use_default, Constructor>,
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     default_constructor<container_t>, Constructor>;
 
 				static_assert(
@@ -1365,10 +1362,10 @@ namespace daw::json {
 				using json_element_parse_to_t = typename json_element_t::parse_to_t;
 
 				using container_t =
-				  std::conditional_t<std::is_same_v<Container, use_default>,
+				  daw::conditional_t<std::is_same_v<Container, use_default>,
 				                     std::vector<json_element_parse_to_t>, Container>;
 				using constructor_t =
-				  std::conditional_t<std::is_same_v<Constructor, use_default>,
+				  daw::conditional_t<std::is_same_v<Constructor, use_default>,
 				                     default_constructor<container_t>, Constructor>;
 
 				static_assert( json_details::is_a_json_type_v<SizeMember>,
@@ -1438,12 +1435,12 @@ namespace daw::json {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
 
-				using value_type_t = typename std::conditional_t<
+				using value_type_t = typename daw::conditional_t<
 				  std::is_same_v<use_default, JsonValueType>,
 				  json_details::ident_trait<json_details::mapped_type_t, Container>,
 				  traits::identity<JsonValueType>>::type;
 
-				using key_type_t = typename std::conditional_t<
+				using key_type_t = typename daw::conditional_t<
 				  std::is_same_v<use_default, JsonKeyType>,
 				  json_details::ident_trait<
 				    json_details::json_key_lit_fix_t,
@@ -1452,7 +1449,7 @@ namespace daw::json {
 				                            JsonKeyType>>::type;
 
 				using constructor_t =
-				  std::conditional_t<std::is_same_v<use_default, Constructor>,
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     default_constructor<Container>, Constructor>;
 
 				static_assert(
@@ -1549,18 +1546,18 @@ namespace daw::json {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
 
-				using value_type_t = typename std::conditional_t<
+				using value_type_t = typename daw::conditional_t<
 				  std::is_same_v<use_default, JsonValueType>,
 				  json_details::ident_trait<json_details::mapped_type_t, Container>,
 				  traits::identity<JsonValueType>>::type;
 
-				using key_type_t = typename std::conditional_t<
+				using key_type_t = typename daw::conditional_t<
 				  std::is_same_v<use_default, JsonKeyType>,
 				  json_details::ident_trait<json_details::key_type_t, Container>,
 				  traits::identity<JsonKeyType>>::type;
 
 				using constructor_t =
-				  std::conditional_t<std::is_same_v<use_default, Constructor>,
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     default_constructor<Container>, Constructor>;
 
 				static_assert(
@@ -1656,7 +1653,7 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 				static constexpr bool force_aggregate_construction = false;
 
-				using sub_member_list = typename std::conditional_t<
+				using sub_member_list = typename daw::conditional_t<
 				  std::is_same_v<JsonTupleTypesList, use_default>,
 				  json_details::identity_parts<json_details::tuple_types_list, Tuple>,
 				  json_details::identity_parts<json_details::tuple_types_list,
@@ -1714,7 +1711,7 @@ namespace daw::json {
 				using i_am_a_tagged_variant = void;
 				static constexpr bool must_be_class_member = false;
 
-				using json_elements = typename std::conditional_t<
+				using json_elements = typename daw::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,
 				  json_details::variant_alternatives_list<Variant>,
 				  daw::traits::identity<JsonElements>>::type;
@@ -1724,7 +1721,7 @@ namespace daw::json {
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 
-				using tag_submember = typename std::conditional_t<
+				using tag_submember = typename daw::conditional_t<
 				  json_details::is_an_ordered_member_v<TagMember>,
 				  daw::traits::identity<TagMember>,
 				  daw::traits::identity<json_details::json_deduced_type<TagMember>>>::
@@ -1741,7 +1738,7 @@ namespace daw::json {
 
 				using switcher = Switcher;
 
-				using tag_submember_class_wrapper = std::conditional_t<
+				using tag_submember_class_wrapper = daw::conditional_t<
 				  json_details::is_an_ordered_member_v<tag_submember>,
 				  json_tuple<std::tuple<typename tag_submember::parse_to_t>,
 				             json_tuple_types_list<tag_submember>>,
@@ -1757,7 +1754,7 @@ namespace daw::json {
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::None;
 
-				using json_container_type = std::conditional_t<
+				using json_container_type = daw::conditional_t<
 				  std::disjunction_v<json_details::is_an_ordered_member<
 				                       json_details::json_deduced_type<tag_submember>>,
 				                     json_details::is_no_name<

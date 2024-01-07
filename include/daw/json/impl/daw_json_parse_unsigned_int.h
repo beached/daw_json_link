@@ -80,9 +80,9 @@ namespace daw::json {
 
 			template<options::JsonRangeCheck RangeCheck, typename Unsigned,
 			         typename MaxArithUnsigned>
-			using max_unsigned_t = std::conditional_t<
+			using max_unsigned_t = daw::conditional_t<
 			  daw::is_integral_v<Unsigned> or std::is_enum_v<Unsigned>,
-			  std::conditional_t<( sizeof( Unsigned ) > sizeof( MaxArithUnsigned ) ),
+			  daw::conditional_t<( sizeof( Unsigned ) > sizeof( MaxArithUnsigned ) ),
 			                     Unsigned, MaxArithUnsigned>,
 			  Unsigned>;
 
@@ -135,6 +135,53 @@ namespace daw::json {
 				using type = bool;
 			};
 
+			template<typename Integer, typename T, typename ParseState>
+			[[nodiscard]] constexpr Integer
+			narrow_cast( T value, ParseState const &parse_state ) {
+				if constexpr( std::is_signed_v<T> ) {
+					if constexpr( std::is_signed_v<Integer> ) {
+						if constexpr( sizeof( T ) <= sizeof( Integer ) ) {
+							return value;
+						} else if( value <= static_cast<T>(
+						                      ( std::numeric_limits<Integer>::max )( ) ) ) {
+							return static_cast<Integer>( value );
+						} else {
+							daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
+						}
+					} else if constexpr( sizeof( T ) <= sizeof( Integer ) ) {
+						if( value >= 0 ) {
+							return value;
+						}
+						daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
+					} else {
+						if( value >= 0 and
+						    value <=
+						      static_cast<T>( ( std::numeric_limits<Integer>::max )( ) ) ) {
+							return value;
+						}
+						daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
+					}
+				} else if constexpr( std::is_signed_v<Integer> ) {
+					if constexpr( sizeof( T ) < sizeof( Integer ) ) {
+						return static_cast<Integer>( value );
+					} else {
+						if( value >
+						    static_cast<T>( ( std::numeric_limits<Integer>::max )( ) ) ) {
+							daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
+						}
+						return static_cast<Integer>( value );
+					}
+				} else if constexpr( sizeof( T ) <= sizeof( Integer ) ) {
+					return static_cast<Integer>( value );
+				} else {
+					if( value <=
+					    static_cast<T>( ( std::numeric_limits<Integer>::max )( ) ) ) {
+						return static_cast<Integer>( value );
+					}
+					daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
+				}
+			}
+
 			template<typename T>
 			using make_unsigned_with_bool_t =
 			  typename make_unsigned_with_bool<T>::type;
@@ -169,7 +216,7 @@ namespace daw::json {
 					result += static_cast<uresult_t>( parse_8_digits( first ) );
 					first += 8;
 				}
-				if constexpr( ParseState::is_zero_terminated_string( ) ) {
+				if constexpr( ParseState::is_zero_terminated_string ) {
 					auto dig = parse_digit( *first );
 					while( dig < 10U ) {
 						result *= 10U;
@@ -198,7 +245,7 @@ namespace daw::json {
 					return daw::construct_a<Unsigned>( static_cast<Unsigned>( result ) );
 				} else {
 					return daw::construct_a<Unsigned>(
-					  daw::narrow_cast<Unsigned>( result ) );
+					  narrow_cast<Unsigned>( result, parse_state ) );
 				}
 			}
 
@@ -246,7 +293,7 @@ namespace daw::json {
 					result += static_cast<uresult_t>( parse_8_digits( first ) );
 					first += 8;
 				}
-				if constexpr( ParseState::is_zero_terminated_string( ) ) {
+				if constexpr( ParseState::is_zero_terminated_string ) {
 					auto dig = parse_digit( *first );
 					while( dig < 10U ) {
 						result *= 10U;
@@ -278,7 +325,7 @@ namespace daw::json {
 					  static_cast<Unsigned>( static_cast<result_t>( result ) ) );
 				} else {
 					return daw::construct_a<Unsigned>(
-					  daw::narrow_cast<Unsigned>( result ) );
+					  narrow_cast<Unsigned>( result, parse_state ) );
 				}
 			}
 
@@ -390,8 +437,7 @@ namespace daw::json {
 			  if constexpr( RangeChecked == options::JsonRangeCheck::Never ) {
 			    return daw::construct_a<Unsigned>( static_cast<Unsigned>( result ) );
 			  } else {
-			    return daw::construct_a<Unsigned>( daw::narrow_cast<Unsigned>( result
-			) );
+			    return daw::construct_a<Unsigned>( narrow_cast<Unsigned>( result, parse_state ) );
 			  }
 			}
 			 */
@@ -411,5 +457,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

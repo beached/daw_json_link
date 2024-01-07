@@ -127,7 +127,7 @@ namespace daw::json {
 			/// @brief Read value from a non-empty nullable value
 			/// @pre nullable_value_traits<T>::has_value( ) == true
 			template<typename T>
-			constexpr decltype( auto ) nullable_value_read( T const &opt ) {
+			constexpr auto const &nullable_value_read( T const &opt ) {
 				return nullable_value_traits<T>::read( opt );
 			}
 
@@ -161,5 +161,5 @@ namespace daw::json {
 			  std::is_nothrow_invocable_v<nullable_value_traits<T>,
 			                              construct_nullable_with_empty_t>;
 		} // namespace concepts
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

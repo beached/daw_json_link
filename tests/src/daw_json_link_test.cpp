@@ -476,7 +476,7 @@ unsigned long long test_dblparse( std::string_view num,
 	};
 	auto lib_parse_dbl = dbl_lib_parser( num );
 	auto const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
-	auto ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
+	auto ui1 = DAW_BIT_CAST( std::uint64_t, strod_parse_dbl );
 	auto const diff = std::max( ui0, ui1 ) - std::min( ui0, ui1 );
 	if( always_disp ) {
 		auto const old_precision = std::cout.precision( );
@@ -757,6 +757,31 @@ namespace daw::json {
 		}
 	};
 } // namespace daw::json
+
+struct Unmapped1 {
+	int x;
+
+	friend constexpr auto to_tuple( Unmapped1 const &um ) {
+		return std::forward_as_tuple( um.x );
+	}
+};
+
+struct Unmapped9 {
+	int a0;
+	int a1;
+	int a2;
+	int a3;
+	int a4;
+	int a5;
+	int a6;
+	int a7;
+	int a8;
+
+	friend constexpr auto to_tuple( Unmapped9 const &um ) {
+		return std::forward_as_tuple( um.a0, um.a1, um.a2, um.a3, um.a4, um.a5,
+		                              um.a6, um.a7, um.a8 );
+	}
+};
 
 int main( int, char ** ) {
 #ifdef DAW_USE_EXCEPTIONS
@@ -1348,34 +1373,12 @@ int main( int, char ** ) {
 		auto um0_str = daw::json::to_json( um0 );
 		ensure( um0_str == "{}" );
 
-		struct Unmapped1 {
-			int x;
-		};
-		static_assert(
-		  daw::json::json_details::is_aggregate_constructible_from_n_v<Unmapped1,
-		                                                               1>,
-		  "Expcted Unmapped1 to be aggregate constructible from 1 parameter" );
 		constexpr auto um1 = daw::json::from_json<Unmapped1>( "[5]" );
 		auto um1_str = daw::json::to_json( um1 );
 		ensure( um1_str == "[5]" );
 
-		struct Unmapped9 {
-			int a0;
-			int a1;
-			int a2;
-			int a3;
-			int a4;
-			int a5;
-			int a6;
-			int a7;
-			int a8;
-		};
-		static_assert(
-		  daw::json::json_details::is_aggregate_constructible_from_n_v<Unmapped9,
-		                                                               9>,
-		  "Expcted Unmapped1 to be aggregate constructible from 2 parameters" );
-
-		constexpr auto um9 = daw::json::from_json<Unmapped9>( "[0,1,2,3,4,5,6,7,8]" );
+		constexpr auto um9 =
+		  daw::json::from_json<Unmapped9>( "[0,1,2,3,4,5,6,7,8]" );
 		auto um9_str = daw::json::to_json( um9 );
 		ensure( um9_str == "[0,1,2,3,4,5,6,7,8]" );
 

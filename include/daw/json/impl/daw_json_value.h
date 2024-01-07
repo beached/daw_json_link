@@ -257,8 +257,9 @@ namespace daw::json {
 				case '}':
 				case ']':
 					return false;
+				default:
+					daw_json_error( ErrorReason::ExpectedTokenNotFound, m_state );
 				}
-				daw_json_error( ErrorReason::ExpectedTokenNotFound, m_state );
 			}
 
 			/// @brief Can we increment more
@@ -729,5 +730,5 @@ namespace daw::json {
 			inline constexpr bool
 			  is_string_view_like_v<basic_json_value<PolicyFlags, Allocator>> = false;
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

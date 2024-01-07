@@ -62,8 +62,8 @@ namespace daw::json {
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using CharT = typename ParseState::CharT;
 
-			static inline constexpr ParseState
-			get_range( daw::string_view data, daw::string_view member_path ) {
+			static constexpr ParseState get_range( daw::string_view data,
+			                                       daw::string_view member_path ) {
 				auto [is_found, result] = json_details::find_range<ParseState>(
 				  DAW_FWD( data ),
 				  { std::data( member_path ), std::size( member_path ) } );
@@ -93,9 +93,9 @@ namespace daw::json {
 			mutable CharT *m_can_skip = nullptr;
 
 		public:
-			json_array_iterator( ) = default;
+			explicit json_array_iterator( ) = default;
 
-			inline constexpr explicit json_array_iterator( daw::string_view jd )
+			explicit constexpr json_array_iterator( daw::string_view jd )
 			  : m_state( ParseState( std::data( jd ), daw::data_end( jd ) ) ) {
 
 				m_state.trim_left( );
@@ -106,8 +106,8 @@ namespace daw::json {
 				m_state.trim_left( );
 			}
 
-			inline constexpr explicit json_array_iterator(
-			  daw::string_view jd, daw::string_view start_path )
+			explicit constexpr json_array_iterator( daw::string_view jd,
+			                                        daw::string_view start_path )
 			  : m_state( get_range( jd, start_path ) ) {
 
 				m_state.trim_left( );
@@ -121,7 +121,7 @@ namespace daw::json {
 			/// @brief Parse the current element
 			/// @pre good( ) returns true
 			/// @return The parsed result of ParseElement
-			[[nodiscard]] inline constexpr value_type operator*( ) const {
+			[[nodiscard]] constexpr value_type operator*( ) const {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 				                      ErrorReason::UnexpectedEndOfData, m_state );
 
@@ -139,7 +139,7 @@ namespace daw::json {
 			/// avoided
 			/// @pre good( ) returns true
 			/// @return an arrow_proxy of the operator* result
-			[[nodiscard]] inline pointer operator->( ) const {
+			[[nodiscard]] pointer operator->( ) const {
 				return pointer{ operator*( ) };
 			}
 
@@ -147,7 +147,7 @@ namespace daw::json {
 			 * Move the parse state to the next element
 			 * @return iterator after moving
 			 */
-			inline constexpr json_array_iterator &operator++( ) {
+			constexpr json_array_iterator &operator++( ) {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 				                      ErrorReason::UnexpectedEndOfData, m_state );
 				if( m_can_skip ) {
@@ -163,7 +163,7 @@ namespace daw::json {
 			///
 			/// @brief Move the parse state to the next element
 			///
-			inline constexpr void operator++( int ) & {
+			constexpr void operator++( int ) & {
 				(void)operator++( );
 			}
 
@@ -171,21 +171,21 @@ namespace daw::json {
 			 * Is it ok to dereference iterator
 			 * @return true when there is parse data available
 			 */
-			[[nodiscard]] inline constexpr bool good( ) const {
+			[[nodiscard]] constexpr bool good( ) const {
 				return not m_state.is_null( ) and m_state.has_more( ) and
 				       m_state.front( ) != ']';
 			}
 
 			/// @brief Are we good( )
 			/// @return result of good( )
-			[[nodiscard]] explicit inline constexpr operator bool( ) const {
+			[[nodiscard]] explicit constexpr operator bool( ) const {
 				return good( );
 			}
 
 			/// @brief Compare rhs for equivalence
 			/// @param rhs Another json_array_iterator
 			/// @return true when equivalent to rhs
-			[[nodiscard]] inline constexpr bool
+			[[nodiscard]] constexpr bool
 			operator==( json_array_iterator const &rhs ) const {
 				if( not( *this ) ) {
 					return not rhs;
@@ -199,7 +199,7 @@ namespace daw::json {
 			/// @brief Check if the other iterator is not equivalent
 			/// @param rhs another json_array_iterator
 			/// @return true when rhs is not equivalent
-			[[nodiscard]] inline constexpr bool
+			[[nodiscard]] constexpr bool
 			operator!=( json_array_iterator const &rhs ) const {
 				if( not( *this ) ) {
 					return static_cast<bool>( rhs );
@@ -222,8 +222,8 @@ namespace daw::json {
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using CharT = typename ParseState::CharT;
 
-			static inline constexpr ParseState
-			get_range( daw::string_view data, daw::string_view member_path ) {
+			static constexpr ParseState get_range( daw::string_view data,
+			                                       daw::string_view member_path ) {
 				auto [is_found, result] = json_details::find_range<ParseState>(
 				  DAW_FWD( data ),
 				  { std::data( member_path ), std::size( member_path ) } );
@@ -246,9 +246,9 @@ namespace daw::json {
 			mutable ParseState m_state = ParseState( );
 
 		public:
-			json_array_iterator_once( ) = default;
+			explicit json_array_iterator_once( ) = default;
 
-			inline constexpr explicit json_array_iterator_once( daw::string_view jd )
+			explicit constexpr json_array_iterator_once( daw::string_view jd )
 			  : m_state( ParseState( std::data( jd ), daw::data_end( jd ) ) ) {
 
 				m_state.trim_left( );
@@ -259,8 +259,8 @@ namespace daw::json {
 				m_state.trim_left( );
 			}
 
-			inline constexpr explicit json_array_iterator_once(
-			  daw::string_view jd, daw::string_view start_path )
+			explicit constexpr json_array_iterator_once( daw::string_view jd,
+			                                             daw::string_view start_path )
 			  : m_state( get_range( jd, start_path ) ) {
 
 				m_state.trim_left( );
@@ -274,7 +274,7 @@ namespace daw::json {
 			/// @brief Parse the current element
 			/// @pre good( ) returns true
 			/// @return The parsed result of ParseElement
-			[[nodiscard]] inline constexpr value_type operator*( ) const {
+			[[nodiscard]] constexpr value_type operator*( ) const {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 				                      ErrorReason::UnexpectedEndOfData, m_state );
 
@@ -286,7 +286,7 @@ namespace daw::json {
 			 * Move the parse state to the next element
 			 * @return iterator after moving
 			 */
-			inline constexpr json_array_iterator_once &operator++( ) {
+			constexpr json_array_iterator_once &operator++( ) {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 				                      ErrorReason::UnexpectedEndOfData, m_state );
 				m_state.move_next_member_or_end( );
@@ -296,7 +296,7 @@ namespace daw::json {
 			///
 			/// @brief Move the parse state to the next element
 			///
-			inline constexpr void operator++( int ) & {
+			constexpr void operator++( int ) & {
 				(void)operator++( );
 			}
 
@@ -304,21 +304,21 @@ namespace daw::json {
 			 * Is it ok to dereference iterator
 			 * @return true when there is parse data available
 			 */
-			[[nodiscard]] inline constexpr bool good( ) const {
+			[[nodiscard]] constexpr bool good( ) const {
 				return not m_state.is_null( ) and m_state.has_more( ) and
 				       m_state.front( ) != ']';
 			}
 
 			/// @brief Are we good( )
 			/// @return result of good( )
-			[[nodiscard]] explicit inline constexpr operator bool( ) const {
+			[[nodiscard]] explicit constexpr operator bool( ) const {
 				return good( );
 			}
 
 			/// @brief Compare rhs for equivalence
 			/// @param rhs Another json_array_iterator
 			/// @return true when equivalent to rhs
-			[[nodiscard]] inline constexpr bool
+			[[nodiscard]] constexpr bool
 			operator==( json_array_iterator_once const &rhs ) const {
 				if( not( *this ) ) {
 					return not rhs;
@@ -332,7 +332,7 @@ namespace daw::json {
 			/// @brief Check if the other iterator is not equivalent
 			/// @param rhs another json_array_iterator
 			/// @return true when rhs is not equivalent
-			[[nodiscard]] inline constexpr bool
+			[[nodiscard]] constexpr bool
 			operator!=( json_array_iterator_once const &rhs ) const {
 				if( not( *this ) ) {
 					return static_cast<bool>( rhs );
@@ -361,26 +361,26 @@ namespace daw::json {
 		public:
 			json_array_range( ) = default;
 
-			constexpr explicit json_array_range( daw::string_view jd )
+			explicit constexpr json_array_range( daw::string_view jd )
 			  : m_first( jd ) {}
 
-			constexpr explicit json_array_range( daw::string_view jd,
+			explicit constexpr json_array_range( daw::string_view jd,
 			                                     daw::string_view start_path )
 			  : m_first( jd, start_path ) {}
 
 			/// @return first item in range
-			[[nodiscard]] inline constexpr iterator begin( ) const {
+			[[nodiscard]] constexpr iterator begin( ) const {
 				return m_first;
 			}
 
 			/// @return one past last item in range
-			[[nodiscard]] inline constexpr iterator end( ) const {
+			[[nodiscard]] constexpr iterator end( ) const {
 				return m_last;
 			}
 
 			/// @brief Are there any elements in range
 			/// @return true when begin( ) == end( )
-			[[nodiscard]] inline constexpr bool empty( ) const {
+			[[nodiscard]] constexpr bool empty( ) const {
 				return m_first == m_last;
 			}
 		};
@@ -403,26 +403,26 @@ namespace daw::json {
 		public:
 			json_array_range_once( ) = default;
 
-			constexpr explicit json_array_range_once( daw::string_view jd )
+			explicit constexpr json_array_range_once( daw::string_view jd )
 			  : m_first( jd ) {}
 
-			constexpr explicit json_array_range_once( daw::string_view jd,
+			explicit constexpr json_array_range_once( daw::string_view jd,
 			                                          daw::string_view start_path )
 			  : m_first( jd, start_path ) {}
 
 			/// @return first item in range
-			[[nodiscard]] inline constexpr iterator begin( ) const {
+			[[nodiscard]] constexpr iterator begin( ) const {
 				return m_first;
 			}
 
 			/// @return one past last item in range
-			[[nodiscard]] inline constexpr iterator end( ) const {
+			[[nodiscard]] constexpr iterator end( ) const {
 				return m_last;
 			}
 
 			/// @brief Are there any elements in range
 			/// @return true when begin( ) == end( )
-			[[nodiscard]] inline constexpr bool empty( ) const {
+			[[nodiscard]] constexpr bool empty( ) const {
 				return m_first == m_last;
 			}
 		};

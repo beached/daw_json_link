@@ -52,55 +52,45 @@ namespace daw::json {
 
 			namespace hnd_checks {
 				// On Next Value
-				template<typename Handler, typename JPair>
-				using has_on_value_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_value(
-				    std::declval<JPair>( ) ) );
+				template<typename /*Handler*/, json_options_t, typename /*JPair*/,
+				         typename = void>
+				inline constexpr bool has_on_value_handler_v = false;
 
-				template<typename Handler, json_options_t P, typename A>
-				inline constexpr bool has_on_value_handler_v =
-				  daw::is_detected_v<has_on_value_handler_detect, Handler,
-				                     basic_json_pair<P, A>>;
+				template<typename Handler, json_options_t O, typename JPair>
+				inline constexpr bool has_on_value_handler_v<
+				  Handler, O, JPair,
+				  std::void_t<decltype( std::declval<Handler>( ).handle_on_value(
+				    std::declval<JPair>( ) ) )>> = true;
 
 				// On Array Start
-				template<typename Handler, typename JValue>
-				using has_on_array_start_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_array_start(
-				    std::declval<JValue>( ) ) );
+				template<typename /*Handler*/, json_options_t, typename /*JValue*/,
+				         typename = void>
+				inline constexpr bool has_on_array_start_handler_v = false;
 
-				template<typename Handler, json_options_t P, typename A>
-				inline constexpr bool has_on_array_start_handler_v =
-				  daw::is_detected_v<has_on_array_start_handler_detect, Handler,
-				                     basic_json_value<P, A>>;
+				template<typename Handler, json_options_t O, typename JValue>
+				inline constexpr bool has_on_array_start_handler_v<
+				  Handler, O, JValue,
+				  std::void_t<decltype( std::declval<Handler>( ).handle_on_array_start(
+				    std::declval<JValue>( ) ) )>> = true;
 
 				// On Array End
-				template<typename Handler>
-				using has_on_array_end_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_array_end( ) );
-
-				template<typename Handler>
-				inline constexpr bool has_on_array_end_handler_v =
-				  daw::is_detected_v<has_on_array_end_handler_detect, Handler>;
+				DAW_JSON_MAKE_REQ_TRAIT( has_on_array_end_handler_v,
+				                         std::declval<T>( ).handle_on_array_end( ) );
 
 				// On Class Start
-				template<typename Handler, typename JValue>
-				using has_on_class_start_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_class_start(
-				    std::declval<JValue>( ) ) );
+				template<typename /*Handler*/, json_options_t, typename /*JValue*/,
+				         typename = void>
+				inline constexpr bool has_on_class_start_handler_v = false;
 
-				template<typename Handler, json_options_t P, typename A>
-				inline constexpr bool has_on_class_start_handler_v =
-				  daw::is_detected_v<has_on_class_start_handler_detect, Handler,
-				                     basic_json_value<P, A>>;
+				template<typename Handler, json_options_t O, typename JValue>
+				inline constexpr bool has_on_class_start_handler_v<
+				  Handler, O, JValue,
+				  std::void_t<decltype( std::declval<Handler>( ).handle_on_class_start(
+				    std::declval<JValue>( ) ) )>> = true;
 
 				// On Class End
-				template<typename Handler>
-				using has_on_class_end_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_class_end( ) );
-
-				template<typename Handler>
-				inline constexpr bool has_on_class_end_handler_v =
-				  daw::is_detected_v<has_on_class_end_handler_detect, Handler>;
+				DAW_JSON_MAKE_REQ_TRAIT( has_on_class_end_handler_v,
+				                         std::declval<T>( ).handle_on_class_end( ) );
 
 				// On Number
 				template<typename Handler, typename JValue>

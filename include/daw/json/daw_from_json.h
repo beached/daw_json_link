@@ -57,7 +57,7 @@ namespace daw::json {
 			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
 			using ParseState =
-			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
+			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
 			auto parse_state =
 			  ParseState( std::data( json_data ), daw::data_end( json_data ) );
@@ -206,7 +206,7 @@ namespace daw::json {
 			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
 			using ParseState =
-			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
+			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
 			auto jv = basic_json_value(
 			  ParseState( std::data( json_data ), daw::data_end( json_data ) ) );
@@ -368,7 +368,7 @@ namespace daw::json {
 			using ParsePolicy = typename BasicParsePolicy<
 			  P, Allocator>::template SetPolicyOptions<PolicyFlags...>;
 			using ParseState =
-			  std::conditional_t<ParsePolicy::is_default_parse_policy,
+			  daw::conditional_t<ParsePolicy::is_default_parse_policy,
 			                     DefaultParsePolicy, ParsePolicy>;
 			auto const old_parse_state = value.get_raw_state( );
 			auto parse_state =
@@ -421,7 +421,7 @@ namespace daw::json {
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
 			auto const old_parse_state = value.get_raw_state( );
 			using ParseState =
-			  std::conditional_t<ParsePolicy::is_default_parse_policy,
+			  daw::conditional_t<ParsePolicy::is_default_parse_policy,
 			                     DefaultParsePolicy, ParsePolicy>;
 			auto jv = basic_json_value(
 			  ParseState( old_parse_state.first, old_parse_state.last,
@@ -504,7 +504,7 @@ namespace daw::json {
 			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
 			using ParseState =
-			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
+			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
 			auto parse_state =
 			  ParseState{ std::data( json_data ), daw::data_end( json_data ) };
@@ -598,7 +598,7 @@ namespace daw::json {
 			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
 
 			using ParseState =
-			  std::conditional_t<policy_zstring_t::is_default_parse_policy,
+			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
 			auto jv = basic_json_value(
 			  ParseState( std::data( json_data ), daw::data_end( json_data ) ) );

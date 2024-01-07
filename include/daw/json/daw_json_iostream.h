@@ -20,23 +20,19 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename T>
-			using is_opted_into_json_iostreams =
-			  typename json_data_contract<T>::opt_into_iostreams;
+			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT(
+			  is_opted_into_json_iostreams_v,
+			  json_data_contract<T>::opt_into_iostreams );
+
+			template<typename, typename = void>
+			inline constexpr bool is_container_opted_into_json_iostreams_v = false;
 
 			template<typename Container>
-			using is_container_opted_into_json_iostreams =
-			  is_opted_into_json_iostreams<typename Container::value_type>;
-
-			template<typename T>
-			inline constexpr bool is_opted_into_json_iostreams_v =
-			  daw::is_detected_v<is_opted_into_json_iostreams, T>;
-
-			template<typename T>
-			inline constexpr bool is_container_opted_into_json_iostreams_v =
-			  daw::is_detected_v<is_container_opted_into_json_iostreams, T>;
+			inline constexpr bool is_container_opted_into_json_iostreams_v<
+			  Container, std::void_t<typename Container::value_type>> =
+			  is_opted_into_json_iostreams_v<typename Container::value_type>;
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json
 
 /// @brief An opt in ostream interface for types that have JSON mappings.

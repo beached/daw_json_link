@@ -31,7 +31,7 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_checked( ParseState &parse_state ) {
-				if constexpr( ParseState::minified_document( ) ) {
+				if constexpr( ParseState::minified_document ) {
 					return;
 				} else {
 					using CharT = typename ParseState::CharT;
@@ -42,7 +42,7 @@ namespace daw::json {
 					// only used when not zero terminated string and gcc9 warns
 					(void)last;
 
-					if constexpr( ParseState::is_zero_terminated_string( ) ) {
+					if constexpr( ParseState::is_zero_terminated_string ) {
 						// Ensure that zero terminator isn't included in skipable value
 						while( DAW_UNLIKELY(
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
@@ -65,7 +65,7 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_unchecked( ParseState &parse_state ) {
-				if constexpr( ParseState::minified_document( ) ) {
+				if constexpr( ParseState::minified_document ) {
 					return;
 				} else {
 					using CharT = typename ParseState::CharT;
@@ -112,7 +112,7 @@ namespace daw::json {
 					// blocks
 					(void)last;
 
-					if( ParseState::is_zero_terminated_string( ) ) {
+					if( ParseState::is_zero_terminated_string ) {
 						daw_json_assert_weak( first < last and *first != '\0',
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
@@ -138,10 +138,13 @@ namespace daw::json {
 				return ( c == '\0' ) | ( c == ',' ) | ( c == ']' ) | ( c == '}' );
 			}
 
-			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
-			         typename ParseState>
+			template<char PrimLeft, typename ParseState>
 			DAW_ATTRIB_FLATTEN static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
+				constexpr char PrimRight = PrimLeft == '{' ? '}' : ']';
+				constexpr char SecLeft = PrimLeft == '{' ? '[' : '{';
+				constexpr char SecRight = SecLeft == '{' ? '}' : ']';
+
 				using CharT = typename ParseState::CharT;
 				// Not checking for Left as it is required to be skipped already
 				CharT *ptr_first = parse_state.first;
@@ -157,7 +160,7 @@ namespace daw::json {
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}
-				if constexpr( ParseState::is_zero_terminated_string( ) ) {
+				if constexpr( ParseState::is_zero_terminated_string ) {
 					daw_json_ensure( ptr_first < ptr_last,
 					                 ErrorReason::UnexpectedEndOfData, parse_state );
 					while( *ptr_first != 0 ) {
@@ -295,11 +298,13 @@ namespace daw::json {
 				return result;
 			}
 
-			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
-			         typename ParseState>
+			template<char PrimLeft, typename ParseState>
 			DAW_ATTRIB_NOINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
+				constexpr char PrimRight = PrimLeft == '{' ? '}' : ']';
+				constexpr char SecLeft = PrimLeft == '{' ? '[' : '{';
+				constexpr char SecRight = SecLeft == '{' ? '}' : ']';
 				using CharT = typename ParseState::CharT;
 				auto result = parse_state;
 				std::size_t cnt = 0;

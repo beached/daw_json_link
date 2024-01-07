@@ -99,7 +99,7 @@ namespace daw::jkj::dragonbox {
 			                                           ? ieee754_format::binary32
 			                                           : ieee754_format::binary64;
 
-			using carrier_uint = std::conditional_t<detail::physical_bits<T> == 32,
+			using carrier_uint = daw::conditional_t<detail::physical_bits<T> == 32,
 			                                        std::uint32_t, std::uint64_t>;
 			static_assert( sizeof( carrier_uint ) == sizeof( T ) );
 

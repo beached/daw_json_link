@@ -802,6 +802,12 @@ if( DAW_USE_EXCEPTIONS )
     add_test( NAME issue_409_test COMMAND issue_409_test )
     add_dependencies( ci_tests issue_409_test )
     add_dependencies( full issue_409_test )
+		
+		add_executable( issue_413_test src/issue_413_test.cpp )
+    target_link_libraries( issue_413_test PRIVATE json_test )
+    add_test( NAME issue_413_test COMMAND issue_413_test )
+    add_dependencies( ci_tests issue_413_test )
+    add_dependencies( full issue_413_test )
 endif()
 
 add_executable( test_details_skip_number src/test_details_skip_number.cpp )
