@@ -41,7 +41,6 @@ int main( int argc, char **argv )
 		std::cerr << "twitter citm canada\n";
 		exit( 1 );
 	}
-
 	auto const mm_twitter = *daw::read_file( argv[1] );
 	auto const mm_citm = *daw::read_file( argv[2] );
 	auto const mm_canada = *daw::read_file( argv[3] );
@@ -56,9 +55,10 @@ int main( int argc, char **argv )
 	for( std::size_t n = 0; n < DAW_NUM_RUNS; ++n ) {
 		[&]( auto f1, auto f2, auto f3 ) {
 			using namespace daw::json::options;
-			auto const j1 =
-			  daw::json::from_json<daw::twitter::twitter_object_t>( f1, parse_flags<ExecModeTypes::simd> );
-			auto const j2 = daw::json::from_json<daw::citm::citm_object_t>( f2, parse_flags<ExecModeTypes::simd> );
+			auto const j1 = daw::json::from_json<daw::twitter::twitter_object_t>(
+			  f1, parse_flags<ExecModeTypes::simd> );
+			auto const j2 = daw::json::from_json<daw::citm::citm_object_t>(
+			  f2, parse_flags<ExecModeTypes::simd> );
 			auto const j3 = daw::json::from_json<daw::geojson::Polygon>(
 			  f3, "features[0].geometry", parse_flags<ExecModeTypes::simd> );
 			daw::do_not_optimize( sv_twitter );

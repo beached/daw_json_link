@@ -12,22 +12,14 @@
 
 #include <daw/json/daw_json_exception.h>
 
-#include <daw/daw_assume.h>
 #include <daw/daw_attributes.h>
-#include <daw/daw_check_exceptions.h>
 #include <daw/daw_likely.h>
-#include <daw/daw_move.h>
 #include <daw/daw_not_null.h>
-#include <daw/daw_string_view.h>
 
-#include <algorithm>
-#include <cstdio>
-#include <cstdlib>
-#include <functional>
-#include <memory>
-#include <numeric>
-#include <string>
+#include <cstddef>
+#include <exception>
 #include <string_view>
+#include <utility>
 
 #if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
 #include <iostream>
@@ -114,7 +106,6 @@ namespace daw::json {
 		[[noreturn]] inline void
 		daw_json_error( json_details::missing_member reason,
 		                ParseState const &location ) {
-			using namespace std::string_literals;
 			if( location.class_first and location.first ) {
 				static constexpr std::size_t max_len = 150;
 				std::size_t const len = [&]( ) -> std::size_t {
@@ -123,14 +114,19 @@ namespace daw::json {
 						    location.class_last == nullptr ) {
 							return 0;
 						}
-						return ( std::min )(
-						  static_cast<std::size_t>(
-						    std::distance( location.class_first, location.class_last ) ),
-						  max_len );
+						auto const dist = static_cast<std::size_t>( location.class_last -
+						                                            location.class_first );
+						if( dist < max_len ) {
+							return dist;
+						}
+						return max_len;
 					}
-					return ( std::min )( static_cast<std::size_t>( std::distance(
-					                       location.class_first, location.first + 1 ) ),
-					                     max_len );
+					auto const dist = static_cast<std::size_t>( location.class_first -
+					                                            location.first + 1 );
+					if( dist < max_len ) {
+						return dist;
+					}
+					return max_len;
 				}( );
 				json_details::handle_error( json_exception(
 				  reason, std::string_view( location.class_first, len ) ) );

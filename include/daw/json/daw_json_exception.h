@@ -15,12 +15,8 @@
 #include <daw/daw_unreachable.h>
 #include <daw/impl/daw_algorithm_accumulate.h>
 
-#include <algorithm>
-#include <cstdio>
-#include <cstdlib>
+#include <cstddef>
 #include <exception>
-#include <memory>
-#include <numeric>
 #include <string>
 #include <string_view>
 
@@ -329,24 +325,24 @@ namespace daw::json {
 			result += "\x1b[1m";
 #endif
 			result.reserve( result.size( ) + std::size( loc_data ) );
-			result +=
-			  std::accumulate( std::data( loc_data ), daw::data_end( loc_data ),
-			                   std::string{ }, []( std::string s, char c ) {
-				                   switch( c ) {
-				                   case '\n':
-				                   case '\r':
-					                   break;
+			result += daw::algorithm::accumulate(
+			  std::data( loc_data ), daw::data_end( loc_data ), std::string{ },
+			  []( std::string s, char c ) {
+				  switch( c ) {
+				  case '\n':
+				  case '\r':
+					  break;
 #if defined( DAW_JSON_NO_COLOUR )
-				                   case '"':
-					                   s += '\\';
-					                   [[fallthrough]];
+				  case '"':
+					  s += '\\';
+					  [[fallthrough]];
 #endif
-				                   default:
-					                   s += c;
-					                   break;
-				                   }
-				                   return s;
-			                   } );
+				  default:
+					  s += c;
+					  break;
+				  }
+				  return s;
+			  } );
 #if not defined( DAW_JSON_NO_COLOUR )
 			result += "\x1b[0m";
 #endif

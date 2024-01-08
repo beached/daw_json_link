@@ -179,13 +179,26 @@
 #define DAW_JSON_HAS_STATIC_CALL_OP
 #endif
 #endif
-
 #if defined( DAW_JSON_HAS_STATIC_CALL_OP )
 #define DAW_JSON_CPP23_STATIC_CALL_OP static
 #define DAW_JSON_CPP23_STATIC_CALL_OP_CONST
+
+#if DAW_HAS_CLANG_VER_GTE( 17, 0 )
+#define DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING \
+_Pragma( "clang diagnostic push") \
+_Pragma( "clang diagnostic ignored \"-Wc++23-extensions\"" )
+
+#define DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING \
+_Pragma( "clang diagnostic pop" )
+#else
+#define DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING
+#define DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING
+#endif
 #else
 #define DAW_JSON_CPP23_STATIC_CALL_OP
 #define DAW_JSON_CPP23_STATIC_CALL_OP_CONST const
+#define DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING
+#define DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING
 #endif
 
 #if defined( __cpp_constexpr_dynamic_alloc )

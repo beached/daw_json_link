@@ -14,20 +14,32 @@
 #include "daw_json_link_types.h"
 #include "impl/daw_json_assert.h"
 
-#include <daw/daw_algorithm.h>
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_move.h>
-#include <daw/daw_utility.h>
+#include <daw/impl/daw_algorithm_accumulate.h>
+#include <daw/impl/daw_algorithm_find.h>
 #include <daw/iterator/daw_reverse_iterator.h>
 
-#include <algorithm>
-#include <iterator>
-#include <numeric>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			struct less {
+				DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING
+				template<typename T, typename U>
+				DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr bool
+				operator( )( T const &lhs, U const &rhs )
+				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
+					return lhs < rhs;
+				}
+				DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING
+			};
+		} // namespace json_details
+
 		class json_path_node;
 
 		[[nodiscard]] inline std::vector<json_path_node>
@@ -75,9 +87,8 @@ namespace daw::json {
 		};
 
 		/// Convert a json_path_node stack to a JSON Path string
-		/// \param path_stack A vector with json_path_nodes representing the path in
-		/// the JSON document tree
-		/// \return A string in JSON Path format
+		/// \param path_stack A vector with json_path_nodes representing the path
+		/// in the JSON document tree \return A string in JSON Path format
 		[[nodiscard]] inline std::string
 		to_json_path_string( std::vector<json_path_node> const &path_stack ) {
 			return daw::algorithm::accumulate(
@@ -102,7 +113,7 @@ namespace daw::json {
 			if( parse_location == nullptr or doc_start == nullptr ) {
 				return { };
 			}
-			if( std::less<>{ }( parse_location, doc_start ) ) {
+			if( json_details::less{ }( parse_location, doc_start ) ) {
 				return { };
 			}
 
@@ -111,8 +122,8 @@ namespace daw::json {
 				char const *last;
 				std::vector<json_path_node> parse_stack{ };
 
-				// This is for when we throw after array/class end, but before the next
-				// value starts
+				// This is for when we throw after array/class end, but before the
+				// next value starts
 				std::optional<json_path_node> last_popped{ };
 				json_path_node state{ };
 
@@ -257,8 +268,8 @@ namespace daw::json {
 				json_event_parser( doc_start, handler );
 #if defined( DAW_USE_EXCEPTIONS )
 			} catch( json_exception const & ) {
-				// Ignoring because we are only looking for the stack leading up to this
-				// and it may have come from an error
+				// Ignoring because we are only looking for the stack leading up to
+				// this and it may have come from an error
 			}
 #endif
 			if( handler.last_popped ) {
@@ -289,7 +300,7 @@ namespace daw::json {
 		find_line_number_of( char const *doc_pos, char const *doc_start ) {
 			daw_json_ensure( doc_pos != nullptr and doc_start != nullptr,
 			                 ErrorReason::UnexpectedEndOfData );
-			daw_json_ensure( std::less<>{ }( doc_start, doc_pos ),
+			daw_json_ensure( json_details::less{ }( doc_start, doc_pos ),
 			                 ErrorReason::UnexpectedEndOfData );
 
 			return daw::algorithm::accumulate( doc_start, doc_pos, std::size_t{ },
@@ -310,13 +321,12 @@ namespace daw::json {
 		find_column_number_of( char const *doc_pos, char const *doc_start ) {
 			daw_json_ensure( doc_pos != nullptr and doc_start != nullptr,
 			                 ErrorReason::UnexpectedEndOfData );
-			daw_json_ensure( std::less<>{ }( doc_start, doc_pos ),
+			daw_json_ensure( json_details::less{ }( doc_start, doc_pos ),
 			                 ErrorReason::UnexpectedEndOfData );
 
-			auto first = daw::reverse_iterator<char const *>( doc_pos );
-			auto last = daw::reverse_iterator<char const *>( doc_start );
-			auto pos =
-			  std::distance( first, daw::algorithm::find( first, last, '\n' ) );
+			auto const first = daw::reverse_iterator<char const *>( doc_pos );
+			auto const last = daw::reverse_iterator<char const *>( doc_start );
+			auto const pos = daw::algorithm::find( first, last, '\n' ) - first;
 			daw_json_ensure( pos >= 0, ErrorReason::Unknown );
 			return static_cast<std::size_t>( pos );
 		}

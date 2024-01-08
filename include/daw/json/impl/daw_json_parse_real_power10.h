@@ -13,13 +13,10 @@
 #include "daw_json_exec_modes.h"
 
 #include <daw/daw_arith_traits.h>
-#include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
 
-#include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <cstdint>
 #include <limits>
 #include <type_traits>
 
@@ -62,11 +59,19 @@ namespace daw::json {
 			inline constexpr int max_dbl_exp =
 			  std::numeric_limits<double>::max_exponent10;
 
+			template<typename T>
+			DAW_ATTRIB_INLINE constexpr T const &Min( T const &l,
+			                                          T const &r ) noexcept {
+				if( l <= r ) {
+					return l;
+				}
+				return r;
+			}
+
 			template<typename Result>
 			inline constexpr int max_exp =
 			  std::is_same_v<Result, float>
-			    ? ( std::min )( max_dbl_exp,
-			                    std::numeric_limits<float>::max_exponent10 )
+			    ? Min( max_dbl_exp, std::numeric_limits<float>::max_exponent10 )
 			    : max_dbl_exp;
 
 			template<typename Result, typename Unsigned>
@@ -135,5 +140,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json
