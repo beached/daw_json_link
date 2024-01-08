@@ -22,6 +22,7 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_cast.h>
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_likely.h>
 
@@ -31,6 +32,10 @@
 #include <cstring>
 #include <limits>
 #include <type_traits>
+
+#if defined( DAW_HAS_MSVC )
+#include <intrin.h>
+#endif
 
 // Suppress additional buffer overrun check
 // I have no idea why MSVC thinks some functions here are vulnerable to the
@@ -358,7 +363,7 @@ namespace daw::jkj::dragonbox {
 					}
 
 					constexpr uint128 &operator+=( std::uint64_t n ) & noexcept {
-#if defined( DAW_IS_CONSTANT_EVALUATED ) and defined( _MSC_VER ) and \
+#if defined( DAW_IS_CONSTANT_EVALUATED ) and defined( DAW_HAS_MSVC ) and \
   defined( _M_X64 )
 						if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
 							auto carry = _addcarry_u64( 0, low_, n, &low_ );
@@ -821,7 +826,7 @@ namespace daw::jkj::dragonbox {
 					}
 				}
 			} // namespace div
-		}   // namespace detail
+		} // namespace detail
 
 		////////////////////////////////////////////////////////////////////////////////////////
 		// DIY floating-point data type
@@ -2218,8 +2223,8 @@ namespace daw::jkj::dragonbox {
 						validate_input( ieee754_bits<Float> ) noexcept {}
 					};
 				} // namespace input_validation
-			}   // namespace policy_impl
-		}     // namespace detail
+			} // namespace policy_impl
+		} // namespace detail
 
 		namespace policy {
 			namespace sign {
@@ -2297,7 +2302,7 @@ namespace daw::jkj::dragonbox {
 				inline constexpr auto do_nothing =
 				  detail::policy_impl::input_validation::do_nothing{ };
 			} // namespace input_validation
-		}   // namespace policy
+		} // namespace policy
 
 		namespace detail {
 			////////////////////////////////////////////////////////////////////////////////////////
@@ -3307,7 +3312,7 @@ namespace daw::jkj::dragonbox {
 					return convert_to_policy_holder( policy_pair_list{ } );
 				}
 			} // namespace policy_impl
-		}   // namespace detail
+		} // namespace detail
 
 		////////////////////////////////////////////////////////////////////////////////////////
 		// The interface function
@@ -3347,7 +3352,7 @@ namespace daw::jkj::dragonbox {
 					}
 				};
 			} // namespace
-		}   // namespace detail
+		} // namespace detail
 
 		template<class Float, class... Policies>
 		[[nodiscard]] JKJ_SAFEBUFFERS DAW_ATTRIB_INLINE constexpr auto
