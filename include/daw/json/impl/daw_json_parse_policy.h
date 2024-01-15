@@ -486,14 +486,14 @@ namespace daw::json {
 			}
 
 			template<char PrimLeft>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr BasicParsePolicy
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy
 			skip_bracketed_item_checked( ) {
 				return CommentPolicy::template skip_bracketed_item_checked<PrimLeft>(
 				  *this );
 			}
 
 			template<char PrimLeft>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr BasicParsePolicy
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy
 			skip_bracketed_item_unchecked( ) {
 				return CommentPolicy::template skip_bracketed_item_unchecked<PrimLeft>(
 				  *this );
@@ -516,16 +516,16 @@ namespace daw::json {
 			}
 		};
 
-		BasicParsePolicy( )->BasicParsePolicy<>;
+		BasicParsePolicy( ) -> BasicParsePolicy<>;
 
-		BasicParsePolicy( char const *, char const * )->BasicParsePolicy<>;
+		BasicParsePolicy( char const *, char const * ) -> BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, Allocator const & )
 		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
 
 		BasicParsePolicy( char const *, char const *, char const *, char const * )
-		  ->BasicParsePolicy<>;
+		  -> BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, char const *, char const *,
@@ -540,7 +540,7 @@ namespace daw::json {
 			constexpr DefaultParsePolicy( BasicParsePolicy const &other ) noexcept
 			  : BasicParsePolicy( other ) {}
 			constexpr DefaultParsePolicy( BasicParsePolicy &&other ) noexcept
-			  : BasicParsePolicy( DAW_MOVE( other ) ) {}
+			  : BasicParsePolicy( std::move( other ) ) {}
 		};
 
 		template<json_options_t PolicyFlags = json_details::default_policy_flag,
@@ -563,7 +563,7 @@ namespace daw::json {
 			template<auto... PolicyFlags>
 			struct parse_flags_t {
 				static_assert(
-				  ( json_details::is_option_flag<decltype( PolicyFlags )> and ... ),
+				  json_details::are_option_flags<decltype( PolicyFlags )...>,
 				  "Only registered policy types are allowed" );
 				static constexpr json_options_t value = parse_options( PolicyFlags... );
 			};

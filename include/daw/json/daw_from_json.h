@@ -15,9 +15,11 @@
 #include "impl/daw_json_parse_value.h"
 #include "impl/daw_json_value.h"
 
-#include <daw/daw_traits.h>
+#include <daw/daw_data_end.h>
+#include <daw/traits/daw_traits_conditional.h>
 
-#include <iterator>
+#include <daw/stdinc/data_access.h>
+#include <daw/stdinc/move_fwd_exch.h>
 #include <string_view>
 
 namespace daw::json {
@@ -392,7 +394,7 @@ namespace daw::json {
 		[[nodiscard]] inline constexpr auto
 		from_json( basic_json_value<PolicyFlags, Allocator> value ) {
 
-			return from_json<JsonMember, KnownBounds>( DAW_MOVE( value ),
+			return from_json<JsonMember, KnownBounds>( std::move( value ),
 			                                           options::parse_flags<> );
 		}
 
@@ -457,8 +459,8 @@ namespace daw::json {
 		         typename Allocator>
 		[[nodiscard]] constexpr auto from_json( basic_json_value<PolicyFlags> value,
 		                                        std::string_view member_path ) {
-			return from_json<JsonMember, KnownBounds>( DAW_MOVE( value ), member_path,
-			                                           options::parse_flags<> );
+			return from_json<JsonMember, KnownBounds>(
+			  std::move( value ), member_path, options::parse_flags<> );
 		}
 
 		/// @brief Parse JSON data where the root item is an array
@@ -489,7 +491,7 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using element_type = json_details::json_deduced_type<JsonElement>;
-			static_assert( traits::not_same_v<element_type, void>,
+			static_assert( not std::is_same_v<element_type, void>,
 			               "Unknown JsonElement type." );
 
 			using parser_t =
@@ -583,7 +585,7 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using element_type = json_details::json_deduced_type<JsonElement>;
-			static_assert( traits::not_same_v<element_type, void>,
+			static_assert( not std::is_same_v<element_type, void>,
 			               "Unknown JsonElement type." );
 
 			using parser_t =

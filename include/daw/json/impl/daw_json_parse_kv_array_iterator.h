@@ -93,8 +93,8 @@ namespace daw::json {
 
 				static constexpr value_type
 				get_pair( typename json_class_type::parse_to_t &&v ) {
-					return value_type( std::get<0>( DAW_MOVE( v.members ) ),
-					                   std::get<1>( DAW_MOVE( v.members ) ) );
+					return value_type( std::get<0>( std::move( v.members ) ),
+					                   std::get<1>( std::move( v.members ) ) );
 				}
 
 				DAW_ATTRIB_NOINLINE value_type operator*( ) const {

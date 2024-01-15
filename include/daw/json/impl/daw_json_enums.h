@@ -10,11 +10,10 @@
 
 #include "version.h"
 
-#include <daw/daw_utility.h>
+#include <daw/daw_constant.h>
 
 #include <cstdint>
 #include <string_view>
-#include <utility>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

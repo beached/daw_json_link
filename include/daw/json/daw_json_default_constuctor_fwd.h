@@ -26,6 +26,12 @@
  */
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			template<typename T, typename... Args>
+			inline constexpr bool should_list_construct_v =
+			  not std::is_constructible_v<T, Args...> and
+			  daw::traits::is_list_constructible_v<T, Args...>;
+		}
 		/// @brief Default Constructor for a type.  It accounts for aggregate types
 		/// and uses brace construction for them
 		/// @tparam T type to construct
@@ -42,10 +48,10 @@ namespace daw::json {
 				return T( DAW_FWD( args )... );
 			}
 
-			template<typename... Args,
-			         std::enable_if_t<(not std::is_constructible_v<T, Args...> and
-			                           traits::is_list_constructible_v<T, Args...>),
-			                          std::nullptr_t> = nullptr>
+			template<
+			  typename... Args,
+			  std::enable_if_t<json_details::should_list_construct_v<T, Args...>,
+			                   std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr T
 			operator( )( Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 			  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {

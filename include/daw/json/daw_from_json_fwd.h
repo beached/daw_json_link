@@ -263,7 +263,7 @@ namespace daw::json {
 		/// @param json_data JSON string data containing array
 		/// @tparam KnownBounds The bounds of the json_data are known to contain the
 		/// whole value
-		/// @return A Container containing parsed data from JSON string
+		/// @return A Container containing parsed data from JSON string.  Defaults to a std::vector
 		/// @throws daw::json::json_exception
 		template<typename JsonElement,
 		         typename Container =

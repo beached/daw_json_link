@@ -14,10 +14,10 @@
 #include "daw_json_link_types.h"
 #include "impl/daw_json_assert.h"
 
+#include <daw/algorithms/daw_algorithm_accumulate.h>
+#include <daw/algorithms/daw_algorithm_find.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_move.h>
-#include <daw/impl/daw_algorithm_accumulate.h>
-#include <daw/impl/daw_algorithm_find.h>
 #include <daw/iterator/daw_reverse_iterator.h>
 
 #include <optional>
@@ -56,7 +56,7 @@ namespace daw::json {
 			find_json_path_stack_to( char const *parse_location,
 			                         char const *doc_start );
 
-			constexpr json_path_node( ) = default;
+			json_path_node( ) = default;
 			constexpr json_path_node( JsonBaseParseTypes Type, std::string_view Name,
 			                          long long Index, char const *ValueStart )
 			  : m_name( Name )
@@ -93,14 +93,15 @@ namespace daw::json {
 		to_json_path_string( std::vector<json_path_node> const &path_stack ) {
 			return daw::algorithm::accumulate(
 			  std::data( path_stack ), daw::data_end( path_stack ), std::string{ },
-			  []( auto &&state, json_path_node const &sv ) mutable {
-				  if( sv.index( ) >= 0 ) {
-					  state += "[" + std::to_string( sv.index( ) ) + "]";
-				  } else if( not sv.name( ).empty( ) ) {
-					  state += "." + static_cast<std::string>( sv.name( ) );
-				  }
-				  return DAW_FWD( state );
-			  } );
+			  []( auto &&state, json_path_node const &sv )
+			    DAW_JSON_CPP23_STATIC_CALL_OP {
+				    if( sv.index( ) >= 0 ) {
+					    state += "[" + std::to_string( sv.index( ) ) + "]";
+				    } else if( not sv.name( ).empty( ) ) {
+					    state += "." + static_cast<std::string>( sv.name( ) );
+				    }
+				    return DAW_FWD( state );
+			    } );
 		}
 
 		/// Get the json_path_nodes representing the path to the nearest value's
@@ -275,7 +276,7 @@ namespace daw::json {
 			if( handler.last_popped ) {
 				handler.parse_stack.push_back( *handler.last_popped );
 			}
-			return DAW_MOVE( handler.parse_stack );
+			return std::move( handler.parse_stack );
 		}
 
 		[[nodiscard]] inline std::vector<json_path_node>
@@ -304,12 +305,13 @@ namespace daw::json {
 			                 ErrorReason::UnexpectedEndOfData );
 
 			return daw::algorithm::accumulate( doc_start, doc_pos, std::size_t{ },
-			                                   []( std::size_t count, char c ) {
-				                                   if( c == '\n' ) {
-					                                   return count + 1;
-				                                   }
-				                                   return count;
-			                                   } );
+			                                   []( std::size_t count, char c )
+			                                     DAW_JSON_CPP23_STATIC_CALL_OP {
+				                                     if( c == '\n' ) {
+					                                     return count + 1;
+				                                     }
+				                                     return count;
+			                                     } );
 		}
 
 		[[nodiscard]] constexpr std::size_t

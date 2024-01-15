@@ -63,7 +63,7 @@ namespace daw::json {
 				if constexpr( ParseState::has_allocator ) {
 					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
 					return daw::try_alloc_construct<Value, Constructor>(
-					  DAW_MOVE( alloc ), DAW_FWD( args )... );
+					  std::move( alloc ), DAW_FWD( args )... );
 				} else {
 					static_assert(
 					  std::is_invocable_v<Constructor, Args...>,
@@ -79,14 +79,14 @@ namespace daw::json {
 				DAW_ATTRIB_INLINE constexpr auto
 				operator( )( fwd_pack<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
-					return Constructor{ }( get<Is>( DAW_MOVE( tp ) )... );
+					return Constructor{ }( get<Is>( std::move( tp ) )... );
 				}
 
 				template<typename... TArgs, typename Allocator, std::size_t... Is>
 				DAW_ATTRIB_INLINE constexpr auto
 				operator( )( fwd_pack<TArgs...> &&tp, Allocator &alloc,
 				             std::index_sequence<Is...> ) const {
-					return Constructor{ }( get<Is>( DAW_MOVE( tp ) )...,
+					return Constructor{ }( get<Is>( std::move( tp ) )...,
 					                       DAW_FWD( alloc ) );
 				}
 
@@ -97,7 +97,7 @@ namespace daw::json {
 				             std::index_sequence<Is...> ) const {
 
 					return Constructor{ }( std::allocator_arg, DAW_FWD( alloc ),
-					                       get<Is>( DAW_MOVE( tp ) )... );
+					                       get<Is>( std::move( tp ) )... );
 				}
 			};
 			template<typename Constructor>
@@ -118,26 +118,23 @@ namespace daw::json {
 					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
 					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
-							return Constructor{ }( get<Is>( DAW_MOVE( tp_args ) )...,
-							                       DAW_MOVE( alloc ) );
-						}
-						( std::make_index_sequence<sizeof...( Args )>{ } );
+							return Constructor{ }( get<Is>( std::move( tp_args ) )...,
+							                       std::move( alloc ) );
+						}( std::make_index_sequence<sizeof...( Args )>{ } );
 					} else if constexpr( std::is_invocable_v<Constructor,
 					                                         std::allocator_arg_t,
 					                                         alloc_t, Args...> ) {
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
-							return Constructor{ }( std::allocator_arg, DAW_MOVE( alloc ),
-							                       get<Is>( DAW_MOVE( tp_args ) )... );
-						}
-						( std::make_index_sequence<sizeof...( Args )>{ } );
+							return Constructor{ }( std::allocator_arg, std::move( alloc ),
+							                       get<Is>( std::move( tp_args ) )... );
+						}( std::make_index_sequence<sizeof...( Args )>{ } );
 					} else {
 						static_assert(
 						  std::is_invocable_v<Constructor, Args...>,
 						  "Unable to construct value with the supplied arguments" );
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
-							return Constructor{ }( get<Is>( DAW_MOVE( tp_args ) )... );
-						}
-						( std::make_index_sequence<sizeof...( Args )>{ } );
+							return Constructor{ }( get<Is>( std::move( tp_args ) )... );
+						}( std::make_index_sequence<sizeof...( Args )>{ } );
 					}
 				} else {
 					// Silence MSVC warning, used in other if constexpr case
@@ -146,9 +143,8 @@ namespace daw::json {
 					  std::is_invocable_v<Constructor, Args...>,
 					  "Unable to construct value with the supplied arguments" );
 					return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
-						return Constructor{ }( get<Is>( DAW_MOVE( tp_args ) )... );
-					}
-					( std::make_index_sequence<sizeof...( Args )>{ } );
+						return Constructor{ }( get<Is>( std::move( tp_args ) )... );
+					}( std::make_index_sequence<sizeof...( Args )>{ } );
 				}
 #else
 				if constexpr( ParseState::has_allocator ) {
@@ -157,20 +153,20 @@ namespace daw::json {
 					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
 					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
 						return construct_value_tp_invoke<Constructor>(
-						  DAW_MOVE( tp_args ), DAW_MOVE( alloc ),
+						  std::move( tp_args ), std::move( alloc ),
 						  std::index_sequence_for<Args...>{ } );
 					} else if constexpr( std::is_invocable_v<Constructor,
 					                                         std::allocator_arg_t,
 					                                         alloc_t, Args...> ) {
 						return construct_value_tp_invoke<Constructor>(
-						  std::allocator_arg, DAW_MOVE( alloc ), DAW_MOVE( tp_args ),
+						  std::allocator_arg, std::move( alloc ), std::move( tp_args ),
 						  std::index_sequence_for<Args...>{ } );
 					} else {
 						static_assert(
 						  std::is_invocable_v<Constructor, Args...>,
 						  "Unable to construct value with the supplied arguments" );
 						return construct_value_tp_invoke<Constructor>(
-						  DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
+						  std::move( tp_args ), std::index_sequence_for<Args...>{ } );
 					}
 				} else {
 					// Silence MSVC warning, used in other if constexpr case
@@ -179,7 +175,7 @@ namespace daw::json {
 					  std::is_invocable_v<Constructor, Args...>,
 					  "Unable to construct value with the supplied arguments" );
 					return construct_value_tp_invoke<Constructor>(
-					  DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
+					  std::move( tp_args ), std::index_sequence_for<Args...>{ } );
 				}
 #endif
 			}
@@ -614,9 +610,9 @@ namespace daw::json {
 			template<typename AssociativeContainer>
 			struct json_deduced_type_map<
 			  AssociativeContainer,
-			  std::enable_if_t<std::conjunction_v<
-			    not_trait<has_json_data_contract_trait<AssociativeContainer>>,
-			    is_associative_container<AssociativeContainer>>>> {
+			  std::enable_if_t<(
+			    not has_json_data_contract_trait_v<AssociativeContainer> and
+			    is_associative_container_v<AssociativeContainer> )>> {
 				static constexpr bool is_null = false;
 				using key = typename AssociativeContainer::key_type;
 				using value = typename AssociativeContainer::mapped_type;
@@ -642,12 +638,15 @@ namespace daw::json {
 			};
 
 			template<typename T>
+			inline constexpr bool has_nullable_type_map_v =
+
+			  concepts::is_nullable_value_v<T> and
+			  not has_json_data_contract_trait_v<T> and
+			  daw::is_detected_v<json_deduced_type_map,
+			                     concepts::nullable_value_type_t<T>>;
+			template<typename T>
 			struct json_deduced_type_map<
-			  T, std::enable_if_t<
-			       concepts::is_nullable_value_v<T> and
-			       not has_json_data_contract_trait_v<T> and
-			       daw::is_detected_v<json_deduced_type_map,
-			                          concepts::nullable_value_type_t<T>>>> {
+			  T, std::enable_if_t<has_nullable_type_map_v<T>>> {
 				static constexpr bool is_null = true;
 				using sub_type = concepts::nullable_value_type_t<T>;
 				using type = json_deduced_type_map<sub_type>;
@@ -659,9 +658,9 @@ namespace daw::json {
 			inline constexpr bool has_deduced_type_mapping_v =
 			  json_deduced_type_map<T>::type_map_found;
 
-			template<typename T>
-			using has_deduced_type_mapping =
-			  std::bool_constant<has_deduced_type_mapping_v<T>>;
+			template<typename... Ts>
+			inline constexpr bool are_deduced_type_mapped_v =
+			  ( has_deduced_type_mapping_v<Ts> and ... );
 
 			template<typename Mapped, bool Found = true>
 			struct json_link_quick_map_type {
@@ -781,8 +780,8 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool is_json_class_map_v =
-			  std::conjunction_v<has_json_data_contract_trait<T>,
-			                     is_json_class_map<json_data_contract_trait_t<T>>>;
+			  has_json_data_contract_trait_v<T> and
+			  is_json_class_map_v<json_data_contract_trait_t<T>>;
 
 			template<typename T>
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_deduced_type_impl( ) noexcept {
@@ -852,9 +851,9 @@ namespace daw::json {
 			  not std::is_same_v<json_deduced_type<T>,
 			                     missing_json_data_contract_for_or_unknown_type<T>>;
 
-			template<typename T>
-			using has_json_deduced_type =
-			  std::bool_constant<has_json_deduced_type_v<T>>;
+			template<typename... Ts>
+			inline constexpr bool all_have_deduced_type_v =
+			  ( has_json_deduced_type_v<Ts> and ... );
 
 			template<typename T>
 			inline constexpr bool has_unnamed_default_type_mapping_v =
@@ -878,7 +877,7 @@ namespace daw::json {
 			using json_class_parse_result_t = typename daw::conditional_t<
 			  std::is_invocable_v<Constructor, typename Members::parse_to_t...>,
 			  std::invoke_result<Constructor, typename Members::parse_to_t...>,
-			  traits::identity<could_not_construct_from_members_error<
+			  daw::traits::identity<could_not_construct_from_members_error<
 			    Constructor, Members...>>>::type;
 
 			template<typename JsonMember>
@@ -911,5 +910,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

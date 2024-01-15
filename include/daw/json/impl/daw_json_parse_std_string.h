@@ -10,13 +10,19 @@
 
 #include "version.h"
 
+#include "daw/json/daw_json_switches.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_not_const_ex_functions.h"
 
+#include <daw/algorithms/daw_algorithm_copy.h>
+#include <daw/algorithms/daw_algorithm_copy_n.h>
+#include <daw/daw_data_end.h>
 #include <daw/daw_likely.h>
 
-#include <string>
+#include <cstddef>
+#include <daw/stdinc/data_access.h>
+#include <daw/stdinc/range_access.h>
 #include <type_traits>
 
 namespace daw::json {
@@ -209,23 +215,26 @@ namespace daw::json {
 				if( auto const first_slash =
 				      static_cast<std::ptrdiff_t>( parse_state.counter ) - 1;
 				    first_slash > 1 ) {
-					it = std::copy_n( parse_state.first, first_slash, it );
+					it = daw::algorithm::copy_n( parse_state.first, it,
+					                             static_cast<std::size_t>( first_slash ) )
+					       .output;
 					parse_state.first += first_slash;
 				}
-				constexpr auto pred = []( auto const &r ) {
-					if constexpr( ParseState::is_unchecked_input ) {
-						return DAW_LIKELY( r.front( ) != '"' );
-					} else {
-						return DAW_LIKELY( r.has_more( ) ) and ( r.front( ) != '"' );
-					}
-				};
+				constexpr auto pred =
+				  []( auto const &r ) DAW_JSON_CPP23_STATIC_CALL_OP {
+					  if constexpr( ParseState::is_unchecked_input ) {
+						  return DAW_LIKELY( r.front( ) != '"' );
+					  } else {
+						  return DAW_LIKELY( r.has_more( ) ) and ( r.front( ) != '"' );
+					  }
+				  };
 
 				while( pred( parse_state ) ) {
 					{
 						char const *first = parse_state.first;
 						char const *const last = parse_state.last;
-						if constexpr( std::is_same<typename ParseState::exec_tag_t,
-						                           constexpr_exec_tag>::value ) {
+						if constexpr( std::is_same_v<typename ParseState::exec_tag_t,
+						                             constexpr_exec_tag> ) {
 
 							daw_json_assert_weak( KnownBounds or first < last,
 							                      ErrorReason::UnexpectedEndOfData,
@@ -305,8 +314,8 @@ namespace daw::json {
 				daw_json_assert_weak( std::size( result ) >= sz,
 				                      ErrorReason::InvalidString, parse_state );
 				result.resize( sz );
-				if constexpr( std::is_convertible<string_type,
-				                                  json_result<JsonMember>>::value ) {
+				if constexpr( std::is_convertible_v<string_type,
+				                                    json_result<JsonMember>> ) {
 					return result;
 				} else {
 					using constructor_t = typename JsonMember::constructor_t;
@@ -316,5 +325,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

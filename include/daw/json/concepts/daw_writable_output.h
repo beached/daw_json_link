@@ -31,9 +31,10 @@ namespace daw::json {
 					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 #endif
 						daw::algorithm::transform_n( source.data( ), buff, source.size( ),
-						                             []( auto c ) {
-							                             return static_cast<T>( c );
-						                             } );
+						                             []( auto c )
+						                               DAW_JSON_CPP23_STATIC_CALL_OP {
+							                               return static_cast<T>( c );
+						                               } );
 #if defined( DAW_IS_CONSTANT_EVALUATED )
 					} else {
 						memcpy( buff, source.data( ), source.size( ) );
@@ -75,7 +76,8 @@ namespace daw::json {
 				static constexpr void write( T *&ptr, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					daw_json_ensure( ptr, daw::json::ErrorReason::OutputError );
-					constexpr auto writer = []( T *&p, auto sv ) {
+					constexpr auto writer = []( T *&p,
+					                            auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
 						if( sv.empty( ) ) {
 							return 0;
 						}
@@ -102,7 +104,8 @@ namespace daw::json {
 				static inline void write( std::ostream &os,
 				                          StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
-					constexpr auto writer = []( std::ostream &o, auto sv ) {
+					constexpr auto writer = []( std::ostream &o,
+					                            auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
 						if( sv.empty( ) ) {
 							return 0;
 						}
@@ -128,7 +131,8 @@ namespace daw::json {
 				template<typename... StringViews>
 				static inline void write( std::FILE *fp, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
-					constexpr auto writer = []( std::FILE *f, auto sv ) {
+					constexpr auto writer = []( std::FILE *f,
+					                            auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
 						if( sv.empty( ) ) {
 							return 0;
 						}
@@ -175,7 +179,8 @@ namespace daw::json {
 					static_assert( sizeof...( StringViews ) > 0 );
 					daw_json_ensure( out.size( ) >= ( std::size( svs ) + ... ),
 					                 daw::json::ErrorReason::OutputError );
-					constexpr auto writer = []( T &s, auto sv ) {
+					constexpr auto writer = []( T &s,
+					                            auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
 						if( sv.empty( ) ) {
 							return 0;
 						}
@@ -234,7 +239,8 @@ namespace daw::json {
 					auto const total_size = ( std::size( svs ) + ... );
 					out.resize( start_pos + total_size );
 
-					constexpr auto writer = []( CharT *&p, auto sv ) {
+					constexpr auto writer = []( CharT *&p,
+					                            auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
 						if( sv.empty( ) ) {
 							return 0;
 						}
@@ -272,13 +278,14 @@ namespace daw::json {
 				static constexpr void write( T &it, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 
-					constexpr auto writer = []( T &i, auto sv ) {
-						for( char c : daw::string_view( sv ) ) {
-							*i = c;
-							++i;
-						}
-						return 0;
-					};
+					constexpr auto writer = []( T &i, auto sv )
+					                          DAW_JSON_CPP23_STATIC_CALL_OP {
+						                          for( char c : daw::string_view( sv ) ) {
+							                          *i = c;
+							                          ++i;
+						                          }
+						                          return 0;
+					                          };
 					(void)( writer( it, svs ) | ... );
 				}
 
@@ -288,5 +295,5 @@ namespace daw::json {
 				}
 			};
 		} // namespace concepts
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

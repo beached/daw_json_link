@@ -17,9 +17,9 @@
 #include <daw/daw_not_null.h>
 
 #include <cstddef>
+#include <daw/stdinc/move_fwd_exch.h>
 #include <exception>
 #include <string_view>
-#include <utility>
 
 #if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
 #include <iostream>
@@ -139,7 +139,6 @@ namespace daw::json {
 		template<typename ParseState>
 		[[noreturn]] inline void daw_json_error( json_details::missing_token reason,
 		                                         ParseState const &location ) {
-			using namespace std::string_literals;
 			if( location.first ) {
 				json_details::handle_error( json_exception( reason, location.first ) );
 			}

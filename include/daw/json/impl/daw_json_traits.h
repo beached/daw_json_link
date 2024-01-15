@@ -21,15 +21,11 @@
 #include <daw/cpp_17.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_move.h>
-#include <daw/daw_scope_guard.h>
 #include <daw/daw_traits.h>
 
-#include <array>
-#include <memory>
-#include <optional>
 #include <string>
-#include <unordered_map>
-#include <utility>
+#include <string_view>
+#include <type_traits>
 
 namespace daw {
 	/// @brief Used to flag that the default will be used.
@@ -57,10 +53,12 @@ namespace daw::json {
 			struct constructor_cannot_be_invoked;
 
 			template<typename Constructor, typename... Args>
-			using construction_result = daw::conditional_t<
-			  std::is_invocable_v<Constructor, Args...>,
-			  std::invoke_result<Constructor, Args...>,
-			  traits::identity<constructor_cannot_be_invoked<Constructor, Args...>>>;
+			struct construction_result
+			  : daw::conditional_t<
+			      std::is_invocable_v<Constructor, Args...>,
+			      std::invoke_result<Constructor, Args...>,
+			      daw::traits::identity<
+			        constructor_cannot_be_invoked<Constructor, Args...>>> {};
 		} // namespace json_details
 
 		namespace json_details {
@@ -146,8 +144,8 @@ namespace daw::json {
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT( is_a_json_type_v,
 			                                    T::i_am_a_json_type );
 
-			template<typename T>
-			using is_a_json_type = std::bool_constant<is_a_json_type_v<T>>;
+			template<typename... Ts>
+			inline constexpr bool are_json_types_v = ( is_a_json_type_v<Ts> and ... );
 
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT( is_an_ordered_member_v,
 			                                    T::i_am_an_ordered_member );
@@ -174,7 +172,7 @@ namespace daw::json {
 			    daw::conditional_t<has_data_contract_constructor_v<T>,
 			                       ident_trait<data_contract_constructor_t, T>,
 			                       ident_trait<default_constructor, T>>,
-			    traits::identity<Default>>::type,
+			    daw::traits::identity<Default>>::type,
 			  json_class_constructor_t_impl, T>;
 
 			DAW_JSON_MAKE_REQ_TRAIT( is_string_view_like_v,
@@ -369,5 +367,5 @@ namespace daw::json {
 			template<typename, typename = void>
 			inline constexpr bool is_deduced_empty_class_v = false;
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

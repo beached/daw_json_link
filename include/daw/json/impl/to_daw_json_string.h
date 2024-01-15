@@ -93,7 +93,7 @@ namespace daw::json {
 			[[nodiscard]] static inline auto use_stream( U const &v ) {
 				std::stringstream ss{ };
 				ss << v;
-				return DAW_MOVE( ss ).str( );
+				return std::move( ss ).str( );
 			}
 
 			template<typename U>
@@ -181,10 +181,8 @@ namespace daw::json {
 		struct default_from_json_converter_t {
 			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr decltype( auto )
 			operator( )( std::string_view sv ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
-				if constexpr( std::disjunction<
-				                std::is_same<T, std::string_view>,
-				                std::is_same<T, std::optional<std::string_view>>>::
-				                value ) {
+				if constexpr( std::is_same_v<T, std::string_view> or
+				              std::is_same_v<T, std::optional<std::string_view>> ) {
 					return sv;
 				} else if constexpr( json_details::has_from_string_v<T> ) {
 					return from_string( daw::tag<T>, sv );
@@ -273,7 +271,7 @@ namespace daw::json {
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
 			  typename WritableType, typename Container,
 			  std::enable_if_t<
-			    traits::is_container_like_v<daw::remove_cvref_t<Container>>,
+			    daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			    std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr WritableType
 			copy_to_iterator( WritableType it, Container const &container ) {
@@ -643,9 +641,9 @@ namespace daw::json {
 				auto lpos = 0;
 				while( lpos < rpos ) {
 					--rpos;
-					auto tmp = DAW_MOVE( first[lpos] );
-					first[lpos] = DAW_MOVE( first[rpos] );
-					first[rpos] = DAW_MOVE( tmp );
+					auto tmp = std::move( first[lpos] );
+					first[lpos] = std::move( first[rpos] );
+					first[rpos] = std::move( tmp );
 					++lpos;
 				}
 			}
@@ -662,8 +660,8 @@ namespace daw::json {
 				using to_strings::to_string;
 				using under_type = base_int_type_t<parse_to_t>;
 
-				if constexpr( std::disjunction_v<std::is_enum<parse_to_t>,
-				                                 daw::is_integral<parse_to_t>> ) {
+				if constexpr( std::is_enum_v<parse_to_t> or
+				              daw::is_integral_v<parse_to_t> ) {
 					auto v = static_cast<under_type>( value );
 
 					char buff[daw::numeric_limits<under_type>::digits10 + 10]{ };
@@ -750,9 +748,8 @@ namespace daw::json {
 					} else {
 						it.put( '0' );
 					}
-				} else if constexpr( std::disjunction_v<
-				                       std::is_enum<parse_to_t>,
-				                       daw::is_integral<parse_to_t>> ) {
+				} else if constexpr( std::is_enum_v<parse_to_t> or
+				                     daw::is_integral_v<parse_to_t> ) {
 					auto v = static_cast<under_type>( value );
 
 					if( DAW_UNLIKELY( v == 0 ) ) {
@@ -984,7 +981,8 @@ namespace daw::json {
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t,
 			         std::size_t... Is>
-			static serialization_policy<WriteableType, SerializationOptions>
+			DAW_ATTRIB_INLINE constexpr serialization_policy<WriteableType,
+			                                                 SerializationOptions>
 			to_daw_json_string_tuple(
 			  serialization_policy<WriteableType, SerializationOptions> it,
 			  parse_to_t const &value, std::index_sequence<Is...> ) {
@@ -1005,9 +1003,10 @@ namespace daw::json {
 				};
 				(void)to_daw_json_string_help;
 
-				daw::Empty const expander[]{
-				  ( to_daw_json_string_help( daw::constant<Is>{ } ), daw::Empty{ } )...,
-				  daw::Empty{} };
+				daw::empty_t const expander[]{
+				  ( to_daw_json_string_help( daw::constant<Is>{ } ),
+				    daw::empty_t{ } )...,
+				  daw::empty_t{} };
 				(void)expander;
 
 				return it;
@@ -1299,7 +1298,7 @@ namespace daw::json {
 			member_to_string( template_param<JsonMember>, WriteableType it,
 			                  T const &value ) {
 				return to_daw_json_string<JsonMember>(
-				  ParseTag<JsonMember::expected_type>{ }, DAW_MOVE( it ), value );
+				  ParseTag<JsonMember::expected_type>{ }, std::move( it ), value );
 			}
 
 			template<typename>
@@ -1363,7 +1362,7 @@ namespace daw::json {
 					using base_member_t = typename daw::conditional_t<
 					  is_json_nullable_v<JsonMember>,
 					  ident_trait<json_nullable_member_type_t, JsonMember>,
-					  traits::identity<JsonMember>>::type;
+					  daw::traits::identity<JsonMember>>::type;
 
 					using dependent_member = dependent_member_t<base_member_t>;
 
@@ -1434,7 +1433,7 @@ namespace daw::json {
 				is_first = false;
 				it.write( '"', JsonMember::name, "\":", it.space );
 
-				it = member_to_string( template_arg<JsonMember>, DAW_MOVE( it ),
+				it = member_to_string( template_arg<JsonMember>, std::move( it ),
 				                       get<pos>( tp ) );
 			}
 
@@ -1549,5 +1548,5 @@ namespace daw::json {
 				return out_it;
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

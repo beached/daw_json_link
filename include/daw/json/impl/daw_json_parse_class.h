@@ -181,7 +181,7 @@ namespace daw::json {
 			///
 			template<typename JsonClass, typename... JsonMembers, typename ParseState,
 			         std::size_t... Is>
-			[[nodiscard]] static inline constexpr json_result<JsonClass>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonClass>
 			parse_json_class( ParseState &parse_state, std::index_sequence<Is...> ) {
 				static_assert( is_a_json_type_v<JsonClass> );
 				using T = typename JsonClass::parse_to_t;
@@ -239,12 +239,12 @@ namespace daw::json {
 						if constexpr( should_construct_explicitly_v<Constructor, T,
 						                                            ParseState> ) {
 							return T{ parse_class_member<
-							  Is, traits::nth_type<Is, JsonMembers...>, must_exist::value,
+							  Is, daw::traits::nth_type<Is, JsonMembers...>, must_exist::value,
 							  NeedClassPositions::value>( parse_state, known_locations )... };
 						} else {
 							return construct_value_tp<T, Constructor>(
 							  parse_state, fwd_pack{ parse_class_member<
-							                 Is, traits::nth_type<Is, JsonMembers...>,
+							                 Is, daw::traits::nth_type<Is, JsonMembers...>,
 							                 must_exist::value, NeedClassPositions::value>(
 							                 parse_state, known_locations )... } );
 						}
@@ -252,7 +252,7 @@ namespace daw::json {
 						if constexpr( should_construct_explicitly_v<Constructor, T,
 						                                            ParseState> ) {
 							auto result = T{ parse_class_member<
-							  Is, traits::nth_type<Is, JsonMembers...>, must_exist::value,
+							  Is, daw::traits::nth_type<Is, JsonMembers...>, must_exist::value,
 							  NeedClassPositions::value>( parse_state, known_locations )... };
 
 							class_cleanup_now<all_json_members_must_exist_v<T, ParseState>>(
@@ -261,7 +261,7 @@ namespace daw::json {
 						} else {
 							auto result = construct_value_tp<T, Constructor>(
 							  parse_state, fwd_pack{ parse_class_member<
-							                 Is, traits::nth_type<Is, JsonMembers...>,
+							                 Is, daw::traits::nth_type<Is, JsonMembers...>,
 							                 must_exist::value, NeedClassPositions::value>(
 							                 parse_state, known_locations )... } );
 
@@ -344,5 +344,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

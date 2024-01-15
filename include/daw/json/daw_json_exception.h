@@ -13,7 +13,7 @@
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_unreachable.h>
-#include <daw/impl/daw_algorithm_accumulate.h>
+#include <daw/algorithms/daw_algorithm_accumulate.h>
 
 #include <cstddef>
 #include <exception>

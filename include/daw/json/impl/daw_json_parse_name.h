@@ -11,10 +11,16 @@
 #include "version.h"
 
 #include "daw_json_assert.h"
+#include "daw_json_find_result.h"
 #include "daw_json_parse_std_string.h"
 #include "daw_not_const_ex_functions.h"
 
 #include <daw/daw_string_view.h>
+
+#include <cstddef>
+#include <daw/stdinc/data_access.h>
+#include <daw/stdinc/range_access.h>
+#include <limits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -194,7 +200,7 @@ namespace daw::json {
 			}
 
 			template<typename ParsePolicy>
-			[[nodiscard]] static constexpr std::pair<bool, ParsePolicy>
+			[[nodiscard]] static constexpr find_result<ParsePolicy>
 			find_range( daw::string_view str, daw::string_view start_path ) {
 				auto parse_state =
 				  ParsePolicy( std::data( str ), daw::data_end( str ) );
@@ -203,11 +209,11 @@ namespace daw::json {
 				if( parse_state.has_more( ) and not start_path.empty( ) ) {
 					found = find_range2( parse_state, start_path );
 				}
-				return std::pair<bool, ParsePolicy>( found, parse_state );
+				return find_result<ParsePolicy>{ parse_state, found };
 			}
 
 			template<typename ParsePolicy, typename Allocator>
-			[[nodiscard]] static constexpr auto
+			[[nodiscard]] static constexpr find_result<ParsePolicy>
 			find_range( daw::string_view str, daw::string_view start_path,
 			            Allocator &alloc ) {
 				static_assert(
@@ -218,11 +224,11 @@ namespace daw::json {
 				parse_state.trim_left_checked( );
 				if( parse_state.has_more( ) and not start_path.empty( ) ) {
 					if( not find_range2( parse_state, start_path ) ) {
-						return std::pair{ false, parse_state };
+						return find_result<ParsePolicy>{ parse_state, false };
 					}
 				}
-				return std::pair{ true, parse_state };
+				return find_result<ParsePolicy>{ parse_state, true };
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

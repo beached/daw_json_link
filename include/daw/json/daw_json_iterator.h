@@ -56,15 +56,13 @@ namespace daw::json {
 		 * heterogeneous, a basic_json_value_iterator may be more appropriate
 		 * @tparam ParsePolicy Parsing policy type
 		 */
-		template<typename JsonElement, auto... PolicyFlags>
-		class json_array_iterator {
-			using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
-			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
+		template<typename JsonElement, typename ParseState>
+		class json_array_iterator_t {
 			using CharT = typename ParseState::CharT;
 
 			static constexpr ParseState get_range( daw::string_view data,
 			                                       daw::string_view member_path ) {
-				auto [is_found, result] = json_details::find_range<ParseState>(
+				auto [result, is_found] = json_details::find_range<ParseState>(
 				  DAW_FWD( data ),
 				  { std::data( member_path ), std::size( member_path ) } );
 				daw_json_ensure( is_found, ErrorReason::JSONPathNotFound );
@@ -93,9 +91,9 @@ namespace daw::json {
 			mutable CharT *m_can_skip = nullptr;
 
 		public:
-			explicit json_array_iterator( ) = default;
+			explicit json_array_iterator_t( ) = default;
 
-			explicit constexpr json_array_iterator( daw::string_view jd )
+			explicit constexpr json_array_iterator_t( daw::string_view jd )
 			  : m_state( ParseState( std::data( jd ), daw::data_end( jd ) ) ) {
 
 				m_state.trim_left( );
@@ -106,8 +104,8 @@ namespace daw::json {
 				m_state.trim_left( );
 			}
 
-			explicit constexpr json_array_iterator( daw::string_view jd,
-			                                        daw::string_view start_path )
+			explicit constexpr json_array_iterator_t( daw::string_view jd,
+			                                          daw::string_view start_path )
 			  : m_state( get_range( jd, start_path ) ) {
 
 				m_state.trim_left( );
@@ -147,7 +145,7 @@ namespace daw::json {
 			 * Move the parse state to the next element
 			 * @return iterator after moving
 			 */
-			constexpr json_array_iterator &operator++( ) {
+			constexpr json_array_iterator_t &operator++( ) {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 				                      ErrorReason::UnexpectedEndOfData, m_state );
 				if( m_can_skip ) {
@@ -186,7 +184,7 @@ namespace daw::json {
 			/// @param rhs Another json_array_iterator
 			/// @return true when equivalent to rhs
 			[[nodiscard]] constexpr bool
-			operator==( json_array_iterator const &rhs ) const {
+			operator==( json_array_iterator_t const &rhs ) const {
 				if( not( *this ) ) {
 					return not rhs;
 				}
@@ -200,7 +198,7 @@ namespace daw::json {
 			/// @param rhs another json_array_iterator
 			/// @return true when rhs is not equivalent
 			[[nodiscard]] constexpr bool
-			operator!=( json_array_iterator const &rhs ) const {
+			operator!=( json_array_iterator_t const &rhs ) const {
 				if( not( *this ) ) {
 					return static_cast<bool>( rhs );
 				}
@@ -211,6 +209,11 @@ namespace daw::json {
 			}
 		};
 
+		template<typename JsonElement, auto... PolicyFlags>
+		using json_array_iterator = json_array_iterator_t<
+		  JsonElement,
+		  TryDefaultParsePolicy<BasicParsePolicy<
+		    options::details::make_parse_flags<PolicyFlags...>( ).value>>>;
 		/// Iterator for iterating over JSON array's. Requires that op
 		/// op++ be called in that sequence one time until end is reached
 		/// @tparam JsonElement type under underlying element in array.If
@@ -224,7 +227,7 @@ namespace daw::json {
 
 			static constexpr ParseState get_range( daw::string_view data,
 			                                       daw::string_view member_path ) {
-				auto [is_found, result] = json_details::find_range<ParseState>(
+				auto [result, is_found] = json_details::find_range<ParseState>(
 				  DAW_FWD( data ),
 				  { std::data( member_path ), std::size( member_path ) } );
 				daw_json_ensure( is_found, ErrorReason::JSONPathNotFound );

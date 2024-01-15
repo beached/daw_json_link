@@ -522,7 +522,7 @@ namespace daw::json {
 
 			template<typename... Ts>
 			constexpr daw::conditional_t<
-			  std::conjunction_v<has_json_deduced_type<Ts>...>,
+			  all_have_deduced_type_v<Ts...>,
 			  json_variant_type_list<json_deduced_type<Ts>...>,
 			  missing_default_type_mapping<json_deduced_type<Ts>...>>
 			get_variant_type_list( std::variant<Ts...> const * );
@@ -550,7 +550,7 @@ namespace daw::json {
 			template<typename... Ts>
 			struct variant_alternatives_list<std::variant<Ts...>> {
 				using type = daw::conditional_t<
-				  std::conjunction_v<has_json_deduced_type<Ts>...>,
+				  all_have_deduced_type_v<Ts...>,
 				  json_variant_type_list<json_deduced_type<Ts>...>,
 				  missing_default_type_mapping<json_deduced_type<Ts>...>>;
 			};
@@ -569,7 +569,7 @@ namespace daw::json {
 			  Tuple<Ts...>,
 			  std::enable_if_t<( not is_std_tuple_v<Tuple<Ts...>> and
 			                     not can_convert_to_tuple_v<Tuple<Ts...>> )>> {
-				static_assert( std::conjunction_v<has_deduced_type_mapping<Ts>...>,
+				static_assert( are_deduced_type_mapped_v<daw::remove_cvref_t<Ts>...>,
 				               "Missing mapping for type in tuple" );
 
 				using types = std::tuple<json_deduced_type<daw::remove_cvref_t<Ts>>...>;
@@ -577,8 +577,7 @@ namespace daw::json {
 
 			template<typename... Ts>
 			struct tuple_types_list<std::tuple<Ts...>> {
-				static_assert( std::conjunction_v<
-				                 has_deduced_type_mapping<daw::remove_cvref_t<Ts>>...>,
+				static_assert( are_deduced_type_mapped_v<daw::remove_cvref_t<Ts>...>,
 				               "Missing mapping for type in tuple" );
 
 				using types = std::tuple<json_deduced_type<daw::remove_cvref_t<Ts>>...>;
@@ -701,9 +700,8 @@ namespace daw::json {
 
 		template<typename... Ts>
 		struct json_tuple_types_list {
-			static_assert(
-			  std::conjunction_v<json_details::has_json_deduced_type<Ts>...>,
-			  "Missing mapping for type in tuple" );
+			static_assert( json_details::all_have_deduced_type_v<Ts...>,
+			               "Missing mapping for type in tuple" );
 			using types = std::tuple<json_details::json_deduced_type<Ts>...>;
 		};
 
@@ -741,5 +739,5 @@ namespace daw::json {
 			using ensure_mapped_t = typename ensure_mapped<T>::type;
 
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

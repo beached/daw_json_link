@@ -358,7 +358,7 @@ namespace daw::json {
 				}
 
 				template<std::size_t... Is>
-				static constexpr WritableType
+				DAW_ATTRIB_INLINE static constexpr WritableType
 				output_member_types( WritableType &out_it,
 				                     std::index_sequence<Is...> ) {
 					bool seen[sizeof...( JsonMembers )]{ };
@@ -492,7 +492,7 @@ namespace daw::json {
 			namespace json_details {
 				template<typename Tuple, bool is_root, typename WritableType,
 				         std::size_t... Is>
-				constexpr WritableType
+				DAW_ATTRIB_INLINE constexpr WritableType
 				to_json_tuple_schema( WritableType out_it,
 				                      std::index_sequence<Is...> ) {
 					if constexpr( not is_root ) {
@@ -522,9 +522,9 @@ namespace daw::json {
 							  ParseTag<JsonMember::expected_type>{ }, out_it );
 						};
 
-						daw::Empty expander[] = {
-						  ( process_member( daw::constant<Is>{ } ), daw::Empty{ } )...,
-						  daw::Empty{} };
+						daw::empty_t expander[] = {
+						  ( process_member( daw::constant<Is>{ } ), daw::empty_t{ } )...,
+						  daw::empty_t{} };
 						(void)expander;
 						out_it.del_indent( );
 						out_it.next_member( );

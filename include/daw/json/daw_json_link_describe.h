@@ -41,7 +41,8 @@ namespace daw::json {
 		struct describe_member_impl<T, std::index_sequence<Is...>> {
 			static constexpr char const name[sizeof...( Is )]{ T::name[Is]... };
 			using type =
-			  json_link<name, traits::member_type_of_t<DAW_TYPEOF( T::pointer )>>;
+			  json_link<name,
+			            daw::traits::member_type_of_t<DAW_TYPEOF( T::pointer )>>;
 		};
 
 		template<typename T>

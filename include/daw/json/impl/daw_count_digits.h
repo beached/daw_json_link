@@ -11,16 +11,17 @@
 #include "version.h"
 
 #include <daw/daw_cxmath.h>
+#include <daw/daw_simple_array.h>
 #include <daw/daw_uint_buffer.h>
 
-#include <array>
 #include <cstddef>
 #include <cstdint>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			inline constexpr auto is_digit = []( char c ) -> daw::UInt8 {
+			inline constexpr auto is_digit =
+			  []( char c ) DAW_JSON_CPP23_STATIC_CALL_OP -> daw::UInt8 {
 				return static_cast<unsigned>( static_cast<unsigned char>( c ) ) -
 				             static_cast<unsigned>(
 				               static_cast<unsigned char>( '0' ) ) <
@@ -32,7 +33,7 @@ namespace daw::json {
 			template<typename Predicate>
 			DAW_ATTRIB_FLATINLINE inline constexpr std::int32_t
 			count_4digits( char const *first, Predicate pred ) {
-				std::array<daw::UInt8, 4> const buff{
+				daw::simple_array<daw::UInt8, 4> const buff{
 				  pred( first[3] ), pred( first[2] ), pred( first[2] ),
 				  pred( first[1] ) };
 				auto const v = DAW_BIT_CAST( std::uint32_t, buff );
@@ -47,7 +48,7 @@ namespace daw::json {
 			template<typename Predicate>
 			DAW_ATTRIB_FLATINLINE inline constexpr std::int32_t
 			count_8digits( char const *first, Predicate pred ) {
-				std::array<daw::UInt8, 8> const buff{
+				daw::simple_array<daw::UInt8, 8> const buff{
 				  pred( first[7] ), pred( first[6] ), pred( first[5] ),
 				  pred( first[4] ), pred( first[3] ), pred( first[2] ),
 				  pred( first[1] ), pred( first[0] ) };
@@ -90,5 +91,5 @@ namespace daw::json {
 				return first;
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

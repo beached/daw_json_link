@@ -88,10 +88,9 @@ namespace daw::json {
 				using key_t = typename JsonMember::json_key_t;
 				using value_t = typename JsonMember::json_element_t;
 
-				inline constexpr json_parse_kv_class_iterator( ) = default;
+				json_parse_kv_class_iterator( ) = default;
 
-				inline constexpr explicit json_parse_kv_class_iterator(
-				  iterator_range_t &r )
+				constexpr explicit json_parse_kv_class_iterator( iterator_range_t &r )
 				  : base{ &r } {
 					if( base::parse_state->front( ) == '}' ) {
 						// Cleanup at end of value
@@ -109,7 +108,7 @@ namespace daw::json {
 					daw_json_error( ErrorReason::UnexpectedEndOfData );
 				}
 
-				inline constexpr value_type operator*( ) {
+				constexpr value_type operator*( ) {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
@@ -119,12 +118,12 @@ namespace daw::json {
 
 					return json_class_constructor<value_type,
 					                              default_constructor<value_type>>(
-					  DAW_MOVE( key ),
+					  std::move( key ),
 					  parse_value<value_t>( *base::parse_state,
 					                        ParseTag<value_t::expected_type>{ } ) );
 				}
 
-				inline constexpr json_parse_kv_class_iterator &operator++( ) {
+				constexpr json_parse_kv_class_iterator &operator++( ) {
 					daw_json_assert_weak( base::parse_state,
 					                      ErrorReason::AttemptToAccessPastEndOfValue,
 					                      *base::parse_state );
@@ -166,19 +165,19 @@ namespace daw::json {
 					(void)operator++( );
 				}
 
-				friend inline constexpr bool
+				friend constexpr bool
 				operator==( json_parse_kv_class_iterator const &lhs,
 				            json_parse_kv_class_iterator const &rhs ) {
 					// using identity as equality
 					return lhs.parse_state == rhs.base::parse_state;
 				}
 
-				friend inline constexpr bool
+				friend constexpr bool
 				operator!=( json_parse_kv_class_iterator const &lhs,
 				            json_parse_kv_class_iterator const &rhs ) {
 					return not( lhs == rhs );
 				}
 			};
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

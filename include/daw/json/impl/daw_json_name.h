@@ -115,11 +115,14 @@ namespace daw::json {
 		namespace json_details {
 			DAW_JSON_MAKE_REQ_TRAIT( has_name_v, T::name );
 
+			template<typename... Ts>
+			inline constexpr bool all_have_name_v = ( has_name_v<Ts> and ... );
+
 			template<typename T>
 			inline constexpr bool is_no_name_v = not has_name_v<T>;
 
-			template<typename T>
-			using is_no_name = std::bool_constant<is_no_name_v<T>>;
+			template<typename... Ts>
+			inline constexpr bool are_no_name_v = ( is_no_name_v<Ts> and ... );
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -100,7 +100,7 @@ namespace daw::json {
 					// This is a logic error to happen.
 					// daw_json_assert_weak( first != '"', "Unexpected quote", parse_state
 					// );
-					if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
+					if constexpr( daw::traits::not_same_v<typename ParseState::exec_tag_t,
 					                                 constexpr_exec_tag> ) {
 						first = mem_skip_until_end_of_string<true>(
 						  ParseState::exec_tag, first, last, need_slow_path );
@@ -115,7 +115,7 @@ namespace daw::json {
 							}
 						}
 						while( *first != '"' ) {
-							while( []( char c ) {
+							while( []( char c ) DAW_JSON_CPP23_STATIC_CALL_OP {
 								return ( c != '"' ) & ( c != '\\' );
 							}( *first ) ) {
 								++first;
@@ -142,7 +142,7 @@ namespace daw::json {
 					std::ptrdiff_t need_slow_path = -1;
 					CharT *first = parse_state.first;
 					CharT *const last = parse_state.class_last;
-					if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
+					if constexpr( daw::traits::not_same_v<typename ParseState::exec_tag_t,
 					                                 constexpr_exec_tag> ) {
 						first = mem_skip_until_end_of_string<false>(
 						  ParseState::exec_tag, first, last, need_slow_path );
@@ -277,6 +277,6 @@ namespace daw::json {
 					}
 				}
 			} // namespace string_quote_parser
-		}   // namespace json_details::string_quote
-	}     // namespace DAW_JSON_VER
+		} // namespace json_details::string_quote
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

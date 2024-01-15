@@ -32,7 +32,7 @@ namespace daw::json {
 		 */
 		template<typename... Policies>
 		constexpr json_options_t serialize_options( Policies... policies ) {
-			static_assert( ( json_details::is_option_flag<Policies> and ... ),
+			static_assert( json_details::are_option_flags<Policies...>,
 			               "Only registered policy types are allowed" );
 			auto result = json_details::serialization::default_policy_flag;
 			if constexpr( sizeof...( Policies ) > 0 ) {
@@ -41,6 +41,16 @@ namespace daw::json {
 			}
 			return result;
 		}
+		namespace json_details {
+			template<typename T>
+			DAW_ATTRIB_INLINE constexpr daw::string_view as_sv( T const &value ) {
+				if constexpr( std::is_same_v<char, DAW_TYPEOF( value )> ) {
+					return daw::string_view( &value, 1 );
+				} else {
+					return daw::string_view( value );
+				}
+			}
+		} // namespace json_details
 
 		template<typename WritableType,
 		         json_options_t PolicyFlags =
@@ -66,7 +76,7 @@ namespace daw::json {
 				return *m_writable;
 			}
 
-			constexpr serialization_policy( WritableType &writable )
+			DAW_ATTRIB_INLINE explicit constexpr serialization_policy( WritableType &writable )
 			  : m_writable( std::addressof( writable ) ) {}
 
 			static constexpr options::SerializationFormat serialization_format =
@@ -103,7 +113,7 @@ namespace daw::json {
 				}
 			}
 
-			inline constexpr void output_indent( ) {
+			DAW_ATTRIB_INLINE constexpr void output_indent( ) {
 				if constexpr( serialization_format !=
 				              options::SerializationFormat::Minified ) {
 					constexpr std::string_view indent =
@@ -137,18 +147,13 @@ namespace daw::json {
 				output_indent( );
 			}
 
-			template<typename... ContiguousCharRanges>
-			DAW_ATTRIB_INLINE constexpr void
-			write( ContiguousCharRanges const &...chrs ) {
-				static_assert( sizeof...( ContiguousCharRanges ) > 0 );
-				constexpr auto as_sv = []( auto const &value ) {
-					if constexpr( std::is_same_v<char, DAW_TYPEOF( value )> ) {
-						return daw::string_view( &value, 1 );
-					} else {
-						return daw::string_view( value );
-					}
-				};
-				write_output( *m_writable, as_sv( chrs )... );
+			template<typename ContiguousCharRange, typename... ContiguousCharRanges>
+			DAW_ATTRIB_FLATINLINE constexpr void
+			write( ContiguousCharRange const &chr,
+			       ContiguousCharRanges const &...chrs ) {
+
+				write_output( *m_writable, json_details::as_sv( chr ),
+				              json_details::as_sv( chrs )... );
 			}
 
 			DAW_ATTRIB_INLINE constexpr void copy_buffer( char const *first,
@@ -157,7 +162,7 @@ namespace daw::json {
 				  daw::string_view( first, static_cast<std::size_t>( last - first ) ) );
 			}
 
-			DAW_ATTRIB_INLINE constexpr void put( char c ) {
+			DAW_ATTRIB_FLATINLINE constexpr void put( char c ) {
 				put_output( *m_writable, c );
 			}
 
