@@ -329,7 +329,7 @@ auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 
 
 ### `json_value`
-For a DOM like api, often used for things like GUI's and providing code when the mappings are inadequate, one can use `json_value`.  This is used in the (json_to_cpp)[https://github.com/beached/json_to_cpp] tool.
+For a DOM like api, often used for things like GUI's and providing code when the mappings are inadequate, one can use `json_value`.  This is used in the [json_to_cpp](https://github.com/beached/json_to_cpp) tool.
 
 ```c++
 auto jv = daw::json::json_value( json_doc );
