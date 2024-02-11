@@ -126,7 +126,7 @@ namespace daw::json {
 			template<typename Result, typename ForwardIterator>
 			constexpr Result parse_unsigned_int( ForwardIterator first,
 			                                     ForwardIterator last ) {
-				size_t count = std::numeric_limits<Result>::digits;
+				std::size_t count = std::numeric_limits<Result>::digits;
 
 				daw_json_ensure( '-' != *first, ErrorReason::InvalidNumber );
 

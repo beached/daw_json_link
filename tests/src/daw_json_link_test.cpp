@@ -18,6 +18,7 @@
 #include <daw/daw_bounded_vector.h>
 #include <daw/daw_span.h>
 
+#include <array>
 #include <cassert>
 #include <cfloat>
 #include <chrono>
@@ -1354,6 +1355,28 @@ int main( int, char ** ) {
 		ensure( dbl_007_str2 == "-1.7e100" );
 		std::cout << dbl_007_str2 << '\n';
 
+		auto tp_nn01 =
+		  from_json<json_tuple_null_no_name<std::tuple<int, int>>>( "[1,2]" );
+		static_assert( daw::traits::is_tuple_v<decltype( tp_nn01 )> );
+		static_assert( std::tuple_size_v<decltype( tp_nn01 )> == 2 );
+		ensure( std::get<0>( tp_nn01 ) == 1 );
+		ensure( std::get<1>( tp_nn01 ) == 2 );
+
+		constexpr auto chkint =
+		  from_json<json_checked_number_no_name<signed char>>( "42" );
+		ensure( chkint == 42 );
+
+		try {
+			auto chkint_err =
+			  from_json<json_checked_number_no_name<signed char>>( "4200" );
+			(void)chkint_err;
+			daw_ensure_error(
+			  "Failed to narrow check number that cannot fit into signed char" );
+		} catch( json_exception const &jex ) {
+			ensure( jex.reason_type( ) == ErrorReason::NumberOutOfRange );
+		} catch( ... ) {
+			daw_ensure_error( "Unexpected error when doing narrow check" );
+		}
 #if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L
 		static_assert(

@@ -39,7 +39,7 @@ namespace daw::json {
 		 */
 		template<typename... JsonMembers>
 		struct json_member_list {
-			using i_am_a_json_member_list = void; // daw::fwd_pack<JsonMembers...>;
+			using i_am_a_json_member_list = void;
 			static_assert( json_details::are_json_types_v<JsonMembers...>,
 			               "Only JSON Link mapping types can appear in a "
 			               "json_member_list(e.g. json_number, json_string...)" );
@@ -276,7 +276,7 @@ namespace daw::json {
 		///
 		template<typename... JsonMembers>
 		struct json_tuple_member_list {
-			using i_am_a_json_member_list = void; // daw::fwd_pack<JsonMembers...>;
+			using i_am_a_json_member_list = void;
 			using i_am_a_json_tuple_member_list = void;
 			static_assert( json_details::are_no_name_v<JsonMembers...>,
 			               "Json Tuple class members are unnamed" );
@@ -1692,8 +1692,8 @@ namespace daw::json {
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
 		using json_tuple_null_no_name = json_base::json_nullable<
-		  WrappedTuple,
-		  json_base::json_tuple<json_details::unwrapped_t<WrappedTuple>>,
+		  WrappedTuple, JsonTupleTypesList,
+		  //		  json_base::json_tuple<json_details::unwrapped_t<WrappedTuple>>,
 		  NullableType, Constructor>;
 
 		namespace json_base {

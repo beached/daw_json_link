@@ -36,13 +36,12 @@ namespace daw::json {
 			static_assert( N > 0 );
 			char const m_data[N]{ };
 
-		private:
+		public:
 			template<std::size_t... Is>
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL
-			json_name( char const ( &ptr )[N], std::index_sequence<Is...> ) noexcept
+			json_name( char const *ptr, std::index_sequence<Is...> ) noexcept
 			  : m_data{ ptr[Is]... } {}
 
-		public:
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL
 			json_name( char const ( &ptr )[N] ) noexcept
 			  : json_name( ptr, std::make_index_sequence<N>{ } ) {}

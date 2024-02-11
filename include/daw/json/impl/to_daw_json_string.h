@@ -23,17 +23,19 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_move.h>
+#include <daw/daw_simple_array.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 #include <daw/daw_visit.h>
 #include <daw/third_party/dragonbox/dragonbox.h>
 #include <daw/utf8/unchecked.h>
 
-#include <array>
+#include <daw/stdinc/move_fwd_exch.h>
+#include <daw/stdinc/tuple_traits.h>
 #include <optional>
 #include <sstream>
 #include <string>
-#include <tuple>
+#include <string_view>
 #include <type_traits>
 #include <variant>
 
@@ -621,8 +623,8 @@ namespace daw::json {
 			                              daw::traits::identity<T>>::type;
 
 			inline constexpr auto digits100 = [] {
-				std::array<char[2], 100> result{ };
-				for( size_t n = 0; n < 100; ++n ) {
+				daw::simple_array<char[2], 100> result{ };
+				for( std::size_t n = 0; n < 100; ++n ) {
 					result[n][0] =
 					  static_cast<char>( ( n % 10 ) + static_cast<unsigned char>( '0' ) );
 					result[n][1] =
@@ -1324,7 +1326,7 @@ namespace daw::json {
 				static DAW_CONSTEVAL std::size_t find_position( ) {
 					static_assert( ( ( Haystack::name == Needle::name ) or ... ),
 					               "Name must exist" );
-					constexpr std::array const names = { Haystack::name... };
+					constexpr daw::simple_array const names = { Haystack::name... };
 					std::size_t n = 0;
 					for( ; n < sizeof...( Haystack ); ++n ) {
 						if( Needle::name == names[n] ) {
@@ -1437,9 +1439,9 @@ namespace daw::json {
 				                       get<pos>( tp ) );
 			}
 
-			template<size_t TupleIdx, typename JsonMember, typename WriteableType,
-			         json_options_t SerializerOptions, template<class...> class Tuple,
-			         typename... Args>
+			template<std::size_t TupleIdx, typename JsonMember,
+			         typename WriteableType, json_options_t SerializerOptions,
+			         template<class...> class Tuple, typename... Args>
 			static constexpr void to_json_ordered_str(
 			  std::size_t &array_idx, std::size_t array_size,
 			  serialization_policy<WriteableType, SerializerOptions> &it,

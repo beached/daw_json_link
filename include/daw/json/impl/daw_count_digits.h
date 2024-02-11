@@ -14,7 +14,6 @@
 #include <daw/daw_simple_array.h>
 #include <daw/daw_uint_buffer.h>
 
-#include <cstddef>
 #include <cstdint>
 
 namespace daw::json {

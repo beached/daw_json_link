@@ -16,6 +16,7 @@
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_move.h>
+#include <daw/daw_scope_guard.h>
 
 #include <array>
 #include <cstddef>
@@ -36,35 +37,6 @@ namespace daw::json {
 			inline constexpr bool is_std_allocator_v<std::allocator<T>> = true;
 		} // namespace json_details
 
-		template<typename Iterator>
-		struct construct_array_cleanup {
-			Iterator &it;
-
-			DAW_ATTRIB_INLINE
-			DAW_SG_CXDTOR ~construct_array_cleanup( ) noexcept(
-			  not use_daw_json_exceptions_v or noexcept( ++it ) ) {
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
-				if( DAW_IS_CONSTANT_EVALUATED( ) ) {
-					++it;
-				} else {
-#endif
-					if constexpr( noexcept( ++it ) ) {
-						++it;
-					} else {
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-						if( std::uncaught_exceptions( ) == 0 ) {
-#endif
-							++it;
-#if not defined( DAW_JSON_DONT_USE_EXCEPTIONS )
-						}
-#endif
-					}
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
-				}
-#endif
-			}
-		};
-
 		/// @brief Default constructor type for std::array and allows (Iterator,
 		/// Iterator) construction
 		template<typename T, std::size_t Sz>
@@ -82,7 +54,9 @@ namespace daw::json {
 							return result;
 						} else {
 							// Only use for non-movable/copyable types
-							auto const run_after_parse = construct_array_cleanup{ first };
+							auto const run_after_parse = on_exit_success( [&] {
+								++first;
+							} );
 							(void)run_after_parse;
 							return *first;
 						}
@@ -92,10 +66,10 @@ namespace daw::json {
 				return std::array<T, Sz>{ get_result( Is )... };
 			}
 
-			DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING
-			DAW_ATTRIB_INLINE
-			DAW_JSON_CPP23_STATIC_CALL_OP constexpr std::array<T, Sz> operator( )(
-			  std::array<T, Sz> &&v ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
+			DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING DAW_ATTRIB_INLINE
+			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr std::array<T, Sz>
+			  operator( )( std::array<T, Sz> &&v )
+			    DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
 				return std::move( v );
 			}
 
@@ -107,7 +81,7 @@ namespace daw::json {
 				return construct_array( first, last, std::make_index_sequence<Sz>{ } );
 			}
 			DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING
-		};
+		}; // namespace daw::json
 
 #if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
 		namespace json_details {

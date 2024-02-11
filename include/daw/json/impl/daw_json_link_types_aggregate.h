@@ -17,7 +17,8 @@
 #include <daw/daw_traits.h>
 #include <daw/daw_tuple_forward.h>
 
-#include <type_traits>
+#include <daw/stdinc/enable_if.h>
+#include <daw/stdinc/declval.h>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

@@ -362,7 +362,7 @@ namespace daw::json {
 			iterator m_last{ };
 
 		public:
-			json_array_range( ) = default;
+			explicit json_array_range( ) = default;
 
 			explicit constexpr json_array_range( daw::string_view jd )
 			  : m_first( jd ) {}
@@ -429,6 +429,5 @@ namespace daw::json {
 				return m_first == m_last;
 			}
 		};
-
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

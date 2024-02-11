@@ -79,7 +79,6 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
         set( DAW_JSON_LINK_TEST_ALWAYS )
     endif()
 endif()
-
 if( DAW_JSON_FULL_TESTS OR DAW_JSON_LINK_TEST_ALWAYS )
     add_executable( daw_json_link_test src/daw_json_link_test.cpp )
     add_test( NAME daw_json_link_test COMMAND daw_json_link_test )

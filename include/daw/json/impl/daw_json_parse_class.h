@@ -298,7 +298,7 @@ namespace daw::json {
 				parse_state.remove_prefix( );
 				parse_state.trim_left( );
 
-				size_t current_idx = 0;
+				std::size_t current_idx = 0;
 
 				if constexpr( is_pinned_type_v<typename JsonClass::parse_to_t> ) {
 					auto const run_after_parse = daw::on_exit_success( [&] {

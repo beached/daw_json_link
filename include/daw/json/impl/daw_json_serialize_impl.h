@@ -97,7 +97,7 @@ namespace daw::json {
 				it.put( '{' );
 				it.add_indent( );
 
-				auto constexpr visit_size =
+				constexpr auto visit_size =
 				  sizeof...( JsonMembers ) +
 				  ( static_cast<std::size_t>( has_dependent_member_v<JsonMembers> ) +
 				    ... + 0 );

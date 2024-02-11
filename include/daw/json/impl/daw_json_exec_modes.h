@@ -10,8 +10,6 @@
 
 #include "version.h"
 
-#include <daw/daw_scope_guard.h>
-
 #include <string_view>
 
 namespace daw::json {

@@ -12,10 +12,6 @@
 
 #include "daw_json_assert.h"
 
-#include <daw/cpp_17.h>
-#include <daw/daw_traits.h>
-
-#include <cstddef>
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -34,7 +30,7 @@ namespace daw::json {
 				  allocator_t const &alloc ) noexcept
 				  : allocator_ptr( &alloc ) {}
 
-				constexpr allocator_t const &get_allocator( ) const {
+				[[nodiscard]] constexpr allocator_t const &get_allocator( ) const {
 					daw_json_ensure( allocator_ptr.has_value( ),
 					                 ErrorReason::UnexpectedNull );
 					return **allocator_ptr;
@@ -52,10 +48,20 @@ namespace daw::json {
 				explicit constexpr AllocatorWrapperBase(
 				  allocator_t const & ) noexcept {}
 
-				constexpr allocator_t const &get_allocator( ) const {
+				[[nodiscard]] constexpr allocator_t const &get_allocator( ) const {
 					return allocator;
 				}
 			};
+
+			template<typename A, typename T, typename = void>
+			inline constexpr bool allocator_has_rebind_v = false;
+
+			template<typename A, typename T>
+			inline constexpr bool allocator_has_rebind_v<
+			  A, T,
+			  std::void_t<
+			    typename std::allocator_traits<A>::template rebind_traits<T>::type>> =
+			  true;
 
 			template<typename Alloc>
 			struct AllocatorWrapper
@@ -80,12 +86,7 @@ namespace daw::json {
 				};
 
 				template<typename A, typename T>
-				using has_allocator_type_as_rebind =
-				  typename std::allocator_traits<A>::template rebind_traits<T>::type;
-
-				template<typename A, typename T>
-				static inline constexpr bool has_rebind_v =
-				  daw::is_detected_v<has_allocator_type_as_rebind, A, T>;
+				static constexpr bool has_rebind_v = allocator_has_rebind_v<A, T>;
 
 				// DAW FIX
 				template<typename T>
@@ -93,17 +94,19 @@ namespace daw::json {
 				  allocator_type>::template rebind_alloc<T>;
 
 				template<typename T>
-				constexpr auto get_allocator_for( template_param<T> ) const {
+				[[nodiscard]] constexpr auto
+				get_allocator_for( template_param<T> ) const {
 					return static_cast<allocator_type_as<T>>( this->get_allocator( ) );
 				}
 			};
 
 			struct NoAllocator {};
+
 			template<>
 			class AllocatorWrapper<NoAllocator> {
 			public:
 				explicit AllocatorWrapper( ) = default;
-				constexpr AllocatorWrapper( NoAllocator const & ) noexcept {}
+				explicit constexpr AllocatorWrapper( NoAllocator const & ) noexcept {}
 
 				static constexpr bool has_allocator = false;
 
@@ -113,15 +116,15 @@ namespace daw::json {
 				using allocator_type_as = std::allocator<T>;
 
 				template<typename T>
-				constexpr std::allocator<T>
-				get_allocator_for( template_param<T> ) const {
+				[[nodiscard]] constexpr static std::allocator<T>
+				get_allocator_for( template_param<T> ) {
 					return std::allocator<T>( );
 				}
 
-				[[nodiscard]] constexpr NoAllocator get_allocator( ) const {
+				[[nodiscard]] DAW_CONSTEVAL static NoAllocator get_allocator( ) {
 					return { };
 				}
 			};
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json
