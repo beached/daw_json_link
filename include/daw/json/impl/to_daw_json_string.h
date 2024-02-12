@@ -622,7 +622,8 @@ namespace daw::json {
 			  typename daw::conditional_t<std::is_enum_v<T>, base_int_type_impl<T>,
 			                              daw::traits::identity<T>>::type;
 
-			inline constexpr auto digits100 = [] {
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL daw::simple_array<char[2], 100>
+			make_digits100( ) {
 				auto result = daw::simple_array<char[2], 100>{ };
 				for( std::size_t n = 0; n < 100; ++n ) {
 					result[n][0] =
@@ -631,7 +632,8 @@ namespace daw::json {
 					  static_cast<char>( ( n / 10 ) + static_cast<unsigned char>( '0' ) );
 				}
 				return result;
-			}( );
+			}
+			inline constexpr auto digits100 = make_digits100( );
 
 			template<typename T>
 			static constexpr void reverse( T *first, T *last ) {
@@ -1327,6 +1329,7 @@ namespace daw::json {
 				  names = { Haystack::name... };
 				static_assert( ( ( Haystack::name == Needle::name ) or ... ),
 				               "Name must exist" );
+
 			public:
 				static DAW_CONSTEVAL std::size_t find_position( ) {
 					std::size_t n = 0;
