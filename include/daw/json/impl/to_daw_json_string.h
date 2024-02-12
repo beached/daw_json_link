@@ -1325,7 +1325,8 @@ namespace daw::json {
 			template<typename Needle, typename... Haystack>
 			struct find_names_in_pack<Needle, daw::fwd_pack<Haystack...>> {
 			private:
-				static constexpr daw::simple_array<JSONNAMETYPE, sizeof...( Haystack )>
+				static constexpr daw::simple_array<daw::string_view,
+				                                   sizeof...( Haystack )>
 				  names = { Haystack::name... };
 				static_assert( ( ( Haystack::name == Needle::name ) or ... ),
 				               "Name must exist" );
