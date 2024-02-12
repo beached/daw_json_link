@@ -30,6 +30,7 @@
 #include <daw/third_party/dragonbox/dragonbox.h>
 #include <daw/utf8/unchecked.h>
 
+#include <array>
 #include <daw/stdinc/move_fwd_exch.h>
 #include <daw/stdinc/tuple_traits.h>
 #include <optional>
@@ -622,9 +623,9 @@ namespace daw::json {
 			  typename daw::conditional_t<std::is_enum_v<T>, base_int_type_impl<T>,
 			                              daw::traits::identity<T>>::type;
 
-			DAW_ATTRIB_INLINE DAW_CONSTEVAL daw::simple_array<char[2], 100>
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL std::array<char[2], 100>
 			make_digits100( ) {
-				auto result = daw::simple_array<char[2], 100>{ };
+				auto result = std::array<char[2], 100>{ };
 				for( std::size_t n = 0; n < 100; ++n ) {
 					result[n][0] =
 					  static_cast<char>( ( n % 10 ) + static_cast<unsigned char>( '0' ) );
