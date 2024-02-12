@@ -623,7 +623,7 @@ namespace daw::json {
 			                              daw::traits::identity<T>>::type;
 
 			inline constexpr auto digits100 = [] {
-				daw::simple_array<char[2], 100> result{ };
+				auto result = daw::simple_array<char[2], 100>{ };
 				for( std::size_t n = 0; n < 100; ++n ) {
 					result[n][0] =
 					  static_cast<char>( ( n % 10 ) + static_cast<unsigned char>( '0' ) );
@@ -1322,11 +1322,13 @@ namespace daw::json {
 
 			template<typename Needle, typename... Haystack>
 			struct find_names_in_pack<Needle, daw::fwd_pack<Haystack...>> {
-
+			private:
+				static constexpr daw::simple_array<JSONNAMETYPE, sizeof...( Haystack )>
+				  names = { Haystack::name... };
+				static_assert( ( ( Haystack::name == Needle::name ) or ... ),
+				               "Name must exist" );
+			public:
 				static DAW_CONSTEVAL std::size_t find_position( ) {
-					static_assert( ( ( Haystack::name == Needle::name ) or ... ),
-					               "Name must exist" );
-					constexpr daw::simple_array const names = { Haystack::name... };
 					std::size_t n = 0;
 					for( ; n < sizeof...( Haystack ); ++n ) {
 						if( Needle::name == names[n] ) {
