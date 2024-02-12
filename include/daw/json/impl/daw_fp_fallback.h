@@ -35,7 +35,7 @@ namespace daw::json {
 			DAW_ATTRIB_NOINLINE [[nodiscard]] Real
 			parse_with_strtod( char const *first, char const *last ) {
 				static_assert( std::is_floating_point_v<Real>,
-				               "Execpected type passed to parse_with_strtod" );
+				               "Unexpected type passed to parse_with_strtod" );
 #if defined( DAW_JSON_USE_STRTOD )
 				(void)last;
 				char **end = nullptr;
