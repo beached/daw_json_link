@@ -121,6 +121,18 @@ if( DAW_JSON_CNTTP_JSON_NAME )
     add_definitions( -DDAW_JSON_CNTTP_JSON_NAME )
 endif()
 
+option( DAW_JSON_NO_DEFAULT_OSTREAM_WRITER "Disable including the ostream writer by default" )
+if( DAW_JSON_NO_DEFAULT_OSTREAM_WRITER )
+    message( STATUS "DAW_JSON_NO_DEFAULT_OSTREAM_WRITER=ON: Does not include json/concepts/daw_writable_output_ostream.h by default" )
+    add_definitions( -DDAW_JSON_NO_DEFAULT_OSTREAM_WRITER )
+endif( )
+
+option( DAW_JSON_NO_DEFAULT_CSTDIO_WRITER "Disable including the FILE * writer by default" )
+if( DAW_JSON_NO_DEFAULT_CSTDIO_WRITER )
+    message( STATUS "DAW_JSON_NO_DEFAULT_CSTDIO_WRITER=ON: Does not include json/concepts/daw_writable_output_cstdio.h by default" )
+    add_definitions( -DDAW_JSON_NO_DEFAULT_CSTDIO_WRITER )
+endif( )
+
 add_library( ${PROJECT_NAME} INTERFACE )
 add_library( daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME} )
 add_library( daw::json_link ALIAS ${PROJECT_NAME} )
