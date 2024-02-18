@@ -36,7 +36,7 @@ namespace my {
 			case daw::json::JsonBaseParseTypes::Bool:
 				return daw::json::as<bool>( jv );
 			case daw::json::JsonBaseParseTypes::String:
-				return std::string{ ptr, sz };
+				return daw::json::as<std::string>( jv );
 			case daw::json::JsonBaseParseTypes::Array:
 			case daw::json::JsonBaseParseTypes::Class:
 			case daw::json::JsonBaseParseTypes::None:

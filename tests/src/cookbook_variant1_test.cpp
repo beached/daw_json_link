@@ -22,8 +22,16 @@
 #include <string>
 
 namespace daw::cookbook_variant1 {
+	struct SomeClass {};
+	constexpr bool operator==( SomeClass, SomeClass ) {
+		return true;
+	}
+	constexpr bool operator!=( SomeClass, SomeClass ) {
+		return true;
+	}
+
 	struct MyVariantStuff1 {
-		std::variant<int, std::string> member0;
+		std::variant<int, std::string, bool, SomeClass, std::vector<int>> member0;
 		std::variant<std::string, bool> member1;
 	};
 
@@ -34,21 +42,40 @@ namespace daw::cookbook_variant1 {
 
 namespace daw::json {
 	template<>
+	struct json_data_contract<daw::cookbook_variant1::SomeClass> {
+		using type = json_member_list<>;
+
+		static constexpr std::tuple<>
+		to_json_data( daw::cookbook_variant1::SomeClass ) {
+			return { };
+		}
+	};
+
+	template<>
 	struct json_data_contract<daw::cookbook_variant1::MyVariantStuff1> {
 #ifdef DAW_JSON_CNTTP_JSON_NAME
-		using type =
-		  json_member_list<json_variant<"member0", std::variant<int, std::string>,
-		                                json_variant_type_list<int, std::string>>,
-		                   json_variant<"member1", std::variant<std::string, bool>,
-		                                json_variant_type_list<std::string, bool>>>;
+		using type = json_member_list<
+		  json_variant<
+		    "member0",
+		    std::variant<int, std::string, bool, daw::cookbook_variant1::SomeClass,
+		                 std::vector<int>>,
+		    json_variant_type_list<int, std::string, bool,
+		                           daw::cookbook_variant1::SomeClass,
+		                           std::vector<int>>,
+		    std::vector<int>>,
+		  json_variant<"member1", std::variant<std::string, bool>>>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
-		using type =
-		  json_member_list<json_variant<member0, std::variant<int, std::string>,
-		                                json_variant_type_list<int, std::string>>,
-		                   json_variant<member1, std::variant<std::string, bool>,
-		                                json_variant_type_list<std::string, bool>>>;
+		using type = json_member_list<
+		  json_variant<
+		    member0,
+		    std::variant<int, std::string, bool, daw::cookbook_variant1::SomeClass,
+		                 std::vector<int>>,
+		    json_variant_type_list<int, std::string, bool,
+		                           daw::cookbook_variant1::SomeClass,
+		                           std::vector<int>>>,
+		  json_variant<member1, std::variant<std::string, bool>>>;
 #endif
 		static inline auto
 		to_json_data( daw::cookbook_variant1::MyVariantStuff1 const &value ) {
@@ -66,12 +93,12 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_variant1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = *daw::read_file( argv[1] );
+	auto const data = daw::read_file( argv[1] ).value( );
 	puts( "Original" );
-	puts( std::string( data.data( ), data.size( ) ).c_str( ) );
+	puts( data.c_str( ) );
 	auto stuff =
 	  daw::json::from_json_array<daw::cookbook_variant1::MyVariantStuff1>( data );
-	test_assert( stuff.size( ) == 2, "Unexpected size" );
+	test_assert( stuff.size( ) == 4, "Unexpected size" );
 	test_assert( stuff.front( ).member0.index( ) == 0, "Unexpected value" );
 	test_assert( ( std::get<0>( stuff.front( ).member0 ) == 5 ),
 	             "Unexpected value" );

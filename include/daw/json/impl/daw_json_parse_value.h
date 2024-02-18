@@ -1191,7 +1191,7 @@ namespace daw::json {
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
 					  std::data( parse_state ), std::size( parse_state ) );
 				} else {
-					auto value_parse_state = skip_value( parse_state );
+					auto value_parse_state = skip_value<true>( parse_state );
 					return construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
 					  std::data( value_parse_state ), std::size( value_parse_state ) );
@@ -1258,56 +1258,64 @@ namespace daw::json {
 				if constexpr( sizeof...( JsonClasses ) >= N + 8 ) {
 					switch( idx ) {
 					case N + 0: {
-						using cur_json_class_t = daw::traits::nth_element<N + 0, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 1: {
-						using cur_json_class_t = daw::traits::nth_element<N + 1, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 2: {
-						using cur_json_class_t = daw::traits::nth_element<N + 2, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 3: {
-						using cur_json_class_t = daw::traits::nth_element<N + 3, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 3, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 4: {
-						using cur_json_class_t = daw::traits::nth_element<N + 4, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 4, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 5: {
-						using cur_json_class_t = daw::traits::nth_element<N + 5, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 5, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 6: {
-						using cur_json_class_t = daw::traits::nth_element<N + 6, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 6, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 7: {
-						using cur_json_class_t = daw::traits::nth_element<N + 7, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 7, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1324,42 +1332,48 @@ namespace daw::json {
 				} else if constexpr( sizeof...( JsonClasses ) == N + 7 ) {
 					switch( idx ) {
 					case N + 0: {
-						using cur_json_class_t = daw::traits::nth_element<N + 0, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 1: {
-						using cur_json_class_t = daw::traits::nth_element<N + 1, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 2: {
-						using cur_json_class_t = daw::traits::nth_element<N + 2, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 3: {
-						using cur_json_class_t = daw::traits::nth_element<N + 3, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 3, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 4: {
-						using cur_json_class_t = daw::traits::nth_element<N + 4, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 4, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 5: {
-						using cur_json_class_t = daw::traits::nth_element<N + 5, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 5, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1367,7 +1381,8 @@ namespace daw::json {
 					}
 					default: {
 						DAW_ASSUME( idx == N + 6 );
-						using cur_json_class_t = daw::traits::nth_element<N + 6, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 6, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1377,35 +1392,40 @@ namespace daw::json {
 				} else if constexpr( sizeof...( JsonClasses ) == N + 6 ) {
 					switch( idx ) {
 					case N + 0: {
-						using cur_json_class_t = daw::traits::nth_element<N + 0, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 1: {
-						using cur_json_class_t = daw::traits::nth_element<N + 1, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 2: {
-						using cur_json_class_t = daw::traits::nth_element<N + 2, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 3: {
-						using cur_json_class_t = daw::traits::nth_element<N + 3, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 3, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 4: {
-						using cur_json_class_t = daw::traits::nth_element<N + 4, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 4, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1413,7 +1433,8 @@ namespace daw::json {
 					}
 					default: {
 						DAW_ASSUME( idx == N + 5 );
-						using cur_json_class_t = daw::traits::nth_element<N + 5, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 5, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1423,28 +1444,32 @@ namespace daw::json {
 				} else if constexpr( sizeof...( JsonClasses ) == N + 5 ) {
 					switch( idx ) {
 					case N + 0: {
-						using cur_json_class_t = daw::traits::nth_element<N + 0, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 1: {
-						using cur_json_class_t = daw::traits::nth_element<N + 1, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 2: {
-						using cur_json_class_t = daw::traits::nth_element<N + 2, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 3: {
-						using cur_json_class_t = daw::traits::nth_element<N + 3, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 3, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1452,7 +1477,8 @@ namespace daw::json {
 					}
 					default: {
 						DAW_ASSUME( idx == N + 4 );
-						using cur_json_class_t = daw::traits::nth_element<N + 4, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 4, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1462,21 +1488,24 @@ namespace daw::json {
 				} else if constexpr( sizeof...( JsonClasses ) == N + 4 ) {
 					switch( idx ) {
 					case N + 0: {
-						using cur_json_class_t = daw::traits::nth_element<N + 0, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 1: {
-						using cur_json_class_t = daw::traits::nth_element<N + 1, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 2: {
-						using cur_json_class_t = daw::traits::nth_element<N + 2, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1484,7 +1513,8 @@ namespace daw::json {
 					}
 					default: {
 						DAW_ASSUME( idx == N + 3 );
-						using cur_json_class_t = daw::traits::nth_element<N + 3, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 3, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1494,14 +1524,16 @@ namespace daw::json {
 				} else if constexpr( sizeof...( JsonClasses ) == N + 3 ) {
 					switch( idx ) {
 					case N + 0: {
-						using cur_json_class_t = daw::traits::nth_element<N + 0, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
 					case N + 1: {
-						using cur_json_class_t = daw::traits::nth_element<N + 1, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1509,7 +1541,8 @@ namespace daw::json {
 					}
 					default: {
 						DAW_ASSUME( idx == N + 2 );
-						using cur_json_class_t = daw::traits::nth_element<N + 2, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
@@ -1518,19 +1551,22 @@ namespace daw::json {
 					}
 				} else if constexpr( sizeof...( JsonClasses ) == N + 2 ) {
 					if( idx == N ) {
-						using cur_json_class_t = daw::traits::nth_element<N + 0, JsonClasses...>;
+						using cur_json_class_t =
+						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value(
 						  template_args<T, Constructor>, parse_state,
 						  parse_value<cur_json_class_t>(
 						    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 					}
-					using cur_json_class_t = daw::traits::nth_element<N + 1, JsonClasses...>;
+					using cur_json_class_t =
+					  daw::traits::nth_element<N + 1, JsonClasses...>;
 					return construct_value(
 					  template_args<T, Constructor>, parse_state,
 					  parse_value<cur_json_class_t>(
 					    parse_state, ParseTag<cur_json_class_t::expected_type>{ } ) );
 				} else {
-					using cur_json_class_t = daw::traits::nth_element<N + 0, JsonClasses...>;
+					using cur_json_class_t =
+					  daw::traits::nth_element<N + 0, JsonClasses...>;
 					return construct_value(
 					  template_args<T, Constructor>, parse_state,
 					  parse_value<cur_json_class_t>(
