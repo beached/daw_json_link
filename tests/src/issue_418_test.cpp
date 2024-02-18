@@ -6,15 +6,19 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/daw_json_link.h>
 
 #include <algorithm>
-#include <cassert>
 #include <string>
 #include <variant>
+#include <vector>
 
 namespace my {
-	using Var2 = std::variant<int, float, std::string>;
+	struct EmptyType {};
+	using Var2 =
+	  std::variant<int, float, std::string, bool, EmptyType, std::vector<int>>;
 
 	struct Var2Constructor {
 		Var2 operator( )( ) const {
@@ -22,6 +26,7 @@ namespace my {
 		}
 
 		Var2 operator( )( char const *ptr, std::size_t sz ) const {
+			using daw::json::as;
 			auto jv = daw::json::json_value( ptr, sz );
 			switch( jv.type( ) ) {
 			case daw::json::JsonBaseParseTypes::Number:
@@ -30,15 +35,17 @@ namespace my {
 					    return '0' <= c and c <= '9';
 				    } ) == sv.end( ) ) {
 					// Only digits
-					return daw::json::as<int>( jv );
+					return as<int>( jv );
 				}
-				return daw::json::as<float>( jv );
+				return as<float>( jv );
 			case daw::json::JsonBaseParseTypes::Bool:
-				return daw::json::as<bool>( jv );
+				return as<bool>( jv );
 			case daw::json::JsonBaseParseTypes::String:
-				return daw::json::as<std::string>( jv );
+				return as<std::string>( jv );
 			case daw::json::JsonBaseParseTypes::Array:
+				return as<std::vector<int>>( jv );
 			case daw::json::JsonBaseParseTypes::Class:
+				return as<my::EmptyType>( jv );
 			case daw::json::JsonBaseParseTypes::None:
 			case daw::json::JsonBaseParseTypes::Null:
 			default:
@@ -69,18 +76,25 @@ int main( ) {
 
 	{
 		auto kx = from_json<my::Var2>( R"(67)" );
-		assert( std::get<int>( kx ) == 67 );
+		ensure( std::get<int>( kx ) == 67 );
 	}
 	{
 		auto kx = from_json<my::Var2>( R"(67.8)" );
-		assert( std::get<float>( kx ) == 67.8F );
+		ensure( std::get<float>( kx ) == 67.8F );
 	}
 	{
 		auto kx = from_json<my::Var2>( R"("test")" );
-		assert( std::get<std::string>( kx ) == "test" );
+		ensure( std::get<std::string>( kx ) == "test" );
 	}
-
+	{
+		auto kx = from_json<my::Var2>( R"([1,2,3])" );
+		ensure( (std::get<std::vector<int>>( kx ) == std::vector<int>{ 1, 2, 3 }) );
+	}
+	{
+		auto kx = from_json<my::Var2>( R"({"a":3})" );
+		ensure( std::holds_alternative<my::EmptyType>( kx ) );
+	}
 	my::Var2 v = 1;
 	auto x = to_json( v );
-	assert( x == "1" );
+	ensure( x == "1" );
 }
