@@ -19,6 +19,7 @@
 #include "daw_json_value_fwd.h"
 #include "to_daw_json_string.h"
 
+#include <daw/algorithms/daw_algorithm_find.h>
 #include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_fwd_pack_apply.h>
@@ -504,9 +505,10 @@ namespace daw::json {
 				( ( found[static_cast<int>( json_details::json_deduced_type<
 				                            JsonElements>::underlying_json_type )]++ ),
 				  ... );
-				return std::find_if( found.begin( ), found.end( ), []( int x ) {
-					       return x > 1;
-				       } ) == found.end( );
+				return daw::algorithm::find_if( found.begin( ), found.end( ),
+				                                []( int x ) {
+					                                return x > 1;
+				                                } ) == found.end( );
 			}
 
 			template<JsonBaseParseTypes PT>

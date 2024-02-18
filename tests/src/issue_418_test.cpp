@@ -30,11 +30,11 @@ namespace my {
 					    return '0' <= c and c <= '9';
 				    } ) == sv.end( ) ) {
 					// Only digits
-					return as<int>( jv );
+					return daw::json::as<int>( jv );
 				}
-				return as<float>( jv );
+				return daw::json::as<float>( jv );
 			case daw::json::JsonBaseParseTypes::Bool:
-				return as<bool>( jv );
+				return daw::json::as<bool>( jv );
 			case daw::json::JsonBaseParseTypes::String:
 				return std::string{ ptr, sz };
 			case daw::json::JsonBaseParseTypes::Array:
