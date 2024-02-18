@@ -961,6 +961,10 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 
+			static_assert(
+			  json_details::all_unique_base_types<JsonElements...>( ),
+			  "Can only have 1 of each boolean, number, string, class, array" );
+
 			static constexpr std::size_t base_map[5] = {
 			  json_details::find_json_element<JsonBaseParseTypes::Number>(
 			    { json_details::json_deduced_type<
@@ -989,6 +993,7 @@ namespace daw::json {
 				  std::is_same_v<JsonElements, use_default>,
 				  json_details::variant_alternatives_list<Variant>,
 				  daw::traits::identity<JsonElements>>::type;
+				using base_map = non_discriminated_variant_base_map<json_elements>;
 
 				static_assert(
 				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
@@ -1003,7 +1008,6 @@ namespace daw::json {
 
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::None;
-				using base_map = non_discriminated_variant_base_map<json_elements>;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =

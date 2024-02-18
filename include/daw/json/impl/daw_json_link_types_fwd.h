@@ -497,6 +497,18 @@ namespace daw::json {
 		  NullableType, Constructor>;
 
 		namespace json_details {
+
+			template<typename... JsonElements>
+			DAW_CONSTEVAL bool all_unique_base_types( ) {
+				auto found = std::array<int, 6>{ };
+				( ( found[static_cast<int>( json_details::json_deduced_type<
+				                            JsonElements>::underlying_json_type )]++ ),
+				  ... );
+				return std::find_if( found.begin( ), found.end( ), []( int x ) {
+					       return x > 1;
+				       } ) == found.end( );
+			}
+
 			template<JsonBaseParseTypes PT>
 			constexpr std::size_t
 			find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
