@@ -987,6 +987,14 @@ add_test( NAME issue_406_test COMMAND issue_406_test WORKING_DIRECTORY "${CMAKE_
 add_dependencies( ci_tests issue_406_test )
 add_dependencies( full issue_406_test )
 
+add_executable( issue_418_test src/issue_418_test.cpp )
+target_link_libraries( issue_418_test PRIVATE json_test )
+add_test( NAME issue_418_test COMMAND issue_418_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests issue_418_test )
+add_dependencies( full issue_418_test )
+
+
+
 add_executable( multi_tu_test src/multi_tu_p0_test.cpp src/multi_tu_p1_test.cpp )
 target_link_libraries( multi_tu_test json_test )
 add_test( NAME multi_tu_test_test COMMAND multi_tu_test )
