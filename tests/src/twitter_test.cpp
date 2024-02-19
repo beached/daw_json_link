@@ -7,10 +7,10 @@
 //
 #include "defines.h"
 
+#include "daw_json_benchmark.h"
 #include "twitter_test_json.h"
 
 #include <daw/cpp_17.h>
-#include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
 #include <daw/json/daw_from_json.h>
@@ -42,8 +42,8 @@ inline namespace {
 		          << " exec model\n*********************************************\n";
 		std::optional<daw::twitter::twitter_object_t> twitter_result;
 		// ******************************
-		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(checked)", sz,
+		(void)daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "twitter bench(checked)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<ExecMode> );
@@ -59,8 +59,8 @@ inline namespace {
 		}
 
 		// options::CheckedParseMode::no
-		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(unchecked)", sz,
+		(void)daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "twitter bench(unchecked)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<CheckedParseMode::no, ExecMode> );
@@ -75,8 +75,8 @@ inline namespace {
 			             "Missing value" );
 		}
 		// CppCommentSkippingPolicyChecked
-		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(cpp comments)", sz,
+		(void)daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "twitter bench(cpp comments)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<ExecMode, PolicyCommentTypes::cpp> );
@@ -92,8 +92,8 @@ inline namespace {
 		}
 #if not defined( _MSC_VER ) or defined( __clang__ )
 		// CppCommentSkippingPolicyUnchecked
-		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(cpp comments, unchecked)", sz,
+		(void)daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "twitter bench(cpp comments, unchecked)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<ExecMode, CheckedParseMode::no,
@@ -110,8 +110,8 @@ inline namespace {
 		}
 #endif
 		// HashCommentSkippingPolicyChecked
-		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(hash comments)", sz,
+		(void)daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "twitter bench(hash comments)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result =
 			    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
@@ -128,8 +128,8 @@ inline namespace {
 		}
 #if not defined( _MSC_VER ) or defined( __clang__ )
 		// HashCommentSkippingPolicyUnchecked
-		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(hash comments, unchecked)", sz,
+		(void)daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "twitter bench(hash comments, unchecked)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<ExecMode, CheckedParseMode::no,
@@ -147,8 +147,8 @@ inline namespace {
 #endif
 		// ******************************
 		// Escaped Names
-		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(checked, escaped names)", sz,
+		(void)daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "twitter bench(checked, escaped names)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<ExecMode, AllowEscapedNames::yes> );
@@ -164,8 +164,8 @@ inline namespace {
 		}
 
 		// options::CheckedParseMode::no Escaped Names
-		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(unchecked, escaped names)", sz,
+		(void)daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, sz, "twitter bench(unchecked, escaped names)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<ExecMode, CheckedParseMode::no,
@@ -220,8 +220,8 @@ int main( int argc, char **argv )
 	}( );
 
 	auto const sz = json_data.size( );
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
-	          << '\n';
+	std::cout << "Processing: " << daw::json::benchmark::to_min_SI_unit_full( sz )
+	          << "B\n";
 	test<ExecModeTypes::compile_time>( json_data, do_asserts );
 	test<ExecModeTypes::runtime>( json_data, do_asserts );
 	if constexpr( not std::is_same_v<runtime_exec_tag, simd_exec_tag> ) {
@@ -233,8 +233,8 @@ int main( int argc, char **argv )
 	std::optional<daw::twitter::twitter_object_t> twitter_result =
 	  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
 	std::string str{ };
-	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(to_json_string)", sz,
+	(void)daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS, sz, "twitter bench(to_json_string)",
 	  [&]( auto const &tr ) {
 		  str.clear( );
 		  daw::json::to_json( *tr, str );

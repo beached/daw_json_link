@@ -40,7 +40,13 @@ jobs:
             cpp_version: 20
           - toolset: clang++-10
             cpp_version: 20
-          - toolset: clang+=-11
+          - toolset: clang++-11
+            cpp_version: 20
+          - toolset: clang++-12
+            cpp_version: 20
+          - toolset: clang++-13
+            cpp_version: 20
+          - toolset: clang++-14
             cpp_version: 20
           - toolset: g++-9
             cpp_version: 20

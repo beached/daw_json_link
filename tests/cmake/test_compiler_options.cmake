@@ -41,6 +41,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-missing-prototypes
                 -Wno-newline-eof
                 -Wno-padded
+                -Wno-switch-default
                 -Wno-unused-template
                 -Wno-weak-vtables
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
@@ -133,7 +134,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
                          -Wold-style-cast
                          -Wshadow
                          -Wzero-as-null-pointer-constant
-                         )
+    )
     if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
         add_compile_options(
                 -ffold-simple-inlines

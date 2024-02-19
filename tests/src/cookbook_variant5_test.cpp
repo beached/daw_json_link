@@ -52,6 +52,7 @@ namespace daw::cookbook_variant4 {
 		constexpr BasicConfig( T &&value )
 		  : data( std::forward<T>( value ) ) {}
 	};
+
 	template<std::size_t Idx, typename... VersionedConfigs>
 	constexpr auto *get_if( BasicConfig<VersionedConfigs...> const *v ) {
 		return std::get_if<Idx>( &( v->data ) );

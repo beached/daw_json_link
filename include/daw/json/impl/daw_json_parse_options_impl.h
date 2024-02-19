@@ -180,13 +180,12 @@ namespace daw::json {
 			}
 
 			template<typename PolicyFlag, typename... PolicyFlags,
-			         std::enable_if_t<( is_option_flag<PolicyFlag> and
-			                            ( is_option_flag<PolicyFlags> and ... ) ),
+			         std::enable_if_t<are_option_flags<PolicyFlag, PolicyFlags...>,
 			                          std::nullptr_t> = nullptr>
 			DAW_CONSTEVAL json_options_t set_bits( json_options_t value,
 			                                       PolicyFlag pol,
 			                                       PolicyFlags... pols ) {
-				static_assert( ( is_option_flag<PolicyFlags> and ... ),
+				static_assert( are_option_flags<PolicyFlags...>,
 				               "Only registered policy types are allowed" );
 
 				auto new_bits = static_cast<unsigned>( pol );
@@ -254,7 +253,7 @@ namespace daw::json {
 		 */
 		template<typename... Policies>
 		DAW_CONSTEVAL json_options_t parse_options( Policies... policies ) {
-			static_assert( ( json_details::is_option_flag<Policies> and ... ),
+			static_assert( json_details::are_option_flags<Policies...>,
 			               "Only registered policy types are allowed" );
 			auto result = json_details::default_policy_flag;
 			if constexpr( sizeof...( Policies ) > 0 ) {

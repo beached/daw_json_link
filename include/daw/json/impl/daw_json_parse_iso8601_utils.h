@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include "daw/json/daw_json_switches.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_digit.h"
 
@@ -92,37 +93,39 @@ namespace daw::json {
 			                     std::uint64_t ns ) {
 				using Clock = typename TP::clock;
 				using Duration = typename TP::duration;
-				constexpr auto calc = []( std::int_least32_t y, std::uint_least32_t m,
-				                          std::uint_least32_t d, std::uint_least32_t h,
-				                          std::uint_least32_t min,
-				                          std::uint_least32_t s, std::uint64_t nano ) {
-					y -= static_cast<std::int_least32_t>( m ) <= 2;
-					std::int_least32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
-					auto const yoe = static_cast<std::uint_least32_t>(
-					  static_cast<std::int_least32_t>( y ) - era * 400 ); // [0, 399]
-					auto const doy = static_cast<std::uint_least32_t>(
-					  ( 153 * ( static_cast<std::int_least32_t>( m ) +
-					            ( static_cast<std::int_least32_t>( m ) > 2 ? -3 : 9 ) ) +
-					    2 ) /
-					    5 +
-					  static_cast<std::int_least32_t>( d ) - 1 ); // [0, 365]
-					std::uint_least32_t const doe =
-					  yoe * 365 + yoe / 4 - yoe / 100 + doy;      // [0, 146096]
-					std::int_least32_t const days_since_epoch =
-					  era * 146097 + static_cast<std::int_least32_t>( doe ) - 719468;
+				constexpr auto calc =
+				  []( std::int_least32_t y, std::uint_least32_t m,
+				      std::uint_least32_t d, std::uint_least32_t h,
+				      std::uint_least32_t min, std::uint_least32_t s,
+				      std::uint64_t nano ) DAW_JSON_CPP23_STATIC_CALL_OP {
+					  y -= static_cast<std::int_least32_t>( m ) <= 2;
+					  std::int_least32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
+					  auto const yoe = static_cast<std::uint_least32_t>(
+					    static_cast<std::int_least32_t>( y ) - era * 400 ); // [0, 399]
+					  auto const doy = static_cast<std::uint_least32_t>(
+					    ( 153 *
+					        ( static_cast<std::int_least32_t>( m ) +
+					          ( static_cast<std::int_least32_t>( m ) > 2 ? -3 : 9 ) ) +
+					      2 ) /
+					      5 +
+					    static_cast<std::int_least32_t>( d ) - 1 ); // [0, 365]
+					  std::uint_least32_t const doe =
+					    yoe * 365 + yoe / 4 - yoe / 100 + doy; // [0, 146096]
+					  std::int_least32_t const days_since_epoch =
+					    era * 146097 + static_cast<std::int_least32_t>( doe ) - 719468;
 
-					using Days =
-					  std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
-					auto const dur =
-					  std::chrono::floor<Duration>( std::chrono::nanoseconds( nano ) );
-					return std::chrono::time_point<std::chrono::system_clock,
-					                               Duration>{ } +
-					       ( Days( days_since_epoch ) + std::chrono::hours( h ) +
-					         std::chrono::minutes( min ) +
-					         std::chrono::seconds(
-					           static_cast<std::uint_least32_t>( s ) ) +
-					         dur );
-				};
+					  using Days =
+					    std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
+					  auto const dur =
+					    std::chrono::floor<Duration>( std::chrono::nanoseconds( nano ) );
+					  return std::chrono::time_point<std::chrono::system_clock,
+					                                 Duration>{ } +
+					         ( Days( days_since_epoch ) + std::chrono::hours( h ) +
+					           std::chrono::minutes( min ) +
+					           std::chrono::seconds(
+					             static_cast<std::uint_least32_t>( s ) ) +
+					           dur );
+				  };
 				// Not all clocks have the same epoch.  This should account for the
 				// offset and adjust the time_point so that the days prior are in
 				// relation to unix epoch.  If system_clock is used, as is the default
@@ -235,10 +238,11 @@ namespace daw::json {
 				}
 
 				date_parts const ymd = parse_iso_8601_date( date_str );
-				auto time_str = ts.pop_front_until( []( char c ) {
-					return not( parse_utils::is_number( c ) | ( c == ':' ) |
-					            ( c == '.' ) );
-				} );
+				auto time_str =
+				  ts.pop_front_until( []( char c ) DAW_JSON_CPP23_STATIC_CALL_OP {
+					  return not( parse_utils::is_number( c ) | ( c == ':' ) |
+					              ( c == '.' ) );
+				  } );
 				// TODO: verify or parse timezone
 				time_parts hms = parse_iso_8601_time( time_str );
 				if( not( ts.empty( ) or ts.front( ) == 'Z' ) ) {
@@ -431,5 +435,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace datetime
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

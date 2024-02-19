@@ -15,8 +15,7 @@
 #include <daw/daw_bounded_vector.h>
 #include <daw/daw_random.h>
 
-#include <fstream>
-#include <iostream>
+#include <numeric>
 #include <streambuf>
 #include <string_view>
 #include <vector>

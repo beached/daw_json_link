@@ -355,9 +355,10 @@ namespace daw::json {
 					}
 					return ptr;
 				} else {
-					constexpr auto eq = []( char l, char r ) {
-						return l == r;
-					};
+					constexpr auto eq = []( char l, char r )
+					                      DAW_JSON_CPP23_STATIC_CALL_OP {
+						                      return l == r;
+					                      };
 					while( is_unchecked_input or first < last ) {
 						char const c = *first;
 						if( nsc_or( eq( c, keys )... ) ) {
@@ -379,7 +380,7 @@ namespace daw::json {
 
 			template<bool is_unchecked_input, typename CharT>
 			DAW_ATTRIB_INLINE CharT *
-			mem_skip_until_end_of_string( runtime_exec_tag const &tag, CharT *first,
+			mem_skip_until_end_of_string( runtime_exec_tag tag, CharT *first,
 			                              CharT *const last ) {
 				if constexpr( not is_unchecked_input ) {
 					daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData );
@@ -391,16 +392,58 @@ namespace daw::json {
 					case '"':
 						return first;
 					case '\\':
-						if constexpr( is_unchecked_input ) {
-							++first;
-						} else {
-							first += static_cast<int>( static_cast<bool>( last - first ) );
-						}
+						++first;
 						break;
 					}
 					++first;
 					first = mem_move_to_next_of<is_unchecked_input, '\\', '"'>(
 					  tag, first, last );
+				}
+				return first;
+			}
+
+			template<bool is_unchecked_input, typename CharT>
+			DAW_ATTRIB_INLINE constexpr CharT *
+			mem_skip_until_end_of_string( constexpr_exec_tag, CharT *first,
+			                              CharT *const last ) {
+				if( first == last ) {
+					return first;
+				}
+				using char_t = std::remove_const_t<CharT>;
+				// Check if the last valid char is a '\'.  If not we can skip a check in
+				// the loop on escaped things
+				if( is_unchecked_input or
+				    DAW_LIKELY( *( last - 1 ) != char_t{ '\\' } ) ) {
+					while( is_unchecked_input or DAW_UNLIKELY( first < last ) ) {
+						char const c = *first;
+						if( c == char_t{ '"' } ) {
+							break;
+						}
+						if( c == char_t{ '\\' } ) {
+							// We know that the last \ character is not the last character in
+							// range
+							first += 2;
+						} else {
+							++first;
+						}
+					}
+				} else {
+					while( is_unchecked_input or DAW_UNLIKELY( first < last ) ) {
+						char const c = *first;
+						if( c == char_t{ '"' } ) {
+							break;
+						}
+						if( c == char_t{ '\\' } ) {
+							if( DAW_LIKELY( first + 1 < last ) ) {
+								first += 2;
+							} else {
+								first = last;
+								break;
+							}
+						} else {
+							++first;
+						}
+					}
 				}
 				return first;
 			}
@@ -438,5 +481,5 @@ namespace daw::json {
 				return first;
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

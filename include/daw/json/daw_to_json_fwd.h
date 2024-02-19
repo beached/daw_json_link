@@ -88,7 +88,7 @@ namespace daw::json {
 		 * @tparam Container Type of Container to serialize the elements of
 		 * @tparam WritableType Iterator to write data to
 		 * @param c Container containing data to serialize.
-		 * @return WritableType with final state of iterator
+		 * @return WritableType withstate of iterator
 		 */
 		template<typename JsonElement = use_default, typename Container,
 		         typename WritableType, auto... PolicyFlags,

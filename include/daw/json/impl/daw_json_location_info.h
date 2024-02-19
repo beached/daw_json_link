@@ -11,9 +11,10 @@
 #include "version.h"
 
 #include "daw_json_assert.h"
+#include "daw_json_find_result.h"
 #include "daw_murmur3.h"
 
-#include <daw/daw_algorithm.h>
+#include <daw/algorithms/daw_algorithm_adjacent_find.h>
 #include <daw/daw_consteval.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_logic.h>
@@ -21,11 +22,9 @@
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
-#include <daw/daw_utility.h>
 
 #include <cstddef>
-#include <iterator>
-#include <utility>
+#include <daw/stdinc/data_access.h>
 
 #if defined( DAW_JSON_PARSER_DIAGNOSTICS )
 #include <cmath>
@@ -156,11 +155,11 @@ namespace daw::json {
 				  name_hash<false>( MemberNames::name )... };
 
 				daw::sort( std::data( hashes ), daw::data_end( hashes ) );
-				return daw::algorithm::adjacent_find( std::data( hashes ),
-				                                      daw::data_end( hashes ),
-				                                      []( UInt32 l, UInt32 r ) {
-					                                      return l == r;
-				                                      } ) != daw::data_end( hashes );
+				return daw::algorithm::adjacent_find(
+				         std::data( hashes ), daw::data_end( hashes ),
+				         []( UInt32 l, UInt32 r ) DAW_JSON_CPP23_STATIC_CALL_OP {
+					         return l == r;
+				         } ) != daw::data_end( hashes );
 			}
 
 			// Should never be called outside a consteval context
@@ -178,7 +177,7 @@ namespace daw::json {
 #else
 				// DAW
 				constexpr bool do_full_name_match =
-				  ParseState::force_name_equal_check( ) or
+				  ParseState::force_name_equal_check or
 				  do_hashes_collide<JsonMembers...>( );
 				if constexpr( do_full_name_match ) {
 					return locations_info_t<sizeof...( JsonMembers ), CharT,
@@ -204,11 +203,11 @@ namespace daw::json {
 			 * @return IteratorRange with begin( ) being start of value
 			 */
 			enum class AllMembersMustExist { yes, no };
+
 			template<std::size_t pos, AllMembersMustExist must_exist,
 			         bool from_start = false, std::size_t N, typename ParseState,
 			         bool B, typename CharT>
-			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr std::pair<ParseState,
-			                                                           bool>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr find_result<ParseState>
 			find_class_member( ParseState &parse_state,
 			                   locations_info_t<N, CharT, B> &locations,
 			                   bool is_nullable, daw::string_view member_name ) {
@@ -284,16 +283,15 @@ namespace daw::json {
 					known = true;
 				}
 				if constexpr( ParseState::has_allocator ) {
-					return std::pair<ParseState, bool>{
-					  locations[pos]
-					    .get_range( template_arg<ParseState> )
-					    .with_allocator( parse_state ),
-					  known };
+					return find_result{ locations[pos]
+					                      .get_range( template_arg<ParseState> )
+					                      .with_allocator( parse_state ),
+					                    known };
 				} else {
-					return std::pair<ParseState, bool>{
+					return find_result<ParseState>{
 					  locations[pos].get_range( template_arg<ParseState> ), known };
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -27,9 +27,9 @@
 
 #include <cassert>
 #include <cstddef>
+#include <daw/stdinc/tuple_traits.h>
 #include <optional>
 #include <string_view>
-#include <tuple>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -78,9 +78,9 @@ namespace daw::json {
 			  Idx < 2,
 			  "Invalid index. Valid values are 0 for name, and 1 for value" );
 			if constexpr( Idx == 0 ) {
-				return DAW_MOVE( parse_state.name );
+				return std::move( parse_state.name );
 			} else {
-				return DAW_MOVE( parse_state.value );
+				return std::move( parse_state.value );
 			}
 		}
 	} // namespace DAW_JSON_VER
@@ -257,8 +257,9 @@ namespace daw::json {
 				case '}':
 				case ']':
 					return false;
+				default:
+					daw_json_error( ErrorReason::ExpectedTokenNotFound, m_state );
 				}
-				daw_json_error( ErrorReason::ExpectedTokenNotFound, m_state );
 			}
 
 			/// @brief Can we increment more
@@ -361,7 +362,7 @@ namespace daw::json {
 			template<json_options_t P, typename A>
 			explicit inline constexpr basic_json_value(
 			  BasicParsePolicy<P, A> parse_state )
-			  : m_parse_state( DAW_MOVE( parse_state ) ) {
+			  : m_parse_state( std::move( parse_state ) ) {
 				// Ensure we are at the actual value.
 				m_parse_state.trim_left( );
 			}
@@ -691,7 +692,7 @@ namespace daw::json {
 				  BasicParsePolicy<P, A>( m_parse_state.first, m_parse_state.last );
 				new_range.class_first = m_parse_state.class_first;
 				new_range.class_last = m_parse_state.class_last;
-				return basic_json_value<P, A>( DAW_MOVE( new_range ) );
+				return basic_json_value<P, A>( std::move( new_range ) );
 			}
 
 			/// @brief Check if state is known or not in error
@@ -729,5 +730,5 @@ namespace daw::json {
 			inline constexpr bool
 			  is_string_view_like_v<basic_json_value<PolicyFlags, Allocator>> = false;
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

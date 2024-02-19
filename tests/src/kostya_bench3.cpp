@@ -68,7 +68,7 @@ coordinate_t calc( std::string const &text ) {
 		z += c.z;
 	}
 
-	double const dlen = static_cast<double>( len );
+	auto const dlen = static_cast<double>( len );
 	return coordinate_t{ x / dlen, y / dlen, z / dlen };
 }
 

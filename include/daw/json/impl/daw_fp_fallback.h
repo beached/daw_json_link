@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// Official repository: https://github.com/beached/
+// Official repository: https://github.com/beached/daw_json_link
 //
 
 #pragma once
@@ -14,6 +14,11 @@
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>
+
+#include <cstdlib>
+#include <limits>
+#include <system_error>
+#include <type_traits>
 
 #if not defined( DAW_JSON_USE_STRTOD )
 #include <charconv>
@@ -30,20 +35,20 @@ namespace daw::json {
 			DAW_ATTRIB_NOINLINE [[nodiscard]] Real
 			parse_with_strtod( char const *first, char const *last ) {
 				static_assert( std::is_floating_point_v<Real>,
-				               "Execpected type passed to parse_with_strtod" );
+				               "Unexpected type passed to parse_with_strtod" );
 #if defined( DAW_JSON_USE_STRTOD )
 				(void)last;
 				char **end = nullptr;
 				if constexpr( std::is_same_v<Real, float> ) {
-					return static_cast<Real>( strtof( first, end ) );
+					return static_cast<Real>( std::strtof( first, end ) );
 				} else if( std::is_same_v<Real, double> ) {
-					return static_cast<Real>( strtod( first, end ) );
+					return static_cast<Real>( std::strtod( first, end ) );
 				} else {
-					return static_cast<Real>( strtold( first, end ) );
+					return static_cast<Real>( std::strtold( first, end ) );
 				}
 #else
 				Real result;
-				std::from_chars_result fc_res = std::from_chars( first, last, result );
+				auto fc_res = std::from_chars( first, last, result );
 				if( fc_res.ec == std::errc::result_out_of_range ) {
 					if( *first == '-' ) {
 						return -std::numeric_limits<Real>::infinity( );
@@ -56,5 +61,5 @@ namespace daw::json {
 #endif
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

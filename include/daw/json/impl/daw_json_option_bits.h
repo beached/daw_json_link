@@ -38,7 +38,7 @@ namespace daw::json {
 
 			template<typename Policy, typename... Options>
 			struct option_bits_start_impl<Policy, pack_list<Options...>> {
-				static constexpr auto idx = traits::pack_index_of_v<Policy, Options...>;
+				static constexpr auto idx = daw::traits::pack_index_of_v<Policy, Options...>;
 				static_assert( idx >= 0, "Policy is not registered" );
 				using tp_policies = pack_list<Options...>;
 
@@ -51,7 +51,7 @@ namespace daw::json {
 				}
 
 				template<std::size_t... Is>
-				static constexpr unsigned calc( std::index_sequence<Is...> ) {
+				DAW_ATTRIB_INLINE static constexpr unsigned calc( std::index_sequence<Is...> ) {
 					return ( do_step<Is, idx>( ) + ... );
 				}
 			};
@@ -69,6 +69,10 @@ namespace daw::json {
 
 			template<typename Option>
 			inline constexpr bool is_option_flag = json_option_bits_width<Option> > 0;
+
+			template<typename... Options>
+			inline constexpr bool are_option_flags =
+			  ( is_option_flag<Options> and ... );
 
 			template<typename Option, typename Options>
 			inline constexpr unsigned basic_option_bits_start =
@@ -112,7 +116,7 @@ namespace daw::json {
 				 */
 				template<typename... Options>
 				static constexpr json_options_t options( Options... options ) {
-					static_assert( ( json_details::is_option_flag<Options> and ... ),
+					static_assert( json_details::are_option_flags<Options...>,
 					               "Only registered option types are allowed" );
 					auto result = default_option_flag;
 					if constexpr( sizeof...( Options ) > 0 ) {
@@ -140,7 +144,7 @@ namespace daw::json {
 			constexpr json_options_t set_bits( JsonOptionList<OptionList...>,
 			                                   json_options_t value, Option pol,
 			                                   Options... pols ) {
-				static_assert( ( is_option_flag<Options> and ... ),
+				static_assert( are_option_flags<Options...>,
 				               "Only registered policy types are allowed" );
 
 				auto new_bits = static_cast<unsigned>( pol );
@@ -211,5 +215,5 @@ namespace daw::json {
 			  default_option_flag_t<OptionList>::value;
 
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

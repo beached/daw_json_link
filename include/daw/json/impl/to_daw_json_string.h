@@ -23,6 +23,7 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_move.h>
+#include <daw/daw_simple_array.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 #include <daw/daw_visit.h>
@@ -30,10 +31,12 @@
 #include <daw/utf8/unchecked.h>
 
 #include <array>
+#include <daw/stdinc/move_fwd_exch.h>
+#include <daw/stdinc/tuple_traits.h>
 #include <optional>
 #include <sstream>
 #include <string>
-#include <tuple>
+#include <string_view>
 #include <type_traits>
 #include <variant>
 
@@ -59,49 +62,25 @@ namespace daw::json {
 				return to_string( *v );
 			}
 
-			namespace to_string_test {
-				template<typename T>
-				static auto to_string_test( T &&v )
-				  -> decltype( to_string( DAW_FWD2( T, v ) ) );
-
-				template<typename T>
-				using to_string_result =
-				  decltype( to_string_test( std::declval<T>( ) ) );
-			} // namespace to_string_test
-
-			template<typename T>
-			inline constexpr bool has_to_string_v =
-			  daw::is_detected_v<to_string_test::to_string_result, T>;
+			DAW_JSON_MAKE_REQ_TRAIT( has_to_string_v,
+			                         to_string( std::declval<T>( ) ) );
 
 			template<typename T>
 			using has_to_string = std::bool_constant<has_to_string_v<T>>;
 
 		} // namespace json_details::to_strings
 		namespace json_details {
-			template<typename T>
-			using from_string_test = decltype( from_string(
-			  std::declval<daw::tag_t<T>>( ), std::declval<std::string_view>( ) ) );
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  has_from_string_v, from_string( std::declval<daw::tag_t<T>>( ),
+			                                  std::declval<std::string_view>( ) ) );
 
-			template<typename T>
-			inline constexpr bool has_from_string_v =
-			  daw::is_detected_v<from_string_test, T>;
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  has_ostream_op_v, operator<<( std::declval<std::stringstream &>( ),
+			                                std::declval<T const &>( ) ) );
 
-			template<typename T, typename U>
-			using has_lshift_test = decltype( operator<<(
-			  std::declval<T &>( ), std::declval<U const &>( ) ) );
-
-			template<typename T, typename U>
-			using has_rshift_test = decltype( operator>>(
-			  std::declval<T &>( ), std::declval<U const &>( ) ) );
-
-			template<typename T>
-			inline constexpr bool has_ostream_op_v =
-			  daw::is_detected_v<has_lshift_test, std::stringstream, T>;
-
-			template<typename T>
-			inline constexpr bool has_istream_op_v =
-			  daw::is_detected_v<has_rshift_test, std::stringstream, T>;
-
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  has_istream_op_v, operator>>( std::declval<std::stringstream &>( ),
+			                                std::declval<T const &>( ) ) );
 		} // namespace json_details
 
 		/***
@@ -117,7 +96,7 @@ namespace daw::json {
 			[[nodiscard]] static inline auto use_stream( U const &v ) {
 				std::stringstream ss{ };
 				ss << v;
-				return DAW_MOVE( ss ).str( );
+				return std::move( ss ).str( );
 			}
 
 			template<typename U>
@@ -205,10 +184,8 @@ namespace daw::json {
 		struct default_from_json_converter_t {
 			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr decltype( auto )
 			operator( )( std::string_view sv ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
-				if constexpr( std::disjunction<
-				                std::is_same<T, std::string_view>,
-				                std::is_same<T, std::optional<std::string_view>>>::
-				                value ) {
+				if constexpr( std::is_same_v<T, std::string_view> or
+				              std::is_same_v<T, std::optional<std::string_view>> ) {
 					return sv;
 				} else if constexpr( json_details::has_from_string_v<T> ) {
 					return from_string( daw::tag<T>, sv );
@@ -297,7 +274,7 @@ namespace daw::json {
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
 			  typename WritableType, typename Container,
 			  std::enable_if_t<
-			    traits::is_container_like_v<daw::remove_cvref_t<Container>>,
+			    daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			    std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr WritableType
 			copy_to_iterator( WritableType it, Container const &container ) {
@@ -643,19 +620,21 @@ namespace daw::json {
 
 			template<typename T>
 			using base_int_type_t =
-			  typename std::conditional_t<std::is_enum_v<T>, base_int_type_impl<T>,
+			  typename daw::conditional_t<std::is_enum_v<T>, base_int_type_impl<T>,
 			                              daw::traits::identity<T>>::type;
 
-			inline constexpr auto digits100 = [] {
-				std::array<char[2], 100> result{ };
-				for( size_t n = 0; n < 100; ++n ) {
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL std::array<char[2], 100>
+			make_digits100( ) {
+				auto result = std::array<char[2], 100>{ };
+				for( std::size_t n = 0; n < 100; ++n ) {
 					result[n][0] =
 					  static_cast<char>( ( n % 10 ) + static_cast<unsigned char>( '0' ) );
 					result[n][1] =
 					  static_cast<char>( ( n / 10 ) + static_cast<unsigned char>( '0' ) );
 				}
 				return result;
-			}( );
+			}
+			inline constexpr auto digits100 = make_digits100( );
 
 			template<typename T>
 			static constexpr void reverse( T *first, T *last ) {
@@ -667,9 +646,9 @@ namespace daw::json {
 				auto lpos = 0;
 				while( lpos < rpos ) {
 					--rpos;
-					auto tmp = DAW_MOVE( first[lpos] );
-					first[lpos] = DAW_MOVE( first[rpos] );
-					first[rpos] = DAW_MOVE( tmp );
+					auto tmp = std::move( first[lpos] );
+					first[lpos] = std::move( first[rpos] );
+					first[rpos] = std::move( tmp );
 					++lpos;
 				}
 			}
@@ -686,8 +665,8 @@ namespace daw::json {
 				using to_strings::to_string;
 				using under_type = base_int_type_t<parse_to_t>;
 
-				if constexpr( std::disjunction_v<std::is_enum<parse_to_t>,
-				                                 daw::is_integral<parse_to_t>> ) {
+				if constexpr( std::is_enum_v<parse_to_t> or
+				              daw::is_integral_v<parse_to_t> ) {
 					auto v = static_cast<under_type>( value );
 
 					char buff[daw::numeric_limits<under_type>::digits10 + 10]{ };
@@ -774,9 +753,8 @@ namespace daw::json {
 					} else {
 						it.put( '0' );
 					}
-				} else if constexpr( std::disjunction_v<
-				                       std::is_enum<parse_to_t>,
-				                       daw::is_integral<parse_to_t>> ) {
+				} else if constexpr( std::is_enum_v<parse_to_t> or
+				                     daw::is_integral_v<parse_to_t> ) {
 					auto v = static_cast<under_type>( value );
 
 					if( DAW_UNLIKELY( v == 0 ) ) {
@@ -1008,7 +986,8 @@ namespace daw::json {
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t,
 			         std::size_t... Is>
-			static serialization_policy<WriteableType, SerializationOptions>
+			DAW_ATTRIB_INLINE constexpr serialization_policy<WriteableType,
+			                                                 SerializationOptions>
 			to_daw_json_string_tuple(
 			  serialization_policy<WriteableType, SerializationOptions> it,
 			  parse_to_t const &value, std::index_sequence<Is...> ) {
@@ -1029,9 +1008,10 @@ namespace daw::json {
 				};
 				(void)to_daw_json_string_help;
 
-				daw::Empty const expander[]{
-				  ( to_daw_json_string_help( daw::constant<Is>{ } ), daw::Empty{ } )...,
-				  daw::Empty{} };
+				daw::empty_t const expander[]{
+				  ( to_daw_json_string_help( daw::constant<Is>{ } ),
+				    daw::empty_t{ } )...,
+				  daw::empty_t{} };
 				(void)expander;
 
 				return it;
@@ -1046,7 +1026,8 @@ namespace daw::json {
 			  parse_to_t const &value ) {
 
 				using tuple_t = typename JsonMember::parse_to_t;
-				using element_pack = tuple_elements_pack<typename std::conditional_t<
+
+				using element_pack = tuple_elements_pack<typename daw::conditional_t<
 				  is_tuple_v<tuple_t>, daw::traits::identity<tuple_t>,
 				  json_details::identity_parts<tp_from_struct_binding_result_t,
 				                               parse_to_t>>::type>;
@@ -1062,7 +1043,8 @@ namespace daw::json {
 					it = to_daw_json_string_tuple<JsonMember>(
 					  it, value, std::make_index_sequence<element_pack::size>{ } );
 				} else {
-					auto value2 = tp_from_struct_binding( DAW_FWD( value ) );
+					auto value2 = to_tuple_impl( DAW_FWD( value ) );
+
 					using value2_t = tp_from_struct_binding_result_t<parse_to_t>;
 					it = to_daw_json_string_tuple<json_base::json_tuple<value2_t>>(
 					  it, value2, std::make_index_sequence<element_pack::size>{ } );
@@ -1080,15 +1062,10 @@ namespace daw::json {
 				return it;
 			}
 
-			template<typename T>
-			using is_view_like_test =
-			  decltype( (void)( std::begin( std::declval<T &>( ) ) ),
-			            (void)( std::end( std::declval<T &>( ) ) ),
-			            (void)( std::declval<typename T::value_type>( ) ) );
-
-			template<typename T>
-			inline constexpr bool is_view_like_v =
-			  daw::is_detected_v<is_view_like_test, T>;
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  is_view_like_v, ( (void)( std::begin( std::declval<T &>( ) ) ),
+			                    (void)( std::end( std::declval<T &>( ) ) ),
+			                    (void)( std::declval<typename T::value_type>( ) ) ) );
 
 			template<typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename parse_to_t>
@@ -1326,7 +1303,7 @@ namespace daw::json {
 			member_to_string( template_param<JsonMember>, WriteableType it,
 			                  T const &value ) {
 				return to_daw_json_string<JsonMember>(
-				  ParseTag<JsonMember::expected_type>{ }, DAW_MOVE( it ), value );
+				  ParseTag<JsonMember::expected_type>{ }, std::move( it ), value );
 			}
 
 			template<typename>
@@ -1348,11 +1325,15 @@ namespace daw::json {
 
 			template<typename Needle, typename... Haystack>
 			struct find_names_in_pack<Needle, daw::fwd_pack<Haystack...>> {
+			private:
+				static constexpr daw::simple_array<daw::string_view,
+				                                   sizeof...( Haystack )>
+				  names = { Haystack::name... };
+				static_assert( ( ( Haystack::name == Needle::name ) or ... ),
+				               "Name must exist" );
 
+			public:
 				static DAW_CONSTEVAL std::size_t find_position( ) {
-					static_assert( ( ( Haystack::name == Needle::name ) or ... ),
-					               "Name must exist" );
-					constexpr std::array const names = { Haystack::name... };
 					std::size_t n = 0;
 					for( ; n < sizeof...( Haystack ); ++n ) {
 						if( Needle::name == names[n] ) {
@@ -1387,10 +1368,10 @@ namespace daw::json {
 					(void)visited_members;
 					return;
 				} else {
-					using base_member_t = typename std::conditional_t<
+					using base_member_t = typename daw::conditional_t<
 					  is_json_nullable_v<JsonMember>,
 					  ident_trait<json_nullable_member_type_t, JsonMember>,
-					  traits::identity<JsonMember>>::type;
+					  daw::traits::identity<JsonMember>>::type;
 
 					using dependent_member = dependent_member_t<base_member_t>;
 
@@ -1461,13 +1442,13 @@ namespace daw::json {
 				is_first = false;
 				it.write( '"', JsonMember::name, "\":", it.space );
 
-				it = member_to_string( template_arg<JsonMember>, DAW_MOVE( it ),
+				it = member_to_string( template_arg<JsonMember>, std::move( it ),
 				                       get<pos>( tp ) );
 			}
 
-			template<size_t TupleIdx, typename JsonMember, typename WriteableType,
-			         json_options_t SerializerOptions, template<class...> class Tuple,
-			         typename... Args>
+			template<std::size_t TupleIdx, typename JsonMember,
+			         typename WriteableType, json_options_t SerializerOptions,
+			         template<class...> class Tuple, typename... Args>
 			static constexpr void to_json_ordered_str(
 			  std::size_t &array_idx, std::size_t array_size,
 			  serialization_policy<WriteableType, SerializerOptions> &it,
@@ -1576,5 +1557,5 @@ namespace daw::json {
 				return out_it;
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

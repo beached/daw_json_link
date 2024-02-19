@@ -190,7 +190,7 @@ namespace daw::json {
 			template<typename Policy, typename... Policies>
 			static constexpr json_options_t set_bits( json_options_t value,
 			                                          Policy pol, Policies... pols ) {
-				static_assert( ( is_option_flag<Policies> and ... ),
+				static_assert( are_option_flags<Policies...>,
 				               "Only registered policy types are allowed" );
 
 				auto new_bits = static_cast<unsigned>( pol );
@@ -290,5 +290,5 @@ namespace daw::json {
 			  generate_indent<options::SerializationFormat::Pretty,
 			                  options::IndentationType::Space10> = "          ";
 		} // namespace json_details::serialization
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

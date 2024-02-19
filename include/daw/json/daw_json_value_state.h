@@ -45,7 +45,7 @@ namespace daw::json {
 				  : name( Name )
 				  , hash_value(
 				      daw::name_hash<ParseState::expect_long_strings>( Name ) )
-				  , location( DAW_MOVE( val ) ) {}
+				  , location( std::move( val ) ) {}
 
 				[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
 					return name == Name;
@@ -162,7 +162,7 @@ namespace daw::json {
 		public:
 			constexpr basic_stateful_json_value(
 			  basic_json_value<PolicyFlags, Allocator> val )
-			  : m_value( DAW_MOVE( val ) ) {
+			  : m_value( std::move( val ) ) {
 
 				daw_json_assert_weak( ( [&] {
 					                      auto t = m_value.type( );
@@ -185,7 +185,7 @@ namespace daw::json {
 			 * @param val Value to contain state for
 			 */
 			constexpr void reset( basic_json_value<PolicyFlags, Allocator> val ) {
-				m_value = DAW_MOVE( val );
+				m_value = std::move( val );
 				m_locs.clear( );
 			}
 
@@ -380,14 +380,13 @@ namespace daw::json {
 			}
 		};
 
-		basic_stateful_json_value( ) -> basic_stateful_json_value<>;
+		basic_stateful_json_value( )->basic_stateful_json_value<>;
 
 		template<json_options_t PolicyFlags, typename Allocator>
 		basic_stateful_json_value( basic_json_value<PolicyFlags, Allocator> )
 		  -> basic_stateful_json_value<PolicyFlags, Allocator>;
 
-		basic_stateful_json_value( daw::string_view )
-		  -> basic_stateful_json_value<>;
+		basic_stateful_json_value( daw::string_view )->basic_stateful_json_value<>;
 
 		using json_value_state = basic_stateful_json_value<>;
 	} // namespace DAW_JSON_VER

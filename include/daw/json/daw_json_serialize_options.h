@@ -77,7 +77,7 @@ namespace daw::json {
 				///
 				enum class NewLineDelimiter : unsigned { n, rn };
 
-				/// @brief When outputting arrays, follow final item with a comma
+				/// @brief When outputting arrays, followitem with a comma
 				///
 				/// default: No
 				///

@@ -10,11 +10,8 @@
 
 #include <daw/json/impl/version.h>
 
-#include <daw/cpp_17.h>
-
 #include <cstddef>
 #include <type_traits>
-#include <utility>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -59,6 +56,7 @@ namespace daw::json {
 			inline constexpr auto construct_nullable_with_empty =
 			  construct_nullable_with_empty_t{ };
 
+			DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING
 			/// @brief Readable values models an option/maybe/nullable type
 			/// @tparam T The option type
 			template<typename T, typename...>
@@ -107,6 +105,7 @@ namespace daw::json {
 					return true;
 				}
 			};
+			DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING
 
 			/// @brief Determines the type stored inside T
 			template<typename T>
@@ -127,7 +126,7 @@ namespace daw::json {
 			/// @brief Read value from a non-empty nullable value
 			/// @pre nullable_value_traits<T>::has_value( ) == true
 			template<typename T>
-			constexpr decltype( auto ) nullable_value_read( T const &opt ) {
+			constexpr auto const &nullable_value_read( T const &opt ) {
 				return nullable_value_traits<T>::read( opt );
 			}
 
@@ -161,5 +160,5 @@ namespace daw::json {
 			  std::is_nothrow_invocable_v<nullable_value_traits<T>,
 			                              construct_nullable_with_empty_t>;
 		} // namespace concepts
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

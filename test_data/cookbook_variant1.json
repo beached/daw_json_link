@@ -6,5 +6,21 @@
   {
     "member0": "world",
     "member1": true
+  },
+  {
+    "member0": {
+      "a": 5
+    },
+    "member1": false
+  },
+  {
+    "member0": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "member1": false
   }
 ]

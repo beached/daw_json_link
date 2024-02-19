@@ -20,12 +20,10 @@
 
 #include <daw/daw_consteval.h>
 #include <daw/daw_constinit.h>
-#include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 
 #include <cstddef>
-#include <exception>
 #include <type_traits>
 
 namespace daw::json {
@@ -96,7 +94,8 @@ namespace daw::json {
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
 			         typename ParseState, std::size_t N, typename CharT, bool B>
-			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr json_result<
+			  JsonMember>
 			parse_class_member( ParseState &parse_state,
 			                    locations_info_t<N, CharT, B> &locations ) {
 				parse_state.move_next_member_or_end( );
@@ -182,7 +181,7 @@ namespace daw::json {
 			///
 			template<typename JsonClass, typename... JsonMembers, typename ParseState,
 			         std::size_t... Is>
-			[[nodiscard]] static inline constexpr json_result<JsonClass>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonClass>
 			parse_json_class( ParseState &parse_state, std::index_sequence<Is...> ) {
 				static_assert( is_a_json_type_v<JsonClass> );
 				using T = typename JsonClass::parse_to_t;
@@ -217,7 +216,7 @@ namespace daw::json {
 					}
 				} else {
 					using NeedClassPositions = std::bool_constant<(
-					  ( JsonMembers::must_be_class_member or ... ) )>;
+					  ( JsonMembers::without_name::must_be_class_member or ... ) )>;
 
 #if defined( DAW_JSON_BUGFIX_MSVC_KNOWN_LOC_ICE_003 )
 					auto known_locations =
@@ -240,12 +239,12 @@ namespace daw::json {
 						if constexpr( should_construct_explicitly_v<Constructor, T,
 						                                            ParseState> ) {
 							return T{ parse_class_member<
-							  Is, traits::nth_type<Is, JsonMembers...>, must_exist::value,
+							  Is, daw::traits::nth_type<Is, JsonMembers...>, must_exist::value,
 							  NeedClassPositions::value>( parse_state, known_locations )... };
 						} else {
 							return construct_value_tp<T, Constructor>(
 							  parse_state, fwd_pack{ parse_class_member<
-							                 Is, traits::nth_type<Is, JsonMembers...>,
+							                 Is, daw::traits::nth_type<Is, JsonMembers...>,
 							                 must_exist::value, NeedClassPositions::value>(
 							                 parse_state, known_locations )... } );
 						}
@@ -253,7 +252,7 @@ namespace daw::json {
 						if constexpr( should_construct_explicitly_v<Constructor, T,
 						                                            ParseState> ) {
 							auto result = T{ parse_class_member<
-							  Is, traits::nth_type<Is, JsonMembers...>, must_exist::value,
+							  Is, daw::traits::nth_type<Is, JsonMembers...>, must_exist::value,
 							  NeedClassPositions::value>( parse_state, known_locations )... };
 
 							class_cleanup_now<all_json_members_must_exist_v<T, ParseState>>(
@@ -262,7 +261,7 @@ namespace daw::json {
 						} else {
 							auto result = construct_value_tp<T, Constructor>(
 							  parse_state, fwd_pack{ parse_class_member<
-							                 Is, traits::nth_type<Is, JsonMembers...>,
+							                 Is, daw::traits::nth_type<Is, JsonMembers...>,
 							                 must_exist::value, NeedClassPositions::value>(
 							                 parse_state, known_locations )... } );
 
@@ -299,7 +298,7 @@ namespace daw::json {
 				parse_state.remove_prefix( );
 				parse_state.trim_left( );
 
-				size_t current_idx = 0;
+				std::size_t current_idx = 0;
 
 				if constexpr( is_pinned_type_v<typename JsonClass::parse_to_t> ) {
 					auto const run_after_parse = daw::on_exit_success( [&] {
@@ -345,5 +344,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

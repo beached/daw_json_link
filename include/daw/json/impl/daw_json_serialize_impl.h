@@ -11,12 +11,14 @@
 
 #include "to_daw_json_string.h"
 
+#include <daw/daw_empty.h>
+#include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_string_view.h>
-#include <daw/daw_utility.h>
+#include <daw/daw_undefined.h>
+#include <daw/traits/daw_traits_nth_element.h>
 
-#include <array>
 #include <cstddef>
-#include <utility>
+#include <daw/stdinc/integer_sequence.h>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -31,7 +33,7 @@ namespace daw::json {
 				daw::string_view array[capacity]{ };
 
 			public:
-				constexpr basic_array_t( ) = default;
+				basic_array_t( ) = default;
 
 				constexpr T const *data( ) const {
 					return array;
@@ -55,17 +57,17 @@ namespace daw::json {
 			struct basic_array_t<T, 0> {
 				static constexpr std::size_t capacity = 0;
 
-				constexpr basic_array_t( ) = default;
+				basic_array_t( ) = default;
 
-				constexpr T const *data( ) const {
+				DAW_CONSTEVAL T const *data( ) const {
 					return nullptr;
 				}
 
-				constexpr T *data( ) {
+				DAW_CONSTEVAL T *data( ) {
 					return nullptr;
 				}
 
-				constexpr std::size_t size( ) const {
+				DAW_CONSTEVAL std::size_t size( ) const {
 					return 0;
 				}
 			};
@@ -81,12 +83,12 @@ namespace daw::json {
 			 * @param it an Output Iterator to write char data to
 			 * @param args A tuple of the member values
 			 * @param value class to serialize
-			 * @return The OutputIterator it at the final position
+			 * @return The OutputIterator it at theposition
 			 */
 			template<typename... JsonMembers, typename OutputIterator,
 			         json_options_t SerializationOptions, std::size_t... Is,
 			         typename Tuple, typename Value>
-			[[nodiscard]] static inline constexpr serialization_policy<
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr serialization_policy<
 			  OutputIterator, SerializationOptions>
 			serialize_json_class(
 			  serialization_policy<OutputIterator, SerializationOptions> it,
@@ -95,12 +97,11 @@ namespace daw::json {
 				it.put( '{' );
 				it.add_indent( );
 
-				using visit_size = daw::constant<(
+				constexpr auto visit_size =
 				  sizeof...( JsonMembers ) +
 				  ( static_cast<std::size_t>( has_dependent_member_v<JsonMembers> ) +
-				    ... + 0 ) )>;
-				auto visited_members =
-				  basic_array_t<daw::string_view, visit_size::value>{ };
+				    ... + 0 );
+				auto visited_members = basic_array_t<daw::string_view, visit_size>{ };
 
 				// Tag Members, if any.  Putting them ahead means we can parse this
 				// faster in the future
@@ -112,23 +113,23 @@ namespace daw::json {
 				(void)visited_members;
 				(void)is_first;
 				{
-					using Names = fwd_pack<JsonMembers...>;
-					daw::Empty const expander[]{
+					using Names = daw::fwd_pack<JsonMembers...>;
+					daw::empty_t const expander[]{
 					  ( dependent_member_to_json_str<
-					      Is, traits::nth_element<Is, JsonMembers...>, Names>(
+					      Is, daw::traits::nth_element<Is, JsonMembers...>, Names>(
 					      is_first, it, args, value, visited_members ),
-					    daw::Empty{ } )...,
-					  daw::Empty{} };
+					    daw::empty_t{ } )...,
+					  daw::empty_t{} };
 					(void)expander;
 				}
 
 				// Regular Members
 				{
-					daw::Empty const expander[]{
-					  ( to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
+					daw::empty_t const expander[]{
+					  ( to_json_str<Is, daw::traits::nth_element<Is, JsonMembers...>>(
 					      is_first, it, args, value, visited_members ),
-					    daw::Empty{ } )...,
-					  daw::Empty{} };
+					    daw::empty_t{ } )...,
+					  daw::empty_t{} };
 					(void)expander;
 				}
 				it.del_indent( );
@@ -146,7 +147,7 @@ namespace daw::json {
 			template<typename... JsonMembers, typename OutputIterator,
 			         json_options_t SerializerOptions, typename Tuple, typename Value,
 			         std::size_t... Is>
-			[[nodiscard]] static inline constexpr serialization_policy<
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr serialization_policy<
 			  OutputIterator, SerializerOptions>
 			serialize_ordered_json_class(
 			  serialization_policy<OutputIterator, SerializerOptions> it,
@@ -155,15 +156,16 @@ namespace daw::json {
 				it.put( '[' );
 				it.add_indent( );
 				it.next_member( );
-				size_t array_idx = 0;
+				std::size_t array_idx = 0;
 				(void)array_idx; // gcc was complaining on empty pack
 				Unused( value );
 				{
-					daw::Empty const expander[]{
-					  ( to_json_ordered_str<Is, traits::nth_element<Is, JsonMembers...>>(
+					daw::empty_t const expander[]{
+					  ( to_json_ordered_str<Is,
+					                        daw::traits::nth_element<Is, JsonMembers...>>(
 					      array_idx, sizeof...( Is ), it, args ),
-					    daw::Empty{ } )...,
-					  daw::Empty{} };
+					    daw::empty_t{ } )...,
+					  daw::empty_t{} };
 					(void)expander;
 				}
 				it.del_indent( );
@@ -178,5 +180,5 @@ namespace daw::json {
 				return it;
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

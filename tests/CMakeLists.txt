@@ -79,7 +79,6 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
         set( DAW_JSON_LINK_TEST_ALWAYS )
     endif()
 endif()
-
 if( DAW_JSON_FULL_TESTS OR DAW_JSON_LINK_TEST_ALWAYS )
     add_executable( daw_json_link_test src/daw_json_link_test.cpp )
     add_test( NAME daw_json_link_test COMMAND daw_json_link_test )
@@ -802,6 +801,13 @@ if( DAW_USE_EXCEPTIONS )
     add_test( NAME issue_409_test COMMAND issue_409_test )
     add_dependencies( ci_tests issue_409_test )
     add_dependencies( full issue_409_test )
+		
+		add_executable( issue_413_test src/issue_413_test.cpp )
+    target_link_libraries( issue_413_test PRIVATE json_test )
+    add_test( NAME issue_413_test COMMAND issue_413_test )
+    add_dependencies( ci_tests issue_413_test )
+    add_dependencies( full issue_413_test )
+    
 endif()
 
 add_executable( test_details_skip_number src/test_details_skip_number.cpp )
@@ -980,6 +986,14 @@ target_link_libraries( issue_406_test PRIVATE json_test )
 add_test( NAME issue_406_test COMMAND issue_406_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
 add_dependencies( ci_tests issue_406_test )
 add_dependencies( full issue_406_test )
+
+add_executable( issue_418_test src/issue_418_test.cpp )
+target_link_libraries( issue_418_test PRIVATE json_test )
+add_test( NAME issue_418_test COMMAND issue_418_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests issue_418_test )
+add_dependencies( full issue_418_test )
+
+
 
 add_executable( multi_tu_test src/multi_tu_p0_test.cpp src/multi_tu_p1_test.cpp )
 target_link_libraries( multi_tu_test json_test )

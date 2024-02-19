@@ -11,10 +11,16 @@
 #include "version.h"
 
 #include "daw_json_assert.h"
+#include "daw_json_find_result.h"
 #include "daw_json_parse_std_string.h"
 #include "daw_not_const_ex_functions.h"
 
 #include <daw/daw_string_view.h>
+
+#include <cstddef>
+#include <daw/stdinc/data_access.h>
+#include <daw/stdinc/range_access.h>
+#include <limits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -37,7 +43,7 @@ namespace daw::json {
 				template<typename ParseState>
 				[[nodiscard]] DAW_ATTRIB_INLINE static constexpr daw::string_view
 				parse_nq( ParseState &parse_state ) {
-					if constexpr( ParseState::allow_escaped_names( ) ) {
+					if constexpr( ParseState::allow_escaped_names ) {
 						auto r = skip_string_nq( parse_state );
 						trim_end_of_name( parse_state );
 						return daw::string_view( std::data( r ), std::size( r ) );
@@ -117,6 +123,24 @@ namespace daw::json {
 				return std::size( json_path_item ) == std::size( member_name );
 			}
 
+			template<typename Result, typename ForwardIterator>
+			constexpr Result parse_unsigned_int( ForwardIterator first,
+			                                     ForwardIterator last ) {
+				std::size_t count = std::numeric_limits<Result>::digits;
+
+				daw_json_ensure( '-' != *first, ErrorReason::InvalidNumber );
+
+				Result result = 0;
+				for( ; first != last and count > 0; ++first, --count ) {
+					result *= static_cast<Result>( 10 );
+					Result val =
+					  static_cast<Result>( *first ) - static_cast<Result>( '0' );
+					result += val;
+				}
+				daw_json_ensure( first == last, ErrorReason::InvalidNumber );
+				return result;
+			}
+
 			// Get the next member name
 			// Assumes that the current item in stream is a double quote
 			// Ensures that the stream is left at the position of the associated
@@ -142,8 +166,8 @@ namespace daw::json {
 						                      ErrorReason::InvalidJSONPath, parse_state );
 						parse_state.remove_prefix( );
 						parse_state.trim_left_unchecked( );
-						auto idx = daw::parser::parse_unsigned_int<std::size_t>(
-						  pop_result.current );
+						auto idx = parse_unsigned_int<std::size_t>(
+						  pop_result.current.data( ), pop_result.current.data_end( ) );
 
 						while( idx > 0 ) {
 							--idx;
@@ -176,7 +200,7 @@ namespace daw::json {
 			}
 
 			template<typename ParsePolicy>
-			[[nodiscard]] static constexpr std::pair<bool, ParsePolicy>
+			[[nodiscard]] static constexpr find_result<ParsePolicy>
 			find_range( daw::string_view str, daw::string_view start_path ) {
 				auto parse_state =
 				  ParsePolicy( std::data( str ), daw::data_end( str ) );
@@ -185,11 +209,11 @@ namespace daw::json {
 				if( parse_state.has_more( ) and not start_path.empty( ) ) {
 					found = find_range2( parse_state, start_path );
 				}
-				return std::pair<bool, ParsePolicy>( found, parse_state );
+				return find_result<ParsePolicy>{ parse_state, found };
 			}
 
 			template<typename ParsePolicy, typename Allocator>
-			[[nodiscard]] static constexpr auto
+			[[nodiscard]] static constexpr find_result<ParsePolicy>
 			find_range( daw::string_view str, daw::string_view start_path,
 			            Allocator &alloc ) {
 				static_assert(
@@ -200,11 +224,11 @@ namespace daw::json {
 				parse_state.trim_left_checked( );
 				if( parse_state.has_more( ) and not start_path.empty( ) ) {
 					if( not find_range2( parse_state, start_path ) ) {
-						return std::pair{ false, parse_state };
+						return find_result<ParsePolicy>{ parse_state, false };
 					}
 				}
-				return std::pair{ true, parse_state };
+				return find_result<ParsePolicy>{ parse_state, true };
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

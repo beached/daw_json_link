@@ -10,6 +10,8 @@
 
 #include "version.h"
 
+#include "daw_json_req_helper.h"
+
 #include <daw/daw_consteval.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_likely.h>
@@ -34,36 +36,40 @@ namespace daw::json {
 			static_assert( N > 0 );
 			char const m_data[N]{ };
 
-		private:
+		public:
 			template<std::size_t... Is>
-			inline DAW_CONSTEVAL json_name( char const ( &ptr )[N],
-			                                std::index_sequence<Is...> ) noexcept
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL
+			json_name( char const *ptr, std::index_sequence<Is...> ) noexcept
 			  : m_data{ ptr[Is]... } {}
 
-		public:
-			inline DAW_CONSTEVAL json_name( char const ( &ptr )[N] ) noexcept
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL
+			json_name( char const ( &ptr )[N] ) noexcept
 			  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
 
-			constexpr operator daw::string_view( ) const noexcept {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr
+			operator daw::string_view( ) const noexcept {
 				return { m_data, N - 1 };
 			}
 
 			// Needed for copy_to_iterator
-			[[nodiscard]] constexpr char const *begin( ) const noexcept {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr char const *
+			begin( ) const noexcept {
 				return m_data;
 			}
 
 			// Needed for copy_to_iterator
-			[[nodiscard]] constexpr char const *end( ) const noexcept {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr char const *
+			end( ) const noexcept {
 				return m_data + static_cast<ptrdiff_t>( size( ) );
 			}
 
-			[[nodiscard]] static constexpr std::size_t size( ) noexcept {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t size( ) noexcept {
 				return N - 1;
 			}
 
 			template<std::size_t M>
-			constexpr bool operator==( json_name<M> const &rhs ) const noexcept {
+			[[nodiscard]] constexpr bool
+			operator==( json_name<M> const &rhs ) const noexcept {
 				if( N != M ) {
 					return false;
 				}
@@ -75,15 +81,18 @@ namespace daw::json {
 				return true;
 			}
 
-			constexpr bool operator==( daw::string_view rhs ) const noexcept {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
+			operator==( daw::string_view rhs ) const noexcept {
 				return daw::string_view( m_data, N - 1 ) == rhs;
 			}
 
-			constexpr bool operator==( std::string_view rhs ) const noexcept {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
+			operator==( std::string_view rhs ) const noexcept {
 				return std::string_view( m_data, N - 1 ) == rhs;
 			}
 
-			constexpr operator std::string_view( ) const noexcept {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr
+			operator std::string_view( ) const noexcept {
 				return std::string_view( m_data, N - 1 );
 			}
 		};
@@ -103,15 +112,16 @@ namespace daw::json {
 		inline constexpr char const default_value_name[] = "value";
 #endif
 		namespace json_details {
-			template<typename T>
-			using has_name_test = decltype( T::name );
+			DAW_JSON_MAKE_REQ_TRAIT( has_name_v, T::name );
+
+			template<typename... Ts>
+			inline constexpr bool all_have_name_v = ( has_name_v<Ts> and ... );
 
 			template<typename T>
-			inline constexpr bool is_no_name_v =
-			  not daw::is_detected_v<has_name_test, T>;
+			inline constexpr bool is_no_name_v = not has_name_v<T>;
 
-			template<typename T>
-			using is_no_name = std::bool_constant<is_no_name_v<T>>;
+			template<typename... Ts>
+			inline constexpr bool are_no_name_v = ( is_no_name_v<Ts> and ... );
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

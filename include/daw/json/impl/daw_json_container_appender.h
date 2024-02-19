@@ -22,21 +22,24 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename Container, typename Value>
-			using detect_push_back = decltype( std::declval<Container &>( ).push_back(
-			  std::declval<Value>( ) ) );
+			template<typename, typename, typename = void>
+			inline constexpr bool has_push_back_v = false;
 
 			template<typename Container, typename Value>
-			using detect_insert_end = decltype( std::declval<Container &>( ).insert(
-			  std::end( std::declval<Container &>( ) ), std::declval<Value>( ) ) );
+			inline constexpr bool has_push_back_v<
+			  Container, Value,
+			  std::void_t<decltype( std::declval<Container &>( ).push_back(
+			    std::declval<Value>( ) ) )>> = true;
+
+			template<typename, typename, typename = void>
+			inline constexpr bool has_insert_end_v = false;
 
 			template<typename Container, typename Value>
-			inline constexpr bool has_push_back_v =
-			  daw::is_detected_v<detect_push_back, Container, Value>;
-
-			template<typename Container, typename Value>
-			inline constexpr bool has_insert_end_v =
-			  daw::is_detected_v<detect_insert_end, Container, Value>;
+			inline constexpr bool has_insert_end_v<
+			  Container, Value,
+			  std::void_t<decltype( std::declval<Container &>( ).insert(
+			    std::end( std::declval<Container &>( ) ),
+			    std::declval<Value>( ) ) )>> = true;
 		} // namespace json_details
 		/***
 		 * @brief A generic output iterator that can push_back or insert depending
@@ -82,20 +85,20 @@ namespace daw::json {
 			         std::enable_if_t<
 			           not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>>,
 			           std::nullptr_t> = nullptr>
-			inline constexpr basic_appender &operator=( Value &&v ) {
+			DAW_ATTRIB_INLINE constexpr basic_appender &operator=( Value &&v ) {
 				operator( )( DAW_FWD( v ) );
 				return *this;
 			}
 
-			inline constexpr basic_appender &operator++( ) {
+			DAW_ATTRIB_INLINE constexpr basic_appender &operator++( ) {
 				return *this;
 			}
 
-			inline constexpr basic_appender operator++( int ) & {
+			DAW_ATTRIB_INLINE constexpr basic_appender operator++( int ) & {
 				return *this;
 			}
 
-			inline constexpr basic_appender &operator*( ) {
+			DAW_ATTRIB_INLINE constexpr basic_appender &operator*( ) {
 				return *this;
 			}
 		};

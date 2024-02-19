@@ -19,6 +19,7 @@
 #include "daw_json_value_fwd.h"
 #include "to_daw_json_string.h"
 
+#include <daw/algorithms/daw_algorithm_find.h>
 #include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_fwd_pack_apply.h>
@@ -497,6 +498,19 @@ namespace daw::json {
 		  NullableType, Constructor>;
 
 		namespace json_details {
+
+			template<typename... JsonElements>
+			DAW_CONSTEVAL bool all_unique_base_types( ) {
+				auto found = std::array<int, 6>{ };
+				( ( found[static_cast<int>( json_details::json_deduced_type<
+				                            JsonElements>::underlying_json_type )]++ ),
+				  ... );
+				return daw::algorithm::find_if( found.begin( ), found.end( ),
+				                                []( int x ) {
+					                                return x > 1;
+				                                } ) == found.end( );
+			}
+
 			template<JsonBaseParseTypes PT>
 			constexpr std::size_t
 			find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
@@ -521,8 +535,8 @@ namespace daw::json {
 			};
 
 			template<typename... Ts>
-			constexpr std::conditional_t<
-			  std::conjunction_v<has_json_deduced_type<Ts>...>,
+			constexpr daw::conditional_t<
+			  all_have_deduced_type_v<Ts...>,
 			  json_variant_type_list<json_deduced_type<Ts>...>,
 			  missing_default_type_mapping<json_deduced_type<Ts>...>>
 			get_variant_type_list( std::variant<Ts...> const * );
@@ -534,9 +548,7 @@ namespace daw::json {
 			using detected_underlying_nullable_type =
 			  std::remove_reference_t<daw::detected_t<underlying_nullable_type, T>>;
 
-			template<typename T>
-			inline constexpr bool is_nullable_type_v =
-			  daw::is_detected_v<underlying_nullable_type, T>;
+			DAW_JSON_MAKE_REQ_TRAIT( is_nullable_type_v, *std::declval<T>( ) );
 
 			template<typename T>
 			using is_nullable_type = std::bool_constant<is_nullable_type_v<T>>;
@@ -551,35 +563,46 @@ namespace daw::json {
 
 			template<typename... Ts>
 			struct variant_alternatives_list<std::variant<Ts...>> {
-				using type = std::conditional_t<
-				  std::conjunction_v<has_json_deduced_type<Ts>...>,
+				using type = daw::conditional_t<
+				  all_have_deduced_type_v<Ts...>,
 				  json_variant_type_list<json_deduced_type<Ts>...>,
 				  missing_default_type_mapping<json_deduced_type<Ts>...>>;
 			};
+
+			template<typename>
+			inline constexpr bool is_std_tuple_v = false;
+
+			template<typename... Ts>
+			inline constexpr bool is_std_tuple_v<std::tuple<Ts...>> = true;
 
 			template<typename, typename = void>
 			struct tuple_types_list;
 
 			template<template<class...> class Tuple, typename... Ts>
-			struct tuple_types_list<Tuple<Ts...>> {
-				static_assert( std::conjunction_v<has_deduced_type_mapping<Ts>...>,
+			struct tuple_types_list<
+			  Tuple<Ts...>,
+			  std::enable_if_t<( not is_std_tuple_v<Tuple<Ts...>> and
+			                     not can_convert_to_tuple_v<Tuple<Ts...>> )>> {
+				static_assert( are_deduced_type_mapped_v<daw::remove_cvref_t<Ts>...>,
 				               "Missing mapping for type in tuple" );
 
-				using types = std::tuple<json_deduced_type<Ts>...>;
+				using types = std::tuple<json_deduced_type<daw::remove_cvref_t<Ts>>...>;
 			};
 
 			template<typename... Ts>
 			struct tuple_types_list<std::tuple<Ts...>> {
-				static_assert( std::conjunction_v<has_deduced_type_mapping<Ts>...>,
+				static_assert( are_deduced_type_mapped_v<daw::remove_cvref_t<Ts>...>,
 				               "Missing mapping for type in tuple" );
 
-				using types = std::tuple<json_deduced_type<Ts>...>;
+				using types = std::tuple<json_deduced_type<daw::remove_cvref_t<Ts>>...>;
 			};
 
 			template<typename T>
-			struct tuple_types_list<T, std::enable_if_t<can_convert_to_tuple_v<T>>> {
-				using tp_type_t = daw::remove_cvref_t<decltype( tp_from_struct_binding(
-				  std::declval<T>( ) ) )>;
+			struct tuple_types_list<
+			  T,
+			  std::enable_if_t<( can_convert_to_tuple_v<T> and not is_tuple_v<T> )>> {
+				using tp_type_t =
+				  daw::remove_cvref_t<decltype( to_tuple_impl( std::declval<T>( ) ) )>;
 				using jt_types_list = tuple_types_list<tp_type_t>;
 				using types = typename jt_types_list::types;
 			};
@@ -691,9 +714,8 @@ namespace daw::json {
 
 		template<typename... Ts>
 		struct json_tuple_types_list {
-			static_assert(
-			  std::conjunction_v<json_details::has_json_deduced_type<Ts>...>,
-			  "Missing mapping for type in tuple" );
+			static_assert( json_details::all_have_deduced_type_v<Ts...>,
+			               "Missing mapping for type in tuple" );
 			using types = std::tuple<json_details::json_deduced_type<Ts>...>;
 		};
 
@@ -731,5 +753,5 @@ namespace daw::json {
 			using ensure_mapped_t = typename ensure_mapped<T>::type;
 
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -14,6 +14,7 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_do_n.h>
 #include <daw/daw_random.h>
+#include <daw/iterator/daw_back_inserter.h>
 
 #include <iostream>
 #include <streambuf>

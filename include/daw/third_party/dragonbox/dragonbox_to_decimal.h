@@ -22,6 +22,7 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_cast.h>
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_likely.h>
 
@@ -32,6 +33,10 @@
 #include <limits>
 #include <type_traits>
 
+#if defined( DAW_HAS_MSVC )
+#include <intrin.h>
+#endif
+
 // Suppress additional buffer overrun check
 // I have no idea why MSVC thinks some functions here are vulnerable to the
 // buffer overrun attacks No, they aren't.
@@ -41,12 +46,6 @@
 #define JKJ_SAFEBUFFERS __declspec( safebuffers )
 #else
 #define JKJ_SAFEBUFFERS
-#endif
-
-#if( defined( __GNUC__ ) or defined( __clang__ ) ) and defined( __x86_64__ )
-#include <immintrin.h>
-#elif defined( _MSC_VER ) and defined( _M_X64 )
-#include <intrin.h> // this includes immintrin.h as well
 #endif
 
 namespace daw::jkj::dragonbox {
@@ -99,7 +98,7 @@ namespace daw::jkj::dragonbox {
 			                                           ? ieee754_format::binary32
 			                                           : ieee754_format::binary64;
 
-			using carrier_uint = std::conditional_t<detail::physical_bits<T> == 32,
+			using carrier_uint = daw::conditional_t<detail::physical_bits<T> == 32,
 			                                        std::uint32_t, std::uint64_t>;
 			static_assert( sizeof( carrier_uint ) == sizeof( T ) );
 
@@ -364,7 +363,7 @@ namespace daw::jkj::dragonbox {
 					}
 
 					constexpr uint128 &operator+=( std::uint64_t n ) & noexcept {
-#if defined( DAW_IS_CONSTANT_EVALUATED ) and defined( _MSC_VER ) and \
+#if defined( DAW_IS_CONSTANT_EVALUATED ) and defined( DAW_HAS_MSVC ) and \
   defined( _M_X64 )
 						if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
 							auto carry = _addcarry_u64( 0, low_, n, &low_ );
@@ -827,7 +826,7 @@ namespace daw::jkj::dragonbox {
 					}
 				}
 			} // namespace div
-		}   // namespace detail
+		} // namespace detail
 
 		////////////////////////////////////////////////////////////////////////////////////////
 		// DIY floating-point data type
@@ -2224,8 +2223,8 @@ namespace daw::jkj::dragonbox {
 						validate_input( ieee754_bits<Float> ) noexcept {}
 					};
 				} // namespace input_validation
-			}   // namespace policy_impl
-		}     // namespace detail
+			} // namespace policy_impl
+		} // namespace detail
 
 		namespace policy {
 			namespace sign {
@@ -2303,7 +2302,7 @@ namespace daw::jkj::dragonbox {
 				inline constexpr auto do_nothing =
 				  detail::policy_impl::input_validation::do_nothing{ };
 			} // namespace input_validation
-		}   // namespace policy
+		} // namespace policy
 
 		namespace detail {
 			////////////////////////////////////////////////////////////////////////////////////////
@@ -3313,7 +3312,7 @@ namespace daw::jkj::dragonbox {
 					return convert_to_policy_holder( policy_pair_list{ } );
 				}
 			} // namespace policy_impl
-		}   // namespace detail
+		} // namespace detail
 
 		////////////////////////////////////////////////////////////////////////////////////////
 		// The interface function
@@ -3353,7 +3352,7 @@ namespace daw::jkj::dragonbox {
 					}
 				};
 			} // namespace
-		}   // namespace detail
+		} // namespace detail
 
 		template<class Float, class... Policies>
 		[[nodiscard]] JKJ_SAFEBUFFERS DAW_ATTRIB_INLINE constexpr auto

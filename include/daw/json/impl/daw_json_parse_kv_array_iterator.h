@@ -42,14 +42,14 @@ namespace daw::json {
 				ParseState *parse_state = nullptr;
 				difference_type counter = 0;
 
-				constexpr json_parse_kv_array_iterator_base( ) = default;
+				explicit json_parse_kv_array_iterator_base( ) = default;
 
-				explicit inline constexpr json_parse_kv_array_iterator_base(
+				explicit constexpr json_parse_kv_array_iterator_base(
 				  ParseState *pd ) noexcept
 				  : parse_state( pd )
 				  , counter( static_cast<difference_type>( pd->counter ) ) {}
 
-				inline constexpr difference_type
+				constexpr difference_type
 				operator-( json_parse_kv_array_iterator_base const &rhs ) const {
 					// rhs is the iterator with the parser in it.  We should know how many
 					// items are in play because we already counted them in the skip_array
@@ -59,7 +59,7 @@ namespace daw::json {
 			};
 
 			template<typename JsonMember, typename ParseState, bool KnownBounds>
-			struct json_parse_kv_array_iterator
+			struct json_parse_kv_array_iterator final
 			  : json_parse_kv_array_iterator_base<
 			      ParseState, can_be_random_iterator_v<KnownBounds>> {
 
@@ -76,10 +76,9 @@ namespace daw::json {
 				using difference_type = typename base::difference_type;
 
 				using json_class_type = typename JsonMember::json_class_t;
-				inline constexpr json_parse_kv_array_iterator( ) = default;
+				explicit json_parse_kv_array_iterator( ) = default;
 
-				inline constexpr explicit json_parse_kv_array_iterator(
-				  parse_state_t &r )
+				explicit constexpr json_parse_kv_array_iterator( parse_state_t &r )
 				  : base{ &r } {
 					if( DAW_UNLIKELY( base::parse_state->front( ) == ']' ) ) {
 						if constexpr( not KnownBounds ) {
@@ -92,10 +91,10 @@ namespace daw::json {
 					}
 				}
 
-				static inline constexpr value_type
+				static constexpr value_type
 				get_pair( typename json_class_type::parse_to_t &&v ) {
-					return value_type( std::get<0>( DAW_MOVE( v.members ) ),
-					                   std::get<1>( DAW_MOVE( v.members ) ) );
+					return value_type( std::get<0>( std::move( v.members ) ),
+					                   std::get<1>( std::move( v.members ) ) );
 				}
 
 				DAW_ATTRIB_NOINLINE value_type operator*( ) const {
@@ -155,13 +154,13 @@ namespace daw::json {
 					(void)operator++( );
 				}
 
-				friend inline constexpr bool
+				friend constexpr bool
 				operator==( json_parse_kv_array_iterator const &lhs,
 				            json_parse_kv_array_iterator const &rhs ) {
 					return lhs.parse_state == rhs.parse_state;
 				}
 
-				friend inline constexpr bool
+				friend constexpr bool
 				operator!=( json_parse_kv_array_iterator const &lhs,
 				            json_parse_kv_array_iterator const &rhs ) {
 					return not( lhs == rhs );
