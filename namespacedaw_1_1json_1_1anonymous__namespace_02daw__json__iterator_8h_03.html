@@ -67,7 +67,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">daw::json::anonymous_namespace{daw_json_iterator.h} Namespace Reference</div>  </div>
 </div><!--header-->
@@ -75,10 +76,10 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator.html">json_array_iterator</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__once.html">json_array_iterator_once</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterator for iterating over JSON array's. Requires that op op++ be called in that sequence one time until end is reached.  <a href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__once.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html">json_array_iterator_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__range.html">json_array_range</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A range of json_array_iterators.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__range.html#details">More...</a><br /></td></tr>
@@ -86,7 +87,32 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__range__once.html">json_array_range_once</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A range of json_array_iterator_onces. Requires that op*&zwj;/op++ be called in that sequence one time untl end is reached.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__range__once.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ac325c13c4ef916ee88cd5a0aa9f5cf61"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement , auto... PolicyFlags&gt; </td></tr>
+<tr class="memitem:ac325c13c4ef916ee88cd5a0aa9f5cf61"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03.html#ac325c13c4ef916ee88cd5a0aa9f5cf61">json_array_iterator</a> = <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html">json_array_iterator_t</a>&lt; JsonElement, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03.html#ac9ab9fa0b15bcff980813b41589246af">TryDefaultParsePolicy</a>&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; options::details::make_parse_flags&lt; PolicyFlags... &gt;().value &gt; &gt;&gt;</td></tr>
+<tr class="separator:ac325c13c4ef916ee88cd5a0aa9f5cf61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="ac325c13c4ef916ee88cd5a0aa9f5cf61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac325c13c4ef916ee88cd5a0aa9f5cf61">&#9670;&nbsp;</a></span>json_array_iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonElement , auto... PolicyFlags&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using daw::json::anonymous_namespace{daw_json_iterator.h}::<a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03.html#ac325c13c4ef916ee88cd5a0aa9f5cf61">json_array_iterator</a> = typedef <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html">json_array_iterator_t</a>&lt; JsonElement, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03.html#ac9ab9fa0b15bcff980813b41589246af">TryDefaultParsePolicy</a>&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; options::details::make_parse_flags&lt;PolicyFlags...&gt;( ).value&gt; &gt;&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00213">213</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

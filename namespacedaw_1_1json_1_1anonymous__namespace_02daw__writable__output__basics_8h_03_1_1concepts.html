@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DAW JSON Link: daw::json::anonymous_namespace{daw_writable_output.h}::concepts Namespace Reference</title>
+<title>DAW JSON Link: daw::json::anonymous_namespace{daw_writable_output_basics.h}::concepts Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -62,14 +62,14 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacedaw.html">daw</a></li><li class="navelem"><a class="el" href="namespacedaw_1_1json.html">json</a></li><li class="navelem"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03.html">anonymous_namespace{daw_writable_output.h}</a></li><li class="navelem"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts.html">concepts</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacedaw.html">daw</a></li><li class="navelem"><a class="el" href="namespacedaw_1_1json.html">json</a></li><li class="navelem"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__basics_8h_03.html">anonymous_namespace{daw_writable_output_basics.h}</a></li><li class="navelem"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__basics_8h_03_1_1concepts.html">concepts</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
-<div class="title">daw::json::anonymous_namespace{daw_writable_output.h}::concepts Namespace Reference</div>  </div>
+<div class="title">daw::json::anonymous_namespace{daw_writable_output_basics.h}::concepts Namespace Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -78,14 +78,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><b>writable_output_trait&lt; Container, std::enable_if_t&lt; writeable_output_details::is_string_like_writable_output_v&lt; Container, typename Container::value_type &gt; &gt; &gt;</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization for a resizable continain like vector/string. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts_1_1writable_d984ec084d0ca8a046f968d3fab77978.html">writable_output_trait&lt; std::FILE * &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization for FILE * streams.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts_1_1writable_d984ec084d0ca8a046f968d3fab77978.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><b>writable_output_trait&lt; T *, std::enable_if_t&lt;(writeable_output_details::is_char_sized_character_v&lt; T &gt; or writeable_output_details::is_byte_type_v&lt; T &gt;)&gt; &gt;</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization for character pointer. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts_1_1writable_1f8898fb07afbc8a99d6efdcb858752b.html">writable_output_trait&lt; T, std::enable_if_t&lt; std::is_base_of_v&lt; std::ostream, T &gt; &gt; &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization for ostream &amp;.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__writable__output_8h_03_1_1concepts_1_1writable_1f8898fb07afbc8a99d6efdcb858752b.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><b>writable_output_trait&lt; T, std::enable_if_t&lt; writeable_output_details::is_span_like_range_v&lt; T, typename T::value_type &gt; &gt; &gt;</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization for a span to a buffer with a fixed size. <br /></td></tr>

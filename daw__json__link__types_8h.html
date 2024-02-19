@@ -79,11 +79,17 @@ $(function() {
 <code>#include &quot;<a class="el" href="daw__json__serialize__impl_8h_source.html">impl/daw_json_serialize_impl.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__traits_8h_source.html">impl/daw_json_traits.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_attributes.h&gt;</code><br />
+<code>#include &lt;daw/daw_fwd_pack_apply.h&gt;</code><br />
 <code>#include &lt;daw/daw_string_view.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;daw/daw_visit.h&gt;</code><br />
+<code>#include &lt;daw/traits/daw_traits_conditional.h&gt;</code><br />
+<code>#include &lt;daw/traits/daw_traits_first_type.h&gt;</code><br />
+<code>#include &lt;daw/traits/daw_traits_identity.h&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
-<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;daw/stdinc/integer_sequence.h&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
 </div>
@@ -324,9 +330,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ae1ca74dc0523a6d8d4f535845e262786"><td class="memTemplParams" colspan="2">template&lt;typename Tuple , typename Constructor  = use_default, typename JsonTupleTypesList  = use_default&gt; </td></tr>
 <tr class="memitem:ae1ca74dc0523a6d8d4f535845e262786"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ae1ca74dc0523a6d8d4f535845e262786">daw::json::anonymous_namespace{daw_json_link_types.h}::json_tuple_no_name</a> = json_base::json_tuple&lt; Tuple, Constructor, JsonTupleTypesList &gt;</td></tr>
 <tr class="separator:ae1ca74dc0523a6d8d4f535845e262786"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0be9574151feb26276c565a3f652b6f4"><td class="memTemplParams" colspan="2">template&lt;typename WrappedTuple , typename JsonTupleTypesList  = use_default, JsonNullable NullableType = JsonNullable::Nullable, typename Constructor  = use_default&gt; </td></tr>
-<tr class="memitem:a0be9574151feb26276c565a3f652b6f4"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a0be9574151feb26276c565a3f652b6f4">daw::json::anonymous_namespace{daw_json_link_types.h}::json_tuple_null_no_name</a> = json_base::json_nullable&lt; WrappedTuple, json_base::json_tuple&lt; json_details::unwrapped_t&lt; WrappedTuple &gt; &gt;, NullableType, Constructor &gt;</td></tr>
-<tr class="separator:a0be9574151feb26276c565a3f652b6f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2da806434705f1c2e6d87a1b44e8819"><td class="memTemplParams" colspan="2">template&lt;typename WrappedTuple , typename JsonTupleTypesList  = use_default, JsonNullable NullableType = JsonNullable::Nullable, typename Constructor  = use_default&gt; </td></tr>
+<tr class="memitem:ab2da806434705f1c2e6d87a1b44e8819"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ab2da806434705f1c2e6d87a1b44e8819">daw::json::anonymous_namespace{daw_json_link_types.h}::json_tuple_null_no_name</a> = json_base::json_nullable&lt; WrappedTuple, JsonTupleTypesList, NullableType, Constructor &gt;</td></tr>
+<tr class="separator:ab2da806434705f1c2e6d87a1b44e8819"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a641580afc0fc4ea246948b582609393c"><td class="memTemplParams" colspan="2">template&lt;typename Variant , typename JsonElements  = use_default, typename Constructor  = use_default&gt; </td></tr>
 <tr class="memitem:a641580afc0fc4ea246948b582609393c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a641580afc0fc4ea246948b582609393c">daw::json::anonymous_namespace{daw_json_link_types.h}::json_variant_no_name</a> = json_base::json_variant&lt; Variant, JsonElements, Constructor &gt;</td></tr>
 <tr class="separator:a641580afc0fc4ea246948b582609393c"><td class="memSeparator" colspan="2">&#160;</td></tr>

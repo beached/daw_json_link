@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['runtime_5fexec_5ftag_961',['runtime_exec_tag',['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html',1,'daw::json::anonymous_namespace{daw_json_exec_modes.h}::runtime_exec_tag'],['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html',1,'daw::json::runtime_exec_tag']]]
+  ['serialization_5fpolicy_973',['serialization_policy',['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html',1,'daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serialization_policy&lt; WritableType, PolicyFlags &gt;'],['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html',1,'daw::json::serialization_policy&lt; WritableType, PolicyFlags &gt;']]],
+  ['simd_5fexec_5ftag_974',['simd_exec_tag',['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1simd__exec__tag.html',1,'daw::json::anonymous_namespace{daw_json_exec_modes.h}::simd_exec_tag'],['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1simd__exec__tag.html',1,'daw::json::simd_exec_tag']]]
 ];

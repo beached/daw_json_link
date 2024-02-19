@@ -98,16 +98,16 @@ Public Types</h2></td></tr>
 <tr class="separator:ae9ba533608970c4a5ef2c9a95244c867"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ae80376ac117c163e353dbd3f326248"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a8ae80376ac117c163e353dbd3f326248">i_am_a_tagged_variant</a> = void</td></tr>
 <tr class="separator:a8ae80376ac117c163e353dbd3f326248"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b997c69b2c1ee206ac4fb5f6b03b595"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a7b997c69b2c1ee206ac4fb5f6b03b595">json_elements</a> = typename std::conditional_t&lt; std::is_same_v&lt; JsonElements, use_default &gt;, json_details::variant_alternatives_list&lt; T &gt;, daw::traits::identity&lt; JsonElements &gt; &gt;::type</td></tr>
-<tr class="separator:a7b997c69b2c1ee206ac4fb5f6b03b595"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ff254000d6b277eedf709cdfbfc0dfc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a3ff254000d6b277eedf709cdfbfc0dfc">json_elements</a> = typename daw::conditional_t&lt; std::is_same_v&lt; JsonElements, use_default &gt;, json_details::variant_alternatives_list&lt; T &gt;, daw::traits::identity&lt; JsonElements &gt; &gt;::type</td></tr>
+<tr class="separator:a3ff254000d6b277eedf709cdfbfc0dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58eba1fee2d347cbe52e8573a1d17db2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a58eba1fee2d347cbe52e8573a1d17db2">parse_to_t</a> = T</td></tr>
 <tr class="separator:a58eba1fee2d347cbe52e8573a1d17db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5e2068984f3d6fd8489946d6334f71a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#ab5e2068984f3d6fd8489946d6334f71a">switcher</a> = Switcher</td></tr>
 <tr class="separator:ab5e2068984f3d6fd8489946d6334f71a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd5b93f946ee9dc51f5139c2f63295ca"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#afd5b93f946ee9dc51f5139c2f63295ca">tag_member</a> = typename std::conditional_t&lt; json_details::is_a_json_type_v&lt; TagMember &gt;, daw::traits::identity&lt; TagMember &gt;, daw::traits::identity&lt; json_details::json_deduced_type&lt; TagMember &gt; &gt;&gt;::type</td></tr>
-<tr class="separator:afd5b93f946ee9dc51f5139c2f63295ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9823fd5f69121a42691e3bb1c0e11b5d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a9823fd5f69121a42691e3bb1c0e11b5d">tag_member_class_wrapper</a> = std::conditional_t&lt; json_details::is_an_ordered_member_v&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#afd5b93f946ee9dc51f5139c2f63295ca">tag_member</a> &gt;, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tuple.html">json_tuple</a>&lt; std::tuple&lt; typename tag_member::parse_to_t &gt;, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__tuple__types__list.html">json_tuple_types_list</a>&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#afd5b93f946ee9dc51f5139c2f63295ca">tag_member</a> &gt; &gt;, json_details::json_deduced_type&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1tuple__json__mapping.html">tuple_json_mapping</a>&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#afd5b93f946ee9dc51f5139c2f63295ca">tag_member</a> &gt; &gt;&gt;</td></tr>
-<tr class="separator:a9823fd5f69121a42691e3bb1c0e11b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71738aeba00b3710d1324c6afcaa6206"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a71738aeba00b3710d1324c6afcaa6206">tag_member</a> = typename daw::conditional_t&lt; json_details::is_a_json_type_v&lt; TagMember &gt;, daw::traits::identity&lt; TagMember &gt;, daw::traits::identity&lt; json_details::json_deduced_type&lt; TagMember &gt; &gt;&gt;::type</td></tr>
+<tr class="separator:a71738aeba00b3710d1324c6afcaa6206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d203c6c7006ce246b30ba31ba60cb77"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a3d203c6c7006ce246b30ba31ba60cb77">tag_member_class_wrapper</a> = daw::conditional_t&lt; json_details::is_an_ordered_member_v&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a71738aeba00b3710d1324c6afcaa6206">tag_member</a> &gt;, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tuple.html">json_tuple</a>&lt; std::tuple&lt; typename tag_member::parse_to_t &gt;, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__tuple__types__list.html">json_tuple_types_list</a>&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a71738aeba00b3710d1324c6afcaa6206">tag_member</a> &gt; &gt;, json_details::json_deduced_type&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1tuple__json__mapping.html">tuple_json_mapping</a>&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a71738aeba00b3710d1324c6afcaa6206">tag_member</a> &gt; &gt;&gt;</td></tr>
+<tr class="separator:a3d203c6c7006ce246b30ba31ba60cb77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3880e69baa2747836321551881aa71a8"><td class="memTemplParams" colspan="2">template&lt;char const * NewName&gt; </td></tr>
 <tr class="memitem:a3880e69baa2747836321551881aa71a8"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a3880e69baa2747836321551881aa71a8">with_name</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__tagged__variant.html">daw::json::json_tagged_variant</a>&lt; NewName, T, TagMember, Switcher, JsonElements, Constructor &gt;</td></tr>
 <tr class="separator:a3880e69baa2747836321551881aa71a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,7 +126,7 @@ Static Public Attributes</h2></td></tr>
 struct daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_tagged_variant&lt; T, TagMember, Switcher, JsonElements, Constructor &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01055">1055</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01053">1053</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a19a4cb700543d11374eb5b031ed1c829"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a19a4cb700543d11374eb5b031ed1c829">&#9670;&nbsp;</a></span>base_type</h2>
@@ -142,7 +142,7 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01101">1101</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01096">1096</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -160,7 +160,7 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01097">1097</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01092">1092</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -178,7 +178,7 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01073">1073</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01071">1071</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -196,7 +196,7 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01056">1056</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01054">1054</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -214,12 +214,12 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01057">1057</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01055">1055</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
-<a id="a7b997c69b2c1ee206ac4fb5f6b03b595"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b997c69b2c1ee206ac4fb5f6b03b595">&#9670;&nbsp;</a></span>json_elements</h2>
+<a id="a3ff254000d6b277eedf709cdfbfc0dfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ff254000d6b277eedf709cdfbfc0dfc">&#9670;&nbsp;</a></span>json_elements</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -227,12 +227,12 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
 template&lt;typename T , typename TagMember , typename Switcher , typename JsonElements , typename Constructor &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_json_link_types.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html">json_base::json_tagged_variant</a>&lt; T, TagMember, Switcher, JsonElements, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a7b997c69b2c1ee206ac4fb5f6b03b595">json_elements</a> =  typename std::conditional_t&lt; std::is_same_v&lt;JsonElements, use_default&gt;, json_details::variant_alternatives_list&lt;T&gt;, daw::traits::identity&lt;JsonElements&gt; &gt;::type</td>
+          <td class="memname">using daw::json::anonymous_namespace{daw_json_link_types.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html">json_base::json_tagged_variant</a>&lt; T, TagMember, Switcher, JsonElements, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a3ff254000d6b277eedf709cdfbfc0dfc">json_elements</a> =  typename daw::conditional_t&lt; std::is_same_v&lt;JsonElements, use_default&gt;, json_details::variant_alternatives_list&lt;T&gt;, daw::traits::identity&lt;JsonElements&gt; &gt;::type</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01060">1060</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01058">1058</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -250,7 +250,7 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01100">1100</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01095">1095</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -268,12 +268,12 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01096">1096</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01091">1091</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
-<a id="afd5b93f946ee9dc51f5139c2f63295ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afd5b93f946ee9dc51f5139c2f63295ca">&#9670;&nbsp;</a></span>tag_member</h2>
+<a id="a71738aeba00b3710d1324c6afcaa6206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71738aeba00b3710d1324c6afcaa6206">&#9670;&nbsp;</a></span>tag_member</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -281,17 +281,17 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
 template&lt;typename T , typename TagMember , typename Switcher , typename JsonElements , typename Constructor &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_json_link_types.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html">json_base::json_tagged_variant</a>&lt; T, TagMember, Switcher, JsonElements, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#afd5b93f946ee9dc51f5139c2f63295ca">tag_member</a> =  typename std::conditional_t&lt; json_details::is_a_json_type_v&lt;TagMember&gt;, daw::traits::identity&lt;TagMember&gt;, daw::traits::identity&lt;json_details::json_deduced_type&lt;TagMember&gt; &gt;&gt;:: type</td>
+          <td class="memname">using daw::json::anonymous_namespace{daw_json_link_types.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html">json_base::json_tagged_variant</a>&lt; T, TagMember, Switcher, JsonElements, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a71738aeba00b3710d1324c6afcaa6206">tag_member</a> =  typename daw::conditional_t&lt; json_details::is_a_json_type_v&lt;TagMember&gt;, daw::traits::identity&lt;TagMember&gt;, daw::traits::identity&lt;json_details::json_deduced_type&lt;TagMember&gt; &gt;&gt;:: type</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01084">1084</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01079">1079</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
-<a id="a9823fd5f69121a42691e3bb1c0e11b5d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9823fd5f69121a42691e3bb1c0e11b5d">&#9670;&nbsp;</a></span>tag_member_class_wrapper</h2>
+<a id="a3d203c6c7006ce246b30ba31ba60cb77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d203c6c7006ce246b30ba31ba60cb77">&#9670;&nbsp;</a></span>tag_member_class_wrapper</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -299,12 +299,12 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
 template&lt;typename T , typename TagMember , typename Switcher , typename JsonElements , typename Constructor &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_json_link_types.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html">json_base::json_tagged_variant</a>&lt; T, TagMember, Switcher, JsonElements, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a9823fd5f69121a42691e3bb1c0e11b5d">tag_member_class_wrapper</a> =  std::conditional_t&lt; json_details::is_an_ordered_member_v&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#afd5b93f946ee9dc51f5139c2f63295ca">tag_member</a>&gt;, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tuple.html">json_tuple</a>&lt;std::tuple&lt;typename tag_member::parse_to_t&gt;, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__tuple__types__list.html">json_tuple_types_list</a>&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#afd5b93f946ee9dc51f5139c2f63295ca">tag_member</a>&gt; &gt;, json_details::json_deduced_type&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1tuple__json__mapping.html">tuple_json_mapping</a>&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#afd5b93f946ee9dc51f5139c2f63295ca">tag_member</a>&gt; &gt;&gt;</td>
+          <td class="memname">using daw::json::anonymous_namespace{daw_json_link_types.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html">json_base::json_tagged_variant</a>&lt; T, TagMember, Switcher, JsonElements, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a3d203c6c7006ce246b30ba31ba60cb77">tag_member_class_wrapper</a> =  daw::conditional_t&lt; json_details::is_an_ordered_member_v&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a71738aeba00b3710d1324c6afcaa6206">tag_member</a>&gt;, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tuple.html">json_tuple</a>&lt;std::tuple&lt;typename tag_member::parse_to_t&gt;, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__tuple__types__list.html">json_tuple_types_list</a>&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a71738aeba00b3710d1324c6afcaa6206">tag_member</a>&gt; &gt;, json_details::json_deduced_type&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1tuple__json__mapping.html">tuple_json_mapping</a>&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tagged__variant.html#a71738aeba00b3710d1324c6afcaa6206">tag_member</a>&gt; &gt;&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01090">1090</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01085">1085</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -324,7 +324,7 @@ template&lt;char const * NewName&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01109">1109</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01104">1104</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -353,7 +353,7 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">          JsonParseTypes::VariantTagged</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01102">1102</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01097">1097</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -379,7 +379,7 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01058">1058</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01056">1056</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -407,7 +407,7 @@ template&lt;typename T , typename TagMember , typename Switcher , typename JsonE
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">          JsonBaseParseTypes::None</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01105">1105</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01100">1100</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>

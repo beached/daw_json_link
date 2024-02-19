@@ -68,7 +68,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_iterator.h File Reference</div>  </div>
 </div><!--header-->
@@ -94,10 +95,10 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator.html">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator&lt; JsonElement, PolicyFlags &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__once.html">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator_once&lt; JsonElement, PolicyFlags &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterator for iterating over JSON array's. Requires that op op++ be called in that sequence one time until end is reached.  <a href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__once.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator_t&lt; JsonElement, ParseState &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__range.html">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_range&lt; JsonElement, PolicyFlags &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A range of json_array_iterators.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__range.html#details">More...</a><br /></td></tr>
@@ -115,6 +116,12 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03.html">daw::json::anonymous_namespace{daw_json_iterator.h}</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ac325c13c4ef916ee88cd5a0aa9f5cf61"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement , auto... PolicyFlags&gt; </td></tr>
+<tr class="memitem:ac325c13c4ef916ee88cd5a0aa9f5cf61"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03.html#ac325c13c4ef916ee88cd5a0aa9f5cf61">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator</a> = json_array_iterator_t&lt; JsonElement, TryDefaultParsePolicy&lt; BasicParsePolicy&lt; options::details::make_parse_flags&lt; PolicyFlags... &gt;().value &gt; &gt;&gt;</td></tr>
+<tr class="separator:ac325c13c4ef916ee88cd5a0aa9f5cf61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

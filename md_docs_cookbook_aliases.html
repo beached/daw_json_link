@@ -66,20 +66,43 @@ $(function() {
 <div class="title">json_type_alias </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>It is sometimes desirable to map a class to be parsed like that of another type of mapping or another class. This, can allow parsing the json data as a number and constructing a class.</p>
-<p>For instance, we want to store a GNU MP Rational type <code>mpq_class::mpq_class</code> as a string and use it's constructor to parse the data.</p>
+<div class="textblock"><p>It is sometimes desirable to map a class to be parsed like that of another type of mapping or another class. This, can allow parsing the json data as a number and constructing a class. There are two parts, first the type alias describes what parser to use that will allow construction of the type. The <code>to_json_data</code> static function will return a value of the type that was parsed to.</p>
+<div class="fragment"><div class="line"><span class="comment">// A basic type that wraps an integer</span></div>
+<div class="line"><span class="keyword">class </span>MyType {</div>
+<div class="line">    <span class="keywordtype">int</span> value;</div>
+<div class="line"> </div>
+<div class="line">   <span class="keyword">public</span>:</div>
+<div class="line">    MyType( <span class="keywordtype">int</span> i ) : value( i ) {}</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">int</span> <span class="keyword">const</span>&amp; <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03.html#a06f110b9e0d95a7f6587ff1cfd82aa17">get</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> value; }</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line"><span class="keyword">template</span> &lt;&gt;</div>
+<div class="line"><span class="keyword">struct </span>json_data_contract&lt;MyType&gt; {</div>
+<div class="line">    <span class="comment">// Tell JSON Link that MyType will be constructible from and parsed as if it was an int.  This could also be json_number_no_name&lt;int&gt;</span></div>
+<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_type_alias&lt;int&gt;;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Extract the int so that it can be serialized as if it was the type being serialized</span></div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">int</span> to_json_data(MyType <span class="keyword">const</span>&amp; v) {</div>
+<div class="line">        <span class="keywordflow">return</span> v.get();</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace daw::json</span></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_html_a06f110b9e0d95a7f6587ff1cfd82aa17"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03.html#a06f110b9e0d95a7f6587ff1cfd82aa17">daw::json::anonymous_namespace{daw_json_value.h}::get</a></div><div class="ttdeci">constexpr decltype(auto) get(basic_json_pair&lt; PolicyFlags, Allocator &gt; const &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value_8h_source.html#l00050">daw_json_value.h:50</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__data__contract_8h_source.html#l00039">daw_json_data_contract.h:39</a></div></div>
+</div><!-- fragment --><p>Another example is we want to store a GNU MP Rational type <code>mpq_class::mpq_class</code> as a string and use it's constructor to parse the data.</p>
 <div class="fragment"><div class="line"><span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;mpq_class::mpq_class&gt; {</div>
 <div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_type_alias&lt;std::string&gt;;</div>
 <div class="line">    </div>
 <div class="line">    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">auto</span> to_json_data( mpq_class::mpq_class <span class="keyword">const</span> &amp; v ) {</div>
-<div class="line">        <span class="keywordflow">return</span> std::tuple{ <span class="keywordflow">return</span> v.get_str( ); }</div>
+<div class="line">        <span class="keywordflow">return</span> <span class="keywordflow">return</span> v.get_str( );</div>
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">}</div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__data__contract_8h_source.html#l00039">daw_json_data_contract.h:39</a></div></div>
 </div><!-- fragment --><p>The data for this mapping could look like "12345/56789"</p>
 <p>The file <a href="../../tests/src/cookbook_aliases1_test.cpp">cookbook_aliases1_test.cpp</a> shows an example share a type <code>MyClass</code> has a single member of type <code>std::string</code> that is serialized and deserialized as a string. </p>
 </div></div><!-- contents -->

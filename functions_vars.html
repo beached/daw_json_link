@@ -68,6 +68,12 @@ $(function() {
 <li>allow_escape_character
 : <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__string__raw.html#a484a28737070e406eb9a226f82c3720f">daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_string_raw&lt; String, Options, Constructor &gt;</a>
 </li>
+<li>allow_escaped_names
+: <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a9240c81399fb35f24663d303465bae28">daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;</a>
+</li>
+<li>allow_leading_zero_plus
+: <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a30ca2c75b17bc348cdb4a95a35f51147">daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;</a>
+</li>
 <li>allow_number_errors
 : <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__number.html#a1c4b5c2e6bad5a5ff00203c8944bcece">daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_number&lt; T, Options, Constructor &gt;</a>
 </li>
@@ -122,6 +128,9 @@ $(function() {
 : <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__string.html#a8c5569b55575ef3a426acfd55f8cf70c">daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_string&lt; String, Options, Constructor &gt;</a>
 , <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__string__raw.html#ae1c607d73ecf436014c0808c9879fe65">daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_string_raw&lt; String, Options, Constructor &gt;</a>
 </li>
+<li>exclude_special_escapes
+: <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#abdf0be2ee1dead484ef11269672561a6">daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;</a>
+</li>
 <li>exec_tag
 : <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a90fb86a83dfa7ce11e56470f69d55d14">daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;</a>
 </li>
@@ -160,6 +169,9 @@ $(function() {
 </li>
 <li>force_aggregate_construction
 : <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__tuple.html#a50b5456205153cfe8a380d77c49b3310">daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_tuple&lt; Tuple, JsonTupleTypesList, Constructor &gt;</a>
+</li>
+<li>force_name_equal_check
+: <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a0d314c3932625a317eb9bd05cb2e7c0e">daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;</a>
 </li>
 <li>fp_output_format
 : <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__number.html#a452db2c7fd33410d49c0686d73227a64">daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_number&lt; T, Options, Constructor &gt;</a>
@@ -201,8 +213,8 @@ $(function() {
 <li>is_unchecked_input
 : <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a2636df2f1166e48ffbe03a55b001d2d3">daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;</a>
 </li>
-<li>it
-: <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__default__constuctor_8h_03_1_1construct__array__cleanup.html#a003ce2d67bd0556548af2b7cdd446e68">daw::json::anonymous_namespace{daw_json_default_constuctor.h}::construct_array_cleanup&lt; Iterator &gt;</a>
+<li>is_zero_terminated_string
+: <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a8ff7235bb0e8811b30e0a690be52ad78">daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;</a>
 </li>
 </ul>
 
@@ -224,7 +236,7 @@ $(function() {
 
 <h3><a id="index_m"></a>- m -</h3><ul>
 <li>m_can_skip
-: <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator.html#a32b99fc1ec811587c7022792ff1b7dff">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator&lt; JsonElement, PolicyFlags &gt;</a>
+: <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#aeb6edd0b39343744b7e4642aed02c9f7">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator_t&lt; JsonElement, ParseState &gt;</a>
 , <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a98b1ccd1b16d083b5893b5f34b8aef5f">daw::json::anonymous_namespace{daw_json_lines_iterator.h}::json_lines_iterator&lt; JsonElement, PolicyFlags &gt;</a>
 </li>
 <li>m_container
@@ -256,8 +268,8 @@ $(function() {
 : <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03_1_1_default_json_event_parser_stack_policy.html#ad042157964c86be4da75c051d3c9acde">daw::json::anonymous_namespace{daw_json_event_parser.h}::DefaultJsonEventParserStackPolicy&lt; StackValue &gt;</a>
 </li>
 <li>m_state
-: <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator.html#a80f6d488c76527656dcb80470a26e3c2">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator&lt; JsonElement, PolicyFlags &gt;</a>
-, <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__once.html#a7c0273ba6d590fa7b579b463dadf3b07">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator_once&lt; JsonElement, PolicyFlags &gt;</a>
+: <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__once.html#a7c0273ba6d590fa7b579b463dadf3b07">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator_once&lt; JsonElement, PolicyFlags &gt;</a>
+, <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a1ca05e6b364e0d0b0223a8a52f64eee6">daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator_t&lt; JsonElement, ParseState &gt;</a>
 , <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a40d9d9f6d69627a31141348e6994667a">daw::json::anonymous_namespace{daw_json_lines_iterator.h}::json_lines_iterator&lt; JsonElement, PolicyFlags &gt;</a>
 , <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value__iterator.html#a5d3c0c5ca2c5f552ca088bbb082d6e20">daw::json::anonymous_namespace{daw_json_value.h}::basic_json_value_iterator&lt; PolicyFlags, Allocator &gt;</a>
 </li>
@@ -278,6 +290,9 @@ $(function() {
 </li>
 <li>members
 : <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1tuple__json__mapping.html#a19892c5605bbb9c4066d9cf814341525">daw::json::anonymous_namespace{daw_json_link_types.h}::tuple_json_mapping&lt; Members &gt;</a>
+</li>
+<li>minified_document
+: <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#aebf24acfe026ed6e3244060050c65be0">daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;</a>
 </li>
 <li>minute
 : <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime_1_1time__parts.html#ad98c2b3d83cd29fa0416e686c3ed4db6">daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::datetime::time_parts</a>
@@ -356,6 +371,13 @@ $(function() {
 <h3><a id="index_o"></a>- o -</h3><ul>
 <li>output_trailing_comma
 : <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a40b853fb5708a354842834999f6cb474">daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serialization_policy&lt; WritableType, PolicyFlags &gt;</a>
+</li>
+</ul>
+
+
+<h3><a id="index_p"></a>- p -</h3><ul>
+<li>precise_ieee754
+: <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html#a4036affe83e1b884479c996289e40893">daw::json::anonymous_namespace{daw_json_parse_policy.h}::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;</a>
 </li>
 </ul>
 

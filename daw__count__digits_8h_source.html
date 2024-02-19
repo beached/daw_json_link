@@ -83,16 +83,16 @@ $(function() {
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">version.h</a>&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;daw/daw_cxmath.h&gt;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;daw/daw_uint_buffer.h&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;array&gt;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;cstddef&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__count__digits_8h_03.html">   21</a></span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keyword">auto</span> is_digit = []( <span class="keywordtype">char</span> c ) -&gt; daw::UInt8 {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;daw/daw_simple_array.h&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;daw/daw_uint_buffer.h&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__count__digits_8h_03.html">   20</a></span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keyword">auto</span> is_digit =</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        []( <span class="keywordtype">char</span> c ) <a class="code" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> -&gt; daw::UInt8 {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( c ) ) -</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                     <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                       <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( <span class="charliteral">&#39;0&#39;</span> ) ) &lt;</div>
@@ -104,7 +104,7 @@ $(function() {
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Predicate&gt;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr std::int32_t</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      count_4digits( <span class="keywordtype">char</span> <span class="keyword">const</span> *first, Predicate pred ) {</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        std::array&lt;daw::UInt8, 4&gt; <span class="keyword">const</span> buff{</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        daw::simple_array&lt;daw::UInt8, 4&gt; <span class="keyword">const</span> buff{</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;          pred( first[3] ), pred( first[2] ), pred( first[2] ),</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;          pred( first[1] ) };</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keyword">auto</span> <span class="keyword">const</span> v = DAW_BIT_CAST( std::uint32_t, buff );</div>
@@ -119,7 +119,7 @@ $(function() {
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Predicate&gt;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr std::int32_t</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      count_8digits( <span class="keywordtype">char</span> <span class="keyword">const</span> *first, Predicate pred ) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        std::array&lt;daw::UInt8, 8&gt; <span class="keyword">const</span> buff{</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        daw::simple_array&lt;daw::UInt8, 8&gt; <span class="keyword">const</span> buff{</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;          pred( first[7] ), pred( first[6] ), pred( first[5] ),</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;          pred( first[4] ), pred( first[3] ), pred( first[2] ),</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;          pred( first[1] ), pred( first[0] ) };</div>
@@ -162,8 +162,9 @@ $(function() {
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordflow">return</span> first;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      }</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="ttc" id="adaw__json__switches_8h_html_ac7bc190776b7ebf5b5c752c685569e1f"><div class="ttname"><a href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a></div><div class="ttdeci">#define DAW_JSON_CPP23_STATIC_CALL_OP</div><div class="ttdoc">This is in addition to the parse policy. Always do a full name match instead of sometimes relying on ...</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__switches_8h_source.html#l00198">daw_json_switches.h:198</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00025">version.h:25</a></div></div>

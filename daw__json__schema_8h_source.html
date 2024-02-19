@@ -93,9 +93,9 @@ $(function() {
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keyword">namespace </span>utils {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> WriteableType&gt;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      <span class="keyword">static</span> <span class="keyword">inline</span> constexpr WriteableType output_kv( WriteableType it,</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                                std::string_view key,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                                                std::string_view value ) {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      <span class="keyword">static</span> <span class="keyword">inline</span> constexpr WriteableType</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      output_kv( WriteableType it, std::string_view key,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                 std::string_view value ) {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        it.write( key, <span class="stringliteral">&quot;:&quot;</span>, it.space, value );</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keywordflow">return</span> it;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;      }</div>
@@ -416,7 +416,7 @@ $(function() {
 <div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;        }</div>
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160; </div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;        <span class="keyword">template</span>&lt;std::size_t... Is&gt;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;        <span class="keyword">static</span> constexpr WritableType</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;        DAW_ATTRIB_INLINE <span class="keyword">static</span> constexpr WritableType</div>
 <div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;        output_member_types( WritableType &amp;out_it,</div>
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;                             std::index_sequence&lt;Is...&gt; ) {</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;          <span class="keywordtype">bool</span> seen[<span class="keyword">sizeof</span>...( JsonMembers )]{ };</div>
@@ -550,7 +550,7 @@ $(function() {
 <div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;      <span class="keyword">namespace </span>json_details {</div>
 <div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b">Tuple</a>, <span class="keywordtype">bool</span> is_root, <span class="keyword">typename</span> WritableType,</div>
 <div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;                 std::size_t... Is&gt;</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;        constexpr WritableType</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;        DAW_ATTRIB_INLINE constexpr WritableType</div>
 <div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;        to_json_tuple_schema( WritableType out_it,</div>
 <div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;                              std::index_sequence&lt;Is...&gt; ) {</div>
 <div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;          <span class="keywordflow">if</span> constexpr( not is_root ) {</div>
@@ -580,9 +580,9 @@ $(function() {
 <div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;                ParseTag&lt;JsonMember::expected_type&gt;{ }, out_it );</div>
 <div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;            };</div>
 <div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160; </div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;            daw::Empty expander[] = {</div>
-<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;              ( process_member( daw::constant&lt;Is&gt;{ } ), daw::Empty{ } )...,</div>
-<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;              daw::Empty{} };</div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;            daw::empty_t expander[] = {</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;              ( process_member( daw::constant&lt;Is&gt;{ } ), daw::empty_t{ } )...,</div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;              daw::empty_t{} };</div>
 <div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;            (void)expander;</div>
 <div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;            out_it.del_indent( );</div>
 <div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;            out_it.next_member( );</div>
@@ -808,7 +808,7 @@ $(function() {
 <div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160; </div>
 <div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> WritableType, <span class="keyword">auto</span>... PolicyFlags&gt;</div>
 <div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    constexpr WritableType to_json_schema(</div>
-<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;      WritableType &amp; it, std::string_view <span class="keywordtype">id</span>, std::string_view title,</div>
+<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;      WritableType &amp;it, std::string_view <span class="keywordtype">id</span>, std::string_view title,</div>
 <div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;      options::output_flags_t&lt;PolicyFlags...&gt; = options::output_flags&lt;&gt; ) {</div>
 <div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160; </div>
 <div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;      <span class="keyword">auto</span> out_it = [&amp;] {</div>
@@ -850,21 +850,22 @@ $(function() {
 <div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;    }</div>
 <div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160; </div>
 <div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Result = std::string, <span class="keyword">auto</span>... PolicyFlags&gt;</div>
-<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;    constexpr Result to_json_schema( std::string_view <span class="keywordtype">id</span>, std::string_view title,</div>
-<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;                           options::output_flags_t&lt;PolicyFlags...&gt; flags =</div>
-<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;                             options::output_flags&lt;&gt; ) {</div>
-<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;      <span class="keyword">auto</span> result = Result( );</div>
-<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160; </div>
-<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;      (void)to_json_schema&lt;T&gt;( result, <span class="keywordtype">id</span>, title, flags );</div>
-<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;      <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;    }</div>
-<div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;    constexpr Result</div>
+<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;    to_json_schema( std::string_view <span class="keywordtype">id</span>, std::string_view title,</div>
+<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;                    options::output_flags_t&lt;PolicyFlags...&gt; flags =</div>
+<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;                      options::output_flags&lt;&gt; ) {</div>
+<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;      <span class="keyword">auto</span> result = Result( );</div>
+<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160; </div>
+<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;      (void)to_json_schema&lt;T&gt;( result, <span class="keywordtype">id</span>, title, flags );</div>
+<div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;      <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;    }</div>
+<div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00822"></a><span class="lineno">  822</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__link__types_8h_html"><div class="ttname"><a href="daw__json__link__types_8h.html">daw_json_link_types.h</a></div></div>
 <div class="ttc" id="adaw__json__serialize__policy_8h_html"><div class="ttname"><a href="daw__json__serialize__policy_8h.html">daw_json_serialize_policy.h</a></div></div>
 <div class="ttc" id="adaw__to__json__fwd_8h_html"><div class="ttname"><a href="daw__to__json__fwd_8h.html">daw_to_json_fwd.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b">daw::json::anonymous_namespace{daw_json_enums.h}::JsonParseTypes::Tuple</a></div><div class="ttdeci">@ Tuple</div><div class="ttdoc">A variant type where the Switcher is based on a submember of the class being parsed.</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_a2bc9822fbb417d22ae9d3d17a4f304c9"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a2bc9822fbb417d22ae9d3d17a4f304c9">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::copy_to_iterator</a></div><div class="ttdeci">static constexpr WritableType copy_to_iterator(WritableType it, Container const &amp;container)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00303">to_daw_json_string.h:303</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_a2bc9822fbb417d22ae9d3d17a4f304c9"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a2bc9822fbb417d22ae9d3d17a4f304c9">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::copy_to_iterator</a></div><div class="ttdeci">static constexpr WritableType copy_to_iterator(WritableType it, Container const &amp;container)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00280">to_daw_json_string.h:280</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="ato__daw__json__string_8h_html"><div class="ttname"><a href="to__daw__json__string_8h.html">to_daw_json_string.h</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>

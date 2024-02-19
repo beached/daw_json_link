@@ -427,98 +427,142 @@ $(function() {
 <div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;          }</div>
 <div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;          <span class="keywordflow">return</span> ptr;</div>
 <div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;          constexpr <span class="keyword">auto</span> eq = []( <span class="keywordtype">char</span> l, <span class="keywordtype">char</span> r ) {</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;            <span class="keywordflow">return</span> l == r;</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;          };</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;          <span class="keywordflow">while</span>( is_unchecked_input or first &lt; last ) {</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;            <span class="keywordtype">char</span> <span class="keyword">const</span> c = *first;</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;            <span class="keywordflow">if</span>( nsc_or( eq( c, keys )... ) ) {</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;              <span class="keywordflow">return</span> first;</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;            }</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;            ++first;</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;          }</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;          <span class="keywordflow">return</span> first;</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;        }</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;      }</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160; </div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> is_unchecked_input, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;      DAW_ATTRIB_INLINE CharT *mem_skip_string( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">runtime_exec_tag</a> <span class="keyword">const</span> &amp;tag,</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;                                                CharT *first,</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;                                                CharT *<span class="keyword">const</span> last ) {</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        <span class="keywordflow">return</span> mem_move_to_next_of&lt;is_unchecked_input, <span class="charliteral">&#39;&quot;&#39;</span>, <span class="charliteral">&#39;\\&#39;</span>&gt;( tag, first,</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;                                                                   last );</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;      }</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160; </div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> is_unchecked_input, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;      DAW_ATTRIB_INLINE CharT *</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;      mem_skip_until_end_of_string( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">runtime_exec_tag</a> <span class="keyword">const</span> &amp;tag, CharT *first,</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;                                    CharT *<span class="keyword">const</span> last ) {</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;        <span class="keywordflow">if</span> constexpr( not is_unchecked_input ) {</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( first &lt; last, ErrorReason::UnexpectedEndOfData );</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;        }</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;        first = mem_move_to_next_of&lt;is_unchecked_input, <span class="charliteral">&#39;\\&#39;</span>, <span class="charliteral">&#39;&quot;&#39;</span>&gt;( tag, first,</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;                                                                    last );</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;        <span class="keywordflow">while</span>( is_unchecked_input or first &lt; last ) {</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;          <span class="keywordflow">switch</span>( *first ) {</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;            <span class="keywordflow">return</span> first;</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;            <span class="keywordflow">if</span> constexpr( is_unchecked_input ) {</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;              ++first;</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;              first += <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span><span class="keyword">&gt;</span>( last - first ) );</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;            }</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;          }</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;          ++first;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;          first = mem_move_to_next_of&lt;is_unchecked_input, <span class="charliteral">&#39;\\&#39;</span>, <span class="charliteral">&#39;&quot;&#39;</span>&gt;(</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;            tag, first, last );</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        }</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;        <span class="keywordflow">return</span> first;</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;      }</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160; </div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> is_unchecked_input, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;      DAW_ATTRIB_INLINE CharT *</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;      mem_skip_until_end_of_string( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">runtime_exec_tag</a> tag, CharT *first,</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;                                    CharT *<span class="keyword">const</span> last,</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;                                    std::ptrdiff_t &amp;first_escape ) {</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        CharT *<span class="keyword">const</span> first_first = first;</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        <span class="keywordflow">if</span> constexpr( not is_unchecked_input ) {</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( first &lt; last, ErrorReason::UnexpectedEndOfData );</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        }</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        first = mem_move_to_next_of&lt;is_unchecked_input, <span class="charliteral">&#39;\\&#39;</span>, <span class="charliteral">&#39;&quot;&#39;</span>&gt;( tag, first,</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;                                                                    last );</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;        <span class="keywordflow">while</span>( is_unchecked_input or first &lt; last ) {</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;          <span class="keywordflow">switch</span>( *first ) {</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;            <span class="keywordflow">return</span> first;</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;            <span class="keywordflow">if</span>( first_escape &lt; 0 ) {</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;              first_escape = first_first - first;</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;            }</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;            <span class="keywordflow">if</span> constexpr( is_unchecked_input ) {</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;              ++first;</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;              first += <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span><span class="keyword">&gt;</span>( last - first ) );</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;            }</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;          }</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;          ++first;</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;          first = mem_move_to_next_of&lt;is_unchecked_input, <span class="charliteral">&#39;\\&#39;</span>, <span class="charliteral">&#39;&quot;&#39;</span>&gt;(</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;            tag, first, last );</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;        }</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;        <span class="keywordflow">return</span> first;</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;      }</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;          constexpr <span class="keyword">auto</span> eq = []( <span class="keywordtype">char</span> l, <span class="keywordtype">char</span> r )</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;                                <a class="code" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> {</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;                                  <span class="keywordflow">return</span> l == r;</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;                                };</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;          <span class="keywordflow">while</span>( is_unchecked_input or first &lt; last ) {</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;            <span class="keywordtype">char</span> <span class="keyword">const</span> c = *first;</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;            <span class="keywordflow">if</span>( nsc_or( eq( c, keys )... ) ) {</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;              <span class="keywordflow">return</span> first;</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;            }</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;            ++first;</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;          }</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;        }</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;      }</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160; </div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> is_unchecked_input, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;      DAW_ATTRIB_INLINE CharT *mem_skip_string( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">runtime_exec_tag</a> <span class="keyword">const</span> &amp;tag,</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;                                                CharT *first,</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;                                                CharT *<span class="keyword">const</span> last ) {</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        <span class="keywordflow">return</span> mem_move_to_next_of&lt;is_unchecked_input, <span class="charliteral">&#39;&quot;&#39;</span>, <span class="charliteral">&#39;\\&#39;</span>&gt;( tag, first,</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;                                                                   last );</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;      }</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160; </div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> is_unchecked_input, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;      DAW_ATTRIB_INLINE CharT *</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;      mem_skip_until_end_of_string( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">runtime_exec_tag</a> tag, CharT *first,</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;                                    CharT *<span class="keyword">const</span> last ) {</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;        <span class="keywordflow">if</span> constexpr( not is_unchecked_input ) {</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( first &lt; last, ErrorReason::UnexpectedEndOfData );</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;        }</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;        first = mem_move_to_next_of&lt;is_unchecked_input, <span class="charliteral">&#39;\\&#39;</span>, <span class="charliteral">&#39;&quot;&#39;</span>&gt;( tag, first,</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;                                                                    last );</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;        <span class="keywordflow">while</span>( is_unchecked_input or first &lt; last ) {</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;          <span class="keywordflow">switch</span>( *first ) {</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;            <span class="keywordflow">return</span> first;</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;            ++first;</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;          }</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;          ++first;</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;          first = mem_move_to_next_of&lt;is_unchecked_input, <span class="charliteral">&#39;\\&#39;</span>, <span class="charliteral">&#39;&quot;&#39;</span>&gt;(</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;            tag, first, last );</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;        }</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        <span class="keywordflow">return</span> first;</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;      }</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160; </div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> is_unchecked_input, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;      DAW_ATTRIB_INLINE constexpr CharT *</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;      mem_skip_until_end_of_string( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>, CharT *first,</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;                                    CharT *<span class="keyword">const</span> last ) {</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        <span class="keywordflow">if</span>( first == last ) {</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;          <span class="keywordflow">return</span> first;</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;        }</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        <span class="keyword">using</span> char_t = std::remove_const_t&lt;CharT&gt;;</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        <span class="comment">// Check if the last valid char is a &#39;\&#39;.  If not we can skip a check in</span></div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        <span class="comment">// the loop on escaped things</span></div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        <span class="keywordflow">if</span>( is_unchecked_input or</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;            DAW_LIKELY( *( last - 1 ) != char_t{ <span class="charliteral">&#39;\\&#39;</span> } ) ) {</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;          <span class="keywordflow">while</span>( is_unchecked_input or DAW_UNLIKELY( first &lt; last ) ) {</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;            <span class="keywordtype">char</span> <span class="keyword">const</span> c = *first;</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;            <span class="keywordflow">if</span>( c == char_t{ <span class="charliteral">&#39;&quot;&#39;</span> } ) {</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;            }</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;            <span class="keywordflow">if</span>( c == char_t{ <span class="charliteral">&#39;\\&#39;</span> } ) {</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;              <span class="comment">// We know that the last \ character is not the last character in</span></div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;              <span class="comment">// range</span></div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;              first += 2;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;              ++first;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;            }</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;          }</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;          <span class="keywordflow">while</span>( is_unchecked_input or DAW_UNLIKELY( first &lt; last ) ) {</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;            <span class="keywordtype">char</span> <span class="keyword">const</span> c = *first;</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;            <span class="keywordflow">if</span>( c == char_t{ <span class="charliteral">&#39;&quot;&#39;</span> } ) {</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;            }</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;            <span class="keywordflow">if</span>( c == char_t{ <span class="charliteral">&#39;\\&#39;</span> } ) {</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;              <span class="keywordflow">if</span>( DAW_LIKELY( first + 1 &lt; last ) ) {</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;                first += 2;</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;              } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;                first = last;</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;              }</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;              ++first;</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;            }</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;          }</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;        }</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;        <span class="keywordflow">return</span> first;</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;      }</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160; </div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> is_unchecked_input, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;      DAW_ATTRIB_INLINE CharT *</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;      mem_skip_until_end_of_string( <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">runtime_exec_tag</a> tag, CharT *first,</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;                                    CharT *<span class="keyword">const</span> last,</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;                                    std::ptrdiff_t &amp;first_escape ) {</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;        CharT *<span class="keyword">const</span> first_first = first;</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;        <span class="keywordflow">if</span> constexpr( not is_unchecked_input ) {</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( first &lt; last, ErrorReason::UnexpectedEndOfData );</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;        }</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;        first = mem_move_to_next_of&lt;is_unchecked_input, <span class="charliteral">&#39;\\&#39;</span>, <span class="charliteral">&#39;&quot;&#39;</span>&gt;( tag, first,</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;                                                                    last );</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;        <span class="keywordflow">while</span>( is_unchecked_input or first &lt; last ) {</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;          <span class="keywordflow">switch</span>( *first ) {</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;            <span class="keywordflow">return</span> first;</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;            <span class="keywordflow">if</span>( first_escape &lt; 0 ) {</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;              first_escape = first_first - first;</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;            }</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;            <span class="keywordflow">if</span> constexpr( is_unchecked_input ) {</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;              ++first;</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;              first += <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span><span class="keyword">&gt;</span>( last - first ) );</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;            }</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;          }</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;          ++first;</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;          first = mem_move_to_next_of&lt;is_unchecked_input, <span class="charliteral">&#39;\\&#39;</span>, <span class="charliteral">&#39;&quot;&#39;</span>&gt;(</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;            tag, first, last );</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;        }</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;        <span class="keywordflow">return</span> first;</div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;      }</div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00162">daw_json_assert.h:162</a></div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00157">daw_json_assert.h:157</a></div></div>
 <div class="ttc" id="adaw__json__exec__modes_8h_html"><div class="ttname"><a href="daw__json__exec__modes_8h.html">daw_json_exec_modes.h</a></div></div>
+<div class="ttc" id="adaw__json__switches_8h_html_ac7bc190776b7ebf5b5c752c685569e1f"><div class="ttname"><a href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a></div><div class="ttdeci">#define DAW_JSON_CPP23_STATIC_CALL_OP</div><div class="ttdoc">This is in addition to the parse policy. Always do a full name match instead of sometimes relying on ...</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__switches_8h_source.html#l00198">daw_json_switches.h:198</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">daw::json::constexpr_exec_tag</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__exec__modes_8h_source.html#l00019">daw_json_exec_modes.h:19</a></div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">daw::json::runtime_exec_tag</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__exec__modes_8h_source.html#l00023">daw_json_exec_modes.h:23</a></div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1simd__exec__tag_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1simd__exec__tag.html">daw::json::simd_exec_tag</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__exec__modes_8h_source.html#l00034">daw_json_exec_modes.h:34</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">daw::json::constexpr_exec_tag</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__exec__modes_8h_source.html#l00017">daw_json_exec_modes.h:17</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1runtime__exec__tag.html">daw::json::runtime_exec_tag</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__exec__modes_8h_source.html#l00021">daw_json_exec_modes.h:21</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1simd__exec__tag_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1simd__exec__tag.html">daw::json::simd_exec_tag</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__exec__modes_8h_source.html#l00032">daw_json_exec_modes.h:32</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00025">version.h:25</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
