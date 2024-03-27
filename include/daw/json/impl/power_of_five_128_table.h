@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include <cstdint>
 
 namespace daw::json {
