@@ -38,12 +38,12 @@ namespace daw::json {
 			/// daw_json_parse_policy.h @endlink
 			/// @param member_index current position in array
 			/// @param parse_state JSON data
-			/// @return A reified value of type JsonMember::parse_to_t
+			/// @return A reified value of type json_result_t<JsonMember>
 			/// @pre parse_state.has_more( ) == true
 			/// @pre parse_state.front( ) == '['
 			///
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result_t<JsonMember>
 			parse_ordered_class_member( template_param<JsonMember>,
 			                            std::size_t &member_index,
 			                            ParseState &parse_state ) {
@@ -94,15 +94,15 @@ namespace daw::json {
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
 			         typename ParseState, std::size_t N, typename CharT, bool B>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr json_result<
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr json_result_t<
 			  JsonMember>
 			parse_class_member( ParseState &parse_state,
 			                    locations_info_t<N, CharT, B> &locations ) {
 				parse_state.move_next_member_or_end( );
 
-				daw_json_assert_weak( parse_state.is_at_next_class_member( ),
-				                      ErrorReason::MissingMemberNameOrEndOfClass,
-				                      parse_state );
+				daw_json_assert_weak(
+				  not parse_state.empty( ) and parse_state.is_at_next_class_member( ),
+				  ErrorReason::MissingMemberNameOrEndOfClass, parse_state );
 
 				auto [loc, known] = find_class_member<member_position, must_exist>(
 				  parse_state, locations, is_json_nullable_v<JsonMember>,
@@ -114,7 +114,7 @@ namespace daw::json {
 						auto const cf = parse_state.class_first;
 						auto const cl = parse_state.class_last;
 						if constexpr( is_pinned_type_v<
-						                typename without_name<JsonMember>::parse_to_t> ) {
+						                json_result_t<without_name<JsonMember>>> ) {
 							auto const after_parse = daw::on_scope_exit( [&] {
 								parse_state.class_first = cf;
 								parse_state.class_last = cl;
@@ -181,11 +181,11 @@ namespace daw::json {
 			///
 			template<typename JsonClass, typename... JsonMembers, typename ParseState,
 			         std::size_t... Is>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result<JsonClass>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result_t<JsonClass>
 			parse_json_class( ParseState &parse_state, std::index_sequence<Is...> ) {
 				static_assert( is_a_json_type_v<JsonClass> );
-				using T = typename JsonClass::parse_to_t;
-				using Constructor = typename JsonClass::constructor_t;
+				using T = json_result_t<JsonClass>;
+				using Constructor = json_constructor_t<JsonClass>;
 				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
 				using must_exist =
 				  daw::constant<( all_json_members_must_exist_v<T, ParseState>
@@ -216,7 +216,8 @@ namespace daw::json {
 					}
 				} else {
 					using NeedClassPositions = std::bool_constant<(
-					  ( JsonMembers::without_name::must_be_class_member or ... ) )>;
+					  ( must_be_class_member_v<typename JsonMembers::without_name> or
+					    ... ) )>;
 
 #if defined( DAW_JSON_BUGFIX_MSVC_KNOWN_LOC_ICE_003 )
 					auto known_locations =
@@ -226,7 +227,7 @@ namespace daw::json {
 					  ( make_locations_info<ParseState, JsonMembers...>( ) ) );
 #endif
 
-					if constexpr( is_pinned_type_v<typename JsonClass::parse_to_t> ) {
+					if constexpr( is_pinned_type_v<json_result_t<JsonClass>> ) {
 						/// Because the return type is pinned(no copy/move).  We cannot rely
 						/// on NRVO. This requires on_exit_success that on some platforms
 						/// can cost a bunch because it checks std::uncaught_exceptions
@@ -239,8 +240,9 @@ namespace daw::json {
 						if constexpr( should_construct_explicitly_v<Constructor, T,
 						                                            ParseState> ) {
 							return T{ parse_class_member<
-							  Is, daw::traits::nth_type<Is, JsonMembers...>, must_exist::value,
-							  NeedClassPositions::value>( parse_state, known_locations )... };
+							  Is, daw::traits::nth_type<Is, JsonMembers...>,
+							  must_exist::value, NeedClassPositions::value>(
+							  parse_state, known_locations )... };
 						} else {
 							return construct_value_tp<T, Constructor>(
 							  parse_state, fwd_pack{ parse_class_member<
@@ -252,8 +254,9 @@ namespace daw::json {
 						if constexpr( should_construct_explicitly_v<Constructor, T,
 						                                            ParseState> ) {
 							auto result = T{ parse_class_member<
-							  Is, daw::traits::nth_type<Is, JsonMembers...>, must_exist::value,
-							  NeedClassPositions::value>( parse_state, known_locations )... };
+							  Is, daw::traits::nth_type<Is, JsonMembers...>,
+							  must_exist::value, NeedClassPositions::value>(
+							  parse_state, known_locations )... };
 
 							class_cleanup_now<all_json_members_must_exist_v<T, ParseState>>(
 							  parse_state, old_class_pos );
@@ -279,15 +282,15 @@ namespace daw::json {
 			/// Point
 			///
 			template<typename JsonClass, typename... JsonMembers, typename ParseState>
-			[[nodiscard]] static inline constexpr json_result<JsonClass>
+			[[nodiscard]] static inline constexpr json_result_t<JsonClass>
 			parse_json_tuple_class( template_params<JsonClass, JsonMembers...>,
 			                        ParseState &parse_state ) {
 				static_assert( is_a_json_type_v<JsonClass> );
-				using T = typename JsonClass::base_type;
-				using Constructor = typename JsonClass::constructor_t;
+				using T = json_base_type_t<JsonClass>;
+				using Constructor = json_constructor_t<JsonClass>;
 				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
 				static_assert(
-				  std::is_invocable_v<Constructor, typename JsonMembers::parse_to_t...>,
+				  std::is_invocable_v<Constructor, json_result_t<JsonMembers>...>,
 				  "Supplied types cannot be used for construction of this type" );
 
 				parse_state.trim_left( ); // Move to array start '['
@@ -300,7 +303,7 @@ namespace daw::json {
 
 				std::size_t current_idx = 0;
 
-				if constexpr( is_pinned_type_v<typename JsonClass::parse_to_t> ) {
+				if constexpr( is_pinned_type_v<json_result_t<JsonClass>> ) {
 					auto const run_after_parse = daw::on_exit_success( [&] {
 						ordered_class_cleanup<all_json_members_must_exist_v<T, ParseState>,
 						                      ParseState, decltype( old_class_pos )>(

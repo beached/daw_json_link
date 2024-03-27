@@ -465,7 +465,11 @@ namespace daw::json {
 					  DAW_UNLIKELY( significant_digits > 9007199254740992ULL );
 					if( DAW_UNLIKELY( use_strtod ) ) {
 						using json_details::parse_with_strtod;
-						return parse_with_strtod<Result>( orig_first, orig_last );
+						auto result = parse_with_strtod<Result>( orig_first, orig_last );
+						/*auto x =
+						  fallback_fp<Result>( result, sign, significant_digits, exponent );
+						(void)x;*/
+						return result;
 					}
 				}
 				return sign * power10<Result>(
@@ -483,5 +487,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

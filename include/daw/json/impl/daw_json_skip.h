@@ -19,6 +19,7 @@
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_cast.h>
+#include <daw/daw_is_any_of.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_unreachable.h>
 
@@ -244,6 +245,7 @@ namespace daw::json {
 				}
 
 				if( DAW_LIKELY( first < last ) ) {
+					DAW_LIKELY_BRANCH
 					first =
 					  skip_digits<( ParseState::is_zero_terminated_string or
 					                ParseState::is_unchecked_input )>( first, last );
@@ -257,6 +259,7 @@ namespace daw::json {
 					decimal = first;
 					++first;
 					if( DAW_LIKELY( first < last ) ) {
+						DAW_LIKELY_BRANCH
 						first =
 						  skip_digits<( ParseState::is_zero_terminated_string or
 						                ParseState::is_unchecked_input )>( first, last );
@@ -290,6 +293,7 @@ namespace daw::json {
 					                      ErrorReason::InvalidNumber );
 
 					if( DAW_LIKELY( first < last ) ) {
+						DAW_LIKELY_BRANCH
 						first =
 						  skip_digits<( ParseState::is_zero_terminated_string or
 						                ParseState::is_unchecked_input )>( first, last );
@@ -343,6 +347,7 @@ namespace daw::json {
 				case '9':
 					return skip_number( parse_state );
 				}
+				DAW_UNLIKELY_BRANCH
 				if constexpr( ParseState::is_unchecked_input ) {
 					if( DAW_UNLIKELY( parse_state.front( ) == '\0' ) ) {
 						daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
@@ -372,16 +377,10 @@ namespace daw::json {
 					                      ErrorReason::InvalidString, parse_state );
 					parse_state.remove_prefix( );
 					return json_details::skip_string_nq( parse_state );
-				} else if constexpr( JsonMember::expected_type ==
-				                       JsonParseTypes::Real or
-				                     JsonMember::expected_type ==
-				                       JsonParseTypes::Signed or
-				                     JsonMember::expected_type ==
-				                       JsonParseTypes::Unsigned or
-				                     JsonMember::expected_type ==
-				                       JsonParseTypes::Bool or
-				                     JsonMember::expected_type ==
-				                       JsonParseTypes::Null ) {
+				} else if constexpr( daw::is_any_of_v<
+				                       JsonMember::expected_type, JsonParseTypes::Real,
+				                       JsonParseTypes::Signed, JsonParseTypes::Unsigned,
+				                       JsonParseTypes::Bool, JsonParseTypes::Null> ) {
 					// All literals
 					return skip_number( parse_state );
 				} else if constexpr( JsonMember::expected_type ==

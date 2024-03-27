@@ -223,8 +223,9 @@ namespace daw::json {
 
 				parse_state.trim_left_unchecked( );
 				bool known = not locations[pos].missing( );
-				while( nsc_and( locations[pos].missing( ),
-				                ( parse_state.front( ) != '}' ) ) ) {
+				while( nsc_and(
+				  locations[pos].missing( ),
+				  ( not parse_state.empty( ) and parse_state.front( ) != '}' ) ) ) {
 					// TODO: fully unescape name
 					// parse_name checks if we have more and are quotes
 					auto const name = parse_name( parse_state );

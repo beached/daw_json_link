@@ -269,6 +269,7 @@ DAW_CONSTEXPR bool test_006( ) {
 #if not defined( DAW_JSON_NO_CONST_EXPR ) and                              \
   ( ( defined( __GNUC__ ) and __GNUC__ > 8 ) or defined( __clang__ ) ) and \
   ( not defined( DAW_JSON_NO_CONST_EXPR ) )
+
 static_assert( test_004( ), "Unexpected value" );
 static_assert( test_005( ), "Unexpected value" );
 static_assert( test_006( ), "Unexpected value" );
@@ -1272,27 +1273,29 @@ int main( int, char ** ) {
 		ensure( static_cast<char>( byte_vec[2] ) == '5' );
 		(void)byte_vec;
 
-		daw::string_view jd_opt_jv1 = R"json({"name":5,"name2":{"foo":6}})json";
-		auto jv = daw::json::json_value( jd_opt_jv1 );
-		auto opt_int0 = as<std::optional<int>>( jv["name"] );
-		ensure( opt_int0 );
-		ensure( *opt_int0 == 5 );
-		auto opt_int1 = as<std::optional<int>>( jv["name2.foo"] );
-		ensure( opt_int1 );
-		ensure( *opt_int1 == 6 );
-		auto opt_int2 = as<std::optional<int>>( jv["name2.bar"] );
-		ensure( not opt_int2 );
-		auto opt_int3 =
-		  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name" );
-		ensure( opt_int3 );
-		ensure( *opt_int3 == 5 );
-		auto opt_int4 =
-		  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.foo" );
-		ensure( opt_int4 );
-		ensure( *opt_int4 == 6 );
-		auto opt_int5 =
-		  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.bar" );
-		ensure( not opt_int5 );
+		{
+			daw::string_view jd_opt_jv1 = R"json({"name":5,"name2":{"foo":6}})json";
+			auto jv = daw::json::json_value( jd_opt_jv1 );
+			auto opt_int0 = as<std::optional<int>>( jv["name"] );
+			ensure( opt_int0 );
+			ensure( *opt_int0 == 5 );
+			auto opt_int1 = as<std::optional<int>>( jv["name2.foo"] );
+			ensure( opt_int1 );
+			ensure( *opt_int1 == 6 );
+			auto opt_int2 = as<std::optional<int>>( jv["name2.bar"] );
+			ensure( not opt_int2 );
+			auto opt_int3 =
+			  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name" );
+			ensure( opt_int3 );
+			ensure( *opt_int3 == 5 );
+			auto opt_int4 =
+			  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.foo" );
+			ensure( opt_int4 );
+			ensure( *opt_int4 == 6 );
+			auto opt_int5 =
+			  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.bar" );
+			ensure( not opt_int5 );
+		}
 
 		using strsigned_t = json_number_no_name<
 		  std::int64_t, options::number_opt( options::LiteralAsStringOpt::Always )>;
@@ -1408,6 +1411,65 @@ int main( int, char ** ) {
 
 		std::cout << "\n\nJSON Link Version: " << json_link_version( ) << '\n';
 		std::cout << "done\n\n";
+
+		{
+			// refs in params are to ensure they don't get in the way of parsing
+			DAW_CONSTEXPR auto const x = daw::json::json_apply(
+			  R"json(["Hello",52,true])json",
+			  []( std::string_view s, std::size_t &&i, bool b ) {
+				  if( b ) {
+					  return s.size( );
+				  }
+				  return i * 2;
+			  } );
+			ensure( x == 5 );
+		}
+		{
+			DAW_CONSTEXPR auto const x =
+			  daw::json::json_apply( R"json({"x":10})json", []( NumberX nx ) {
+				  return nx.x;
+			  } );
+			ensure( x == 10 );
+		}
+		{
+			DAW_CONSTEXPR auto jv = json_value( R"json({"x":10})json" );
+			DAW_CONSTEXPR auto x = daw::json::json_apply( jv, []( NumberX nx ) {
+				return nx.x;
+			} );
+			ensure( x == 10 );
+		}
+		{
+			DAW_CONSTEXPR auto jv = json_value( R"json({"x":10})json" );
+			DAW_CONSTEXPR auto x =
+			  daw::json::json_apply<std::size_t( NumberX )>( jv, []( NumberX nx ) {
+				  return nx.x;
+			  } );
+			ensure( x == 10 );
+		}
+		{
+			// refs in params are to ensure they don't get in the way of parsing
+			DAW_CONSTEXPR auto const x = daw::json::json_apply(
+			  R"json("Hello")json", []( std::string_view &&s ) {
+				  return s.size( );
+			  } );
+			ensure( x == 5 );
+		}
+		{
+			DAW_CONSTEXPR auto const x = daw::json::json_apply(
+			  R"json({ "x": "Hello" })json", "x", []( std::string_view s ) {
+				  return s.size( );
+			  } );
+			ensure( x == 5 );
+		}
+		{
+			using namespace daw::json::options;
+			DAW_CONSTEXPR auto const x = daw::json::json_apply(
+			  R"json({ "x": "Hello" })json", "x", parse_flags<CheckedParseMode::no>,
+			  []( std::string_view s ) {
+				  return s.size( );
+			  } );
+			ensure( x == 5 );
+		}
 	}
 #ifdef DAW_USE_EXCEPTIONS
 	catch( daw::json::json_exception const &jex ) {

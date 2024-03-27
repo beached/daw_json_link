@@ -89,14 +89,14 @@ namespace daw::json {
 			 */
 			template<typename JsonClass, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
-			  json_result<JsonClass>
+			  json_result_t<JsonClass>
 			  parse_to_class( ParseState &parse_state,
 			                  template_param<JsonClass> = template_arg<JsonClass> ) {
 
 				static_assert( json_details::is_no_name_v<JsonClass> );
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
-				                 typename JsonClass::parse_to_t>,
+				                 json_details::json_result_t<JsonClass>>,
 				               "Unexpected type" );
 				return json_details::parse_json_class<JsonClass, JsonMembers...>(
 				  parse_state, std::index_sequence_for<JsonMembers...>{ } );
@@ -181,19 +181,19 @@ namespace daw::json {
 
 			template<typename JsonClass, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
-			  json_result<JsonClass>
+			  json_result_t<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
-				                 typename JsonClass::parse_to_t>,
+				                 json_details::json_result_t<JsonClass>>,
 				               "Unexpected type" );
 				// Using construct_value here as the result of aliased type is used to
 				// construct our result and the Constructor maybe different.  This
 				// happens with BigInt and string.
-				// using Constructor = typename JsonClass::constructor_t;
-				using result_t = typename JsonClass::parse_to_t;
 				return json_details::construct_value(
-				  template_args<JsonClass, daw::construct_a_t<result_t>>, parse_state,
+				  template_args<JsonClass, daw::construct_a_t<
+				                             json_details::json_result_t<JsonClass>>>,
+				  parse_state,
 				  json_details::parse_value<json_member, false>(
 				    parse_state, ParseTag<json_member::expected_type>{ } ) );
 			}
@@ -205,7 +205,7 @@ namespace daw::json {
 		}
 
 		template<typename JsonType>
-		struct json_details::is_json_class_map<json_type_alias<JsonType>> final
+		struct json_details::is_json_class_map<json_type_alias<JsonType>>
 		  : std::true_type {};
 
 		/***
@@ -215,7 +215,7 @@ namespace daw::json {
 		 */
 		template<typename... Members>
 		struct tuple_json_mapping {
-			std::tuple<typename Members::parse_to_t...> members;
+			std::tuple<json_details::json_result_t<Members>...> members;
 
 			template<typename... Ts>
 			explicit constexpr tuple_json_mapping( Ts &&...values )
@@ -248,8 +248,7 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using json_member = json_details::json_deduced_type<JsonMember>;
-			using parse_to_t = typename json_member::parse_to_t;
-			using base_type = parse_to_t;
+			using parse_to_t = json_details::json_result_t<json_member>;
 		};
 
 		template<std::size_t Index, typename JsonMember>
@@ -324,11 +323,11 @@ namespace daw::json {
 			 */
 			template<typename JsonClass, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
-			  json_result<JsonClass>
+			  json_result_t<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
-				                 typename JsonClass::base_type>,
+				                 json_details::json_base_type_t<JsonClass>>,
 				               "Unexpected type" );
 
 				return json_details::parse_json_tuple_class(
@@ -401,7 +400,7 @@ namespace daw::json {
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
-				                 typename JsonClass::base_type>,
+				                 json_details::json_base_type_t<JsonClass>>,
 				               "Unexpected type" );
 				using tag_class_t = tuple_json_mapping<TagMember>;
 
@@ -429,7 +428,6 @@ namespace daw::json {
 			struct json_number {
 				using i_am_a_json_type = void;
 				using wrapped_type = T;
-				static constexpr bool must_be_class_member = false;
 
 				static_assert( daw::is_arithmetic_v<T>,
 				               "json_number requires an arithmetic type" );
@@ -439,7 +437,6 @@ namespace daw::json {
 				                     default_constructor<T>, Constructor>;
 				using parse_to_t =
 				  typename json_details::construction_result<constructor_t, T>::type;
-				using base_type = parse_to_t;
 
 				static constexpr JsonParseTypes expected_type =
 				  json_details::number_parse_type_v<T>;
@@ -479,7 +476,6 @@ namespace daw::json {
 				                Options, options::LiteralAsStringOpt::Always>,
 				              Constructor>;
 			};
-
 		} // namespace json_base
 
 		template<char const *Name, typename Base>
@@ -555,7 +551,6 @@ namespace daw::json {
 			template<typename T, json_options_t Options, typename Constructor>
 			struct json_bool {
 				using i_am_a_json_type = void;
-				static constexpr bool must_be_class_member = false;
 
 				using constructor_t =
 				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
@@ -565,7 +560,6 @@ namespace daw::json {
 				  std::is_invocable_v<constructor_t, T>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, T>;
-				using base_type = parse_to_t;
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
 
@@ -621,7 +615,7 @@ namespace daw::json {
 			template<typename String, json_options_t Options, typename Constructor>
 			struct json_string_raw {
 				using i_am_a_json_type = void;
-				static constexpr bool must_be_class_member = false;
+
 				using constructor_t =
 				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     default_constructor<String>, Constructor>;
@@ -630,7 +624,6 @@ namespace daw::json {
 				  std::is_invocable_v<constructor_t, String>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, String>;
-				using base_type = parse_to_t;
 
 				static constexpr JsonParseTypes expected_type =
 				  JsonParseTypes::StringRaw;
@@ -666,7 +659,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename String, json_options_t Options,
 		         typename Constructor>
-		struct json_string_raw final
+		struct json_string_raw
 		  : json_base::json_string_raw<String, Options, Constructor> {
 			using i_am_a_json_type = void;
 
@@ -694,7 +687,6 @@ namespace daw::json {
 			template<typename String, json_options_t Options, typename Constructor>
 			struct json_string {
 				using i_am_a_json_type = void;
-				static constexpr bool must_be_class_member = false;
 
 				using constructor_t =
 				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
@@ -704,7 +696,6 @@ namespace daw::json {
 				  std::is_invocable_v<constructor_t, String>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, String>;
-				using base_type = parse_to_t;
 
 				static constexpr JsonParseTypes expected_type =
 				  JsonParseTypes::StringEscaped;
@@ -736,8 +727,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename String, json_options_t Options,
 		         typename Constructor>
-		struct json_string final
-		  : json_base::json_string<String, Options, Constructor> {
+		struct json_string : json_base::json_string<String, Options, Constructor> {
 			static constexpr daw::string_view name = Name;
 
 			using without_name = json_base::json_string<String, Options, Constructor>;
@@ -766,10 +756,8 @@ namespace daw::json {
 				                     construct_from_iso8601_timestamp<T>, Constructor>;
 
 				using wrapped_type = T;
-				static constexpr bool must_be_class_member = false;
 
 				using parse_to_t = T;
-				using base_type = T;
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
 				static constexpr JsonBaseParseTypes underlying_json_type =
@@ -815,10 +803,8 @@ namespace daw::json {
 			struct json_nullable {
 				using i_am_a_json_type = void;
 				using i_am_a_json_nullable = void;
-				static constexpr bool must_be_class_member = true;
 				static constexpr JsonNullable nullable = NullableType;
 				using wrapped_type = T;
-				using parse_to_t = T;
 				using raw_member_type = typename daw::conditional_t<
 				  not std::is_same_v<JsonMember, use_default>,
 				  daw::traits::identity<JsonMember>,
@@ -836,7 +822,7 @@ namespace daw::json {
 
 				static_assert( json_details::is_no_name_v<member_type>,
 				               "JsonMember template paramater must be noname type" );
-				using base_type = json_details::json_result<member_type>;
+				using parse_to_t = T;
 				using constructor_t =
 				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     nullable_constructor<T>, Constructor>;
@@ -853,12 +839,28 @@ namespace daw::json {
 				using with_name = daw::json::json_nullable<NewName, T, JsonMember,
 				                                           NullableType, Constructor>;
 			};
-
 		} // namespace json_base
 
+		namespace json_details {
+			template<typename T, typename JsonMember, JsonNullable NullableType,
+			         typename Constructor>
+			inline constexpr bool must_be_class_member_v<
+			  json_base::json_nullable<T, JsonMember, NullableType, Constructor>> =
+			  true;
+
+			template<typename T, typename JsonMember, JsonNullable NullableType,
+			         typename Constructor>
+			struct json_base_type<
+			  json_base::json_nullable<T, JsonMember, NullableType, Constructor>> {
+				using member_type =
+				  typename json_base::json_nullable<T, JsonMember, NullableType,
+				                                    Constructor>::member_type;
+				using type = json_details::json_result_t<member_type>;
+			};
+		} // namespace json_details
 		template<JSONNAMETYPE Name, typename T, typename JsonMember,
 		         JsonNullable NullableType, typename Constructor>
-		struct json_nullable final
+		struct json_nullable
 		  : json_base::json_nullable<T, JsonMember, NullableType, Constructor> {
 
 			static constexpr daw::string_view name = Name;
@@ -881,7 +883,6 @@ namespace daw::json {
 			struct json_class {
 				using i_am_a_json_type = void;
 				using wrapped_type = T;
-				static constexpr bool must_be_class_member = false;
 
 				using constructor_t = daw::conditional_t<
 				  json_details::is_a_json_map_alias_v<T>, daw::construct_a_t<T>,
@@ -895,7 +896,6 @@ namespace daw::json {
 				  force_aggregate_construction_v<T>, daw::traits::identity<T>,
 				  daw::traits::identity<
 				    typename data_contract::template result_type<constructor_t>>>::type;
-				using base_type = parse_to_t;
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
 
@@ -987,7 +987,6 @@ namespace daw::json {
 			template<typename Variant, typename JsonElements, typename Constructor>
 			struct json_variant {
 				using i_am_a_json_type = void;
-				static constexpr bool must_be_class_member = false;
 
 				using json_elements = typename daw::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,
@@ -1003,7 +1002,7 @@ namespace daw::json {
 				using constructor_t =
 				  json_details::json_class_constructor_t<Variant, Constructor>;
 				using parse_to_t = Variant;
-				using base_type = parse_to_t;
+
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Variant;
 
 				static constexpr JsonBaseParseTypes underlying_json_type =
@@ -1026,7 +1025,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename Variant, typename JsonElements,
 		         typename Constructor>
-		struct json_variant final
+		struct json_variant
 		  : json_base::json_variant<Variant, JsonElements, Constructor> {
 			static constexpr daw::string_view name = Name;
 
@@ -1053,7 +1052,6 @@ namespace daw::json {
 			struct json_tagged_variant {
 				using i_am_a_json_type = void;
 				using i_am_a_tagged_variant = void;
-				static constexpr bool must_be_class_member = false;
 
 				using json_elements = typename daw::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,
@@ -1084,7 +1082,7 @@ namespace daw::json {
 
 				using tag_member_class_wrapper = daw::conditional_t<
 				  json_details::is_an_ordered_member_v<tag_member>,
-				  json_tuple<std::tuple<typename tag_member::parse_to_t>,
+				  json_tuple<std::tuple<json_details::json_result_t<tag_member>>,
 				             json_tuple_types_list<tag_member>>,
 				  json_details::json_deduced_type<tuple_json_mapping<tag_member>>>;
 
@@ -1093,7 +1091,7 @@ namespace daw::json {
 				  json_details::json_class_constructor_t<T, Constructor>;
 
 				using parse_to_t = T;
-				using base_type = parse_to_t;
+
 				static constexpr JsonParseTypes expected_type =
 				  JsonParseTypes::VariantTagged;
 
@@ -1123,7 +1121,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T, typename TagMember,
 		         typename Switcher, typename JsonElements, typename Constructor>
-		struct json_tagged_variant final
+		struct json_tagged_variant
 		  : json_base::json_tagged_variant<T, TagMember, Switcher, JsonElements,
 		                                   Constructor> {
 
@@ -1168,14 +1166,12 @@ namespace daw::json {
 				  daw::traits::identity<ToJsonConverter>>::type;
 
 				using constructor_t = from_converter_t;
-				static constexpr bool must_be_class_member = false;
 
 				static_assert(
 				  std::is_invocable_v<from_converter_t, std::string_view>,
 				  "Constructor must support construction from std::string_view" );
 				using parse_to_t =
 				  std::invoke_result_t<from_converter_t, std::string_view>;
-				using base_type = parse_to_t;
 
 				static_assert(
 				  std::is_invocable_v<to_converter_t, parse_to_t> or
@@ -1208,7 +1204,7 @@ namespace daw::json {
 		/// @tparam JsonRawType JSON type value is encoded as literal/string
 		template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
 		         typename ToJsonConverter, json_options_t Options>
-		struct json_custom final
+		struct json_custom
 		  : json_base::json_custom<T, FromJsonConverter, ToJsonConverter, Options> {
 
 			static constexpr daw::string_view name = Name;
@@ -1259,13 +1255,12 @@ namespace daw::json {
 			template<typename JsonElement, typename Container, typename Constructor>
 			struct json_array {
 				using i_am_a_json_type = void;
-				static constexpr bool must_be_class_member = false;
+
 				static_assert(
 				  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
 				  "Missing specialization of daw::json::json_data_contract for class "
 				  "mapping or specialization of daw::json::json_link_basic_type_map" );
 				using json_element_t = json_details::json_deduced_type<JsonElement>;
-				using json_element_parse_to_t = typename json_element_t::parse_to_t;
 
 				static_assert(
 				  not is_missing_data_contract_or_unknown_type_v<json_element_t>,
@@ -1274,22 +1269,6 @@ namespace daw::json {
 				               "Array elements must not have names" );
 				static_assert( json_details::is_a_json_type_v<json_element_t>,
 				               "Error determining element type" );
-				using container_t =
-				  daw::conditional_t<std::is_same_v<Container, use_default>,
-				                     std::vector<json_element_parse_to_t>, Container>;
-
-				using constructor_t =
-				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
-				                     default_constructor<container_t>, Constructor>;
-
-				static_assert(
-				  std::is_invocable_v<constructor_t, json_element_parse_to_t const *,
-				                      json_element_parse_to_t const *>,
-				  "Constructor must support copy and/or move construction" );
-				using parse_to_t =
-				  std::invoke_result_t<constructor_t, json_element_parse_to_t const *,
-				                       json_element_parse_to_t const *>;
-				using base_type = parse_to_t;
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
 
@@ -1316,10 +1295,14 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename JsonElement, typename Container,
 		         typename Constructor>
-		struct json_array final
+		struct json_array
 		  : json_base::json_array<JsonElement, Container, Constructor> {
 
 			static constexpr daw::string_view name = Name;
+
+			// This is needed because json_base::json_array does not have a parse_to_t
+			using parse_to_t = json_details::json_result_t<
+			  json_base::json_array<JsonElement, Container, Constructor>>;
 
 			using without_name =
 			  json_base::json_array<JsonElement, Container, Constructor>;
@@ -1345,7 +1328,6 @@ namespace daw::json {
 			         typename Constructor = use_default>
 			struct json_sized_array {
 				using i_am_a_json_type = void;
-				static constexpr bool must_be_class_member = true;
 				static_assert(
 				  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
 				  "Missing specialization of daw::json::json_data_contract for class "
@@ -1357,7 +1339,8 @@ namespace daw::json {
 				static_assert( json_details::is_a_json_type_v<json_element_t>,
 				               "Error determining element type" );
 
-				using json_element_parse_to_t = typename json_element_t::parse_to_t;
+				using json_element_parse_to_t =
+				  json_details::json_result_t<json_element_t>;
 
 				using container_t =
 				  daw::conditional_t<std::is_same_v<Container, use_default>,
@@ -1380,7 +1363,6 @@ namespace daw::json {
 				using parse_to_t =
 				  std::invoke_result_t<constructor_t, json_element_parse_to_t const *,
 				                       json_element_parse_to_t const *, std::size_t>;
-				using base_type = parse_to_t;
 
 				static constexpr JsonParseTypes expected_type =
 				  JsonParseTypes::SizedArray;
@@ -1397,9 +1379,16 @@ namespace daw::json {
 			};
 		} // namespace json_base
 
+		namespace json_details {
+			template<typename JsonElement, typename SizeMember, typename Container,
+			         typename Constructor>
+			inline constexpr bool must_be_class_member_v<json_base::json_sized_array<
+			  JsonElement, SizeMember, Container, Constructor>> = true;
+		}
+
 		template<JSONNAMETYPE Name, typename JsonElement, typename SizeMember,
 		         typename Container, typename Constructor>
-		struct json_sized_array final
+		struct json_sized_array
 		  : json_base::json_sized_array<JsonElement, SizeMember, Container,
 		                                Constructor> {
 
@@ -1431,7 +1420,6 @@ namespace daw::json {
 			         typename Constructor>
 			struct json_key_value {
 				using i_am_a_json_type = void;
-				static constexpr bool must_be_class_member = false;
 
 				using value_type_t = typename daw::conditional_t<
 				  std::is_same_v<use_default, JsonValueType>,
@@ -1477,7 +1465,7 @@ namespace daw::json {
 				               "Key member name must be the default no_name" );
 
 				using parse_to_t = Container;
-				using base_type = parse_to_t;
+
 				static constexpr JsonParseTypes expected_type =
 				  JsonParseTypes::KeyValue;
 				static constexpr JsonBaseParseTypes underlying_json_type =
@@ -1505,7 +1493,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType, typename Constructor>
-		struct json_key_value final
+		struct json_key_value
 		  : json_base::json_key_value<Container, JsonValueType, JsonKeyType,
 		                              Constructor> {
 
@@ -1542,7 +1530,6 @@ namespace daw::json {
 			         typename Constructor = use_default>
 			struct json_key_value_array {
 				using i_am_a_json_type = void;
-				static constexpr bool must_be_class_member = false;
 
 				using value_type_t = typename daw::conditional_t<
 				  std::is_same_v<use_default, JsonValueType>,
@@ -1562,7 +1549,6 @@ namespace daw::json {
 				  std::is_invocable_v<constructor_t, Container>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, Container>;
-				using base_type = parse_to_t;
 
 				using json_key_t = json_details::copy_name_when_noname<
 				  json_details::json_deduced_type<key_type_t>, default_key_name>;
@@ -1612,7 +1598,7 @@ namespace daw::json {
 		///
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType, typename Constructor>
-		struct json_key_value_array final
+		struct json_key_value_array
 		  : json_base::json_key_value_array<Container, JsonValueType, JsonKeyType,
 		                                    Constructor> {
 
@@ -1648,7 +1634,7 @@ namespace daw::json {
 				using i_am_a_json_type = void;
 
 				using wrapped_type = Tuple;
-				static constexpr bool must_be_class_member = false;
+
 				static constexpr bool force_aggregate_construction = false;
 
 				using sub_member_list = typename daw::conditional_t<
@@ -1664,7 +1650,6 @@ namespace daw::json {
 				  std::is_invocable_v<constructor_t, Tuple>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, Tuple>;
-				using base_type = parse_to_t;
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Tuple;
 				static constexpr JsonBaseParseTypes underlying_json_type =
@@ -1679,7 +1664,7 @@ namespace daw::json {
 
 		template<JSONNAMETYPE Name, typename Tuple, typename JsonTupleTypesList,
 		         typename Constructor>
-		struct json_tuple final
+		struct json_tuple
 		  : json_base::json_tuple<Tuple, JsonTupleTypesList, Constructor> {
 			static constexpr daw::string_view name = Name;
 
@@ -1707,7 +1692,6 @@ namespace daw::json {
 			struct json_intrusive_variant {
 				using i_am_a_json_type = void;
 				using i_am_a_tagged_variant = void;
-				static constexpr bool must_be_class_member = false;
 
 				using json_elements = typename daw::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,
@@ -1730,7 +1714,8 @@ namespace daw::json {
 				               "member of the same object as this" );
 
 				static_assert(
-				  std::is_invocable_v<Switcher, typename tag_submember::parse_to_t>,
+				  std::is_invocable_v<Switcher,
+				                      json_details::json_result_t<tag_submember>>,
 				  "There is a mismatch between the Switcher and the TagMember's parsed "
 				  "result" );
 
@@ -1738,7 +1723,7 @@ namespace daw::json {
 
 				using tag_submember_class_wrapper = daw::conditional_t<
 				  json_details::is_an_ordered_member_v<tag_submember>,
-				  json_tuple<std::tuple<typename tag_submember::parse_to_t>,
+				  json_tuple<std::tuple<json_details::json_result_t<tag_submember>>,
 				             json_tuple_types_list<tag_submember>>,
 				  json_details::json_deduced_type<tuple_json_mapping<tag_submember>>>;
 
@@ -1746,7 +1731,7 @@ namespace daw::json {
 				  json_details::json_class_constructor_t<Variant, Constructor>;
 
 				using parse_to_t = Variant;
-				using base_type = parse_to_t;
+
 				static constexpr JsonParseTypes expected_type =
 				  JsonParseTypes::VariantIntrusive;
 				static constexpr JsonBaseParseTypes underlying_json_type =
@@ -1757,8 +1742,8 @@ namespace daw::json {
 				     json_details::json_deduced_type<tag_submember>> or
 				   json_details::is_no_name_v<
 				     json_details::json_deduced_type<tag_submember>>),
-				  json_tuple<std::tuple<typename json_details::json_deduced_type<
-				               tag_submember>::parse_to_t>,
+				  json_tuple<std::tuple<json_details::json_result_t<
+				               json_details::json_deduced_type<tag_submember>>>,
 				             json_tuple_types_list<tag_submember>>,
 				  tuple_json_mapping<tag_submember>>;
 
@@ -1783,7 +1768,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T, typename TagMember,
 		         typename Switcher, typename JsonElements, typename Constructor>
-		struct json_intrusive_variant final
+		struct json_intrusive_variant
 		  : json_base::json_intrusive_variant<T, TagMember, Switcher, JsonElements,
 		                                      Constructor> {
 
@@ -1845,7 +1830,7 @@ namespace daw::json {
 			template<typename T, typename Constructor>
 			struct json_raw {
 				using i_am_a_json_type = void;
-				static constexpr bool must_be_class_member = false;
+
 				using wrapped_type = json_value;
 				using constructor_t =
 				  json_details::json_class_constructor_t<T, Constructor>;
@@ -1855,7 +1840,6 @@ namespace daw::json {
 				  "Constructor must be constructible from char const *, std::size_t" );
 				using parse_to_t =
 				  std::invoke_result_t<constructor_t, char const *, std::size_t>;
-				using base_type = parse_to_t;
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Unknown;
 				static constexpr JsonParseTypes base_expected_type =

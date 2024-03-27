@@ -560,11 +560,10 @@ namespace daw::json {
 			to_json_string_real( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible_v<parse_to_t, json_result_t<JsonMember>>,
 				  "value must be convertible to specified type in class contract" );
 
-				if constexpr( std::is_floating_point_v<
-				                typename JsonMember::parse_to_t> ) {
+				if constexpr( std::is_floating_point_v<json_result_t<JsonMember>> ) {
 					if( daw::cxmath::is_nan( value ) ) {
 						if constexpr( JsonMember::literal_as_string ==
 						                options::LiteralAsStringOpt::Never or
@@ -658,7 +657,7 @@ namespace daw::json {
 			to_json_string_signed( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::base_type>,
+				  std::is_convertible_v<parse_to_t, json_base_type_t<JsonMember>>,
 				  "value must be convertible to specified type in class contract" );
 
 				using std::to_string;
@@ -737,7 +736,7 @@ namespace daw::json {
 			to_json_string_unsigned( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible_v<parse_to_t, json_result_t<JsonMember>>,
 				  "value must be convertible to specified type in class contract" );
 
 				using std::to_string;
@@ -793,7 +792,7 @@ namespace daw::json {
 				template<typename Integer>
 				struct number {
 					using parse_to_t = Integer;
-					using base_type = Integer;
+					using base_type = parse_to_t;
 					static constexpr options::LiteralAsStringOpt literal_as_string =
 					  options::LiteralAsStringOpt::Never;
 				};
@@ -822,7 +821,7 @@ namespace daw::json {
 			to_json_string_string_raw( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible_v<parse_to_t, json_result_t<JsonMember>>,
 				  "Value must be convertible to specialized type in "
 				  "json_data_contract" );
 
@@ -865,7 +864,7 @@ namespace daw::json {
 			to_json_string_date( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible_v<parse_to_t, json_result_t<JsonMember>>,
 				  "value must be convertible to specified type in class contract" );
 
 				using json_details::is_null;
@@ -925,11 +924,11 @@ namespace daw::json {
 			to_json_string_class( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t> or
+				  std::is_convertible_v<parse_to_t, json_result_t<JsonMember>> or
 				    std::is_same_v<parse_to_t,
-				                   typename JsonMember::parse_to_t>, // This is for
-				                                                     // not-copy/movable
-				                                                     // types
+				                   json_result_t<JsonMember>>, // This is for
+				                                               // not-copy/movable
+				                                               // types
 				  "value must be convertible to specified type in class contract" );
 
 				if constexpr( has_json_to_json_data_v<parse_to_t> ) {
@@ -960,7 +959,7 @@ namespace daw::json {
 			to_json_string_custom( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible_v<parse_to_t, json_result_t<JsonMember>>,
 				  "value must be convertible to specified type in class contract" );
 
 				if constexpr( JsonMember::custom_json_type !=
@@ -1009,7 +1008,7 @@ namespace daw::json {
 				(void)to_daw_json_string_help;
 
 				daw::empty_t const expander[]{
-				  ( to_daw_json_string_help( daw::constant<Is>{ } ),
+				  ( to_daw_json_string_help( daw::constant_v<Is> ),
 				    daw::empty_t{ } )...,
 				  daw::empty_t{} };
 				(void)expander;
@@ -1025,7 +1024,7 @@ namespace daw::json {
 			  serialization_policy<WriteableType, SerializationOptions> it,
 			  parse_to_t const &value ) {
 
-				using tuple_t = typename JsonMember::parse_to_t;
+				using tuple_t = json_result_t<JsonMember>;
 
 				using element_pack = tuple_elements_pack<typename daw::conditional_t<
 				  is_tuple_v<tuple_t>, daw::traits::identity<tuple_t>,
@@ -1075,7 +1074,7 @@ namespace daw::json {
 			  serialization_policy<WriteableType, SerializationOptions> it,
 			  parse_to_t const &value ) {
 
-				using array_t = typename JsonMember::parse_to_t;
+				using array_t = json_result_t<JsonMember>;
 				if constexpr( is_view_like_v<array_t> ) {
 					static_assert(
 					  std::is_convertible_v<parse_to_t, array_t>,
@@ -1152,7 +1151,7 @@ namespace daw::json {
 			  parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible_v<parse_to_t, json_result_t<JsonMember>>,
 				  "value must be convertible to specified type in class contract" );
 				using key_t = typename JsonMember::json_key_t;
 				using value_t = typename JsonMember::json_value_t;
