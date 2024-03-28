@@ -16,6 +16,7 @@
 #include "daw_to_json.h"
 #include "impl/daw_json_alternate_mapping.h"
 #include "impl/daw_json_value.h"
+#include "daw_json_apply.h"
 
 namespace daw::json::literals {
 	/***

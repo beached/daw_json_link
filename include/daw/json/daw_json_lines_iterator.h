@@ -44,7 +44,7 @@ namespace daw::json {
 			using element_type = json_details::json_deduced_type<JsonElement>;
 			static_assert( not std::is_same_v<element_type, void>,
 			               "Unknown JsonElement type." );
-			using value_type = typename element_type::parse_to_t;
+			using value_type = json_details::json_result_t<element_type>;
 			using reference = value_type;
 			using pointer = json_details::arrow_proxy<value_type>;
 			using difference_type = std::ptrdiff_t;

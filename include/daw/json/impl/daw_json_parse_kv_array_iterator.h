@@ -68,8 +68,8 @@ namespace daw::json {
 				using iterator_category = typename base::iterator_category;
 				using json_key_t = typename JsonMember::json_key_t;
 				using json_element_t = typename JsonMember::json_value_t;
-				using value_type = std::pair<typename json_key_t::parse_to_t const,
-				                             typename json_element_t::parse_to_t>;
+				using value_type = std::pair<json_result_t<json_key_t> const,
+				                             json_result_t<json_element_t>>;
 				using reference = value_type;
 				using pointer = arrow_proxy<value_type>;
 				using parse_state_t = ParseState;
@@ -92,7 +92,7 @@ namespace daw::json {
 				}
 
 				static constexpr value_type
-				get_pair( typename json_class_type::parse_to_t &&v ) {
+				get_pair( json_result_t<json_class_type> &&v ) {
 					return value_type( std::get<0>( std::move( v.members ) ),
 					                   std::get<1>( std::move( v.members ) ) );
 				}
@@ -167,5 +167,5 @@ namespace daw::json {
 				}
 			};
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

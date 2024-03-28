@@ -76,7 +76,7 @@ namespace daw::json {
 				                                    can_be_random_iterator_v<IsKnown>>;
 				using iterator_category = typename base::iterator_category;
 				using element_t = typename JsonMember::json_element_t;
-				using member_container_type = typename JsonMember::base_type;
+				using member_container_type = json_base_type_t<JsonMember>;
 				using value_type =
 				  kv_class_iter_impl::container_value_type_or<JsonMember,
 				                                              member_container_type>;
@@ -92,6 +92,8 @@ namespace daw::json {
 
 				constexpr explicit json_parse_kv_class_iterator( iterator_range_t &r )
 				  : base{ &r } {
+					daw_json_ensure( not IsKnown and not base::parse_state->empty( ),
+					                 ErrorReason::UnexpectedEndOfData );
 					if( base::parse_state->front( ) == '}' ) {
 						// Cleanup at end of value
 						if( not IsKnown ) {

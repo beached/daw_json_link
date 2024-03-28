@@ -61,8 +61,12 @@ namespace daw::json {
 			using ParseState =
 			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
-			auto parse_state =
-			  ParseState( std::data( json_data ), daw::data_end( json_data ) );
+			auto first = std::data( json_data );
+			auto last = daw::data_end( json_data );
+			if( first != last and last[-1] == 0 ) {
+				--last;
+			}
+			auto parse_state = ParseState( first, last );
 
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
@@ -210,14 +214,18 @@ namespace daw::json {
 			using ParseState =
 			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
-			auto jv = basic_json_value(
-			  ParseState( std::data( json_data ), daw::data_end( json_data ) ) );
+			auto first = std::data( json_data );
+			auto last = daw::data_end( json_data );
+			if( first != last and last[-1] == 0 ) {
+				--last;
+			}
+			auto jv = basic_json_value( ParseState( first, last ) );
 			jv = jv.find_member( member_path );
 
 			if constexpr( json_details::is_json_nullable_v<json_member> ) {
 				if( not jv ) {
 					return json_details::construct_nullable_empty<
-					  typename json_member::constructor_t>( );
+					  json_details::json_constructor_t<json_member>>( );
 				}
 			} else {
 				daw_json_ensure( jv, ErrorReason::JSONPathNotFound );
@@ -300,7 +308,9 @@ namespace daw::json {
 
 			auto first = std::data( json_data );
 			auto last = daw::data_end( json_data );
-
+			if( first != last and last[-1] == 0 ) {
+				--last;
+			}
 			auto jv = basic_json_value(
 			  ParseState( first, last, first, last ).with_allocator( alloc ) );
 			jv = jv.find_member( member_path );
@@ -308,7 +318,7 @@ namespace daw::json {
 			if constexpr( json_details::is_json_nullable_v<json_member> ) {
 				if( not jv ) {
 					return json_details::construct_nullable_empty<
-					  typename json_member::constructor_t>( );
+					  json_details::json_constructor_t<json_member>>( );
 				}
 			} else {
 				daw_json_ensure( jv, ErrorReason::JSONPathNotFound );
@@ -435,7 +445,7 @@ namespace daw::json {
 			if constexpr( json_details::is_json_nullable_v<json_member> ) {
 				if( not jv ) {
 					return json_details::construct_nullable_empty<
-					  typename json_member::constructor_t>( );
+					  json_details::json_constructor_t<json_member>>( );
 				}
 			} else {
 				daw_json_ensure( jv, ErrorReason::JSONPathNotFound );
@@ -602,14 +612,18 @@ namespace daw::json {
 			using ParseState =
 			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy, policy_zstring_t>;
-			auto jv = basic_json_value(
-			  ParseState( std::data( json_data ), daw::data_end( json_data ) ) );
+			auto first = std::data( json_data );
+			auto last = daw::data_end( json_data );
+			if( first != last and last[-1] == 0 ) {
+				--last;
+			}
+			auto jv = basic_json_value( ParseState( first, last ) );
 			jv = jv.find_member( member_path );
 
 			if constexpr( json_details::is_json_nullable_v<parser_t> ) {
 				if( not jv ) {
 					return json_details::construct_nullable_empty<
-					  typename parser_t::constructor_t>( );
+					  json_details::json_constructor_t<parser_t>>( );
 				}
 			} else {
 				daw_json_ensure( jv, ErrorReason::JSONPathNotFound );

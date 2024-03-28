@@ -58,14 +58,17 @@ coordinate_t calc( std::string const &text ) {
 	std::size_t len = 0;
 
 	using namespace daw::json;
-	using range_t = json_array_range<coordinate_t, options::CheckedParseMode::no>;
+	using range_t = json_array_range<coordinate_t, options::CheckedParseMode::yes>;
 	auto rng = range_t( text, "coordinates" );
-
-	for( auto c : rng ) {
+	auto f = rng.begin( );
+	auto l = rng.end( );
+	while( f != l ) {
+		auto c = *f;
 		++len;
 		x += c.x;
 		y += c.y;
 		z += c.z;
+		++f;
 	}
 
 	auto const dlen = static_cast<double>( len );

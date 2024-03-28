@@ -21,6 +21,7 @@
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
 
+#include <cassert>
 #include <chrono>
 #include <cstdint>
 
@@ -31,8 +32,13 @@ namespace daw::json {
 			constexpr Result parse_unsigned( char const *digit_str ) {
 				UInt64 result = UInt64( );
 				for( std::size_t n = 0; n < count; ++n ) {
+					auto const dig =
+					  to_uint64( json_details::parse_digit( digit_str[n] ) );
+					if( dig >= 10 ) {
+						break;
+					}
 					result *= 10U;
-					result += to_uint64( json_details::parse_digit( digit_str[n] ) );
+					result += dig;
 				}
 				return static_cast<Result>( result );
 			}
@@ -86,44 +92,40 @@ namespace daw::json {
 			// https://stackoverflow.com/questions/16773285/how-to-convert-stdchronotime-point-to-stdtm-without-using-time-t
 			template<typename TP = std::chrono::time_point<std::chrono::system_clock,
 			                                               std::chrono::milliseconds>>
-			constexpr TP
-			civil_to_time_point( std::int_least32_t yr, std::uint_least32_t mo,
-			                     std::uint_least32_t dy, std::uint_least32_t hr,
-			                     std::uint_least32_t mn, std::uint_least32_t se,
-			                     std::uint64_t ns ) {
+			constexpr TP civil_to_time_point( std::int32_t yr, std::uint32_t mo,
+			                                  std::uint32_t dy, std::uint32_t hr,
+			                                  std::uint32_t mn, std::uint32_t se,
+			                                  std::uint64_t ns ) {
 				using Clock = typename TP::clock;
 				using Duration = typename TP::duration;
 				constexpr auto calc =
-				  []( std::int_least32_t y, std::uint_least32_t m,
-				      std::uint_least32_t d, std::uint_least32_t h,
-				      std::uint_least32_t min, std::uint_least32_t s,
+				  []( std::int32_t y, std::uint32_t m, std::uint32_t d, std::uint32_t h,
+				      std::uint32_t min, std::uint32_t s,
 				      std::uint64_t nano ) DAW_JSON_CPP23_STATIC_CALL_OP {
-					  y -= static_cast<std::int_least32_t>( m ) <= 2;
-					  std::int_least32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
-					  auto const yoe = static_cast<std::uint_least32_t>(
-					    static_cast<std::int_least32_t>( y ) - era * 400 ); // [0, 399]
-					  auto const doy = static_cast<std::uint_least32_t>(
-					    ( 153 *
-					        ( static_cast<std::int_least32_t>( m ) +
-					          ( static_cast<std::int_least32_t>( m ) > 2 ? -3 : 9 ) ) +
+					  y -= static_cast<std::int32_t>( m ) <= 2;
+					  std::int32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
+					  auto const yoe = static_cast<std::uint32_t>(
+					    static_cast<std::int32_t>( y ) - era * 400 ); // [0, 399]
+					  auto const doy = static_cast<std::uint32_t>(
+					    ( 153 * ( static_cast<std::int32_t>( m ) +
+					              ( static_cast<std::int32_t>( m ) > 2 ? -3 : 9 ) ) +
 					      2 ) /
 					      5 +
-					    static_cast<std::int_least32_t>( d ) - 1 ); // [0, 365]
-					  std::uint_least32_t const doe =
+					    static_cast<std::int32_t>( d ) - 1 ); // [0, 365]
+					  std::uint32_t const doe =
 					    yoe * 365 + yoe / 4 - yoe / 100 + doy; // [0, 146096]
-					  std::int_least32_t const days_since_epoch =
-					    era * 146097 + static_cast<std::int_least32_t>( doe ) - 719468;
+					  auto const days_since_epoch =
+					    static_cast<int64_t>( era ) * 146097LL +
+					    static_cast<std::int64_t>( doe ) - 719468LL;
 
-					  using Days =
-					    std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
+					  using Days = std::chrono::duration<std::int32_t, std::ratio<86400>>;
 					  auto const dur =
 					    std::chrono::floor<Duration>( std::chrono::nanoseconds( nano ) );
 					  return std::chrono::time_point<std::chrono::system_clock,
 					                                 Duration>{ } +
 					         ( Days( days_since_epoch ) + std::chrono::hours( h ) +
 					           std::chrono::minutes( min ) +
-					           std::chrono::seconds(
-					             static_cast<std::uint_least32_t>( s ) ) +
+					           std::chrono::seconds( static_cast<std::uint32_t>( s ) ) +
 					           dur );
 				  };
 				// Not all clocks have the same epoch.  This should account for the
@@ -162,9 +164,9 @@ namespace daw::json {
 			}
 
 			struct date_parts {
-				int_least32_t year;
-				uint_least32_t month;
-				uint_least32_t day;
+				std::int32_t year;
+				std::uint32_t month;
+				std::uint32_t day;
 			};
 
 			template<string_view_bounds_type Bounds>
@@ -249,15 +251,29 @@ namespace daw::json {
 					daw_json_ensure( std::size( ts ) == 5 or std::size( ts ) == 6,
 					                 ErrorReason::InvalidTimestamp );
 					// The format will be (+|-)hh[:]mm
-					bool const sign = ts.front( ) == '+';
+					bool sign = false;
+					daw_json_ensure( not ts.empty( ), ErrorReason::InvalidTimestamp );
+					switch( ts.front( ) ) {
+					case '+':
+						sign = true;
+						break;
+					case '-':
+						break;
+					default:
+						daw_json_error( daw::json::ErrorReason::InvalidTimestamp );
+					}
 					ts.remove_prefix( );
 					auto hr_offset = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 					  std::data( ts ) );
+					daw_json_ensure( hr_offset <= 24,
+					                 daw::json::ErrorReason::InvalidTimestamp );
 					if( ts.front( ) == ':' ) {
 						ts.remove_prefix( );
 					}
 					auto mn_offset = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 					  std::data( ts ) );
+					daw_json_ensure( mn_offset <= 61,
+					                 daw::json::ErrorReason::InvalidTimestamp );
 					// Want to subtract offset from current time, we are converting to UTC
 					if( sign ) {
 						// Positive offset

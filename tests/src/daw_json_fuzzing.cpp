@@ -43,8 +43,8 @@ public:
 	explicit JSONMinifyHandler( OutputIterator it )
 	  : out_it( std::move( it ) ) {}
 
-	template<typename ParsePolicy>
-	bool handle_on_value( daw::json::basic_json_pair<ParsePolicy> p ) {
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	bool handle_on_value( daw::json::basic_json_pair<PolicyFlags, Allocator> p ) {
 		if( member_count_stack.empty( ) ) {
 			// We are root object/array
 			member_count_stack.emplace_back( p.value.is_class( ) );
@@ -98,27 +98,35 @@ public:
 		}
 	}
 
-	template<typename ParsePolicy>
-	bool handle_on_array_start( daw::json::basic_json_value<ParsePolicy> ) {
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	bool
+	handle_on_array_start( daw::json::basic_json_value<PolicyFlags, Allocator> ) {
 		member_count_stack.emplace_back( false );
 		write_chr( '[' );
 		return true;
 	}
 
 	bool handle_on_array_end( ) {
+		if( member_count_stack.empty( ) ) {
+			throw std::exception( );
+		}
 		member_count_stack.pop_back( );
 		write_chr( ']' );
 		return true;
 	}
 
-	template<typename ParsePolicy>
-	bool handle_on_class_start( daw::json::basic_json_value<ParsePolicy> ) {
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	bool
+	handle_on_class_start( daw::json::basic_json_value<PolicyFlags, Allocator> ) {
 		member_count_stack.emplace_back( true );
 		write_chr( '{' );
 		return true;
 	}
 
 	bool handle_on_class_end( ) {
+		if( member_count_stack.empty( ) ) {
+			throw std::exception( );
+		}
 		member_count_stack.pop_back( );
 		write_chr( '}' );
 		return true;
@@ -148,9 +156,8 @@ extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
 #ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
-		auto jv = daw::json::basic_json_value<
-		  daw::json::BasicParsePolicy<daw::json::ConformancePolicy.value>>(
-		  json_doc );
+		auto jv = daw::json::basic_json_value<daw::json::parse_options(
+		  DAW_JSON_CONFORMANCE_FLAGS )>( json_doc );
 		switch( jv.type( ) ) {
 		case daw::json::JsonBaseParseTypes::Number:
 			ofile << daw::json::from_json<double>( jv );

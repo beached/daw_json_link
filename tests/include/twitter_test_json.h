@@ -27,13 +27,14 @@ namespace daw::twitter {
 			daw_json_ensure(
 			  sv.size( ) >= 26,
 			  daw::json::ErrorReason::InvalidTimestamp ); // Date format is always 26
+
 			// Skip Day of Week
 			sv.remove_prefix( 4 );
 			auto const mo = daw::json::datetime::parse_short_month( sv );
 			sv.remove_prefix( 4 );
 			auto const dy =
 			  daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
-			sv.remove_prefix( 3 );
+			sv.remove_prefix( 2U + static_cast<unsigned>( dy > 9 ) );
 			auto const hr =
 			  daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
 			sv.remove_prefix( 3 );
@@ -53,6 +54,8 @@ namespace daw::twitter {
 			  daw::json::parse_utils::parse_unsigned<int_least32_t, 2>( sv.data( ) ) *
 			  sign;
 			sv.remove_prefix( 3 );
+			daw_json_ensure( not sv.empty( ),
+			                 daw::json::ErrorReason::InvalidTimestamp );
 			int const yr_sign = [&] {
 				if( sv.front( ) == '-' ) {
 					sv.remove_prefix( 1 );
@@ -66,6 +69,9 @@ namespace daw::twitter {
 			  yr_sign *
 			  daw::json::parse_utils::parse_unsigned2<int_least32_t>( sv.data( ) );
 
+			daw_json_ensure( mo <= 12 and dy <= 31 and hr <= 24 and mn <= 61 and
+			                   se <= 61,
+			                 daw::json::ErrorReason::InvalidTimestamp );
 			return daw::json::datetime::civil_to_time_point( yr, mo, dy, hr, mn, se,
 			                                                 0 ) +
 			       std::chrono::hours( off_hr ) + std::chrono::minutes( off_mn );

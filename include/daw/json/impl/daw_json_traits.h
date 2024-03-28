@@ -102,6 +102,39 @@ namespace daw::json {
 		  json_details::force_aggregate_construction_test2<T>;
 
 		namespace json_details {
+			template<typename, typename = void>
+			struct json_constructor;
+
+			template<typename T>
+			struct json_constructor<T, std::void_t<typename T::constructor_t>> {
+				using type = typename T::constructor_t;
+			};
+
+			template<typename T>
+			using json_constructor_t = typename json_constructor<T>::type;
+
+			template<typename, typename = void>
+			struct json_result;
+
+			template<typename T>
+			struct json_result<T, std::void_t<typename T::parse_to_t>> {
+				using type = typename T::parse_to_t;
+			};
+
+			template<typename T>
+			using json_result_t = typename json_result<T>::type;
+
+			template<typename, typename = void>
+			struct json_base_type;
+
+			template<typename T>
+			struct json_base_type<T, std::void_t<json_result_t<T>>> {
+				using type = json_result_t<T>;
+			};
+
+			template<typename T>
+			using json_base_type_t = typename json_base_type<T>::type;
+
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT(
 			  is_default_default_constructor_type_v,
 			  T::i_am_the_default_default_constructor_type );
@@ -111,6 +144,9 @@ namespace daw::json {
 
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT(
 			  has_data_contract_constructor_v, json_data_contract<T>::constructor_t );
+
+			template<typename>
+			inline constexpr bool must_be_class_member_v = false;
 		} // namespace json_details
 
 		template<typename Constructor, typename T, typename ParseState>

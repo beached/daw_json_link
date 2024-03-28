@@ -71,7 +71,7 @@ namespace daw::json {
 
 				using iterator_category = typename base::iterator_category;
 				using element_t = typename JsonMember::json_element_t;
-				using value_type = typename element_t::parse_to_t;
+				using value_type = json_result_t<element_t>;
 				using reference = value_type;
 				using pointer = arrow_proxy<value_type>;
 				using parse_state_t = ParseState;
@@ -167,5 +167,5 @@ namespace daw::json {
 				}
 			};
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

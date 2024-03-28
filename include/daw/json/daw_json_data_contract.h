@@ -42,6 +42,5 @@ namespace daw::json {
 		/// @brief This trait gets us the mapping type from the contract.
 		template<typename T>
 		using json_data_contract_trait_t = typename json_data_contract<T>::type;
-
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

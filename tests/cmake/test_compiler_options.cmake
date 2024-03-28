@@ -41,6 +41,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-missing-prototypes
                 -Wno-newline-eof
                 -Wno-padded
+                -Wno-redundant-parens
                 -Wno-switch-default
                 -Wno-unused-template
                 -Wno-weak-vtables
@@ -58,6 +59,26 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
             add_compile_options(
                     -Wno-c++2b-extensions
                     -Wno-unsafe-buffer-usage
+            )
+        endif()
+        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
+            add_compile_options(
+                    -Wno-c++20-extensions
+            )
+        endif()
+        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL "14.0.0" )
+            add_compile_options(
+                    -Wno-c++20-extensions
+            )
+        endif()
+        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14.0.0 )
+            add_compile_options(
+                    -Wno-c++20-attribute-extensions
+            )
+        endif()
+        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL "15.0.0" )
+            add_compile_options(
+                    -Wno-c++20-attribute-extensions
             )
         endif()
         if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR
@@ -90,7 +111,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
         endif()
         if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
             AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9 )
-            set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_ENABLE_ASSERTIONS=1 -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS" )
+            set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_ENABLE_ASSERTIONS=1 -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -D_FORTIFY_SOURCE=2" )
             set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
             set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
         else()
@@ -160,8 +181,8 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
     # Prior to gcc-12, it tries to concept check an input iterator as a bidirectional and requires
     # *it-- = *it to be a valid expression
     if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
-        set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS" )
-        set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
+        set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer" )
+        set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer" )
         set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
     else()
         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS" )
