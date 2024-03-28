@@ -29,10 +29,14 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+#if defined( DAW_HAS_GCC_LIKE )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 			using u128 = unsigned __int128;
+#if defined( DAW_HAS_GCC_LIKE )
 #pragma GCC diagnostic pop
+#endif
 			DAW_CONSTEVAL u128 operator""_daw_json_u128( char const *str ) {
 				u128 result = 0;
 				char c = *str;
