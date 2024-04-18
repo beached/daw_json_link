@@ -20,7 +20,6 @@
 #include <cstddef>
 #include <daw/stdinc/declval.h>
 #include <daw/stdinc/move_fwd_exch.h>
-#include <daw/stdinc/void_t.h>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -55,133 +54,97 @@ namespace daw::json {
 
 			namespace hnd_checks {
 				// On Next Value
-				template<typename /*Handler*/, json_options_t, typename /*JPair*/,
-				         typename = void>
-				inline constexpr bool has_on_value_handler_v = false;
+				DAW_JSON_MAKE_REQ_TRAIT2(
+				  has_on_value_handler_impl,
+				  std::declval<T>( ).handle_on_value( std::declval<U>( ) ) );
 
-				template<typename Handler, json_options_t O, typename JPair>
-				inline constexpr bool has_on_value_handler_v<
-				  Handler, O, JPair,
-				  std::void_t<decltype( std::declval<Handler>( ).handle_on_value(
-				    std::declval<JPair>( ) ) )>> = true;
+				template<typename Handler, json_options_t, typename JPair>
+				inline constexpr bool has_on_value_handler_v =
+				  has_on_value_handler_impl<Handler, JPair>;
 
 				// On Array Start
-				template<typename /*Handler*/, json_options_t, typename /*JValue*/,
-				         typename = void>
-				inline constexpr bool has_on_array_start_handler_v = false;
+				DAW_JSON_MAKE_REQ_TRAIT2(
+				  has_on_array_start_handler_impl,
+				  std::declval<T>( ).handle_on_array_start( std::declval<U>( ) ) );
 
-				template<typename Handler, json_options_t O, typename JValue>
-				inline constexpr bool has_on_array_start_handler_v<
-				  Handler, O, JValue,
-				  std::void_t<decltype( std::declval<Handler>( ).handle_on_array_start(
-				    std::declval<JValue>( ) ) )>> = true;
+				template<typename Handler, json_options_t /*O*/, typename JValue>
+				inline constexpr bool has_on_array_start_handler_v =
+				  has_on_array_start_handler_impl<Handler, JValue>;
 
 				// On Array End
 				DAW_JSON_MAKE_REQ_TRAIT( has_on_array_end_handler_v,
 				                         std::declval<T>( ).handle_on_array_end( ) );
 
 				// On Class Start
-				template<typename /*Handler*/, json_options_t, typename /*JValue*/,
-				         typename = void>
-				inline constexpr bool has_on_class_start_handler_v = false;
+				DAW_JSON_MAKE_REQ_TRAIT2(
+				  has_on_class_start_handler_impl,
+				  std::declval<T>( ).handle_on_class_start( std::declval<U>( ) ) );
 
-				template<typename Handler, json_options_t O, typename JValue>
-				inline constexpr bool has_on_class_start_handler_v<
-				  Handler, O, JValue,
-				  std::void_t<decltype( std::declval<Handler>( ).handle_on_class_start(
-				    std::declval<JValue>( ) ) )>> = true;
+				template<typename Handler, json_options_t /*Opt*/, typename JValue>
+				inline constexpr bool has_on_class_start_handler_v =
+				  has_on_class_start_handler_impl<Handler, JValue>;
 
 				// On Class End
 				DAW_JSON_MAKE_REQ_TRAIT( has_on_class_end_handler_v,
 				                         std::declval<T>( ).handle_on_class_end( ) );
 
 				// On Number
-				template<typename Handler, typename JValue>
-				using has_on_number_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_number(
-				    std::declval<JValue>( ) ) );
+				DAW_JSON_MAKE_REQ_TRAIT2(
+				  has_on_number_handler_jv_impl,
+				  std::declval<T>( ).handle_on_number( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_number_handler_jv_v =
-				  daw::is_detected_v<has_on_number_handler_detect_jv, Handler,
-				                     basic_json_value<P, A>>;
+				  has_on_number_handler_jv_impl<Handler, basic_json_value<P, A>>;
 
-				template<typename Handler>
-				using has_on_number_handler_detect_dbl =
-				  decltype( std::declval<Handler>( ).handle_on_number( 0.0 ) );
+				DAW_JSON_MAKE_REQ_TRAIT( has_on_number_handler_dbl_v,
+				                         std::declval<T>( ).handle_on_number( 0.0 ) );
 
-				template<typename Handler>
-				inline constexpr bool has_on_number_handler_dbl_v =
-				  daw::is_detected_v<has_on_number_handler_detect_dbl, Handler>;
-
-				// On Bool
-				template<typename Handler, typename JValue>
-				using has_on_bool_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_bool(
-				    std::declval<JValue>( ) ) );
+				// On Bool // T = Handler, U = JValue
+				DAW_JSON_MAKE_REQ_TRAIT2(
+				  has_on_bool_handler_jv_impl,
+				  std::declval<T>( ).handle_on_bool( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_bool_handler_jv_v =
-				  daw::is_detected_v<has_on_bool_handler_detect_jv, Handler,
-				                     basic_json_value<P, A>>;
+				  has_on_bool_handler_jv_impl<Handler, basic_json_value<P, A>>;
 
-				template<typename Handler>
-				using has_on_bool_handler_detect_bl =
-				  decltype( std::declval<Handler>( ).handle_on_bool( true ) );
+				DAW_JSON_MAKE_REQ_TRAIT( has_on_bool_handler_bl_v,
+				                         std::declval<T>( ).handle_on_bool( true ) );
 
-				template<typename Handler>
-				inline constexpr bool has_on_bool_handler_bl_v =
-				  daw::is_detected_v<has_on_bool_handler_detect_bl, Handler>;
-
-				// On String
-				template<typename Handler, typename JValue>
-				using has_on_string_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_string(
-				    std::declval<JValue>( ) ) );
+				// On String // T = Handler, U = JValue
+				DAW_JSON_MAKE_REQ_TRAIT2(
+				  has_on_string_handler_impl,
+				  std::declval<T>( ).handle_on_string( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_string_handler_jv_v =
-				  daw::is_detected_v<has_on_string_handler_detect_jv, Handler,
-				                     basic_json_value<P, A>>;
+				  has_on_string_handler_impl<Handler, basic_json_value<P, A>>;
 
-				template<typename Handler>
-				using has_on_string_handler_detect_str =
-				  decltype( std::declval<Handler>( ).handle_on_string(
-				    std::declval<std::string>( ) ) );
+				DAW_JSON_MAKE_REQ_TRAIT(
+				  has_on_string_handler_str_v,
+				  std::declval<T>( ).handle_on_string( std::declval<std::string>( ) ) );
 
-				template<typename Handler>
-				inline constexpr bool has_on_string_handler_str_v =
-				  daw::is_detected_v<has_on_string_handler_detect_str, Handler>;
-
-				// On Null
-				template<typename Handler, typename JValue>
-				using has_on_null_handler_detect_jv =
-				  decltype( std::declval<Handler>( ).handle_on_null(
-				    std::declval<JValue>( ) ) );
+				// On Null, T = Handler, U = JValue
+				DAW_JSON_MAKE_REQ_TRAIT2(
+				  has_on_null_handler_impl,
+				  std::declval<T>( ).handle_on_null( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_null_handler_jv_v =
-				  daw::is_detected_v<has_on_null_handler_detect_jv, Handler,
-				                     basic_json_value<P, A>>;
+				  has_on_null_handler_impl<Handler, basic_json_value<P, A>>;
 
-				template<typename Handler>
-				using has_on_null_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_null( ) );
-
-				template<typename Handler>
-				inline constexpr bool has_on_null_handler_v =
-				  daw::is_detected_v<has_on_null_handler_detect, Handler>;
+				DAW_JSON_MAKE_REQ_TRAIT( has_on_null_handler_v,
+				                         std::declval<T>( ).handle_on_null( ) );
 
 				// On Error
-				template<typename Handler, typename JValue>
-				using has_on_error_handler_detect =
-				  decltype( std::declval<Handler>( ).handle_on_error(
-				    std::declval<JValue>( ) ) );
+				DAW_JSON_MAKE_REQ_TRAIT2(
+				  has_on_error_handler_impl,
+				  std::declval<T>( ).handle_on_error( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t P, typename A>
 				inline constexpr bool has_on_error_handler_v =
-				  daw::is_detected_v<has_on_error_handler_detect, Handler,
-				                     basic_json_value<P, A>>;
+				  has_on_error_handler_impl<Handler, basic_json_value<P, A>>;
 			} // namespace hnd_checks
 
 			template<typename T>

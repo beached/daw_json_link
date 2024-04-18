@@ -10,16 +10,26 @@
 option( DAW_ENABLE_TESTING "Build unit tests" OFF )
 if( DAW_ENABLE_TESTING )
     set( DAW_ENABLE_TESTING OFF )
+    set( DAW_EXTERN_USE_LATEST ON )
 endif()
 
 include( FetchContent )
 
-FetchContent_Declare(
-        daw_header_libraries
-        GIT_REPOSITORY https://github.com/beached/header_libraries.git
-				#        GIT_TAG v2
-				GIT_TAG master
-)
+if( DAW_EXTERN_USE_LATEST )
+    # Use the latest header_libraries and not release
+    FetchContent_Declare(
+            daw_header_libraries
+            GIT_REPOSITORY https://github.com/beached/header_libraries.git
+            GIT_TAG v2
+    )
+    message( STATUS "Using latest header_libraries" )
+else()
+    FetchContent_Declare(
+            daw_header_libraries
+            GIT_REPOSITORY https://github.com/beached/header_libraries.git
+            GIT_TAG master
+    )
+endif()
 
 FetchContent_Declare(
         daw_utf_range

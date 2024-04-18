@@ -629,11 +629,11 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool has_nullable_type_map_v =
-
 			  concepts::is_nullable_value_v<T> and
 			  not has_json_data_contract_trait_v<T> and
 			  daw::is_detected_v<json_deduced_type_map,
 			                     concepts::nullable_value_type_t<T>>;
+
 			template<typename T>
 			struct json_deduced_type_map<
 			  T, std::enable_if_t<has_nullable_type_map_v<T>>> {

@@ -314,7 +314,7 @@ namespace daw::json {
 			 * what the member should be if that can increase performance
 			 */
 			template<bool KeepInitialQuote = false, typename ParseState>
-			[[nodiscard]] static constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_NOINLINE constexpr ParseState
 			skip_value( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );

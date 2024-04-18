@@ -484,11 +484,11 @@ namespace daw::json {
 			  can_single_allocation_string_v<json_result_t<JsonMember>> or
 			  can_single_allocation_string_v<json_base_type_t<JsonMember>>;
 
-			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT2( has_json_member_constructor_v,
-			                                     json_constructor_t<T> );
+			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT_NT( has_json_member_constructor_v,
+			                                    json_constructor_t<T> );
 
-			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT2( has_json_member_parse_to_v,
-			                                     json_result_t<T> );
+			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT_NT( has_json_member_parse_to_v,
+			                                    json_result_t<T> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
