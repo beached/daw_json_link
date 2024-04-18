@@ -22,7 +22,7 @@
 #include <system_error>
 #include <type_traits>
 
-#if DAW_HAS_MSVC_VER_GTE( 0 )
+#if DAW_HAS_MSVC_VER_GTE( 1930 )
 #include <__msvc_int128.hpp>
 #endif
 
@@ -38,7 +38,7 @@ namespace daw::json {
 #pragma GCC diagnostic ignored "-Wpedantic"
 			using u128 = unsigned __int128;
 #pragma GCC diagnostic pop
-#elif DAW_HAS_MSVC_VER_GTE( 0 )
+#elif DAW_HAS_MSVC_VER_GTE( 1930 )
 			using u128 = std::_Unsigned128;
 #endif
 			DAW_CONSTEVAL u128 operator""_daw_json_u128( char const *str ) {
