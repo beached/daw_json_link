@@ -35,8 +35,7 @@ namespace daw::json {
 				  std::is_same_v<use_default, Signature>,
 				  daw::traits::identity<daw::func::function_traits<Callable>>,
 				  daw::traits::identity<daw::func::function_traits<Signature>>>::type;
-				static_assert( func_t::arity > 0,
-				               "Empty parameter lists are not supported" );
+
 				if constexpr( func_t::arity == 1 ) {
 					return DAW_FWD( callable )(
 					  daw::json::from_json<

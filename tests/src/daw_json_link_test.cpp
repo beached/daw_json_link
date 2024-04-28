@@ -921,26 +921,22 @@ int main( int, char ** ) {
 		  json_number_no_name<double, options::number_opt(
 		                                options::LiteralAsStringOpt::Always,
 		                                options::JsonNumberErrors::AllowNanInf )>;
-		std::cout << "Inf double: "
-		          << "serialize: "
+		std::cout << "Inf double: " << "serialize: "
 		          << to_json<num_t>( std::numeric_limits<double>::infinity( ) )
 		          << '\n';
 		std::cout << "parse: " << from_json<num_t>( R"("Infinity")" ) << '\n';
-		std::cout << "-Inf double: "
-		          << "serialize: "
+		std::cout << "-Inf double: " << "serialize: "
 		          << to_json<num_t>( -std::numeric_limits<double>::infinity( ) )
 		          << '\n';
 		std::cout << "parse: " << from_json<num_t>( R"("-Infinity")" ) << '\n';
 
-		std::cout << "NaN double: "
-		          << "serialize: "
+		std::cout << "NaN double: " << "serialize: "
 		          << to_json<num_t>( std::numeric_limits<double>::quiet_NaN( ) )
 		          << '\n';
 		std::cout << "parse: " << from_json<num_t>( R"("NaN")" ) << '\n';
 
-		std::cout << "Negative 0: "
-		          << "serialize: " << to_json<num_t>( std::copysign( 0.0, -1.0 ) )
-		          << '\n';
+		std::cout << "Negative 0: " << "serialize: "
+		          << to_json<num_t>( std::copysign( 0.0, -1.0 ) ) << '\n';
 
 		std::cout << "parse: " << from_json<double>( "-0.0" ) << '\n';
 
@@ -1421,6 +1417,20 @@ int main( int, char ** ) {
 					  return s.size( );
 				  }
 				  return i * 2;
+			  } );
+			ensure( x == 5 );
+		}
+		{
+			constexpr auto const x =
+			  daw::json::json_apply( R"json(["Hello",52,true])json", []( ) {
+				  return std::size_t{ 5 };
+			  } );
+			ensure( x == 5 );
+		}
+		{
+			constexpr auto const x =
+			  daw::json::json_apply( R"json([])json", []( ) {
+				  return std::size_t{ 5 };
 			  } );
 			ensure( x == 5 );
 		}
