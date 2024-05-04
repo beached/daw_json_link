@@ -48,55 +48,61 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
                 -Wno-mismatched-tags
         )
-        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
-            AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
-            add_compile_options(
-                    -Wno-c++20-compat
-            )
-        endif()
-        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
-            AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16 )
-            add_compile_options(
-                    -Wno-c++2b-extensions
-                    -Wno-unsafe-buffer-usage
-            )
-        endif()
-        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
-            add_compile_options(
-                    -Wno-c++20-extensions
-            )
-        endif()
-        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL "14.0.0" )
-            add_compile_options(
-                    -Wno-c++20-extensions
-            )
-        endif()
-        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14.0.0 )
-            add_compile_options(
-                    -Wno-c++20-attribute-extensions
-            )
-        endif()
-        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL "15.0.0" )
-            add_compile_options(
-                    -Wno-c++20-attribute-extensions
-            )
-        endif()
-        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR
-            CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
+        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
+            if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
+                add_compile_options(
+                        -Wno-c++20-extensions
+                )
+            endif()
+            if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 15 )
+                add_compile_options(
+                        -Wno-c++20-attribute-extensions
+                        -Wno-c++2b-extensions
+                        -Wno-c++20-compat
+                )
+            endif()
             add_compile_options( -Wno-poison-system-directories )
-        endif()
-        if( DAW_WERROR )
-            if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang"
-                OR CMAKE_CXX_COMPILER_VERSION LESS 13.0.0 )
+            if( DAW_WERROR )
                 add_compile_options( -Werror -pedantic-errors )
+                # Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
+                # https://bugs.llvm.org/show_bug.cgi?id=16404
+                string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
+                if( HAS_LIBCXX EQUAL -1 )
+                    add_compile_options( -ftrapv )
+                endif()
             endif()
-            # Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
-            # https://bugs.llvm.org/show_bug.cgi?id=16404
-            string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
-            if( HAS_LIBCXX EQUAL -1 )
-                add_compile_options( -ftrapv )
+        else() # Not Apple Clang Clang
+            if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 10 )
+                add_compile_options(
+                        -Wno-c++20-extensions
+                        -Wno-poison-system-directories
+                )
+            endif()
+            if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
+                add_compile_options(
+                        -Wno-c++20-attribute-extensions
+                        -Wno-c++20-compat
+                )
+            endif()
+            if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16 )
+                add_compile_options(
+                        -Wno-c++2b-extensions
+                        -Wno-unsafe-buffer-usage
+                )
+            endif()
+            if( DAW_WERROR )
+                if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13 )
+                    add_compile_options( -Werror -pedantic-errors )
+                endif()
+                # Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
+                # https://bugs.llvm.org/show_bug.cgi?id=16404
+                string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
+                if( HAS_LIBCXX EQUAL -1 )
+                    add_compile_options( -ftrapv )
+                endif()
             endif()
         endif()
+
         if( CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)" )
             if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
                 if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
