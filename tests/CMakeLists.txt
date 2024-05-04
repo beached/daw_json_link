@@ -230,7 +230,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND CLANG_VERSION_MAJOR VERSION_GR
     endif()
     target_link_libraries( twitter_output_test PRIVATE json_test )
     add_dependencies( full twitter_output_test )
-endif( )
+endif()
 
 add_executable( twitter_test_alloc EXCLUDE_FROM_ALL src/twitter_test_alloc.cpp )
 target_link_libraries( twitter_test_alloc PRIVATE json_test )
@@ -747,6 +747,13 @@ add_test( test_details_parse_value_null_test test_details_parse_value_null )
 add_dependencies( ci_tests test_details_parse_value_null )
 add_dependencies( full test_details_parse_value_null )
 
+
+add_executable( test_details_parse_value_iso8601 src/test_details_parse_value_iso8601.cpp )
+target_link_libraries( test_details_parse_value_iso8601 PRIVATE json_test )
+add_test( test_details_parse_value_iso8601_test test_details_parse_value_iso8601 )
+add_dependencies( ci_tests test_details_parse_value_iso8601 )
+add_dependencies( full test_details_parse_value_iso8601 )
+
 if( DAW_USE_EXCEPTIONS )
     add_executable( test_details_parse_value_unsigned src/test_details_parse_value_unsigned.cpp )
     target_link_libraries( test_details_parse_value_unsigned PRIVATE json_test )
@@ -766,23 +773,23 @@ if( DAW_USE_EXCEPTIONS )
     add_dependencies( ci_tests test_details_parse_value_real )
     add_dependencies( full test_details_parse_value_real )
 
-		add_executable( issue_370_exact_class_mapping_test src/issue_370_exact_class_mapping_test.cpp )
-		target_link_libraries( issue_370_exact_class_mapping_test json_test )
-		add_test( NAME issue_370_exact_class_mapping_test_test COMMAND issue_370_exact_class_mapping_test )
-		add_dependencies( ci_tests issue_370_exact_class_mapping_test )
-		add_dependencies( full issue_370_exact_class_mapping_test )
+    add_executable( issue_370_exact_class_mapping_test src/issue_370_exact_class_mapping_test.cpp )
+    target_link_libraries( issue_370_exact_class_mapping_test json_test )
+    add_test( NAME issue_370_exact_class_mapping_test_test COMMAND issue_370_exact_class_mapping_test )
+    add_dependencies( ci_tests issue_370_exact_class_mapping_test )
+    add_dependencies( full issue_370_exact_class_mapping_test )
 
-		add_executable( issue_389_test src/issue_389_test.cpp )
-		target_link_libraries( issue_389_test PRIVATE json_test )
-		add_test( NAME issue_389_test COMMAND issue_389_test ./issue_389.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
-		add_dependencies( ci_tests issue_389_test )
-		add_dependencies( full issue_389_test )
+    add_executable( issue_389_test src/issue_389_test.cpp )
+    target_link_libraries( issue_389_test PRIVATE json_test )
+    add_test( NAME issue_389_test COMMAND issue_389_test ./issue_389.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+    add_dependencies( ci_tests issue_389_test )
+    add_dependencies( full issue_389_test )
 
-		add_executable( issue_398_test src/issue_398_test.cpp )
-		target_link_libraries( issue_398_test PRIVATE json_test )
-		add_test( NAME issue_398_test COMMAND issue_398_test )
-		add_dependencies( ci_tests issue_398_test )
-		add_dependencies( full issue_398_test )
+    add_executable( issue_398_test src/issue_398_test.cpp )
+    target_link_libraries( issue_398_test PRIVATE json_test )
+    add_test( NAME issue_398_test COMMAND issue_398_test )
+    add_dependencies( ci_tests issue_398_test )
+    add_dependencies( full issue_398_test )
 
     add_executable( issue_399_test src/issue_399_test.cpp )
     target_link_libraries( issue_399_test PRIVATE json_test )
@@ -790,24 +797,24 @@ if( DAW_USE_EXCEPTIONS )
     add_dependencies( ci_tests issue_399_test )
     add_dependencies( full issue_399_test )
 
-		add_executable( issue_402_test src/issue_402_test.cpp )
+    add_executable( issue_402_test src/issue_402_test.cpp )
     target_link_libraries( issue_402_test PRIVATE json_test )
     add_test( NAME issue_402_test COMMAND issue_402_test )
     add_dependencies( ci_tests issue_402_test )
     add_dependencies( full issue_402_test )
 
-		add_executable( issue_409_test src/issue_409_test.cpp )
+    add_executable( issue_409_test src/issue_409_test.cpp )
     target_link_libraries( issue_409_test PRIVATE json_test )
     add_test( NAME issue_409_test COMMAND issue_409_test )
     add_dependencies( ci_tests issue_409_test )
     add_dependencies( full issue_409_test )
-		
-		add_executable( issue_413_test src/issue_413_test.cpp )
+
+    add_executable( issue_413_test src/issue_413_test.cpp )
     target_link_libraries( issue_413_test PRIVATE json_test )
     add_test( NAME issue_413_test COMMAND issue_413_test )
     add_dependencies( ci_tests issue_413_test )
     add_dependencies( full issue_413_test )
-    
+
 endif()
 
 add_executable( test_details_skip_number src/test_details_skip_number.cpp )
@@ -892,7 +899,15 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT MSVC AND CMAKE_CXX_COMPILE
     # Only clang is supported for fuzzing
     add_executable( daw_json_fuzzing EXCLUDE_FROM_ALL src/daw_json_fuzzing.cpp )
     target_link_libraries( daw_json_fuzzing PRIVATE json_test "-fsanitize=fuzzer,address,undefined" )
-    target_compile_options( daw_json_fuzzing PRIVATE -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined -O3 -g -march=native -fsanitize-coverage=trace-cmp )
+    target_compile_options( daw_json_fuzzing PRIVATE -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined -O0 -g -march=native -fsanitize-coverage=trace-cmp )
+
+    add_executable( daw_json_fuzzing_twitter EXCLUDE_FROM_ALL src/daw_json_fuzzing_twitter.cpp )
+    target_link_libraries( daw_json_fuzzing_twitter PRIVATE json_test "-fsanitize=fuzzer,address,undefined" )
+    target_compile_options( daw_json_fuzzing_twitter PRIVATE -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined -O0 -g -march=native -fsanitize-coverage=trace-cmp )
+
+    add_executable( daw_json_fuzzing_gsoc EXCLUDE_FROM_ALL src/daw_json_fuzzing_gsoc.cpp )
+    target_link_libraries( daw_json_fuzzing_gsoc PRIVATE json_test "-fsanitize=fuzzer,address,undefined" )
+    target_compile_options( daw_json_fuzzing_gsoc PRIVATE -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined -O0 -g -march=native -fsanitize-coverage=trace-cmp )
 else()
     message( STATUS "Fuzzing support disabled for compiler: ${CMAKE_CXX_COMPILER_ID} is not supported.  Only Clang(excluding AppleClang)" )
 endif()
@@ -902,9 +917,9 @@ target_link_libraries( daw_json_fuzzing_replay PRIVATE json_test )
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
     target_link_libraries( daw_json_fuzzing_replay PRIVATE json_test "-fsanitize=address" )
     target_compile_options( daw_json_fuzzing_replay PRIVATE -fsanitize=address -fno-sanitize-recover=undefined -g )
-elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
-    target_link_libraries( daw_json_fuzzing_replay PRIVATE json_test "-fsanitize=fuzzer,address" )
-    target_compile_options( daw_json_fuzzing_replay PRIVATE -fsanitize=address,undefined -fno-sanitize-recover=undefined -g )
+elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
+    target_link_libraries( daw_json_fuzzing_replay PRIVATE json_test "-fsanitize=address" )
+    target_compile_options( daw_json_fuzzing_replay PRIVATE -fsanitize=address -fno-sanitize-recover=undefined -g )
 else()
     # MSVC is not supported here and Gcc(at least at v10.3.0) has issues with sanitzers and constexpr.
     # This is often char_ptr == nullptr is not a constant expression type error
@@ -912,6 +927,23 @@ else()
 endif()
 
 add_dependencies( full daw_json_fuzzing_replay )
+
+add_executable( daw_json_fuzzing_twitter_replay src/daw_json_fuzzing_twitter_replay.cpp )
+target_link_libraries( daw_json_fuzzing_twitter_replay PRIVATE json_test )
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
+    target_link_libraries( daw_json_fuzzing_twitter_replay PRIVATE json_test "-fsanitize=address" )
+    target_compile_options( daw_json_fuzzing_twitter_replay PRIVATE -fsanitize=address -fno-sanitize-recover=undefined -g )
+elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
+    target_link_libraries( daw_json_fuzzing_twitter_replay PRIVATE json_test "-fsanitize=address" )
+    target_compile_options( daw_json_fuzzing_twitter_replay PRIVATE -fsanitize=address,undefined -fno-sanitize-recover=undefined -g )
+else()
+    # MSVC is not supported here and Gcc(at least at v10.3.0) has issues with sanitzers and constexpr.
+    # This is often char_ptr == nullptr is not a constant expression type error
+    target_link_libraries( daw_json_fuzzing_twitter_replay PRIVATE json_test )
+endif()
+
+add_dependencies( full daw_json_fuzzing_twitter_replay )
+
 
 set( DAW_JSON_BUILD_SCHEMA_TEST ON )
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
@@ -993,7 +1025,11 @@ add_test( NAME issue_418_test COMMAND issue_418_test WORKING_DIRECTORY "${CMAKE_
 add_dependencies( ci_tests issue_418_test )
 add_dependencies( full issue_418_test )
 
-
+add_executable( issue_421_test EXCLUDE_FROM_ALL src/issue_421_test.cpp )
+target_link_libraries( issue_421_test PRIVATE json_test )
+#add_test( NAME issue_421_test COMMAND issue_421_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+#add_dependencies( ci_tests issue_421_test )
+#add_dependencies( full issue_421_test )
 
 add_executable( multi_tu_test src/multi_tu_p0_test.cpp src/multi_tu_p1_test.cpp )
 target_link_libraries( multi_tu_test json_test )
@@ -1038,7 +1074,7 @@ if( GIT_FOUND )
     message( STATUS "Git revision: ${SOURCE_CONTROL_REVISION}" )
     add_executable( json_benchmark src/json_benchmark.cpp )
     target_compile_definitions( json_benchmark PRIVATE -DSOURCE_CONTROL_REVISION="${BUILD_VERSION}" )
-    target_link_libraries( json_benchmark PRIVATE json_test fmt::fmt )
+    target_link_libraries( json_benchmark PRIVATE json_test )
     if( DEFINED MSVC AND NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
         add_compile_options( "/bigobj" )
     endif()

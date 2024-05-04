@@ -199,11 +199,11 @@ namespace daw::json {
 			// appender
 			template<bool AllowHighEight, typename JsonMember, bool KnownBounds,
 			         typename ParseState>
-			[[nodiscard]] static constexpr auto // json_result<JsonMember>
+			[[nodiscard]] static constexpr auto // json_result_t<JsonMember>
 			parse_string_known_stdstring( ParseState &parse_state ) {
-				using string_type = json_base_type<JsonMember>;
+				using string_type = json_base_type_t<JsonMember>;
 				string_type result =
-				  string_type( std::size( parse_state ), '\0',
+				  string_type( std::size( parse_state ) + 1, '\0',
 				               parse_state.get_allocator_for( template_arg<char> ) );
 				char *it = std::data( result );
 
@@ -252,6 +252,11 @@ namespace daw::json {
 							                      '"', '\\'>( ParseState::exec_tag, first,
 							                                  last );
 						}
+						daw_json_assert_weak(
+						  static_cast<std::ptrdiff_t>( result.size( ) ) -
+						      std::distance( result.data( ), it ) >=
+						    std::distance( parse_state.first, first ),
+						  ErrorReason::UnexpectedEndOfData );
 						it = daw::algorithm::copy( parse_state.first, first, it );
 						parse_state.first = first;
 					}
@@ -315,13 +320,13 @@ namespace daw::json {
 				                      ErrorReason::InvalidString, parse_state );
 				result.resize( sz );
 				if constexpr( std::is_convertible_v<string_type,
-				                                    json_result<JsonMember>> ) {
+				                                    json_result_t<JsonMember>> ) {
 					return result;
 				} else {
-					using constructor_t = typename JsonMember::constructor_t;
+					using constructor_t = json_constructor_t<JsonMember>;
 					construct_value(
-					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
-					  std::data( result ), daw::data_end( result ) );
+					  template_args<json_result_t<JsonMember>, constructor_t>,
+					  parse_state, std::data( result ), daw::data_end( result ) );
 				}
 			}
 		} // namespace json_details

@@ -189,12 +189,6 @@ namespace daw::json {
 			using has_json_data_contract_trait =
 			  std::bool_constant<has_json_data_contract_trait_v<T>>;
 
-			template<typename JsonMember>
-			using json_result = typename JsonMember::parse_to_t;
-
-			template<typename JsonMember>
-			using json_base_type = typename JsonMember::base_type;
-
 			DAW_JSON_MAKE_REQ_TRAIT(
 			  has_json_to_json_data_v,
 			  json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
@@ -266,11 +260,9 @@ namespace daw::json {
 				using i_am_a_json_type = void;
 				using i_am_a_deduced_empty_class = void;
 				using wrapped_type = T;
-				static constexpr bool must_be_class_member = false;
 
 				using constructor_t = default_constructor<T>;
 				using parse_to_t = T;
-				using base_type = T;
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
 
@@ -288,11 +280,9 @@ namespace daw::json {
 				using i_am_a_json_type = void;
 				using i_am_a_deduced_ordered_class = void;
 				using wrapped_type = T;
-				static constexpr bool must_be_class_member = false;
 
 				using constructor_t = default_constructor<T>;
 				using parse_to_t = T;
-				using base_type = T;
 
 				static constexpr JsonParseTypes expected_type = JsonParseTypes::Tuple;
 
@@ -639,11 +629,11 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool has_nullable_type_map_v =
-
 			  concepts::is_nullable_value_v<T> and
 			  not has_json_data_contract_trait_v<T> and
 			  daw::is_detected_v<json_deduced_type_map,
 			                     concepts::nullable_value_type_t<T>>;
+
 			template<typename T>
 			struct json_deduced_type_map<
 			  T, std::enable_if_t<has_nullable_type_map_v<T>>> {
@@ -731,7 +721,7 @@ namespace daw::json {
 						}
 					} else if constexpr( parse_type::value == JsonParseTypes::KeyValue ) {
 						if constexpr( is_null::value ) {
-							using b_t = typename mapped_type_t::base_type;
+							using b_t = json_base_type_t<mapped_type_t>;
 							using k_t = typename b_t::key;
 							using v_t = typename b_t::value;
 							return json_link_quick_map_type<
@@ -744,7 +734,7 @@ namespace daw::json {
 						}
 					} else if constexpr( parse_type::value == JsonParseTypes::Array ) {
 						if constexpr( is_null::value ) {
-							using b_t = typename mapped_type_t::base_type;
+							using b_t = json_base_type_t<mapped_type_t>;
 							using v_t = typename b_t::value;
 							return json_link_quick_map_type<
 							  json_base::json_nullable<T, json_base::json_array<v_t, T>>>{ };
@@ -855,16 +845,49 @@ namespace daw::json {
 			inline constexpr bool all_have_deduced_type_v =
 			  ( has_json_deduced_type_v<Ts> and ... );
 
+			template<typename JsonElement, typename Container, typename Constructor>
+			struct json_constructor<
+			  json_base::json_array<JsonElement, Container, Constructor>> {
+				using json_element_t = json_deduced_type<JsonElement>;
+				using json_element_parse_to_t = json_result_t<json_element_t>;
+
+				using container_t =
+				  daw::conditional_t<std::is_same_v<Container, use_default>,
+				                     std::vector<json_element_parse_to_t>, Container>;
+
+				using type =
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
+				                     default_constructor<container_t>, Constructor>;
+
+				static_assert(
+				  std::is_invocable_v<type, json_element_parse_to_t const *,
+				                      json_element_parse_to_t const *>,
+				  "Constructor must support copy and/or move construction" );
+			};
+
+			template<typename JsonElement, typename Container, typename Constructor>
+			struct json_result<
+			  json_base::json_array<JsonElement, Container, Constructor>> {
+				using constructor_t = typename json_constructor<
+				  json_base::json_array<JsonElement, Container, Constructor>>::type;
+				using json_element_t = json_deduced_type<JsonElement>;
+				using json_element_parse_to_t =
+				  typename json_result<json_element_t>::type;
+				using type =
+				  std::invoke_result_t<constructor_t, json_element_parse_to_t const *,
+				                       json_element_parse_to_t const *>;
+			};
+
 			template<typename T>
 			inline constexpr bool has_unnamed_default_type_mapping_v =
 			  has_json_deduced_type_v<T>;
 
 			template<typename JsonMember>
-			using from_json_result_t = json_result<json_deduced_type<JsonMember>>;
+			using from_json_result_t = json_result_t<json_deduced_type<JsonMember>>;
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_impl2 =
-			  std::invoke_result_t<Constructor, typename Members::parse_to_t...>;
+			  std::invoke_result_t<Constructor, json_result_t<Members>...>;
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_impl =
@@ -875,8 +898,8 @@ namespace daw::json {
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_t = typename daw::conditional_t<
-			  std::is_invocable_v<Constructor, typename Members::parse_to_t...>,
-			  std::invoke_result<Constructor, typename Members::parse_to_t...>,
+			  std::is_invocable_v<Constructor, json_result_t<Members>...>,
+			  std::invoke_result<Constructor, json_result_t<Members>...>,
 			  daw::traits::identity<could_not_construct_from_members_error<
 			    Constructor, Members...>>>::type;
 

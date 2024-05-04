@@ -40,6 +40,7 @@ DAW_ATTRIB_NOINLINE void daw_ensure_error( StringView &&msg ) {
 
 #define test_assert( Bool, Msg )      \
 	if( DAW_UNLIKELY( not( Bool ) ) ) { \
+		DAW_UNLIKELY_BRANCH               \
 		daw_ensure_error( Msg );          \
 	}                                   \
 	while( false )

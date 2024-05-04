@@ -469,7 +469,7 @@ namespace daw::json {
 			                                       WritableType out_it ) {
 				using json_class_processor_t = json_class_processor<
 				  WritableType,
-				  json_data_contract_trait_t<typename JsonMember::base_type>>;
+				  json_data_contract_trait_t<json_base_type_t<JsonMember>>>;
 
 				if constexpr( not is_root ) {
 					out_it.put( '{' );
@@ -513,7 +513,7 @@ namespace daw::json {
 								is_first = false;
 							}
 							out_it.next_member( );
-							static constexpr std::size_t index = decltype( Idx )::value;
+							constexpr std::size_t index = Idx.value;
 							using pack_element = tuple_elements_pack<Tuple>;
 							using JsonMember = json_deduced_type<
 							  typename pack_element::template element_t<index>>;
@@ -523,7 +523,7 @@ namespace daw::json {
 						};
 
 						daw::empty_t expander[] = {
-						  ( process_member( daw::constant<Is>{ } ), daw::empty_t{ } )...,
+						  ( process_member( daw::constant_v<Is> ), daw::empty_t{ } )...,
 						  daw::empty_t{} };
 						(void)expander;
 						out_it.del_indent( );

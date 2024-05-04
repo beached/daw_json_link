@@ -8,7 +8,9 @@
 
 #pragma once
 
-#include <daw/json/impl/version.h>
+#include "daw/json/impl/version.h"
+
+#include <daw/daw_is_detected.h>
 
 #include <cstddef>
 #include <type_traits>
@@ -29,7 +31,7 @@ namespace daw::json {
 #endif
 				template<typename T, typename... Args>
 				inline constexpr bool is_list_constructible_v =
-				  is_detected_v<is_list_constructible_test, T, Args...>;
+				  daw::is_detected_v<is_list_constructible_test, T, Args...>;
 
 				template<typename T, typename... Args>
 				inline constexpr bool is_nullable_value_type_constructible_v =

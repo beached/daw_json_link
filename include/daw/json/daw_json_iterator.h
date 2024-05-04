@@ -56,7 +56,7 @@ namespace daw::json {
 		 * heterogeneous, a basic_json_value_iterator may be more appropriate
 		 * @tparam ParsePolicy Parsing policy type
 		 */
-		template<typename JsonElement, typename ParseState>
+		template<typename JsonElement, typename ParseState, typename = void>
 		class json_array_iterator_t {
 			using CharT = typename ParseState::CharT;
 
@@ -75,7 +75,7 @@ namespace daw::json {
 			using element_type = json_details::json_deduced_type<JsonElement>;
 			static_assert( not std::is_same_v<element_type, void>,
 			               "Unknown JsonElement type." );
-			using value_type = typename element_type::parse_to_t;
+			using value_type = json_details::json_result_t<element_type>;
 			using reference = value_type;
 			using pointer = json_details::arrow_proxy<value_type>;
 			using difference_type = std::ptrdiff_t;
@@ -240,7 +240,7 @@ namespace daw::json {
 			using element_type = json_details::json_deduced_type<JsonElement>;
 			static_assert( not std::is_same_v<element_type, void>,
 			               "Unknown JsonElement type." );
-			using value_type = typename element_type::parse_to_t;
+			using value_type = json_details::json_result_t<element_type>;
 			using reference = value_type;
 			using pointer = json_details::arrow_proxy<value_type>;
 			using difference_type = std::ptrdiff_t;
@@ -324,7 +324,7 @@ namespace daw::json {
 			[[nodiscard]] constexpr bool
 			operator==( json_array_iterator_once const &rhs ) const {
 				if( not( *this ) ) {
-					return not rhs;
+					return static_cast<bool>( rhs );
 				}
 				if( not rhs ) {
 					return false;
@@ -338,7 +338,7 @@ namespace daw::json {
 			[[nodiscard]] constexpr bool
 			operator!=( json_array_iterator_once const &rhs ) const {
 				if( not( *this ) ) {
-					return static_cast<bool>( rhs );
+					return not rhs;
 				}
 				if( not rhs ) {
 					return true;

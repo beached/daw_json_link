@@ -71,7 +71,7 @@ namespace daw::json {
 
 				using iterator_category = typename base::iterator_category;
 				using element_t = typename JsonMember::json_element_t;
-				using value_type = typename element_t::parse_to_t;
+				using value_type = json_result_t<element_t>;
 				using reference = value_type;
 				using pointer = arrow_proxy<value_type>;
 				using parse_state_t = ParseState;
@@ -109,13 +109,13 @@ namespace daw::json {
 					}
 				}
 
-				DAW_ATTRIB_NOINLINE value_type operator*( ) const {
+				[[noreturn]] DAW_ATTRIB_NOINLINE value_type operator*( ) const {
+					DAW_UNLIKELY_BRANCH
 					// This is hear to satisfy indirectly_readable
 					daw_json_error( ErrorReason::UnexpectedEndOfData );
 				}
 
-				DAW_ATTRIB_INLINE
-				constexpr value_type operator*( ) {
+				DAW_ATTRIB_INLINE constexpr value_type operator*( ) {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
@@ -192,5 +192,5 @@ namespace daw::json {
 				}
 			};
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

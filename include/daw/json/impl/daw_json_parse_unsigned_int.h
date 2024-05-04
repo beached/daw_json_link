@@ -53,14 +53,14 @@ namespace daw::json {
 						// are the same as limits<Signed>::min( ).  We can just cast
 						return static_cast<Signed>( u );
 					}
-					return static_cast<Signed>( sign * static_cast<Signed>( u ) );
+					return sign * static_cast<Signed>( u );
 				} else {
-					return static_cast<Signed>( sign * static_cast<Signed>( u ) );
+					return sign * static_cast<Signed>( u );
 				}
 			}
 
-			[[nodiscard]] static inline constexpr bool
-			is_made_of_eight_digits_cx( const char *ptr ) {
+			[[nodiscard]] inline constexpr bool
+			is_made_of_eight_digits_cx( char const *ptr ) {
 				// The copy to local buffer is to get the compiler to treat it like a
 				// reinterpret_cast
 
@@ -90,7 +90,7 @@ namespace daw::json {
 
 			// Constexpr'ified version from
 			// https://kholdstare.github.io/technical/2020/05/26/faster-integer-parsing.html
-			static inline constexpr UInt64 parse_8_digits( const char *const str ) {
+			inline constexpr UInt64 parse_8_digits( char const *const str ) {
 				auto const chunk = daw::to_uint64_buffer( str );
 				// 1-byte mask trick (works on 4 pairs of single digits)
 				auto const lower_digits =
@@ -119,7 +119,7 @@ namespace daw::json {
 			static_assert( parse_8_digits( "12345678" ) == 1234'5678_u64,
 			               "8 digit parser does not work on this platform" );
 
-			static inline constexpr UInt64 parse_16_digits( const char *const str ) {
+			inline constexpr UInt64 parse_16_digits( char const *const str ) {
 				auto const upper = parse_8_digits( str );
 				auto const lower = parse_8_digits( str + 8 );
 				return upper * 100'000'000_u64 + lower;
@@ -304,12 +304,14 @@ namespace daw::json {
 						dig = parse_digit( *first );
 					}
 				} else {
-					auto dig = parse_digit( *first );
-					while( first < last and dig < 10U ) {
+					while( first < last ) {
+						auto const dig = parse_digit( *first );
+						if( dig >= 10U ) {
+							break;
+						}
 						result *= 10U;
 						result += dig;
 						++first;
-						dig = parse_digit( *first );
 					}
 				}
 
@@ -337,7 +339,7 @@ namespace daw::json {
 			//
 			//
 			https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
-			static inline UInt64 parse_eight_digits_unrolled( const char *ptr ) {
+			inline UInt64 parse_eight_digits_unrolled( char const *ptr ) {
 			  // this actually computes *16* values so we are being wasteful.
 			  static __m128i const ascii0 = _mm_set1_epi8( '0' );
 
@@ -362,7 +364,7 @@ namespace daw::json {
 			rest
 			}
 
-			static inline UInt64 parse_sixteen_digits_unrolled( const char *ptr ) {
+			inline UInt64 parse_sixteen_digits_unrolled( char const *ptr ) {
 			  static __m128i const ascii0 = _mm_set1_epi8( '0' );
 
 			  static __m128i const mul_1_10 =
@@ -384,8 +386,8 @@ namespace daw::json {
 			  return to_uint64( _mm_cvtsi128_si64( t4 ) );
 			}
 
-			[[nodiscard]] static inline bool
-			is_made_of_eight_digits_fast( const char *ptr ) {
+			[[nodiscard]] inline bool
+			is_made_of_eight_digits_fast( char const *ptr ) {
 			  UInt64 val;
 			  memcpy( &val, ptr, sizeof( std::uint64_t ) );
 			  return ( ( ( val & 0xF0F0F0F0F0F0F0F0_u64 ) |
@@ -396,7 +398,7 @@ namespace daw::json {
 
 			template<typename Unsigned, options::JsonRangeCheck RangeChecked, bool, typename
 			ParseState>
-			[[nodiscard]] static inline Unsigned
+			[[nodiscard]] inline Unsigned
 			unsigned_parser( sse42_exec_tag const &, ParseState &parse_state ) {
 			  daw_json_assert_weak( parse_state.has_more( ),
 			ErrorRange::UnexpectedEndOfData, parse_state

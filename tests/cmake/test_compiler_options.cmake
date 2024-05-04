@@ -41,41 +41,68 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-missing-prototypes
                 -Wno-newline-eof
                 -Wno-padded
+                -Wno-redundant-parens
                 -Wno-switch-default
                 -Wno-unused-template
                 -Wno-weak-vtables
                 # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
                 -Wno-mismatched-tags
         )
-        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
-            AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
-            add_compile_options(
-                    -Wno-c++20-compat
-            )
-        endif()
-        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
-            AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16 )
-            add_compile_options(
-                    -Wno-c++2b-extensions
-                    -Wno-unsafe-buffer-usage
-            )
-        endif()
-        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR
-            CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
+        if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
+            if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
+                add_compile_options(
+                        -Wno-c++20-extensions
+                )
+            endif()
+            if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 15 )
+                add_compile_options(
+                        -Wno-c++20-attribute-extensions
+                        -Wno-c++2b-extensions
+                        -Wno-c++20-compat
+                )
+            endif()
             add_compile_options( -Wno-poison-system-directories )
-        endif()
-        if( DAW_WERROR )
-            if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang"
-                OR CMAKE_CXX_COMPILER_VERSION LESS 13.0.0 )
+            if( DAW_WERROR )
                 add_compile_options( -Werror -pedantic-errors )
+                # Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
+                # https://bugs.llvm.org/show_bug.cgi?id=16404
+                string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
+                if( HAS_LIBCXX EQUAL -1 )
+                    add_compile_options( -ftrapv )
+                endif()
             endif()
-            # Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
-            # https://bugs.llvm.org/show_bug.cgi?id=16404
-            string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
-            if( HAS_LIBCXX EQUAL -1 )
-                add_compile_options( -ftrapv )
+        else() # Not Apple Clang Clang
+            if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 10 )
+                add_compile_options(
+                        -Wno-c++20-extensions
+                        -Wno-poison-system-directories
+                )
+            endif()
+            if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
+                add_compile_options(
+                        -Wno-c++20-attribute-extensions
+                        -Wno-c++20-compat
+                )
+            endif()
+            if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16 )
+                add_compile_options(
+                        -Wno-c++2b-extensions
+                        -Wno-unsafe-buffer-usage
+                )
+            endif()
+            if( DAW_WERROR )
+                if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13 )
+                    add_compile_options( -Werror -pedantic-errors )
+                endif()
+                # Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
+                # https://bugs.llvm.org/show_bug.cgi?id=16404
+                string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
+                if( HAS_LIBCXX EQUAL -1 )
+                    add_compile_options( -ftrapv )
+                endif()
             endif()
         endif()
+
         if( CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)" )
             if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
                 if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
@@ -90,7 +117,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
         endif()
         if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
             AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9 )
-            set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_ENABLE_ASSERTIONS=1 -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS" )
+            set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_ENABLE_ASSERTIONS=1 -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -D_FORTIFY_SOURCE=2" )
             set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
             set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
         else()
@@ -160,8 +187,8 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
     # Prior to gcc-12, it tries to concept check an input iterator as a bidirectional and requires
     # *it-- = *it to be a valid expression
     if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
-        set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS" )
-        set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
+        set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer" )
+        set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer" )
         set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
     else()
         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS" )

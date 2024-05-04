@@ -71,14 +71,15 @@ namespace daw::json {
 			}
 		} // namespace json_details
 
-		[[noreturn]] inline void daw_json_error( ErrorReason reason ) {
+		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
+		daw_json_error( ErrorReason reason ) {
 			json_details::handle_error( json_exception( reason ) );
 			DAW_UNREACHABLE( );
 		}
 
 		template<typename ParseState>
-		[[noreturn]] inline void daw_json_error( ErrorReason reason,
-		                                         ParseState const &location ) {
+		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
+		daw_json_error( ErrorReason reason, ParseState const &location ) {
 			if( location.first ) {
 				json_details::handle_error( json_exception( reason, location.first ) );
 			}
@@ -90,20 +91,20 @@ namespace daw::json {
 			DAW_UNREACHABLE( );
 		}
 
-		[[noreturn]] inline void
+		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 		daw_json_error( json_details::missing_member reason ) {
 			json_details::handle_error( json_exception( reason ) );
 			DAW_UNREACHABLE( );
 		}
 
-		[[noreturn]] inline void
+		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 		daw_json_error( json_details::missing_token reason ) {
 			json_details::handle_error( json_exception( reason ) );
 			DAW_UNREACHABLE( );
 		}
 
 		template<typename ParseState>
-		[[noreturn]] inline void
+		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 		daw_json_error( json_details::missing_member reason,
 		                ParseState const &location ) {
 			if( location.class_first and location.first ) {
@@ -137,8 +138,9 @@ namespace daw::json {
 		}
 
 		template<typename ParseState>
-		[[noreturn]] inline void daw_json_error( json_details::missing_token reason,
-		                                         ParseState const &location ) {
+		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
+		daw_json_error( json_details::missing_token reason,
+		                ParseState const &location ) {
 			if( location.first ) {
 				json_details::handle_error( json_exception( reason, location.first ) );
 			}
