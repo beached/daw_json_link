@@ -527,7 +527,7 @@ $(function() {
 <div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;                                             WritableType out_it ) {</div>
 <div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;        <span class="keyword">using</span> json_class_processor_t = json_class_processor&lt;</div>
 <div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;          WritableType,</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;          json_data_contract_trait_t&lt;typename JsonMember::base_type&gt;&gt;;</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;          json_data_contract_trait_t&lt;json_base_type_t&lt;JsonMember&gt;&gt;&gt;;</div>
 <div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160; </div>
 <div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;        <span class="keywordflow">if</span> constexpr( not is_root ) {</div>
 <div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;          out_it.put( <span class="charliteral">&#39;{&#39;</span> );</div>
@@ -571,7 +571,7 @@ $(function() {
 <div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;                is_first = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;              }</div>
 <div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;              out_it.next_member( );</div>
-<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;              <span class="keyword">static</span> constexpr std::size_t index = decltype( Idx )::value;</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;              constexpr std::size_t index = Idx.value;</div>
 <div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;              <span class="keyword">using</span> pack_element = tuple_elements_pack&lt;Tuple&gt;;</div>
 <div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;              <span class="keyword">using</span> JsonMember = json_deduced_type&lt;</div>
 <div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;                <span class="keyword">typename</span> pack_element::template element_t&lt;index&gt;&gt;;</div>
@@ -581,7 +581,7 @@ $(function() {
 <div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;            };</div>
 <div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160; </div>
 <div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;            daw::empty_t expander[] = {</div>
-<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;              ( process_member( daw::constant&lt;Is&gt;{ } ), daw::empty_t{ } )...,</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;              ( process_member( daw::constant_v&lt;Is&gt; ), daw::empty_t{ } )...,</div>
 <div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;              daw::empty_t{} };</div>
 <div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;            (void)expander;</div>
 <div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;            out_it.del_indent( );</div>

@@ -271,11 +271,11 @@ $(function() {
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      <span class="comment">// appender</span></div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> AllowHighEight, <span class="keyword">typename</span> JsonMember, <span class="keywordtype">bool</span> KnownBounds,</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;               <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr <span class="keyword">auto</span> <span class="comment">// json_result&lt;JsonMember&gt;</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr <span class="keyword">auto</span> <span class="comment">// json_result_t&lt;JsonMember&gt;</span></div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      parse_string_known_stdstring( ParseState &amp;parse_state ) {</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        <span class="keyword">using</span> string_type = json_base_type&lt;JsonMember&gt;;</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        <span class="keyword">using</span> string_type = json_base_type_t&lt;JsonMember&gt;;</div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        string_type result =</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;          string_type( std::size( parse_state ), <span class="charliteral">&#39;\0&#39;</span>,</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;          string_type( std::size( parse_state ) + 1, <span class="charliteral">&#39;\0&#39;</span>,</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                       parse_state.get_allocator_for( template_arg&lt;char&gt; ) );</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordtype">char</span> *it = std::data( result );</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160; </div>
@@ -324,89 +324,94 @@ $(function() {
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;                                    <span class="charliteral">&#39;&quot;&#39;</span>, <span class="charliteral">&#39;\\&#39;</span>&gt;( ParseState::exec_tag, first,</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;                                                last );</div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;            }</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;            it = daw::algorithm::copy( parse_state.first, first, it );</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;            parse_state.first = first;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;          }</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;          <span class="keywordflow">if</span>( parse_state.front( ) == <span class="charliteral">&#39;\\&#39;</span> ) {</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;            parse_state.remove_prefix( );</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( not parse_state.is_space_unchecked( ),</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;                                  ErrorReason::InvalidUTFCodepoint,</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;                                  parse_state );</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;            <span class="keywordflow">switch</span>( parse_state.front( ) ) {</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;b&#39;</span>:</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;              *it++ = <span class="charliteral">&#39;\b&#39;</span>;</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;              parse_state.remove_prefix( );</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;f&#39;</span>:</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;              *it++ = <span class="charliteral">&#39;\f&#39;</span>;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;              parse_state.remove_prefix( );</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;n&#39;</span>:</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;              *it++ = <span class="charliteral">&#39;\n&#39;</span>;</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;              parse_state.remove_prefix( );</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;r&#39;</span>:</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;              *it++ = <span class="charliteral">&#39;\r&#39;</span>;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;              parse_state.remove_prefix( );</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;t&#39;</span>:</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;              *it++ = <span class="charliteral">&#39;\t&#39;</span>;</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;              parse_state.remove_prefix( );</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;u&#39;</span>:</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;              it = decode_utf16( parse_state, it );</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;/&#39;</span>:</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;              *it++ = parse_state.front( );</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;              parse_state.remove_prefix( );</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;            <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;              <span class="keywordflow">if</span> constexpr( not AllowHighEight ) {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;                <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;                  ( not parse_state.is_space_unchecked( ) ) &amp;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;                    ( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( parse_state.front( ) ) &lt;=</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;                      0x7FU ),</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;                  ErrorReason::InvalidStringHighASCII, parse_state );</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;              }</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;              *it++ = parse_state.front( );</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;              parse_state.remove_prefix( );</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;            }</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( not has_quote or</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;                                    parse_state.is_quotes_checked( ),</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;                                  ErrorReason::InvalidString, parse_state );</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;          }</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( not has_quote or parse_state.has_more( ),</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;                                ErrorReason::UnexpectedEndOfData, parse_state );</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        }</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        <span class="keyword">auto</span> <span class="keyword">const</span> sz =</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;          <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( std::distance( std::data( result ), it ) );</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( std::size( result ) &gt;= sz,</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;                              ErrorReason::InvalidString, parse_state );</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        result.resize( sz );</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_convertible_v&lt;string_type,</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;                                            json_result&lt;JsonMember&gt;&gt; ) {</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;          <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;          <span class="keyword">using</span> constructor_t = <span class="keyword">typename</span> JsonMember::constructor_t;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;          construct_value(</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;            template_args&lt;json_result&lt;JsonMember&gt;, constructor_t&gt;, parse_state,</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;            std::data( result ), daw::data_end( result ) );</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        }</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;      }</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;              <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>( result.size( ) ) -</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;                  std::distance( result.data( ), it ) &gt;=</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;                std::distance( parse_state.first, first ),</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;              ErrorReason::UnexpectedEndOfData );</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;            it = daw::algorithm::copy( parse_state.first, first, it );</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;            parse_state.first = first;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;          }</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;          <span class="keywordflow">if</span>( parse_state.front( ) == <span class="charliteral">&#39;\\&#39;</span> ) {</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;            parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( not parse_state.is_space_unchecked( ),</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;                                  ErrorReason::InvalidUTFCodepoint,</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;                                  parse_state );</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;            <span class="keywordflow">switch</span>( parse_state.front( ) ) {</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;b&#39;</span>:</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;              *it++ = <span class="charliteral">&#39;\b&#39;</span>;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;              parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;f&#39;</span>:</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;              *it++ = <span class="charliteral">&#39;\f&#39;</span>;</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;              parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;n&#39;</span>:</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;              *it++ = <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;              parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;r&#39;</span>:</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;              *it++ = <span class="charliteral">&#39;\r&#39;</span>;</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;              parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;t&#39;</span>:</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;              *it++ = <span class="charliteral">&#39;\t&#39;</span>;</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;              parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;u&#39;</span>:</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;              it = decode_utf16( parse_state, it );</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;/&#39;</span>:</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;              *it++ = parse_state.front( );</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;              parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;              <span class="keywordflow">if</span> constexpr( not AllowHighEight ) {</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;                <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;                  ( not parse_state.is_space_unchecked( ) ) &amp;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                    ( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( parse_state.front( ) ) &lt;=</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;                      0x7FU ),</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;                  ErrorReason::InvalidStringHighASCII, parse_state );</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;              }</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;              *it++ = parse_state.front( );</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;              parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;            }</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( not has_quote or</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;                                    parse_state.is_quotes_checked( ),</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;                                  ErrorReason::InvalidString, parse_state );</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;          }</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( not has_quote or parse_state.has_more( ),</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;                                ErrorReason::UnexpectedEndOfData, parse_state );</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        }</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        <span class="keyword">auto</span> <span class="keyword">const</span> sz =</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;          <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( std::distance( std::data( result ), it ) );</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( std::size( result ) &gt;= sz,</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;                              ErrorReason::InvalidString, parse_state );</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        result.resize( sz );</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_convertible_v&lt;string_type,</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;                                            json_result_t&lt;JsonMember&gt;&gt; ) {</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;          <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;          <span class="keyword">using</span> constructor_t = json_constructor_t&lt;JsonMember&gt;;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;          construct_value(</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;            template_args&lt;json_result_t&lt;JsonMember&gt;, constructor_t&gt;,</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;            parse_state, std::data( result ), daw::data_end( result ) );</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        }</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;      }</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00166">daw_json_assert.h:166</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00157">daw_json_assert.h:157</a></div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00168">daw_json_assert.h:168</a></div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00159">daw_json_assert.h:159</a></div></div>
 <div class="ttc" id="adaw__json__parse__common_8h_html"><div class="ttname"><a href="daw__json__parse__common_8h.html">daw_json_parse_common.h</a></div></div>
 <div class="ttc" id="adaw__json__switches_8h_html"><div class="ttname"><a href="daw__json__switches_8h.html">daw_json_switches.h</a></div></div>
 <div class="ttc" id="adaw__json__switches_8h_html_ac7bc190776b7ebf5b5c752c685569e1f"><div class="ttname"><a href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a></div><div class="ttdeci">#define DAW_JSON_CPP23_STATIC_CALL_OP</div><div class="ttdoc">This is in addition to the parse policy. Always do a full name match instead of sometimes relying on ...</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__switches_8h_source.html#l00198">daw_json_switches.h:198</a></div></div>
 <div class="ttc" id="adaw__not__const__ex__functions_8h_html"><div class="ttname"><a href="daw__not__const__ex__functions_8h.html">daw_not_const_ex_functions.h</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03_html_aea5a1546ce5990cc93d84a65b7ce79ba"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#aea5a1546ce5990cc93d84a65b7ce79ba">daw::json::anonymous_namespace{daw_json_traits.h}::is_zero_terminated_string</a></div><div class="ttdeci">std::bool_constant&lt; is_zero_terminated_string_v&lt; T &gt; &gt; is_zero_terminated_string</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__traits_8h_source.html#l00199">daw_json_traits.h:200</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03_html_aea5a1546ce5990cc93d84a65b7ce79ba"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#aea5a1546ce5990cc93d84a65b7ce79ba">daw::json::anonymous_namespace{daw_json_traits.h}::is_zero_terminated_string</a></div><div class="ttdeci">std::bool_constant&lt; is_zero_terminated_string_v&lt; T &gt; &gt; is_zero_terminated_string</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__traits_8h_source.html#l00235">daw_json_traits.h:236</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1constexpr__exec__tag.html">daw::json::constexpr_exec_tag</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__exec__modes_8h_source.html#l00017">daw_json_exec_modes.h:17</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>

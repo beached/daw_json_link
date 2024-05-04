@@ -143,7 +143,7 @@ $(function() {
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keyword">using</span> iterator_category = <span class="keyword">typename</span> base::iterator_category;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keyword">using</span> element_t = <span class="keyword">typename</span> JsonMember::json_element_t;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keyword">using</span> value_type = <span class="keyword">typename</span> element_t::parse_to_t;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keyword">using</span> value_type = json_result_t&lt;element_t&gt;;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keyword">using</span> reference = value_type;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="keyword">using</span> pointer = arrow_proxy&lt;value_type&gt;;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keyword">using</span> parse_state_t = ParseState;</div>
@@ -239,11 +239,11 @@ $(function() {
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        }</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;      };</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__arrow__proxy_8h_html"><div class="ttname"><a href="daw__json__arrow__proxy_8h.html">daw_json_arrow_proxy.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00166">daw_json_assert.h:166</a></div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00168">daw_json_assert.h:168</a></div></div>
 <div class="ttc" id="adaw__json__parse__value__fwd_8h_html"><div class="ttname"><a href="daw__json__parse__value__fwd_8h.html">daw_json_parse_value_fwd.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a90ac904856c64d7aa4d8b2327e56c680"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a90ac904856c64d7aa4d8b2327e56c680">daw::json::anonymous_namespace{daw_json_enums.h}::ParseTag</a></div><div class="ttdeci">daw::constant&lt; v &gt; ParseTag</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__enums_8h_source.html#l00097">daw_json_enums.h:97</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>

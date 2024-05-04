@@ -91,8 +91,6 @@ Inheritance diagram for daw::json::anonymous_namespace{daw_json_link_types.h}::j
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aa83d56b24a264d9eb2ec08ab7030e823"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#aa83d56b24a264d9eb2ec08ab7030e823">base_type</a> = json_details::json_result&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#a1eb132b1e216ba1465dc7630ea782897">member_type</a> &gt;</td></tr>
-<tr class="separator:aa83d56b24a264d9eb2ec08ab7030e823"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a10543bbc9d275a9d83d6395d071aec"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#a7a10543bbc9d275a9d83d6395d071aec">constructor_t</a> = daw::conditional_t&lt; std::is_same_v&lt; use_default, Constructor &gt;, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__default__constuctor__fwd_8h_03_1_1nullable__constructor.html">nullable_constructor</a>&lt; T &gt;, Constructor &gt;</td></tr>
 <tr class="separator:a7a10543bbc9d275a9d83d6395d071aec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0be98ab7fbaf4ead3d62e3789a5b3a47"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#a0be98ab7fbaf4ead3d62e3789a5b3a47">i_am_a_json_nullable</a> = void</td></tr>
@@ -117,8 +115,6 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:ab49b8638a933d6b4082782a6ecc4a59b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7135293e72ff4e29d8cc64815c6af8e"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674">JsonParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#ac7135293e72ff4e29d8cc64815c6af8e">expected_type</a> = JsonParseTypes::Null</td></tr>
 <tr class="separator:ac7135293e72ff4e29d8cc64815c6af8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1dc9d6d2e905b83625273467159a2356"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#a1dc9d6d2e905b83625273467159a2356">must_be_class_member</a> = true</td></tr>
-<tr class="separator:a1dc9d6d2e905b83625273467159a2356"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57cfc9449ebbf846d18a33a0362ea417"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a76c935c7d7920b0b78037e1968ad56bb">JsonNullable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#a57cfc9449ebbf846d18a33a0362ea417">nullable</a> = NullableType</td></tr>
 <tr class="separator:a57cfc9449ebbf846d18a33a0362ea417"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add5c84cdf9fcfe41d9cd024013845fc5"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#acd40264b57a9a9f908f31622031701de">JsonBaseParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#add5c84cdf9fcfe41d9cd024013845fc5">underlying_json_type</a></td></tr>
@@ -138,26 +134,8 @@ struct daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_nu
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00815">815</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00803">803</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="aa83d56b24a264d9eb2ec08ab7030e823"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa83d56b24a264d9eb2ec08ab7030e823">&#9670;&nbsp;</a></span>base_type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T , typename JsonMember , JsonNullable NullableType, typename Constructor &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_json_link_types.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html">json_base::json_nullable</a>&lt; T, JsonMember, NullableType, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#aa83d56b24a264d9eb2ec08ab7030e823">base_type</a> =  json_details::json_result&lt;<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#a1eb132b1e216ba1465dc7630ea782897">member_type</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00839">839</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
-
-</div>
-</div>
 <a id="a7a10543bbc9d275a9d83d6395d071aec"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7a10543bbc9d275a9d83d6395d071aec">&#9670;&nbsp;</a></span>constructor_t</h2>
 
@@ -172,7 +150,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00840">840</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00826">826</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -190,7 +168,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00817">817</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00805">805</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -208,7 +186,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00816">816</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00804">804</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -226,7 +204,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00831">831</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00817">817</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -244,7 +222,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00821">821</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00825">825</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -262,7 +240,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00822">822</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00808">808</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -282,7 +260,7 @@ template&lt;char const * NewName&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00853">853</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00839">839</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -300,7 +278,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00820">820</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00807">807</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -329,7 +307,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">          member_type::expected_type</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00846">846</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00832">832</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -355,33 +333,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00844">844</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
-
-</div>
-</div>
-<a id="a1dc9d6d2e905b83625273467159a2356"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1dc9d6d2e905b83625273467159a2356">&#9670;&nbsp;</a></span>must_be_class_member</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T , typename JsonMember , JsonNullable NullableType, typename Constructor &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr bool daw::json::anonymous_namespace{daw_json_link_types.h}::<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html">json_base::json_nullable</a>&lt; T, JsonMember, NullableType, Constructor &gt;::must_be_class_member = true</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00818">818</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00830">830</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -407,7 +359,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00819">819</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00806">806</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -435,7 +387,7 @@ template&lt;typename T , typename JsonMember , JsonNullable NullableType, typena
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">          member_type::underlying_json_type</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00849">849</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00835">835</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>

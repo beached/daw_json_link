@@ -67,34 +67,61 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">daw::json::anonymous_namespace{daw_container_traits.h}::concepts::container_detect Namespace Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:aabdb75937512dccee6267bb9b8aef978"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aabdb75937512dccee6267bb9b8aef978"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts_1_1container__detect.html#aabdb75937512dccee6267bb9b8aef978">is_container_test</a> = decltype((void)(std::begin(std::declval&lt; T &amp; &gt;())),(void)(std::end(std::declval&lt; T &amp; &gt;())),(void)(std::declval&lt; typename T::value_type &gt;()),(void)(std::declval&lt; T &amp; &gt;().insert(std::end(std::declval&lt; T &amp; &gt;()), std::declval&lt; typename T::value_type &gt;())))</td></tr>
-<tr class="separator:aabdb75937512dccee6267bb9b8aef978"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:aecfecb652ea6aa2428d94691a0ed6e29"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts_1_1container__detect.html#aecfecb652ea6aa2428d94691a0ed6e29">DAW_JSON_MAKE_REQ_TRAIT</a> (<a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts.html#ae3804f9ee96138de4463740d64ee6af4">is_container_v</a>,(void)(std::begin(std::declval&lt; T &amp; &gt;())),(void)(std::end(std::declval&lt; T &amp; &gt;())),(void)(std::declval&lt; typename T::value_type &gt;()),(void)(std::declval&lt; T &amp; &gt;().insert(std::end(std::declval&lt; T &amp; &gt;()), std::declval&lt; typename T::value_type &gt;())))</td></tr>
+<tr class="separator:aecfecb652ea6aa2428d94691a0ed6e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a id="aabdb75937512dccee6267bb9b8aef978"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabdb75937512dccee6267bb9b8aef978">&#9670;&nbsp;</a></span>is_container_test</h2>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="aecfecb652ea6aa2428d94691a0ed6e29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecfecb652ea6aa2428d94691a0ed6e29">&#9670;&nbsp;</a></span>DAW_JSON_MAKE_REQ_TRAIT()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_container_traits.h}::<a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts_1_1container__detect.html#aabdb75937512dccee6267bb9b8aef978">concepts::container_detect::is_container_test</a> = typedef decltype( (void)( std::begin( std::declval&lt;T &amp;&gt;( ) ) ), (void)( std::end( std::declval&lt;T &amp;&gt;( ) ) ), (void)( std::declval&lt;typename T::value_type&gt;( ) ), (void)( std::declval&lt;T &amp;&gt;( ).insert( std::end( std::declval&lt;T &amp;&gt;( ) ), std::declval&lt;typename T::value_type&gt;( ) ) ) )</td>
+          <td class="memname">daw::json::anonymous_namespace{daw_container_traits.h}::concepts::container_detect::DAW_JSON_MAKE_REQ_TRAIT </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts.html#ae3804f9ee96138de4463740d64ee6af4">is_container_v</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">(void)(std::begin(std::declval&lt; T &amp; &gt;()))&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">(void)(std::end(std::declval&lt; T &amp; &gt;()))&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">(void)(std::declval&lt; typename T::value_type &gt;())&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">(void)(std::declval&lt; T &amp; &gt;().insert(std::end(std::declval&lt; T &amp; &gt;()), std::declval&lt; typename T::value_type &gt;()))&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__container__traits_8h_source.html#l00027">27</a> of file <a class="el" href="daw__container__traits_8h_source.html">daw_container_traits.h</a>.</p>
 
 </div>
 </div>

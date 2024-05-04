@@ -295,81 +295,82 @@ $(function() {
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160; </div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        parse_state.trim_left_unchecked( );</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        <span class="keywordtype">bool</span> known = not locations[pos].missing( );</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        <span class="keywordflow">while</span>( nsc_and( locations[pos].missing( ),</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;                        ( parse_state.front( ) != <span class="charliteral">&#39;}&#39;</span> ) ) ) {</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;          <span class="comment">// TODO: fully unescape name</span></div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;          <span class="comment">// parse_name checks if we have more and are quotes</span></div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> name = parse_name( parse_state );</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> name_pos =</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;            locations.template find_name&lt;ParseState::expect_long_strings&gt;(</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;              template_vals&lt;( from_start ? 0 : pos )&gt;, name );</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;          <span class="keywordflow">if</span> constexpr( must_exist == AllMembersMustExist::yes ) {</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( name_pos &lt; std::size( locations ),</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;                                  ErrorReason::UnknownMember, parse_state );</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="preprocessor">#if defined( DAW_JSON_PARSER_DIAGNOSTICS )</span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;DEBUG: Unknown member &#39;&quot;</span> &lt;&lt; name &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;            <span class="keywordflow">if</span>( name_pos &gt;= std::size( locations ) ) {</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;              <span class="comment">// This is not a member we are concerned with</span></div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;              (void)skip_value( parse_state );</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;              parse_state.move_next_member_or_end( );</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;              <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;            }</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;          }</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;          <span class="keywordflow">if</span>( name_pos == pos ) {</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;            locations[pos].set_range( parse_state );</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="preprocessor">#if defined( DAW_JSON_PARSER_DIAGNOSTICS )</span></div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;DEBUG:  Out of order member &#39;&quot;</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;                      &lt;&lt; locations.names[name_pos].name</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot;&#39; found, looking for &#39;&quot;</span> &lt;&lt; locations.names[pos].name</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot;. It is &quot;</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;                      &lt;&lt; std::abs( <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">long</span><span class="keyword">&gt;</span>( pos ) -</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;                                   <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">long</span><span class="keyword">&gt;</span>( name_pos ) )</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; members ahead in constructor\n&quot;</span>;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;            <span class="comment">// We are out of order, store position for later</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;            <span class="comment">// OLDTODO: use type knowledge to speed up skip</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;            <span class="comment">// OLDTODO: on skipped classes see if way to store</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;            <span class="comment">//        member positions so that we don&#39;t have to</span></div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;            <span class="comment">//        re-parse them after</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;            <span class="comment">// RESULT: storing preparsed is slower, don&#39;t try 3 times</span></div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;            <span class="comment">// it also limits the type of things we can parse potentially</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;            <span class="comment">// Using locations to switch on BaseType is slower too</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;            locations[name_pos].set_range( skip_value( parse_state ) );</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160; </div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;            <span class="keywordflow">if</span> constexpr( ParseState::is_unchecked_input ) {</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;              <span class="keywordflow">if</span>( name_pos + 1 &lt; std::size( locations ) ) {</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;                parse_state.move_next_member( );</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;              } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;                parse_state.move_next_member_or_end( );</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;              }</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;              parse_state.move_next_member_or_end( );</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;            }</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;          }</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        }</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        <span class="keywordflow">if</span>( locations[pos].missing( ) ) {</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;          known = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        }</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;        <span class="keywordflow">if</span> constexpr( ParseState::has_allocator ) {</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;          <span class="keywordflow">return</span> find_result{ locations[pos]</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;                                .get_range( template_arg&lt;ParseState&gt; )</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;                                .with_allocator( parse_state ),</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;                              known };</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;          <span class="keywordflow">return</span> find_result&lt;ParseState&gt;{</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;            locations[pos].get_range( template_arg&lt;ParseState&gt; ), known };</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;        }</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;      }</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        <span class="keywordflow">while</span>( nsc_and(</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;          locations[pos].missing( ),</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;          ( not parse_state.empty( ) and parse_state.front( ) != <span class="charliteral">&#39;}&#39;</span> ) ) ) {</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;          <span class="comment">// TODO: fully unescape name</span></div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;          <span class="comment">// parse_name checks if we have more and are quotes</span></div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> name = parse_name( parse_state );</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> name_pos =</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;            locations.template find_name&lt;ParseState::expect_long_strings&gt;(</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;              template_vals&lt;( from_start ? 0 : pos )&gt;, name );</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;          <span class="keywordflow">if</span> constexpr( must_exist == AllMembersMustExist::yes ) {</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( name_pos &lt; std::size( locations ),</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;                                  ErrorReason::UnknownMember, parse_state );</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="preprocessor">#if defined( DAW_JSON_PARSER_DIAGNOSTICS )</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;DEBUG: Unknown member &#39;&quot;</span> &lt;&lt; name &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;            <span class="keywordflow">if</span>( name_pos &gt;= std::size( locations ) ) {</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;              <span class="comment">// This is not a member we are concerned with</span></div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;              (void)skip_value( parse_state );</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;              parse_state.move_next_member_or_end( );</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;              <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            }</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;          }</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;          <span class="keywordflow">if</span>( name_pos == pos ) {</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;            locations[pos].set_range( parse_state );</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="preprocessor">#if defined( DAW_JSON_PARSER_DIAGNOSTICS )</span></div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;DEBUG:  Out of order member &#39;&quot;</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                      &lt;&lt; locations.names[name_pos].name</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot;&#39; found, looking for &#39;&quot;</span> &lt;&lt; locations.names[pos].name</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot;. It is &quot;</span></div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;                      &lt;&lt; std::abs( <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">long</span><span class="keyword">&gt;</span>( pos ) -</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                                   <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">long</span><span class="keyword">&gt;</span>( name_pos ) )</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; members ahead in constructor\n&quot;</span>;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;            <span class="comment">// We are out of order, store position for later</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;            <span class="comment">// OLDTODO: use type knowledge to speed up skip</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;            <span class="comment">// OLDTODO: on skipped classes see if way to store</span></div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;            <span class="comment">//        member positions so that we don&#39;t have to</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;            <span class="comment">//        re-parse them after</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;            <span class="comment">// RESULT: storing preparsed is slower, don&#39;t try 3 times</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;            <span class="comment">// it also limits the type of things we can parse potentially</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;            <span class="comment">// Using locations to switch on BaseType is slower too</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;            locations[name_pos].set_range( skip_value( parse_state ) );</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160; </div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;            <span class="keywordflow">if</span> constexpr( ParseState::is_unchecked_input ) {</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;              <span class="keywordflow">if</span>( name_pos + 1 &lt; std::size( locations ) ) {</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;                parse_state.move_next_member( );</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;              } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;                parse_state.move_next_member_or_end( );</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;              }</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;              parse_state.move_next_member_or_end( );</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;            }</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;          }</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        }</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;        <span class="keywordflow">if</span>( locations[pos].missing( ) ) {</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;          known = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;        }</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;        <span class="keywordflow">if</span> constexpr( ParseState::has_allocator ) {</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;          <span class="keywordflow">return</span> find_result{ locations[pos]</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;                                .get_range( template_arg&lt;ParseState&gt; )</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;                                .with_allocator( parse_state ),</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;                              known };</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;          <span class="keywordflow">return</span> find_result&lt;ParseState&gt;{</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;            locations[pos].get_range( template_arg&lt;ParseState&gt; ), known };</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        }</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;      }</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00166">daw_json_assert.h:166</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00157">daw_json_assert.h:157</a></div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00168">daw_json_assert.h:168</a></div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00159">daw_json_assert.h:159</a></div></div>
 <div class="ttc" id="adaw__json__find__result_8h_html"><div class="ttname"><a href="daw__json__find__result_8h.html">daw_json_find_result.h</a></div></div>
 <div class="ttc" id="adaw__json__switches_8h_html_ac7bc190776b7ebf5b5c752c685569e1f"><div class="ttname"><a href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a></div><div class="ttdeci">#define DAW_JSON_CPP23_STATIC_CALL_OP</div><div class="ttdoc">This is in addition to the parse policy. Always do a full name match instead of sometimes relying on ...</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__switches_8h_source.html#l00198">daw_json_switches.h:198</a></div></div>
 <div class="ttc" id="adaw__json__switches_8h_html_afa488feef2353e4e4dcd3039ac2dfa16"><div class="ttname"><a href="daw__json__switches_8h.html#afa488feef2353e4e4dcd3039ac2dfa16">DAW_JSON_MAKE_LOC_INFO_CONSTEVAL</a></div><div class="ttdeci">#define DAW_JSON_MAKE_LOC_INFO_CONSTEVAL</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__switches_8h_source.html#l00106">daw_json_switches.h:106</a></div></div>

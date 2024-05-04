@@ -69,7 +69,7 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">daw_container_traits.h File Reference</div>  </div>
@@ -89,7 +89,7 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts_1_1containe40e6cd04cc45d363c6f4d4d94cada6d2.html">daw::json::anonymous_namespace{daw_container_traits.h}::concepts::container_traits&lt; std::array&lt; T, N &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts_1_1containe3b63cc0b9198c5b78c78a3fe81cc3315.html">daw::json::anonymous_namespace{daw_container_traits.h}::concepts::container_traits&lt; T, std::enable_if_t&lt; daw::is_detected_v&lt; container_detect::is_container_test, T &gt; &gt; &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts_1_1containef29a9499a5a99197a0f8df7ac62224bc.html">daw::json::anonymous_namespace{daw_container_traits.h}::concepts::container_traits&lt; T, std::enable_if_t&lt; container_detect::is_container_v&lt; T &gt; &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -106,11 +106,10 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacedaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts_1_1container__detect"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts_1_1container__detect.html">daw::json::anonymous_namespace{daw_container_traits.h}::concepts::container_detect</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:aabdb75937512dccee6267bb9b8aef978"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aabdb75937512dccee6267bb9b8aef978"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts_1_1container__detect.html#aabdb75937512dccee6267bb9b8aef978">daw::json::anonymous_namespace{daw_container_traits.h}::concepts::container_detect::is_container_test</a> = decltype((void)(std::begin(std::declval&lt; T &amp; &gt;())),(void)(std::end(std::declval&lt; T &amp; &gt;())),(void)(std::declval&lt; typename T::value_type &gt;()),(void)(std::declval&lt; T &amp; &gt;().insert(std::end(std::declval&lt; T &amp; &gt;()), std::declval&lt; typename T::value_type &gt;())))</td></tr>
-<tr class="separator:aabdb75937512dccee6267bb9b8aef978"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:aecfecb652ea6aa2428d94691a0ed6e29"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__container__traits_8h_03_1_1concepts_1_1container__detect.html#aecfecb652ea6aa2428d94691a0ed6e29">daw::json::anonymous_namespace{daw_container_traits.h}::concepts::container_detect::DAW_JSON_MAKE_REQ_TRAIT</a> (is_container_v,(void)(std::begin(std::declval&lt; T &amp; &gt;())),(void)(std::end(std::declval&lt; T &amp; &gt;())),(void)(std::declval&lt; typename T::value_type &gt;()),(void)(std::declval&lt; T &amp; &gt;().insert(std::end(std::declval&lt; T &amp; &gt;()), std::declval&lt; typename T::value_type &gt;())))</td></tr>
+<tr class="separator:aecfecb652ea6aa2428d94691a0ed6e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>

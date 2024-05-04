@@ -143,7 +143,7 @@ $(function() {
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keyword">using</span> iterator_category = <span class="keyword">typename</span> base::iterator_category;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keyword">using</span> element_t = <span class="keyword">typename</span> JsonMember::json_element_t;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keyword">using</span> value_type = <span class="keyword">typename</span> element_t::parse_to_t;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keyword">using</span> value_type = json_result_t&lt;element_t&gt;;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keyword">using</span> reference = value_type;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="keyword">using</span> pointer = arrow_proxy&lt;value_type&gt;;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keyword">using</span> parse_state_t = ParseState;</div>
@@ -181,13 +181,13 @@ $(function() {
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;          }</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        }</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        DAW_ATTRIB_NOINLINE value_type operator*( )<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;          <span class="comment">// This is hear to satisfy indirectly_readable</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;          <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#addf5e51921956f9b5038d68a1bec1292">daw_json_error</a>( ErrorReason::UnexpectedEndOfData );</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        }</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        DAW_ATTRIB_INLINE</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        constexpr value_type operator*( ) {</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        [[noreturn]] DAW_ATTRIB_NOINLINE value_type operator*( )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;          DAW_UNLIKELY_BRANCH</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;          <span class="comment">// This is hear to satisfy indirectly_readable</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;          <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#a34c1b9710edbfb34e82d35c033afc142">daw_json_error</a>( ErrorReason::UnexpectedEndOfData );</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        }</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        DAW_ATTRIB_INLINE constexpr value_type operator*( ) {</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            base::parse_state and base::parse_state-&gt;has_more( ),</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;            ErrorReason::UnexpectedEndOfData, *base::parse_state );</div>
@@ -264,14 +264,14 @@ $(function() {
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        }</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      };</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__arrow__proxy_8h_html"><div class="ttname"><a href="daw__json__arrow__proxy_8h.html">daw_json_arrow_proxy.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00166">daw_json_assert.h:166</a></div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00168">daw_json_assert.h:168</a></div></div>
 <div class="ttc" id="adaw__json__parse__value__fwd_8h_html"><div class="ttname"><a href="daw__json__parse__value__fwd_8h.html">daw_json_parse_value_fwd.h</a></div></div>
 <div class="ttc" id="adaw__json__switches_8h_html_a413b5dd3e94255b21377165dfe43165c"><div class="ttname"><a href="daw__json__switches_8h.html#a413b5dd3e94255b21377165dfe43165c">DAW_JSON_CPP20_CX_DTOR</a></div><div class="ttdeci">#define DAW_JSON_CPP20_CX_DTOR</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__switches_8h_source.html#l00214">daw_json_switches.h:214</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03_html_addf5e51921956f9b5038d68a1bec1292"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#addf5e51921956f9b5038d68a1bec1292">daw::json::anonymous_namespace{daw_json_assert.h}::daw_json_error</a></div><div class="ttdeci">void daw_json_error(ErrorReason reason)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00074">daw_json_assert.h:74</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03_html_a34c1b9710edbfb34e82d35c033afc142"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#a34c1b9710edbfb34e82d35c033afc142">daw::json::anonymous_namespace{daw_json_assert.h}::daw_json_error</a></div><div class="ttdeci">DAW_ATTRIB_NOINLINE void daw_json_error(ErrorReason reason)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00075">daw_json_assert.h:75</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a90ac904856c64d7aa4d8b2327e56c680"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a90ac904856c64d7aa4d8b2327e56c680">daw::json::anonymous_namespace{daw_json_enums.h}::ParseTag</a></div><div class="ttdeci">daw::constant&lt; v &gt; ParseTag</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__enums_8h_source.html#l00097">daw_json_enums.h:97</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>

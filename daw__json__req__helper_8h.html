@@ -79,8 +79,18 @@ $(function() {
 Macros</h2></td></tr>
 <tr class="memitem:a70abbb1d38e555e07d3e03e89f202b0c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__req__helper_8h.html#a70abbb1d38e555e07d3e03e89f202b0c">DAW_JSON_MAKE_REQ_TRAIT</a>(Name, ...)</td></tr>
 <tr class="separator:a70abbb1d38e555e07d3e03e89f202b0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9e5e97b66513cbafa82754d85808a16"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__req__helper_8h.html#af9e5e97b66513cbafa82754d85808a16">DAW_JSON_MAKE_REQ_TRAIT2</a>(Name, ...)</td></tr>
+<tr class="separator:af9e5e97b66513cbafa82754d85808a16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9e5e97b66513cbafa82754d85808a16"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__req__helper_8h.html#af9e5e97b66513cbafa82754d85808a16">DAW_JSON_MAKE_REQ_TRAIT2</a>(Name, ...)</td></tr>
+<tr class="separator:af9e5e97b66513cbafa82754d85808a16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7dcd75573ea4e13d544f2c2084a15b5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__req__helper_8h.html#ac7dcd75573ea4e13d544f2c2084a15b5">DAW_JSON_MAKE_REQ_TRAIT3</a>(Name, ...)</td></tr>
+<tr class="separator:ac7dcd75573ea4e13d544f2c2084a15b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1270adaa645dd28a3126777ac2e2005b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__req__helper_8h.html#a1270adaa645dd28a3126777ac2e2005b">DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT</a>(Name, ...)</td></tr>
 <tr class="separator:a1270adaa645dd28a3126777ac2e2005b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af90a7b53cb0f9fe04a5bc56a217cba2a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__req__helper_8h.html#af90a7b53cb0f9fe04a5bc56a217cba2a">DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT2</a>(Name, ...)</td></tr>
+<tr class="separator:af90a7b53cb0f9fe04a5bc56a217cba2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae50a3bbc4a3c648ea1b2f5d0c587ab74"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__req__helper_8h.html#ae50a3bbc4a3c648ea1b2f5d0c587ab74">DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT_NT</a>(Name, ...)</td></tr>
+<tr class="separator:ae50a3bbc4a3c648ea1b2f5d0c587ab74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a70abbb1d38e555e07d3e03e89f202b0c"></a>
@@ -118,6 +128,114 @@ Macros</h2></td></tr>
 
 </div>
 </div>
+<a id="af9e5e97b66513cbafa82754d85808a16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9e5e97b66513cbafa82754d85808a16">&#9670;&nbsp;</a></span>DAW_JSON_MAKE_REQ_TRAIT2 <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DAW_JSON_MAKE_REQ_TRAIT2</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keyword">template</span>&lt;<span class="keyword">typename</span>, <span class="keyword">typename</span>, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;                            \</div>
+<div class="line">  inline constexpr <span class="keywordtype">bool</span> Name = <span class="keyword">false</span>;                                      \</div>
+<div class="line">                                                                           \</div>
+<div class="line">  template&lt;typename T, typename U&gt;                                         \</div>
+<div class="line">  inline constexpr <span class="keywordtype">bool</span> Name&lt;T, U, std::void_t&lt;decltype( __VA_ARGS__ )&gt;&gt; = \</div>
+<div class="line">    true;</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__req__helper_8h_source.html#l00049">49</a> of file <a class="el" href="daw__json__req__helper_8h_source.html">daw_json_req_helper.h</a>.</p>
+
+</div>
+</div>
+<a id="af9e5e97b66513cbafa82754d85808a16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9e5e97b66513cbafa82754d85808a16">&#9670;&nbsp;</a></span>DAW_JSON_MAKE_REQ_TRAIT2 <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DAW_JSON_MAKE_REQ_TRAIT2</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keyword">template</span>&lt;<span class="keyword">typename</span>, <span class="keyword">typename</span>, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;                            \</div>
+<div class="line">  inline constexpr <span class="keywordtype">bool</span> Name = <span class="keyword">false</span>;                                      \</div>
+<div class="line">                                                                           \</div>
+<div class="line">  template&lt;typename T, typename U&gt;                                         \</div>
+<div class="line">  inline constexpr <span class="keywordtype">bool</span> Name&lt;T, U, std::void_t&lt;decltype( __VA_ARGS__ )&gt;&gt; = \</div>
+<div class="line">    true;</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__req__helper_8h_source.html#l00049">49</a> of file <a class="el" href="daw__json__req__helper_8h_source.html">daw_json_req_helper.h</a>.</p>
+
+</div>
+</div>
+<a id="ac7dcd75573ea4e13d544f2c2084a15b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7dcd75573ea4e13d544f2c2084a15b5">&#9670;&nbsp;</a></span>DAW_JSON_MAKE_REQ_TRAIT3</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DAW_JSON_MAKE_REQ_TRAIT3</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keyword">template</span>&lt;<span class="keyword">typename</span>, <span class="keyword">typename</span>, <span class="keyword">typename</span>, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;                     \</div>
+<div class="line">  inline constexpr <span class="keywordtype">bool</span> Name = <span class="keyword">false</span>;                                         \</div>
+<div class="line">                                                                              \</div>
+<div class="line">  template&lt;typename T, typename U, typename V&gt;                                \</div>
+<div class="line">  inline constexpr <span class="keywordtype">bool</span> Name&lt;T, U, V, std::void_t&lt;decltype( __VA_ARGS__ )&gt;&gt; = \</div>
+<div class="line">    true;</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__req__helper_8h_source.html#l00065">65</a> of file <a class="el" href="daw__json__req__helper_8h_source.html">daw_json_req_helper.h</a>.</p>
+
+</div>
+</div>
 <a id="a1270adaa645dd28a3126777ac2e2005b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1270adaa645dd28a3126777ac2e2005b">&#9670;&nbsp;</a></span>DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT</h2>
 
@@ -149,7 +267,77 @@ Macros</h2></td></tr>
 <div class="line">  template&lt;typename T&gt;                                                     \</div>
 <div class="line">  inline constexpr <span class="keywordtype">bool</span> Name&lt;T, std::void_t&lt;typename __VA_ARGS__&gt;&gt; = <span class="keyword">true</span></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__req__helper_8h_source.html#l00033">33</a> of file <a class="el" href="daw__json__req__helper_8h_source.html">daw_json_req_helper.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__req__helper_8h_source.html#l00096">96</a> of file <a class="el" href="daw__json__req__helper_8h_source.html">daw_json_req_helper.h</a>.</p>
+
+</div>
+</div>
+<a id="af90a7b53cb0f9fe04a5bc56a217cba2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af90a7b53cb0f9fe04a5bc56a217cba2a">&#9670;&nbsp;</a></span>DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT2</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keyword">template</span>&lt;<span class="keyword">typename</span>, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;                                       \</div>
+<div class="line">  inline constexpr <span class="keywordtype">bool</span> Name = <span class="keyword">false</span>;                                       \</div>
+<div class="line">                                                                            \</div>
+<div class="line">  template&lt;typename T&gt;                                                      \</div>
+<div class="line">  inline constexpr <span class="keywordtype">bool</span> Name&lt;T, std::void_t&lt;__VA_ARGS__&gt;&gt; = <span class="keyword">true</span></div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__req__helper_8h_source.html#l00111">111</a> of file <a class="el" href="daw__json__req__helper_8h_source.html">daw_json_req_helper.h</a>.</p>
+
+</div>
+</div>
+<a id="ae50a3bbc4a3c648ea1b2f5d0c587ab74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae50a3bbc4a3c648ea1b2f5d0c587ab74">&#9670;&nbsp;</a></span>DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT_NT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT_NT</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keyword">template</span>&lt;<span class="keyword">typename</span>, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;                                         \</div>
+<div class="line">  inline constexpr <span class="keywordtype">bool</span> Name = <span class="keyword">false</span>;                                         \</div>
+<div class="line">                                                                              \</div>
+<div class="line">  template&lt;typename T&gt;                                                        \</div>
+<div class="line">  inline constexpr <span class="keywordtype">bool</span> Name&lt;T, std::void_t&lt;__VA_ARGS__&gt;&gt; = <span class="keyword">true</span></div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__req__helper_8h_source.html#l00081">81</a> of file <a class="el" href="daw__json__req__helper_8h_source.html">daw_json_req_helper.h</a>.</p>
 
 </div>
 </div>
