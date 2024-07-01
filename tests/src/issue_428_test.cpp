@@ -6,6 +6,7 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include <daw/daw_ensure.h>
 #include <daw/json/daw_json_link.h>
 
 #include <iostream>
@@ -27,12 +28,31 @@ private:
 public:
 	vector_map( ) = default;
 
+	template<typename Iter>
+	vector_map( Iter first, Iter last ) {
+		while( first != last ) {
+			auto [k, v] = *first;
+			emplace( std::move( k ), std::move( v ) );
+			++first;
+		}
+	}
 	template<typename Container,
 	         std::enable_if_t<
 	           not std::is_same_v<vector_map, daw::remove_cvref_t<Container>>,
 	           std::nullptr_t> = nullptr>
-	vector_map( Container &&values ) {
-		for( auto &&v : values ) {}
+	vector_map( Container &&values )
+	  : vector_map( std::begin( values ), std::end( values ) ) {}
+
+	bool operator==( vector_map const &rhs ) const {
+		return data_ == rhs.data_;
+	}
+
+	auto begin( ) const {
+		return data_.begin( );
+	}
+
+	auto end( ) const {
+		return data_.end( );
 	}
 
 	template<class... Args>
@@ -44,27 +64,15 @@ public:
 
 template<typename class_type>
 struct map_builder {
-	constexpr class_type operator( )( ) const {
-		static_assert( std::is_same_v<int, class_type> );
-		return class_type{ };
-	}
-
-	template<typename T>
-	constexpr class_type operator( )( T &&v ) const {
-		static_assert( std::is_same_v<int, class_type> );
-		return class_type( v );
-	}
-
-	template<typename Iter>
-	constexpr class_type operator( )( Iter first, Iter last ) const {
-		static_assert( std::is_same_v<int, class_type> );
-		class_type ans;
+	template<typename Iter, typename Last>
+	constexpr class_type operator( )( Iter first, Last last ) const {
+		auto result = class_type{ };
 		while( first != last ) {
 			auto [k, v] = *first;
-			ans.emplace( k, v );
+			result.emplace( k, v );
 			++first;
 		}
-		return ans;
+		return result;
 	}
 };
 
@@ -73,9 +81,8 @@ namespace daw::json {
 	struct json_data_contract<vector_map<Key, T>> {
 		using class_type = vector_map<Key, T>;
 
-		//using constructor_t = map_builder<class_type>;
 		using type = json_type_alias<
-		  json_key_value_no_name<class_type, Key, T, map_builder<class_type>>>;
+		  json_key_value_no_name<class_type, T, Key, map_builder<class_type>>>;
 	};
 } // namespace daw::json
 
@@ -86,4 +93,14 @@ void json_test( std::string_view data_view ) {
 	         daw::json::options::SerializationFormat::Pretty> );
 
 	std::cout << obj_json.c_str( ) << std::endl;
+}
+
+int main( ) {
+	auto v = vector_map<std::string, int>{ };
+	v.emplace( "Hello", 42 );
+	v.emplace( "World", 24 );
+	auto json_doc = daw::json::to_json( v );
+	json_test( json_doc );
+	auto v2 = daw::json::from_json<vector_map<std::string, int>>( json_doc );
+	daw_ensure( v == v2 );
 }
