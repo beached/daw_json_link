@@ -1,5 +1,5 @@
 ![logo image](docs/images/json_link_logo_128.png)
-# DAW JSON Link v3 
+# JSON Link v3 
 
 ## Content 
   * [Intro](#intro)
@@ -53,7 +53,7 @@
 ## Intro 
 ###### [Top](#content)
 
-The DAW JSON Link library is a high performance, no allocation, C++ JSON Library supporting:
+The JSON Link library is a high performance, no allocation, C++ JSON Library supporting:
   * Direct parsing of JSON to your own data structures via simple declarative mappings
   * Earlier error reporting of unexpected data and errors
   * Low memory requirement, parser requires a small amount of stack but does not allocate itself.
