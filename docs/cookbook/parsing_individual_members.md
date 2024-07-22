@@ -19,12 +19,12 @@ Parsing single members from the JSON data is common. This can be to discriminate
 }
 ```
 
-With the previous JSON data, the next example will extract the member `"a.b"`, the `"b"` member of the `"a"` member of the root object.
+With the previous JSON data, the next example will extract the member `"member2.b"`, the `"b"` member of the `"member2"` member of the root object.
 
 To see a working example using this code, refer to [cookbook_parsing_individual_members1_test.cpp](../../tests/src/cookbook_parsing_individual_members1_test.cpp).
 
 ```c++
-std::string b_value = daw::json::from_json<std::string>( json_data, "a.b" );
+std::string b_value = daw::json::from_json<std::string>( json_data, "member2.b" );
 ```
 
 `b_value` should have a value of `"found me"`
