@@ -81,10 +81,10 @@ $(function() {
 <div class="line">    &quot;b&quot;: &quot;found me&quot;</div>
 <div class="line">  }</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>With the previous JSON data, the next example will extract the member <code>"a.b"</code>, the <code>"b"</code> member of the <code>"a"</code> member of the root object.</p>
+</div><!-- fragment --><p>With the previous JSON data, the next example will extract the member <code>"member2.b"</code>, the <code>"b"</code> member of the <code>"member2"</code> member of the root object.</p>
 <p>To see a working example using this code, refer to <a href="../../tests/src/cookbook_parsing_individual_members1_test.cpp">cookbook_parsing_individual_members1_test.cpp</a>.</p>
 <div class="fragment"><div class="line"> {c++}</div>
-<div class="line">std::string b_value = daw::json::from_json&lt;std::string&gt;( json_data, &quot;a.b&quot; );</div>
+<div class="line">std::string b_value = daw::json::from_json&lt;std::string&gt;( json_data, &quot;member2.b&quot; );</div>
 </div><!-- fragment --><p><code>b_value</code> should have a value of <code>"found me"</code></p>
 <p>Below shows when member is known to be an array and full control of the resulting collection is needed.</p>
 <p>Too see a working example using this code, refer to <a href="../../tests/src/cookbook_parsing_individual_members2_test.cpp">cookbook_parsing_individual_members2_test.cpp</a>.</p>
