@@ -485,10 +485,10 @@ namespace daw::json {
 			  can_single_allocation_string_v<json_base_type_t<JsonMember>>;
 
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT_NT( has_json_member_constructor_v,
-			                                    json_constructor_t<T> );
+			                                       json_constructor_t<T> );
 
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT_NT( has_json_member_parse_to_v,
-			                                    json_result_t<T> );
+			                                       json_result_t<T> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
@@ -556,8 +556,7 @@ namespace daw::json {
 				  std::data( str ), std::size( str ) );
 			}
 
-			template<typename JsonMember, bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds, typename ParseState>
 			[[nodiscard]] static constexpr json_result_t<JsonMember>
 			parse_value_custom( ParseState &parse_state ) {
 
@@ -603,8 +602,7 @@ namespace daw::json {
 				  std::string_view( std::data( str ), std::size( str ) ) );
 			}
 
-			template<typename JsonMember, bool KnownBounds = false,
-			         typename ParseState>
+			template<typename JsonMember, bool KnownBounds, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result_t<JsonMember>
 			parse_value_class( ParseState &parse_state ) {
 
@@ -613,21 +611,22 @@ namespace daw::json {
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 
 				if constexpr( KnownBounds ) {
-					return json_data_contract_trait_t<element_t>::parse_to_class(
-					  parse_state, template_arg<JsonMember> );
+					return json_data_contract_trait_t<element_t>::template parse_to_class<
+					  JsonMember, KnownBounds>( parse_state );
 				} else if constexpr( is_pinned_type_v<element_t> ) {
 					auto const run_after_parse = daw::on_exit_success( [&] {
 						parse_state.trim_left_checked( );
 					} );
 					(void)run_after_parse;
-					return json_data_contract_trait_t<element_t>::parse_to_class(
-					  parse_state, template_arg<JsonMember> );
+					return json_data_contract_trait_t<element_t>::template parse_to_class<
+					  JsonMember, KnownBounds>( parse_state );
 				} else if constexpr( is_deduced_empty_class_v<JsonMember> ) {
 					parse_state.trim_left_checked( );
 					return json_result_t<JsonMember>{ };
 				} else {
-					auto result = json_data_contract_trait_t<element_t>::parse_to_class(
-					  parse_state, template_arg<JsonMember> );
+					auto result =
+					  json_data_contract_trait_t<element_t>::template parse_to_class<
+					    JsonMember, KnownBounds>( parse_state );
 					parse_state.trim_left_checked( );
 					return result;
 				}
