@@ -66,7 +66,7 @@ namespace daw::json {
 				  "The method to_json_data in the json_data_contract does not match "
 				  "the mapping.  The number of members is not the same." );
 				static_assert(
-				  ( (not std::is_rvalue_reference_v<Ts>)and... ),
+				  ( ( not std::is_rvalue_reference_v<Ts> ) and ... ),
 				  "The Tuple contains rvalue references.  The values "
 				  "passed are now dangling.  daw::forward_nonrvalue_as_tuple in "
 				  "<daw/daw_tuple_forward.h> can forward only non-rvalue refs and "
@@ -87,11 +87,10 @@ namespace daw::json {
 			 * @param parse_state JSON data to parse
 			 * @return A T object
 			 */
-			template<typename JsonClass, typename ParseState>
+			template<typename JsonClass, bool /*KnownBounds*/, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
 			  json_result_t<JsonClass>
-			  parse_to_class( ParseState &parse_state,
-			                  template_param<JsonClass> = template_arg<JsonClass> ) {
+			  parse_to_class( ParseState &parse_state ) {
 
 				static_assert( json_details::is_no_name_v<JsonClass> );
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
@@ -179,10 +178,10 @@ namespace daw::json {
 			using result_type =
 			  json_details::json_class_parse_result_t<Constructor, json_member>;
 
-			template<typename JsonClass, typename ParseState>
+			template<typename JsonClass, bool KnownBounds, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
 			  json_result_t<JsonClass>
-			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
+			  parse_to_class( ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 json_details::json_result_t<JsonClass>>,
@@ -194,7 +193,7 @@ namespace daw::json {
 				  template_args<JsonClass, daw::construct_a_t<
 				                             json_details::json_result_t<JsonClass>>>,
 				  parse_state,
-				  json_details::parse_value<json_member, false>(
+				  json_details::parse_value<json_member, KnownBounds>(
 				    parse_state, ParseTag<json_member::expected_type>{ } ) );
 			}
 		};
@@ -321,10 +320,10 @@ namespace daw::json {
 			 * @param parse_state JSON data to parse
 			 * @return A T object
 			 */
-			template<typename JsonClass, typename ParseState>
+			template<typename JsonClass, bool /*KnownBounds*/, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
 			  json_result_t<JsonClass>
-			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
+			  parse_to_class( ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 json_details::json_base_type_t<JsonClass>>,
@@ -394,10 +393,10 @@ namespace daw::json {
 			 * @param parse_state JSON data to parse
 			 * @return A T object
 			 */
-			template<typename JsonClass, typename ParseState>
+			template<typename JsonClass, bool /*KnownBounds*/, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_details::
 			  from_json_result_t<JsonClass>
-			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
+			  parse_to_class( ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 json_details::json_base_type_t<JsonClass>>,
@@ -406,8 +405,8 @@ namespace daw::json {
 
 				std::size_t const idx = [parse_state]( ) mutable {
 					return Switcher{ }( std::get<0>(
-					  json_details::parse_value_class<json_base::json_class<tag_class_t>>(
-					    parse_state )
+					  json_details::parse_value_class<json_base::json_class<tag_class_t>,
+					                                  false>( parse_state )
 					    .members ) );
 				}( );
 				daw_json_assert_weak( idx < sizeof...( JsonClasses ),
