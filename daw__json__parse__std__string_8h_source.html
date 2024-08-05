@@ -276,7 +276,7 @@ $(function() {
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        <span class="keyword">using</span> string_type = json_base_type_t&lt;JsonMember&gt;;</div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        string_type result =</div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;          string_type( std::size( parse_state ) + 1, <span class="charliteral">&#39;\0&#39;</span>,</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                       parse_state.get_allocator_for( template_arg&lt;char&gt; ) );</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                       parse_state.template get_allocator_for&lt;char&gt;( ) );</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordtype">char</span> *it = std::data( result );</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160; </div>
 <div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        <span class="keywordtype">bool</span> <span class="keyword">const</span> has_quote = parse_state.front( ) == <span class="charliteral">&#39;&quot;&#39;</span>;</div>
@@ -396,14 +396,13 @@ $(function() {
 <div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;          <span class="keywordflow">return</span> result;</div>
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;          <span class="keyword">using</span> constructor_t = json_constructor_t&lt;JsonMember&gt;;</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;          construct_value(</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;            template_args&lt;json_result_t&lt;JsonMember&gt;, constructor_t&gt;,</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;            parse_state, std::data( result ), daw::data_end( result ) );</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        }</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;      }</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;          construct_value&lt;json_result_t&lt;JsonMember&gt;, constructor_t&gt;(</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;            parse_state, std::data( result ), daw::data_end( result ) );</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;        }</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;      }</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00168">daw_json_assert.h:168</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00159">daw_json_assert.h:159</a></div></div>

@@ -126,8 +126,8 @@ $(function() {
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      <span class="comment">// Need to use ADL to_string in unevaluated contexts.  Limiting to it&#39;s</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="comment">// own namespace</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr <span class="keyword">auto</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">to_string</a>( std::optional&lt;T&gt; <span class="keyword">const</span> &amp;v )</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        -&gt; decltype( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">to_string</a>( *v ) ) {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr <span class="keyword">auto</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">to_string</a>( std::optional&lt;T&gt; <span class="keyword">const</span> &amp;v ) -&gt; decltype( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">to_string</a>( *v ) ) {</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">if</span>( not has_value( v ) ) {</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;          <span class="keywordflow">return</span> { <span class="stringliteral">&quot;null&quot;</span> };</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        }</div>
@@ -1371,265 +1371,261 @@ $(function() {
 <div class="line"><a name="l01299"></a><span class="lineno"> 1299</span>&#160; </div>
 <div class="line"><a name="l01300"></a><span class="lineno"> 1300</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember, <span class="keyword">typename</span> WriteableType, <span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l01301"></a><span class="lineno"> 1301</span>&#160;      [[nodiscard]] <span class="keyword">static</span> <span class="keyword">inline</span> constexpr WriteableType</div>
-<div class="line"><a name="l01302"></a><span class="lineno"> 1302</span>&#160;      member_to_string( template_param&lt;JsonMember&gt;, WriteableType it,</div>
-<div class="line"><a name="l01303"></a><span class="lineno"> 1303</span>&#160;                        T <span class="keyword">const</span> &amp;value ) {</div>
-<div class="line"><a name="l01304"></a><span class="lineno"> 1304</span>&#160;        <span class="keywordflow">return</span> to_daw_json_string&lt;JsonMember&gt;(</div>
-<div class="line"><a name="l01305"></a><span class="lineno"> 1305</span>&#160;          ParseTag&lt;JsonMember::expected_type&gt;{ }, std::move( it ), value );</div>
-<div class="line"><a name="l01306"></a><span class="lineno"> 1306</span>&#160;      }</div>
-<div class="line"><a name="l01307"></a><span class="lineno"> 1307</span>&#160; </div>
-<div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
-<div class="line"><a name="l01309"></a><span class="lineno"> 1309</span>&#160;      <span class="keyword">struct </span>missing_required_mapping_for {};</div>
-<div class="line"><a name="l01310"></a><span class="lineno"> 1310</span>&#160; </div>
-<div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160;      <span class="comment">// This is only ever called in a constant expression. But will not</span></div>
-<div class="line"><a name="l01312"></a><span class="lineno"> 1312</span>&#160;      <span class="comment">// compile if exceptions are disabled and it tries to throw</span></div>
-<div class="line"><a name="l01313"></a><span class="lineno"> 1313</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Name&gt;</div>
-<div class="line"><a name="l01314"></a><span class="lineno"> 1314</span>&#160;      [[noreturn]] DAW_ATTRIB_NOINLINE <span class="keywordtype">void</span> missing_required_mapping_error( ) {</div>
-<div class="line"><a name="l01315"></a><span class="lineno"> 1315</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
-<div class="line"><a name="l01316"></a><span class="lineno"> 1316</span>&#160;        <span class="keywordflow">throw</span> missing_required_mapping_for&lt;Name&gt;{ };</div>
-<div class="line"><a name="l01317"></a><span class="lineno"> 1317</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l01318"></a><span class="lineno"> 1318</span>&#160;        std::terminate( );</div>
-<div class="line"><a name="l01319"></a><span class="lineno"> 1319</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01320"></a><span class="lineno"> 1320</span>&#160;      }</div>
-<div class="line"><a name="l01321"></a><span class="lineno"> 1321</span>&#160; </div>
-<div class="line"><a name="l01322"></a><span class="lineno"> 1322</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>, <span class="keyword">typename</span>...&gt;</div>
-<div class="line"><a name="l01323"></a><span class="lineno"> 1323</span>&#160;      <span class="keyword">struct </span>find_names_in_pack;</div>
-<div class="line"><a name="l01324"></a><span class="lineno"> 1324</span>&#160; </div>
-<div class="line"><a name="l01325"></a><span class="lineno"> 1325</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Needle, <span class="keyword">typename</span>... Haystack&gt;</div>
-<div class="line"><a name="l01326"></a><span class="lineno"> 1326</span>&#160;      <span class="keyword">struct </span>find_names_in_pack&lt;Needle, <a class="code" href="namespacedaw.html">daw</a>::fwd_pack&lt;Haystack...&gt;&gt; {</div>
-<div class="line"><a name="l01327"></a><span class="lineno"> 1327</span>&#160;      <span class="keyword">private</span>:</div>
-<div class="line"><a name="l01328"></a><span class="lineno"> 1328</span>&#160;        <span class="keyword">static</span> constexpr daw::simple_array&lt;daw::string_view,</div>
-<div class="line"><a name="l01329"></a><span class="lineno"> 1329</span>&#160;                                           <span class="keyword">sizeof</span>...( Haystack )&gt;</div>
-<div class="line"><a name="l01330"></a><span class="lineno"> 1330</span>&#160;          names = { Haystack::name... };</div>
-<div class="line"><a name="l01331"></a><span class="lineno"> 1331</span>&#160;        static_assert( ( ( Haystack::name == Needle::name ) or ... ),</div>
-<div class="line"><a name="l01332"></a><span class="lineno"> 1332</span>&#160;                       <span class="stringliteral">&quot;Name must exist&quot;</span> );</div>
-<div class="line"><a name="l01333"></a><span class="lineno"> 1333</span>&#160; </div>
-<div class="line"><a name="l01334"></a><span class="lineno"> 1334</span>&#160;      <span class="keyword">public</span>:</div>
-<div class="line"><a name="l01335"></a><span class="lineno"> 1335</span>&#160;        <span class="keyword">static</span> DAW_CONSTEVAL std::size_t find_position( ) {</div>
-<div class="line"><a name="l01336"></a><span class="lineno"> 1336</span>&#160;          std::size_t <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> = 0;</div>
-<div class="line"><a name="l01337"></a><span class="lineno"> 1337</span>&#160;          <span class="keywordflow">for</span>( ; <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; <span class="keyword">sizeof</span>...( Haystack ); ++<a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
-<div class="line"><a name="l01338"></a><span class="lineno"> 1338</span>&#160;            <span class="keywordflow">if</span>( Needle::name == names[n] ) {</div>
-<div class="line"><a name="l01339"></a><span class="lineno"> 1339</span>&#160;              <span class="keywordflow">return</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a>;</div>
-<div class="line"><a name="l01340"></a><span class="lineno"> 1340</span>&#160;            }</div>
-<div class="line"><a name="l01341"></a><span class="lineno"> 1341</span>&#160;          }</div>
-<div class="line"><a name="l01342"></a><span class="lineno"> 1342</span>&#160;          <span class="keywordflow">if</span>( n &gt;= <span class="keyword">sizeof</span>...( Haystack ) ) {</div>
-<div class="line"><a name="l01343"></a><span class="lineno"> 1343</span>&#160;            missing_required_mapping_error&lt;Needle&gt;( );</div>
-<div class="line"><a name="l01344"></a><span class="lineno"> 1344</span>&#160;          }</div>
-<div class="line"><a name="l01345"></a><span class="lineno"> 1345</span>&#160;          DAW_UNREACHABLE( );</div>
-<div class="line"><a name="l01346"></a><span class="lineno"> 1346</span>&#160;        }</div>
-<div class="line"><a name="l01347"></a><span class="lineno"> 1347</span>&#160; </div>
-<div class="line"><a name="l01348"></a><span class="lineno"> 1348</span>&#160;        <span class="keyword">static</span> constexpr std::size_t value = find_position( );</div>
-<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160;      };</div>
-<div class="line"><a name="l01350"></a><span class="lineno"> 1350</span>&#160; </div>
-<div class="line"><a name="l01351"></a><span class="lineno"> 1351</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Needle, <span class="keyword">typename</span>... Haystack&gt;</div>
-<div class="line"><a name="l01352"></a><span class="lineno"> 1352</span>&#160;      <span class="keyword">inline</span> <span class="keyword">static</span> constexpr std::size_t find_names_in_pack_v =</div>
-<div class="line"><a name="l01353"></a><span class="lineno"> 1353</span>&#160;        find_names_in_pack&lt;Needle, Haystack...&gt;::value;</div>
-<div class="line"><a name="l01354"></a><span class="lineno"> 1354</span>&#160; </div>
-<div class="line"><a name="l01355"></a><span class="lineno"> 1355</span>&#160;      <span class="keyword">template</span>&lt;std::size_t pos, <span class="keyword">typename</span> JsonMember, <span class="keyword">typename</span> NamePack,</div>
-<div class="line"><a name="l01356"></a><span class="lineno"> 1356</span>&#160;               <span class="keyword">typename</span> WriteableType, <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> SerializationOptions,</div>
-<div class="line"><a name="l01357"></a><span class="lineno"> 1357</span>&#160;               <span class="keyword">typename</span> TpArgs, <span class="keyword">typename</span> Value, <span class="keyword">typename</span> VisitedMembers&gt;</div>
-<div class="line"><a name="l01358"></a><span class="lineno"> 1358</span>&#160;      <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> dependent_member_to_json_str(</div>
-<div class="line"><a name="l01359"></a><span class="lineno"> 1359</span>&#160;        <span class="keywordtype">bool</span> &amp;is_first,</div>
-<div class="line"><a name="l01360"></a><span class="lineno"> 1360</span>&#160;        serialization_policy&lt;WriteableType, SerializationOptions&gt; it,</div>
-<div class="line"><a name="l01361"></a><span class="lineno"> 1361</span>&#160;        TpArgs <span class="keyword">const</span> &amp;args, Value <span class="keyword">const</span> &amp;v, VisitedMembers &amp;visited_members ) {</div>
-<div class="line"><a name="l01362"></a><span class="lineno"> 1362</span>&#160;        <span class="keywordflow">if</span> constexpr( not has_dependent_member_v&lt;JsonMember&gt; ) {</div>
-<div class="line"><a name="l01363"></a><span class="lineno"> 1363</span>&#160;          (void)is_first;</div>
-<div class="line"><a name="l01364"></a><span class="lineno"> 1364</span>&#160;          (void)it;</div>
-<div class="line"><a name="l01365"></a><span class="lineno"> 1365</span>&#160;          (void)args;</div>
-<div class="line"><a name="l01366"></a><span class="lineno"> 1366</span>&#160;          (void)v;</div>
-<div class="line"><a name="l01367"></a><span class="lineno"> 1367</span>&#160;          (void)visited_members;</div>
-<div class="line"><a name="l01368"></a><span class="lineno"> 1368</span>&#160;          <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l01369"></a><span class="lineno"> 1369</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l01370"></a><span class="lineno"> 1370</span>&#160;          <span class="keyword">using</span> base_member_t = <span class="keyword">typename</span> daw::conditional_t&lt;</div>
-<div class="line"><a name="l01371"></a><span class="lineno"> 1371</span>&#160;            is_json_nullable_v&lt;JsonMember&gt;,</div>
-<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;            ident_trait&lt;json_nullable_member_type_t, JsonMember&gt;,</div>
-<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160;            daw::traits::identity&lt;JsonMember&gt;&gt;::type;</div>
-<div class="line"><a name="l01374"></a><span class="lineno"> 1374</span>&#160; </div>
-<div class="line"><a name="l01375"></a><span class="lineno"> 1375</span>&#160;          <span class="keyword">using</span> dependent_member = dependent_member_t&lt;base_member_t&gt;;</div>
-<div class="line"><a name="l01376"></a><span class="lineno"> 1376</span>&#160; </div>
-<div class="line"><a name="l01377"></a><span class="lineno"> 1377</span>&#160;          <span class="keyword">using</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03.html#a06f110b9e0d95a7f6587ff1cfd82aa17">daw::get</a>;</div>
-<div class="line"><a name="l01378"></a><span class="lineno"> 1378</span>&#160;          <span class="keyword">using</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03.html#a06f110b9e0d95a7f6587ff1cfd82aa17">std::get</a>;</div>
-<div class="line"><a name="l01379"></a><span class="lineno"> 1379</span>&#160;          static_assert( is_a_json_type_v&lt;JsonMember&gt;,</div>
-<div class="line"><a name="l01380"></a><span class="lineno"> 1380</span>&#160;                         <span class="stringliteral">&quot;Unsupported data type&quot;</span> );</div>
-<div class="line"><a name="l01381"></a><span class="lineno"> 1381</span>&#160;          <span class="keywordflow">if</span> constexpr( is_json_nullable_v&lt;JsonMember&gt; ) {</div>
-<div class="line"><a name="l01382"></a><span class="lineno"> 1382</span>&#160;            <span class="keywordflow">if</span> constexpr( JsonMember::nullable == JsonNullable::Nullable ) {</div>
-<div class="line"><a name="l01383"></a><span class="lineno"> 1383</span>&#160;              <span class="comment">// We have no requirement to output this member when it&#39;s null</span></div>
-<div class="line"><a name="l01384"></a><span class="lineno"> 1384</span>&#160;              <span class="keywordflow">if</span>( not get&lt;pos&gt;( args ) ) {</div>
-<div class="line"><a name="l01385"></a><span class="lineno"> 1385</span>&#160;                <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l01386"></a><span class="lineno"> 1386</span>&#160;              }</div>
-<div class="line"><a name="l01387"></a><span class="lineno"> 1387</span>&#160;            }</div>
-<div class="line"><a name="l01388"></a><span class="lineno"> 1388</span>&#160;          }</div>
-<div class="line"><a name="l01389"></a><span class="lineno"> 1389</span>&#160;          <span class="keywordflow">if</span>( daw::algorithm::contains( std::data( visited_members ),</div>
-<div class="line"><a name="l01390"></a><span class="lineno"> 1390</span>&#160;                                        daw::data_end( visited_members ),</div>
-<div class="line"><a name="l01391"></a><span class="lineno"> 1391</span>&#160;                                        dependent_member::name ) ) {</div>
-<div class="line"><a name="l01392"></a><span class="lineno"> 1392</span>&#160;            <span class="comment">// Already outputted this member</span></div>
-<div class="line"><a name="l01393"></a><span class="lineno"> 1393</span>&#160;            <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l01394"></a><span class="lineno"> 1394</span>&#160;          }</div>
-<div class="line"><a name="l01395"></a><span class="lineno"> 1395</span>&#160;          visited_members.push_back( dependent_member::name );</div>
-<div class="line"><a name="l01396"></a><span class="lineno"> 1396</span>&#160;          <span class="keywordflow">if</span>( not is_first ) {</div>
-<div class="line"><a name="l01397"></a><span class="lineno"> 1397</span>&#160;            it.put( <span class="charliteral">&#39;,&#39;</span> );</div>
-<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;          }</div>
-<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;          it.next_member( );</div>
-<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160;          is_first = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01401"></a><span class="lineno"> 1401</span>&#160;          it.write( <span class="charliteral">&#39;&quot;&#39;</span>, dependent_member::name, <span class="stringliteral">&quot;\&quot;:&quot;</span>, it.space );</div>
-<div class="line"><a name="l01402"></a><span class="lineno"> 1402</span>&#160; </div>
-<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;          <span class="keywordflow">if</span> constexpr( has_switcher_v&lt;base_member_t&gt; ) {</div>
-<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;            it = member_to_string( template_arg&lt;dependent_member&gt;, it,</div>
-<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;                                   <span class="keyword">typename</span> base_member_t::switcher{ }( v ) );</div>
-<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160;            constexpr <span class="keyword">auto</span> idx =</div>
-<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160;              find_names_in_pack_v&lt;dependent_member, NamePack&gt;;</div>
-<div class="line"><a name="l01409"></a><span class="lineno"> 1409</span>&#160;            it = member_to_string( template_arg&lt;dependent_member&gt;, it,</div>
-<div class="line"><a name="l01410"></a><span class="lineno"> 1410</span>&#160;                                   get&lt;idx&gt;( args ) );</div>
-<div class="line"><a name="l01411"></a><span class="lineno"> 1411</span>&#160;          }</div>
-<div class="line"><a name="l01412"></a><span class="lineno"> 1412</span>&#160;          (void)it;</div>
-<div class="line"><a name="l01413"></a><span class="lineno"> 1413</span>&#160;        }</div>
-<div class="line"><a name="l01414"></a><span class="lineno"> 1414</span>&#160;      }</div>
-<div class="line"><a name="l01415"></a><span class="lineno"> 1415</span>&#160; </div>
-<div class="line"><a name="l01416"></a><span class="lineno"> 1416</span>&#160;      <span class="keyword">template</span>&lt;std::size_t pos, <span class="keyword">typename</span> JsonMember, <span class="keyword">typename</span> WriteableType,</div>
-<div class="line"><a name="l01417"></a><span class="lineno"> 1417</span>&#160;               <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> SerializationOptions, <span class="keyword">typename</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b">Tuple</a>,</div>
-<div class="line"><a name="l01418"></a><span class="lineno"> 1418</span>&#160;               <span class="keyword">typename</span> Value, <span class="keyword">typename</span> Visited&gt;</div>
-<div class="line"><a name="l01419"></a><span class="lineno"> 1419</span>&#160;      <span class="keyword">static</span> <span class="keyword">inline</span> constexpr <span class="keywordtype">void</span> to_json_str(</div>
-<div class="line"><a name="l01420"></a><span class="lineno"> 1420</span>&#160;        <span class="keywordtype">bool</span> &amp;is_first,</div>
-<div class="line"><a name="l01421"></a><span class="lineno"> 1421</span>&#160;        serialization_policy&lt;WriteableType, SerializationOptions&gt; &amp;it,</div>
-<div class="line"><a name="l01422"></a><span class="lineno"> 1422</span>&#160;        Tuple <span class="keyword">const</span> &amp;tp, Value <span class="keyword">const</span> &amp;, Visited &amp;visited_members ) {</div>
-<div class="line"><a name="l01423"></a><span class="lineno"> 1423</span>&#160;        constexpr <span class="keyword">auto</span> json_member_name = daw::string_view(</div>
-<div class="line"><a name="l01424"></a><span class="lineno"> 1424</span>&#160;          std::data( JsonMember::name ), std::size( JsonMember::name ) );</div>
-<div class="line"><a name="l01425"></a><span class="lineno"> 1425</span>&#160;        <span class="keywordflow">if</span>( daw::algorithm::contains( std::data( visited_members ),</div>
-<div class="line"><a name="l01426"></a><span class="lineno"> 1426</span>&#160;                                      daw::data_end( visited_members ),</div>
-<div class="line"><a name="l01427"></a><span class="lineno"> 1427</span>&#160;                                      json_member_name ) ) {</div>
-<div class="line"><a name="l01428"></a><span class="lineno"> 1428</span>&#160;          <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l01429"></a><span class="lineno"> 1429</span>&#160;        }</div>
-<div class="line"><a name="l01430"></a><span class="lineno"> 1430</span>&#160;        visited_members.push_back( json_member_name );</div>
-<div class="line"><a name="l01431"></a><span class="lineno"> 1431</span>&#160;        static_assert( is_a_json_type_v&lt;JsonMember&gt;, <span class="stringliteral">&quot;Unsupported data type&quot;</span> );</div>
-<div class="line"><a name="l01432"></a><span class="lineno"> 1432</span>&#160;        <span class="keywordflow">if</span> constexpr( is_json_nullable_v&lt;JsonMember&gt; ) {</div>
-<div class="line"><a name="l01433"></a><span class="lineno"> 1433</span>&#160;          <span class="keywordflow">if</span>( not <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a3d1fd061e31c6efbe7954113c763cd72">concepts::nullable_value_has_value</a>( get&lt;pos&gt;( tp ) ) ) {</div>
-<div class="line"><a name="l01434"></a><span class="lineno"> 1434</span>&#160;            <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l01435"></a><span class="lineno"> 1435</span>&#160;          }</div>
-<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160;        }</div>
-<div class="line"><a name="l01437"></a><span class="lineno"> 1437</span>&#160;        <span class="keywordflow">if</span>( not is_first ) {</div>
-<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;          it.put( <span class="charliteral">&#39;,&#39;</span> );</div>
-<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;        }</div>
-<div class="line"><a name="l01440"></a><span class="lineno"> 1440</span>&#160;        it.next_member( );</div>
-<div class="line"><a name="l01441"></a><span class="lineno"> 1441</span>&#160;        is_first = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01442"></a><span class="lineno"> 1442</span>&#160;        it.write( <span class="charliteral">&#39;&quot;&#39;</span>, JsonMember::name, <span class="stringliteral">&quot;\&quot;:&quot;</span>, it.space );</div>
-<div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160; </div>
-<div class="line"><a name="l01444"></a><span class="lineno"> 1444</span>&#160;        it = member_to_string( template_arg&lt;JsonMember&gt;, std::move( it ),</div>
-<div class="line"><a name="l01445"></a><span class="lineno"> 1445</span>&#160;                               get&lt;pos&gt;( tp ) );</div>
-<div class="line"><a name="l01446"></a><span class="lineno"> 1446</span>&#160;      }</div>
-<div class="line"><a name="l01447"></a><span class="lineno"> 1447</span>&#160; </div>
-<div class="line"><a name="l01448"></a><span class="lineno"> 1448</span>&#160;      <span class="keyword">template</span>&lt;std::size_t TupleIdx, <span class="keyword">typename</span> JsonMember,</div>
-<div class="line"><a name="l01449"></a><span class="lineno"> 1449</span>&#160;               <span class="keyword">typename</span> WriteableType, <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> SerializerOptions,</div>
-<div class="line"><a name="l01450"></a><span class="lineno"> 1450</span>&#160;               <span class="keyword">template</span>&lt;<span class="keyword">class</span>...&gt; <span class="keyword">class </span><a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b">Tuple</a>, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l01451"></a><span class="lineno"> 1451</span>&#160;      <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> to_json_ordered_str(</div>
-<div class="line"><a name="l01452"></a><span class="lineno"> 1452</span>&#160;        std::size_t &amp;array_idx, std::size_t array_size,</div>
-<div class="line"><a name="l01453"></a><span class="lineno"> 1453</span>&#160;        serialization_policy&lt;WriteableType, SerializerOptions&gt; &amp;it,</div>
-<div class="line"><a name="l01454"></a><span class="lineno"> 1454</span>&#160;        Tuple&lt;Args...&gt; <span class="keyword">const</span> &amp;tp ) {</div>
-<div class="line"><a name="l01455"></a><span class="lineno"> 1455</span>&#160; </div>
-<div class="line"><a name="l01456"></a><span class="lineno"> 1456</span>&#160;        <span class="keyword">using</span> json_member_type = ordered_member_subtype_t&lt;JsonMember&gt;;</div>
-<div class="line"><a name="l01457"></a><span class="lineno"> 1457</span>&#160;        static_assert( is_a_json_type_v&lt;json_member_type&gt;,</div>
-<div class="line"><a name="l01458"></a><span class="lineno"> 1458</span>&#160;                       <span class="stringliteral">&quot;Unsupported data type&quot;</span> );</div>
-<div class="line"><a name="l01459"></a><span class="lineno"> 1459</span>&#160;        <span class="comment">// json_tagged_variant like members cannot work as we have no member</span></div>
-<div class="line"><a name="l01460"></a><span class="lineno"> 1460</span>&#160;        <span class="comment">// names to work with</span></div>
-<div class="line"><a name="l01461"></a><span class="lineno"> 1461</span>&#160;        static_assert(</div>
-<div class="line"><a name="l01462"></a><span class="lineno"> 1462</span>&#160;          not is_a_json_tagged_variant_v&lt;json_member_type&gt;,</div>
-<div class="line"><a name="l01463"></a><span class="lineno"> 1463</span>&#160;          <span class="stringliteral">&quot;JSON tagged variant types are not supported when inside an array &quot;</span></div>
-<div class="line"><a name="l01464"></a><span class="lineno"> 1464</span>&#160;          <span class="stringliteral">&quot;as an ordered structure&quot;</span> );</div>
-<div class="line"><a name="l01465"></a><span class="lineno"> 1465</span>&#160; </div>
-<div class="line"><a name="l01466"></a><span class="lineno"> 1466</span>&#160;        <span class="keywordflow">if</span> constexpr( is_an_ordered_member_v&lt;JsonMember&gt; ) {</div>
-<div class="line"><a name="l01467"></a><span class="lineno"> 1467</span>&#160;          <span class="keywordflow">for</span>( ; array_idx &lt; JsonMember::member_index; ++array_idx ) {</div>
-<div class="line"><a name="l01468"></a><span class="lineno"> 1468</span>&#160;            it.next_member( );</div>
-<div class="line"><a name="l01469"></a><span class="lineno"> 1469</span>&#160;            it.write( <span class="stringliteral">&quot;null,&quot;</span> );</div>
-<div class="line"><a name="l01470"></a><span class="lineno"> 1470</span>&#160;            it.next_member( );</div>
-<div class="line"><a name="l01471"></a><span class="lineno"> 1471</span>&#160;          }</div>
-<div class="line"><a name="l01472"></a><span class="lineno"> 1472</span>&#160;        }</div>
-<div class="line"><a name="l01473"></a><span class="lineno"> 1473</span>&#160;        it = member_to_string( template_arg&lt;json_member_type&gt;, it,</div>
-<div class="line"><a name="l01474"></a><span class="lineno"> 1474</span>&#160;                               get&lt;TupleIdx&gt;( tp ) );</div>
-<div class="line"><a name="l01475"></a><span class="lineno"> 1475</span>&#160;        ++array_idx;</div>
-<div class="line"><a name="l01476"></a><span class="lineno"> 1476</span>&#160;        <span class="keywordflow">if</span>( array_idx &lt; array_size ) {</div>
-<div class="line"><a name="l01477"></a><span class="lineno"> 1477</span>&#160;          it.put( <span class="charliteral">&#39;,&#39;</span> );</div>
-<div class="line"><a name="l01478"></a><span class="lineno"> 1478</span>&#160;          it.next_member( );</div>
-<div class="line"><a name="l01479"></a><span class="lineno"> 1479</span>&#160;        }</div>
-<div class="line"><a name="l01480"></a><span class="lineno"> 1480</span>&#160;      }</div>
-<div class="line"><a name="l01481"></a><span class="lineno"> 1481</span>&#160; </div>
-<div class="line"><a name="l01482"></a><span class="lineno"> 1482</span>&#160;      <span class="keyword">template</span>&lt;<a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#a2daf504eec0026f70b87dd83b240be2c">options::FPOutputFormat</a> fp_output_fmt, <span class="keyword">typename</span> WriteableType,</div>
-<div class="line"><a name="l01483"></a><span class="lineno"> 1483</span>&#160;               <span class="keyword">typename</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674a7f80fcc452c2f1ed2bb51b39d0864df1">Real</a>&gt;</div>
-<div class="line"><a name="l01484"></a><span class="lineno"> 1484</span>&#160;      <span class="keyword">static</span> constexpr WriteableType to_chars( Real <span class="keyword">const</span> &amp;value,</div>
-<div class="line"><a name="l01485"></a><span class="lineno"> 1485</span>&#160;                                               WriteableType out_it ) {</div>
-<div class="line"><a name="l01486"></a><span class="lineno"> 1486</span>&#160;        daw::jkj::dragonbox::unsigned_fp_t&lt;Real&gt; dec =</div>
-<div class="line"><a name="l01487"></a><span class="lineno"> 1487</span>&#160;          daw::jkj::dragonbox::to_decimal(</div>
-<div class="line"><a name="l01488"></a><span class="lineno"> 1488</span>&#160;            value, daw::jkj::dragonbox::policy::sign::ignore );</div>
+<div class="line"><a name="l01302"></a><span class="lineno"> 1302</span>&#160;      member_to_string( WriteableType it, T <span class="keyword">const</span> &amp;value ) {</div>
+<div class="line"><a name="l01303"></a><span class="lineno"> 1303</span>&#160;        <span class="keywordflow">return</span> to_daw_json_string&lt;JsonMember&gt;(</div>
+<div class="line"><a name="l01304"></a><span class="lineno"> 1304</span>&#160;          ParseTag&lt;JsonMember::expected_type&gt;{ }, std::move( it ), value );</div>
+<div class="line"><a name="l01305"></a><span class="lineno"> 1305</span>&#160;      }</div>
+<div class="line"><a name="l01306"></a><span class="lineno"> 1306</span>&#160; </div>
+<div class="line"><a name="l01307"></a><span class="lineno"> 1307</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
+<div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;      <span class="keyword">struct </span>missing_required_mapping_for {};</div>
+<div class="line"><a name="l01309"></a><span class="lineno"> 1309</span>&#160; </div>
+<div class="line"><a name="l01310"></a><span class="lineno"> 1310</span>&#160;      <span class="comment">// This is only ever called in a constant expression. But will not</span></div>
+<div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160;      <span class="comment">// compile if exceptions are disabled and it tries to throw</span></div>
+<div class="line"><a name="l01312"></a><span class="lineno"> 1312</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Name&gt;</div>
+<div class="line"><a name="l01313"></a><span class="lineno"> 1313</span>&#160;      [[noreturn]] DAW_ATTRIB_NOINLINE <span class="keywordtype">void</span> missing_required_mapping_error( ) {</div>
+<div class="line"><a name="l01314"></a><span class="lineno"> 1314</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
+<div class="line"><a name="l01315"></a><span class="lineno"> 1315</span>&#160;        <span class="keywordflow">throw</span> missing_required_mapping_for&lt;Name&gt;{ };</div>
+<div class="line"><a name="l01316"></a><span class="lineno"> 1316</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l01317"></a><span class="lineno"> 1317</span>&#160;        std::terminate( );</div>
+<div class="line"><a name="l01318"></a><span class="lineno"> 1318</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01319"></a><span class="lineno"> 1319</span>&#160;      }</div>
+<div class="line"><a name="l01320"></a><span class="lineno"> 1320</span>&#160; </div>
+<div class="line"><a name="l01321"></a><span class="lineno"> 1321</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>, <span class="keyword">typename</span>...&gt;</div>
+<div class="line"><a name="l01322"></a><span class="lineno"> 1322</span>&#160;      <span class="keyword">struct </span>find_names_in_pack;</div>
+<div class="line"><a name="l01323"></a><span class="lineno"> 1323</span>&#160; </div>
+<div class="line"><a name="l01324"></a><span class="lineno"> 1324</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Needle, <span class="keyword">typename</span>... Haystack&gt;</div>
+<div class="line"><a name="l01325"></a><span class="lineno"> 1325</span>&#160;      <span class="keyword">struct </span>find_names_in_pack&lt;Needle, <a class="code" href="namespacedaw.html">daw</a>::fwd_pack&lt;Haystack...&gt;&gt; {</div>
+<div class="line"><a name="l01326"></a><span class="lineno"> 1326</span>&#160;      <span class="keyword">private</span>:</div>
+<div class="line"><a name="l01327"></a><span class="lineno"> 1327</span>&#160;        <span class="keyword">static</span> constexpr daw::simple_array&lt;daw::string_view,</div>
+<div class="line"><a name="l01328"></a><span class="lineno"> 1328</span>&#160;                                           <span class="keyword">sizeof</span>...( Haystack )&gt;</div>
+<div class="line"><a name="l01329"></a><span class="lineno"> 1329</span>&#160;          names = { Haystack::name... };</div>
+<div class="line"><a name="l01330"></a><span class="lineno"> 1330</span>&#160;        static_assert( ( ( Haystack::name == Needle::name ) or ... ),</div>
+<div class="line"><a name="l01331"></a><span class="lineno"> 1331</span>&#160;                       <span class="stringliteral">&quot;Name must exist&quot;</span> );</div>
+<div class="line"><a name="l01332"></a><span class="lineno"> 1332</span>&#160; </div>
+<div class="line"><a name="l01333"></a><span class="lineno"> 1333</span>&#160;      <span class="keyword">public</span>:</div>
+<div class="line"><a name="l01334"></a><span class="lineno"> 1334</span>&#160;        <span class="keyword">static</span> DAW_CONSTEVAL std::size_t find_position( ) {</div>
+<div class="line"><a name="l01335"></a><span class="lineno"> 1335</span>&#160;          std::size_t <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> = 0;</div>
+<div class="line"><a name="l01336"></a><span class="lineno"> 1336</span>&#160;          <span class="keywordflow">for</span>( ; <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; <span class="keyword">sizeof</span>...( Haystack ); ++<a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
+<div class="line"><a name="l01337"></a><span class="lineno"> 1337</span>&#160;            <span class="keywordflow">if</span>( Needle::name == names[n] ) {</div>
+<div class="line"><a name="l01338"></a><span class="lineno"> 1338</span>&#160;              <span class="keywordflow">return</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a>;</div>
+<div class="line"><a name="l01339"></a><span class="lineno"> 1339</span>&#160;            }</div>
+<div class="line"><a name="l01340"></a><span class="lineno"> 1340</span>&#160;          }</div>
+<div class="line"><a name="l01341"></a><span class="lineno"> 1341</span>&#160;          <span class="keywordflow">if</span>( n &gt;= <span class="keyword">sizeof</span>...( Haystack ) ) {</div>
+<div class="line"><a name="l01342"></a><span class="lineno"> 1342</span>&#160;            missing_required_mapping_error&lt;Needle&gt;( );</div>
+<div class="line"><a name="l01343"></a><span class="lineno"> 1343</span>&#160;          }</div>
+<div class="line"><a name="l01344"></a><span class="lineno"> 1344</span>&#160;          DAW_UNREACHABLE( );</div>
+<div class="line"><a name="l01345"></a><span class="lineno"> 1345</span>&#160;        }</div>
+<div class="line"><a name="l01346"></a><span class="lineno"> 1346</span>&#160; </div>
+<div class="line"><a name="l01347"></a><span class="lineno"> 1347</span>&#160;        <span class="keyword">static</span> constexpr std::size_t value = find_position( );</div>
+<div class="line"><a name="l01348"></a><span class="lineno"> 1348</span>&#160;      };</div>
+<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160; </div>
+<div class="line"><a name="l01350"></a><span class="lineno"> 1350</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Needle, <span class="keyword">typename</span>... Haystack&gt;</div>
+<div class="line"><a name="l01351"></a><span class="lineno"> 1351</span>&#160;      <span class="keyword">inline</span> <span class="keyword">static</span> constexpr std::size_t find_names_in_pack_v =</div>
+<div class="line"><a name="l01352"></a><span class="lineno"> 1352</span>&#160;        find_names_in_pack&lt;Needle, Haystack...&gt;::value;</div>
+<div class="line"><a name="l01353"></a><span class="lineno"> 1353</span>&#160; </div>
+<div class="line"><a name="l01354"></a><span class="lineno"> 1354</span>&#160;      <span class="keyword">template</span>&lt;std::size_t pos, <span class="keyword">typename</span> JsonMember, <span class="keyword">typename</span> NamePack,</div>
+<div class="line"><a name="l01355"></a><span class="lineno"> 1355</span>&#160;               <span class="keyword">typename</span> WriteableType, <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> SerializationOptions,</div>
+<div class="line"><a name="l01356"></a><span class="lineno"> 1356</span>&#160;               <span class="keyword">typename</span> TpArgs, <span class="keyword">typename</span> Value, <span class="keyword">typename</span> VisitedMembers&gt;</div>
+<div class="line"><a name="l01357"></a><span class="lineno"> 1357</span>&#160;      <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> dependent_member_to_json_str(</div>
+<div class="line"><a name="l01358"></a><span class="lineno"> 1358</span>&#160;        <span class="keywordtype">bool</span> &amp;is_first,</div>
+<div class="line"><a name="l01359"></a><span class="lineno"> 1359</span>&#160;        serialization_policy&lt;WriteableType, SerializationOptions&gt; it,</div>
+<div class="line"><a name="l01360"></a><span class="lineno"> 1360</span>&#160;        TpArgs <span class="keyword">const</span> &amp;args, Value <span class="keyword">const</span> &amp;v, VisitedMembers &amp;visited_members ) {</div>
+<div class="line"><a name="l01361"></a><span class="lineno"> 1361</span>&#160;        <span class="keywordflow">if</span> constexpr( not has_dependent_member_v&lt;JsonMember&gt; ) {</div>
+<div class="line"><a name="l01362"></a><span class="lineno"> 1362</span>&#160;          (void)is_first;</div>
+<div class="line"><a name="l01363"></a><span class="lineno"> 1363</span>&#160;          (void)it;</div>
+<div class="line"><a name="l01364"></a><span class="lineno"> 1364</span>&#160;          (void)args;</div>
+<div class="line"><a name="l01365"></a><span class="lineno"> 1365</span>&#160;          (void)v;</div>
+<div class="line"><a name="l01366"></a><span class="lineno"> 1366</span>&#160;          (void)visited_members;</div>
+<div class="line"><a name="l01367"></a><span class="lineno"> 1367</span>&#160;          <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l01368"></a><span class="lineno"> 1368</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l01369"></a><span class="lineno"> 1369</span>&#160;          <span class="keyword">using</span> base_member_t = <span class="keyword">typename</span> daw::conditional_t&lt;</div>
+<div class="line"><a name="l01370"></a><span class="lineno"> 1370</span>&#160;            is_json_nullable_v&lt;JsonMember&gt;,</div>
+<div class="line"><a name="l01371"></a><span class="lineno"> 1371</span>&#160;            ident_trait&lt;json_nullable_member_type_t, JsonMember&gt;,</div>
+<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;            daw::traits::identity&lt;JsonMember&gt;&gt;::type;</div>
+<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160; </div>
+<div class="line"><a name="l01374"></a><span class="lineno"> 1374</span>&#160;          <span class="keyword">using</span> dependent_member = dependent_member_t&lt;base_member_t&gt;;</div>
+<div class="line"><a name="l01375"></a><span class="lineno"> 1375</span>&#160; </div>
+<div class="line"><a name="l01376"></a><span class="lineno"> 1376</span>&#160;          <span class="keyword">using</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03.html#a06f110b9e0d95a7f6587ff1cfd82aa17">daw::get</a>;</div>
+<div class="line"><a name="l01377"></a><span class="lineno"> 1377</span>&#160;          <span class="keyword">using</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03.html#a06f110b9e0d95a7f6587ff1cfd82aa17">std::get</a>;</div>
+<div class="line"><a name="l01378"></a><span class="lineno"> 1378</span>&#160;          static_assert( is_a_json_type_v&lt;JsonMember&gt;,</div>
+<div class="line"><a name="l01379"></a><span class="lineno"> 1379</span>&#160;                         <span class="stringliteral">&quot;Unsupported data type&quot;</span> );</div>
+<div class="line"><a name="l01380"></a><span class="lineno"> 1380</span>&#160;          <span class="keywordflow">if</span> constexpr( is_json_nullable_v&lt;JsonMember&gt; ) {</div>
+<div class="line"><a name="l01381"></a><span class="lineno"> 1381</span>&#160;            <span class="keywordflow">if</span> constexpr( JsonMember::nullable == JsonNullable::Nullable ) {</div>
+<div class="line"><a name="l01382"></a><span class="lineno"> 1382</span>&#160;              <span class="comment">// We have no requirement to output this member when it&#39;s null</span></div>
+<div class="line"><a name="l01383"></a><span class="lineno"> 1383</span>&#160;              <span class="keywordflow">if</span>( not get&lt;pos&gt;( args ) ) {</div>
+<div class="line"><a name="l01384"></a><span class="lineno"> 1384</span>&#160;                <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l01385"></a><span class="lineno"> 1385</span>&#160;              }</div>
+<div class="line"><a name="l01386"></a><span class="lineno"> 1386</span>&#160;            }</div>
+<div class="line"><a name="l01387"></a><span class="lineno"> 1387</span>&#160;          }</div>
+<div class="line"><a name="l01388"></a><span class="lineno"> 1388</span>&#160;          <span class="keywordflow">if</span>( daw::algorithm::contains( std::data( visited_members ),</div>
+<div class="line"><a name="l01389"></a><span class="lineno"> 1389</span>&#160;                                        daw::data_end( visited_members ),</div>
+<div class="line"><a name="l01390"></a><span class="lineno"> 1390</span>&#160;                                        dependent_member::name ) ) {</div>
+<div class="line"><a name="l01391"></a><span class="lineno"> 1391</span>&#160;            <span class="comment">// Already outputted this member</span></div>
+<div class="line"><a name="l01392"></a><span class="lineno"> 1392</span>&#160;            <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l01393"></a><span class="lineno"> 1393</span>&#160;          }</div>
+<div class="line"><a name="l01394"></a><span class="lineno"> 1394</span>&#160;          visited_members.push_back( dependent_member::name );</div>
+<div class="line"><a name="l01395"></a><span class="lineno"> 1395</span>&#160;          <span class="keywordflow">if</span>( not is_first ) {</div>
+<div class="line"><a name="l01396"></a><span class="lineno"> 1396</span>&#160;            it.put( <span class="charliteral">&#39;,&#39;</span> );</div>
+<div class="line"><a name="l01397"></a><span class="lineno"> 1397</span>&#160;          }</div>
+<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;          it.next_member( );</div>
+<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;          is_first = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160;          it.write( <span class="charliteral">&#39;&quot;&#39;</span>, dependent_member::name, <span class="stringliteral">&quot;\&quot;:&quot;</span>, it.space );</div>
+<div class="line"><a name="l01401"></a><span class="lineno"> 1401</span>&#160; </div>
+<div class="line"><a name="l01402"></a><span class="lineno"> 1402</span>&#160;          <span class="keywordflow">if</span> constexpr( has_switcher_v&lt;base_member_t&gt; ) {</div>
+<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;            it = member_to_string&lt;dependent_member&gt;(</div>
+<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;              it, <span class="keyword">typename</span> base_member_t::switcher{ }( v ) );</div>
+<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160;            constexpr <span class="keyword">auto</span> idx =</div>
+<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160;              find_names_in_pack_v&lt;dependent_member, NamePack&gt;;</div>
+<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160;            it = member_to_string&lt;dependent_member&gt;( it, get&lt;idx&gt;( args ) );</div>
+<div class="line"><a name="l01409"></a><span class="lineno"> 1409</span>&#160;          }</div>
+<div class="line"><a name="l01410"></a><span class="lineno"> 1410</span>&#160;          (void)it;</div>
+<div class="line"><a name="l01411"></a><span class="lineno"> 1411</span>&#160;        }</div>
+<div class="line"><a name="l01412"></a><span class="lineno"> 1412</span>&#160;      }</div>
+<div class="line"><a name="l01413"></a><span class="lineno"> 1413</span>&#160; </div>
+<div class="line"><a name="l01414"></a><span class="lineno"> 1414</span>&#160;      <span class="keyword">template</span>&lt;std::size_t pos, <span class="keyword">typename</span> JsonMember, <span class="keyword">typename</span> WriteableType,</div>
+<div class="line"><a name="l01415"></a><span class="lineno"> 1415</span>&#160;               <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> SerializationOptions, <span class="keyword">typename</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b">Tuple</a>,</div>
+<div class="line"><a name="l01416"></a><span class="lineno"> 1416</span>&#160;               <span class="keyword">typename</span> Value, <span class="keyword">typename</span> Visited&gt;</div>
+<div class="line"><a name="l01417"></a><span class="lineno"> 1417</span>&#160;      <span class="keyword">static</span> <span class="keyword">inline</span> constexpr <span class="keywordtype">void</span> to_json_str(</div>
+<div class="line"><a name="l01418"></a><span class="lineno"> 1418</span>&#160;        <span class="keywordtype">bool</span> &amp;is_first,</div>
+<div class="line"><a name="l01419"></a><span class="lineno"> 1419</span>&#160;        serialization_policy&lt;WriteableType, SerializationOptions&gt; &amp;it,</div>
+<div class="line"><a name="l01420"></a><span class="lineno"> 1420</span>&#160;        Tuple <span class="keyword">const</span> &amp;tp, Value <span class="keyword">const</span> &amp;, Visited &amp;visited_members ) {</div>
+<div class="line"><a name="l01421"></a><span class="lineno"> 1421</span>&#160;        constexpr <span class="keyword">auto</span> json_member_name = daw::string_view(</div>
+<div class="line"><a name="l01422"></a><span class="lineno"> 1422</span>&#160;          std::data( JsonMember::name ), std::size( JsonMember::name ) );</div>
+<div class="line"><a name="l01423"></a><span class="lineno"> 1423</span>&#160;        <span class="keywordflow">if</span>( daw::algorithm::contains( std::data( visited_members ),</div>
+<div class="line"><a name="l01424"></a><span class="lineno"> 1424</span>&#160;                                      daw::data_end( visited_members ),</div>
+<div class="line"><a name="l01425"></a><span class="lineno"> 1425</span>&#160;                                      json_member_name ) ) {</div>
+<div class="line"><a name="l01426"></a><span class="lineno"> 1426</span>&#160;          <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l01427"></a><span class="lineno"> 1427</span>&#160;        }</div>
+<div class="line"><a name="l01428"></a><span class="lineno"> 1428</span>&#160;        visited_members.push_back( json_member_name );</div>
+<div class="line"><a name="l01429"></a><span class="lineno"> 1429</span>&#160;        static_assert( is_a_json_type_v&lt;JsonMember&gt;, <span class="stringliteral">&quot;Unsupported data type&quot;</span> );</div>
+<div class="line"><a name="l01430"></a><span class="lineno"> 1430</span>&#160;        <span class="keywordflow">if</span> constexpr( is_json_nullable_v&lt;JsonMember&gt; ) {</div>
+<div class="line"><a name="l01431"></a><span class="lineno"> 1431</span>&#160;          <span class="keywordflow">if</span>( not <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a3d1fd061e31c6efbe7954113c763cd72">concepts::nullable_value_has_value</a>( get&lt;pos&gt;( tp ) ) ) {</div>
+<div class="line"><a name="l01432"></a><span class="lineno"> 1432</span>&#160;            <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l01433"></a><span class="lineno"> 1433</span>&#160;          }</div>
+<div class="line"><a name="l01434"></a><span class="lineno"> 1434</span>&#160;        }</div>
+<div class="line"><a name="l01435"></a><span class="lineno"> 1435</span>&#160;        <span class="keywordflow">if</span>( not is_first ) {</div>
+<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160;          it.put( <span class="charliteral">&#39;,&#39;</span> );</div>
+<div class="line"><a name="l01437"></a><span class="lineno"> 1437</span>&#160;        }</div>
+<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;        it.next_member( );</div>
+<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;        is_first = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01440"></a><span class="lineno"> 1440</span>&#160;        it.write( <span class="charliteral">&#39;&quot;&#39;</span>, JsonMember::name, <span class="stringliteral">&quot;\&quot;:&quot;</span>, it.space );</div>
+<div class="line"><a name="l01441"></a><span class="lineno"> 1441</span>&#160; </div>
+<div class="line"><a name="l01442"></a><span class="lineno"> 1442</span>&#160;        it = member_to_string&lt;JsonMember&gt;( std::move( it ), get&lt;pos&gt;( tp ) );</div>
+<div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160;      }</div>
+<div class="line"><a name="l01444"></a><span class="lineno"> 1444</span>&#160; </div>
+<div class="line"><a name="l01445"></a><span class="lineno"> 1445</span>&#160;      <span class="keyword">template</span>&lt;std::size_t TupleIdx, <span class="keyword">typename</span> JsonMember,</div>
+<div class="line"><a name="l01446"></a><span class="lineno"> 1446</span>&#160;               <span class="keyword">typename</span> WriteableType, <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> SerializerOptions,</div>
+<div class="line"><a name="l01447"></a><span class="lineno"> 1447</span>&#160;               <span class="keyword">template</span>&lt;<span class="keyword">class</span>...&gt; <span class="keyword">class </span><a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aafcbeb58fca053cad573bd9efda1dc5b">Tuple</a>, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a name="l01448"></a><span class="lineno"> 1448</span>&#160;      <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> to_json_ordered_str(</div>
+<div class="line"><a name="l01449"></a><span class="lineno"> 1449</span>&#160;        std::size_t &amp;array_idx, std::size_t array_size,</div>
+<div class="line"><a name="l01450"></a><span class="lineno"> 1450</span>&#160;        serialization_policy&lt;WriteableType, SerializerOptions&gt; &amp;it,</div>
+<div class="line"><a name="l01451"></a><span class="lineno"> 1451</span>&#160;        Tuple&lt;Args...&gt; <span class="keyword">const</span> &amp;tp ) {</div>
+<div class="line"><a name="l01452"></a><span class="lineno"> 1452</span>&#160; </div>
+<div class="line"><a name="l01453"></a><span class="lineno"> 1453</span>&#160;        <span class="keyword">using</span> json_member_type = ordered_member_subtype_t&lt;JsonMember&gt;;</div>
+<div class="line"><a name="l01454"></a><span class="lineno"> 1454</span>&#160;        static_assert( is_a_json_type_v&lt;json_member_type&gt;,</div>
+<div class="line"><a name="l01455"></a><span class="lineno"> 1455</span>&#160;                       <span class="stringliteral">&quot;Unsupported data type&quot;</span> );</div>
+<div class="line"><a name="l01456"></a><span class="lineno"> 1456</span>&#160;        <span class="comment">// json_tagged_variant like members cannot work as we have no member</span></div>
+<div class="line"><a name="l01457"></a><span class="lineno"> 1457</span>&#160;        <span class="comment">// names to work with</span></div>
+<div class="line"><a name="l01458"></a><span class="lineno"> 1458</span>&#160;        static_assert(</div>
+<div class="line"><a name="l01459"></a><span class="lineno"> 1459</span>&#160;          not is_a_json_tagged_variant_v&lt;json_member_type&gt;,</div>
+<div class="line"><a name="l01460"></a><span class="lineno"> 1460</span>&#160;          <span class="stringliteral">&quot;JSON tagged variant types are not supported when inside an array &quot;</span></div>
+<div class="line"><a name="l01461"></a><span class="lineno"> 1461</span>&#160;          <span class="stringliteral">&quot;as an ordered structure&quot;</span> );</div>
+<div class="line"><a name="l01462"></a><span class="lineno"> 1462</span>&#160; </div>
+<div class="line"><a name="l01463"></a><span class="lineno"> 1463</span>&#160;        <span class="keywordflow">if</span> constexpr( is_an_ordered_member_v&lt;JsonMember&gt; ) {</div>
+<div class="line"><a name="l01464"></a><span class="lineno"> 1464</span>&#160;          <span class="keywordflow">for</span>( ; array_idx &lt; JsonMember::member_index; ++array_idx ) {</div>
+<div class="line"><a name="l01465"></a><span class="lineno"> 1465</span>&#160;            it.next_member( );</div>
+<div class="line"><a name="l01466"></a><span class="lineno"> 1466</span>&#160;            it.write( <span class="stringliteral">&quot;null,&quot;</span> );</div>
+<div class="line"><a name="l01467"></a><span class="lineno"> 1467</span>&#160;            it.next_member( );</div>
+<div class="line"><a name="l01468"></a><span class="lineno"> 1468</span>&#160;          }</div>
+<div class="line"><a name="l01469"></a><span class="lineno"> 1469</span>&#160;        }</div>
+<div class="line"><a name="l01470"></a><span class="lineno"> 1470</span>&#160;        it = member_to_string&lt;json_member_type&gt;( it, get&lt;TupleIdx&gt;( tp ) );</div>
+<div class="line"><a name="l01471"></a><span class="lineno"> 1471</span>&#160;        ++array_idx;</div>
+<div class="line"><a name="l01472"></a><span class="lineno"> 1472</span>&#160;        <span class="keywordflow">if</span>( array_idx &lt; array_size ) {</div>
+<div class="line"><a name="l01473"></a><span class="lineno"> 1473</span>&#160;          it.put( <span class="charliteral">&#39;,&#39;</span> );</div>
+<div class="line"><a name="l01474"></a><span class="lineno"> 1474</span>&#160;          it.next_member( );</div>
+<div class="line"><a name="l01475"></a><span class="lineno"> 1475</span>&#160;        }</div>
+<div class="line"><a name="l01476"></a><span class="lineno"> 1476</span>&#160;      }</div>
+<div class="line"><a name="l01477"></a><span class="lineno"> 1477</span>&#160; </div>
+<div class="line"><a name="l01478"></a><span class="lineno"> 1478</span>&#160;      <span class="keyword">template</span>&lt;<a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#a2daf504eec0026f70b87dd83b240be2c">options::FPOutputFormat</a> fp_output_fmt, <span class="keyword">typename</span> WriteableType,</div>
+<div class="line"><a name="l01479"></a><span class="lineno"> 1479</span>&#160;               <span class="keyword">typename</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674a7f80fcc452c2f1ed2bb51b39d0864df1">Real</a>&gt;</div>
+<div class="line"><a name="l01480"></a><span class="lineno"> 1480</span>&#160;      <span class="keyword">static</span> constexpr WriteableType to_chars( Real <span class="keyword">const</span> &amp;value,</div>
+<div class="line"><a name="l01481"></a><span class="lineno"> 1481</span>&#160;                                               WriteableType out_it ) {</div>
+<div class="line"><a name="l01482"></a><span class="lineno"> 1482</span>&#160;        daw::jkj::dragonbox::unsigned_fp_t&lt;Real&gt; dec =</div>
+<div class="line"><a name="l01483"></a><span class="lineno"> 1483</span>&#160;          daw::jkj::dragonbox::to_decimal(</div>
+<div class="line"><a name="l01484"></a><span class="lineno"> 1484</span>&#160;            value, daw::jkj::dragonbox::policy::sign::ignore );</div>
+<div class="line"><a name="l01485"></a><span class="lineno"> 1485</span>&#160; </div>
+<div class="line"><a name="l01486"></a><span class="lineno"> 1486</span>&#160;        <span class="keyword">auto</span> <span class="keyword">const</span> digits =</div>
+<div class="line"><a name="l01487"></a><span class="lineno"> 1487</span>&#160;          daw::jkj::dragonbox::to_chars_detail::decimal_length(</div>
+<div class="line"><a name="l01488"></a><span class="lineno"> 1488</span>&#160;            dec.significand );</div>
 <div class="line"><a name="l01489"></a><span class="lineno"> 1489</span>&#160; </div>
-<div class="line"><a name="l01490"></a><span class="lineno"> 1490</span>&#160;        <span class="keyword">auto</span> <span class="keyword">const</span> digits =</div>
-<div class="line"><a name="l01491"></a><span class="lineno"> 1491</span>&#160;          daw::jkj::dragonbox::to_chars_detail::decimal_length(</div>
-<div class="line"><a name="l01492"></a><span class="lineno"> 1492</span>&#160;            dec.significand );</div>
-<div class="line"><a name="l01493"></a><span class="lineno"> 1493</span>&#160; </div>
-<div class="line"><a name="l01494"></a><span class="lineno"> 1494</span>&#160;        <span class="keyword">auto</span> whole_dig = <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( digits ) + dec.exponent;</div>
-<div class="line"><a name="l01495"></a><span class="lineno"> 1495</span>&#160; </div>
-<div class="line"><a name="l01496"></a><span class="lineno"> 1496</span>&#160;        <span class="keyword">auto</span> <span class="keyword">const</span> br = [&amp;] {</div>
-<div class="line"><a name="l01497"></a><span class="lineno"> 1497</span>&#160;          <span class="keywordflow">if</span> constexpr( std::is_same_v&lt;Real, float&gt; ) {</div>
-<div class="line"><a name="l01498"></a><span class="lineno"> 1498</span>&#160;            <span class="keywordflow">return</span> daw::jkj::dragonbox::ieee754_bits( value );</div>
-<div class="line"><a name="l01499"></a><span class="lineno"> 1499</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l01500"></a><span class="lineno"> 1500</span>&#160;            <span class="keywordflow">return</span> daw::jkj::dragonbox::ieee754_bits(</div>
-<div class="line"><a name="l01501"></a><span class="lineno"> 1501</span>&#160;              <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>( value ) );</div>
-<div class="line"><a name="l01502"></a><span class="lineno"> 1502</span>&#160;          }</div>
-<div class="line"><a name="l01503"></a><span class="lineno"> 1503</span>&#160;        }( );</div>
-<div class="line"><a name="l01504"></a><span class="lineno"> 1504</span>&#160;        <span class="keywordflow">if</span>( dec.significand == 0 ) {</div>
-<div class="line"><a name="l01505"></a><span class="lineno"> 1505</span>&#160;          out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a name="l01506"></a><span class="lineno"> 1506</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01507"></a><span class="lineno"> 1507</span>&#160;        }</div>
-<div class="line"><a name="l01508"></a><span class="lineno"> 1508</span>&#160;        <span class="keywordflow">if</span>( br.is_negative( ) ) {</div>
-<div class="line"><a name="l01509"></a><span class="lineno"> 1509</span>&#160;          out_it.put( <span class="charliteral">&#39;-&#39;</span> );</div>
-<div class="line"><a name="l01510"></a><span class="lineno"> 1510</span>&#160;        }</div>
-<div class="line"><a name="l01511"></a><span class="lineno"> 1511</span>&#160;        <span class="keywordflow">if</span>( fp_output_fmt == options::FPOutputFormat::Scientific ) {</div>
-<div class="line"><a name="l01512"></a><span class="lineno"> 1512</span>&#160;          <span class="keywordtype">char</span> buff[50]{ };</div>
-<div class="line"><a name="l01513"></a><span class="lineno"> 1513</span>&#160;          <span class="keywordtype">char</span> *ptr = buff;</div>
-<div class="line"><a name="l01514"></a><span class="lineno"> 1514</span>&#160;          ptr =</div>
-<div class="line"><a name="l01515"></a><span class="lineno"> 1515</span>&#160;            daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );</div>
-<div class="line"><a name="l01516"></a><span class="lineno"> 1516</span>&#160;          out_it.copy_buffer( buff, ptr );</div>
-<div class="line"><a name="l01517"></a><span class="lineno"> 1517</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01518"></a><span class="lineno"> 1518</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span>( fp_output_fmt == options::FPOutputFormat::Auto ) {</div>
-<div class="line"><a name="l01519"></a><span class="lineno"> 1519</span>&#160;          <span class="keywordflow">if</span>( ( whole_dig &lt; -4 ) | ( whole_dig &gt; 6 ) ) {</div>
-<div class="line"><a name="l01520"></a><span class="lineno"> 1520</span>&#160;            <span class="keywordtype">char</span> buff[50]{ };</div>
-<div class="line"><a name="l01521"></a><span class="lineno"> 1521</span>&#160;            <span class="keywordtype">char</span> *ptr = buff;</div>
-<div class="line"><a name="l01522"></a><span class="lineno"> 1522</span>&#160;            ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr,</div>
-<div class="line"><a name="l01523"></a><span class="lineno"> 1523</span>&#160;                                                                  digits );</div>
-<div class="line"><a name="l01524"></a><span class="lineno"> 1524</span>&#160;            out_it.copy_buffer( buff, ptr );</div>
-<div class="line"><a name="l01525"></a><span class="lineno"> 1525</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01526"></a><span class="lineno"> 1526</span>&#160;          }</div>
-<div class="line"><a name="l01527"></a><span class="lineno"> 1527</span>&#160;        }</div>
-<div class="line"><a name="l01528"></a><span class="lineno"> 1528</span>&#160;        <span class="keywordflow">if</span>( dec.exponent &lt; 0 ) {</div>
-<div class="line"><a name="l01529"></a><span class="lineno"> 1529</span>&#160;          <span class="keywordflow">if</span>( whole_dig &lt; 0 ) {</div>
-<div class="line"><a name="l01530"></a><span class="lineno"> 1530</span>&#160;            out_it.write( <span class="stringliteral">&quot;0.&quot;</span> );</div>
-<div class="line"><a name="l01531"></a><span class="lineno"> 1531</span>&#160;            <span class="keywordflow">do</span> {</div>
-<div class="line"><a name="l01532"></a><span class="lineno"> 1532</span>&#160;              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a name="l01533"></a><span class="lineno"> 1533</span>&#160;              ++whole_dig;</div>
-<div class="line"><a name="l01534"></a><span class="lineno"> 1534</span>&#160;            } <span class="keywordflow">while</span>( whole_dig &lt; 0 );</div>
-<div class="line"><a name="l01535"></a><span class="lineno"> 1535</span>&#160;            out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#ac292f38a20162b813bed9f0a0efd62d5">utils::integer_to_string</a>( out_it, dec.significand );</div>
-<div class="line"><a name="l01536"></a><span class="lineno"> 1536</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01537"></a><span class="lineno"> 1537</span>&#160;          }</div>
-<div class="line"><a name="l01538"></a><span class="lineno"> 1538</span>&#160;          <span class="comment">// TODO allow for decimal output for all</span></div>
-<div class="line"><a name="l01539"></a><span class="lineno"> 1539</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p1pow =</div>
-<div class="line"><a name="l01540"></a><span class="lineno"> 1540</span>&#160;            daw::cxmath::pow10( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( -dec.exponent ) );</div>
-<div class="line"><a name="l01541"></a><span class="lineno"> 1541</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p1val = dec.significand / p1pow;</div>
-<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;          out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#ac292f38a20162b813bed9f0a0efd62d5">utils::integer_to_string</a>( out_it, p1val );</div>
-<div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160;          <span class="keywordflow">if</span>( p1pow == 1 ) {</div>
-<div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160;          }</div>
-<div class="line"><a name="l01546"></a><span class="lineno"> 1546</span>&#160;          out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
-<div class="line"><a name="l01547"></a><span class="lineno"> 1547</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p2val = dec.significand - ( p1val * p1pow );</div>
-<div class="line"><a name="l01548"></a><span class="lineno"> 1548</span>&#160;          out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#ac292f38a20162b813bed9f0a0efd62d5">utils::integer_to_string</a>( out_it, p2val );</div>
-<div class="line"><a name="l01549"></a><span class="lineno"> 1549</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01550"></a><span class="lineno"> 1550</span>&#160;        }</div>
-<div class="line"><a name="l01551"></a><span class="lineno"> 1551</span>&#160;        out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#ac292f38a20162b813bed9f0a0efd62d5">utils::integer_to_string</a>( out_it, dec.significand );</div>
-<div class="line"><a name="l01552"></a><span class="lineno"> 1552</span>&#160;        <span class="keywordflow">while</span>( dec.exponent &gt; 0 ) {</div>
-<div class="line"><a name="l01553"></a><span class="lineno"> 1553</span>&#160;          out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a name="l01554"></a><span class="lineno"> 1554</span>&#160;          --dec.exponent;</div>
-<div class="line"><a name="l01555"></a><span class="lineno"> 1555</span>&#160;        }</div>
-<div class="line"><a name="l01556"></a><span class="lineno"> 1556</span>&#160;        <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l01557"></a><span class="lineno"> 1557</span>&#160;      }</div>
-<div class="line"><a name="l01558"></a><span class="lineno"> 1558</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l01559"></a><span class="lineno"> 1559</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l01560"></a><span class="lineno"> 1560</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l01490"></a><span class="lineno"> 1490</span>&#160;        <span class="keyword">auto</span> whole_dig = <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( digits ) + dec.exponent;</div>
+<div class="line"><a name="l01491"></a><span class="lineno"> 1491</span>&#160; </div>
+<div class="line"><a name="l01492"></a><span class="lineno"> 1492</span>&#160;        <span class="keyword">auto</span> <span class="keyword">const</span> br = [&amp;] {</div>
+<div class="line"><a name="l01493"></a><span class="lineno"> 1493</span>&#160;          <span class="keywordflow">if</span> constexpr( std::is_same_v&lt;Real, float&gt; ) {</div>
+<div class="line"><a name="l01494"></a><span class="lineno"> 1494</span>&#160;            <span class="keywordflow">return</span> daw::jkj::dragonbox::ieee754_bits( value );</div>
+<div class="line"><a name="l01495"></a><span class="lineno"> 1495</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l01496"></a><span class="lineno"> 1496</span>&#160;            <span class="keywordflow">return</span> daw::jkj::dragonbox::ieee754_bits(</div>
+<div class="line"><a name="l01497"></a><span class="lineno"> 1497</span>&#160;              <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>( value ) );</div>
+<div class="line"><a name="l01498"></a><span class="lineno"> 1498</span>&#160;          }</div>
+<div class="line"><a name="l01499"></a><span class="lineno"> 1499</span>&#160;        }( );</div>
+<div class="line"><a name="l01500"></a><span class="lineno"> 1500</span>&#160;        <span class="keywordflow">if</span>( dec.significand == 0 ) {</div>
+<div class="line"><a name="l01501"></a><span class="lineno"> 1501</span>&#160;          out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a name="l01502"></a><span class="lineno"> 1502</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01503"></a><span class="lineno"> 1503</span>&#160;        }</div>
+<div class="line"><a name="l01504"></a><span class="lineno"> 1504</span>&#160;        <span class="keywordflow">if</span>( br.is_negative( ) ) {</div>
+<div class="line"><a name="l01505"></a><span class="lineno"> 1505</span>&#160;          out_it.put( <span class="charliteral">&#39;-&#39;</span> );</div>
+<div class="line"><a name="l01506"></a><span class="lineno"> 1506</span>&#160;        }</div>
+<div class="line"><a name="l01507"></a><span class="lineno"> 1507</span>&#160;        <span class="keywordflow">if</span>( fp_output_fmt == options::FPOutputFormat::Scientific ) {</div>
+<div class="line"><a name="l01508"></a><span class="lineno"> 1508</span>&#160;          <span class="keywordtype">char</span> buff[50]{ };</div>
+<div class="line"><a name="l01509"></a><span class="lineno"> 1509</span>&#160;          <span class="keywordtype">char</span> *ptr = buff;</div>
+<div class="line"><a name="l01510"></a><span class="lineno"> 1510</span>&#160;          ptr =</div>
+<div class="line"><a name="l01511"></a><span class="lineno"> 1511</span>&#160;            daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );</div>
+<div class="line"><a name="l01512"></a><span class="lineno"> 1512</span>&#160;          out_it.copy_buffer( buff, ptr );</div>
+<div class="line"><a name="l01513"></a><span class="lineno"> 1513</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01514"></a><span class="lineno"> 1514</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span>( fp_output_fmt == options::FPOutputFormat::Auto ) {</div>
+<div class="line"><a name="l01515"></a><span class="lineno"> 1515</span>&#160;          <span class="keywordflow">if</span>( ( whole_dig &lt; -4 ) | ( whole_dig &gt; 6 ) ) {</div>
+<div class="line"><a name="l01516"></a><span class="lineno"> 1516</span>&#160;            <span class="keywordtype">char</span> buff[50]{ };</div>
+<div class="line"><a name="l01517"></a><span class="lineno"> 1517</span>&#160;            <span class="keywordtype">char</span> *ptr = buff;</div>
+<div class="line"><a name="l01518"></a><span class="lineno"> 1518</span>&#160;            ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr,</div>
+<div class="line"><a name="l01519"></a><span class="lineno"> 1519</span>&#160;                                                                  digits );</div>
+<div class="line"><a name="l01520"></a><span class="lineno"> 1520</span>&#160;            out_it.copy_buffer( buff, ptr );</div>
+<div class="line"><a name="l01521"></a><span class="lineno"> 1521</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01522"></a><span class="lineno"> 1522</span>&#160;          }</div>
+<div class="line"><a name="l01523"></a><span class="lineno"> 1523</span>&#160;        }</div>
+<div class="line"><a name="l01524"></a><span class="lineno"> 1524</span>&#160;        <span class="keywordflow">if</span>( dec.exponent &lt; 0 ) {</div>
+<div class="line"><a name="l01525"></a><span class="lineno"> 1525</span>&#160;          <span class="keywordflow">if</span>( whole_dig &lt; 0 ) {</div>
+<div class="line"><a name="l01526"></a><span class="lineno"> 1526</span>&#160;            out_it.write( <span class="stringliteral">&quot;0.&quot;</span> );</div>
+<div class="line"><a name="l01527"></a><span class="lineno"> 1527</span>&#160;            <span class="keywordflow">do</span> {</div>
+<div class="line"><a name="l01528"></a><span class="lineno"> 1528</span>&#160;              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a name="l01529"></a><span class="lineno"> 1529</span>&#160;              ++whole_dig;</div>
+<div class="line"><a name="l01530"></a><span class="lineno"> 1530</span>&#160;            } <span class="keywordflow">while</span>( whole_dig &lt; 0 );</div>
+<div class="line"><a name="l01531"></a><span class="lineno"> 1531</span>&#160;            out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#ac292f38a20162b813bed9f0a0efd62d5">utils::integer_to_string</a>( out_it, dec.significand );</div>
+<div class="line"><a name="l01532"></a><span class="lineno"> 1532</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01533"></a><span class="lineno"> 1533</span>&#160;          }</div>
+<div class="line"><a name="l01534"></a><span class="lineno"> 1534</span>&#160;          <span class="comment">// TODO allow for decimal output for all</span></div>
+<div class="line"><a name="l01535"></a><span class="lineno"> 1535</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p1pow =</div>
+<div class="line"><a name="l01536"></a><span class="lineno"> 1536</span>&#160;            daw::cxmath::pow10( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( -dec.exponent ) );</div>
+<div class="line"><a name="l01537"></a><span class="lineno"> 1537</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p1val = dec.significand / p1pow;</div>
+<div class="line"><a name="l01538"></a><span class="lineno"> 1538</span>&#160;          out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#ac292f38a20162b813bed9f0a0efd62d5">utils::integer_to_string</a>( out_it, p1val );</div>
+<div class="line"><a name="l01539"></a><span class="lineno"> 1539</span>&#160;          <span class="keywordflow">if</span>( p1pow == 1 ) {</div>
+<div class="line"><a name="l01540"></a><span class="lineno"> 1540</span>&#160;            <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01541"></a><span class="lineno"> 1541</span>&#160;          }</div>
+<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;          out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
+<div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> p2val = dec.significand - ( p1val * p1pow );</div>
+<div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160;          out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#ac292f38a20162b813bed9f0a0efd62d5">utils::integer_to_string</a>( out_it, p2val );</div>
+<div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160;          <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01546"></a><span class="lineno"> 1546</span>&#160;        }</div>
+<div class="line"><a name="l01547"></a><span class="lineno"> 1547</span>&#160;        out_it = <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#ac292f38a20162b813bed9f0a0efd62d5">utils::integer_to_string</a>( out_it, dec.significand );</div>
+<div class="line"><a name="l01548"></a><span class="lineno"> 1548</span>&#160;        <span class="keywordflow">while</span>( dec.exponent &gt; 0 ) {</div>
+<div class="line"><a name="l01549"></a><span class="lineno"> 1549</span>&#160;          out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a name="l01550"></a><span class="lineno"> 1550</span>&#160;          --dec.exponent;</div>
+<div class="line"><a name="l01551"></a><span class="lineno"> 1551</span>&#160;        }</div>
+<div class="line"><a name="l01552"></a><span class="lineno"> 1552</span>&#160;        <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l01553"></a><span class="lineno"> 1553</span>&#160;      }</div>
+<div class="line"><a name="l01554"></a><span class="lineno"> 1554</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l01555"></a><span class="lineno"> 1555</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l01556"></a><span class="lineno"> 1556</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__assert_8h_source.html#l00159">daw_json_assert.h:159</a></div></div>
 <div class="ttc" id="adaw__json__data__contract_8h_html"><div class="ttname"><a href="daw__json__data__contract_8h.html">daw_json_data_contract.h</a></div></div>
