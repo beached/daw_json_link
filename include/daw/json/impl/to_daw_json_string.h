@@ -54,8 +54,8 @@ namespace daw::json {
 			// Need to use ADL to_string in unevaluated contexts.  Limiting to it's
 			// own namespace
 			template<typename T>
-			[[nodiscard]] static constexpr auto to_string( std::optional<T> const &v )
-			  -> decltype( to_string( *v ) ) {
+			[[nodiscard]] static constexpr auto
+			to_string( std::optional<T> const &v ) -> decltype( to_string( *v ) ) {
 				if( not has_value( v ) ) {
 					return { "null" };
 				}
@@ -1299,8 +1299,7 @@ namespace daw::json {
 
 			template<typename JsonMember, typename WriteableType, typename T>
 			[[nodiscard]] static inline constexpr WriteableType
-			member_to_string( template_param<JsonMember>, WriteableType it,
-			                  T const &value ) {
+			member_to_string( WriteableType it, T const &value ) {
 				return to_daw_json_string<JsonMember>(
 				  ParseTag<JsonMember::expected_type>{ }, std::move( it ), value );
 			}
@@ -1401,13 +1400,12 @@ namespace daw::json {
 					it.write( '"', dependent_member::name, "\":", it.space );
 
 					if constexpr( has_switcher_v<base_member_t> ) {
-						it = member_to_string( template_arg<dependent_member>, it,
-						                       typename base_member_t::switcher{ }( v ) );
+						it = member_to_string<dependent_member>(
+						  it, typename base_member_t::switcher{ }( v ) );
 					} else {
 						constexpr auto idx =
 						  find_names_in_pack_v<dependent_member, NamePack>;
-						it = member_to_string( template_arg<dependent_member>, it,
-						                       get<idx>( args ) );
+						it = member_to_string<dependent_member>( it, get<idx>( args ) );
 					}
 					(void)it;
 				}
@@ -1441,8 +1439,7 @@ namespace daw::json {
 				is_first = false;
 				it.write( '"', JsonMember::name, "\":", it.space );
 
-				it = member_to_string( template_arg<JsonMember>, std::move( it ),
-				                       get<pos>( tp ) );
+				it = member_to_string<JsonMember>( std::move( it ), get<pos>( tp ) );
 			}
 
 			template<std::size_t TupleIdx, typename JsonMember,
@@ -1470,8 +1467,7 @@ namespace daw::json {
 						it.next_member( );
 					}
 				}
-				it = member_to_string( template_arg<json_member_type>, it,
-				                       get<TupleIdx>( tp ) );
+				it = member_to_string<json_member_type>( it, get<TupleIdx>( tp ) );
 				++array_idx;
 				if( array_idx < array_size ) {
 					it.put( ',' );

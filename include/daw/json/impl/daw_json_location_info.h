@@ -57,7 +57,7 @@ namespace daw::json {
 				}
 
 				template<typename ParseState>
-				constexpr auto get_range( template_param<ParseState> ) const {
+				constexpr auto get_range( ) const {
 					using range_t = typename ParseState::without_allocator_type;
 					auto result = range_t( first, last, class_first, class_last );
 					result.counter = counter;
@@ -87,7 +87,7 @@ namespace daw::json {
 				}
 
 				template<typename ParseState>
-				constexpr auto get_range( template_param<ParseState> ) const {
+				constexpr auto get_range( ) const {
 					// Not copying allocator as it may contain state that needs copying in
 					using range_t = typename ParseState::without_allocator_type;
 					auto result = range_t( first, last, class_first, class_last );
@@ -126,8 +126,7 @@ namespace daw::json {
 
 				template<bool expect_long_strings, std::size_t start_pos>
 				[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t
-				find_name( daw::template_vals_t<start_pos>,
-				           daw::string_view key ) const {
+				find_name( daw::string_view key ) const {
 					UInt32 const hash = name_hash<expect_long_strings>( key );
 #if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 					(void)start_pos;
@@ -230,8 +229,8 @@ namespace daw::json {
 					// parse_name checks if we have more and are quotes
 					auto const name = parse_name( parse_state );
 					auto const name_pos =
-					  locations.template find_name<ParseState::expect_long_strings>(
-					    template_vals<( from_start ? 0 : pos )>, name );
+					  locations.template find_name<ParseState::expect_long_strings,
+					                               ( from_start ? 0 : pos )>( name );
 					if constexpr( must_exist == AllMembersMustExist::yes ) {
 						daw_json_assert_weak( name_pos < std::size( locations ),
 						                      ErrorReason::UnknownMember, parse_state );
@@ -284,13 +283,13 @@ namespace daw::json {
 					known = true;
 				}
 				if constexpr( ParseState::has_allocator ) {
-					return find_result{ locations[pos]
-					                      .get_range( template_arg<ParseState> )
-					                      .with_allocator( parse_state ),
-					                    known };
+					return find_result{
+					  locations[pos].template get_range<ParseState>( ).with_allocator(
+					    parse_state ),
+					  known };
 				} else {
 					return find_result<ParseState>{
-					  locations[pos].get_range( template_arg<ParseState> ), known };
+					  locations[pos].template get_range<ParseState>( ), known };
 				}
 			}
 		} // namespace json_details

@@ -68,8 +68,7 @@ namespace daw::json {
 			auto out_it =
 			  json_details::apply_policy_flags<output_t, PolicyFlags...>( it );
 
-			return json_details::member_to_string( template_arg<json_class_t>, out_it,
-			                                       value )
+			return json_details::member_to_string<json_class_t>( out_it, value )
 			  .get( );
 		}
 
@@ -140,8 +139,7 @@ namespace daw::json {
 					// static_assert( not std::is_same_v<JsonElement, JsonMember> );
 					out_it.next_member( );
 
-					out_it = json_details::member_to_string( template_arg<JsonMember>,
-					                                         out_it, v );
+					out_it = json_details::member_to_string<JsonMember>( out_it, v );
 				}
 				( *first );
 				++first;

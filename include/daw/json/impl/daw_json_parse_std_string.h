@@ -204,7 +204,7 @@ namespace daw::json {
 				using string_type = json_base_type_t<JsonMember>;
 				string_type result =
 				  string_type( std::size( parse_state ) + 1, '\0',
-				               parse_state.get_allocator_for( template_arg<char> ) );
+				               parse_state.template get_allocator_for<char>( ) );
 				char *it = std::data( result );
 
 				bool const has_quote = parse_state.front( ) == '"';
@@ -324,8 +324,7 @@ namespace daw::json {
 					return result;
 				} else {
 					using constructor_t = json_constructor_t<JsonMember>;
-					construct_value(
-					  template_args<json_result_t<JsonMember>, constructor_t>,
+					construct_value<json_result_t<JsonMember>, constructor_t>(
 					  parse_state, std::data( result ), daw::data_end( result ) );
 				}
 			}
