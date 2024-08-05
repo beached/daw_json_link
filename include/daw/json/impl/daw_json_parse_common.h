@@ -56,12 +56,11 @@ namespace daw::json {
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
 			DAW_ATTRIB_INLINE static constexpr auto
-			construct_value( template_params<Value, Constructor>,
-			                 ParseState &parse_state, Args &&...args ) {
+			construct_value( ParseState &parse_state, Args &&...args ) {
 				// Silence MSVC warning, used in other if constexpr case
 				(void)parse_state;
 				if constexpr( ParseState::has_allocator ) {
-					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
+					auto alloc = parse_state.template get_allocator_for<Value>( );
 					return daw::try_alloc_construct<Value, Constructor>(
 					  std::move( alloc ), DAW_FWD( args )... );
 				} else {
@@ -115,7 +114,7 @@ namespace daw::json {
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
-					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
+					auto alloc = parse_state.template get_allocator_for<Value>( );
 					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 							return Constructor{ }( get<Is>( std::move( tp_args ) )...,
@@ -150,7 +149,7 @@ namespace daw::json {
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
-					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
+					auto alloc = parse_state.template get_allocator_for<Value>( );
 					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
 						return construct_value_tp_invoke<Constructor>(
 						  std::move( tp_args ), std::move( alloc ),

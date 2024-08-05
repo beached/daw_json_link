@@ -170,8 +170,7 @@ namespace daw::json {
 			template<typename OutputIterator, typename Member, typename Value>
 			[[nodiscard]] static inline constexpr OutputIterator
 			serialize( OutputIterator it, Member const &m, Value const & ) {
-				return json_details::member_to_string( template_arg<json_member>, it,
-				                                       m );
+				return json_details::member_to_string<json_member>( it, m );
 			}
 
 			template<typename Constructor>
@@ -189,9 +188,9 @@ namespace daw::json {
 				// Using construct_value here as the result of aliased type is used to
 				// construct our result and the Constructor maybe different.  This
 				// happens with BigInt and string.
-				return json_details::construct_value(
-				  template_args<JsonClass, daw::construct_a_t<
-				                             json_details::json_result_t<JsonClass>>>,
+				return json_details::construct_value<
+				  JsonClass,
+				  daw::construct_a_t<json_details::json_result_t<JsonClass>>>(
 				  parse_state,
 				  json_details::parse_value<json_member, KnownBounds>(
 				    parse_state, ParseTag<json_member::expected_type>{ } ) );
@@ -329,9 +328,8 @@ namespace daw::json {
 				                 json_details::json_base_type_t<JsonClass>>,
 				               "Unexpected type" );
 
-				return json_details::parse_json_tuple_class(
-				  template_args<
-				    JsonClass, json_details::json_tuple_member_wrapper<JsonMembers>...>,
+				return json_details::parse_json_tuple_class<
+				  JsonClass, json_details::json_tuple_member_wrapper<JsonMembers>...>(
 				  parse_state );
 			}
 		};
@@ -375,8 +373,8 @@ namespace daw::json {
 					               "Alternative type does not have a to_json_data_member "
 					               "in it's json_data_contract specialization" );
 
-					return json_details::member_to_string(
-					  template_arg<json_base::json_class<Alternative>>, it, alternative );
+					return json_details::member_to_string<
+					  json_base::json_class<Alternative>>( it, alternative );
 				} );
 			}
 
