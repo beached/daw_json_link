@@ -44,7 +44,7 @@ namespace daw::json {
 				return magic_enum::enum_name( e );
 			}
 
-			constexpr Enum operator( )( std::string_view sv ) const {
+			inline Enum operator( )( std::string_view sv ) const {
 				auto test = magic_enum::enum_cast<Enum>( sv );
 				if( !test ) {
 					std::string msg = "Bad enum value ";

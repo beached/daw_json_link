@@ -45,9 +45,9 @@ struct JSONToNano {
 	constexpr std::chrono::nanoseconds operator( )( std::string_view sv ) const {
 		auto rng =
 		  daw::json::BasicParsePolicy( std::data( sv ), daw::data_end( sv ) );
-		return std::chrono::nanoseconds( daw::json::json_details::parse_value<
-		                                 daw::json::json_number_no_name<long long>>(
-		  rng, daw::json::ParseTag<daw::json::JsonParseTypes::Signed>{ } ) );
+		return std::chrono::nanoseconds(
+		  daw::json::json_details::parse_value_signed<
+		    daw::json::json_number_no_name<long long>, false>( rng ) );
 	}
 
 	std::string operator( )( std::chrono::nanoseconds t ) const {

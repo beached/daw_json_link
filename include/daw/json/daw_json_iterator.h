@@ -12,6 +12,7 @@
 
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/daw_json_parse_class.h"
+#include "impl/daw_json_parse_value_fwd.h"
 
 #include <daw/daw_cxmath.h>
 #include <daw/daw_move.h>
@@ -128,8 +129,8 @@ namespace daw::json {
 				auto const run_after_parse =
 				  json_details::assign_on_dtor{ m_can_skip, tmp.first };
 				(void)run_after_parse;
-				return json_details::parse_value<element_type>(
-				  tmp, ParseTag<element_type::expected_type>{ } );
+				return json_details::parse_value<element_type, false,
+				                                 element_type::expected_type>( tmp );
 			}
 
 			/// @brief A dereferencable value proxy holding the result of operator*
@@ -281,8 +282,9 @@ namespace daw::json {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 				                      ErrorReason::UnexpectedEndOfData, m_state );
 
-				return json_details::parse_value<element_type>(
-				  m_state, ParseTag<element_type::expected_type>{ } );
+				return json_details::parse_value<element_type, false,
+				                                 element_type::expected_type>(
+				  m_state );
 			}
 
 			/***

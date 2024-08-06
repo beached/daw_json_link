@@ -24,7 +24,7 @@ bool test_null_literal_untrusted( ) {
 	using my_number = json_number_null_no_name<std::optional<int>>;
 	DAW_CONSTEXPR std::string_view sv = "null,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Null>{ } );
+	auto v = parse_value_null<my_number, false>( rng );
 	return not v;
 }
 
@@ -34,8 +34,7 @@ bool test_null_literal_known( ) {
 
 	using my_number = json_number_null_no_name<std::optional<int>>;
 	auto rng = BasicParsePolicy( );
-	auto v =
-	  parse_value<my_number, true>( rng, ParseTag<JsonParseTypes::Null>{ } );
+	auto v = parse_value_null<my_number, true>( rng );
 	return not v;
 }
 
@@ -46,7 +45,7 @@ bool test_null_number_untrusted( ) {
 	using my_number = json_number_null_no_name<std::optional<int>>;
 	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Null>{ } );
+	auto v = parse_value_null<my_number, false>( rng );
 	return v and *v == 5;
 }
 
@@ -57,7 +56,7 @@ bool test_null_number_trusted( ) {
 	using my_number = json_number_null_no_name<std::optional<int>>;
 	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Null>{ } );
+	auto v = parse_value_null<my_number, false>( rng );
 	return v and *v == 5;
 }
 
@@ -68,8 +67,7 @@ bool test_null_number_untrusted_known( ) {
 	using my_number = json_number_null_no_name<std::optional<int>>;
 	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) - 1 );
-	auto v =
-	  parse_value<my_number, true>( rng, ParseTag<JsonParseTypes::Null>{ } );
+	auto v = parse_value_null<my_number, true>( rng );
 	return v and *v == 5;
 }
 

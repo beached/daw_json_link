@@ -29,7 +29,7 @@ bool test_zero_untrusted( ) {
 	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = "0,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
+	auto v = parse_value_unsigned<my_number, false>( rng );
 	return not v;
 }
 
@@ -40,7 +40,7 @@ bool test_missing_untrusted( ) {
 	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = " ,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
+	auto v = parse_value_unsigned<my_number, false>( rng );
 	daw::do_not_optimize( v );
 	return false;
 }
@@ -52,7 +52,7 @@ bool test_negative_untrusted( ) {
 	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = "-1,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
+	auto v = parse_value_unsigned<my_number, false>( rng );
 	daw::do_not_optimize( v );
 	return false;
 }
@@ -64,7 +64,7 @@ bool test_real_untrusted( ) {
 	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = "1.23,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
+	auto v = parse_value_unsigned<my_number, false>( rng );
 	daw::do_not_optimize( v );
 	return false;
 }
@@ -79,13 +79,13 @@ bool test_real_untrusted( ) {
 	do {                                                                   \
 	} while( false )
 
-#define do_fail_test( ... )                                   \
-	do {                                                        \
-		try {                                                     \
-			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ ); \
-		} catch( daw::json::json_exception const & ) { break; }   \
-		std::cerr << "Expected exception, but none thrown in '"   \
-		          << "" #__VA_ARGS__ << "'\n";                    \
+#define do_fail_test( ... )                                                    \
+	do {                                                                         \
+		try {                                                                      \
+			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                  \
+		} catch( daw::json::json_exception const & ) { break; }                    \
+		std::cerr << "Expected exception, but none thrown in '" << "" #__VA_ARGS__ \
+		          << "'\n";                                                        \
 	} while( false )
 
 int main( int, char ** )

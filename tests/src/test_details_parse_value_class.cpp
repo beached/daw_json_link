@@ -27,13 +27,13 @@
 	do {                                                                   \
 	} while( false )
 
-#define do_fail_test( ... )                                   \
-	do {                                                        \
-		try {                                                     \
-			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ ); \
-		} catch( daw::json::json_exception const & ) { break; }   \
-		std::cerr << "Expected exception, but none thrown in '"   \
-		          << "" #__VA_ARGS__ << "'\n";                    \
+#define do_fail_test( ... )                                                    \
+	do {                                                                         \
+		try {                                                                      \
+			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                  \
+		} catch( daw::json::json_exception const & ) { break; }                    \
+		std::cerr << "Expected exception, but none thrown in '" << "" #__VA_ARGS__ \
+		          << "'\n";                                                        \
 	} while( false )
 
 namespace daw::json {
@@ -54,8 +54,7 @@ bool empty_class_empty_json_class( ) {
 	std::string_view sv = "{}";
 	daw::do_not_optimize( sv );
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_class_no_name<daw::Empty>>(
-	  rng, ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value_class<json_class_no_name<daw::Empty>, false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -64,8 +63,7 @@ bool empty_class_nonempty_json_class( ) {
 	std::string_view sv = R"({ "a": 12345, "b": {} })";
 	daw::do_not_optimize( sv );
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_class_no_name<daw::Empty>>(
-	  rng, ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value_class<json_class_no_name<daw::Empty>, false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -81,8 +79,9 @@ bool missing_members_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 
-	auto v = parse_value<json_class_no_name<missing_members_fail_t::class_t>>(
-	  rng, ParseTag<JsonParseTypes::Class>{ } );
+	auto v =
+	  parse_value_class<json_class_no_name<missing_members_fail_t::class_t>,
+	                    false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -97,8 +96,9 @@ bool wrong_member_type_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 
-	auto v = parse_value<json_class_no_name<wrong_member_type_fail_t::class_t>>(
-	  rng, ParseTag<JsonParseTypes::Class>{ } );
+	auto v =
+	  parse_value_class<json_class_no_name<wrong_member_type_fail_t::class_t>,
+	                    false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -113,9 +113,8 @@ bool wrong_member_number_type_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 
-	auto v =
-	  parse_value<json_class_no_name<wrong_member_number_type_fail_t::class_t>>(
-	    rng, ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value_class<
+	  json_class_no_name<wrong_member_number_type_fail_t::class_t>, false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -129,8 +128,8 @@ bool unexpected_eof_in_class1_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 
-	auto v = parse_value<json_class_no_name<unexpected_eof_in_class1_fail_t::class_t>>(
-	  rng, ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value_class<
+	  json_class_no_name<unexpected_eof_in_class1_fail_t::class_t>, false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -147,9 +146,8 @@ bool wrong_member_stored_pos_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 
-	auto v =
-	  parse_value<json_class_no_name<wrong_member_stored_pos_fail_t::class_t>>(
-	    rng, ParseTag<JsonParseTypes::Class>{ } );
+	auto v = parse_value_class<
+	  json_class_no_name<wrong_member_stored_pos_fail_t::class_t>, false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }

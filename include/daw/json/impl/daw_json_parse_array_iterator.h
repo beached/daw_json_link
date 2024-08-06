@@ -12,7 +12,6 @@
 
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
-#include "daw_json_parse_value_fwd.h"
 
 #include <daw/daw_attributes.h>
 
@@ -120,8 +119,8 @@ namespace daw::json {
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
 
-					return parse_value<element_t>(
-					  *base::parse_state, ParseTag<element_t::expected_type>{ } );
+					return parse_value<element_t, false, element_t::expected_type>(
+					  *base::parse_state );
 				}
 
 				DAW_ATTRIB_INLINE constexpr json_parse_array_iterator &operator++( ) {

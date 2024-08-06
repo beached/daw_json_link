@@ -15,10 +15,10 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename JsonMember, bool KnownBounds = false,
-			         typename ParseState, JsonParseTypes PTag>
+			template<typename JsonMember, bool KnownBounds, JsonParseTypes PTag,
+			         typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result_t<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<PTag> );
+			parse_value( ParseState &parse_state );
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

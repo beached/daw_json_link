@@ -30,8 +30,9 @@ bool empty_array_empty_json_array( ) {
 	DAW_CONSTEXPR std::string_view sv = R"({ "a": "20200130" })";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	rng.remove_prefix( 7 );
-	auto v = parse_value<json_custom_no_name<std::string_view, NoOp>>(
-	  rng, ParseTag<JsonParseTypes::Custom>{ } );
+	auto v =
+	  parse_value_custom<json_custom_no_name<std::string_view, NoOp>, false>(
+	    rng );
 	return v.size( ) == 8;
 }
 
