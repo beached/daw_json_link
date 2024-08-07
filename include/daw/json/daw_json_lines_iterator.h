@@ -62,8 +62,7 @@ namespace daw::json {
 		public:
 			explicit json_lines_iterator( ) = default;
 
-			explicit constexpr json_lines_iterator(
-			  daw::string_view json_lines_doc )
+			explicit constexpr json_lines_iterator( daw::string_view json_lines_doc )
 			  : m_state( ParseState( std::data( json_lines_doc ),
 			                         daw::data_end( json_lines_doc ) ) ) {
 
@@ -82,8 +81,8 @@ namespace daw::json {
 					m_can_skip = tmp.first;
 				} );
 				(void)run_after_parse;
-				return json_details::parse_value<element_type>(
-				  tmp, ParseTag<element_type::expected_type>{ } );
+				return json_details::parse_value<element_type, false,
+				                                 element_type::expected_type>( tmp );
 			}
 
 			/// @brief A dereferencable value proxy holding the result of operator* .

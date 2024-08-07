@@ -69,15 +69,17 @@ namespace daw::json {
 			auto parse_state = ParseState( first, last );
 
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
-				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				auto result =
+				  json_details::parse_value<json_member, KnownBounds,
+				                            json_member::expected_type>( parse_state );
 				parse_state.trim_left( );
 				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
-				return json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				return json_details::parse_value<json_member, KnownBounds,
+				                                 json_member::expected_type>(
+				  parse_state );
 			}
 		}
 
@@ -140,15 +142,17 @@ namespace daw::json {
 
 			auto parse_state = ParseState::with_allocator( f, l, a );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
-				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				auto result =
+				  json_details::parse_value<json_member, KnownBounds,
+				                            json_member::expected_type>( parse_state );
 				parse_state.trim_left( );
 				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
-				return json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				return json_details::parse_value<json_member, KnownBounds,
+				                                 json_member::expected_type>(
+				  parse_state );
 			}
 		}
 
@@ -232,15 +236,17 @@ namespace daw::json {
 			}
 			auto parse_state = jv.get_raw_state( );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
-				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				auto result =
+				  json_details::parse_value<json_member, KnownBounds,
+				                            json_member::expected_type>( parse_state );
 				parse_state.trim_left( );
 				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
-				return json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				return json_details::parse_value<json_member, KnownBounds,
+				                                 json_member::expected_type>(
+				  parse_state );
 			}
 		}
 
@@ -325,15 +331,17 @@ namespace daw::json {
 			}
 			auto parse_state = jv.get_raw_state( );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
-				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				auto result =
+				  json_details::parse_value<json_member, KnownBounds,
+				                            json_member::expected_type>( parse_state );
 				parse_state.trim_left( );
 				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
-				return json_details::parse_value<json_member, KnownBounds>(
-				  parse_state, ParseTag<json_member::expected_type>{ } );
+				return json_details::parse_value<json_member, KnownBounds,
+				                                 json_member::expected_type>(
+				  parse_state );
 			}
 		}
 
@@ -388,8 +396,9 @@ namespace daw::json {
 			              old_parse_state.class_first, old_parse_state.class_last,
 			              old_parse_state.get_allocator( ) );
 
-			return json_details::parse_value<json_member, KnownBounds>(
-			  parse_state, ParseTag<json_member::expected_type>{ } );
+			return json_details::parse_value<json_member, KnownBounds,
+			                                 json_member::expected_type>(
+			  parse_state );
 		}
 
 		/// @brief Parse a value from a json_value
@@ -451,8 +460,9 @@ namespace daw::json {
 				daw_json_ensure( jv, ErrorReason::JSONPathNotFound );
 			}
 			auto parse_state = jv.get_raw_state( );
-			return json_details::parse_value<json_member, KnownBounds>(
-			  parse_state, ParseTag<json_member::expected_type>{ } );
+			return json_details::parse_value<json_member, KnownBounds,
+			                                 json_member::expected_type>(
+			  parse_state );
 		}
 
 		/// @brief Parse a JSONMember from the json_data starting at member_path.

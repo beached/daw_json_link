@@ -473,8 +473,7 @@ unsigned long long test_dblparse( std::string_view num,
 			rng = json_details::skip_number( rng );
 		}
 		using json_member = json_details::json_deduced_type<double>;
-		return json_details::parse_value<json_member, KnownBounds>(
-		  rng, ParseTag<json_member::expected_type>{ } );
+		return json_details::parse_value_real<json_member, KnownBounds>( rng );
 	};
 	auto lib_parse_dbl = dbl_lib_parser( num );
 	auto const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
@@ -522,8 +521,8 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 			  daw::json::BasicParsePolicy( num.data( ), num.data( ) + num.size( ) );
 			rng = daw::json::json_details::skip_number( rng );
 			using json_member = daw::json::json_details::json_deduced_type<double>;
-			return daw::json::json_details::parse_value<json_member, KnownBounds>(
-			  rng, daw::json::ParseTag<json_member::expected_type>{ } );
+			return daw::json::json_details::parse_value_real<json_member,
+			                                                 KnownBounds>( rng );
 		} else {
 			return daw::json::from_json<double, KnownBounds>( num );
 		}
@@ -561,8 +560,8 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 				  daw::json::BasicParsePolicy( num.data( ), num.data( ) + num.size( ) );
 				rng = daw::json::json_details::skip_number( rng );
 				using json_member = daw::json::json_details::json_deduced_type<double>;
-				return daw::json::json_details::parse_value<json_member, KnownBounds>(
-				  rng, daw::json::ParseTag<json_member::expected_type>{ } );
+				return daw::json::json_details::parse_value_real<json_member,
+				                                                 KnownBounds>( rng );
 			} else {
 				return daw::json::from_json<double, KnownBounds>( num );
 			}
@@ -1428,10 +1427,9 @@ int main( int, char ** ) {
 			ensure( x == 5 );
 		}
 		{
-			constexpr auto const x =
-			  daw::json::json_apply( R"json([])json", []( ) {
-				  return std::size_t{ 5 };
-			  } );
+			constexpr auto const x = daw::json::json_apply( R"json([])json", []( ) {
+				return std::size_t{ 5 };
+			} );
 			ensure( x == 5 );
 		}
 		{

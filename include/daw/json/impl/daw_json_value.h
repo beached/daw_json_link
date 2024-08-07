@@ -504,8 +504,8 @@ namespace daw::json {
 			[[nodiscard]] constexpr auto as( ) const {
 				using result_t = json_details::json_deduced_type<Result>;
 				auto state = m_parse_state;
-				return json_details::parse_value<result_t>(
-				  state, ParseTag<result_t::expected_type>{ } );
+				return json_details::parse_value<result_t, false,
+				                                 result_t::expected_type>( state );
 			}
 
 			template<typename Result>
@@ -709,8 +709,8 @@ namespace daw::json {
 
 		basic_json_value( char const *first, std::size_t sz ) -> basic_json_value<>;
 
-		basic_json_value( char const *first, char const *last )
-		  -> basic_json_value<>;
+		basic_json_value( char const *first,
+		                  char const *last ) -> basic_json_value<>;
 
 		template<typename Result, json_options_t PolicyFlags, typename Allocator>
 		[[nodiscard]] constexpr Result

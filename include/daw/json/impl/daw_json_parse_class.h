@@ -69,15 +69,15 @@ namespace daw::json {
 					if constexpr( is_json_nullable_v<json_member_t> ) {
 
 						auto loc = ParseState{ };
-						return parse_value<json_member_t, true>(
-						  loc, ParseTag<json_member_t::expected_type>{ } );
+						return parse_value<json_member_t, true,
+						                   json_member_t::expected_type>( loc );
 					} else {
 						daw_json_error( missing_member( "ordered_class_member" ),
 						                parse_state );
 					}
 				}
-				return parse_value<json_member_t>(
-				  parse_state, ParseTag<json_member_t::expected_type>{ } );
+				return parse_value<json_member_t, false, json_member_t::expected_type>(
+				  parse_state );
 			}
 
 			///
@@ -118,18 +118,19 @@ namespace daw::json {
 								parse_state.class_first = cf;
 								parse_state.class_last = cl;
 							} );
-							return parse_value<without_name<JsonMember>>(
-							  parse_state, ParseTag<JsonMember::expected_type>{ } );
+							return parse_value<without_name<JsonMember>, false,
+							                   JsonMember::expected_type>( parse_state );
 						} else {
-							auto result = parse_value<without_name<JsonMember>>(
-							  parse_state, ParseTag<JsonMember::expected_type>{ } );
+							auto result =
+							  parse_value<without_name<JsonMember>, false,
+							              JsonMember::expected_type>( parse_state );
 							parse_state.class_first = cf;
 							parse_state.class_last = cl;
 							return result;
 						}
 					} else {
-						return parse_value<without_name<JsonMember>>(
-						  parse_state, ParseTag<JsonMember::expected_type>{ } );
+						return parse_value<without_name<JsonMember>, false,
+						                   JsonMember::expected_type>( parse_state );
 					}
 				}
 				// We cannot find the member, check if the member is nullable
@@ -145,8 +146,8 @@ namespace daw::json {
 				}
 
 				// Member was previously skipped
-				return parse_value<without_name<JsonMember>, true>(
-				  loc, ParseTag<JsonMember::expected_type>{ } );
+				return parse_value<without_name<JsonMember>, true,
+				                   JsonMember::expected_type>( loc );
 			}
 
 			template<bool IsExactClass, typename ParseState, typename OldClassPos>

@@ -114,15 +114,15 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
-					auto key = parse_value<key_t>( *base::parse_state,
-					                               ParseTag<key_t::expected_type>{ } );
+					auto key = parse_value<key_t, false, key_t::expected_type>(
+					  *base::parse_state );
 					name::name_parser::trim_end_of_name( *base::parse_state );
 
 					return json_class_constructor<value_type,
 					                              default_constructor<value_type>>(
 					  std::move( key ),
-					  parse_value<value_t>( *base::parse_state,
-					                        ParseTag<value_t::expected_type>{ } ) );
+					  parse_value<value_t, false, value_t::expected_type>(
+					    *base::parse_state ) );
 				}
 
 				constexpr json_parse_kv_class_iterator &operator++( ) {

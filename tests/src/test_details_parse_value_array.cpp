@@ -10,6 +10,7 @@
 
 #include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_json_parse_common.h>
+#include <daw/json/impl/daw_json_parse_value.h>
 
 #include <daw/daw_benchmark.h>
 
@@ -23,7 +24,7 @@ bool empty_array_empty_json_array( ) {
 
 	DAW_CONSTEXPR std::string_view sv = "[]";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value_array<json_array_no_name<int>>( rng );
+	auto v = parse_value_array<json_array_no_name<int>, false>( rng );
 	return v.empty( );
 }
 
@@ -34,7 +35,7 @@ bool int_array_json_string_array_fail( ) {
 	std::string_view sv = R"([ "this is strange" ])";
 	daw::do_not_optimize( sv );
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value_array<json_array_no_name<int>>( rng );
+	auto v = parse_value_array<json_array_no_name<int>, false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -72,7 +73,7 @@ bool array_with_closing_class_fail( ) {
 	std::string_view sv = R"([ {}}, ])";
 	daw::do_not_optimize( sv );
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value_array<json_array_no_name<InlineClass<>>>( rng );
+	auto v = parse_value_array<json_array_no_name<InlineClass<>>, false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -87,13 +88,13 @@ bool array_with_closing_class_fail( ) {
 	do {                                                                   \
 	} while( false )
 
-#define do_fail_test( ... )                                   \
-	do {                                                        \
-		try {                                                     \
-			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ ); \
-		} catch( daw::json::json_exception const & ) { break; }   \
-		std::cerr << "Expected exception, but none thrown in '"   \
-		          << "" #__VA_ARGS__ << "'\n";                    \
+#define do_fail_test( ... )                                                    \
+	do {                                                                         \
+		try {                                                                      \
+			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                  \
+		} catch( daw::json::json_exception const & ) { break; }                    \
+		std::cerr << "Expected exception, but none thrown in '" << "" #__VA_ARGS__ \
+		          << "'\n";                                                        \
 	} while( false )
 
 int main( int, char ** )

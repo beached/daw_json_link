@@ -192,8 +192,7 @@ namespace daw::json {
 				  JsonClass,
 				  daw::construct_a_t<json_details::json_result_t<JsonClass>>>(
 				  parse_state,
-				  json_details::parse_value<json_member, KnownBounds>(
-				    parse_state, ParseTag<json_member::expected_type>{ } ) );
+				  json_details::parse_value<json_member, KnownBounds, json_member::expected_type>( parse_state ) );
 			}
 		};
 
