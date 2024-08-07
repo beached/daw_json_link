@@ -108,7 +108,8 @@ namespace daw::json {
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
 
 					return get_pair(
-					  parse_value_class<json_class_type, false>( *base::parse_state ) );
+					  parse_value<json_class_type, false, JsonParseTypes::Class>(
+					    *base::parse_state ) );
 				}
 
 				DAW_ATTRIB_INLINE constexpr json_parse_kv_array_iterator &
