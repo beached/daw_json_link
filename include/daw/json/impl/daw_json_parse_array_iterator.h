@@ -12,6 +12,7 @@
 
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
+#include "daw_json_parse_value.h"
 
 #include <daw/daw_attributes.h>
 
