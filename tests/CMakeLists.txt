@@ -1046,6 +1046,12 @@ if( magic_enum_FOUND )
 	add_dependencies( full issue_433_test )
 endif()
 
+add_executable( issue_439_test src/issue_439_test.cpp )
+target_link_libraries( issue_439_test PRIVATE json_test )
+add_test( NAME issue_439_test COMMAND issue_439_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests issue_439_test )
+add_dependencies( full issue_439_test )
+
 add_executable( multi_tu_test src/multi_tu_p0_test.cpp src/multi_tu_p1_test.cpp )
 target_link_libraries( multi_tu_test json_test )
 add_test( NAME multi_tu_test_test COMMAND multi_tu_test )

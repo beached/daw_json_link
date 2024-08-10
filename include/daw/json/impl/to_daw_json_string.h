@@ -1468,6 +1468,23 @@ namespace daw::json {
 				}
 			}
 
+			constexpr int log10( std::uint64_t value ) {
+				constexpr auto values = [] {
+					std::uint64_t v = 1;
+					auto res = std::array<std::uint64_t, 19>{ };
+					for( unsigned n = 0; n < 19; ++n ) {
+						res[n] = v;
+						v *= 10ULL;
+					}
+					return res;
+				}( );
+				auto pos = daw::algorithm::lower_bound(
+				  std::data( values ), daw::data_end( values ), value );
+				auto l = static_cast<int>( pos - std::data( values ) );
+				return l;
+			}
+			static_assert( log10( 1'000'000ULL ) == 6 );
+
 			template<options::FPOutputFormat fp_output_fmt, typename WriteableType,
 			         typename Real>
 			static constexpr WriteableType to_chars( Real const &value,
@@ -1534,10 +1551,22 @@ namespace daw::json {
 					}
 					out_it.put( '.' );
 					auto const p2val = dec.significand - ( p1val * p1pow );
+					// ensure we account for leading zeros
+					//					auto const sig_sigits =
+					{
+						auto const l10_sig = log10( dec.significand ) + 1;
+						auto const l10_p1val = log10( p1val ) + 1;
+						auto const l10_p2val = log10( p2val ) + 1;
+						auto const extra_zeros = l10_sig - ( l10_p2val + l10_p1val );
+						for( int n = 0; n < extra_zeros; ++n ) {
+							out_it.put( '0' );
+						}
+					}
 					out_it = utils::integer_to_string( out_it, p2val );
 					return out_it;
 				}
 				out_it = utils::integer_to_string( out_it, dec.significand );
+
 				while( dec.exponent > 0 ) {
 					out_it.put( '0' );
 					--dec.exponent;
