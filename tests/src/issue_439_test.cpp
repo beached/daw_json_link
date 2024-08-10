@@ -86,7 +86,7 @@ int main( ) {
 	auto obj = daw::json::from_json<TestClass>( json_doc2 );
 	daw_ensure( obj.d == 1.000005 );
 	auto obj_json = daw::json::to_json( obj );
-	daw_ensure( obj_json[0] = '{' );
+	daw_ensure( obj_json[0] == '{' );
 
 	auto arry_of_test_class = daw::json::from_json_array<TestClass>( json_doc1 );
 

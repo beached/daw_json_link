@@ -1469,21 +1469,30 @@ namespace daw::json {
 			}
 
 			constexpr int count_digits( std::uint64_t value ) {
-				constexpr auto values = [] {
-					auto res = std::array<std::uint64_t, 19>{ 0 };
-					std::uint64_t v = 10;
-					for( unsigned n = 1; n < 19; ++n ) {
-						res[n] = v;
-						v *= 10ULL;
-					}
-					return res;
-				}( );
-				for( unsigned n = 1; n < 19; ++n ) {
-					if( values[n] > value ) {
-						return static_cast<int>( n );
-					}
-				}
-				return 19;
+				constexpr std::uint64_t powers[19] = { 10ull,
+				                                       100ull,
+				                                       1000ull,
+				                                       10000ull,
+				                                       100000ull,
+				                                       1000000ull,
+				                                       10000000ull,
+				                                       100000000ull,
+				                                       1000000000ull,
+				                                       10000000000ull,
+				                                       100000000000ull,
+				                                       1000000000000ull,
+				                                       10000000000000ull,
+				                                       100000000000000ull,
+				                                       1000000000000000ull,
+				                                       10000000000000000ull,
+				                                       100000000000000000ull,
+				                                       1000000000000000000ull,
+				                                       10000000000000000000ull };
+
+				auto b =
+				  -( value > 0 ) & ( 63 - daw::cxmath::count_leading_zeroes( value ) );
+				auto a = ( b * 77 ) / 256;
+				return static_cast<int>( 1 + a + ( value >= powers[a] ) );
 			}
 			static_assert( count_digits( 1'000'000ULL ) == 7 );
 
