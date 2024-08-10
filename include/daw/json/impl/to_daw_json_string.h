@@ -1468,22 +1468,24 @@ namespace daw::json {
 				}
 			}
 
-			constexpr int log10( std::uint64_t value ) {
+			constexpr int count_digits( std::uint64_t value ) {
 				constexpr auto values = [] {
-					std::uint64_t v = 1;
-					auto res = std::array<std::uint64_t, 19>{ };
-					for( unsigned n = 0; n < 19; ++n ) {
+					auto res = std::array<std::uint64_t, 19>{ 0 };
+					std::uint64_t v = 10;
+					for( unsigned n = 1; n < 19; ++n ) {
 						res[n] = v;
 						v *= 10ULL;
 					}
 					return res;
 				}( );
-				auto pos = daw::algorithm::lower_bound(
-				  std::data( values ), daw::data_end( values ), value );
-				auto l = static_cast<int>( pos - std::data( values ) );
-				return l;
+				for( unsigned n = 1; n < 19; ++n ) {
+					if( values[n] > value ) {
+						return static_cast<int>( n );
+					}
+				}
+				return 19;
 			}
-			static_assert( log10( 1'000'000ULL ) == 6 );
+			static_assert( count_digits( 1'000'000ULL ) == 7 );
 
 			template<options::FPOutputFormat fp_output_fmt, typename WriteableType,
 			         typename Real>
@@ -1554,9 +1556,9 @@ namespace daw::json {
 					// ensure we account for leading zeros
 					//					auto const sig_sigits =
 					{
-						auto const l10_sig = log10( dec.significand ) + 1;
-						auto const l10_p1val = log10( p1val ) + 1;
-						auto const l10_p2val = log10( p2val ) + 1;
+						auto const l10_sig = count_digits( dec.significand );
+						auto const l10_p1val = count_digits( p1val );
+						auto const l10_p2val = count_digits( p2val );
 						auto const extra_zeros = l10_sig - ( l10_p2val + l10_p1val );
 						for( int n = 0; n < extra_zeros; ++n ) {
 							out_it.put( '0' );

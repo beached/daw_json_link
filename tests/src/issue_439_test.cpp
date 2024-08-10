@@ -75,6 +75,14 @@ int main( ) {
 	auto const flttest0 = daw::json::to_json( 1.000005f );
 	daw_ensure( flttest0 == "1.000005" );
 
+	auto const flttest1 = daw::json::to_json( 1.05f );
+	daw_ensure( flttest1 == "1.05" );
+
+	auto const flttest2 = daw::json::to_json( 1.55f );
+	daw_ensure( flttest2 == "1.55" );
+
+	auto const flttest3 = daw::json::to_json( 21.05f );
+	daw_ensure( flttest3 == "21.05" );
 	auto obj = daw::json::from_json<TestClass>( json_doc2 );
 	daw_ensure( obj.d == 1.000005 );
 	auto obj_json = daw::json::to_json( obj );
