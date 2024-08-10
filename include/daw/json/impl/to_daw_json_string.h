@@ -1468,6 +1468,34 @@ namespace daw::json {
 				}
 			}
 
+			constexpr int count_digits( std::uint64_t value ) {
+				constexpr std::uint64_t powers[19] = { 10ull,
+				                                       100ull,
+				                                       1000ull,
+				                                       10000ull,
+				                                       100000ull,
+				                                       1000000ull,
+				                                       10000000ull,
+				                                       100000000ull,
+				                                       1000000000ull,
+				                                       10000000000ull,
+				                                       100000000000ull,
+				                                       1000000000000ull,
+				                                       10000000000000ull,
+				                                       100000000000000ull,
+				                                       1000000000000000ull,
+				                                       10000000000000000ull,
+				                                       100000000000000000ull,
+				                                       1000000000000000000ull,
+				                                       10000000000000000000ull };
+
+				auto b =
+				  -( value > 0 ) & ( 63 - daw::cxmath::count_leading_zeroes( value ) );
+				auto a = ( b * 77 ) / 256;
+				return static_cast<int>( 1 + a + ( value >= powers[a] ) );
+			}
+			static_assert( count_digits( 1'000'000ULL ) == 7 );
+
 			template<options::FPOutputFormat fp_output_fmt, typename WriteableType,
 			         typename Real>
 			static constexpr WriteableType to_chars( Real const &value,
@@ -1534,10 +1562,22 @@ namespace daw::json {
 					}
 					out_it.put( '.' );
 					auto const p2val = dec.significand - ( p1val * p1pow );
+					// ensure we account for leading zeros
+					//					auto const sig_sigits =
+					{
+						auto const l10_sig = count_digits( dec.significand );
+						auto const l10_p1val = count_digits( p1val );
+						auto const l10_p2val = count_digits( p2val );
+						auto const extra_zeros = l10_sig - ( l10_p2val + l10_p1val );
+						for( int n = 0; n < extra_zeros; ++n ) {
+							out_it.put( '0' );
+						}
+					}
 					out_it = utils::integer_to_string( out_it, p2val );
 					return out_it;
 				}
 				out_it = utils::integer_to_string( out_it, dec.significand );
+
 				while( dec.exponent > 0 ) {
 					out_it.put( '0' );
 					--dec.exponent;
