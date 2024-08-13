@@ -31,24 +31,27 @@ namespace daw::json {
 			inline constexpr bool is_container_opted_into_json_iostreams_v<
 			  Container, std::void_t<typename Container::value_type>> =
 			  is_opted_into_json_iostreams_v<typename Container::value_type>;
+
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json
 
 /// @brief An opt in ostream interface for types that have JSON mappings.
-template<typename T>
-auto operator<<( std::ostream &os, T const &value ) -> std::enable_if_t<
-  daw::json::json_details::is_opted_into_json_iostreams_v<T>, std::ostream &> {
-
+template<typename T DAW_JSON_ENABLEIF(
+  daw::json::json_details::is_opted_into_json_iostreams_v<T> )>
+DAW_JSON_REQUIRES( daw::json::json_details::is_opted_into_json_iostreams_v<T> )
+std::ostream &operator<<( std::ostream &os, T const &value ) {
 	return daw::json::to_json( value, os );
 }
 
 /// @brief An opt in ostream interface for containers of types that have JSON
 /// mappings.
-template<typename Container>
-auto operator<<( std::ostream &os, Container const &c ) -> std::enable_if_t<
-  daw::json::json_details::is_container_opted_into_json_iostreams_v<Container>,
-  std::ostream &> {
-
+template<typename Container DAW_JSON_ENABLEIF(
+  daw::json::json_details::is_container_opted_into_json_iostreams_v<
+    Container> )>
+DAW_JSON_REQUIRES(
+  daw::json::json_details::is_container_opted_into_json_iostreams_v<Container> )
+std::ostream &
+operator<<( std::ostream &os, Container const &c ) {
 	return daw::json::to_json_array( c, os );
 }

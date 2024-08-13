@@ -26,8 +26,8 @@ namespace daw::json {
 			DAW_JSON_MAKE_REQ_TRAIT( has_to_tuple_v,
 			                         to_tuple( std::declval<T const &>( ) ) );
 
-			template<typename T,
-			         std::enable_if_t<has_to_tuple_v<T>, std::nullptr_t> = nullptr>
+			template<typename T DAW_JSON_ENABLEIF( has_to_tuple_v<T> )>
+			DAW_JSON_REQUIRES( has_to_tuple_v<T> )
 			constexpr auto to_tuple_impl( T const &value ) {
 				return to_tuple( value );
 			}

@@ -33,9 +33,9 @@ namespace daw::json {
 			} // namespace container_detect
 
 			template<typename T>
-			struct container_traits<
-			  T, std::enable_if_t<container_detect::is_container_v<T>>>
-			  : std::true_type {};
+			DAW_JSON_REQUIRES( container_detect::is_container_v<T> )
+			struct container_traits<T DAW_JSON_ENABLEIF_S(
+			  container_detect::is_container_v<T> )> : std::true_type {};
 
 			template<typename T, std::size_t N>
 			struct container_traits<std::array<T, N>> : std::true_type {

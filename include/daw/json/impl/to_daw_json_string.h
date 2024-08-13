@@ -272,12 +272,13 @@ namespace daw::json {
 			template<
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
-			  typename WritableType, typename Container,
-			  std::enable_if_t<
-			    daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
-			    std::nullptr_t> = nullptr>
+			  typename WritableType,
+			  typename Container DAW_JSON_ENABLEIF(
+			    daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )>
+			DAW_JSON_REQUIRES(
+			  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )
 			[[nodiscard]] static constexpr WritableType
-			copy_to_iterator( WritableType it, Container const &container ) {
+			  copy_to_iterator( WritableType it, Container const &container ) {
 				constexpr bool restrict_high =
 				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( WritableType::restricted_string_output ==

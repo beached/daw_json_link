@@ -109,9 +109,9 @@
 	}
 #else
 #define DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT2( Name, /*MemberTypeAlias*/... ) \
-	template<typename, typename = void>                                       \
+	template<typename, typename, typename = void>                             \
 	inline constexpr bool Name = false;                                       \
                                                                             \
-	template<typename T>                                                      \
-	inline constexpr bool Name<T, std::void_t<__VA_ARGS__>> = true
+	template<typename T, typename U>                                          \
+	inline constexpr bool Name<T, U, std::void_t<__VA_ARGS__>> = true
 #endif

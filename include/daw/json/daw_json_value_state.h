@@ -321,8 +321,9 @@ namespace daw::json {
 			 * @pre index must exist
 			 * @return A new basic_json_value for the indexed member
 			 */
-			template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
-			                                            std::nullptr_t> = nullptr>
+			template<
+			  typename Integer DAW_JSON_ENABLEIF( std::is_integral_v<Integer> )>
+			DAW_JSON_REQUIRES( std::is_integral_v<Integer> )
 			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
 			operator[]( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {
@@ -348,11 +349,11 @@ namespace daw::json {
 			 * from one past last, e.g. -1 is last item
 			 * @return A new basic_json_value for the indexed member
 			 */
-			template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
-			                                            std::nullptr_t> = nullptr>
+			template<
+			  typename Integer DAW_JSON_ENABLEIF( std::is_integral_v<Integer> )>
+			DAW_JSON_REQUIRES( std::is_integral_v<Integer> )
 			[[nodiscard]] constexpr std::optional<
-			  basic_json_value<PolicyFlags, Allocator>>
-			at( Integer index ) {
+			  basic_json_value<PolicyFlags, Allocator>> at( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {
 					if( index < 0 ) {
 						index = -index;
@@ -380,13 +381,14 @@ namespace daw::json {
 			}
 		};
 
-		basic_stateful_json_value( )->basic_stateful_json_value<>;
+		basic_stateful_json_value( ) -> basic_stateful_json_value<>;
 
 		template<json_options_t PolicyFlags, typename Allocator>
 		basic_stateful_json_value( basic_json_value<PolicyFlags, Allocator> )
 		  -> basic_stateful_json_value<PolicyFlags, Allocator>;
 
-		basic_stateful_json_value( daw::string_view )->basic_stateful_json_value<>;
+		basic_stateful_json_value( daw::string_view )
+		  -> basic_stateful_json_value<>;
 
 		using json_value_state = basic_stateful_json_value<>;
 	} // namespace DAW_JSON_VER

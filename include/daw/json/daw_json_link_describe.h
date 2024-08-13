@@ -63,9 +63,11 @@ namespace daw::json {
 	} // namespace describe_impl
 
 	template<typename T>
+	DAW_JSON_REQUIRES_20( boost::describe::has_describe_members<T>::value
+	                        and use_boost_describe_v<T> )
 	struct json_data_contract<
-	  T, std::enable_if_t<boost::describe::has_describe_members<T>::value and
-	                      use_boost_describe_v<T>>> {
+	  T DAW_JSON_REQUIRES_17B( boost::describe::has_describe_members<T>::value
+	                             and use_boost_describe_v<T> )> {
 	private:
 		using pub_desc_t =
 		  boost::describe::describe_members<T, boost::describe::mod_public>;

@@ -579,10 +579,11 @@ namespace daw::json {
 			struct tuple_types_list;
 
 			template<template<class...> class Tuple, typename... Ts>
-			struct tuple_types_list<
-			  Tuple<Ts...>,
-			  std::enable_if_t<( not is_std_tuple_v<Tuple<Ts...>> and
-			                     not can_convert_to_tuple_v<Tuple<Ts...>> )>> {
+			DAW_JSON_REQUIRES( not is_std_tuple_v<Tuple<Ts...>> and
+			                   not can_convert_to_tuple_v<Tuple<Ts...>> )
+			struct tuple_types_list<Tuple<Ts...> DAW_JSON_ENABLEIF_S(
+			  not is_std_tuple_v<Tuple<Ts...>> and
+			  not can_convert_to_tuple_v<Tuple<Ts...>> )> {
 				static_assert( are_deduced_type_mapped_v<daw::remove_cvref_t<Ts>...>,
 				               "Missing mapping for type in tuple" );
 
@@ -598,9 +599,9 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			struct tuple_types_list<
-			  T,
-			  std::enable_if_t<( can_convert_to_tuple_v<T> and not is_tuple_v<T> )>> {
+			DAW_JSON_REQUIRES( can_convert_to_tuple_v<T> and not is_tuple_v<T> )
+			struct tuple_types_list<T DAW_JSON_ENABLEIF_S(
+			  can_convert_to_tuple_v<T> and not is_tuple_v<T> )> {
 				using tp_type_t =
 				  daw::remove_cvref_t<decltype( to_tuple_impl( std::declval<T>( ) ) )>;
 				using jt_types_list = tuple_types_list<tp_type_t>;
