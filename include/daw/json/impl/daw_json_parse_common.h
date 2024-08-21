@@ -456,8 +456,9 @@ namespace daw::json {
 			};
 
 			template<typename JsonType>
+			DAW_JSON_REQUIRES( is_a_json_type_v<JsonType> )
 			struct json_deduced_type_map<
-			  JsonType, std::enable_if_t<is_a_json_type_v<JsonType>>> {
+			  JsonType DAW_JSON_ENABLEIF_S( is_a_json_type_v<JsonType> )> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
 
@@ -466,8 +467,9 @@ namespace daw::json {
 			};
 
 			template<typename T>
+			DAW_JSON_REQUIRES( has_json_data_contract_trait_v<T> )
 			struct json_deduced_type_map<
-			  T, std::enable_if_t<has_json_data_contract_trait_v<T>>> {
+			  T DAW_JSON_ENABLEIF_S( has_json_data_contract_trait_v<T> )> {
 				static constexpr bool is_null = false;
 				using type = typename json_data_contract<T>::type;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
@@ -523,10 +525,12 @@ namespace daw::json {
 #endif
 
 			template<typename Integer>
-			struct json_deduced_type_map<
-			  Integer, std::enable_if_t<
-			             not json_details::has_json_data_contract_trait_v<Integer> and
-			             daw::is_integral_v<Integer>>> {
+			DAW_JSON_REQUIRES(
+			  not json_details::has_json_data_contract_trait_v<Integer> and
+			  daw::is_integral_v<Integer> )
+			struct json_deduced_type_map<Integer DAW_JSON_ENABLEIF_S(
+			  not json_details::has_json_data_contract_trait_v<Integer> and
+			  daw::is_integral_v<Integer> )> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type =
 				  daw::is_signed_v<Integer> ? JsonParseTypes::Signed
@@ -536,10 +540,12 @@ namespace daw::json {
 			};
 
 			template<typename Enum>
-			struct json_deduced_type_map<
-			  Enum, std::enable_if_t<
-			          not json_details::has_json_data_contract_trait_v<Enum> and
-			          std::is_enum_v<Enum>>> {
+			DAW_JSON_REQUIRES(
+			  not json_details::has_json_data_contract_trait_v<Enum> and
+			  std::is_enum_v<Enum> )
+			struct json_deduced_type_map<Enum DAW_JSON_ENABLEIF_S(
+			  not json_details::has_json_data_contract_trait_v<Enum> and
+			  std::is_enum_v<Enum> )> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type =
 				  daw::is_signed_v<std::underlying_type<Enum>>
@@ -550,11 +556,12 @@ namespace daw::json {
 			};
 
 			template<typename FloatingPoint>
-			struct json_deduced_type_map<
-			  FloatingPoint,
-			  std::enable_if_t<
-			    not json_details::has_json_data_contract_trait_v<FloatingPoint> and
-			    daw::is_floating_point_v<FloatingPoint>>> {
+			DAW_JSON_REQUIRES(
+			  not json_details::has_json_data_contract_trait_v<FloatingPoint> and
+			  daw::is_floating_point_v<FloatingPoint> )
+			struct json_deduced_type_map<FloatingPoint DAW_JSON_ENABLEIF_S(
+			  not json_details::has_json_data_contract_trait_v<FloatingPoint> and
+			  daw::is_floating_point_v<FloatingPoint> )> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Real;
 
@@ -562,10 +569,12 @@ namespace daw::json {
 			};
 
 			template<typename Tuple>
-			struct json_deduced_type_map<
-			  Tuple, std::enable_if_t<
-			           not json_details::has_json_data_contract_trait_v<Tuple> and
-			           is_tuple_v<Tuple>>> {
+			DAW_JSON_REQUIRES(
+			  not json_details::has_json_data_contract_trait_v<Tuple> and
+			  is_tuple_v<Tuple> )
+			struct json_deduced_type_map<Tuple DAW_JSON_ENABLEIF_S(
+			  not json_details::has_json_data_contract_trait_v<Tuple> and
+			  is_tuple_v<Tuple> )> {
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Tuple;
 
@@ -597,11 +606,12 @@ namespace daw::json {
 			  std::bool_constant<is_associative_container_v<T>>;
 
 			template<typename AssociativeContainer>
-			struct json_deduced_type_map<
-			  AssociativeContainer,
-			  std::enable_if_t<(
-			    not has_json_data_contract_trait_v<AssociativeContainer> and
-			    is_associative_container_v<AssociativeContainer> )>> {
+			DAW_JSON_REQUIRES(
+			  not has_json_data_contract_trait_v<AssociativeContainer> and
+			  is_associative_container_v<AssociativeContainer> )
+			struct json_deduced_type_map<AssociativeContainer DAW_JSON_ENABLEIF_S(
+			  not has_json_data_contract_trait_v<AssociativeContainer> and
+			  is_associative_container_v<AssociativeContainer> )> {
 				static constexpr bool is_null = false;
 				using key = typename AssociativeContainer::key_type;
 				using value = typename AssociativeContainer::mapped_type;
@@ -617,8 +627,9 @@ namespace daw::json {
 			  not is_string_v<T>;
 
 			template<typename Container>
+			DAW_JSON_REQUIRES( is_deduced_array_v<Container> )
 			struct json_deduced_type_map<
-			  Container, std::enable_if_t<is_deduced_array_v<Container>>> {
+			  Container DAW_JSON_ENABLEIF_S( is_deduced_array_v<Container> )> {
 				static constexpr bool is_null = false;
 				using value = typename Container::value_type;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Array;
@@ -634,8 +645,9 @@ namespace daw::json {
 			                     concepts::nullable_value_type_t<T>>;
 
 			template<typename T>
+			DAW_JSON_REQUIRES( has_nullable_type_map_v<T> )
 			struct json_deduced_type_map<
-			  T, std::enable_if_t<has_nullable_type_map_v<T>>> {
+			  T DAW_JSON_ENABLEIF_S( has_nullable_type_map_v<T> )> {
 				static constexpr bool is_null = true;
 				using sub_type = concepts::nullable_value_type_t<T>;
 				using type = json_deduced_type_map<sub_type>;
@@ -916,8 +928,9 @@ namespace daw::json {
 			                                    T::member_type::dependent_member );
 
 			template<typename JsonMember>
+			DAW_JSON_REQUIRES( is_json_nullable_v<JsonMember> )
 			inline constexpr bool has_dependent_member_v<
-			  JsonMember, std::enable_if_t<is_json_nullable_v<JsonMember>>> =
+			  JsonMember DAW_JSON_ENABLEIF_S( is_json_nullable_v<JsonMember> )> =
 			  has_nullable_dependent_member_v<JsonMember>;
 
 			template<typename Constructor>

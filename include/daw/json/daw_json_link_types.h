@@ -191,8 +191,9 @@ namespace daw::json {
 				return json_details::construct_value<
 				  JsonClass,
 				  daw::construct_a_t<json_details::json_result_t<JsonClass>>>(
-				  parse_state,
-				  json_details::parse_value<json_member, KnownBounds, json_member::expected_type>( parse_state ) );
+				  parse_state, json_details::parse_value<json_member, KnownBounds,
+				                                         json_member::expected_type>(
+				                 parse_state ) );
 			}
 		};
 

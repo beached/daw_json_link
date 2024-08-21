@@ -212,8 +212,9 @@ namespace daw::json {
 
 		/// @brief Default constructor for readable nullable types.
 		template<typename T>
+		DAW_JSON_REQUIRES( concepts::is_nullable_value_v<T> )
 		struct nullable_constructor<
-		  T, std::enable_if_t<concepts::is_nullable_value_v<T>>> {
+		  T DAW_JSON_ENABLEIF_S( concepts::is_nullable_value_v<T> )> {
 			using value_type = concepts::nullable_value_type_t<T>;
 			using rtraits_t = concepts::nullable_value_traits<T>;
 
@@ -227,12 +228,12 @@ namespace daw::json {
 				return rtraits_t{ }( concepts::construct_nullable_with_empty );
 			}
 
-			template<typename... Args,
-			         std::enable_if_t<
-			           concepts::is_nullable_value_constructible_v<T, Args...>,
-			           std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE
-			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
+			template<typename... Args DAW_JSON_ENABLEIF(
+			  concepts::is_nullable_value_constructible_v<T, Args...> )>
+			DAW_JSON_REQUIRES(
+			  concepts::is_nullable_value_constructible_v<T, Args...> )
+			[[nodiscard]] DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP
+			  constexpr auto
 			  operator( )( Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 			  noexcept(
 			    concepts::is_nullable_value_nothrow_constructible_v<T, Args...> ) {
@@ -240,12 +241,12 @@ namespace daw::json {
 				                     DAW_FWD( args )... );
 			}
 
-			template<typename Pointer,
-			         std::enable_if_t<
-			           concepts::is_nullable_pointer_constructible_v<T, Pointer *>,
-			           std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIB_INLINE
-			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
+			template<typename Pointer DAW_JSON_ENABLEIF(
+			  concepts::is_nullable_pointer_constructible_v<T, Pointer *> )>
+			DAW_JSON_REQUIRES(
+			  concepts::is_nullable_pointer_constructible_v<T, Pointer *> )
+			[[nodiscard]] DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP
+			  constexpr auto
 			  operator( )( concepts::construct_nullable_with_pointer_t,
 			               Pointer *ptr ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 			  noexcept(

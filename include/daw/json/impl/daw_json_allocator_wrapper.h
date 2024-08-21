@@ -53,15 +53,9 @@ namespace daw::json {
 				}
 			};
 
-			template<typename A, typename T, typename = void>
-			inline constexpr bool allocator_has_rebind_v = false;
-
-			template<typename A, typename T>
-			inline constexpr bool allocator_has_rebind_v<
-			  A, T,
-			  std::void_t<
-			    typename std::allocator_traits<A>::template rebind_traits<T>::type>> =
-			  true;
+			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT2(
+			  allocator_has_rebind_v,
+			  typename std::allocator_traits<T>::template rebind_traits<U>::type );
 
 			template<typename Alloc>
 			struct AllocatorWrapper

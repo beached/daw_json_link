@@ -13,6 +13,8 @@
 
 #include <daw/daw_consteval.h>
 #include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_is_detected.h>
+#include <daw/stdinc/enable_if.h>
 
 /// DAW_NO_FLATTEN disables any flatten attributes in code.  This is disabled in
 /// GCC by default as it cannot handle it
@@ -185,11 +187,11 @@
 
 #if DAW_HAS_CLANG_VER_GTE( 17, 0 )
 #define DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING \
-_Pragma( "clang diagnostic push") \
-_Pragma( "clang diagnostic ignored \"-Wc++23-extensions\"" )
+	_Pragma( "clang diagnostic push" )                  \
+	  _Pragma( "clang diagnostic ignored \"-Wc++23-extensions\"" )
 
 #define DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING \
-_Pragma( "clang diagnostic pop" )
+	_Pragma( "clang diagnostic pop" )
 #else
 #define DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING
 #define DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING
@@ -263,4 +265,19 @@ _Pragma( "clang diagnostic pop" )
 #if __cpp_lib_containers_ranges > 202202L
 #define DAW_JSON_HAS_CPP23_RANGE_CTOR
 #endif
+#endif
+
+#if defined( DAW_HAS_CONCEPTS ) and not defined( DAW_JSON_NO_REQUIRES )
+#define DAW_JSON_USE_REQUIRES
+#define DAW_JSON_ENABLEIF( ... )
+#define DAW_JSON_ENABLEIF2( ... )
+#define DAW_JSON_ENABLEIF_S( ... )
+#define DAW_JSON_REQUIRES( ... ) requires( __VA_ARGS__ )
+#else
+#define DAW_JSON_ENABLEIF( ... ) \
+	, std::enable_if_t<( __VA_ARGS__ ), std::nullptr_t> = nullptr
+#define DAW_JSON_ENABLEIF2( ... ) \
+	, std::enable_if_t<( __VA_ARGS__ ), std::nullptr_t>
+#define DAW_JSON_ENABLEIF_S( ... ) , std::enable_if_t<( __VA_ARGS__ )>
+#define DAW_JSON_REQUIRES( ... )
 #endif

@@ -22,14 +22,8 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename, typename, typename = void>
-			inline constexpr bool has_push_back_v = false;
-
-			template<typename Container, typename Value>
-			inline constexpr bool has_push_back_v<
-			  Container, Value,
-			  std::void_t<decltype( std::declval<Container &>( ).push_back(
-			    std::declval<Value>( ) ) )>> = true;
+			DAW_MAKE_REQ_TRAIT2(
+			  has_push_back_v, std::declval<T &>( ).push_back( std::declval<U>( ) ) );
 
 			template<typename, typename, typename = void>
 			inline constexpr bool has_insert_end_v = false;
@@ -81,11 +75,12 @@ namespace daw::json {
 				}
 			}
 
-			template<typename Value,
-			         std::enable_if_t<
-			           not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>>,
-			           std::nullptr_t> = nullptr>
-			DAW_ATTRIB_INLINE constexpr basic_appender &operator=( Value &&v ) {
+			template<typename Value DAW_JSON_ENABLEIF(
+			  not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>> )>
+			DAW_JSON_REQUIRES(
+			  not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>> )
+			DAW_ATTRIB_INLINE constexpr basic_appender &
+			operator=( Value &&v ) {
 				operator( )( DAW_FWD( v ) );
 				return *this;
 			}

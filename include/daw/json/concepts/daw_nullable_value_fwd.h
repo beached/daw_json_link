@@ -87,11 +87,12 @@ namespace daw::json {
 					return value_type{ };
 				}
 				/// @brief Return an empty nullable type
-				template<typename... Args,
-				         std::enable_if_t<
-				           nullable_impl::is_nullable_value_type_constructible_v<
-				             nullable_type, Args...>,
-				           std::nullptr_t> = nullptr>
+				template<typename... Args DAW_JSON_ENABLEIF(
+				  nullable_impl::is_nullable_value_type_constructible_v<nullable_type,
+				                                                        Args...> )>
+				DAW_JSON_REQUIRES(
+				  nullable_impl::is_nullable_value_type_constructible_v<nullable_type,
+				                                                        Args...> )
 				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
 				operator( )( construct_nullable_with_empty_t,
 				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST

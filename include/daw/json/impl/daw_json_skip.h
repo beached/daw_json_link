@@ -163,12 +163,13 @@ namespace daw::json {
 
 			// DAW TODO: This branch has a bug that shows up in twitter_test2
 #if false and defined( DAW_CX_BIT_CAST )
-			template<typename ParseState,
-			         std::enable_if_t<( ParseState::is_unchecked_input or
-			                            ParseState::is_zero_terminated_string ),
-			                          std::nullptr_t> = nullptr>
+			template<typename ParseState DAW_JSON_ENABLEIF(
+			  ParseState::is_unchecked_input or
+			  ParseState::is_zero_terminated_string )>
+			DAW_JSON_REQUIRES( ParseState::is_unchecked_input or
+			                     ParseState::is_zero_terminated_string )
 			[[nodiscard]] static constexpr ParseState
-			skip_number( ParseState &parse_state ) {
+			  skip_number( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 
 				auto result = parse_state;
@@ -207,15 +208,16 @@ namespace daw::json {
 				return result;
 			}
 
-			template<typename ParseState,
-			         std::enable_if_t<not( ParseState::is_unchecked_input or
-			                               ParseState::is_zero_terminated_string ),
-			                          std::nullptr_t> = nullptr>
+			template<typename ParseState DAW_JSON_ENABLEIF(
+			  not( ParseState::is_unchecked_input or
+			       ParseState::is_zero_terminated_string ) )>
+			DAW_JSON_REQUIRES( not( ParseState::is_unchecked_input or
+			                          ParseState::is_zero_terminated_string ) )
 #else
 			template<typename ParseState>
 #endif
 			[[nodiscard]] static constexpr ParseState
-			skip_number( ParseState &parse_state ) {
+			  skip_number( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );

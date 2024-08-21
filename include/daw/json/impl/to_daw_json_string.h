@@ -43,10 +43,10 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<options::FPOutputFormat fp_output_format, typename WriteableType,
-			         typename Real>
-			static constexpr WriteableType to_chars( Real const &value,
-			                                         WriteableType out_it );
+			template<typename WriteableType, typename Real>
+			static constexpr WriteableType
+			to_chars( options::FPOutputFormat fp_output_format, Real const &value,
+			          WriteableType out_it );
 		} // namespace json_details
 
 		namespace json_details::to_strings {
@@ -272,12 +272,13 @@ namespace daw::json {
 			template<
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
-			  typename WritableType, typename Container,
-			  std::enable_if_t<
-			    daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
-			    std::nullptr_t> = nullptr>
+			  typename WritableType,
+			  typename Container DAW_JSON_ENABLEIF(
+			    daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )>
+			DAW_JSON_REQUIRES(
+			  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )
 			[[nodiscard]] static constexpr WritableType
-			copy_to_iterator( WritableType it, Container const &container ) {
+			  copy_to_iterator( WritableType it, Container const &container ) {
 				constexpr bool restrict_high =
 				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( WritableType::restricted_string_output ==
@@ -599,7 +600,7 @@ namespace daw::json {
 				}
 				if constexpr( daw::is_floating_point_v<parse_to_t> ) {
 					static_assert( sizeof( parse_to_t ) <= sizeof( double ) );
-					it = to_chars<JsonMember::fp_output_format>( value, it );
+					it = to_chars( JsonMember::fp_output_format, value, it );
 				} else {
 					using std::to_string;
 					using to_strings::to_string;
@@ -1468,38 +1469,10 @@ namespace daw::json {
 				}
 			}
 
-			constexpr int count_digits( std::uint64_t value ) {
-				constexpr std::uint64_t powers[19] = { 10ull,
-				                                       100ull,
-				                                       1000ull,
-				                                       10000ull,
-				                                       100000ull,
-				                                       1000000ull,
-				                                       10000000ull,
-				                                       100000000ull,
-				                                       1000000000ull,
-				                                       10000000000ull,
-				                                       100000000000ull,
-				                                       1000000000000ull,
-				                                       10000000000000ull,
-				                                       100000000000000ull,
-				                                       1000000000000000ull,
-				                                       10000000000000000ull,
-				                                       100000000000000000ull,
-				                                       1000000000000000000ull,
-				                                       10000000000000000000ull };
-
-				auto b =
-				  -( value > 0 ) & ( 63 - daw::cxmath::count_leading_zeroes( value ) );
-				auto a = ( b * 77 ) / 256;
-				return static_cast<int>( 1 + a + ( value >= powers[a] ) );
-			}
-			static_assert( count_digits( 1'000'000ULL ) == 7 );
-
-			template<options::FPOutputFormat fp_output_fmt, typename WriteableType,
-			         typename Real>
-			static constexpr WriteableType to_chars( Real const &value,
-			                                         WriteableType out_it ) {
+			template<typename WriteableType, typename Real>
+			static constexpr WriteableType
+			to_chars( options::FPOutputFormat fp_output_fmt, Real const &value,
+			          WriteableType out_it ) {
 				daw::jkj::dragonbox::unsigned_fp_t<Real> dec =
 				  daw::jkj::dragonbox::to_decimal(
 				    value, daw::jkj::dragonbox::policy::sign::ignore );
@@ -1565,9 +1538,9 @@ namespace daw::json {
 					// ensure we account for leading zeros
 					//					auto const sig_sigits =
 					{
-						auto const l10_sig = count_digits( dec.significand );
-						auto const l10_p1val = count_digits( p1val );
-						auto const l10_p2val = count_digits( p2val );
+						auto const l10_sig = daw::cxmath::count_digits( dec.significand );
+						auto const l10_p1val = daw::cxmath::count_digits( p1val );
+						auto const l10_p2val = daw::cxmath::count_digits( p2val );
 						auto const extra_zeros = l10_sig - ( l10_p2val + l10_p1val );
 						for( int n = 0; n < extra_zeros; ++n ) {
 							out_it.put( '0' );

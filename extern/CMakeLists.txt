@@ -27,6 +27,7 @@ else()
     FetchContent_Declare(
             daw_header_libraries
             GIT_REPOSITORY https://github.com/beached/header_libraries.git
+						GIT_SHALLOW 1
             GIT_TAG master
     )
 endif()
@@ -34,6 +35,7 @@ endif()
 FetchContent_Declare(
         daw_utf_range
         GIT_REPOSITORY https://github.com/beached/utf_range.git
+				GIT_SHALLOW 1
         GIT_TAG v2.2.5
 )
 

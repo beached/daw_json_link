@@ -54,10 +54,12 @@ namespace daw::json {
 		/// @param out_it result to serialize to
 		/// @return it as is with ref qual or as a value if rvalue ref
 		template<typename JsonClass = use_default, typename Value,
-		         typename WritableType = std::string, auto... PolicyFlags,
-		         std::enable_if_t<concepts::is_writable_output_type_v<
-		                            daw::remove_cvref_t<WritableType>>,
-		                          std::nullptr_t> = nullptr>
+		         typename WritableType = std::string,
+		         auto... PolicyFlags DAW_JSON_ENABLEIF(
+		           concepts::is_writable_output_type_v<
+		             daw::remove_cvref_t<WritableType>> )>
+		DAW_JSON_REQUIRES(
+		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json(
 		  Value const &value, WritableType &&it = std::string{ },
 		  options::output_flags_t<PolicyFlags...> = options::output_flags<> );
@@ -91,10 +93,12 @@ namespace daw::json {
 		 * @return WritableType withstate of iterator
 		 */
 		template<typename JsonElement = use_default, typename Container,
-		         typename WritableType, auto... PolicyFlags,
-		         std::enable_if_t<concepts::is_writable_output_type_v<
-		                            daw::remove_cvref_t<WritableType>>,
-		                          std::nullptr_t> = nullptr>
+		         typename WritableType,
+		         auto... PolicyFlags DAW_JSON_ENABLEIF(
+		           concepts::is_writable_output_type_v<
+		             daw::remove_cvref_t<WritableType>> )>
+		DAW_JSON_REQUIRES(
+		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json_array(
 		  Container const &c, WritableType &&it,
 		  options::output_flags_t<PolicyFlags...> = options::output_flags<> );

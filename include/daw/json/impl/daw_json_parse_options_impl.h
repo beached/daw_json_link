@@ -179,12 +179,12 @@ namespace daw::json {
 				return value;
 			}
 
-			template<typename PolicyFlag, typename... PolicyFlags,
-			         std::enable_if_t<are_option_flags<PolicyFlag, PolicyFlags...>,
-			                          std::nullptr_t> = nullptr>
-			DAW_CONSTEVAL json_options_t set_bits( json_options_t value,
-			                                       PolicyFlag pol,
-			                                       PolicyFlags... pols ) {
+			template<typename PolicyFlag,
+			         typename... PolicyFlags DAW_JSON_ENABLEIF(
+			           are_option_flags<PolicyFlag, PolicyFlags...> )>
+			DAW_JSON_REQUIRES( are_option_flags<PolicyFlag, PolicyFlags...> )
+			DAW_CONSTEVAL json_options_t
+			  set_bits( json_options_t value, PolicyFlag pol, PolicyFlags... pols ) {
 				static_assert( are_option_flags<PolicyFlags...>,
 				               "Only registered policy types are allowed" );
 

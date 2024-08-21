@@ -23,9 +23,9 @@ namespace daw::json {
 		namespace concepts {
 			/// @brief Specialization for ostream &
 			template<typename T>
-			struct writable_output_trait<
-			  T, std::enable_if_t<std::is_base_of_v<std::ostream, T>>>
-			  : std::true_type {
+			DAW_JSON_REQUIRES( std::is_base_of_v<std::ostream, T> )
+			struct writable_output_trait<T DAW_JSON_ENABLEIF_S(
+			  std::is_base_of_v<std::ostream, T> )> : std::true_type {
 
 				template<typename... StringViews>
 				static inline void write( std::ostream &os,

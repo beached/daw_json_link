@@ -24,5 +24,5 @@ namespace daw::json {
 			template<typename, typename = void>
 			struct container_traits : std::false_type {};
 		} // namespace concepts
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json
