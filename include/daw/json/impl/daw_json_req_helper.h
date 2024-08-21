@@ -105,7 +105,7 @@
 #define DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT2( Name, /*MemberTypeAlias*/... ) \
 	template<typename T, typename U>                                          \
 	inline constexpr bool Name = requires {                                   \
-		typename __VA_ARGS__;                                                   \
+		__VA_ARGS__;                                                            \
 	}
 #else
 #define DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT2( Name, /*MemberTypeAlias*/... ) \

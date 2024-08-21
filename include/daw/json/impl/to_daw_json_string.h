@@ -43,10 +43,10 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<options::FPOutputFormat fp_output_format, typename WriteableType,
-			         typename Real>
-			static constexpr WriteableType to_chars( Real const &value,
-			                                         WriteableType out_it );
+			template<typename WriteableType, typename Real>
+			static constexpr WriteableType
+			to_chars( options::FPOutputFormat fp_output_format, Real const &value,
+			          WriteableType out_it );
 		} // namespace json_details
 
 		namespace json_details::to_strings {
@@ -600,7 +600,7 @@ namespace daw::json {
 				}
 				if constexpr( daw::is_floating_point_v<parse_to_t> ) {
 					static_assert( sizeof( parse_to_t ) <= sizeof( double ) );
-					it = to_chars<JsonMember::fp_output_format>( value, it );
+					it = to_chars( JsonMember::fp_output_format, value, it );
 				} else {
 					using std::to_string;
 					using to_strings::to_string;
@@ -1469,10 +1469,10 @@ namespace daw::json {
 				}
 			}
 
-			template<options::FPOutputFormat fp_output_fmt, typename WriteableType,
-			         typename Real>
-			static constexpr WriteableType to_chars( Real const &value,
-			                                         WriteableType out_it ) {
+			template<typename WriteableType, typename Real>
+			static constexpr WriteableType
+			to_chars( options::FPOutputFormat fp_output_fmt, Real const &value,
+			          WriteableType out_it ) {
 				daw::jkj::dragonbox::unsigned_fp_t<Real> dec =
 				  daw::jkj::dragonbox::to_decimal(
 				    value, daw::jkj::dragonbox::policy::sign::ignore );
