@@ -895,7 +895,7 @@ add_test( NAME out_of_order_test COMMAND out_of_order_test )
 add_dependencies( ci_tests out_of_order_test )
 add_dependencies( full out_of_order_test )
 
-if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13 )
+if( NOT EMSCRIPTEN AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13 )
 	# Only clang is supported for fuzzing
 	add_executable( daw_json_fuzzing EXCLUDE_FROM_ALL src/daw_json_fuzzing.cpp )
 	target_link_libraries( daw_json_fuzzing PRIVATE json_test "-fsanitize=fuzzer,address,undefined" )
