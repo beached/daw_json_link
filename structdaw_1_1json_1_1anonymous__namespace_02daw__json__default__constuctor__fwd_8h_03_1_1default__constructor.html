@@ -96,12 +96,12 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6c8a37826225dfe81081041f3616f891"><td class="memTemplParams" colspan="2">template&lt;typename... Args, std::enable_if_t&lt; std::is_constructible_v&lt; T, Args... &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
-<tr class="memitem:a6c8a37826225dfe81081041f3616f891"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_INLINE constexpr <a class="el" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__default__constuctor__fwd_8h_03_1_1default__constructor.html#a6c8a37826225dfe81081041f3616f891">operator()</a> (Args &amp;&amp;...args) <a class="el" href="daw__json__switches_8h.html#a3311e700c0ddc4417661e1c50510e996">DAW_JSON_CPP23_STATIC_CALL_OP_CONST</a></td></tr>
-<tr class="separator:a6c8a37826225dfe81081041f3616f891"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab41a99bd017400f8c4b5c13989045fe3"><td class="memTemplParams" colspan="2">template&lt;typename... Args, std::enable_if_t&lt; json_details::should_list_construct_v&lt; T, Args... &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
-<tr class="memitem:ab41a99bd017400f8c4b5c13989045fe3"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_INLINE constexpr <a class="el" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__default__constuctor__fwd_8h_03_1_1default__constructor.html#ab41a99bd017400f8c4b5c13989045fe3">operator()</a> (Args &amp;&amp;...args) <a class="el" href="daw__json__switches_8h.html#a3311e700c0ddc4417661e1c50510e996">DAW_JSON_CPP23_STATIC_CALL_OP_CONST</a> noexcept(std::is_nothrow_constructible_v&lt; T, Args... &gt;)</td></tr>
-<tr class="separator:ab41a99bd017400f8c4b5c13989045fe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad620ff64bd01cffd92219bbc0e7a9688"><td class="memTemplParams" colspan="2">template&lt;typename... Args  DAW_JSON_ENABLEIF&gt; </td></tr>
+<tr class="memitem:ad620ff64bd01cffd92219bbc0e7a9688"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_INLINE constexpr <a class="el" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__default__constuctor__fwd_8h_03_1_1default__constructor.html#ad620ff64bd01cffd92219bbc0e7a9688">operator()</a> (Args &amp;&amp;...args) <a class="el" href="daw__json__switches_8h.html#a3311e700c0ddc4417661e1c50510e996">DAW_JSON_CPP23_STATIC_CALL_OP_CONST</a></td></tr>
+<tr class="separator:ad620ff64bd01cffd92219bbc0e7a9688"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3df331a379c862bde7fd61cb650fb096"><td class="memTemplParams" colspan="2">template&lt;typename... Args  DAW_JSON_ENABLEIF&gt; </td></tr>
+<tr class="memitem:a3df331a379c862bde7fd61cb650fb096"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_INLINE constexpr <a class="el" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__default__constuctor__fwd_8h_03_1_1default__constructor.html#a3df331a379c862bde7fd61cb650fb096">operator()</a> (Args &amp;&amp;...args) <a class="el" href="daw__json__switches_8h.html#a3311e700c0ddc4417661e1c50510e996">DAW_JSON_CPP23_STATIC_CALL_OP_CONST</a> noexcept(std::is_nothrow_constructible_v&lt; T, Args... &gt;)</td></tr>
+<tr class="separator:a3df331a379c862bde7fd61cb650fb096"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename T, typename = void&gt;<br />
@@ -136,15 +136,15 @@ template&lt;typename T , typename  = void&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a6c8a37826225dfe81081041f3616f891"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6c8a37826225dfe81081041f3616f891">&#9670;&nbsp;</a></span>operator()() <span class="overload">[1/2]</span></h2>
+<a id="ad620ff64bd01cffd92219bbc0e7a9688"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad620ff64bd01cffd92219bbc0e7a9688">&#9670;&nbsp;</a></span>operator()() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename T , typename  = void&gt; </div>
 <div class="memtemplate">
-template&lt;typename... Args, std::enable_if_t&lt; std::is_constructible_v&lt; T, Args... &gt;, std::nullptr_t &gt;  = nullptr&gt; </div>
+template&lt;typename... Args  DAW_JSON_ENABLEIF&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -168,15 +168,15 @@ template&lt;typename... Args, std::enable_if_t&lt; std::is_constructible_v&lt; T
 
 </div>
 </div>
-<a id="ab41a99bd017400f8c4b5c13989045fe3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab41a99bd017400f8c4b5c13989045fe3">&#9670;&nbsp;</a></span>operator()() <span class="overload">[2/2]</span></h2>
+<a id="a3df331a379c862bde7fd61cb650fb096"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3df331a379c862bde7fd61cb650fb096">&#9670;&nbsp;</a></span>operator()() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename T , typename  = void&gt; </div>
 <div class="memtemplate">
-template&lt;typename... Args, std::enable_if_t&lt; json_details::should_list_construct_v&lt; T, Args... &gt;, std::nullptr_t &gt;  = nullptr&gt; </div>
+template&lt;typename... Args  DAW_JSON_ENABLEIF&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -196,7 +196,7 @@ template&lt;typename... Args, std::enable_if_t&lt; json_details::should_list_con
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__default__constuctor__fwd_8h_source.html#l00056">56</a> of file <a class="el" href="daw__json__default__constuctor__fwd_8h_source.html">daw_json_default_constuctor_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__default__constuctor__fwd_8h_source.html#l00055">55</a> of file <a class="el" href="daw__json__default__constuctor__fwd_8h_source.html">daw_json_default_constuctor_fwd.h</a>.</p>
 
 </div>
 </div>

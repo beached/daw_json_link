@@ -168,12 +168,13 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">do</span> {                                                   \</div>
-<div class="line">    if constexpr( not ParseState::is_unchecked_input ) { \</div>
+<div class="line">    if <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( not ParseState::is_unchecked_input ) { \</div>
 <div class="line">      if( DAW_UNLIKELY( not( Bool ) ) ) {                \</div>
 <div class="line">        daw_json_error( __VA_ARGS__ );                   \</div>
 <div class="line">      }                                                  \</div>
 <div class="line">    }                                                    \</div>
 <div class="line">  } <span class="keywordflow">while</span>( <span class="keyword">false</span> )</div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00286">to_daw_json_string.h:286</a></div></div>
 </div><!-- fragment -->
 <p>Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error. </p>
 

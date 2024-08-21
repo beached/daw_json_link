@@ -98,7 +98,7 @@ $(function() {
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      <span class="keyword">struct </span>missing_member {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        <span class="keywordtype">char</span> <span class="keyword">const</span> *member_name;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="keyword">explicit</span> constexpr missing_member( daw::string_view name )</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="keyword">explicit</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> missing_member( daw::string_view name )</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;          : member_name( <a class="code" href="namespacestd.html">std</a>::data( name ) ) {</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;          <span class="keywordflow">if</span>( member_name and member_name[0] == <span class="charliteral">&#39;\a&#39;</span> ) {</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            member_name = <span class="stringliteral">&quot;no_name&quot;</span>;</div>
@@ -108,7 +108,7 @@ $(function() {
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      <span class="keyword">struct </span>missing_token {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keywordtype">char</span> token;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keyword">explicit</span> constexpr missing_token( <span class="keywordtype">char</span> c )</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keyword">explicit</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> missing_token( <span class="keywordtype">char</span> c )</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;          : token( c ) {}</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      };</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    } <span class="comment">// namespace json_details</span></div>
@@ -162,7 +162,7 @@ $(function() {
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      AttemptToCallOpStarOnConstIterator</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    };</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    constexpr std::string_view reason_message( ErrorReason er ) {</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> std::string_view reason_message( ErrorReason er ) {</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      <span class="keyword">using namespace </span>std::string_view_literals;</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      <span class="keywordflow">switch</span>( er ) {</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;      <span class="keywordflow">case</span> ErrorReason::Unknown:</div>
@@ -277,9 +277,9 @@ $(function() {
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <span class="keywordtype">char</span> <span class="keyword">const</span> *pointer;</div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        <span class="keywordtype">char</span> token;</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160; </div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keyword">explicit</span> constexpr data_t( <span class="keywordtype">char</span> <span class="keyword">const</span> *p )</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keyword">explicit</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> data_t( <span class="keywordtype">char</span> <span class="keyword">const</span> *p )</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;          : pointer( p ) {}</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        <span class="keyword">explicit</span> constexpr data_t( <span class="keywordtype">char</span> t )</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        <span class="keyword">explicit</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> data_t( <span class="keywordtype">char</span> t )</div>
 <div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;          : token( t ) {}</div>
 <div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;      } m_data{ <span class="keyword">nullptr</span> };</div>
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;      <span class="keywordtype">char</span> <span class="keyword">const</span> *m_parse_loc = <span class="keyword">nullptr</span>;</div>
@@ -341,7 +341,7 @@ $(function() {
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;      }</div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160; </div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;      DAW_ATTRIB_NOINLINE [[nodiscard]] constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> *</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;      DAW_ATTRIB_NOINLINE [[nodiscard]] <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">char</span> <span class="keyword">const</span> *</div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;      parse_location( )<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        <span class="keywordflow">return</span> m_parse_loc;</div>
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;      }</div>
@@ -425,6 +425,7 @@ $(function() {
 <div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a03ce1a19bcc03c87524a09913907d38d"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">daw::json::anonymous_namespace{daw_json_enums.h}::to_string</a></div><div class="ttdeci">constexpr std::string_view to_string(JsonBaseParseTypes pt)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__enums_8h_source.html#l00062">daw_json_enums.h:62</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a7450e9320c653f81c31714a390d56674a88183b946cc5f0e8c96b2e66e1c74a7e"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674a88183b946cc5f0e8c96b2e66e1c74a7e">daw::json::anonymous_namespace{daw_json_enums.h}::JsonParseTypes::Unknown</a></div><div class="ttdeci">@ Unknown</div><div class="ttdoc">Array - An array type where each element is mapped to the member of a C++ class.</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00286">to_daw_json_string.h:286</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> <a href="daw__json__value_8h_source.html#l00089">daw_json_value.h:89</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>

@@ -88,13 +88,14 @@ $(function() {
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;      <span class="keyword">struct </span>arrow_proxy {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        T value;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        [[nodiscard]] constexpr T *operator-&gt;( ) &amp;&amp; {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        [[nodiscard]] <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> T *operator-&gt;( ) &amp;&amp; {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;          <span class="keywordflow">return</span> &amp;value;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        }</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      };</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    } <span class="comment">// namespace json_details</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00286">to_daw_json_string.h:286</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00025">version.h:25</a></div></div>

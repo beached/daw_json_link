@@ -194,7 +194,7 @@ Class construction</h1>
 Specifying the classes default</h2>
 <p>If one wants to change the default Constructor type of a specific type they can add a type alias in that classes <code>json_data_contract</code>. For instance, if a member needs extra checking that the types constructor does not provide:</p>
 <div class="fragment"><div class="line"><span class="keyword">struct </span>FooConstructor {</div>
-<div class="line">  constexpr Foo operator( )( std::string name, .... ) <span class="keyword">const</span> {</div>
+<div class="line">  <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> Foo operator( )( std::string name, .... ) <span class="keyword">const</span> {</div>
 <div class="line">    <span class="keywordflow">if</span>( name != <span class="stringliteral">&quot;bobfred&quot;</span> ) { <span class="keywordflow">throw</span> badname{}; }</div>
 <div class="line">    <span class="keywordflow">return</span> Foo{ name, .... };</div>
 <div class="line">  }</div>
@@ -205,6 +205,7 @@ Specifying the classes default</h2>
 <div class="line">  <span class="keyword">using</span> constructor_t = FooConstructor;</div>
 <div class="line">  <span class="keyword">using</span> type = json_member_list&lt;json_string&lt;<span class="stringliteral">&quot;name&quot;</span>&gt;,...&gt;;</div>
 <div class="line">};</div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00286">to_daw_json_string.h:286</a></div></div>
 </div><!-- fragment --><p>Here the type <code>Foo</code> will use a callable of type <code>FooConstructor</code> to create all <code>Foo</code>'s in the library unless overridden by a mapping.</p>
 <h2><a class="anchor" id="autotoc_md17"></a>
 Per mapping</h2>

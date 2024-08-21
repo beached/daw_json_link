@@ -94,7 +94,7 @@ $(function() {
 <div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__details_8h_03.html">   22</a></span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">namespace </span>concepts::writeable_output_details {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      constexpr T *copy_to_buffer( T *buff, daw::string_view source ) {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> T *copy_to_buffer( T *buff, daw::string_view source ) {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        <span class="keywordflow">if</span>( DAW_IS_CONSTANT_EVALUATED( ) ) {</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#endif</span></div>
@@ -112,22 +112,22 @@ $(function() {
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      }</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_byte_type_v =</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span> is_byte_type_v =</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        std::is_same_v&lt;T, std::byte&gt; or std::is_same_v&lt;T, unsigned char&gt;;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      <span class="keyword">using</span> is_char_sized = std::bool_constant&lt;<span class="keyword">sizeof</span>( T ) == 1&gt;;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_char_sized_character_v = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span> is_char_sized_character_v = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_char_sized_character_v&lt;char&gt; = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span> is_char_sized_character_v&lt;char&gt; = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#if defined( __cpp_lib_char8_t )</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#if __cpp_lib_char8_t &gt;= 201907L</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_char_sized_character_v&lt;char8_t&gt; = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span> is_char_sized_character_v&lt;char8_t&gt; = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
@@ -141,7 +141,7 @@ $(function() {
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                  (<span class="keywordtype">void</span>)( *std::declval&lt;T &amp;&gt;( ).data( ) =</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                            std::declval&lt;CharT&gt;( ) ) );</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_span_like_range_v =</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span> is_span_like_range_v =</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        daw::is_detected_v&lt;span_like_range_test, T, CharT&gt; and</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        ( writeable_output_details::is_char_sized_character_v&lt;CharT&gt; or</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;          writeable_output_details::is_byte_type_v&lt;CharT&gt; );</div>
@@ -158,11 +158,11 @@ $(function() {
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                  (<span class="keywordtype">void</span>)( <span class="keyword">static_cast&lt;</span>CharT<span class="keyword">&gt;</span>( <span class="charliteral">&#39;a&#39;</span> ) ) );</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_resizable_contiguous_range_v =</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span> is_resizable_contiguous_range_v =</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        daw::is_detected_v&lt;resizable_contiguous_range_test, Container, CharT&gt;;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_string_like_writable_output_v =</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span> is_string_like_writable_output_v =</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        (writeable_output_details::is_char_sized_character_v&lt;CharT&gt; or</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;         writeable_output_details::is_byte_type_v&lt;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;           CharT&gt;)and writeable_output_details::</div>
@@ -173,14 +173,15 @@ $(function() {
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        decltype( *std::declval&lt;T &amp;&gt;( ) = <span class="charliteral">&#39;c&#39;</span>, ++std::declval&lt;T &amp;&gt;( ) );</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> is_writable_output_iterator_v =</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span> is_writable_output_iterator_v =</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        not std::is_pointer_v&lt;T&gt; and</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        daw::is_detected_v&lt;is_writable_output_iterator_test, T&gt;;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    } <span class="comment">// namespace concepts::writeable_output_details</span></div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
-<div class="ttc" id="adaw__json__switches_8h_html_ac7bc190776b7ebf5b5c752c685569e1f"><div class="ttname"><a href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a></div><div class="ttdeci">#define DAW_JSON_CPP23_STATIC_CALL_OP</div><div class="ttdoc">This is in addition to the parse policy. Always do a full name match instead of sometimes relying on ...</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__switches_8h_source.html#l00198">daw_json_switches.h:198</a></div></div>
+<div class="ttc" id="adaw__json__switches_8h_html_ac7bc190776b7ebf5b5c752c685569e1f"><div class="ttname"><a href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a></div><div class="ttdeci">#define DAW_JSON_CPP23_STATIC_CALL_OP</div><div class="ttdoc">This is in addition to the parse policy. Always do a full name match instead of sometimes relying on ...</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__switches_8h_source.html#l00200">daw_json_switches.h:200</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00286">to_daw_json_string.h:286</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00025">version.h:25</a></div></div>

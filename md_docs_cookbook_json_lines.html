@@ -87,8 +87,8 @@ Parsing JSON Lines</h1>
 <div class="line"><span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;Element&gt; {</div>
-<div class="line">    <span class="keyword">static</span> constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> a[] = <span class="stringliteral">&quot;a&quot;</span>;</div>
-<div class="line">    <span class="keyword">static</span> constexpr <span class="keywordtype">char</span> <span class="keyword">const</span> b[] = <span class="stringliteral">&quot;b&quot;</span>;</div>
+<div class="line">    <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">char</span> <span class="keyword">const</span> a[] = <span class="stringliteral">&quot;a&quot;</span>;</div>
+<div class="line">    <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">char</span> <span class="keyword">const</span> b[] = <span class="stringliteral">&quot;b&quot;</span>;</div>
 <div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;json_link&lt;a, int&gt;, json_link&lt;b, bool&gt;&gt;;</div>
 <div class="line">  };</div>
 <div class="line">} <span class="comment">// namespace daw::json</span></div>
@@ -99,6 +99,7 @@ Parsing JSON Lines</h1>
 <div class="line">    std::cout &lt;&lt; e.a &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; e.b &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line">  }  </div>
 <div class="line">}</div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00286">to_daw_json_string.h:286</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__data__contract_8h_source.html#l00039">daw_json_data_contract.h:39</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__range_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__range.html">daw::json::json_lines_range</a></div><div class="ttdoc">A range of json_lines_iterators.</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__lines__iterator_8h_source.html#l00167">daw_json_lines_iterator.h:167</a></div></div>
@@ -108,10 +109,10 @@ Serializing to JSON Lines</h1>
 <div class="fragment"><div class="line">std::vector&lt;Element&gt; elements = get_element_vector( );</div>
 <div class="line"><span class="keyword">auto</span> result = std::string( );</div>
 <div class="line"><span class="keywordflow">for</span>( <span class="keyword">auto</span> <span class="keyword">const</span> &amp; e : elements ) {</div>
-<div class="line">  <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a859449aeea134506b34eaeeca6e9c42a">daw::json::to_json</a>( e, result );</div>
+<div class="line">  <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a1b0ae10d78464e8ad4060170d184b4d7">daw::json::to_json</a>( e, result );</div>
 <div class="line">  result += <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line">}</div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a859449aeea134506b34eaeeca6e9c42a"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a859449aeea134506b34eaeeca6e9c42a">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">constexpr daw::rvalue_to_value_t&lt; WritableType &gt; to_json(Value const &amp;value, WritableType &amp;&amp;it, options::output_flags_t&lt; PolicyFlags... &gt;)</div><div class="ttdef"><b>Definition:</b> <a href="daw__to__json_8h_source.html#l00055">daw_to_json.h:55</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a1b0ae10d78464e8ad4060170d184b4d7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a1b0ae10d78464e8ad4060170d184b4d7">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition:</b> <a href="daw__to__json_8h_source.html#l00077">daw_to_json.h:77</a></div></div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

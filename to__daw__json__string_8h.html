@@ -69,7 +69,8 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">to_daw_json_string.h File Reference</div>  </div>
 </div><!--header-->
@@ -126,18 +127,27 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a2bc9822fbb417d22ae9d3d17a4f304c9"><td class="memTemplParams" colspan="2">template&lt;bool do_escape = false, options::EightBitModes EightBitMode = options::EightBitModes::AllowFull, typename WritableType , typename Container , std::enable_if_t&lt; daw::traits::is_container_like_v&lt; daw::remove_cvref_t&lt; Container &gt;&gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
-<tr class="memitem:a2bc9822fbb417d22ae9d3d17a4f304c9"><td class="memTemplItemLeft" align="right" valign="top">static constexpr WritableType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a2bc9822fbb417d22ae9d3d17a4f304c9">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::copy_to_iterator</a> (WritableType it, Container const &amp;container)</td></tr>
-<tr class="separator:a2bc9822fbb417d22ae9d3d17a4f304c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbd3c674a764e86e3b09da0d5c9277a7"><td class="memItemLeft" align="right" valign="top">if&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a> (do_escape)</td></tr>
+<tr class="separator:afbd3c674a764e86e3b09da0d5c9277a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78736e917187172d9033b21182ada765"><td class="memTemplParams" colspan="2">template&lt;bool do_escape = false, options::EightBitModes EightBitMode = options::EightBitModes::AllowFull, typename WriteableType , json_options_t P, typename A &gt; </td></tr>
 <tr class="memitem:a78736e917187172d9033b21182ada765"><td class="memTemplItemLeft" align="right" valign="top">static constexpr WriteableType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a78736e917187172d9033b21182ada765">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::copy_to_iterator</a> (WriteableType it, basic_json_value&lt; P, A &gt; const &amp;jv)</td></tr>
 <tr class="separator:a78736e917187172d9033b21182ada765"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca1b459d53dbdae7c6fdfa75208290af"><td class="memTemplParams" colspan="2">template&lt;bool do_escape = false, options::EightBitModes EightBitMode = options::EightBitModes::AllowFull, typename WriteableType &gt; </td></tr>
 <tr class="memitem:aca1b459d53dbdae7c6fdfa75208290af"><td class="memTemplItemLeft" align="right" valign="top">static constexpr WriteableType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#aca1b459d53dbdae7c6fdfa75208290af">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::copy_to_iterator</a> (WriteableType it, char const *ptr)</td></tr>
 <tr class="separator:aca1b459d53dbdae7c6fdfa75208290af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69f20d85072332726f0309d2ac39552f"><td class="memTemplParams" colspan="2">template&lt;bool do_escape = false, options::EightBitModes EightBitMode = options::EightBitModes::AllowFull, typename WritableType , typename Container  DAW_JSON_ENABLEIF&gt; </td></tr>
+<tr class="memitem:a69f20d85072332726f0309d2ac39552f"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a69f20d85072332726f0309d2ac39552f">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::DAW_JSON_REQUIRES</a> (daw::traits::is_container_like_v&lt; daw::remove_cvref_t&lt; Container &gt;&gt;) static const expr WritableType copy_to_iterator(WritableType it</td></tr>
+<tr class="separator:a69f20d85072332726f0309d2ac39552f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac292f38a20162b813bed9f0a0efd62d5"><td class="memTemplParams" colspan="2">template&lt;typename Integer , typename WriteableType &gt; </td></tr>
 <tr class="memitem:ac292f38a20162b813bed9f0a0efd62d5"><td class="memTemplItemLeft" align="right" valign="top">static constexpr WriteableType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#ac292f38a20162b813bed9f0a0efd62d5">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::integer_to_string</a> (WriteableType it, Integer const &amp;value)</td></tr>
 <tr class="separator:ac292f38a20162b813bed9f0a0efd62d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a22ea001ebed2d5d0a33c10d44a093f80"><td class="memItemLeft" align="right" valign="top">Container const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#a22ea001ebed2d5d0a33c10d44a093f80">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::container</a></td></tr>
+<tr class="separator:a22ea001ebed2d5d0a33c10d44a093f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6aa42fe6cda8bf1b9af36001051ddf1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#ae6aa42fe6cda8bf1b9af36001051ddf1">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::else</a></td></tr>
+<tr class="separator:ae6aa42fe6cda8bf1b9af36001051ddf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

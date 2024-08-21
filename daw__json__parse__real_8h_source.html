@@ -104,12 +104,12 @@ $(function() {
 <div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__real_8h_03.html">   32</a></span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> skip_end_check, <span class="keyword">typename</span> Un<span class="keywordtype">signed</span>&gt;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      parse_digits_until_last( <span class="keywordtype">char</span> <span class="keyword">const</span> *DAW_RESTRICT first,</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                               <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> DAW_RESTRICT last,</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                               Unsigned &amp;DAW_RESTRICT v ) {</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        Unsigned value = v;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordflow">if</span> constexpr( skip_end_check ) {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( skip_end_check ) {</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;          <span class="keyword">auto</span> dig = parse_digit( *first );</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;          <span class="keywordflow">while</span>( dig &lt; 10U ) {</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            value *= 10U;</div>
@@ -128,7 +128,7 @@ $(function() {
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      }</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> skip_end_check, <span class="keyword">typename</span> Un<span class="keywordtype">signed</span>, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      [[nodiscard]] DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> constexpr CharT *</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      [[nodiscard]] DAW_ATTRIB_FLATINLINE <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> CharT *</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      parse_digits_while_number( CharT *DAW_RESTRICT first,</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                                 CharT *<span class="keyword">const</span> DAW_RESTRICT last,</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                                 Unsigned &amp;DAW_RESTRICT v ) {</div>
@@ -138,7 +138,7 @@ $(function() {
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        (void)last;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        Unsigned value = v;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">if</span> constexpr( skip_end_check ) {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( skip_end_check ) {</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;          <span class="keywordflow">for</span>( <span class="keyword">auto</span> dig = parse_digit( *first ); dig &lt; 10U;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;               ++first, dig = parse_digit( *first ) ) {</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;            value *= 10U;</div>
@@ -164,10 +164,10 @@ $(function() {
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState, <span class="keyword">typename</span> Result,</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;               <span class="keyword">typename</span> max_storage_digits, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span></div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;      should_use_strtod( CharT *whole_first, CharT *whole_last,</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                         CharT *fract_first, CharT *fract_last ) {</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_floating_point_v&lt;Result&gt; and</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( std::is_floating_point_v&lt;Result&gt; and</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                      ParseState::precise_ieee754 ) {</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;          <span class="keywordflow">return</span> DAW_UNLIKELY(</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            ( ( whole_last - whole_first ) +</div>
@@ -184,7 +184,7 @@ $(function() {
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      }</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result, <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> constexpr Result</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> Result</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      parse_real_known( ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keyword">using</span> CharT = <span class="keyword">typename</span> ParseState::CharT;</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <span class="comment">// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]</span></div>
@@ -251,7 +251,7 @@ $(function() {
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;        } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;          whole_exponent_available =</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;            max_exponent::value - whole_exponent_available;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;          <span class="keywordflow">if</span> constexpr( ParseState::precise_ieee754 ) {</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;          <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( ParseState::precise_ieee754 ) {</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;            use_strtod |= DAW_UNLIKELY( fract_exponent_available &gt;</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;                                        whole_exponent_available );</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;          }</div>
@@ -292,7 +292,7 @@ $(function() {
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;          exponent += to_signed(</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;            [&amp;] {</div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;              unsigned_t exp_result = 0;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;              <span class="keywordflow">if</span> constexpr( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#aea5a1546ce5990cc93d84a65b7ce79ba">ParseState::is_zero_terminated_string</a> ) {</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;              <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#aea5a1546ce5990cc93d84a65b7ce79ba">ParseState::is_zero_terminated_string</a> ) {</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;                <span class="keyword">auto</span> dig = parse_digit( *exp_first );</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;                <span class="keywordflow">while</span>( dig &lt; 10U ) {</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;                  ++exp_first;</div>
@@ -321,7 +321,7 @@ $(function() {
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;            }( ),</div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;            exp_sign );</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        }</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_floating_point_v&lt;Result&gt; and</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( std::is_floating_point_v&lt;Result&gt; and</div>
 <div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                      ParseState::precise_ieee754 ) {</div>
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;          <span class="comment">// On std floating point types, check for conditions that cannot be</span></div>
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;          <span class="comment">// precisely calculated using the normal method and use the fallback</span></div>
@@ -329,7 +329,7 @@ $(function() {
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;          use_strtod |= exponent &gt; 22;</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;          use_strtod |= exponent &lt; -22;</div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;          use_strtod |= significant_digits &gt; 9007199254740992ULL;</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;          <span class="keywordflow">if</span> constexpr( std::is_same_v&lt;Result, long double&gt; ) {</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;          <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( std::is_same_v&lt;Result, long double&gt; ) {</div>
 <div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;            <span class="keywordflow">return</span> json_details::parse_with_strtod&lt;Result&gt;( parse_state.first,</div>
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;                                                            parse_state.last );</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;          } <span class="keywordflow">else</span> {</div>
@@ -345,7 +345,7 @@ $(function() {
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;      }</div>
 <div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160; </div>
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result, <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> constexpr Result</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> Result</div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;      parse_real_unknown( ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;        <span class="comment">// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]</span></div>
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        <span class="keyword">using</span> CharT = <span class="keyword">typename</span> ParseState::CharT;</div>
@@ -393,7 +393,7 @@ $(function() {
 <div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;          DAW_UNLIKELY( sig_digit_count &gt; max_storage_digits::value );</div>
 <div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        signed_t exponent_p1 = [&amp;] {</div>
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;          <span class="keywordflow">if</span>( DAW_UNLIKELY( last_char &gt;= whole_last ) ) {</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;            <span class="keywordflow">if</span> constexpr( std::is_floating_point_v&lt;Result&gt; and</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;            <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( std::is_floating_point_v&lt;Result&gt; and</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;                          ParseState::precise_ieee754 ) {</div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;              use_strtod = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;            }</div>
@@ -444,7 +444,7 @@ $(function() {
 <div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;                skip_digits&lt;( <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#aea5a1546ce5990cc93d84a65b7ce79ba">ParseState::is_zero_terminated_string</a> or</div>
 <div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;                              ParseState::is_unchecked_input )&gt;(</div>
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;                  first, parse_state.last );</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;              <span class="keywordflow">if</span> constexpr( std::is_floating_point_v&lt;Result&gt; and</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;              <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( std::is_floating_point_v&lt;Result&gt; and</div>
 <div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;                            ParseState::precise_ieee754 ) {</div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;                use_strtod |= new_first &gt; first;</div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;              }</div>
@@ -495,7 +495,7 @@ $(function() {
 <div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;          <span class="keywordflow">return</span> signed_t{ 0 };</div>
 <div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;        }( );</div>
 <div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;        signed_t <span class="keyword">const</span> exponent = [&amp;] {</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;          <span class="keywordflow">if</span> constexpr( ParseState::is_unchecked_input or</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;          <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( ParseState::is_unchecked_input or</div>
 <div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;                        not std::is_floating_point_v&lt;Result&gt; ) {</div>
 <div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;            <span class="keywordflow">return</span> exponent_p1 + exponent_p2;</div>
 <div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;          } <span class="keywordflow">else</span> {</div>
@@ -527,7 +527,7 @@ $(function() {
 <div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;        }( );</div>
 <div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;        parse_state.first = first;</div>
 <div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160; </div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;        <span class="keywordflow">if</span> constexpr( std::is_floating_point_v&lt;Result&gt; and</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;        <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( std::is_floating_point_v&lt;Result&gt; and</div>
 <div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;                      ParseState::precise_ieee754 ) {</div>
 <div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;          use_strtod |= DAW_UNLIKELY( exponent &gt; 22 );</div>
 <div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;          use_strtod |= DAW_UNLIKELY( exponent &lt; -22 );</div>
@@ -548,9 +548,9 @@ $(function() {
 <div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;      }</div>
 <div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160; </div>
 <div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result, <span class="keywordtype">bool</span> KnownRange, <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr Result</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;      [[nodiscard]] <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> Result</div>
 <div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;      parse_real( ParseState &amp;parse_state ) {</div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;        <span class="keywordflow">if</span> constexpr( KnownRange ) {</div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;        <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( KnownRange ) {</div>
 <div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;          <span class="keywordflow">return</span> parse_real_known&lt;Result&gt;( parse_state );</div>
 <div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;        } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;          <span class="keywordflow">return</span> parse_real_unknown&lt;Result&gt;( parse_state );</div>
@@ -569,6 +569,7 @@ $(function() {
 <div class="ttc" id="adaw__json__type__options_8h_html"><div class="ttname"><a href="daw__json__type__options_8h.html">daw_json_type_options.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1parse__utils_html_a03278169ba5072850a0d1bd20f0ddde8"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1parse__utils.html#a03278169ba5072850a0d1bd20f0ddde8">daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::parse_utils::is_number</a></div><div class="ttdeci">constexpr bool is_number(char c)</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__parse__iso8601__utils_8h_source.html#l00059">daw_json_parse_iso8601_utils.h:59</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03_html_aea5a1546ce5990cc93d84a65b7ce79ba"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#aea5a1546ce5990cc93d84a65b7ce79ba">daw::json::anonymous_namespace{daw_json_traits.h}::is_zero_terminated_string</a></div><div class="ttdeci">std::bool_constant&lt; is_zero_terminated_string_v&lt; T &gt; &gt; is_zero_terminated_string</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__traits_8h_source.html#l00235">daw_json_traits.h:236</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00286">to_daw_json_string.h:286</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00025">version.h:25</a></div></div>

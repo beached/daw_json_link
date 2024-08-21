@@ -103,7 +103,7 @@ $(function() {
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">         * the string can be escaped too</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">         */</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> trim_end_of_name( ParseState &amp;parse_state ) {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span> trim_end_of_name( ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;          parse_state.trim_left( );</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;          <span class="comment">// TODO: should we check for end</span></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.front_checked( ) == <span class="charliteral">&#39;:&#39;</span>,</div>
@@ -113,15 +113,15 @@ $(function() {
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        }</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> constexpr daw::string_view</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> daw::string_view</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        parse_nq( ParseState &amp;parse_state ) {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;          <span class="keywordflow">if</span> constexpr( ParseState::allow_escaped_names ) {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;          <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( ParseState::allow_escaped_names ) {</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keyword">auto</span> r = skip_string_nq( parse_state );</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            trim_end_of_name( parse_state );</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="keywordflow">return</span> daw::string_view( std::data( r ), std::size( r ) );</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;          } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> ptr = parse_state.first;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keywordflow">if</span> constexpr( ParseState::is_unchecked_input ) {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keywordflow">if</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a>( ParseState::is_unchecked_input ) {</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;              parse_state.template move_to_next_of_unchecked&lt;<span class="charliteral">&#39;&quot;&#39;</span>&gt;( );</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;              parse_state.template move_to_next_of_checked&lt;<span class="charliteral">&#39;&quot;&#39;</span>&gt;( );</div>
@@ -144,7 +144,7 @@ $(function() {
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="comment">// Paths are specified with dot separators, if the name has a dot in it,</span></div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <span class="comment">// it must be escaped</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      <span class="comment">// memberA.memberB.member\.C has 3 parts[&#39;memberA&#39;, &#39;memberB&#39;, &#39;member.C&#39;]</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr pop_json_path_result</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      [[nodiscard]] <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> pop_json_path_result</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      pop_json_path( daw::string_view &amp;path ) {</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keyword">auto</span> result = pop_json_path_result{ };</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keywordflow">if</span>( path.empty( ) ) {</div>
@@ -175,7 +175,7 @@ $(function() {
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="keywordflow">return</span> result;</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      }</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      [[nodiscard]] <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span></div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      json_path_compare( daw::string_view json_path_item,</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                         daw::string_view member_name ) {</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        <span class="keywordflow">if</span>( json_path_item.front( ) == <span class="charliteral">&#39;\\&#39;</span> ) {</div>
@@ -196,7 +196,7 @@ $(function() {
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      }</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result, <span class="keyword">typename</span> ForwardIterator&gt;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      constexpr Result parse_unsigned_int( ForwardIterator first,</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> Result parse_unsigned_int( ForwardIterator first,</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;                                           ForwardIterator last ) {</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        std::size_t count = std::numeric_limits&lt;Result&gt;::digits;</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160; </div>
@@ -218,7 +218,7 @@ $(function() {
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;      <span class="comment">// Ensures that the stream is left at the position of the associated</span></div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      <span class="comment">// value(e.g after the colon(:) and trimmed)</span></div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;      [[nodiscard]] DAW_ATTRIB_FLATTEN <span class="keyword">static</span> <span class="keyword">inline</span> constexpr daw::string_view</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;      [[nodiscard]] DAW_ATTRIB_FLATTEN <span class="keyword">static</span> <span class="keyword">inline</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> daw::string_view</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;      parse_name( ParseState &amp;parse_state ) {</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.is_quotes_checked( ),</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                              ErrorReason::InvalidMemberName, parse_state );</div>
@@ -227,7 +227,7 @@ $(function() {
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      }</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; </div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      <span class="keyword">static</span> constexpr <span class="keywordtype">bool</span> find_range2( ParseState &amp;parse_state,</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">bool</span> find_range2( ParseState &amp;parse_state,</div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;                                         daw::string_view path ) {</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        <span class="keyword">auto</span> pop_result = pop_json_path( path );</div>
@@ -272,7 +272,7 @@ $(function() {
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      }</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160; </div>
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParsePolicy&gt;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr find_result&lt;ParsePolicy&gt;</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      [[nodiscard]] <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> find_result&lt;ParsePolicy&gt;</div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      find_range( daw::string_view str, daw::string_view start_path ) {</div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <span class="keyword">auto</span> parse_state =</div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;          ParsePolicy( std::data( str ), daw::data_end( str ) );</div>
@@ -285,7 +285,7 @@ $(function() {
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;      }</div>
 <div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160; </div>
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParsePolicy, <span class="keyword">typename</span> Allocator&gt;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr find_result&lt;ParsePolicy&gt;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;      [[nodiscard]] <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> find_result&lt;ParsePolicy&gt;</div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;      find_range( daw::string_view str, daw::string_view start_path,</div>
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;                  Allocator &amp;alloc ) {</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        static_assert(</div>
@@ -310,6 +310,7 @@ $(function() {
 <div class="ttc" id="adaw__json__find__result_8h_html"><div class="ttname"><a href="daw__json__find__result_8h.html">daw_json_find_result.h</a></div></div>
 <div class="ttc" id="adaw__json__parse__std__string_8h_html"><div class="ttname"><a href="daw__json__parse__std__string_8h.html">daw_json_parse_std_string.h</a></div></div>
 <div class="ttc" id="adaw__not__const__ex__functions_8h_html"><div class="ttname"><a href="daw__not__const__ex__functions_8h.html">daw_not_const_ex_functions.h</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00286">to_daw_json_string.h:286</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00025">version.h:25</a></div></div>

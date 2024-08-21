@@ -75,22 +75,41 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:abb552f66466cc83a51c96489878c0cfd"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename Value , typename WritableType , auto... PolicyFlags  DAW_JSON_ENABLEIF2&gt; </td></tr>
+<tr class="memitem:abb552f66466cc83a51c96489878c0cfd"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#abb552f66466cc83a51c96489878c0cfd">DAW_JSON_REQUIRES</a> (concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt;&gt;) const expr daw</td></tr>
+<tr class="separator:abb552f66466cc83a51c96489878c0cfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b0ae10d78464e8ad4060170d184b4d7"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename Value , auto... PolicyFlags&gt; </td></tr>
 <tr class="memitem:a1b0ae10d78464e8ad4060170d184b4d7"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a1b0ae10d78464e8ad4060170d184b4d7">to_json</a> (Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</td></tr>
 <tr class="separator:a1b0ae10d78464e8ad4060170d184b4d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a859449aeea134506b34eaeeca6e9c42a"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename Value , typename WritableType , auto... PolicyFlags, std::enable_if_t&lt; concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt;&gt;, std::nullptr_t &gt; &gt; </td></tr>
-<tr class="memitem:a859449aeea134506b34eaeeca6e9c42a"><td class="memTemplItemLeft" align="right" valign="top">constexpr daw::rvalue_to_value_t&lt; WritableType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a859449aeea134506b34eaeeca6e9c42a">to_json</a> (Value const &amp;value, WritableType &amp;&amp;it, options::output_flags_t&lt; PolicyFlags... &gt;)</td></tr>
-<tr class="separator:a859449aeea134506b34eaeeca6e9c42a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c68962d2cee35480daec18fc98ceeb6"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement , typename Container , auto... PolicyFlags&gt; </td></tr>
 <tr class="memitem:a7c68962d2cee35480daec18fc98ceeb6"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a7c68962d2cee35480daec18fc98ceeb6">to_json_array</a> (Container const &amp;c, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</td></tr>
 <tr class="separator:a7c68962d2cee35480daec18fc98ceeb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3105bdaf98b9ab459d5e8513c91241cf"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement , typename Container , typename WritableType , auto... PolicyFlags, std::enable_if_t&lt; concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt;&gt;, std::nullptr_t &gt; &gt; </td></tr>
-<tr class="memitem:a3105bdaf98b9ab459d5e8513c91241cf"><td class="memTemplItemLeft" align="right" valign="top">constexpr daw::rvalue_to_value_t&lt; WritableType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a3105bdaf98b9ab459d5e8513c91241cf">to_json_array</a> (Container const &amp;c, WritableType &amp;&amp;it, options::output_flags_t&lt; PolicyFlags... &gt;)</td></tr>
-<tr class="separator:a3105bdaf98b9ab459d5e8513c91241cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="abb552f66466cc83a51c96489878c0cfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb552f66466cc83a51c96489878c0cfd">&#9670;&nbsp;</a></span>DAW_JSON_REQUIRES()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonClass , typename Value , typename WritableType , auto... PolicyFlags  DAW_JSON_ENABLEIF2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">daw::json::anonymous_namespace{daw_to_json.h}::DAW_JSON_REQUIRES </td>
+          <td>(</td>
+          <td class="paramtype">concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt;&gt;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__to__json_8h_source.html#l00053">53</a> of file <a class="el" href="daw__to__json_8h_source.html">daw_to_json.h</a>.</p>
+
+</div>
+</div>
 <a id="a1b0ae10d78464e8ad4060170d184b4d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b0ae10d78464e8ad4060170d184b4d7">&#9670;&nbsp;</a></span>to_json() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b0ae10d78464e8ad4060170d184b4d7">&#9670;&nbsp;</a></span>to_json()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -125,58 +144,12 @@ template&lt;typename JsonClass , typename Value , auto... PolicyFlags&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__to__json_8h_source.html#l00076">76</a> of file <a class="el" href="daw__to__json_8h_source.html">daw_to_json.h</a>.</p>
-
-</div>
-</div>
-<a id="a859449aeea134506b34eaeeca6e9c42a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a859449aeea134506b34eaeeca6e9c42a">&#9670;&nbsp;</a></span>to_json() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonClass , typename Value , typename WritableType , auto... PolicyFlags, std::enable_if_t&lt; concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt;&gt;, std::nullptr_t &gt; &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr daw::rvalue_to_value_t&lt;WritableType&gt; daw::json::anonymous_namespace{daw_to_json.h}::to_json </td>
-          <td>(</td>
-          <td class="paramtype">Value const &amp;&#160;</td>
-          <td class="paramname"><em>value</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">WritableType &amp;&amp;&#160;</td>
-          <td class="paramname"><em>it</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">options::output_flags_t&lt; PolicyFlags... &gt;&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__to__json_8h_source.html#l00055">55</a> of file <a class="el" href="daw__to__json_8h_source.html">daw_to_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__to__json_8h_source.html#l00077">77</a> of file <a class="el" href="daw__to__json_8h_source.html">daw_to_json.h</a>.</p>
 
 </div>
 </div>
 <a id="a7c68962d2cee35480daec18fc98ceeb6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c68962d2cee35480daec18fc98ceeb6">&#9670;&nbsp;</a></span>to_json_array() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c68962d2cee35480daec18fc98ceeb6">&#9670;&nbsp;</a></span>to_json_array()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -211,53 +184,7 @@ template&lt;typename JsonElement , typename Container , auto... PolicyFlags&gt; 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__to__json_8h_source.html#l00161">161</a> of file <a class="el" href="daw__to__json_8h_source.html">daw_to_json.h</a>.</p>
-
-</div>
-</div>
-<a id="a3105bdaf98b9ab459d5e8513c91241cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3105bdaf98b9ab459d5e8513c91241cf">&#9670;&nbsp;</a></span>to_json_array() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonElement , typename Container , typename WritableType , auto... PolicyFlags, std::enable_if_t&lt; concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt;&gt;, std::nullptr_t &gt; &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr daw::rvalue_to_value_t&lt;WritableType&gt; daw::json::anonymous_namespace{daw_to_json.h}::to_json_array </td>
-          <td>(</td>
-          <td class="paramtype">Container const &amp;&#160;</td>
-          <td class="paramname"><em>c</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">WritableType &amp;&amp;&#160;</td>
-          <td class="paramname"><em>it</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">options::output_flags_t&lt; PolicyFlags... &gt;&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__to__json_8h_source.html#l00091">91</a> of file <a class="el" href="daw__to__json_8h_source.html">daw_to_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__to__json_8h_source.html#l00163">163</a> of file <a class="el" href="daw__to__json_8h_source.html">daw_to_json.h</a>.</p>
 
 </div>
 </div>
