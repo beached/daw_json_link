@@ -1,6 +1,8 @@
 name: MacOS
 
 on:
+  schedule:
+    - cron:  '0 5 * * *'
   push:
     branches: [ release, develop ]
   pull_request:

@@ -12,7 +12,7 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_bounded_hash_map.h>
+#include <daw/deprecated/daw_bounded_hash_map.h>
 #include <daw/daw_fnv1a_hash.h>
 #include <daw/daw_string_view.h>
 
