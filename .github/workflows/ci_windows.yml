@@ -1,5 +1,7 @@
 name: Windows
 on:
+  schedule:
+    - cron: '10 5 * * *'
   push:
     branches: [ release, develop ]
   pull_request:
