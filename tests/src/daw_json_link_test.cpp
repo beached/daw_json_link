@@ -15,8 +15,8 @@
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_benchmark.h>
-#include <daw/daw_bounded_vector.h>
 #include <daw/daw_span.h>
+#include <daw/daw_bounded_vector.h>
 
 #include <array>
 #include <cassert>
@@ -830,7 +830,7 @@ int main( int, char ** ) {
 			  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
 			daw::expecting( not v.b );
 		}
-#if( defined( __GNUC__ ) and __GNUC__ <= 9 ) or ( defined( _MSC_VER ) )
+#if ( defined( __GNUC__ ) and __GNUC__ <= 9 ) or ( defined( _MSC_VER ) )
 #define CX
 #elif defined( DAW_JSON_NO_CONST_EXPR )
 #define CX
@@ -1150,7 +1150,7 @@ int main( int, char ** ) {
 		test_vector_of_bool( );
 		static_assert( from_json<bool>( "true" ) );
 		static_assert( not from_json<bool>( "false" ) );
-		static_assert( not *from_json<std::optional<bool>>( "false" ) );
+		static_assert( not*from_json<std::optional<bool>>( "false" ) );
 		static_assert( not from_json<std::optional<bool>>( "null" ) );
 		static_assert( from_json<signed char>( "-1" ) ==
 		               static_cast<signed char>( -1 ) );

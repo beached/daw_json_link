@@ -12,8 +12,8 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_bounded_vector.h>
 #include <daw/daw_random.h>
+#include <daw/daw_bounded_vector.h>
 
 #include <numeric>
 #include <streambuf>

@@ -11,8 +11,8 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_graph.h>
 #include <daw/daw_read_file.h>
+#include <daw/daw_graph.h>
 
 #include <cstdint>
 #include <cstdio>
