@@ -85,6 +85,7 @@ bower_components/
 build/
 ClientBin/
 cmake-build-*/
+test-data/
 CMakeFiles/
 CMakeSettings.json
 csx/
