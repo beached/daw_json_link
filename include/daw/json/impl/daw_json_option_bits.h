@@ -165,7 +165,7 @@ namespace daw::json {
 			template<typename... OptionList, typename Option>
 			static constexpr json_options_t
 			set_bits_for( JsonOptionList<OptionList...>, Option e ) {
-				return JsonOptionList<OptionList...>::template set_bits_for( e );
+				return JsonOptionList<OptionList...>::set_bits_for( e );
 			}
 
 			template<typename Option, typename Result = Option,
@@ -193,7 +193,7 @@ namespace daw::json {
 			template<typename... OptionList, typename... Options>
 			constexpr json_options_t json_option( JsonOptionList<OptionList...>,
 			                                      Options... options ) {
-				return JsonOptionList<OptionList...>::template options( options... );
+				return JsonOptionList<OptionList...>::options( options... );
 			}
 
 			template<typename>
