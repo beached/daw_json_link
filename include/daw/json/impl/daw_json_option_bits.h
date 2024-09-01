@@ -38,7 +38,8 @@ namespace daw::json {
 
 			template<typename Policy, typename... Options>
 			struct option_bits_start_impl<Policy, pack_list<Options...>> {
-				static constexpr auto idx = daw::traits::pack_index_of_v<Policy, Options...>;
+				static constexpr auto idx =
+				  daw::traits::pack_index_of_v<Policy, Options...>;
 				static_assert( idx >= 0, "Policy is not registered" );
 				using tp_policies = pack_list<Options...>;
 
@@ -51,7 +52,8 @@ namespace daw::json {
 				}
 
 				template<std::size_t... Is>
-				DAW_ATTRIB_INLINE static constexpr unsigned calc( std::index_sequence<Is...> ) {
+				DAW_ATTRIB_INLINE static constexpr unsigned
+				calc( std::index_sequence<Is...> ) {
 					return ( do_step<Is, idx>( ) + ... );
 				}
 			};
@@ -94,7 +96,7 @@ namespace daw::json {
 				static inline constexpr unsigned option_bits_start =
 				  basic_option_bits_start<Option, OptionList>;
 
-				template<typename... OptionList, typename Option>
+				template<typename... /*OptionList*/, typename Option>
 				static constexpr json_options_t set_bits_for( Option e ) {
 					static_assert( is_option_flag<Option>,
 					               "Only registered policy types are allowed" );
