@@ -115,9 +115,9 @@ $(function() {
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;              <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            }</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            p = writeable_output_details::copy_to_buffer( p, sv );</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordflow">return</span> 1;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;          };</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;          (void)( writer( ptr, svs ) | ... );</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;          ( (void)writer( ptr, svs ), ... );</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        }</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span> put( T *&amp;ptr, <span class="keywordtype">char</span> c ) {</div>
@@ -147,9 +147,9 @@ $(function() {
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;            }</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            (void)writeable_output_details::copy_to_buffer( s.data( ), sv );</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            s = s.subspan( sv.size( ) );</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            <span class="keywordflow">return</span> 1;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;          };</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;          (void)( writer( out, svs ) | ... );</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;          ( (void)writer( out, svs ), ... );</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        }</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span> put( T &amp;out, <span class="keywordtype">char</span> c ) {</div>
@@ -182,10 +182,10 @@ $(function() {
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;              <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;            }</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;            p = writeable_output_details::copy_to_buffer( p, sv );</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;            <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;            <span class="keywordflow">return</span> 1;</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;          };</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;          <span class="keyword">auto</span> *ptr = out.data( ) + start_pos;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;          (void)( writer( ptr, svs ) | ... );</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;          ( (void)writer( ptr, svs ), ... );</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        }</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> put( Container &amp;out, <span class="keywordtype">char</span> c ) {</div>
@@ -212,7 +212,7 @@ $(function() {
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;                                      }</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;                                      <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;                                    };</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;          (void)( writer( it, svs ) | ... );</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;          ( (void)writer( it, svs ), ... );</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        }</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span> put( T &amp;it, <span class="keywordtype">char</span> c ) {</div>
@@ -231,7 +231,7 @@ $(function() {
 <div class="ttc" id="adaw__writable__output__details_8h_html"><div class="ttname"><a href="daw__writable__output__details_8h.html">daw_writable_output_details.h</a></div></div>
 <div class="ttc" id="adaw__writable__output__fwd_8h_html"><div class="ttname"><a href="daw__writable__output__fwd_8h.html">daw_writable_output_fwd.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_abb552f66466cc83a51c96489878c0cfd"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#abb552f66466cc83a51c96489878c0cfd">daw::json::anonymous_namespace{daw_to_json.h}::DAW_JSON_REQUIRES</a></div><div class="ttdeci">DAW_JSON_REQUIRES(concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt;&gt;) const expr daw</div><div class="ttdef"><b>Definition:</b> <a href="daw__to__json_8h_source.html#l00053">daw_to_json.h:53</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00286">to_daw_json_string.h:286</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00283">to_daw_json_string.h:283</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition:</b> <a href="version_8h_source.html#l00025">version.h:25</a></div></div>
