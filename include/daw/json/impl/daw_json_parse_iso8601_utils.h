@@ -175,11 +175,15 @@ namespace daw::json {
 				auto result = date_parts{ 0, 0, 0 };
 				result.day = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 				  std::data( timestamp_str.pop_back( 2U ) ) );
+				daw_json_ensure( result.day >= 1 and result.day <= 31,
+				                 ErrorReason::InvalidTimestamp );
 				if( not parse_utils::is_number( timestamp_str.back( ) ) ) {
 					timestamp_str.remove_suffix( );
 				}
 				result.month = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 				  std::data( timestamp_str.pop_back( 2U ) ) );
+				daw_json_ensure( result.month >= 1 and result.month <= 12,
+				                 ErrorReason::InvalidTimestamp );
 				if( not parse_utils::is_number( timestamp_str.back( ) ) ) {
 					timestamp_str.remove_suffix( );
 				}
@@ -201,11 +205,15 @@ namespace daw::json {
 				auto result = time_parts{ 0, 0, 0, 0 };
 				result.hour = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 				  std::data( timestamp_str.pop_front( 2 ) ) );
+				daw_json_ensure( result.hour >= 0 and result.hour <= 24,
+				                 ErrorReason::InvalidTimestamp );
 				if( not parse_utils::is_number( timestamp_str.front( ) ) ) {
 					timestamp_str.remove_prefix( );
 				}
 				result.minute = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 				  std::data( timestamp_str.pop_front( 2 ) ) );
+				daw_json_ensure( result.minute >= 0 and result.minute <= 59,
+				                 ErrorReason::InvalidTimestamp );
 				if( timestamp_str.empty( ) ) {
 					return result;
 				}
@@ -214,6 +222,8 @@ namespace daw::json {
 				}
 				result.second = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 				  std::data( timestamp_str.pop_front( 2 ) ) );
+				daw_json_ensure( result.second >= 0 and result.second <= 60,
+				                 ErrorReason::InvalidTimestamp );
 				if( timestamp_str.empty( ) ) {
 					return result;
 				}

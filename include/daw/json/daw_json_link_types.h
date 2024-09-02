@@ -101,7 +101,6 @@ namespace daw::json {
 				  parse_state, std::index_sequence_for<JsonMembers...>{ } );
 			}
 		};
-
 		///
 		/// Deduce the json type mapping based on common types and types already
 		/// mapped.
@@ -365,7 +364,7 @@ namespace daw::json {
 			[[nodiscard]] static inline constexpr OutputIterator
 			serialize( OutputIterator it, Value const &v ) {
 
-				return daw::visit_nt( v, [&]( auto const &alternative ) {
+				return daw::visit_nt( v, [&it]( auto const &alternative ) {
 					using Alternative = DAW_TYPEOF( alternative );
 					static_assert( ( std::is_same_v<Alternative, JsonClasses> or ... ),
 					               "Unexpected alternative type" );
@@ -475,11 +474,6 @@ namespace daw::json {
 			};
 		} // namespace json_base
 
-		template<char const *Name, typename Base>
-		struct json_named_member : Base {
-			static constexpr daw::string_view name = Name;
-			using without_name = Base;
-		};
 		/**
 		 * The member is a range checked number
 		 * @tparam Name name of json member
@@ -866,15 +860,6 @@ namespace daw::json {
 			  json_base::json_nullable<T, JsonMember, NullableType, Constructor>;
 		};
 
-		namespace json_details {
-			template<typename T>
-			struct alias_constructor_t {
-				using type = json_details::json_class_constructor_t<
-				  T,
-				  typename json_data_contract_trait_t<T>::json_member::constructor_t>;
-			};
-		} // namespace json_details
-
 		namespace json_base {
 			template<typename T, typename Constructor>
 			struct json_class {
@@ -992,7 +977,7 @@ namespace daw::json {
 				using base_map = non_discriminated_variant_base_map<json_elements>;
 
 				static_assert(
-				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
+				  json_details::is_variant_type_list_v<json_elements>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 
@@ -1055,7 +1040,7 @@ namespace daw::json {
 				  json_details::variant_alternatives_list<T>,
 				  daw::traits::identity<JsonElements>>::type;
 				static_assert(
-				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
+				  json_details::is_variant_type_list_v<json_elements>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 
@@ -1522,9 +1507,8 @@ namespace daw::json {
 		  NullableType, Constructor>;
 
 		namespace json_base {
-			template<typename Container, typename JsonValueType = use_default,
-			         typename JsonKeyType = use_default,
-			         typename Constructor = use_default>
+			template<typename Container, typename JsonValueType, typename JsonKeyType,
+			         typename Constructor>
 			struct json_key_value_array {
 				using i_am_a_json_type = void;
 
@@ -1696,7 +1680,7 @@ namespace daw::json {
 				  daw::traits::identity<JsonElements>>::type;
 
 				static_assert(
-				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
+				  json_details::is_variant_type_list_v<json_elements>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 

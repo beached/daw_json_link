@@ -506,7 +506,7 @@ namespace daw::json {
 					if constexpr( sizeof...( Is ) > 0 ) {
 						out_it.add_indent( );
 						bool is_first = true;
-						auto const process_member = [&]( auto Idx ) {
+						auto const process_member = [&is_first, &out_it]( auto Idx ) {
 							if( not is_first ) {
 								out_it.put( ',' );
 							} else {
@@ -761,7 +761,7 @@ namespace daw::json {
 		  WritableType &it, std::string_view id, std::string_view title,
 		  options::output_flags_t<PolicyFlags...> = options::output_flags<> ) {
 
-			auto out_it = [&] {
+			auto out_it = [&it] {
 				if constexpr( is_serialization_policy_v<WritableType> ) {
 					if constexpr( sizeof...( PolicyFlags ) == 0 ) {
 						return it;
