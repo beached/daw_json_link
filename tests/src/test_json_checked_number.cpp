@@ -12,6 +12,7 @@
 
 #include <cstddef>
 #include <exception>
+#include <optional>
 #include <tuple>
 
 struct Byte {
@@ -30,13 +31,38 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
+struct NullableByte {
+	std::optional<std::byte> x;
+};
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<NullableByte> {
+		static constexpr char const x[] = "x";
+		using type =
+		  json_member_list<json_checked_number_null<x, std::optional<std::byte>>>;
+
+		static constexpr auto to_json_data( NullableByte const &v ) {
+			return std::forward_as_tuple( v.x );
+		}
+	};
+} // namespace daw::json
+
 static_assert( daw::json::from_json<Byte>( R"json({"x":42})json" ).x ==
+               std::byte{ 42 } );
+static_assert( not daw::json::from_json<NullableByte>( R"json({})json" ).x );
+static_assert( daw::json::from_json<NullableByte>( R"json({"x":42})json" ).x ==
                std::byte{ 42 } );
 
 int main( ) {
 	bool success = false;
 	try {
 		(void)daw::json::from_json<Byte>( R"json({"x":1024})json" );
+		success = false;
+	} catch( std::exception const &ex ) { success = true; }
+	try {
+		(void)daw::json::from_json<NullableByte>( R"json({"x":1024})json" );
+		success = false;
 	} catch( std::exception const &ex ) { success = true; }
 	daw_ensure( success );
 }
