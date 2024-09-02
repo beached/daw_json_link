@@ -907,6 +907,12 @@ add_test( test_json_raw_test test_json_raw )
 add_dependencies( ci_tests test_json_raw )
 add_dependencies( full test_json_raw )
 
+add_executable( test_json_iterator src/test_json_iterator.cpp )
+target_link_libraries( test_json_iterator PRIVATE json_test )
+add_test( test_json_iterator_test test_json_iterator )
+add_dependencies( ci_tests test_json_iterator )
+add_dependencies( full test_json_iterator )
+
 add_executable( utf16_string_test src/utf16_string_test.cpp )
 target_link_libraries( utf16_string_test PRIVATE json_test )
 add_test( NAME utf16_string_test COMMAND utf16_string_test ./utf16_test.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )

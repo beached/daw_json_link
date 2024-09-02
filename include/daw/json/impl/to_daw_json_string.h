@@ -65,9 +65,6 @@ namespace daw::json {
 			DAW_JSON_MAKE_REQ_TRAIT( has_to_string_v,
 			                         to_string( std::declval<T>( ) ) );
 
-			template<typename T>
-			using has_to_string = std::bool_constant<has_to_string_v<T>>;
-
 		} // namespace json_details::to_strings
 		namespace json_details {
 			DAW_JSON_MAKE_REQ_TRAIT(
@@ -536,6 +533,9 @@ namespace daw::json {
 						return it;
 					}
 				} else {
+					// has_value defaults to true for non-nullable.  This allows types
+					// like containers to accept null/missing on parsing but just be empty
+					// when serialized
 					if( not concepts::nullable_value_has_value( value ) ) {
 						it.write( "null" );
 						return it;
@@ -1471,7 +1471,7 @@ namespace daw::json {
 
 			template<typename WriteableType, typename Real>
 			static constexpr WriteableType
-			to_chars( options::FPOutputFormat fp_output_fmt, Real const &value,
+			to_chars( options::FPOutputFormat fp_output_format, Real const &value,
 			          WriteableType out_it ) {
 				daw::jkj::dragonbox::unsigned_fp_t<Real> dec =
 				  daw::jkj::dragonbox::to_decimal(
@@ -1498,14 +1498,14 @@ namespace daw::json {
 				if( br.is_negative( ) ) {
 					out_it.put( '-' );
 				}
-				if( fp_output_fmt == options::FPOutputFormat::Scientific ) {
+				if( fp_output_format == options::FPOutputFormat::Scientific ) {
 					char buff[50]{ };
 					char *ptr = buff;
 					ptr =
 					  daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );
 					out_it.copy_buffer( buff, ptr );
 					return out_it;
-				} else if( fp_output_fmt == options::FPOutputFormat::Auto ) {
+				} else if( fp_output_format == options::FPOutputFormat::Auto ) {
 					if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
 						char buff[50]{ };
 						char *ptr = buff;

@@ -164,7 +164,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler, json_options_t P, typename A>
-			inline constexpr handler_result_holder
+			constexpr handler_result_holder
 			handle_on_array_start( Handler &&handler, basic_json_value<P, A> jv ) {
 				if constexpr( hnd_checks::has_on_array_start_handler_v<Handler, P,
 				                                                       A> ) {
@@ -176,8 +176,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler>
-			inline constexpr handler_result_holder
-			handle_on_array_end( Handler &&handler ) {
+			constexpr handler_result_holder handle_on_array_end( Handler &&handler ) {
 				if constexpr( hnd_checks::has_on_array_end_handler_v<Handler> ) {
 					return handler.handle_on_array_end( );
 				} else {
@@ -186,7 +185,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler, json_options_t P, typename A>
-			inline constexpr handler_result_holder
+			constexpr handler_result_holder
 			handle_on_class_start( Handler &&handler, basic_json_value<P, A> jv ) {
 				if constexpr( hnd_checks::has_on_class_start_handler_v<Handler, P,
 				                                                       A> ) {
@@ -198,8 +197,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler>
-			inline constexpr handler_result_holder
-			handle_on_class_end( Handler &&handler ) {
+			constexpr handler_result_holder handle_on_class_end( Handler &&handler ) {
 				if constexpr( hnd_checks::has_on_class_end_handler_v<Handler> ) {
 					return handler.handle_on_class_end( );
 				} else {
@@ -208,7 +206,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler, json_options_t P, typename A>
-			inline constexpr handler_result_holder
+			constexpr handler_result_holder
 			handle_on_number( Handler &&handler, basic_json_value<P, A> &jv ) {
 				if constexpr( hnd_checks::has_on_number_handler_jv_v<Handler, P, A> ) {
 					return handler.handle_on_number( as_copy( jv ) );
@@ -222,7 +220,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler, json_options_t P, typename A>
-			inline constexpr handler_result_holder
+			constexpr handler_result_holder
 			handle_on_bool( Handler &&handler, basic_json_value<P, A> jv ) {
 				if constexpr( hnd_checks::has_on_bool_handler_jv_v<Handler, P, A> ) {
 					return handler.handle_on_bool( as_copy( jv ) );
@@ -235,7 +233,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler, json_options_t P, typename A>
-			inline constexpr handler_result_holder
+			constexpr handler_result_holder
 			handle_on_string( Handler &&handler, basic_json_value<P, A> &jv ) {
 				if constexpr( hnd_checks::has_on_string_handler_jv_v<Handler, P, A> ) {
 					return handler.handle_on_string( as_copy( jv ) );
@@ -249,7 +247,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler, json_options_t P, typename A>
-			inline constexpr handler_result_holder
+			constexpr handler_result_holder
 			handle_on_null( Handler &&handler, basic_json_value<P, A> &jv ) {
 				if constexpr( hnd_checks::has_on_null_handler_jv_v<Handler, P, A> ) {
 					return handler.handle_on_null( as_copy( jv ) );
@@ -261,7 +259,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler, json_options_t P, typename A>
-			inline constexpr handler_result_holder
+			constexpr handler_result_holder
 			handle_on_error( Handler &&handler, basic_json_value<P, A> jv ) {
 				if constexpr( hnd_checks::has_on_error_handler_v<Handler, P, A> ) {
 					return handler.handle_on_error( std::move( jv ) );
@@ -318,9 +316,9 @@ namespace daw::json {
 		template<json_options_t P, typename A,
 		         typename StackContainerPolicy = use_default, typename Handler,
 		         auto... ParseFlags>
-		inline constexpr void
-		json_event_parser( basic_json_value<P, A> bjv, Handler &&handler,
-		                   options::parse_flags_t<ParseFlags...> ) {
+		constexpr void json_event_parser( basic_json_value<P, A> bjv,
+		                                  Handler &&handler,
+		                                  options::parse_flags_t<ParseFlags...> ) {
 
 			using ParseState = TryDefaultParsePolicy<typename BasicParsePolicy<
 			  P, A>::template SetPolicyOptions<ParseFlags...>>;
@@ -525,14 +523,14 @@ namespace daw::json {
 
 		template<json_options_t P, typename A,
 		         typename StackContainerPolicy = use_default, typename Handler>
-		inline constexpr void json_event_parser( basic_json_value<P, A> bjv,
-		                                         Handler &&handler ) {
+		DAW_ATTRIB_INLINE constexpr void
+		json_event_parser( basic_json_value<P, A> bjv, Handler &&handler ) {
 			json_event_parser( std::move( bjv ), DAW_FWD( handler ),
 			                   options::parse_flags<> );
 		}
 
 		template<typename Handler, auto... ParseFlags>
-		inline void
+		DAW_ATTRIB_INLINE void
 		json_event_parser( daw::string_view json_document, Handler &&handler,
 		                   options::parse_flags_t<ParseFlags...> pflags ) {
 
@@ -541,8 +539,8 @@ namespace daw::json {
 		}
 
 		template<typename Handler>
-		inline void json_event_parser( daw::string_view json_document,
-		                               Handler &&handler ) {
+		DAW_ATTRIB_INLINE void json_event_parser( daw::string_view json_document,
+		                                          Handler &&handler ) {
 
 			return json_event_parser( basic_json_value( json_document ),
 			                          DAW_FWD2( Handler, handler ),

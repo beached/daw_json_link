@@ -117,6 +117,16 @@ namespace daw::json {
 				m_state.trim_left( );
 			}
 
+			/// @return The iterator representing the beginning of the iteration.
+			constexpr json_array_iterator_t begin( ) const {
+				return *this;
+			}
+
+			/// @return The iterator representing the end sentinel of the iteration.
+			constexpr json_array_iterator_t end( ) const {
+				return json_array_iterator_t( );
+			}
+
 			/// @brief Parse the current element
 			/// @pre good( ) returns true
 			/// @return The parsed result of ParseElement

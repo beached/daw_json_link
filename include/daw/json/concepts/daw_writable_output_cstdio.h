@@ -37,9 +37,9 @@ namespace daw::json {
 						auto ret = std::fwrite( sv.data( ), 1, sv.size( ), f );
 						daw_json_ensure( ret == sv.size( ),
 						                 daw::json::ErrorReason::OutputError );
-						return 0;
+						return 1;
 					};
-					(void)( writer( fp, svs ) | ... );
+					( (void)writer( fp, svs ), ... );
 				}
 
 				static inline void put( std::FILE *f, char c ) {

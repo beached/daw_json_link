@@ -44,9 +44,9 @@ namespace daw::json {
 							return 0;
 						}
 						p = writeable_output_details::copy_to_buffer( p, sv );
-						return 0;
+						return 1;
 					};
-					(void)( writer( ptr, svs ) | ... );
+					( (void)writer( ptr, svs ), ... );
 				}
 
 				static constexpr void put( T *&ptr, char c ) {
@@ -77,9 +77,9 @@ namespace daw::json {
 						}
 						(void)writeable_output_details::copy_to_buffer( s.data( ), sv );
 						s = s.subspan( sv.size( ) );
-						return 0;
+						return 1;
 					};
-					(void)( writer( out, svs ) | ... );
+					( (void)writer( out, svs ), ... );
 				}
 
 				static constexpr void put( T &out, char c ) {
@@ -113,10 +113,10 @@ namespace daw::json {
 							return 0;
 						}
 						p = writeable_output_details::copy_to_buffer( p, sv );
-						return 0;
+						return 1;
 					};
 					auto *ptr = out.data( ) + start_pos;
-					(void)( writer( ptr, svs ) | ... );
+					( (void)writer( ptr, svs ), ... );
 				}
 
 				static inline void put( Container &out, char c ) {
@@ -144,7 +144,7 @@ namespace daw::json {
 						                          }
 						                          return 0;
 					                          };
-					(void)( writer( it, svs ) | ... );
+					( (void)writer( it, svs ), ... );
 				}
 
 				static constexpr void put( T &it, char c ) {
