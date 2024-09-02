@@ -364,7 +364,7 @@ namespace daw::json {
 			[[nodiscard]] static inline constexpr OutputIterator
 			serialize( OutputIterator it, Value const &v ) {
 
-				return daw::visit_nt( v, [&]( auto const &alternative ) {
+				return daw::visit_nt( v, [&it]( auto const &alternative ) {
 					using Alternative = DAW_TYPEOF( alternative );
 					static_assert( ( std::is_same_v<Alternative, JsonClasses> or ... ),
 					               "Unexpected alternative type" );
@@ -474,11 +474,6 @@ namespace daw::json {
 			};
 		} // namespace json_base
 
-		template<char const *Name, typename Base>
-		struct json_named_member : Base {
-			static constexpr daw::string_view name = Name;
-			using without_name = Base;
-		};
 		/**
 		 * The member is a range checked number
 		 * @tparam Name name of json member
@@ -864,15 +859,6 @@ namespace daw::json {
 			using without_name =
 			  json_base::json_nullable<T, JsonMember, NullableType, Constructor>;
 		};
-
-		namespace json_details {
-			template<typename T>
-			struct alias_constructor_t {
-				using type = json_details::json_class_constructor_t<
-				  T,
-				  typename json_data_contract_trait_t<T>::json_member::constructor_t>;
-			};
-		} // namespace json_details
 
 		namespace json_base {
 			template<typename T, typename Constructor>
