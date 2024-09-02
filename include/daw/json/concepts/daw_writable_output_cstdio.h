@@ -39,7 +39,7 @@ namespace daw::json {
 						                 daw::json::ErrorReason::OutputError );
 						return 1;
 					};
-					(void)( writer( fp, svs ), ... );
+					( (void)writer( fp, svs ), ... );
 				}
 
 				static inline void put( std::FILE *f, char c ) {

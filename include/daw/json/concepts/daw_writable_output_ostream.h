@@ -41,7 +41,7 @@ namespace daw::json {
 						                 daw::json::ErrorReason::OutputError );
 						return 1;
 					};
-					(void)( writer( os, svs ), ... );
+					( (void)writer( os, svs ), ... );
 				}
 
 				static inline void put( std::ostream &os, char c ) {
