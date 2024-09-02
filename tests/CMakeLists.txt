@@ -889,6 +889,12 @@ add_test( test_json_tuple_test test_json_tuple )
 add_dependencies( ci_tests test_json_tuple )
 add_dependencies( full test_json_tuple )
 
+add_executable( test_json_array src/test_json_array.cpp )
+target_link_libraries( test_json_array PRIVATE json_test )
+add_test( test_json_array_test test_json_array )
+add_dependencies( ci_tests test_json_array )
+add_dependencies( full test_json_array )
+
 add_executable( utf16_string_test src/utf16_string_test.cpp )
 target_link_libraries( utf16_string_test PRIVATE json_test )
 add_test( NAME utf16_string_test COMMAND utf16_string_test ./utf16_test.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
@@ -1045,9 +1051,6 @@ add_dependencies( full issue_418_test )
 
 add_executable( issue_421_test EXCLUDE_FROM_ALL src/issue_421_test.cpp )
 target_link_libraries( issue_421_test PRIVATE json_test )
-#add_test( NAME issue_421_test COMMAND issue_421_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
-#add_dependencies( ci_tests issue_421_test )
-#add_dependencies( full issue_421_test )
 
 add_executable( issue_428_test src/issue_428_test.cpp )
 target_link_libraries( issue_428_test PRIVATE json_test )
@@ -1095,13 +1098,12 @@ if( DEFINED MSVC AND NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
 	target_compile_options( error_handling_bench_test PRIVATE /wd4324 /wd4611 )
 endif()
 
-add_executable( json_bench_viewer src/json_bench_viewer.cpp )
+add_executable( json_bench_viewer EXCLUDE_FROM_ALL src/json_bench_viewer.cpp )
 target_link_libraries( json_bench_viewer json_test )
 
 if( Threads_FOUND )
-	add_executable( json_lines_bench_test src/json_lines_bench_test.cpp )
+	add_executable( json_lines_bench_test EXCLUDE_FROM_ALL src/json_lines_bench_test.cpp )
 	target_link_libraries( json_lines_bench_test json_test ${CMAKE_THREAD_LIBS_INIT} )
-	add_dependencies( full json_lines_bench_test )
 endif()
 
 # **************************************************

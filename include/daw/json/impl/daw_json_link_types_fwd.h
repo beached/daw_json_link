@@ -339,6 +339,10 @@ namespace daw::json {
 			  fwd_pack<json_details::json_deduced_type<JsonElements>...>;
 		};
 
+		namespace json_details {
+			DAW_MAKE_REQ_TRAIT_TYPE( is_variant_type_list_v,
+			                         T::i_am_variant_type_list );
+		}
 		/** Link to a JSON array
 		 * @tparam Name name of JSON member to link to
 		 * @tparam Container type of C++ container being constructed(e.g.
@@ -524,37 +528,10 @@ namespace daw::json {
 				return daw::max_value<std::size_t>;
 			}
 
-			template<typename T>
-			struct unknown_variant_type {
-				using i_am_variant_type_list = void;
-			};
-
 			template<typename... Ts>
 			struct missing_default_type_mapping {
 				using i_am_variant_type_list = void;
 			};
-
-			template<typename... Ts>
-			constexpr daw::conditional_t<
-			  all_have_deduced_type_v<Ts...>,
-			  json_variant_type_list<json_deduced_type<Ts>...>,
-			  missing_default_type_mapping<json_deduced_type<Ts>...>>
-			get_variant_type_list( std::variant<Ts...> const * );
-
-			template<typename T>
-			using underlying_nullable_type = decltype( *std::declval<T>( ) );
-
-			template<typename T>
-			using detected_underlying_nullable_type =
-			  std::remove_reference_t<daw::detected_t<underlying_nullable_type, T>>;
-
-			DAW_JSON_MAKE_REQ_TRAIT( is_nullable_type_v, *std::declval<T>( ) );
-
-			template<typename T>
-			using is_nullable_type = std::bool_constant<is_nullable_type_v<T>>;
-
-			template<typename T>
-			constexpr unknown_variant_type<T> get_variant_type_list( T const * );
 
 			/// Allow specialization of variant like types to extract the alternative
 			/// pack

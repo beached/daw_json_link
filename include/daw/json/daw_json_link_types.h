@@ -101,7 +101,6 @@ namespace daw::json {
 				  parse_state, std::index_sequence_for<JsonMembers...>{ } );
 			}
 		};
-
 		///
 		/// Deduce the json type mapping based on common types and types already
 		/// mapped.
@@ -992,7 +991,7 @@ namespace daw::json {
 				using base_map = non_discriminated_variant_base_map<json_elements>;
 
 				static_assert(
-				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
+				  json_details::is_variant_type_list_v<json_elements>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 
@@ -1055,7 +1054,7 @@ namespace daw::json {
 				  json_details::variant_alternatives_list<T>,
 				  daw::traits::identity<JsonElements>>::type;
 				static_assert(
-				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
+					json_details::is_variant_type_list_v<json_elements>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 
@@ -1696,7 +1695,7 @@ namespace daw::json {
 				  daw::traits::identity<JsonElements>>::type;
 
 				static_assert(
-				  std::is_same_v<typename json_elements::i_am_variant_type_list, void>,
+					json_details::is_variant_type_list_v<json_elements>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 

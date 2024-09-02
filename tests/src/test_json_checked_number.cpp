@@ -59,10 +59,10 @@ int main( ) {
 	try {
 		(void)daw::json::from_json<Byte>( R"json({"x":1024})json" );
 		success = false;
-	} catch( std::exception const &ex ) { success = true; }
+	} catch( std::exception const & ) { success = true; }
 	try {
 		(void)daw::json::from_json<NullableByte>( R"json({"x":1024})json" );
 		success = false;
-	} catch( std::exception const &ex ) { success = true; }
+	} catch( std::exception const & ) { success = true; }
 	daw_ensure( success );
 }

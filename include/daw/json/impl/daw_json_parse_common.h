@@ -42,6 +42,9 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+			DAW_MAKE_REQ_TRAIT_TYPE( is_json_member_list_v,
+			                         T::i_am_a_json_member_list );
+
 			template<typename T>
 			using ordered_member_subtype_test = typename T::json_member;
 
@@ -472,6 +475,8 @@ namespace daw::json {
 			  T DAW_JSON_ENABLEIF_S( has_json_data_contract_trait_v<T> )> {
 				static constexpr bool is_null = false;
 				using type = typename json_data_contract<T>::type;
+				static_assert( is_json_member_list_v<type>,
+				               "Expected a JSON member list" );
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
 
 				static constexpr bool type_map_found = true;
