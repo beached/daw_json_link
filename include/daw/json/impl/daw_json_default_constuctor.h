@@ -73,12 +73,13 @@ namespace daw::json {
 				return std::move( v );
 			}
 
-			template<typename Iterator>
+			template<typename Iterator, typename Last>
 			DAW_ATTRIB_INLINE
 			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr std::array<T, Sz>
 			  operator( )( Iterator first,
-			               Iterator last ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
-				return construct_array( first, last, std::make_index_sequence<Sz>{ } );
+			               Last last ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
+				return construct_array( std::move( first ), std::move( last ),
+				                        std::make_index_sequence<Sz>{ } );
 			}
 			DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING
 		}; // namespace daw::json
@@ -90,19 +91,21 @@ namespace daw::json {
 				F first;
 				L last;
 
-				iter_range_t( ) = default;
-				constexpr iter_range_t( F f, L l ) noexcept
+				explicit iter_range_t( ) = default;
+				explicit constexpr iter_range_t( F f, L l ) noexcept
 				  : first( f )
 				  , last( l ) {}
 
-				constexpr F begin( ) const noexcept {
+				[[nodiscard]] constexpr F begin( ) const noexcept {
 					return first;
 				}
 
-				constexpr L end( ) const noexcept {
+				[[nodiscard]] constexpr L end( ) const noexcept {
 					return last;
 				}
 			};
+			template<typename F, typename L>
+			iter_range_t( F, L ) -> iter_range_t<F, L>;
 		} // namespace json_details
 
 		/// @brief Default constructor type for std::vector.  It will reserve up
@@ -118,22 +121,24 @@ namespace daw::json {
 				return std::move( v );
 			}
 
-			template<typename Iterator>
+			template<typename Iterator, typename Last>
 			DAW_ATTRIB_INLINE
 			  DAW_JSON_CPP23_STATIC_CALL_OP DAW_JSON_CX_VECTOR std::vector<T, Alloc>
-			  operator( )( Iterator first, Iterator last,
-			               Alloc const &alloc = Alloc{ } )
+			  operator( )( Iterator first, Last last, Alloc const &alloc = Alloc{ } )
 			    DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				if constexpr( requires { last - first; } or
 				              not json_details::is_std_allocator_v<Alloc> ) {
 					return std::vector<T, Alloc>(
-					  std::from_range, json_details::iter_range_t{ first, last }, alloc );
+					  std::from_range,
+					  json_details::iter_range_t{ std::move( first ), std::move( last ) },
+					  alloc );
 				} else {
 					constexpr auto reserve_amount = 4096U / ( sizeof( T ) * 8U );
 					auto result = std::vector<T, Alloc>( alloc );
 					// Lets use a WAG and go for a 4k page size
 					result.reserve( reserve_amount );
-					result.assign_range( json_details::iter_range_t{ first, last } );
+					result.assign_range( json_details::iter_range_t{
+					  std::move( first ), std::move( last ) } );
 					return result;
 				}
 			}
@@ -154,23 +159,23 @@ namespace daw::json {
 				return std::move( v );
 			}
 
-			template<typename Iterator>
+			template<typename Iterator, typename Last>
 			DAW_ATTRIB_INLINE
 			  DAW_JSON_CPP23_STATIC_CALL_OP DAW_JSON_CX_VECTOR std::vector<T, Alloc>
-			  operator( )( Iterator first, Iterator last,
-			               Alloc const &alloc = Alloc{ } )
+			  operator( )( Iterator first, Last last, Alloc const &alloc = Alloc{ } )
 			    DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				if constexpr( std::is_same_v<std::random_access_iterator_tag,
 				                             typename std::iterator_traits<
 				                               Iterator>::iterator_category> or
 				              not json_details::is_std_allocator_v<Alloc> ) {
-					return std::vector<T, Alloc>( first, last, alloc );
+					return std::vector<T, Alloc>( std::move( first ), std::move( last ),
+					                              alloc );
 				} else {
 					constexpr auto reserve_amount = 4096U / ( sizeof( T ) * 8U );
 					auto result = std::vector<T, Alloc>( alloc );
 					// Lets use a WAG and go for a 4k page size
 					result.reserve( reserve_amount );
-					result.assign( first, last );
+					result.assign( std::move( first ), std::move( last ) );
 					return result;
 				}
 			}

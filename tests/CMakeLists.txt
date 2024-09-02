@@ -871,6 +871,12 @@ target_link_libraries( test_details_parse_options PRIVATE json_test )
 add_dependencies( ci_tests test_details_parse_options )
 add_dependencies( full test_details_parse_options )
 
+add_executable( test_details_json_checked_number src/test_details_json_checked_number.cpp )
+target_link_libraries( test_details_json_checked_number PRIVATE json_test )
+add_test( test_details_json_checked_number_test test_details_json_checked_number )
+add_dependencies( ci_tests test_details_json_checked_number )
+add_dependencies( full test_details_json_checked_number )
+
 add_executable( utf16_string_test src/utf16_string_test.cpp )
 target_link_libraries( utf16_string_test PRIVATE json_test )
 add_test( NAME utf16_string_test COMMAND utf16_string_test ./utf16_test.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
