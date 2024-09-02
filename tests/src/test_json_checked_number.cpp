@@ -55,6 +55,7 @@ static_assert( daw::json::from_json<NullableByte>( R"json({"x":42})json" ).x ==
                std::byte{ 42 } );
 
 int main( ) {
+#if defined( DAW_USE_EXCEPTIONS )
 	bool success = false;
 	try {
 		(void)daw::json::from_json<Byte>( R"json({"x":1024})json" );
@@ -65,4 +66,5 @@ int main( ) {
 		success = false;
 	} catch( std::exception const & ) { success = true; }
 	daw_ensure( success );
+#endif
 }

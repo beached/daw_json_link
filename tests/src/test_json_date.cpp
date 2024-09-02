@@ -63,6 +63,7 @@ static_assert( daw::json::from_json<NullableDate>(
                                                          0 ) );
 
 int main( ) {
+#if defined( DAW_USE_EXCEPTIONS )
 	{
 		bool success = false;
 		try {
@@ -161,4 +162,5 @@ int main( ) {
 		} catch( std::exception const & ) { success = true; }
 		daw_ensure( success );
 	}
+#endif
 }
