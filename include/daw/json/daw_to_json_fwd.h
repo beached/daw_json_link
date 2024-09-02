@@ -77,12 +77,6 @@ namespace daw::json {
 		inline std::string to_json( Value const &value,
 		                            options::output_flags_t<PolicyFlags...> );
 
-		namespace json_details {
-			/// @brief Tag type to indicate that the element of a Container is not
-			/// being specified.  This is the default.
-			struct auto_detect_array_element {};
-		} // namespace json_details
-
 		/**
 		 * Serialize a container to JSON.  This convenience method allows for easier
 		 * serialization of containers when the root of the document is an array
