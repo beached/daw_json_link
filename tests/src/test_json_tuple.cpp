@@ -75,9 +75,8 @@ static_assert( tp1.a );
 static_assert( std::get<0>( *tp1.a ) == 5 );
 static_assert( std::get<1>( *tp1.a ) == false );
 static_assert( std::get<2>( *tp1.a ) == -42 );
-#endif
-
 static_assert( not daw::json::from_json<NullableTuple>( R"json({})json" ).a );
+#endif
 
 int main( ) {
 #if not defined( DAW_HAS_OPTIONAL_CX_COPY )
@@ -87,5 +86,6 @@ int main( ) {
 	daw_ensure( std::get<0>( *tp.a ) == 5 );
 	daw_ensure( std::get<1>( *tp.a ) == false );
 	daw_ensure( std::get<2>( *tp.a ) == -42 );
+	daw_ensure( not daw::json::from_json<NullableTuple>( R"json({})json" ).a );
 #endif
 }
