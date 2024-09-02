@@ -39,9 +39,9 @@ namespace daw::json {
 						o.write( sv.data( ), static_cast<std::streamsize>( sv.size( ) ) );
 						daw_json_ensure( static_cast<bool>( o ),
 						                 daw::json::ErrorReason::OutputError );
-						return 0;
+						return 1;
 					};
-					(void)( writer( os, svs ) | ... );
+					(void)( writer( os, svs ), ... );
 				}
 
 				static inline void put( std::ostream &os, char c ) {

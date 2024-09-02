@@ -44,9 +44,6 @@ namespace daw::json {
 			  std::is_same_v<T, std::byte> or std::is_same_v<T, unsigned char>;
 
 			template<typename T>
-			using is_char_sized = std::bool_constant<sizeof( T ) == 1>;
-
-			template<typename T>
 			inline constexpr bool is_char_sized_character_v = false;
 
 			template<>

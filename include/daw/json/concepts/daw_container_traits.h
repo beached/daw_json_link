@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// Official repository: https://github.com/beached/
+// Official repository: https://github.com/beached/daw_json_link
 //
 
 #pragma once
@@ -38,9 +38,7 @@ namespace daw::json {
 			  container_detect::is_container_v<T> )> : std::true_type {};
 
 			template<typename T, std::size_t N>
-			struct container_traits<std::array<T, N>> : std::true_type {
-				static constexpr bool has_custom_constructor = true;
-			};
+			struct container_traits<std::array<T, N>> : std::true_type {};
 
 			/// @brief Is the type deduced or specialized as a container
 			template<typename T>
