@@ -374,6 +374,11 @@ namespace daw::json {
 			         typename Constructor = use_default>
 			struct json_key_value;
 
+			template<typename Container, typename JsonValueType = use_default,
+			         typename JsonKeyType = use_default,
+			         typename Constructor = use_default>
+			struct json_key_value_array;
+
 			template<typename Container, typename JsonValueType, typename JsonKeyType,
 			         JsonNullable NullableType = JsonNullable::Nullable,
 			         typename Constructor = use_default>

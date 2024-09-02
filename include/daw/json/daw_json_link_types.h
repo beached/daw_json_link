@@ -1054,7 +1054,7 @@ namespace daw::json {
 				  json_details::variant_alternatives_list<T>,
 				  daw::traits::identity<JsonElements>>::type;
 				static_assert(
-					json_details::is_variant_type_list_v<json_elements>,
+				  json_details::is_variant_type_list_v<json_elements>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 
@@ -1521,9 +1521,8 @@ namespace daw::json {
 		  NullableType, Constructor>;
 
 		namespace json_base {
-			template<typename Container, typename JsonValueType = use_default,
-			         typename JsonKeyType = use_default,
-			         typename Constructor = use_default>
+			template<typename Container, typename JsonValueType, typename JsonKeyType,
+			         typename Constructor>
 			struct json_key_value_array {
 				using i_am_a_json_type = void;
 
@@ -1695,7 +1694,7 @@ namespace daw::json {
 				  daw::traits::identity<JsonElements>>::type;
 
 				static_assert(
-					json_details::is_variant_type_list_v<json_elements>,
+				  json_details::is_variant_type_list_v<json_elements>,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 

@@ -420,11 +420,12 @@ namespace daw::json {
 		         typename JsonKeyType = use_default,
 		         JsonNullable NullableType = JsonNullable::Nullable,
 		         typename Constructor = use_default>
-		using json_key_value_array_null = json_nullable<
-		  Name, WrappedContainer,
-		  json_base::json_key_value<json_details::unwrapped_t<WrappedContainer>,
-		                            JsonValueType, JsonKeyType>,
-		  NullableType, Constructor>;
+		using json_key_value_array_null =
+		  json_nullable<Name, WrappedContainer,
+		                json_base::json_key_value_array<
+		                  json_details::unwrapped_t<WrappedContainer>,
+		                  JsonValueType, JsonKeyType>,
+		                NullableType, Constructor>;
 
 		/**
 		 * Allow parsing of a type that does not fit
