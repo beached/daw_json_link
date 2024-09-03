@@ -997,7 +997,7 @@ namespace daw::json {
 		} // namespace json_base
 
 		/***
-		 * Link to a nullable JSON variant
+		 * Link to a basic variant type that has no more than one of each of string, boolean, number, class, or array.
 		 * @tparam Name name of JSON member to link to
 		 * @tparam T type that has specialization of
 		 * daw::json::json_data_contract
@@ -1734,7 +1734,7 @@ namespace daw::json {
 			};
 		} // namespace json_base
 		/***
-		 * Link to a nullable variant like data type that is discriminated via
+		 * Link to a variant like data type that is discriminated via
 		 * another member.
 		 * @tparam Name name of JSON member to link to
 		 * @tparam T type of value to construct
