@@ -6,6 +6,7 @@
   * [Default Mapping of Types](#default-mapping-of-types)
   * [API Documentation](https://beached.github.io/daw_json_link/) - Member mapping classes and methods
   * [Cookbook](docs/cookbook/readme.md) Get cooking and putting it all together 
+    * [Mapping Overview](docs/cookbook/mapping_overview.md)
     * [Aliases](docs/cookbook/aliases.md)
     * [Arrays](docs/cookbook/array.md)
     * [Classes](docs/cookbook/class.md)
