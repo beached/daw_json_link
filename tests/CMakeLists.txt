@@ -913,6 +913,18 @@ add_test( test_json_iterator_test test_json_iterator )
 add_dependencies( ci_tests test_json_iterator )
 add_dependencies( full test_json_iterator )
 
+add_executable( test_json_sized_array src/test_json_sized_array.cpp )
+target_link_libraries( test_json_sized_array PRIVATE json_test )
+add_test( test_json_sized_array_test test_json_sized_array )
+add_dependencies( ci_tests test_json_sized_array )
+add_dependencies( full test_json_sized_array )
+
+add_executable( test_json_intrusive_variant src/test_json_intrusive_variant.cpp )
+target_link_libraries( test_json_intrusive_variant PRIVATE json_test )
+add_test( test_json_intrusive_variant_test test_json_intrusive_variant )
+add_dependencies( ci_tests test_json_intrusive_variant )
+add_dependencies( full test_json_intrusive_variant )
+
 add_executable( utf16_string_test src/utf16_string_test.cpp )
 target_link_libraries( utf16_string_test PRIVATE json_test )
 add_test( NAME utf16_string_test COMMAND utf16_string_test ./utf16_test.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
