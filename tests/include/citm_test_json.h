@@ -115,7 +115,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::venueNames_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_string_raw<"PLEYEL_PLEYEL", std::string_view>>;
 #else
@@ -132,7 +132,7 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::citm::citm_object_t> {
 		using ignore_unknown_members = void;
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_key_value<"areaNames",
 		                 std::unordered_map<std::int64_t, std::string_view>,

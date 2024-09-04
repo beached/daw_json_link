@@ -25,7 +25,7 @@ struct string_trail {
 
 template<>
 struct daw::json::json_data_contract<string_trail> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	using type = json_member_list<json_string<"a">>;
 #else
 	static constexpr char const a[] = "a";
@@ -34,14 +34,14 @@ struct daw::json::json_data_contract<string_trail> {
 };
 
 bool test_string_trail( ) {
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif
 		static DAW_CONSTEXPR std::string_view json_data =
 		  R"({"b": 5, "c": true, "a": "hello", } )";
 		auto const result = daw::json::from_json<string_trail>( json_data );
 		test_assert( result.a == "hello", "Unexpected result" );
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "string trail parsing failed: " << je.reason( ) << '\n';
 		return false;
@@ -56,7 +56,7 @@ struct string_raw_trail {
 
 template<>
 struct daw::json::json_data_contract<string_raw_trail> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	using type = json_member_list<json_string_raw<"a", std::string_view>>;
 #else
 	static constexpr char const a[] = "a";
@@ -81,7 +81,7 @@ struct int_trail {
 
 template<>
 struct daw::json::json_data_contract<int_trail> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	using type = json_member_list<json_number<"a", int>>;
 #else
 	static constexpr char const a[] = "a";
@@ -106,7 +106,7 @@ struct unsigned_trail {
 
 template<>
 struct daw::json::json_data_contract<unsigned_trail> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	using type = json_member_list<json_number<"a", unsigned>>;
 #else
 	static constexpr char const a[] = "a";
@@ -130,7 +130,7 @@ struct bool_trail {
 
 template<>
 struct daw::json::json_data_contract<bool_trail> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	using type = json_member_list<json_bool<"a">>;
 #else
 	static constexpr char const a[] = "a";
@@ -155,7 +155,7 @@ struct object_trail {
 
 template<>
 struct daw::json::json_data_contract<object_trail> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	using type = json_member_list<json_class<"a", int_trail>>;
 #else
 	static constexpr char const a[] = "a";
@@ -180,7 +180,7 @@ struct array_member_trail {
 
 template<>
 struct daw::json::json_data_contract<array_member_trail> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	using type = json_member_list<json_array<"a", int>>;
 #else
 	static constexpr char const a[] = "a";
@@ -193,13 +193,13 @@ bool test_array_member_trail( ) {
 
 	static DAW_CONSTEXPR std::string_view json_data =
 	  R"({"b": 5, "c": true, "a": [1,2,3,4], } )";
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif
 		auto const result = daw::json::from_json<array_member_trail>( json_data );
 		test_assert( result.a.size( ) == 4, "Unexpected result" );
 		test_assert( result.a[0] == 1, "Unexpected result" );
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "array_member trail parsing failed: " << je.reason( ) << '\n';
 		return false;
@@ -210,7 +210,7 @@ bool test_array_member_trail( ) {
 
 bool test_array_trail( ) {
 	static DAW_CONSTEXPR std::string_view json_data = "[1,2,3,4,5,]";
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif
 		std::vector<int> const result =
@@ -218,7 +218,7 @@ bool test_array_trail( ) {
 		test_assert( result.size( ) == 5, "Unexpected result" );
 		test_assert( result[0] == 1, "Unexpected result" );
 		test_assert( result[4] == 5, "Unexpected result" );
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "array trail parsing failed: " << je.reason( ) << '\n';
 		return false;
@@ -228,7 +228,7 @@ bool test_array_trail( ) {
 }
 
 int main( int, char ** )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -246,7 +246,7 @@ int main( int, char ** )
 	daw::expecting( test_array_member_trail( ) );
 	daw::expecting( test_array_trail( ) );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

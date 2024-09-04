@@ -27,7 +27,7 @@ struct City {
 namespace daw::json {
 	template<>
 	struct json_data_contract<City> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_string_raw<"country", std::string_view>,
 		  json_string_raw<"name", std::string_view>,
@@ -55,7 +55,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -85,7 +85,7 @@ int main( int argc, char **argv )
 
 	std::cout << "Chitungwiza was found.\n" << to_json( *pos ) << '\n';
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

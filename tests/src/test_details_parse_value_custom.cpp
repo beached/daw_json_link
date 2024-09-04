@@ -36,7 +36,7 @@ bool empty_array_empty_json_array( ) {
 	return v.size( ) == 8;
 }
 
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 #define do_test( ... )                                                   \
 	try {                                                                  \
 		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );              \
@@ -64,13 +64,13 @@ bool empty_array_empty_json_array( ) {
 */
 
 int main( int, char ** )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
 	do_test( empty_array_empty_json_array( ) );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

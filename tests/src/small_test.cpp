@@ -27,7 +27,7 @@ namespace daw {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::Data> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_number<"a", int>>;
 #else
 		static constexpr char const a[] = "a";
@@ -40,7 +40,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -55,7 +55,7 @@ int main( int argc, char **argv )
 
 	test_assert( cls.a == 12345, "Unexpected value" );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

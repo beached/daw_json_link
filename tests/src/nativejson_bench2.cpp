@@ -30,11 +30,11 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 static_assert( DAW_NUM_RUNS > 0 );
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif
 		using namespace daw::json;
@@ -225,14 +225,14 @@ int main( int argc, char **argv )
 		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
 		             "Incorrect value" );
 		test_assert( canada_result, "Missing value" );
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
 #endif
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( std::exception const &ex ) {
 	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
 	          << '\n';

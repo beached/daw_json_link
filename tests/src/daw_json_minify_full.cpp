@@ -176,7 +176,7 @@ int main( int argc, char **argv ) {
 	auto data =
 	  daw::read_file( args[0].value, daw::terminate_on_read_file_error );
 
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try
 #endif
 	{
@@ -191,7 +191,7 @@ int main( int argc, char **argv ) {
 			minify( args, data, std::ostreambuf_iterator<char>( std::cout ) );
 		}
 	}
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 		exit( 1 );

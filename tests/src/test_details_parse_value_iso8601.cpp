@@ -19,7 +19,7 @@
 #include <string_view>
 
 int main( )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -29,7 +29,7 @@ int main( )
 	auto result = daw::twitter::TimestampConverter{ }( sv );
 	(void)result;
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

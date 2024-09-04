@@ -153,7 +153,7 @@ namespace daw {
 		[[nodiscard]] T *allocate( std::size_t n ) noexcept {
 			assert( m_data->buffer_start and m_data->ptr );
 			// Ensure aligned.  Underlying ptr could be shared so must be done
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 			daw_json_ensure( ( ( used( ) + n ) < m_data->capacity ),
 			                 daw::json::ErrorReason::Unknown );
 #endif

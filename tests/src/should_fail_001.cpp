@@ -9,13 +9,13 @@
 #include "defines.h"
 
 // Ensure that we are always checking
-#ifdef DAW_JSON_CHECK_DEBUG_ONLY
+#if defined( DAW_JSON_CHECK_DEBUG_ONLY )
 #undef DAW_JSON_CHECK_DEBUG_ONLY
 #endif
 
 #include <daw/json/daw_json_link.h>
 
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 #include <exception>
 #endif
 #include <iostream>
@@ -36,7 +36,7 @@ namespace tests {
 
 template<>
 struct daw::json::json_data_contract<tests::Coordinate> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	using type = json_member_list<json_number<"lat">, json_number<"lng">,
 	                              json_string<"name">>;
 #else
@@ -50,7 +50,7 @@ struct daw::json::json_data_contract<tests::Coordinate> {
 
 template<>
 struct daw::json::json_data_contract<tests::UriList> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	using type = json_member_list<json_array<"uris", std::string>>;
 #else
 	static constexpr char const uris[] = "uris";
@@ -257,7 +257,7 @@ namespace tests {
 	}
 } // namespace tests
 
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 #define expect_fail( Bool, Reason )                                          \
 	do {                                                                       \
 		std::cout << "testing: "                                                 \
@@ -286,11 +286,11 @@ namespace tests {
 #endif
 
 int main( int, char ** )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	std::exception_ptr last_uncaught_except = nullptr;
 #endif
 	expect_fail( tests::quotes_in_numbers( ),
@@ -335,14 +335,14 @@ int main( int, char ** )
 	             "Incomplete false in array not caught" );
 
 	expect_fail( tests::bad_true( ), "bad true value not caught" );
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	if( last_uncaught_except ) {
 		std::rethrow_exception( last_uncaught_except );
 	}
 #endif
 	return 0;
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( std::exception const &ex ) {
 	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
 	          << '\n';

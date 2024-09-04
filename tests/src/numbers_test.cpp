@@ -62,7 +62,7 @@ void test( std::string_view data ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -77,7 +77,7 @@ int main( int argc, char **argv )
 	auto const sv_numbers =
 	  std::string_view( mm_numbers.data( ), mm_numbers.size( ) );
 
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 	std::cout << "non-debug run\n";
 #endif
 	test<daw::json::options::ExecModeTypes::compile_time>( sv_numbers );
@@ -86,7 +86,7 @@ int main( int argc, char **argv )
 	test<daw::json::options::ExecModeTypes::simd>( sv_numbers );
 #endif
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

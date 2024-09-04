@@ -159,7 +159,7 @@ bool test_class_close_mid_array_without_open( ) {
 	} while( false )
 
 int main( int, char ** )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -177,7 +177,7 @@ int main( int, char ** )
 	do_fail_test( test_embedded_class_broken_001( ) );
 	do_fail_test( test_class_close_mid_array_without_open( ) );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

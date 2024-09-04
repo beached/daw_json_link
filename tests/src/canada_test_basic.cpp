@@ -22,7 +22,7 @@
 #include <cstdio>
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -32,7 +32,7 @@ int main( int argc, char **argv )
 	}
 	using namespace daw::json;
 	auto json_data = std::string( *daw::read_file( argv[1] ) );
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif
 		for( int n = 0; n < 100; ++n ) {
@@ -48,14 +48,14 @@ int main( int argc, char **argv )
 			// );
 			daw::do_not_optimize( canada_result );
 		}
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	} catch( daw::json::json_exception const &jex ) {
 		display_exception( jex, json_data.data( ) );
 		exit( 1 );
 	}
 #endif
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( std::exception const &ex ) {
 	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
 	          << '\n';

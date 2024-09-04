@@ -159,7 +159,7 @@ void roundtrip( daw::Arguments const &args, std::string_view data,
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -177,7 +177,7 @@ int main( int argc, char **argv )
 	auto data =
 	  daw::read_file( args[0].value, daw::terminate_on_read_file_error );
 
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif
 		if( args.size( ) > 1 and args[1].name.empty( ) ) {
@@ -193,7 +193,7 @@ int main( int argc, char **argv )
 		} else {
 			roundtrip( args, data, std::ostreambuf_iterator<char>( std::cout ) );
 		}
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	} catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Exception thrown by parser\n"
 		          << to_formatted_string( jex, data.data( ) ) << '\n';
@@ -201,7 +201,7 @@ int main( int argc, char **argv )
 	}
 #endif
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( std::exception const &ex ) {
 	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
 	          << '\n';

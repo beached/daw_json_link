@@ -98,7 +98,7 @@ auto test( std::string_view json_data ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -122,7 +122,7 @@ int main( int argc, char **argv )
 		test_assert( h0 == h2, "constexpr/fast exec model hashes do not match" );
 	}
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

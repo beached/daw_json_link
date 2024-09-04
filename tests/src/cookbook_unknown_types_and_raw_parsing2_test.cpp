@@ -82,7 +82,7 @@ bool operator==( MyClass2 const &lhs, MyClass2 const &rhs ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -107,7 +107,7 @@ int main( int argc, char **argv )
 	auto const val2 = daw::json::from_json<MyClass2>( json_str2 );
 	test_assert( val == val2, "Broken round trip" );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

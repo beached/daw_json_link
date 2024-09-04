@@ -43,7 +43,7 @@ namespace daw::cookbook_graphs1 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::Metadata> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_number<"member0", int>,
 		                              json_string<"member1">, json_bool<"member2">>;
 #else
@@ -57,7 +57,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::GraphNode> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_number<"id", size_t,
 		              options::number_opt( options::LiteralAsStringOpt::Always )>,
@@ -74,7 +74,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::GraphEdge> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_number<"source", size_t,
 		              options::number_opt( options::LiteralAsStringOpt::Always )>,
@@ -100,7 +100,7 @@ struct Node {
 };
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -173,7 +173,7 @@ int main( int argc, char **argv )
 
 	return 0;
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

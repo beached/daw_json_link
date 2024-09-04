@@ -49,7 +49,7 @@ using namespace daw::json::options;
 
 template<ExecModeTypes ExecMode>
 void test( std::string_view json_data, AllocType &alloc )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -215,7 +215,7 @@ void test( std::string_view json_data, AllocType &alloc )
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Missing value" );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
@@ -230,7 +230,7 @@ catch( daw::json::json_exception const &jex ) {
 #endif
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -281,7 +281,7 @@ int main( int argc, char **argv )
 	  daw::json::from_json_alloc<daw::twitter::twitter_object_t>( str, alloc );
 	daw::do_not_optimize( twitter_result2 );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

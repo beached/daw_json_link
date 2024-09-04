@@ -207,7 +207,7 @@ namespace daw::jkj::dragonbox {
 
 				auto output2 = static_cast<std::uint32_t>( output );
 				while( output2 >= 10000 ) {
-#ifdef __clang__ // https://bugs.llvm.org/show_bug.cgi?id=38217
+#if defined( __clang__ ) // https://bugs.llvm.org/show_bug.cgi?id=38217
 					const std::uint32_t c = output2 - 10000 * ( output2 / 10000 );
 #else
 					const std::uint32_t c = output2 % 10000;
@@ -297,5 +297,5 @@ namespace daw::jkj::dragonbox {
 				return to_chars_impl( v, buffer, digit_count );
 			}
 		} // namespace to_chars_detail
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::jkj::dragonbox

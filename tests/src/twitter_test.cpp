@@ -33,7 +33,7 @@ using namespace daw::json::options;
 inline namespace {
 	template<ExecModeTypes ExecMode>
 	void test( std::string_view json_data, bool do_asserts )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	  try
 #endif
 	{
@@ -181,7 +181,7 @@ inline namespace {
 			             "Missing value" );
 		}
 	}
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 		exit( 1 );
@@ -197,7 +197,7 @@ inline namespace {
 } // namespace
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -249,7 +249,7 @@ int main( int argc, char **argv )
 	  daw::json::from_json<daw::twitter::twitter_object_t>( str );
 	daw::do_not_optimize( twitter_result2 );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
