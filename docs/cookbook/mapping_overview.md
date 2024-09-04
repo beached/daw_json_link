@@ -37,7 +37,7 @@ Maps JSON strings in iso8601 timestamp to values to C++ `std::chrono::time_point
 
 ### `json_key_value`
 
-Maps JSON objects to C++ containers containers like maps or vector of pairs.
+Maps JSON objects to C++ containers like maps or vector of pairs.
 
 ### `json_key_value_array`
 
