@@ -26,25 +26,25 @@
 #include <string_view>
 
 // These come from build system and must be defined
-#ifndef SOURCE_CONTROL_REVISION
+#if not defined( SOURCE_CONTROL_REVISION )
 #error "SOURCE_CONTROL_REVSION must be defined"
 #endif
-#ifndef PROCESSOR_DESCRIPTION
+#if not defined( PROCESSOR_DESCRIPTION )
 #error "PROCESSOR_DESCRIPTION must be defined"
 #endif
-#ifndef OS_NAME
+#if not defined( OS_NAME )
 #error "OS_NAME must be defined"
 #endif
-#ifndef OS_RELEASE
+#if not defined( OS_RELEASE )
 #error "OS_RELEASE must be defined"
 #endif
-#ifndef OS_VERSION
+#if not defined( OS_VERSION )
 #error "OS_VERSION must be defined"
 #endif
-#ifndef OS_PLATFORM
+#if not defined( OS_PLATFORM )
 #error "OS_PLATFORM must be defined"
 #endif
-#ifndef BUILD_TYPE
+#if not defined( BUILD_TYPE )
 #error "BUILD_TYPE must be defined"
 #endif
 
@@ -91,7 +91,7 @@ inline namespace {
 
 	std::ostream &operator<<( std::ostream &os, std::chrono::nanoseconds t ) {
 		auto const ae = daw::on_scope_exit(
-		  [&os, old_flags = std::ios_base::fmtflags( os.flags( ) )] {
+		  [&os, old_flags = std::ios_base::fmtflags{ os.flags( ) }] {
 			  os.flags( old_flags );
 		  } );
 
@@ -504,7 +504,7 @@ inline namespace {
 } // namespace
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -571,7 +571,7 @@ int main( int argc, char **argv )
 	out_file.write( out_data.data( ),
 	                static_cast<std::streamsize>( out_data.size( ) ) );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

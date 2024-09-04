@@ -36,7 +36,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::geojson::Property> {
 		using ignore_unknown_members = void;
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_string_raw<"name", std::string_view>>;
 #else
 		static constexpr char const type_sym[] = "type";
@@ -51,7 +51,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::geojson::Polygon> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_string_raw<"type", std::string_view>,
 		  json_array<"coordinates", std::vector<daw::geojson::Point>>>;
@@ -72,7 +72,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::geojson::Feature> {
 		using ignore_unknown_members = void;
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_string_raw<"type", std::string_view>,
 		                   json_class<"properties", daw::geojson::Property>,
@@ -96,7 +96,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::geojson::FeatureCollection> {
 		using ignore_unknown_members = void;
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_string_raw<"type", std::string_view>,
 		                   json_array<"features", daw::geojson::Feature>>;

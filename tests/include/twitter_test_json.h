@@ -117,7 +117,7 @@ namespace daw::twitter {
 namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::metadata_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_string<"result_type">,
 		                              json_string<"iso_language_code">>;
 #else
@@ -136,7 +136,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::urls_element_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_string<"url">, json_string<"expanded_url">,
 		                   json_string<"display_url">,
@@ -159,7 +159,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::url_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_array<"urls", daw::twitter::urls_element_t>>;
 #else
@@ -176,7 +176,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::entities_t> {
 		using ignore_unknown_members = void;
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_class_null<"url", std::optional<daw::twitter::url_t>>,
 		  json_class_null<"description", std::optional<daw::twitter::url_t>>>;
@@ -300,7 +300,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN
 	  json_data_contract<daw::twitter::hashtags_element_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_string<"text">, json_array<"indices", int32_t>>;
 #else
@@ -318,7 +318,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::tweet_object_t> {
 		using ignore_unknown_members = void;
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
 		  json_custom<"created_at", daw::twitter::twitter_tp,
@@ -399,7 +399,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN
 	  json_data_contract<daw::twitter::user_mentions_element_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_string<"screen_name">, json_string<"name">,
 		                   json_number<"id", int64_t>, json_string<"id_str">,
@@ -423,7 +423,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::size_item_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_number<"w", int64_t>, json_number<"h", int64_t>,
 		                   json_string<"resize">>;
@@ -442,7 +442,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::sizes_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_class<"medium", daw::twitter::size_item_t>,
 		                   json_class<"small", daw::twitter::size_item_t>,
@@ -467,7 +467,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::media_element_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_number<"id", int64_t>, json_string<"id_str">,
 		                   json_array<"indices", int64_t>, json_string<"media_url">,
@@ -506,7 +506,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN
 	  json_data_contract<daw::twitter::retweeted_status_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
 		  json_custom<"created_at", daw::twitter::twitter_tp,
@@ -586,7 +586,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::search_metadata_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_number<"completed_in">, json_number<"max_id", int64_t>,
 		  json_string<"max_id_str">, json_string<"next_results">,
@@ -620,7 +620,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::twitter_object_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_array<"statuses", daw::twitter::tweet_object_t>,
 		  json_class<"search_metadata", daw::twitter::search_metadata_t>>;

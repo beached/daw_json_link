@@ -116,7 +116,7 @@ void test( daw::string_view json ) {
 
 int main( int argc, char **argv ) {
 	auto json_doc = std::optional<std::string>{ };
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try
 #endif
 	{
@@ -133,7 +133,7 @@ int main( int argc, char **argv ) {
 		test<options::ExecModeTypes::compile_time>( json_sv );
 		test<options::ExecModeTypes::runtime>( json_sv );
 	}
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 		std::cerr << to_formatted_string( jex, json_doc->data( ) ) << '\n';

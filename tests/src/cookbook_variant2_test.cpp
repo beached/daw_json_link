@@ -44,7 +44,7 @@ namespace daw::cookbook_variant2 {
 
 template<>
 struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 	using type = json_member_list<
 	  json_string<"name">,
 	  json_tagged_variant<"value", std::variant<std::string, int, bool>,
@@ -67,7 +67,7 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 };
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -88,7 +88,7 @@ int main( int argc, char **argv )
 
 	test_assert( values1 == values2, "Error in round tripping" );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

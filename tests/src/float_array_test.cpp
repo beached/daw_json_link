@@ -41,7 +41,7 @@ struct Number2 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Number> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_number<"a", float>>;
 #else
 		static constexpr char const a[] = "a";
@@ -51,7 +51,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<Number2> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_number<"a", float>>;
 #else
 		static constexpr char const a[] = "a";
@@ -283,7 +283,7 @@ void test_func( ) {
 			std::cout << "double parse count: " << count3 << '\n';
 		}
 	}
-#ifdef DAW_ALLOW_SSE42
+#if defined( DAW_ALLOW_SSE42 )
 	// ***********************************************
 	// SSE42
 	std::cout << "**********************\nSSE42 Processing\n";
@@ -481,7 +481,7 @@ void test_func( ) {
 }
 
 int main( int argc, char ** )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -491,7 +491,7 @@ int main( int argc, char ** )
 		test_func<1'000ULL>( );
 	}
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

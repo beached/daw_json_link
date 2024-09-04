@@ -30,7 +30,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 static_assert( DAW_NUM_RUNS > 0 );
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -53,7 +53,7 @@ int main( int argc, char **argv )
 	std::optional<daw::twitter2::twitter_object_t> j1{ };
 	std::optional<daw::citm::citm_object_t> j2{ };
 	std::optional<daw::geojson::Polygon> j3{ };
-#ifdef NDEBUG
+#if defined( NDEBUG )
 	std::cout << "non-debug run\n";
 	auto const sz = sv_twitter.size( ) + sv_citm.size( ) + sv_canada.size( );
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -101,7 +101,7 @@ int main( int argc, char **argv )
 	test_assert( j2, "Missing value" );
 	test_assert( j3, "Missing value" );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

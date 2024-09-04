@@ -37,7 +37,7 @@ namespace daw::cookbook_array3 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_array3::MyArrayClass1> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_number<"member0", int>, json_array<"member1", int>,
 		                   json_array<"member2", std::string>>;
@@ -58,7 +58,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -82,7 +82,7 @@ int main( int argc, char **argv )
 
 	test_assert( my_array_class == my_array_class2, "Round trip failed" );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

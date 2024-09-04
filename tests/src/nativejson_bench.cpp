@@ -75,7 +75,7 @@ void test( char **argv, bool do_asserts ) {
 	std::optional<daw::citm::citm_object_t> citm_result{ };
 	std::optional<daw::geojson::Polygon> canada_result{ };
 
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try
 #endif
 	{
@@ -88,7 +88,7 @@ void test( char **argv, bool do_asserts ) {
 		  json_sv1 );
 		twitter_result = ret.get( );
 	}
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	catch( json_exception const &jex ) {
 		std::cerr << "Error while testing twitter.json\n";
 		std::cerr << to_formatted_string( jex ) << '\n';
@@ -282,7 +282,7 @@ void test( char **argv, bool do_asserts ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -310,7 +310,7 @@ int main( int argc, char **argv )
 	}
 	test<options::ExecModeTypes::simd>( argv, do_asserts );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

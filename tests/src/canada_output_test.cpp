@@ -57,7 +57,7 @@ inline auto get_canada_check( std::string_view f1 ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -114,7 +114,7 @@ int main( int argc, char **argv )
 	                 "Expected round trip to produce same result" );
 	                 */
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
