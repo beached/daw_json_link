@@ -6,6 +6,9 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+// This code demonstrates json_intrusive_variant in a versioned config file
+// scenario
+
 #include <daw/json/daw_json_link.h>
 
 #include <daw/daw_ensure.h>
@@ -17,7 +20,7 @@
 #include <variant>
 
 struct ConfigV1 {
-	constexpr static int version = 1;
+	constexpr static unsigned version = 1;
 	std::string file;
 	bool flag;
 
@@ -27,7 +30,7 @@ struct ConfigV1 {
 };
 
 struct ConfigV2 {
-	constexpr static int version = 2;
+	constexpr static unsigned version = 2;
 	bool flag1;
 	bool flag2;
 	bool flag3;
@@ -43,8 +46,11 @@ struct ConfigV2 {
 using Config = std::variant<ConfigV1, ConfigV2>;
 
 struct ConfigSwitcher {
-	constexpr std::size_t operator( )( int n ) const {
-		assert( n >= 1 );
+	constexpr std::size_t operator( )( unsigned n ) const {
+		if( n == 0 ) {
+			// no version in file, default to v1
+			return 1;
+		}
 		assert( n <= 2 );
 		return static_cast<std::size_t>( n - 1 );
 	}
@@ -82,7 +88,7 @@ namespace daw::json {
 	struct json_data_contract<Config> {
 		static constexpr char const version[] = "version";
 		using type = json_type_alias<json_intrusive_variant_no_name<
-		  Config, json_number<version, int>, ConfigSwitcher>>;
+		  Config, json_number_null<version, unsigned>, ConfigSwitcher>>;
 	};
 } // namespace daw::json
 
@@ -90,6 +96,13 @@ int main( ) {
 	static constexpr daw::string_view json_doc_v1 = R"json(
 {
 	"version": 1,
+	"file": "/path/to/thing",
+	"flag": true
+}
+)json";
+
+	static constexpr daw::string_view json_doc_v1b = R"json(
+{
 	"file": "/path/to/thing",
 	"flag": true
 }
@@ -107,7 +120,6 @@ int main( ) {
 )json";
 
 	auto const cv1 = daw::json::from_json<ConfigV1>( json_doc_v1 );
-	auto const cv2 = daw::json::from_json<ConfigV2>( json_doc_v2 );
 	auto const c1 = daw::json::from_json<Config>( json_doc_v1 );
 	daw_ensure( c1.index( ) == 0 );
 	daw_ensure( daw::visit(
@@ -118,7 +130,11 @@ int main( ) {
 	  [&cv1]( ConfigV1 const &a ) -> bool {
 		  return a == cv1;
 	  } ) );
+	auto const cv1b = daw::json::from_json<ConfigV1>( json_doc_v1b );
+	daw_ensure( cv1 == cv1b );
+
 	auto const c2 = daw::json::from_json<Config>( json_doc_v2 );
+	auto const cv2 = daw::json::from_json<ConfigV2>( json_doc_v2 );
 	daw_ensure( c2.index( ) == 1 );
 	daw_ensure( daw::visit(
 	  c2,
