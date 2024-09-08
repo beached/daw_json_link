@@ -318,7 +318,7 @@ namespace daw::jkj::dragonbox {
 
 #if( defined( __GNUC__ ) or defined( __clang__ ) ) and \
   defined( __SIZEOF_INT128__ ) and defined( __x86_64__ )
-#ifdef __GNUC__
+#if defined( __GNUC__ )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
@@ -331,7 +331,7 @@ namespace daw::jkj::dragonbox {
 
 					constexpr uint128( unsigned __int128 u ) noexcept
 					  : internal_{ u } {}
-#ifdef __GNUC__
+#if defined( __GNUC__ )
 #pragma GCC diagnostic pop
 #endif
 					[[nodiscard]] constexpr std::uint64_t high( ) const noexcept {
@@ -385,13 +385,13 @@ namespace daw::jkj::dragonbox {
 				umul128( std::uint64_t x, std::uint64_t y ) noexcept {
 #if( defined( __GNUC__ ) or defined( __clang__ ) ) and \
   defined( __SIZEOF_INT128__ ) and defined( __x86_64__ )
-#ifdef __GNUC__
+#if defined( __GNUC__ )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 					return static_cast<unsigned __int128>( x ) *
 					       static_cast<unsigned __int128>( y );
-#ifdef __GNUC__
+#if defined( __GNUC__ )
 #pragma GCC diagnostic pop
 #endif
 #elif defined( _MSC_VER ) and defined( _M_X64 ) and \
@@ -443,14 +443,14 @@ namespace daw::jkj::dragonbox {
 				umul128_upper64( std::uint64_t x, std::uint64_t y ) noexcept {
 #if( defined( __GNUC__ ) or defined( __clang__ ) ) and \
   defined( __SIZEOF_INT128__ ) and defined( __x86_64__ )
-#ifdef __GNUC__
+#if defined( __GNUC__ )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 					auto p = static_cast<unsigned __int128>( x ) *
 					         static_cast<unsigned __int128>( y );
 					return std::uint64_t( p >> 64 );
-#ifdef __GNUC__
+#if defined( __GNUC__ )
 #pragma GCC diagnostic pop
 #endif
 #elif defined( DAW_IS_CONSTANT_EVALUATED ) and defined( _MSC_VER ) and \

@@ -20,7 +20,7 @@
 #include <unordered_map>
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -45,7 +45,7 @@ int main( int argc, char **argv )
 
 	test_assert( opt_value.empty( ), "Unexpected result" );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

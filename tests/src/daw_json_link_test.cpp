@@ -60,7 +60,7 @@ struct NumberX {
 namespace daw::json {
 	template<>
 	struct json_data_contract<NumberX> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_number<"x", int>>;
 #else
 		static constexpr char const x[] = "x";
@@ -195,7 +195,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<test_002_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_class<"a", test_001_t>>;
 #else
 		static constexpr char const a[] = "a";
@@ -208,7 +208,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<test_003_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_class_null<"a", std::optional<test_001_t>>>;
 #else
@@ -383,7 +383,7 @@ struct Empty2 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Empty2> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type =
 		  json_member_list<json_class<"b", EmptyClassTest>, json_number<"c", int>>;
 #else
@@ -428,7 +428,7 @@ static_assert( static_cast<bool>(
   ( not defined( _MSC_VER ) ) and                                          \
   ( not defined( __clang__ ) and not defined( _LIBCPP_VERSION ) or         \
     __clang_major__ > 9 )
-#ifdef __GNUC__
+#if defined( __GNUC__ )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
@@ -454,7 +454,7 @@ void test128( ) {
 	          << static_cast<std::uint64_t>( val & 0xFFFF'FFFF'FFFF'FFFFULL )
 	          << '\n';
 }
-#ifdef __GNUC__
+#if defined( __GNUC__ )
 #pragma GCC diagnostic pop
 #endif
 #endif
@@ -489,7 +489,7 @@ unsigned long long test_dblparse( std::string_view num,
 		std::cout << "->ulp diff: " << std::dec << diff << '\n';
 		std::cout.precision( old_precision );
 	}
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 	if( diff > ( Precise ? 0 : 2 ) ) {
 		auto const old_precision = std::cout.precision( );
 		// Do again to do it from debugger
@@ -544,7 +544,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 		std::cout << "->ulp diff: " << std::dec << diff << '\n';
 		std::cout.precision( old_precision );
 	}
-#ifndef NDEBUG
+#if not defined( NDEBUG )
 	if( diff > 2 ) {
 		double o = orig;
 		(void)o;
@@ -789,7 +789,7 @@ struct Unmapped9 {
 };
 
 int main( int, char ** ) {
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif
 		constexpr daw::string_view foo2_json =
@@ -1179,11 +1179,11 @@ int main( int, char ** ) {
 #endif
 
 		auto const test_bad_float = []( ) -> bool {
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 			try {
 #endif
 				(void)from_json<double>( "0e "sv );
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 			} catch( daw::json::json_exception const &ex ) {
 				(void)ex;
 				return true;
@@ -1194,7 +1194,7 @@ int main( int, char ** ) {
 		daw_json_ensure( test_bad_float( ), ErrorReason::Unknown );
 
 		auto const test_empty_map = []( ) -> bool {
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 			try {
 #endif
 				auto m = from_json<std::map<std::string, std::string>>( "{}"sv );
@@ -1204,7 +1204,7 @@ int main( int, char ** ) {
 				auto const s = to_json( m );
 
 				return s == "{}";
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 			} catch( daw::json::json_exception const &jex ) {
 				std::cerr << "Exception thrown by parser: " << jex.reason( )
 				          << std::endl;
@@ -1216,12 +1216,12 @@ int main( int, char ** ) {
 
 		auto const test_leading_zero = []( auto i ) {
 			using test_t = daw::remove_cvref_t<decltype( i )>;
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 			try {
 #endif
 				auto l0 = from_json<test_t>( "01.0"sv );
 				(void)l0;
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 			} catch( daw::json::json_exception const & ) { return true; }
 #endif
 			return false;
@@ -1483,7 +1483,7 @@ int main( int, char ** ) {
 			ensure( x == 5 );
 		}
 	}
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 		exit( 1 );

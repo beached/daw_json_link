@@ -17,7 +17,7 @@
 #include <string_view>
 #include <tuple>
 
-#ifdef __GNUC__
+#if defined( __GNUC__ )
 #define DAW_HIDDEN __attribute__( ( visibility( "hidden" ) ) )
 #else
 #define DAW_HIDDEN

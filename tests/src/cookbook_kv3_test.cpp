@@ -32,7 +32,7 @@ namespace daw::cookbook_kv3 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<cookbook_kv3::MyKeyValue3> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_key_value<
 		  "kv", std::multimap<std::string, std::string>, std::string>>;
 #else
@@ -47,7 +47,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -72,7 +72,7 @@ int main( int argc, char **argv )
 	  std::string_view( str.data( ), str.size( ) ) );
 	test_assert( kv == kv3, "Unexpected round trip error" );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

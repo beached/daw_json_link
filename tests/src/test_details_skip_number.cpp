@@ -40,7 +40,7 @@ bool test_number_space( ) {
 	auto v = skip_number( rng );
 	return std::string_view( v.first, v.size( ) ) == "12345";
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 #define do_test( ... )                                                   \
 	try {                                                                  \
 		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );              \
@@ -68,7 +68,7 @@ bool test_number_space( ) {
 */
 
 int main( int, char ** )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -76,7 +76,7 @@ int main( int, char ** )
 	do_test( test_number( ) );
 	do_test( test_number_space( ) );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

@@ -71,7 +71,7 @@ bool test_null_number_untrusted_known( ) {
 	return v and *v == 5;
 }
 
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 #define do_test( ... )                                                   \
 	try {                                                                  \
 		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );              \
@@ -99,7 +99,7 @@ bool test_null_number_untrusted_known( ) {
 */
 
 int main( )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -109,7 +109,7 @@ int main( )
 	do_test( test_null_number_trusted( ) );
 	do_test( test_null_number_untrusted_known( ) );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

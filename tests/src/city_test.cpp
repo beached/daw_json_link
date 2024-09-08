@@ -22,6 +22,7 @@
 #include <daw/iterator/daw_back_inserter.h>
 
 #include <iostream>
+#include <numeric>
 #include <streambuf>
 #include <string_view>
 #include <vector>
@@ -45,7 +46,7 @@ struct City {
 namespace daw::json {
 	template<>
 	struct json_data_contract<City> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_string<"country">, json_string<"name">,
 		  json_number<"lat", float,
@@ -72,7 +73,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -221,12 +222,11 @@ int main( int argc, char **argv )
 	  "Calculate Middle Latitude", json_data.size( ),
 	  []( auto const &jstr ) -> float {
 		  uint32_t tot = 0;
-		  auto result =
-		    daw::algorithm::accumulate( iterator_t( jstr ), iterator_t( ), 0.0f,
-		                                [&tot]( float cur, City const &city ) {
-			                                ++tot;
-			                                return cur + city.lat;
-		                                } );
+		  auto result = std::accumulate( iterator_t( jstr ), iterator_t( ), 0.0f,
+		                                 [&tot]( float cur, City const &city ) {
+			                                 ++tot;
+			                                 return cur + city.lat;
+		                                 } );
 		  return result / static_cast<float>( tot );
 	  },
 	  json_data );
@@ -250,7 +250,7 @@ int main( int argc, char **argv )
 	  json_data );
 	std::cout << "mid_lat2 of all is: " << mid_lat2 << '\n';
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

@@ -67,7 +67,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( ) {
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	try
 #endif
 	{
@@ -80,7 +80,7 @@ int main( ) {
 		auto parsed = daw::json::from_json<DepthUpdateJson>( testJson1 );
 		std::cout << "";
 	}
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 	catch( daw::json::json_exception const &e ) {
 		std::cout << "formatted: " << to_formatted_string( e ) << "\n\n";
 		std::cout << "daw error: " << e.reason( ) << " near: '"

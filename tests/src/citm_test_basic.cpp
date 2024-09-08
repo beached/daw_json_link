@@ -25,7 +25,7 @@
 #include <streambuf>
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -48,7 +48,7 @@ int main( int argc, char **argv )
 	test_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
 	             "Incorrect value" );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );

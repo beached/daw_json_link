@@ -31,7 +31,7 @@ struct kv2_t {
 namespace daw::json {
 	template<>
 	struct json_data_contract<kv_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
 		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
 #else
@@ -43,7 +43,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<kv2_t> {
-#ifdef DAW_JSON_CNTTP_JSON_NAME
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<json_key_value<
 		  "kv", daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
 		  int, daw::string_view>>;
@@ -57,7 +57,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int, char ** )
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
@@ -77,7 +77,7 @@ int main( int, char ** )
 	test_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
 	test_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
 }
-#ifdef DAW_USE_EXCEPTIONS
+#if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
