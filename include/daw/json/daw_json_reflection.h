@@ -21,6 +21,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace refl_details {
+			/// Get the public non-static data members
 			consteval std::vector<std::meta::info>
 			pub_nsdm_of( std::meta::info type_class ) {
 				auto members = std::meta::nonstatic_data_members_of( type_class );

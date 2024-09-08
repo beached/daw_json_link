@@ -50,8 +50,26 @@ public:
 		return ++counter;
 	}
 };
-//template<>
-//inline constexpr bool daw::json::is_reflectible_type_v<A> = true;
+
+struct NoRefl {
+	int x = 55;
+};
+
+struct NumberHalf {
+	constexpr auto operator( )( auto y ) const {
+		return y / 2;
+	}
+};
+
+template<>
+struct daw::json::json_data_contract<NoRefl> {
+	using type =
+	  json_member_list<json_number<"x", int, number_opts_def, NumberHalf>>;
+
+	static constexpr auto to_json_data( NoRefl const &nr ) {
+		return std::tuple{ nr.x * 2 };
+	}
+};
 
 int main( ) {
 	constexpr daw::string_view json_doc0 = R"json(
@@ -111,7 +129,6 @@ int main( ) {
 	daw_ensure( val3.m1[1].m2 == 3 );
 	daw::println( "json: {}", daw::json::to_json( val3 ) );
 
-	/*
 	using namespace daw::json::options;
 	auto json_doc3b =
 	  daw::json::to_json( val3, output_flags<SerializationFormat::Pretty> );
@@ -125,7 +142,17 @@ int main( ) {
 	daw_ensure( val3b.m1[1].m2 == 3 );
 
 	static constexpr daw::string_view json_doc4 = R"json({"value": "42"})json";
+	daw::println( "json_doc4: {}", json_doc4 );
 	auto val4 = daw::json::from_json<A>( json_doc4 );
 	daw_ensure( val4.value == "42" );
-	 */
+	auto const val4_json = daw::json::to_json( val4 );
+	daw::println( "json: {}", val4_json );
+
+	static constexpr daw::string_view json_doc5 = R"json({"x": 42})json";
+	daw::println( "json_doc5: {}", json_doc5 );
+	auto val5 = daw::json::from_json<NoRefl>( json_doc5 );
+	// If refletion is used, x will be 42
+	daw_ensure( val5.x == 21 );
+	auto const val5_json = daw::json::to_json( val4 );
+	daw::println( "json: {}", val5_json );
 }
