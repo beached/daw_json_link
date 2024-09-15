@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['variant_20types_1802',['Variant Types',['../md_docs_cookbook_variant.html',1,'']]]
+  ['variant_20types_1812',['Variant Types',['../md_docs_cookbook_variant.html',1,'']]]
 ];
