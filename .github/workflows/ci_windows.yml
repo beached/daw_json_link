@@ -69,7 +69,7 @@ jobs:
       - name: Test
         run: ctest.exe -C ${{ matrix.config.build_type }} -j2 -VV --timeout 1200 --test-dir ${{ env.DAW_BUILD_DIR }}/
       - name: Archive any crashes as an artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always( )
         with:
           name: crashes
