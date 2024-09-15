@@ -53,6 +53,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-weak-vtables
 				# This is for when specializing things like tuple_size and each implementer gets to choose struct/class
 				-Wno-mismatched-tags
+				-Wno-global-constructors
 				)
 		if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
 			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )

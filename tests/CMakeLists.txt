@@ -12,6 +12,11 @@ endif()
 find_package( Boost 1.78.0 COMPONENTS container system )
 find_package( Threads )
 
+option( DAW_JSON_USE_REFLECTION "Enable testing of reflection for JSON" OFF )
+if( DAW_JSON_USE_REFLECTION )
+	add_compile_definitions( DAW_JSON_USE_REFLECTION )
+endif()
+
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
 	if( CLANG_VERSION_MAJOR VERSION_LESS 13 )
 		# Constexpr causes some ICE'ing on clang prior to v11
@@ -966,7 +971,7 @@ else()
 	message( STATUS "Fuzzing support disabled for compiler: ${CMAKE_CXX_COMPILER_ID} is not supported.  Only Clang(excluding AppleClang)" )
 endif()
 
-add_executable( daw_json_fuzzing_replay src/daw_json_fuzzing_replay.cpp )
+add_executable( daw_json_fuzzing_replay EXCLUDE_FROM_ALL src/daw_json_fuzzing_replay.cpp )
 target_link_libraries( daw_json_fuzzing_replay PRIVATE json_test )
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
 	target_link_libraries( daw_json_fuzzing_replay PRIVATE json_test "-fsanitize=address" )
@@ -980,9 +985,7 @@ else()
 	target_link_libraries( daw_json_fuzzing_replay PRIVATE json_test )
 endif()
 
-add_dependencies( full daw_json_fuzzing_replay )
-
-add_executable( daw_json_fuzzing_twitter_replay src/daw_json_fuzzing_twitter_replay.cpp )
+add_executable( daw_json_fuzzing_twitter_replay EXCLUDE_FROM_ALL src/daw_json_fuzzing_twitter_replay.cpp )
 target_link_libraries( daw_json_fuzzing_twitter_replay PRIVATE json_test )
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
 	target_link_libraries( daw_json_fuzzing_twitter_replay PRIVATE json_test "-fsanitize=address" )
@@ -995,8 +998,6 @@ else()
 	# This is often char_ptr == nullptr is not a constant expression type error
 	target_link_libraries( daw_json_fuzzing_twitter_replay PRIVATE json_test )
 endif()
-
-add_dependencies( full daw_json_fuzzing_twitter_replay )
 
 
 set( DAW_JSON_BUILD_SCHEMA_TEST ON )
@@ -1133,6 +1134,14 @@ target_link_libraries( json_bench_viewer json_test )
 if( Threads_FOUND )
 	add_executable( json_lines_bench_test EXCLUDE_FROM_ALL src/json_lines_bench_test.cpp )
 	target_link_libraries( json_lines_bench_test json_test ${CMAKE_THREAD_LIBS_INIT} )
+endif()
+
+if( DAW_JSON_USE_REFLECTION )
+	add_executable( daw_json_link_reflection_test src/daw_json_link_reflection_test.cpp )
+	target_link_libraries( daw_json_link_reflection_test json_test )
+	add_test( NAME daw_json_link_reflection_test_test COMMAND daw_json_link_reflection_test )
+	add_dependencies( ci_tests daw_json_link_reflection_test )
+	add_dependencies( full daw_json_link_reflection_test )
 endif()
 
 # **************************************************

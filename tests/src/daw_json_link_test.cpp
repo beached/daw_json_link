@@ -8,15 +8,19 @@
 
 #include "defines.h"
 
-#include "daw/json/daw_json_exception.h"
-#include "daw/json/daw_json_iterator.h"
-#include "daw/json/daw_json_link.h"
-#include "daw/json/impl/daw_json_exec_modes.h"
+#include <daw/json/daw_json_exception.h>
+#include <daw/json/daw_json_iterator.h>
+#include <daw/json/daw_json_link.h>
+#include <daw/json/impl/daw_json_exec_modes.h>
+
+#if defined( DAW_JSON_USE_REFLECTION )
+#include <daw/json/daw_json_reflection.h>
+#endif
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_benchmark.h>
-#include <daw/daw_span.h>
 #include <daw/daw_bounded_vector.h>
+#include <daw/daw_span.h>
 
 #include <array>
 #include <cassert>

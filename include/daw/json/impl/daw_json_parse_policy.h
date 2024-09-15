@@ -46,6 +46,7 @@ namespace daw::json {
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 
+			using i_am_a_parse_policy = void;
 			static constexpr bool is_default_parse_policy =
 			  PolicyFlags == json_details::default_policy_flag and
 			  std::is_same_v<Allocator, json_details::NoAllocator>;
@@ -294,7 +295,7 @@ namespace daw::json {
 					return true;
 				}
 				if constexpr( is_zero_terminated_string ) {
-					return first >= last or *first == '\0';
+					return first >= last or * first == '\0';
 				} else {
 					return first >= last;
 				}
@@ -405,19 +406,19 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] constexpr bool is_opening_bracket_checked( ) const {
-				return DAW_LIKELY( first < last ) and *first == '[';
+				return DAW_LIKELY( first < last ) and * first == '[';
 			}
 
 			[[nodiscard]] constexpr bool is_opening_brace_checked( ) const {
-				return DAW_LIKELY( first < last ) and *first == '{';
+				return DAW_LIKELY( first < last ) and * first == '{';
 			}
 
 			[[nodiscard]] constexpr bool is_closing_brace_checked( ) const {
-				return DAW_LIKELY( first < last ) and *first == '}';
+				return DAW_LIKELY( first < last ) and * first == '}';
 			}
 
 			[[nodiscard]] constexpr bool is_quotes_checked( ) const {
-				return DAW_LIKELY( first < last ) and *first == '"';
+				return DAW_LIKELY( first < last ) and * first == '"';
 			}
 
 			DAW_ATTRIB_INLINE constexpr void trim_left( ) {
@@ -524,8 +525,8 @@ namespace daw::json {
 		BasicParsePolicy( char const *, char const *, Allocator const & )
 		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
 
-		BasicParsePolicy( char const *, char const *, char const *, char const * )
-		  -> BasicParsePolicy<>;
+		BasicParsePolicy( char const *, char const *, char const *,
+		                  char const * ) -> BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, char const *, char const *,
@@ -535,6 +536,7 @@ namespace daw::json {
 		struct DefaultParsePolicy
 		  : BasicParsePolicy<json_details::default_policy_flag,
 		                     json_details::NoAllocator> {
+
 			using BasicParsePolicy::BasicParsePolicy;
 
 			constexpr DefaultParsePolicy( BasicParsePolicy const &other ) noexcept

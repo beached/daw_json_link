@@ -172,7 +172,7 @@ jobs:
       #          cmake --build build/ --target daw_json_fuzzing
       #          ./build/tests/daw_json_fuzzing -max_len=4000 -max_total_time=120
       - name: Archive any crashes as an artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always( )
         with:
           name: crashes
