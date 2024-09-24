@@ -9,7 +9,7 @@ else()
 	set( CMAKE_CXX_EXTENSIONS OFF )
 endif()
 
-find_package( Boost 1.78.0 COMPONENTS container system )
+find_package( Boost 1.83.0 COMPONENTS container system )
 find_package( Threads )
 
 option( DAW_JSON_USE_REFLECTION "Enable testing of reflection for JSON" OFF )
