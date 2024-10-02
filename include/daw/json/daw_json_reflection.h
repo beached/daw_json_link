@@ -33,17 +33,17 @@ namespace daw::json {
 
 			template<typename T, std::size_t... Is>
 			consteval auto to_tuple( T const &value, std::index_sequence<Is...> )
-			  -> decltype( std::tuple( value.[:pub_nsdm_of( ^T )[Is]:]... ) ) {
+			  -> decltype( std::tuple( value.[:pub_nsdm_of( ^^T )[Is]:]... ) ) {
 
-				return std::tuple( value.[:pub_nsdm_of( ^T )[Is]:]... );
+				return std::tuple( value.[:pub_nsdm_of( ^^T )[Is]:]... );
 			}
 
 			template<typename T>
 			consteval auto to_tuple( T const &value )
 			  -> decltype( refl_details::to_tuple(
-			    value, std::make_index_sequence<pub_nsdm_of( ^T ).size( )>{ } ) ) {
+			    value, std::make_index_sequence<pub_nsdm_of( ^^T ).size( )>{ } ) ) {
 				return refl_details::to_tuple(
-				  value, std::make_index_sequence<pub_nsdm_of( ^T ).size( )>{ } );
+				  value, std::make_index_sequence<pub_nsdm_of( ^^T ).size( )>{ } );
 			}
 
 			template<JSONNAMETYPE Name, typename T>
@@ -58,7 +58,7 @@ namespace daw::json {
 			template<typename T, std::size_t Idx>
 			consteval auto get_member_link_func( ) {
 				constexpr auto name =
-				  std::meta::identifier_of( pub_nsdm_of( ^T )[Idx] );
+				  std::meta::identifier_of( pub_nsdm_of( ^^T )[Idx] );
 				static_assert( not name.empty( ) );
 
 				return daw::traits::identity<deduce_t<
@@ -97,7 +97,7 @@ namespace daw::json {
 
 				DAW_ATTRIB_INLINE static constexpr auto to_json_data( T const &value ) {
 					return daw::forward_nonrvalue_as_tuple(
-					  value.[:pub_nsdm_of( ^T )[Is]:]... );
+					  value.[:pub_nsdm_of( ^^T )[Is]:]... );
 				}
 			};
 		} // namespace refl_details
@@ -167,6 +167,6 @@ namespace daw::json {
 		  struct json_data_contract<T>
 		  : refl_details::make_data_contract<
 		      T,
-		      std::make_index_sequence<refl_details::pub_nsdm_of( ^T ).size( )>> {};
+		      std::make_index_sequence<refl_details::pub_nsdm_of( ^^T ).size( )>> {};
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

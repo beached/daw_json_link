@@ -12,8 +12,9 @@ endif()
 find_package( Boost 1.83.0 COMPONENTS container system )
 find_package( Threads )
 
-option( DAW_JSON_USE_REFLECTION "Enable testing of reflection for JSON" OFF )
+option( DAW_JSON_USE_REFLECTION "Enable testing of reflection p2996 for JSON" OFF )
 if( DAW_JSON_USE_REFLECTION )
+	message( STATUS "DAW_JSON_USE_REFLECTION=ON: Enabled testing of reflection p2996 for JSON" )
 	add_compile_definitions( DAW_JSON_USE_REFLECTION )
 endif()
 
