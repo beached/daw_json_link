@@ -15,27 +15,30 @@
 #include <memory>
 #include <optional>
 
-struct X {
+struct[[= daw::json::reflectable]] X {
+	[[=daw::json::rename_json{"member1"}]]
 	int m1;
+	
+	[[=daw::json::rename_json{"member2"}]]
 	int m2;
 };
 
-struct Y {
+struct[[= daw::json::reflectable]] Y {
 	X m0;
 	std::string m1;
 };
 
-struct Z {
+struct[[= daw::json::reflectable]] Z {
 	std::map<std::string, int> kv;
 };
 
-struct Foo {
+struct[[= daw::json::reflectable]] Foo {
 	std::optional<Y> m0;
 	std::vector<X> m1;
 	std::shared_ptr<int> m2;
 };
 
-class A {
+class[[= daw::json::reflectable]] A {
 	mutable int counter = 0;
 
 public:
@@ -55,7 +58,7 @@ struct NoRefl {
 	int x = 55;
 };
 
-struct NumberHalf {
+struct[[= daw::json::reflectable]] NumberHalf {
 	constexpr auto operator( )( auto y ) const {
 		return y / 2;
 	}
@@ -74,8 +77,8 @@ struct daw::json::json_data_contract<NoRefl> {
 int main( ) {
 	constexpr daw::string_view json_doc0 = R"json(
 {
-	"m1": 55,
-	"m2": 123
+	"member1": 55,
+	"member2": 123
 }
 )json";
 	constexpr auto val0 = daw::json::from_json<X>( json_doc0 );
@@ -86,7 +89,7 @@ int main( ) {
 
 	constexpr daw::string_view json_doc1 = R"json(
 	{
-	  "m0": { "m1": 55, "m2": 123 },
+	  "m0": { "member1": 55, "member2": 123 },
 	  "m1": "Hello World!"
 	}
 	)json";
@@ -117,7 +120,7 @@ int main( ) {
 
 	constexpr daw::string_view json_doc3 = R"json(
 	{
-	  "m1": [ { "m1": 0, "m2": 1 }, { "m1": 2, "m2": 3 } ]
+	  "m1": [ { "member1": 0, "member2": 1 }, { "member1": 2, "member2": 3 } ]
 	}
 	)json";
 	auto val3 = daw::json::from_json<Foo>( json_doc3 );
