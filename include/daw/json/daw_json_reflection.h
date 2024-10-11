@@ -25,7 +25,7 @@ namespace daw::json
   {
     inline namespace experimental
     {
-      struct rename_json
+      struct refl_rename
       {
         char const* name;
       };
@@ -72,7 +72,7 @@ namespace daw::json
         {
           for (std::meta::info a : std::meta::annotations_of(r))
           {
-            if (std::meta::type_of(a) == ^ ^ T)
+            if (std::meta::type_of(a) == ^^T)
             {
               return std::meta::extract<T>(a);
             }
@@ -125,7 +125,7 @@ namespace daw::json
           constexpr auto name = []
           {
             constexpr auto m = pub_nsdm_of(^^T)[Idx];
-            constexpr auto annot = get_annotaion<daw::json::rename_json>(m);
+            constexpr auto annot = get_annotaion<daw::json::refl_rename>(m);
             if constexpr (annot)
             {
               return std::string_view(annot->name);
@@ -182,58 +182,11 @@ namespace daw::json
         };
       }
 
-      inline constexpr auto reflectable = std::monostate{};
+      inline constexpr auto refl = std::monostate{};
 
+      // Trait that specifies a type is to be reflected on for parse info
       template <refl_details::Reflectable T>
-      inline constexpr bool is_reflectible_type_v = refl_details::has_annotation(^^T, reflectable);
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_json_type; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_json_member_list; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_json_deduced_ordered_class; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_json_map_alias; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_deduced_empty_class; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_json_nullable; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_tagged_variant; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_json_tuple_member_list; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_serialization_policy; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_submember_tagged_variant; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_an_ordered_member; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
-
-      template <refl_details::Reflectable T>
-        requires(requires { typename T::i_am_a_parse_policy; }) //
-      inline constexpr bool is_reflectible_type_v<T> = false;
+      inline constexpr bool is_reflectible_type_v = refl_details::has_annotation(^^T, refl);
     }
 
     template <typename T>

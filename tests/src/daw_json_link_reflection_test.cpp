@@ -15,30 +15,28 @@
 #include <memory>
 #include <optional>
 
-struct[[= daw::json::reflectable]] X {
-	[[=daw::json::rename_json{"member1"}]]
-	int m1;
-	
-	[[=daw::json::rename_json{"member2"}]]
-	int m2;
+struct[[= daw::json::refl]] X {
+	[[= daw::json::refl_rename{ "member1" }]] int m1;
+
+	[[= daw::json::refl_rename{ "member2" }]] int m2;
 };
 
-struct[[= daw::json::reflectable]] Y {
+struct[[= daw::json::refl]] Y {
 	X m0;
 	std::string m1;
 };
 
-struct[[= daw::json::reflectable]] Z {
+struct[[= daw::json::refl]] Z {
 	std::map<std::string, int> kv;
 };
 
-struct[[= daw::json::reflectable]] Foo {
+struct[[= daw::json::refl]] Foo {
 	std::optional<Y> m0;
 	std::vector<X> m1;
 	std::shared_ptr<int> m2;
 };
 
-class[[= daw::json::reflectable]] A {
+class[[= daw::json::refl]] A {
 	mutable int counter = 0;
 
 public:
@@ -58,7 +56,7 @@ struct NoRefl {
 	int x = 55;
 };
 
-struct[[= daw::json::reflectable]] NumberHalf {
+struct[[= daw::json::refl]] NumberHalf {
 	constexpr auto operator( )( auto y ) const {
 		return y / 2;
 	}

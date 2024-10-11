@@ -830,14 +830,14 @@ namespace daw::json {
 					static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
 					               "Detection failure" );
 					return daw::traits::identity<type>{ };
-				} else if constexpr( concepts::is_container_v<T> ) {
-					using type = json_base::json_array<typename T::value_type, T>;
-					return daw::traits::identity<type>{ };
 				} else if constexpr( concepts::is_nullable_value_v<T> ) {
 					using value_type = concepts::nullable_value_type_t<T>;
 					using sub_type =
 					  typename decltype( json_deduced_type_impl<value_type>( ) )::type;
 					using type = json_base::json_nullable<T, sub_type>;
+					return daw::traits::identity<type>{ };
+				} else if constexpr( concepts::is_container_v<T> ) {
+					using type = json_base::json_array<typename T::value_type, T>;
 					return daw::traits::identity<type>{ };
 				} else if constexpr( std::is_empty_v<T> and
 				                     std::is_default_constructible_v<T> ) {

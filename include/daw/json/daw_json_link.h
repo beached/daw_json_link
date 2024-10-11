@@ -25,7 +25,7 @@ namespace daw::json::literals {
 	 */
 	constexpr daw::json::json_value operator""_dawjson( char const *ptr,
 	                                                    std::size_t sz ) {
-		return daw::json::json_value( std::string_view( ptr, sz ) );
+		return daw::json::json_value( ptr, sz );
 	}
 } // namespace daw::json::literals
 
