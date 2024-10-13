@@ -20,6 +20,10 @@
 
 namespace daw::json::inline DAW_JSON_VER {
   inline namespace experimental {
+		template<typename E, json_options_t Options = json_custom_opts_def>
+		  requires std::is_enum_v<E>
+		struct enum_string;
+    
     struct refl_map_as {
       std::meta::info type;
     };
@@ -27,6 +31,10 @@ namespace daw::json::inline DAW_JSON_VER {
     struct refl_rename {
 			char const* name;
 		};
+
+    struct refl_enum_string {
+      json_options_t Options; 
+    };
 
     struct refl_ignore_with_default { };
 
@@ -112,32 +120,45 @@ namespace daw::json::inline DAW_JSON_VER {
 
 				template<typename T, std::size_t Idx>
 				consteval auto get_member_link_func( ) {
-					static constexpr auto m = pub_nsdm_of(^^T )[Idx];
-					static constexpr auto annot_rename = get_annotaion<daw::json::refl_rename>( m );
-					static constexpr auto name = [] {
-						if constexpr( annot_rename ) {
-							return std::string_view( annot_rename->name );
-						} else {
-							return std::meta::identifier_of( m );
-						}
-					}( );
-					static_assert( not name.empty( ) );
+				  static constexpr auto member_info = pub_nsdm_of(^^T )[Idx];
+				  static constexpr auto annot_rename = get_annotaion<daw::json::refl_rename>( member_info );
+				  
+				  static constexpr std::string_view name = annot_rename ? 
+				      std::string_view( annot_rename->name ):
+				      std::meta::identifier_of( member_info );
+				  static_assert( not name.empty( ), "Unexpected empty name" );
 
-					static constexpr auto annot_map_as = get_annotaion<refl_map_as>( m );
-				  if constexpr( annot_map_as ) {
-				      static constexpr auto result = daw::traits::identity<[: annot_map_as->type :]>{};
-				    if constexpr( not annot_rename ) {
-				       return result; 
+				  static constexpr auto annot_map_as = [] {
+				    static constexpr auto refl_map_as_annot = get_annotaion<refl_map_as>( member_info );
+				    static constexpr auto refl_enum_string_annot = get_annotaion<refl_enum_string>( member_info );
+				    if constexpr( refl_map_as_annot ) {
+				      static_assert( not refl_enum_string_annot,
+                             "Do not use reflect.enum_string and reflect.map_as at the same time" );
+				      return refl_map_as_annot;
+				    } else if constexpr( refl_enum_string_annot ) {
+				      using json_member_no_name = daw::json::enum_string<
+				        [: std::meta::type_of( member_info ) :],
+				        refl_enum_string_annot->Options>;
+				      using json_member = typename json_member_no_name::template with_name<
+                  json_name<name.size( ) + 1>(
+                    name.data( ),
+                    std::make_index_sequence<name.size( ) + 1>{ }
+                  )>;
+				      return std::optional<refl_map_as>{ refl_map_as{ ^^json_member } };
 				    } else {
-				      static constexpr auto n = json_name<name.size( ) + 1>(
-				        name.data( ), std::make_index_sequence<name.size( ) + 1>{}
-				      );
-				      return daw::traits::identity<typename DAW_TYPEOF(result)::type::template with_name<n>>{};
+				      return false;
 				    }
+				  }( );
+				  
+				  if constexpr( annot_map_as ) {
+				    static_assert( not annot_rename, "Do not use reflect.rename and reflect.map_as at the same time" );
+				    static constexpr auto result = daw::traits::identity<[: annot_map_as->type :]>{};
+				    return result;
 				  } else {
 				    return daw::traits::identity<deduce_t<
                                             json_name<name.size( ) + 1>(
-                                                    name.data( ), std::make_index_sequence<name.size( ) + 1>{ } ),
+                                                    name.data( ),
+                                                    std::make_index_sequence<name.size( ) + 1>{ } ),
                                             submember_type_t<T, Idx>>>{ };
 				  }
 				}
@@ -173,15 +194,72 @@ namespace daw::json::inline DAW_JSON_VER {
 							value.[:pub_nsdm_of(^^T )[Is]:]... );
 					}
 				};
+
+		  template<typename E>
+		    requires std::is_enum_v<E>
+			constexpr E enum_from_string( std::string_view name ) {
+			  template for( constexpr auto enumerator: std::meta::enumerators_of( ^^E ) ) {
+				  if( name == std::meta::identifier_of( enumerator ) ) {
+					  return [:enumerator:];
+					}
+				}
+				daw_json_error( ErrorReason::InvalidString );
 			}
 
-			inline constexpr struct reflect_t {
-        static consteval refl_rename rename( char const * name ) {
-          return refl_rename{ name };
-        }
+		  /*
+		  template<typename E>
+		    requires std::is_enum_v<E>
+		  constexpr std::string_view enum_to_string( E value ) {
+		    template for( constexpr auto enumerator: std::meta::enumerators_of( ^^E ) ) {
+				  if( value == [:enumerator:] ) {
+					  return std::meta::identifier_of( enumerator );
+					}
+		    }
+		    return std::string_view{ }; 
+		  }
+      */
+		  template<typename E>
+        requires std::is_enum_v<E>
+      constexpr std::string_view enum_to_string(E value) {
+				//std::string result = "";
+		    auto result = std::string_view{};
+				[:expand(std::meta::enumerators_of(^^E)):] >> [&]<auto e>{
+					if (value == [:e:]) {
+						result = std::meta::identifier_of(e);
+					}
+				};
+				return result;
+		  }
+		  
+			template<typename E>
+			  requires std::is_enum_v<E>
+			struct reflect_enum_as_string {
+			  static constexpr E operator()( std::string_view name ) {
+			    return enum_from_string<E>( name );
+				}
 
-		    template<typename JsonMember>
-		    static constexpr auto map_as = refl_map_as{ ^^JsonMember };
+				static constexpr std::string_view operator()( E value ) {
+          return enum_to_string( value );
+				}
+			};
+		}
+
+		template<typename E, json_options_t Options>
+			requires std::is_enum_v<E>
+		struct enum_string: json_custom_no_name<
+			E,
+			refl_details::reflect_enum_as_string<E>,
+			refl_details::reflect_enum_as_string<E>,
+			Options
+		> {};
+			
+		inline constexpr struct reflect_t {
+       static consteval refl_rename rename( char const * name ) {
+         return refl_rename{ name };
+       }
+
+		template<typename JsonMember>
+		static constexpr auto map_as = refl_map_as{ ^^JsonMember };
 
 		    static constexpr auto ignore_with_default = daw::json::refl_ignore_with_default{};
 
@@ -189,6 +267,11 @@ namespace daw::json::inline DAW_JSON_VER {
 		    static consteval auto ignore_with_value( T && v ) {
 		      return refl_ignore_with_value{ DAW_FWD( v ) };
 		    }
+
+				template<json_options_t Options>
+				static constexpr auto enum_string_with_opt = daw::json::refl_enum_string{ Options };
+			  
+				static constexpr auto enum_string = enum_string_with_opt<json_custom_opts_def>;
 			} reflect{ };
 
 			// Trait that specifies a type is to be reflected on for parse info
@@ -203,41 +286,4 @@ namespace daw::json::inline DAW_JSON_VER {
 			T,
 			std::make_index_sequence<refl_details::pub_nsdm_of(^^T ).size( )>> { };
 
-	namespace json_details {
-		template<typename E>
-			requires std::is_enum_v<E>
-		struct reflect_enum_as_string {
-			constexpr E operator()( std::string_view name ) const {
-				template for( constexpr auto e: std::meta::enumerators_of(^^E ) ) {
-					if( name == std::meta::identifier_of( e ) ) {
-						return [:e:];
-					}
-				}
-				daw_json_error( ErrorReason::InvalidString );
-			}
-
-			constexpr std::string_view operator()( E value ) const {
-				template for( constexpr auto e: std::meta::enumerators_of(^^E ) ) {
-					if( value == [:e:] ) {
-						return std::meta::identifier_of( e );
-					}
-				}
-				return std::string_view{ };
-			}
-		};
-	}
-
-	namespace refl {
-		using namespace daw::json::json_base;
-
-		template<typename E,
-						json_options_t Options = json_custom_opts_def>
-			requires std::is_enum_v<E>
-		using enum_string = json_custom_no_name<
-			E,
-			json_details::reflect_enum_as_string<E>,
-			json_details::reflect_enum_as_string<E>,
-			Options
-		>;
-	}
 }

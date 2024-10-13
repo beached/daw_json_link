@@ -76,6 +76,20 @@ struct daw::json::json_data_contract<NoRefl> {
 	}
 };
 
+enum class EFoo {
+	AChoo,
+	BlessYou
+};
+
+struct [[=reflect]] EnumMember {
+	EFoo foo;
+};
+
+struct [[=reflect]] EnumMemberString {
+	[[=reflect.enum_string]]
+	EFoo foo;
+};
+
 int main( ) {
 	constexpr daw::string_view json_doc0 = R"json(
 {
@@ -160,4 +174,22 @@ int main( ) {
 	daw_ensure( val5.x == 21 );
 	auto const val5_json = daw::json::to_json( val4 );
 	daw::println( "json: {}", val5_json );
+
+	auto afoo0 = EnumMember{ EFoo::AChoo };
+	auto afoo1 = EnumMember{ EFoo::BlessYou };
+	auto const val6_json = daw::json::to_json( afoo0 );
+	daw::println( "EnumMember{{ EFoo::AChoo }}; as json: {}", val6_json );
+	auto const val7_json = daw::json::to_json( afoo1 );
+	daw::println( "EnumMember{{ EFoo::BlessYou }}; as json: {}", val7_json );
+
+	static constexpr auto achoo = daw::json::refl_details::enum_to_string( EFoo::AChoo );
+	static_assert( achoo == "AChoo" );
+	
+	auto bfoo0 = EnumMemberString{ EFoo::AChoo };
+	auto bfoo1 = EnumMemberString{ EFoo::BlessYou };
+	auto const val8_json = daw::json::to_json( bfoo0 );
+	daw::println( "EnumMemberString{{ EFoo::AChoo }}; as json: {}", val8_json );
+	auto const val9_json = daw::json::to_json( bfoo1 );
+	daw::println( "EnumMemberString{{ EFoo::BlessYou }}; as json: {}", val9_json );
+	
 }
