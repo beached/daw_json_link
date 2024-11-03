@@ -77,6 +77,7 @@ var menudata={children:[
 {text:"n",url:"namespacemembers_vars.html#index_n"},
 {text:"o",url:"namespacemembers_vars.html#index_o"},
 {text:"p",url:"namespacemembers_vars.html#index_p"},
+{text:"r",url:"namespacemembers_vars.html#index_r"},
 {text:"s",url:"namespacemembers_vars.html#index_s"},
 {text:"u",url:"namespacemembers_vars.html#index_u"}]},
 {text:"Typedefs",url:"namespacemembers_type.html",children:[
@@ -207,4 +208,7 @@ var menudata={children:[
 {text:"j",url:"globals.html#index_j"},
 {text:"o",url:"globals.html#index_o"}]},
 {text:"Functions",url:"globals_func.html"},
-{text:"Macros",url:"globals_defs.html"}]}]}]}
+{text:"Macros",url:"globals_defs.html",children:[
+{text:"c",url:"globals_defs.html#index_c"},
+{text:"d",url:"globals_defs.html#index_d"},
+{text:"j",url:"globals_defs.html#index_j"}]}]}]}]}
