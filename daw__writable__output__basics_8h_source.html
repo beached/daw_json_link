@@ -106,10 +106,10 @@ $(function() {
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;              writeable_output_details::is_byte_type_v&lt;T&gt; )&gt; : std::true_type {</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... StringViews&gt;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span> write( T *&amp;ptr, StringViews <span class="keyword">const</span> &amp;...svs ) {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> write( T *&amp;ptr, StringViews <span class="keyword">const</span> &amp;...svs ) {</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;          static_assert( <span class="keyword">sizeof</span>...( StringViews ) &gt; 0 );</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( ptr, daw::json::ErrorReason::OutputError );</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;          <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keyword">auto</span> writer = []( T *&amp;p,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;          constexpr <span class="keyword">auto</span> writer = []( T *&amp;p,</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                                      <span class="keyword">auto</span> sv ) <a class="code" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> {</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordflow">if</span>( sv.empty( ) ) {</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;              <span class="keywordflow">return</span> 0;</div>
@@ -120,7 +120,7 @@ $(function() {
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;          ( (void)writer( ptr, svs ), ... );</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        }</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span> put( T *&amp;ptr, <span class="keywordtype">char</span> c ) {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> put( T *&amp;ptr, <span class="keywordtype">char</span> c ) {</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( ptr, daw::json::ErrorReason::OutputError );</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;          *ptr = <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>( c );</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;          ++ptr;</div>
@@ -136,11 +136,11 @@ $(function() {
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keyword">using</span> CharT = <span class="keyword">typename</span> T::value_type;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... StringViews&gt;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span> write( T &amp;out, StringViews <span class="keyword">const</span> &amp;...svs ) {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> write( T &amp;out, StringViews <span class="keyword">const</span> &amp;...svs ) {</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;          static_assert( <span class="keyword">sizeof</span>...( StringViews ) &gt; 0 );</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( out.size( ) &gt;= ( std::size( svs ) + ... ),</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                           daw::json::ErrorReason::OutputError );</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;          <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keyword">auto</span> writer = []( T &amp;s,</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;          constexpr <span class="keyword">auto</span> writer = []( T &amp;s,</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                      <span class="keyword">auto</span> sv ) <a class="code" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> {</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="keywordflow">if</span>( sv.empty( ) ) {</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;              <span class="keywordflow">return</span> 0;</div>
@@ -152,7 +152,7 @@ $(function() {
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;          ( (void)writer( out, svs ), ... );</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        }</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span> put( T &amp;out, <span class="keywordtype">char</span> c ) {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> put( T &amp;out, <span class="keywordtype">char</span> c ) {</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;          <a class="code" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( not out.empty( ),</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                           daw::json::ErrorReason::OutputError );</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;          *out.data( ) = <span class="keyword">static_cast&lt;</span>CharT<span class="keyword">&gt;</span>( c );</div>
@@ -176,7 +176,7 @@ $(function() {
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;          <span class="keyword">auto</span> <span class="keyword">const</span> total_size = ( std::size( svs ) + ... );</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;          out.resize( start_pos + total_size );</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;          <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keyword">auto</span> writer = []( CharT *&amp;p,</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;          constexpr <span class="keyword">auto</span> writer = []( CharT *&amp;p,</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                                      <span class="keyword">auto</span> sv ) <a class="code" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> {</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;            <span class="keywordflow">if</span>( sv.empty( ) ) {</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;              <span class="keywordflow">return</span> 0;</div>
@@ -201,10 +201,10 @@ $(function() {
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        : std::true_type {</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... StringViews&gt;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span> write( T &amp;it, StringViews <span class="keyword">const</span> &amp;...svs ) {</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> write( T &amp;it, StringViews <span class="keyword">const</span> &amp;...svs ) {</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;          static_assert( <span class="keyword">sizeof</span>...( StringViews ) &gt; 0 );</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;          <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keyword">auto</span> writer = []( T &amp;i, <span class="keyword">auto</span> sv )</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;          constexpr <span class="keyword">auto</span> writer = []( T &amp;i, <span class="keyword">auto</span> sv )</div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;                                    <a class="code" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> {</div>
 <div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;                                      <span class="keywordflow">for</span>( <span class="keywordtype">char</span> c : daw::string_view( sv ) ) {</div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;                                        *i = c;</div>
@@ -215,7 +215,7 @@ $(function() {
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;          ( (void)writer( it, svs ), ... );</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        }</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keyword">static</span> <a class="code" href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">constexpr</a> <span class="keywordtype">void</span> put( T &amp;it, <span class="keywordtype">char</span> c ) {</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keyword">static</span> constexpr <span class="keywordtype">void</span> put( T &amp;it, <span class="keywordtype">char</span> c ) {</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;          *it = c;</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;          ++it;</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        }</div>
@@ -230,7 +230,6 @@ $(function() {
 <div class="ttc" id="adaw__json__switches_8h_html_ac7bc190776b7ebf5b5c752c685569e1f"><div class="ttname"><a href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a></div><div class="ttdeci">#define DAW_JSON_CPP23_STATIC_CALL_OP</div><div class="ttdoc">This is in addition to the parse policy. Always do a full name match instead of sometimes relying on ...</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__switches_8h_source.html#l00200">daw_json_switches.h:200</a></div></div>
 <div class="ttc" id="adaw__writable__output__details_8h_html"><div class="ttname"><a href="daw__writable__output__details_8h.html">daw_writable_output_details.h</a></div></div>
 <div class="ttc" id="adaw__writable__output__fwd_8h_html"><div class="ttname"><a href="daw__writable__output__fwd_8h.html">daw_writable_output_fwd.h</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils_html_afbd3c674a764e86e3b09da0d5c9277a7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02to__daw__json__string_8h_03_1_1utils.html#afbd3c674a764e86e3b09da0d5c9277a7">daw::json::anonymous_namespace{to_daw_json_string.h}::utils::constexpr</a></div><div class="ttdeci">if constexpr(do_escape)</div><div class="ttdef"><b>Definition:</b> <a href="to__daw__json__string_8h_source.html#l00283">to_daw_json_string.h:283</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition:</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html_a2e6e121adcc3170845c2f633e551f208"><div class="ttname"><a href="namespacedaw_1_1json.html#a2e6e121adcc3170845c2f633e551f208">daw::json::DAW_JSON_REQUIRES</a></div><div class="ttdeci">DAW_JSON_REQUIRES(boost::describe::has_describe_members&lt; T &gt;::value and use_boost_describe_v&lt; T &gt;) struct json_data_contract&lt; T &gt;</div><div class="ttdef"><b>Definition:</b> <a href="daw__json__link__describe_8h_source.html#l00066">daw_json_link_describe.h:66</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
