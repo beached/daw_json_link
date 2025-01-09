@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unknown_20types_20and_20delayed_20parsing_1849',['Unknown Types and Delayed Parsing',['../md_docs_cookbook_unknown_types_and_raw_parsing.html',1,'']]]
+  ['readable_20values_0',['Readable Values',['../md_docs_2cookbook_2nullable__value__concept.html',1,'']]]
 ];

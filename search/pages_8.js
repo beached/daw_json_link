@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['mapping_20types_1840',['Mapping Types',['../md_docs_cookbook_mapping_overview.html',1,'']]],
-  ['mapping_5fdeduction_1841',['mapping_deduction',['../md_docs_cookbook_mapping_deduction.html',1,'']]],
-  ['member_20options_2ftype_20options_1842',['Member Options/Type Options',['../md_docs_cookbook_member_options.html',1,'']]]
+  ['key_20values_0',['Key Values',['../md_docs_2cookbook_2key__values.html',1,'']]],
+  ['kostya_5fbenchmark_5fresults_1',['kostya_benchmark_results',['../md_docs_2kostya__benchmark__results.html',1,'']]]
 ];
