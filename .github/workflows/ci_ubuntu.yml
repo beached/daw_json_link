@@ -175,7 +175,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always( )
         with:
-          name: crashes
+          name: crashes-${{ matrix.os }}-${{ matrix.toolset }}
           path: |
             crash-*
             leak-*
