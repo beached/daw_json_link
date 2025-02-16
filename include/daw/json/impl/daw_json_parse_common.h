@@ -70,7 +70,7 @@ namespace daw::json {
 					static_assert(
 					  std::is_invocable_v<Constructor, Args...>,
 					  "Unable to construct value with the supplied arguments" );
-					return Constructor{ }( DAW_FWD2( Args, args )... );
+					return Constructor{ }( DAW_FWD( args )... );
 				}
 			}
 

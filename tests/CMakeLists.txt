@@ -2,7 +2,9 @@
 
 cmake_policy( SET CMP0065 NEW )
 cmake_policy( SET CMP0156 NEW )
-cmake_policy( SET CMP0179 NEW )
+if( POLICY CMP0179 )
+	cmake_policy( SET CMP0179 NEW )
+endif()
 cmake_policy( SET CMP0167 NEW )
 
 set( CMAKE_CXX_STANDARD_REQUIRED ON )

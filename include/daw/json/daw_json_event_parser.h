@@ -536,8 +536,7 @@ namespace daw::json {
 		                   options::parse_flags_t<ParseFlags...> pflags ) {
 
 			return json_event_parser<StackContainerPolicy>(
-			  basic_json_value( json_document ), DAW_FWD2( Handler, handler ),
-			  pflags );
+			  basic_json_value( json_document ), DAW_FWD( handler ), pflags );
 		}
 
 		template<typename StackContainerPolicy = use_default, typename Handler>
@@ -545,7 +544,7 @@ namespace daw::json {
 		                                          Handler &&handler ) {
 
 			return json_event_parser<StackContainerPolicy>(
-			  basic_json_value( json_document ), DAW_FWD2( Handler, handler ),
+			  basic_json_value( json_document ), DAW_FWD( handler ),
 			  options::parse_flags<> );
 		}
 

@@ -216,7 +216,7 @@ namespace daw::json {
 
 			template<typename... Ts>
 			explicit constexpr tuple_json_mapping( Ts &&...values )
-			  : members{ DAW_FWD2( Ts, values )... } {}
+			  : members{ DAW_FWD( values )... } {}
 		};
 
 		template<typename... Members>
@@ -997,7 +997,8 @@ namespace daw::json {
 		} // namespace json_base
 
 		/***
-		 * Link to a basic variant type that has no more than one of each of string, boolean, number, class, or array.
+		 * Link to a basic variant type that has no more than one of each of string,
+		 * boolean, number, class, or array.
 		 * @tparam Name name of JSON member to link to
 		 * @tparam T type that has specialization of
 		 * daw::json::json_data_contract
