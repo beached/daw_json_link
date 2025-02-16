@@ -639,25 +639,24 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>                       options::parse_flags_t&lt;ParseFlags...&gt; pflags ) {</div>
 <div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span> </div>
 <div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>      <span class="keywordflow">return</span> json_event_parser&lt;StackContainerPolicy&gt;(</div>
-<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>        <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>( json_document ), DAW_FWD2( Handler, handler ),</div>
-<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>        pflags );</div>
-<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>    }</div>
+<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>        <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>( json_document ), DAW_FWD( handler ), pflags );</div>
+<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>    }</div>
 </div>
-<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span> </div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> StackContainerPolicy = use_default, <span class="keyword">typename</span> Handler&gt;</div>
-<div class="foldopen" id="foldopen00544" data-start="{" data-end="}">
-<div class="line"><a id="l00544" name="l00544"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03.html#a272e4699440205922dcab1835edb3f84">  544</a></span>    DAW_ATTRIB_INLINE <span class="keywordtype">void</span> <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03.html#a23995b83cd1c7ec677f9ff19a6935ab4">json_event_parser</a>( daw::string_view json_document,</div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>                                              Handler &amp;&amp;handler ) {</div>
-<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span> </div>
-<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>      <span class="keywordflow">return</span> json_event_parser&lt;StackContainerPolicy&gt;(</div>
-<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>        <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>( json_document ), DAW_FWD2( Handler, handler ),</div>
-<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>        options::parse_flags&lt;&gt; );</div>
-<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>    }</div>
+<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span> </div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> StackContainerPolicy = use_default, <span class="keyword">typename</span> Handler&gt;</div>
+<div class="foldopen" id="foldopen00543" data-start="{" data-end="}">
+<div class="line"><a id="l00543" name="l00543"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03.html#a272e4699440205922dcab1835edb3f84">  543</a></span>    DAW_ATTRIB_INLINE <span class="keywordtype">void</span> <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03.html#a23995b83cd1c7ec677f9ff19a6935ab4">json_event_parser</a>( daw::string_view json_document,</div>
+<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>                                              Handler &amp;&amp;handler ) {</div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span> </div>
+<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>      <span class="keywordflow">return</span> json_event_parser&lt;StackContainerPolicy&gt;(</div>
+<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>        <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">basic_json_value</a>( json_document ), DAW_FWD( handler ),</div>
+<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>        options::parse_flags&lt;&gt; );</div>
+<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>    }</div>
 </div>
-<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span> </div>
-<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span> </div>
+<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 </div>
-<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03_1_1_default_json_event_parser_stack_policy_html"><div class="ttname"><a href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03_1_1_default_json_event_parser_stack_policy.html">daw::json::anonymous_namespace{daw_json_event_parser.h}::DefaultJsonEventParserStackPolicy</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__event__parser_8h_source.html#l00284">daw_json_event_parser.h:284</a></div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03_1_1_default_json_event_parser_stack_policy_html_a145a114ec20468dc30ec72cf7acac2d4"><div class="ttname"><a href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03_1_1_default_json_event_parser_stack_policy.html#a145a114ec20468dc30ec72cf7acac2d4">daw::json::anonymous_namespace{daw_json_event_parser.h}::DefaultJsonEventParserStackPolicy::pop_back</a></div><div class="ttdeci">CPP20CONSTEXPR void pop_back()</div><div class="ttdef"><b>Definition</b> <a href="daw__json__event__parser_8h_source.html#l00308">daw_json_event_parser.h:308</a></div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03_1_1_default_json_event_parser_stack_policy_html_a29ec3d06337c77ce3bad6de392949ae4"><div class="ttname"><a href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__event__parser_8h_03_1_1_default_json_event_parser_stack_policy.html#a29ec3d06337c77ce3bad6de392949ae4">daw::json::anonymous_namespace{daw_json_event_parser.h}::DefaultJsonEventParserStackPolicy::empty</a></div><div class="ttdeci">CPP20CONSTEXPR bool empty() const</div><div class="ttdef"><b>Definition</b> <a href="daw__json__event__parser_8h_source.html#l00312">daw_json_event_parser.h:312</a></div></div>

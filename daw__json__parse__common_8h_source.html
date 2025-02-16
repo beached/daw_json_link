@@ -155,7 +155,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>          <span class="keyword">static_assert</span>(</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            std::is_invocable_v&lt;Constructor, Args...&gt;,</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="stringliteral">&quot;Unable to construct value with the supplied arguments&quot;</span> );</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>          <span class="keywordflow">return</span> Constructor{ }( DAW_FWD2( Args, args )... );</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>          <span class="keywordflow">return</span> Constructor{ }( DAW_FWD( args )... );</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        }</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>      }</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
