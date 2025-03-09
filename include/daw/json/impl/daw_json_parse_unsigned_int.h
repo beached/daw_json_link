@@ -137,7 +137,7 @@ namespace daw::json {
 						if constexpr( sizeof( T ) <= sizeof( Integer ) ) {
 							return value;
 						} else if( value <= static_cast<T>(
-						                      ( std::numeric_limits<Integer>::max )( ) ) ) {
+						                      daw::max_value<Integer> ) ) {
 							return static_cast<Integer>( value );
 						} else {
 							daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
@@ -150,7 +150,7 @@ namespace daw::json {
 					} else {
 						if( value >= 0 and
 						    value <=
-						      static_cast<T>( ( std::numeric_limits<Integer>::max )( ) ) ) {
+						      static_cast<T>( daw::max_value<Integer> ) ) {
 							return value;
 						}
 						daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
@@ -160,7 +160,7 @@ namespace daw::json {
 						return static_cast<Integer>( value );
 					} else {
 						if( value >
-						    static_cast<T>( ( std::numeric_limits<Integer>::max )( ) ) ) {
+						    static_cast<T>( daw::max_value<Integer> ) ) {
 							daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
 						}
 						return static_cast<Integer>( value );
@@ -169,7 +169,7 @@ namespace daw::json {
 					return static_cast<Integer>( value );
 				} else {
 					if( value <=
-					    static_cast<T>( ( std::numeric_limits<Integer>::max )( ) ) ) {
+					    static_cast<T>( daw::max_value<Integer> ) ) {
 						return static_cast<Integer>( value );
 					}
 					daw_json_error( ErrorReason::NumberOutOfRange, parse_state );

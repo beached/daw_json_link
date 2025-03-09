@@ -15,6 +15,7 @@
 #include "daw_json_parse_std_string.h"
 #include "daw_not_const_ex_functions.h"
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_string_view.h>
 
 #include <cstddef>
@@ -126,7 +127,7 @@ namespace daw::json {
 			template<typename Result, typename ForwardIterator>
 			constexpr Result parse_unsigned_int( ForwardIterator first,
 			                                     ForwardIterator last ) {
-				std::size_t count = std::numeric_limits<Result>::digits;
+				std::size_t count = daw::digits<Result>;
 
 				daw_json_ensure( '-' != *first, ErrorReason::InvalidNumber );
 

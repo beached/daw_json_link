@@ -69,7 +69,7 @@ namespace daw::json {
 
 				template<typename Result>
 				constexpr Result parse_number( daw::string_view sv ) {
-					static_assert( daw::numeric_limits<Result>::digits10 >= 4 );
+					static_assert( daw::digits10<Result> >= 4 );
 					daw_json_ensure( not sv.empty( ), ErrorReason::InvalidNumber );
 					Result result = 0;
 					Result sign = 1;

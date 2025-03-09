@@ -485,7 +485,7 @@ unsigned long long test_dblparse( std::string_view num,
 	auto const diff = std::max( ui0, ui1 ) - std::min( ui0, ui1 );
 	if( always_disp ) {
 		auto const old_precision = std::cout.precision( );
-		std::cout.precision( std::numeric_limits<double>::max_digits10 );
+		std::cout.precision( daw::max_digits10<double> );
 		std::cout << "->ulp diff: " << std::dec << diff << '\n';
 		std::cout.precision( old_precision );
 	}
@@ -496,7 +496,7 @@ unsigned long long test_dblparse( std::string_view num,
 
 		lib_parse_dbl = dbl_lib_parser( num );
 
-		std::cout.precision( std::numeric_limits<double>::max_digits10 );
+		std::cout.precision( daw::max_digits10<double> );
 		std::cout << "orig: " << num << '\n';
 		std::cout << "daw_json_link: " << lib_parse_dbl << '\n'
 		          << "strtod: " << strod_parse_dbl << '\n';
@@ -540,7 +540,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 	auto const diff = std::max( ui0, ui1 ) - std::min( ui0, ui1 );
 	if( always_disp ) {
 		auto const old_precision = std::cout.precision( );
-		std::cout.precision( std::numeric_limits<double>::max_digits10 );
+		std::cout.precision( daw::max_digits10<double> );
 		std::cout << "->ulp diff: " << std::dec << diff << '\n';
 		std::cout.precision( old_precision );
 	}
@@ -570,7 +570,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 				return daw::json::from_json<double, KnownBounds>( num );
 			}
 		}( );
-		std::cout.precision( std::numeric_limits<double>::max_digits10 );
+		std::cout.precision( daw::max_digits10<double> );
 		std::cout << "orig: " << num << '\n';
 		std::cout << "daw_json_link: " << lib_parse_dbl << '\n'
 		          << "strtod: " << strod_parse_dbl << '\n';
@@ -593,8 +593,8 @@ void test_lots_of_doubles( ) {
 	auto rng = std::mt19937_64( rd( ) );
 	struct tracking_t {
 		std::size_t count = 0;
-		double min_value = std::numeric_limits<double>::max( );
-		double max_value = std::numeric_limits<double>::min( );
+		double min_value = daw::max_value<double>;
+		double max_value = daw::min_value<double>;
 
 		tracking_t( ) = default;
 
@@ -948,7 +948,7 @@ int main( int, char ** ) {
 		std::cout << "parse: " << from_json<double>( "-0.0" ) << '\n';
 
 		std::cout << "denormal - DOUBLE_MIN/2 double: "
-		          << to_json( std::numeric_limits<double>::min( ) / 2.0 ) << '\n';
+		          << to_json( daw::min_value<double> / 2.0 ) << '\n';
 
 		std::cout << "denormal min double: "
 		          << to_json( std::numeric_limits<double>::denorm_min( ) ) << '\n';
@@ -959,7 +959,7 @@ int main( int, char ** ) {
 		          << '\n';
 
 		std::cout << "min double: "
-		          << to_json( std::numeric_limits<double>::min( ) ) << '\n';
+		          << to_json( daw::min_value<double> ) << '\n';
 		std::cout << "2.2250738585072014E-308 -> "
 		          << AS_CONSTEXPR( from_json<double>( "2.2250738585072014E-308" ) )
 		          << '\n';
@@ -972,7 +972,7 @@ int main( int, char ** ) {
 
 		std::cout << AS_CONSTEXPR( from_json<double>( "5E-324" ) ) << '\n';
 		std::cout << "max double: "
-		          << to_json( std::numeric_limits<double>::max( ) ) << '\n';
+		          << to_json( daw::max_value<double> ) << '\n';
 		std::cout << "1.7976931348623157E308 -> "
 		          << AS_CONSTEXPR( from_json<double>( "1.7976931348623157E308" ) )
 		          << '\n';
@@ -1073,7 +1073,7 @@ int main( int, char ** ) {
 		test_dblparse( "8725540998407961.3743556965848965343e-308", true );
 		test_dblparse( "1e-10000", true );
 		test_dblparse<false, true>( "0.9868011474609375", true );
-		std::cout.precision( std::numeric_limits<double>::max_digits10 );
+		std::cout.precision( daw::max_digits10<double> );
 #if defined( LDBL_MAX )
 		std::cout << "result: " << from_json<long double>( "1e-10000" ) << '\n';
 #endif
@@ -1105,7 +1105,7 @@ int main( int, char ** ) {
 		  "5874679014086723327636718751234567890123456789012345678901e-308",
 		  true );
 		test_dblparse( "0.9868011474609375", true );
-		std::cout.precision( std::numeric_limits<double>::max_digits10 );
+		std::cout.precision( daw::max_digits10<double> );
 #if defined( LDBL_MAX )
 		std::cout << "long double result: "
 		          << from_json<long double>( "0.9868011474609375" ) << '\n';
