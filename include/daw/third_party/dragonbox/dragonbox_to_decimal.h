@@ -20,6 +20,7 @@
 #include <daw/json/impl/version.h>
 
 #include <daw/daw_algorithm.h>
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_cast.h>
 #include <daw/daw_cpp_feature_check.h>
@@ -53,11 +54,11 @@ namespace daw::jkj::dragonbox {
 		namespace detail {
 			template<class T>
 			inline constexpr std::size_t physical_bits =
-			  sizeof( T ) * std::numeric_limits<unsigned char>::digits;
+			  sizeof( T ) * daw::digits<unsigned char>;
 
 			template<class T>
 			inline constexpr std::size_t value_bits =
-			  std::numeric_limits<std::enable_if_t<std::is_unsigned_v<T>, T>>::digits;
+			  daw::digits<std::enable_if_t<std::is_unsigned_v<T>, T>>;
 		} // namespace detail
 
 		enum class ieee754_format { binary32, binary64 };
@@ -316,7 +317,7 @@ namespace daw::jkj::dragonbox {
 				struct uint128 {
 					uint128( ) = default;
 
-#if( defined( __GNUC__ ) or defined( __clang__ ) ) and \
+#if ( defined( __GNUC__ ) or defined( __clang__ ) ) and \
   defined( __SIZEOF_INT128__ ) and defined( __x86_64__ )
 #if defined( __GNUC__ )
 #pragma GCC diagnostic push
@@ -383,7 +384,7 @@ namespace daw::jkj::dragonbox {
 				// integers
 				[[nodiscard]] JKJ_SAFEBUFFERS inline constexpr uint128
 				umul128( std::uint64_t x, std::uint64_t y ) noexcept {
-#if( defined( __GNUC__ ) or defined( __clang__ ) ) and \
+#if ( defined( __GNUC__ ) or defined( __clang__ ) ) and \
   defined( __SIZEOF_INT128__ ) and defined( __x86_64__ )
 #if defined( __GNUC__ )
 #pragma GCC diagnostic push
@@ -441,7 +442,7 @@ namespace daw::jkj::dragonbox {
 
 				[[nodiscard]] JKJ_SAFEBUFFERS inline constexpr std::uint64_t
 				umul128_upper64( std::uint64_t x, std::uint64_t y ) noexcept {
-#if( defined( __GNUC__ ) or defined( __clang__ ) ) and \
+#if ( defined( __GNUC__ ) or defined( __clang__ ) ) and \
   defined( __SIZEOF_INT128__ ) and defined( __x86_64__ )
 #if defined( __GNUC__ )
 #pragma GCC diagnostic push
@@ -693,8 +694,7 @@ namespace daw::jkj::dragonbox {
 						UInt pow_of_a = 1;
 						for( int i = 0; i < N; ++i ) {
 							tbl.mod_inv[i] = UInt( pow_of_mod_inverse );
-							tbl.max_quotients[i] =
-							  UInt( ( std::numeric_limits<UInt>::max )( ) / pow_of_a );
+							tbl.max_quotients[i] = UInt( daw::max_value<UInt> / pow_of_a );
 
 							pow_of_mod_inverse *= mod_inverse;
 							pow_of_a *= a;
@@ -764,7 +764,7 @@ namespace daw::jkj::dragonbox {
 					n *= info::magic_number;
 					constexpr std::uint32_t comparison_mask =
 					  info::bits_for_comparison >= 32
-					    ? ( std::numeric_limits<std::uint32_t>::max )( )
+					    ? daw::max_value<std::uint32_t>
 					    : std::uint32_t(
 					        ( std::uint32_t( 1 ) << info::bits_for_comparison ) - 1 );
 
@@ -2864,7 +2864,7 @@ namespace daw::jkj::dragonbox {
 				remove_trailing_zeros( carrier_uint &n ) noexcept {
 					constexpr auto max_power = [] {
 						auto max_possible_significand =
-						  ( std::numeric_limits<carrier_uint>::max )( ) /
+						  daw::max_value<carrier_uint> /
 						  compute_power<kappa + 1>( std::uint32_t( 10 ) );
 
 						int k = 0;
@@ -2921,8 +2921,7 @@ namespace daw::jkj::dragonbox {
 
 								constexpr auto mod_inverse =
 								  std::uint32_t( divtable.mod_inv[1] );
-								constexpr auto max_quotient =
-								  ( std::numeric_limits<std::uint32_t>::max )( ) / 5;
+								constexpr auto max_quotient = daw::max_value<std::uint32_t> / 5;
 
 								int s = 8;
 								for( ; s < t; ++s ) {
@@ -2944,8 +2943,7 @@ namespace daw::jkj::dragonbox {
 						  static_cast<unsigned>( n ) - 1'0000'0000 * quotient );
 
 						constexpr auto mod_inverse = std::uint32_t( divtable.mod_inv[1] );
-						constexpr auto max_quotient =
-						  ( std::numeric_limits<std::uint32_t>::max )( ) / 5;
+						constexpr auto max_quotient = daw::max_value<std::uint32_t> / 5;
 
 						if( t == 0 or remainder * mod_inverse > max_quotient ) {
 							return 0;

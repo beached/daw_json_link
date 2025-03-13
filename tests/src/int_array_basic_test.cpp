@@ -11,9 +11,10 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_benchmark.h>
-#include <daw/daw_random.h>
 #include <daw/daw_bounded_vector.h>
+#include <daw/daw_random.h>
 
 #include <numeric>
 #include <streambuf>
@@ -26,10 +27,9 @@ static std::string make_int_array_data( ) {
 		std::string result = "[";
 		result.reserve( N * 23 + 8 );
 		for( size_t n = 0; n < N; ++n ) {
-			result +=
-			  std::to_string( daw::randint<T>( daw::numeric_limits<T>::min( ),
-			                                   daw::numeric_limits<T>::max( ) ) ) +
-			  ',';
+			result += std::to_string(
+			            daw::randint<T>( daw::min_value<T>, daw::max_value<T> ) ) +
+			          ',';
 		}
 		result.back( ) = ']';
 		result.shrink_to_fit( );

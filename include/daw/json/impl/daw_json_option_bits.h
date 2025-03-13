@@ -12,6 +12,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_bit_count.h>
 #include <daw/daw_traits.h>
 
 #include <climits>
@@ -64,7 +65,7 @@ namespace daw::json {
 
 				static_assert(
 				  ( json_option_bits_width<Options> + ... + 0 ) <=
-				    ( sizeof( json_options_t ) * CHAR_BIT ),
+				    daw::bit_count_v<json_options_t>,
 				  "The size of json_options_t is not large enough "
 				  "to safely hold all the bits of state.  Use a larger size." );
 			};

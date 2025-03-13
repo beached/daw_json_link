@@ -1477,11 +1477,11 @@ namespace daw::json {
 				  daw::jkj::dragonbox::to_decimal(
 				    value, daw::jkj::dragonbox::policy::sign::ignore );
 
-				auto const digits =
+				auto const digit_values =
 				  daw::jkj::dragonbox::to_chars_detail::decimal_length(
 				    dec.significand );
 
-				auto whole_dig = static_cast<std::int32_t>( digits ) + dec.exponent;
+				auto whole_dig = static_cast<std::int32_t>( digit_values ) + dec.exponent;
 
 				auto const br = [&] {
 					if constexpr( std::is_same_v<Real, float> ) {
@@ -1502,7 +1502,7 @@ namespace daw::json {
 					char buff[50]{ };
 					char *ptr = buff;
 					ptr =
-					  daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digits );
+					  daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digit_values );
 					out_it.copy_buffer( buff, ptr );
 					return out_it;
 				} else if( fp_output_format == options::FPOutputFormat::Auto ) {
@@ -1510,7 +1510,7 @@ namespace daw::json {
 						char buff[50]{ };
 						char *ptr = buff;
 						ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr,
-						                                                      digits );
+						                                                      digit_values );
 						out_it.copy_buffer( buff, ptr );
 						return out_it;
 					}

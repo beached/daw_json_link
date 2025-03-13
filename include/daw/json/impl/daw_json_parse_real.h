@@ -145,7 +145,7 @@ namespace daw::json {
 				}
 
 				using max_storage_digits = daw::constant<static_cast<std::ptrdiff_t>(
-				  daw::numeric_limits<std::uint64_t>::digits10 )>;
+				  daw::digits10<std::uint64_t> )>;
 
 				bool use_strtod =
 				  should_use_strtod<ParseState, Result, max_storage_digits>(
@@ -159,7 +159,7 @@ namespace daw::json {
 					return static_cast<Result>( 1.0 );
 				}( );
 				using max_exponent = daw::constant<static_cast<std::ptrdiff_t>(
-				  daw::numeric_limits<Result>::max_digits10 + 1 )>;
+				  daw::max_digits10<Result> + 1 )>;
 				using unsigned_t =
 				  daw::conditional_t<max_storage_digits::value >= max_exponent::value,
 				                     std::uint64_t, Result>;
@@ -297,9 +297,9 @@ namespace daw::json {
 				  parse_policy_details::validate_signed_first( parse_state ) );
 
 				using max_storage_digits = daw::constant<static_cast<std::int64_t>(
-				  daw::numeric_limits<std::uint64_t>::digits10 )>;
+				  daw::digits10<std::uint64_t> )>;
 				using max_exponent = daw::constant<static_cast<std::int64_t>(
-				  daw::numeric_limits<Result>::max_digits10 + 1 )>;
+				  daw::max_digits10<Result> + 1 )>;
 				using unsigned_t =
 				  daw::conditional_t<max_storage_digits::value >= max_exponent::value,
 				                     std::uint64_t, Result>;
@@ -310,8 +310,8 @@ namespace daw::json {
 				CharT *first = parse_state.first;
 				CharT *const whole_last =
 				  parse_state.first +
-				  ( std::min )( parse_state.last - parse_state.first,
-				                static_cast<std::ptrdiff_t>( max_exponent::value ) );
+				  (std::min)( parse_state.last - parse_state.first,
+				              static_cast<std::ptrdiff_t>( max_exponent::value ) );
 
 				unsigned_t significant_digits = 0;
 				CharT *last_char =
@@ -358,10 +358,10 @@ namespace daw::json {
 						}
 					} else {
 						CharT *fract_last =
-						  first + ( std::min )( parse_state.last - first,
-						                        static_cast<std::ptrdiff_t>(
-						                          max_exponent::value -
-						                          ( first - parse_state.first ) ) );
+						  first + (std::min)( parse_state.last - first,
+						                      static_cast<std::ptrdiff_t>(
+						                        max_exponent::value -
+						                        ( first - parse_state.first ) ) );
 
 						last_char = parse_digits_while_number<(
 						  ParseState::is_zero_terminated_string or
@@ -438,20 +438,19 @@ namespace daw::json {
 						}
 						auto const s = exponent_p1 < 0 ? signed_t{ -1 } : signed_t{ 1 };
 						if( s < 0 ) {
-							if( DAW_UNLIKELY( ( daw::numeric_limits<signed_t>::min( ) -
-							                    exponent_p1 ) > exponent_p2 ) ) {
+							if( DAW_UNLIKELY( ( daw::min_value<signed_t> - exponent_p1 ) >
+							                  exponent_p2 ) ) {
 								// We don't have inf, but we can just saturate it to min as it
 								// will be 0 anyways for the other result
-								return daw::numeric_limits<signed_t>::min( );
+								return daw::min_value<signed_t>;
 							}
 							return exponent_p1 + exponent_p2;
 						}
 						auto r = static_cast<unsigned_t>( exponent_p1 ) +
 						         static_cast<unsigned_t>( exponent_p2 );
 						if( DAW_UNLIKELY(
-						      r > static_cast<unsigned_t>(
-						            ( daw::numeric_limits<signed_t>::max )( ) ) ) ) {
-							return ( daw::numeric_limits<signed_t>::max )( );
+						      r > static_cast<unsigned_t>( daw::max_value<signed_t> ) ) ) {
+							return daw::max_value<signed_t>;
 						}
 						return static_cast<signed_t>( r );
 					}
