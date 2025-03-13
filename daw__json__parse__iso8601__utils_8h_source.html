@@ -163,7 +163,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result&gt;</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">constexpr</span> Result parse_number( daw::string_view sv ) {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>          <span class="keyword">static_assert</span>( daw::numeric_limits&lt;Result&gt;::digits10 &gt;= 4 );</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>          <span class="keyword">static_assert</span>( daw::digits10&lt;Result&gt; &gt;= 4 );</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>          <a class="code hl_define" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( not sv.empty( ), ErrorReason::InvalidNumber );</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>          Result result = 0;</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>          Result sign = 1;</div>
