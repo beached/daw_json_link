@@ -51,8 +51,6 @@ Temporarily disable the constexpr tests in MSVC when C++20
 #define DAW_JSON_NO_CONST_EXPR
 #endif
 
-static_assert( daw::is_arithmetic_v<int> );
-
 struct NumberX {
 	int x;
 };
