@@ -12,7 +12,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 		message( STATUS "Clang-CL ${CMAKE_CXX_COMPILER_VERSION} detected" )
 		add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 -D_CRT_SECURE_NO_WARNINGS )
 
-		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 )
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
 			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" )
 		else()
 			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc -D_LIBCPP_ENABLE_ASSERTIONS=1" )
@@ -38,23 +38,24 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Weverything
 				-ftemplate-backtrace-limit=0
 				-Wincompatible-pointer-types-discards-qualifiers
+				-Wno-c++2b-extensions
 				-Wno-c++98-compat
 				-Wno-c++98-compat-pedantic
 				-Wno-covered-switch-default
 				-Wno-documentation
 				-Wno-exit-time-destructors
 				-Wno-float-equal
+				-Wno-global-constructors
 				-Wno-missing-prototypes
+				# This is for when specializing things like tuple_size and each implementer gets to choose struct/class
+				-Wno-mismatched-tags
 				-Wno-newline-eof
+				-Wno-nullability-extension
 				-Wno-padded
 				-Wno-redundant-parens
 				-Wno-switch-default
 				-Wno-unused-template
 				-Wno-weak-vtables
-				# This is for when specializing things like tuple_size and each implementer gets to choose struct/class
-				-Wno-mismatched-tags
-				-Wno-global-constructors
-				-Wno-nullability-extension
 				)
 		if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
 			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
@@ -126,7 +127,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 		if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
 				AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9 )
 
-			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 )
+			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
 				set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -D_FORTIFY_SOURCE=2" )
 			else()
 				set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_ENABLE_ASSERTIONS=1 -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -D_FORTIFY_SOURCE=2" )
@@ -134,7 +135,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 			set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
 			set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
 		else()
-			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 )
+			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
 				set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" )
 			else()
 				set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_ENABLE_ASSERTIONS=1" )
