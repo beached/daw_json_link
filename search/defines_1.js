@@ -28,8 +28,8 @@ var searchData=
   ['daw_5fjson_5fuse_5fstrtod_25',['DAW_JSON_USE_STRTOD',['../daw__json__switches_8h.html#a1c9c45c5965bd934f5daf4a269ab4e8c',1,'daw_json_switches.h']]],
   ['daw_5fjson_5fver_26',['DAW_JSON_VER',['../version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15',1,'version.h']]],
   ['daw_5fno_5fconstexpr_5fscope_5fguard_27',['DAW_NO_CONSTEXPR_SCOPE_GUARD',['../daw__json__switches_8h.html#ac1911e0829b766c30f5065f5e6111754',1,'daw_json_switches.h']]],
-  ['daw_5frefl_28',['DAW_REFL',['../daw__json__reflection_8h.html#ab9f39b8f0bf0e86c20fae80b23516f04',1,'daw_json_reflection.h']]],
-  ['daw_5fsplice_29',['DAW_SPLICE',['../daw__json__reflection_8h.html#a4e90b66f50b6ba43a21b8cb851a769d8',1,'daw_json_reflection.h']]],
+  ['daw_5freflect_28',['DAW_REFLECT',['../daw__json__reflection_8h.html#aef47864b33458d05b45b68722f3ed2a7',1,'daw_json_reflection.h']]],
+  ['daw_5fsplice_29',['daw_splice',['../daw__json__reflection_8h.html#a4e90b66f50b6ba43a21b8cb851a769d8',1,'DAW_SPLICE:&#160;daw_json_reflection.h'],['../daw__json__reflection_8h.html#a4e90b66f50b6ba43a21b8cb851a769d8',1,'DAW_SPLICE:&#160;daw_json_reflection.h']]],
   ['daw_5fstr_30',['DAW_STR',['../daw__json__link_8h.html#a20a2923e34bfc278a9cabccd6cf93a50',1,'daw_json_link.h']]],
   ['daw_5fxstr_31',['DAW_XSTR',['../daw__json__link_8h.html#a6eaff693857db04cbc5c2eea656b8632',1,'daw_json_link.h']]]
 ];

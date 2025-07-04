@@ -89,6 +89,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a76c7a195e5921441ab27a9f94daf2d54" id="r_a76c7a195e5921441ab27a9f94daf2d54"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a76c7a195e5921441ab27a9f94daf2d54"><td class="memTemplItemLeft" align="right" valign="top">static consteval auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1reflect__t.html#a76c7a195e5921441ab27a9f94daf2d54">ignore_with_value</a> (T &amp;&amp;v)</td></tr>
 <tr class="separator:a76c7a195e5921441ab27a9f94daf2d54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25d854881cbe6ff5bca5403fc848a224" id="r_a25d854881cbe6ff5bca5403fc848a224"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember &gt; </td></tr>
+<tr class="memitem:a25d854881cbe6ff5bca5403fc848a224"><td class="memTemplItemLeft" align="right" valign="top">static consteval auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1reflect__t.html#a25d854881cbe6ff5bca5403fc848a224">map_as</a> ()</td></tr>
+<tr class="separator:a25d854881cbe6ff5bca5403fc848a224"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10f17cbdf81968169108065b136e123f" id="r_a10f17cbdf81968169108065b136e123f"><td class="memItemLeft" align="right" valign="top">static consteval <a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1refl__rename.html">refl_rename</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1reflect__t.html#a10f17cbdf81968169108065b136e123f">rename</a> (char const *name)</td></tr>
 <tr class="separator:a10f17cbdf81968169108065b136e123f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -101,13 +104,10 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:a8d82b431cc05c1d8ae18960faa49b9dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b240e4f0fb4e3bb559e478188ab6e97" id="r_a5b240e4f0fb4e3bb559e478188ab6e97"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1reflect__t.html#a5b240e4f0fb4e3bb559e478188ab6e97">ignore_with_default</a></td></tr>
 <tr class="separator:a5b240e4f0fb4e3bb559e478188ab6e97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab57922a40d3d4b38d8580966bbe40fab" id="r_ab57922a40d3d4b38d8580966bbe40fab"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember &gt; </td></tr>
-<tr class="memitem:ab57922a40d3d4b38d8580966bbe40fab"><td class="memTemplItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1reflect__t.html#ab57922a40d3d4b38d8580966bbe40fab">map_as</a> = <a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1refl__map__as.html">refl_map_as</a>{ <a class="el" href="daw__json__reflection_8h.html#ab9f39b8f0bf0e86c20fae80b23516f04">DAW_REFL</a>( JsonMember ) }</td></tr>
-<tr class="separator:ab57922a40d3d4b38d8580966bbe40fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00268">268</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00272">272</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a76c7a195e5921441ab27a9f94daf2d54" name="a76c7a195e5921441ab27a9f94daf2d54"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a76c7a195e5921441ab27a9f94daf2d54">&#9670;&#160;</a></span>ignore_with_value()</h2>
@@ -135,7 +135,36 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00280">280</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00286">286</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
+
+</div>
+</div>
+<a id="a25d854881cbe6ff5bca5403fc848a224" name="a25d854881cbe6ff5bca5403fc848a224"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25d854881cbe6ff5bca5403fc848a224">&#9670;&#160;</a></span>map_as()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonMember &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static consteval auto daw::json::inline::experimental::reflect_t::map_as </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00278">278</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
 
 </div>
 </div>
@@ -163,7 +192,7 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00269">269</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00273">273</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
 
 </div>
 </div>
@@ -190,7 +219,7 @@ template&lt;typename T &gt; </div>
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">        enum_string_with_opt&lt;json_custom_opts_def&gt;</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00288">288</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00294">294</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
 
 </div>
 </div>
@@ -218,7 +247,7 @@ template&lt;<a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02d
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">        daw::json::refl_enum_string{ Options }</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00285">285</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00291">291</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
 
 </div>
 </div>
@@ -244,33 +273,7 @@ template&lt;<a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02d
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">        daw::json::refl_ignore_with_default{ }</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00276">276</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
-
-</div>
-</div>
-<a id="ab57922a40d3d4b38d8580966bbe40fab" name="ab57922a40d3d4b38d8580966bbe40fab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab57922a40d3d4b38d8580966bbe40fab">&#9670;&#160;</a></span>map_as</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonMember &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto daw::json::inline::experimental::reflect_t::map_as = <a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1refl__map__as.html">refl_map_as</a>{ <a class="el" href="daw__json__reflection_8h.html#ab9f39b8f0bf0e86c20fae80b23516f04">DAW_REFL</a>( JsonMember ) }</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00274">274</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00282">282</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
 
 </div>
 </div>
