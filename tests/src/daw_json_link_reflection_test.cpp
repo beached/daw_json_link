@@ -21,8 +21,7 @@ using daw::json::reflect;
 struct[[= reflect]] X {
 	[[= reflect.map_as<daw::json::json_number<"member1", int>>( )]] int m1;
 
-	//[[= reflect.rename( "member2" )]] int m2;
-	int member2;
+	[[= reflect.rename<"member2">]] int m2;
 };
 
 struct[[= reflect]] Y {
@@ -95,7 +94,7 @@ int main( ) {
 )json";
 	constexpr auto val0 = daw::json::from_json<X>( json_doc0 );
 	daw_ensure( val0.m1 == 55 );
-	daw_ensure( val0./*m2*/member2 == 123 );
+	daw_ensure( val0.m2 == 123 );
 	auto const val0_json = daw::json::to_json( val0 );
 	daw::println( "json: {}", val0_json );
 
@@ -107,7 +106,7 @@ int main( ) {
 	)json";
 	auto const val1 = daw::json::from_json<Y>( json_doc1 );
 	daw_ensure( val1.m0.m1 == 55 );
-	daw_ensure( val1.m0./*m2*/member2 == 123 );
+	daw_ensure( val1.m0.m2 == 123 );
 	daw_ensure( val1.m1 == "Hello World!" );
 	daw::println( "json: {}", daw::json::to_json( val1 ) );
 
@@ -139,9 +138,9 @@ int main( ) {
 	daw_ensure( not val3.m0 );
 	daw_ensure( val3.m1.size( ) == 2 );
 	daw_ensure( val3.m1[0].m1 == 0 );
-	daw_ensure( val3.m1[0]./*m2*/member2 == 1 );
+	daw_ensure( val3.m1[0].m2 == 1 );
 	daw_ensure( val3.m1[1].m1 == 2 );
-	daw_ensure( val3.m1[1]./*m2*/member2 == 3 );
+	daw_ensure( val3.m1[1].m2 == 3 );
 	daw::println( "json: {}", daw::json::to_json( val3 ) );
 
 	using namespace daw::json::options;
@@ -152,9 +151,9 @@ int main( ) {
 	daw_ensure( not val3b.m0 );
 	daw_ensure( val3b.m1.size( ) == 2 );
 	daw_ensure( val3b.m1[0].m1 == 0 );
-	daw_ensure( val3b.m1[0]./*m2*/member2 == 1 );
+	daw_ensure( val3b.m1[0].m2 == 1 );
 	daw_ensure( val3b.m1[1].m1 == 2 );
-	daw_ensure( val3b.m1[1]./*m2*/member2 == 3 );
+	daw_ensure( val3b.m1[1].m2 == 3 );
 
 	static constexpr daw::string_view json_doc4 = R"json({"value": "42"})json";
 	daw::println( "json_doc4: {}", json_doc4 );

@@ -270,9 +270,8 @@ namespace daw::json::inline DAW_JSON_VER {
 		};
 
 		inline constexpr struct reflect_t {
-			static consteval refl_rename rename( char const *name ) {
-				return refl_rename{ name };
-			}
+			template<json_name Name>
+			static constexpr refl_rename rename = refl_rename{ Name.m_data };
 
 			template<typename JsonMember>
 			static consteval auto map_as( ) {
