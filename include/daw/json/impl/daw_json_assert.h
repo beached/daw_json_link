@@ -20,6 +20,7 @@
 #include <daw/stdinc/move_fwd_exch.h>
 #include <exception>
 #include <string_view>
+#include <utility>
 
 #if defined( DAW_JSON_SHOW_ERROR_BEFORE_TERMINATE )
 #include <iostream>

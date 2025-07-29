@@ -282,7 +282,7 @@ namespace daw::json {
 					return true;
 				}
 				if constexpr( is_zero_terminated_string ) {
-					return first >= last or *first == '\0';
+					return first >= last or * first == '\0';
 				} else {
 					return first >= last;
 				}
@@ -303,6 +303,15 @@ namespace daw::json {
 					result = result & ( first[n] == rhs[n] );
 				}
 				return result;
+			}
+
+			template<std::size_t N>
+			constexpr bool starts_with_skip( char const ( &rhs )[N] ) {
+				if( not starts_with( rhs ) ) {
+					return false;
+				}
+				first += static_cast<std::ptrdiff_t>( N - 1 );
+				return true;
 			}
 
 			template<char c>
@@ -393,19 +402,19 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] constexpr bool is_opening_bracket_checked( ) const {
-				return DAW_LIKELY( first < last ) and *first == '[';
+				return DAW_LIKELY( first < last ) and * first == '[';
 			}
 
 			[[nodiscard]] constexpr bool is_opening_brace_checked( ) const {
-				return DAW_LIKELY( first < last ) and *first == '{';
+				return DAW_LIKELY( first < last ) and * first == '{';
 			}
 
 			[[nodiscard]] constexpr bool is_closing_brace_checked( ) const {
-				return DAW_LIKELY( first < last ) and *first == '}';
+				return DAW_LIKELY( first < last ) and * first == '}';
 			}
 
 			[[nodiscard]] constexpr bool is_quotes_checked( ) const {
-				return DAW_LIKELY( first < last ) and *first == '"';
+				return DAW_LIKELY( first < last ) and * first == '"';
 			}
 
 			DAW_ATTRIB_INLINE constexpr void trim_left( ) {

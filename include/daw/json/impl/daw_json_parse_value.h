@@ -93,16 +93,9 @@ namespace daw::json {
 							parse_state.first++;
 						}
 						// Looking for Inf as that will match Infinity too.
-						if( parse_state.size( ) >= 4 and
-						    parse_state.starts_with( "Inf" ) ) {
-
-							parse_state.first += 3;
-							if( parse_state.front( ) == '"' ) {
-								parse_state.first++;
-							} else if( parse_state.size( ) >= 6 and
-							           parse_state.starts_with( R"(inity")" ) ) {
-								parse_state.first += 6;
-							} else {
+						if( parse_state.starts_with_skip( "Inf" ) ) {
+							if( not( parse_state.starts_with_skip( "\"" ) or
+							         parse_state.starts_with_skip( "inity\"" ) ) ) {
 								daw_json_error( ErrorReason::InvalidString, parse_state );
 							}
 							if constexpr( KnownBounds ) {
