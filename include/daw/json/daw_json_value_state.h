@@ -26,34 +26,35 @@
 #include <vector>
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	inline namespace
+	DAW_JSON_VER {
 		namespace json_details {
 			template<json_options_t PolicyFlags = default_policy_flag,
 			         typename Allocator = NoAllocator>
 			class basic_stateful_json_value_state {
 				using ParseState =
-				  TryDefaultParsePolicy<BasicParsePolicy<PolicyFlags, Allocator>>;
+				TryDefaultParsePolicy<BasicParsePolicy<PolicyFlags, Allocator>>;
 
 			public:
 				daw::string_view name;
-				daw::UInt32 hash_value;
+				json_name_hash_t hash_value;
 				basic_json_value_iterator<PolicyFlags, Allocator> location;
 
 				explicit constexpr basic_stateful_json_value_state(
-				  daw::string_view Name,
-				  basic_json_value_iterator<PolicyFlags, Allocator> val )
-				  : name( Name )
-				  , hash_value(
-				      daw::name_hash<ParseState::expect_long_strings>( Name ) )
-				  , location( std::move( val ) ) {}
+					daw::string_view Name,
+					basic_json_value_iterator<PolicyFlags, Allocator> val )
+					: name( Name )
+					  , hash_value(
+						  daw::name_hash<ParseState::expect_long_strings>( Name ) )
+					  , location( std::move( val ) ) {}
 
 				[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
 					return name == Name;
 				}
 
 				[[nodiscard]] constexpr bool is_match( daw::string_view Name,
-				                                       daw::UInt32 hash ) const {
-					if( hash != hash_value ) {
+				                                       json_name_hash_t hash ) const {
+					if(hash != hash_value) {
 						return false;
 					}
 					return name == Name;
@@ -63,11 +64,11 @@ namespace daw::json {
 
 		struct json_member_name {
 			daw::string_view name;
-			daw::UInt32 hash_value;
+			json_name_hash_t hash_value;
 
 			constexpr json_member_name( std::string_view Name )
-			  : name( std::data( Name ), std::size( Name ) )
-			  , hash_value( daw::name_hash<false>( name ) ) {}
+				: name( std::data( Name ), std::size( Name ) )
+				  , hash_value( daw::name_hash<false>( name ) ) {}
 		};
 
 		/**
@@ -79,12 +80,12 @@ namespace daw::json {
 		         typename Allocator = json_details::NoAllocator>
 		class basic_stateful_json_value {
 			using ParseState =
-			  TryDefaultParsePolicy<BasicParsePolicy<PolicyFlags, Allocator>>;
+			TryDefaultParsePolicy<BasicParsePolicy<PolicyFlags, Allocator>>;
 
 			basic_json_value<PolicyFlags, Allocator> m_value;
 			std::vector<
-			  json_details::basic_stateful_json_value_state<PolicyFlags, Allocator>>
-			  m_locs{ };
+				json_details::basic_stateful_json_value_state<PolicyFlags, Allocator>>
+			m_locs{};
 
 			/***
 			 * Move parser until member name matches key if needed
@@ -94,14 +95,14 @@ namespace daw::json {
 			[[nodiscard]] constexpr std::size_t move_to( json_member_name member ) {
 				std::size_t pos = 0;
 				std::size_t const Sz = std::size( m_locs );
-				for( ; pos < Sz; ++pos ) {
-					if( m_locs[pos].is_match( member.name, member.hash_value ) ) {
+				for(; pos < Sz; ++pos) {
+					if(m_locs[pos].is_match( member.name, member.hash_value )) {
 						return pos;
 					}
 				}
 
 				auto it = [&] {
-					if( m_locs.empty( ) ) {
+					if(m_locs.empty( )) {
 						return m_value.begin( );
 					}
 					auto res = m_locs.back( ).location;
@@ -109,12 +110,13 @@ namespace daw::json {
 					return res;
 				}( );
 				auto const last = m_value.end( );
-				while( it != last ) {
+				while(it != last) {
 					auto name = it.name( );
 					daw_json_assert_weak( name, ErrorReason::MissingMemberName );
 					auto const &new_loc = m_locs.emplace_back(
-					  daw::string_view( std::data( *name ), std::size( *name ) ), it );
-					if( new_loc.is_match( member.name ) ) {
+						daw::string_view( std::data( *name ), std::size( *name ) ),
+						it );
+					if(new_loc.is_match( member.name )) {
 						return pos;
 					}
 					++pos;
@@ -129,11 +131,11 @@ namespace daw::json {
 			 * @return position in members or size
 			 */
 			[[nodiscard]] constexpr std::size_t move_to( std::size_t index ) {
-				if( index < std::size( m_locs ) ) {
+				if(index < std::size( m_locs )) {
 					return index;
 				}
 				auto it = [&] {
-					if( m_locs.empty( ) ) {
+					if(m_locs.empty( )) {
 						return m_value.begin( );
 					}
 					auto res = m_locs.back( ).location;
@@ -142,15 +144,16 @@ namespace daw::json {
 				}( );
 				auto last = m_value.end( );
 				std::size_t pos = std::size( m_locs );
-				while( it != last ) {
+				while(it != last) {
 					auto name = it.name( );
-					if( name ) {
+					if(name) {
 						m_locs.emplace_back(
-						  daw::string_view( std::data( *name ), std::size( *name ) ), it );
+							daw::string_view( std::data( *name ), std::size( *name ) ),
+							it );
 					} else {
 						m_locs.emplace_back( daw::string_view( ), it );
 					}
-					if( pos == index ) {
+					if(pos == index) {
 						return pos;
 					}
 					++pos;
@@ -161,25 +164,26 @@ namespace daw::json {
 
 		public:
 			constexpr basic_stateful_json_value(
-			  basic_json_value<PolicyFlags, Allocator> val )
-			  : m_value( std::move( val ) ) {
+				basic_json_value<PolicyFlags, Allocator> val )
+				: m_value( std::move( val ) ) {
 
 				daw_json_assert_weak( ( [&] {
 					                      auto t = m_value.type( );
 					                      return ( t == JsonBaseParseTypes::Class ) |
-					                             ( t == JsonBaseParseTypes::Array );
-				                      }( ) ),
+					                      ( t == JsonBaseParseTypes::Array );
+					                      }( ) ),
 				                      ErrorReason::ExpectedArrayOrClassStart,
 				                      val.get_raw_state( ) );
 			}
 
 			constexpr basic_stateful_json_value( )
-			  : basic_stateful_json_value(
-			      basic_json_value<PolicyFlags, Allocator>( "{}" ) ) {}
+				: basic_stateful_json_value(
+					basic_json_value<PolicyFlags, Allocator>( "{}" ) ) {}
 
 			constexpr basic_stateful_json_value( daw::string_view json_data )
-			  : basic_stateful_json_value(
-			      basic_json_value<PolicyFlags, Allocator>( json_data ) ) {}
+				: basic_stateful_json_value(
+					basic_json_value<PolicyFlags, Allocator>( json_data ) ) {}
+
 			/**
 			 * Reuse state storage for another basic_json_value
 			 * @param val Value to contain state for
@@ -224,10 +228,10 @@ namespace daw::json {
 			at( std::string_view key ) {
 				auto const k = std::string_view( std::data( key ), std::size( key ) );
 				std::size_t pos = move_to( k );
-				if( pos < std::size( m_locs ) ) {
+				if(pos < std::size( m_locs )) {
 					return m_locs[pos].location->value;
 				}
-				return { };
+				return {};
 			}
 
 			/// @brief Count the number of elements/members in the JSON class or array
@@ -237,7 +241,7 @@ namespace daw::json {
 			///
 			[[nodiscard]] std::size_t size( ) {
 				JsonBaseParseTypes const current_type = m_value.type( );
-				switch( current_type ) {
+				switch(current_type) {
 				case JsonBaseParseTypes::Array:
 				case JsonBaseParseTypes::Class:
 					return move_to( ( daw::numeric_limits<std::size_t>::max )( ) );
@@ -293,24 +297,24 @@ namespace daw::json {
 			[[nodiscard]] std::optional<std::string_view> name_of( Integer index ) {
 				static_assert( std::is_integral_v<Integer>,
 				               "Only integer indices are allowed" );
-				if constexpr( std::is_signed_v<Integer> ) {
-					if( index < 0 ) {
+				if constexpr(std::is_signed_v<Integer>) {
+					if(index < 0) {
 						index = -index;
 						auto sz = size( );
-						if( static_cast<std::size_t>( index ) >= sz ) {
-							return { };
+						if(static_cast<std::size_t>(index) >= sz) {
+							return {};
 						}
-						sz -= static_cast<std::size_t>( index );
+						sz -= static_cast<std::size_t>(index);
 						return std::string_view( std::data( m_locs[sz].name( ) ),
 						                         std::size( m_locs[sz].name( ) ) );
 					}
 				}
-				std::size_t pos = move_to( static_cast<std::size_t>( index ) );
-				if( pos < std::size( m_locs ) ) {
+				std::size_t pos = move_to( static_cast<std::size_t>(index) );
+				if(pos < std::size( m_locs )) {
 					return std::string_view( std::data( m_locs[pos].name( ) ),
 					                         std::size( m_locs[pos].name( ) ) );
 				}
-				return { };
+				return {};
 			}
 
 			/***
@@ -322,21 +326,21 @@ namespace daw::json {
 			 * @return A new basic_json_value for the indexed member
 			 */
 			template<
-			  typename Integer DAW_JSON_ENABLEIF( std::is_integral_v<Integer> )>
-			DAW_JSON_REQUIRES( std::is_integral_v<Integer> )
+				typename Integer DAW_JSON_ENABLEIF( std::is_integral_v<Integer> )>
+				DAW_JSON_REQUIRES( std::is_integral_v<Integer> )
 			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
 			operator[]( Integer index ) {
-				if constexpr( std::is_signed_v<Integer> ) {
-					if( index < 0 ) {
+				if constexpr(std::is_signed_v<Integer>) {
+					if(index < 0) {
 						index = -index;
 						auto sz = size( );
 						daw_json_assert_weak( ( static_cast<std::size_t>( index ) < sz ),
 						                      ErrorReason::UnknownMember );
-						sz -= static_cast<std::size_t>( index );
+						sz -= static_cast<std::size_t>(index);
 						return m_locs[sz].location->value;
 					}
 				}
-				std::size_t pos = move_to( static_cast<std::size_t>( index ) );
+				std::size_t pos = move_to( static_cast<std::size_t>(index) );
 				daw_json_assert_weak( pos < std::size( m_locs ),
 				                      ErrorReason::UnknownMember );
 				return m_locs[pos].location->value;
@@ -350,26 +354,26 @@ namespace daw::json {
 			 * @return A new basic_json_value for the indexed member
 			 */
 			template<
-			  typename Integer DAW_JSON_ENABLEIF( std::is_integral_v<Integer> )>
-			DAW_JSON_REQUIRES( std::is_integral_v<Integer> )
+				typename Integer DAW_JSON_ENABLEIF( std::is_integral_v<Integer> )>
+				DAW_JSON_REQUIRES( std::is_integral_v<Integer> )
 			[[nodiscard]] constexpr std::optional<
-			  basic_json_value<PolicyFlags, Allocator>> at( Integer index ) {
-				if constexpr( std::is_signed_v<Integer> ) {
-					if( index < 0 ) {
+				basic_json_value<PolicyFlags, Allocator>> at( Integer index ) {
+				if constexpr(std::is_signed_v<Integer>) {
+					if(index < 0) {
 						index = -index;
 						auto sz = size( );
-						if( static_cast<std::size_t>( index ) >= sz ) {
-							return { };
+						if(static_cast<std::size_t>(index) >= sz) {
+							return {};
 						}
-						sz -= static_cast<std::size_t>( index );
+						sz -= static_cast<std::size_t>(index);
 						return m_locs[sz].location->value( );
 					}
 				}
-				std::size_t pos = move_to( static_cast<std::size_t>( index ) );
-				if( pos < std::size( m_locs ) ) {
+				std::size_t pos = move_to( static_cast<std::size_t>(index) );
+				if(pos < std::size( m_locs )) {
 					return m_locs[pos].location->value( );
 				}
-				return { };
+				return {};
 			}
 
 			/***
@@ -385,11 +389,11 @@ namespace daw::json {
 
 		template<json_options_t PolicyFlags, typename Allocator>
 		basic_stateful_json_value( basic_json_value<PolicyFlags, Allocator> )
-		  -> basic_stateful_json_value<PolicyFlags, Allocator>;
+			-> basic_stateful_json_value<PolicyFlags, Allocator>;
 
 		basic_stateful_json_value( daw::string_view )
-		  -> basic_stateful_json_value<>;
+			-> basic_stateful_json_value<>;
 
 		using json_value_state = basic_stateful_json_value<>;
 	} // namespace DAW_JSON_VER
-} // namespace daw::json
+}   // namespace daw::json

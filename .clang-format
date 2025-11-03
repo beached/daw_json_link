@@ -13,7 +13,7 @@ AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: true
 AlwaysBreakTemplateDeclarations: Yes
 BasedOnStyle: LLVM
-BinPackArguments: true
+BinPackArguments: false
 BinPackParameters: true
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Attach
