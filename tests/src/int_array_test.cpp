@@ -12,9 +12,9 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
+#include <daw/daw_bounded_vector.h>
 #include <daw/daw_do_n.h>
 #include <daw/daw_random.h>
-#include <daw/daw_bounded_vector.h>
 #include <daw/iterator/daw_back_inserter.h>
 
 #include <fstream>
@@ -133,8 +133,8 @@ void test_func( ) {
 		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy(
+			    iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -144,7 +144,8 @@ void test_func( ) {
 	}
 	{ // just ints
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "array of intmax_t: from_json_array", json_sv_intmax.size( ),
+		  "array of intmax_t: from_json_array",
+		  json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<intmax_t, std::vector<intmax_t>>(
 			    sv, options::parse_flags<options::CheckedParseMode::no> );
@@ -177,7 +178,8 @@ void test_func( ) {
 			to_json_str.resize(
 			  static_cast<std::size_t>( ( json_sv_intmax.size( ) * 15 ) ) / 10 );
 			auto result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "array of intmax_t: to_json presized", data.size( ) * sizeof( data[0] ),
+			  "array of intmax_t: to_json presized",
+			  data.size( ) * sizeof( data[0] ),
 			  [&]( std::vector<intmax_t> const &v ) noexcept {
 				  daw::json::to_json_array( v, to_json_str.data( ) );
 				  daw::do_not_optimize( to_json_str.data( ) );
@@ -191,7 +193,8 @@ void test_func( ) {
 			to_json_str.resize( make_int_array_data<NUMVALUES, int32_t>( ).size( ) *
 			                    2 );
 			auto result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "array of int32_t: to_json presized", ( NUMVALUES * sizeof( int32_t ) ),
+			  "array of int32_t: to_json presized",
+			  ( NUMVALUES * sizeof( int32_t ) ),
 			  [&]( std::vector<int32_t> const &v ) noexcept {
 				  daw::json::to_json_array( v, to_json_str.data( ) );
 				  daw::do_not_optimize( to_json_str.data( ) );
@@ -238,7 +241,8 @@ void test_func( ) {
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "int parsing 1", json_sv.size( ),
+		  "int parsing 1",
+		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number>( sv );
 			  daw::do_not_optimize( data );
@@ -253,11 +257,12 @@ void test_func( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "int parsing 2", json_sv.size( ),
+		  "int parsing 2",
+		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy(
+			    iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -270,7 +275,8 @@ void test_func( ) {
 		          << daw::utility::to_bytes_per_second( json_sv_intmax.size( ) )
 		          << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "int parsing 1", json_sv_intmax.size( ),
+		  "int parsing 1",
+		  json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<json_checked_number_no_name<intmax_t>>( sv );
@@ -287,11 +293,12 @@ void test_func( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "p2. int parsing 2", json_sv_intmax.size( ),
+		  "p2. int parsing 2",
+		  json_sv_intmax.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy(
+			    iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -302,7 +309,8 @@ void test_func( ) {
 		{
 			auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p3. int parsing 3", json_sv_intmax.size( ),
+			  "p3. int parsing 3",
+			  json_sv_intmax.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );
@@ -325,7 +333,8 @@ void test_func( ) {
 		auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p4. parsing", json_sv.size( ),
+			  "p4. parsing",
+			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );
@@ -343,10 +352,12 @@ void test_func( ) {
 
 		{
 			auto const count4 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p5. parsing", json_sv.size( ),
+			  "p5. parsing",
+			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>>(
+				    int_type,
+				    daw::bounded_vector_t<int_type, NUMVALUES>>(
 				    sv, options::parse_flags<options::CheckedParseMode::no> );
 
 				  daw::do_not_optimize( result );
@@ -367,7 +378,8 @@ void test_func( ) {
 		auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p4. parsing", json_sv.size( ),
+			  "p4. parsing",
+			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );
@@ -385,10 +397,12 @@ void test_func( ) {
 
 		{
 			auto const count4 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p5. parsing", json_sv.size( ),
+			  "p5. parsing",
+			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
+				    int_type,
+				    daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -407,12 +421,15 @@ void test_func( ) {
 
 		{
 			auto const count4 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p5. parsing sse3", json_sv.size( ),
+			  "p5. parsing sse3",
+			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>>(
-				    sv, options::parse_flags<options::CheckedParseMode::no,
-				                             options::ExecModeTypes::simd> );
+				    uint_type,
+				    daw::bounded_vector_t<uintmax_t, NUMVALUES>>(
+				    sv,
+				    options::parse_flags<options::CheckedParseMode::no,
+				                         options::ExecModeTypes::simd> );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -434,7 +451,8 @@ void test_func( ) {
 		auto data2 = std::unique_ptr<uintmax_t[]>( new uintmax_t[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p4. parsing sse3", json_sv.size( ),
+			  "p4. parsing sse3",
+			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );
@@ -452,10 +470,12 @@ void test_func( ) {
 
 		{
 			auto const count4 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p5. parsing sse3", json_sv.size( ),
+			  "p5. parsing sse3",
+			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>>(
+				    uint_type,
+				    daw::bounded_vector_t<uint32_t, NUMVALUES>>(
 				    sv, options::parse_flags<options::ExecModeTypes::simd> );
 
 				  daw::do_not_optimize( result );

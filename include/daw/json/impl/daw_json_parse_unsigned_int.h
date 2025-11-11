@@ -54,11 +54,14 @@ namespace daw::json {
 				// The copy to local buffer is to get the compiler to treat it like a
 				// reinterpret_cast
 
-				std::byte const buff[8]{
-				  static_cast<std::byte>( ptr[0] ), static_cast<std::byte>( ptr[1] ),
-				  static_cast<std::byte>( ptr[2] ), static_cast<std::byte>( ptr[3] ),
-				  static_cast<std::byte>( ptr[4] ), static_cast<std::byte>( ptr[5] ),
-				  static_cast<std::byte>( ptr[6] ), static_cast<std::byte>( ptr[7] ) };
+				std::byte const buff[8]{ static_cast<std::byte>( ptr[0] ),
+				                         static_cast<std::byte>( ptr[1] ),
+				                         static_cast<std::byte>( ptr[2] ),
+				                         static_cast<std::byte>( ptr[3] ),
+				                         static_cast<std::byte>( ptr[4] ),
+				                         static_cast<std::byte>( ptr[5] ),
+				                         static_cast<std::byte>( ptr[6] ),
+				                         static_cast<std::byte>( ptr[7] ) };
 
 				UInt64 val = UInt64( );
 				for( std::size_t n = 0; n < 8; ++n ) {
@@ -136,8 +139,7 @@ namespace daw::json {
 					if constexpr( std::is_signed_v<Integer> ) {
 						if constexpr( sizeof( T ) <= sizeof( Integer ) ) {
 							return value;
-						} else if( value <= static_cast<T>(
-						                      daw::max_value<Integer> ) ) {
+						} else if( value <= static_cast<T>( daw::max_value<Integer> ) ) {
 							return static_cast<Integer>( value );
 						} else {
 							daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
@@ -149,8 +151,7 @@ namespace daw::json {
 						daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
 					} else {
 						if( value >= 0 and
-						    value <=
-						      static_cast<T>( daw::max_value<Integer> ) ) {
+						    value <= static_cast<T>( daw::max_value<Integer> ) ) {
 							return value;
 						}
 						daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
@@ -159,8 +160,7 @@ namespace daw::json {
 					if constexpr( sizeof( T ) < sizeof( Integer ) ) {
 						return static_cast<Integer>( value );
 					} else {
-						if( value >
-						    static_cast<T>( daw::max_value<Integer> ) ) {
+						if( value > static_cast<T>( daw::max_value<Integer> ) ) {
 							daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
 						}
 						return static_cast<Integer>( value );
@@ -168,8 +168,7 @@ namespace daw::json {
 				} else if constexpr( sizeof( T ) <= sizeof( Integer ) ) {
 					return static_cast<Integer>( value );
 				} else {
-					if( value <=
-					    static_cast<T>( daw::max_value<Integer> ) ) {
+					if( value <= static_cast<T>( daw::max_value<Integer> ) ) {
 						return static_cast<Integer>( value );
 					}
 					daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
@@ -188,9 +187,9 @@ namespace daw::json {
 				using CharT = typename ParseState::CharT;
 				// We know how many digits are in the number
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
-				using uresult_t =
-				  max_unsigned_t<RangeChecked, make_unsigned_with_bool_t<Unsigned>,
-				                 UInt64>;
+				using uresult_t = max_unsigned_t<RangeChecked,
+				                                 make_unsigned_with_bool_t<Unsigned>,
+				                                 UInt64>;
 				static_assert(
 				  not static_cast<bool>( RangeChecked ) or
 				    std::is_same_v<uresult_t, UInt64>,
@@ -232,7 +231,8 @@ namespace daw::json {
 					  ( ( result <= static_cast<uresult_t>(
 					                  ( daw::numeric_limits<result_t>::max )( ) ) ) &
 					    ( count >= 0 ) ),
-					  ErrorReason::NumberOutOfRange, parse_state );
+					  ErrorReason::NumberOutOfRange,
+					  parse_state );
 				}
 				parse_state.first = first;
 				if constexpr( RangeChecked == options::JsonRangeCheck::Never ) {
@@ -252,15 +252,16 @@ namespace daw::json {
 				using CharT = typename ParseState::CharT;
 				// We do not know how long the string is
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
-				using uresult_t =
-				  max_unsigned_t<RangeChecked, make_unsigned_with_bool_t<Unsigned>,
-				                 UInt64>;
+				using uresult_t = max_unsigned_t<RangeChecked,
+				                                 make_unsigned_with_bool_t<Unsigned>,
+				                                 UInt64>;
 				static_assert(
 				  not static_cast<bool>( RangeChecked ) or
 				    std::is_same_v<uresult_t, UInt64>,
 				  "Range checking is only supported for std integral types" );
 				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
 				CharT *first = parse_state.first;
 				CharT *const orig_first = first;
 				(void)orig_first; // only used inside if constexpr and gcc9 warns
@@ -311,8 +312,8 @@ namespace daw::json {
 					auto const count = static_cast<std::ptrdiff_t>(
 					                     daw::numeric_limits<result_t>::digits10 + 1 ) -
 					                   ( first - orig_first );
-					daw_json_ensure( count >= 0, ErrorReason::NumberOutOfRange,
-					                 parse_state );
+					daw_json_ensure(
+					  count >= 0, ErrorReason::NumberOutOfRange, parse_state );
 				}
 
 				parse_state.first = first;

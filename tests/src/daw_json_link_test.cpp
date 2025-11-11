@@ -87,7 +87,8 @@ DAW_CONSTEXPR bool parse_unsigned_test( char const ( &str )[N],
 	  daw::json::options::CheckedParseMode::no )>;
 	auto tmp = policy_t( str, str + N );
 	return daw::json::json_details::unsigned_parser<
-	         Unsigned, daw::json::options::JsonRangeCheck::CheckForNarrowing,
+	         Unsigned,
+	         daw::json::options::JsonRangeCheck::CheckForNarrowing,
 	         false>( daw::json::constexpr_exec_tag{ }, tmp ) == expected;
 }
 
@@ -186,8 +187,8 @@ namespace daw::json {
 		                   json_date<dte>>;
 
 		static DAW_CONSTEXPR auto to_json_data( test_001_t const &v ) {
-			return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.s2, v.y, v.o, v.o2,
-			                              v.dte );
+			return std::forward_as_tuple(
+			  v.i, v.d, v.b, v.s, v.s2, v.y, v.o, v.o2, v.dte );
 		}
 	};
 
@@ -247,7 +248,8 @@ DAW_CONSTEXPR char const test_001_t_json_data[] =
 
 DAW_CONSTEXPR bool test_004( ) {
 	auto result = daw::json::from_json<int>(
-	  test_001_t_json_data, "i",
+	  test_001_t_json_data,
+	  "i",
 	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
 
 	if( result == 55 ) {
@@ -258,7 +260,8 @@ DAW_CONSTEXPR bool test_004( ) {
 
 DAW_CONSTEXPR bool test_005( ) {
 	auto result = daw::json::from_json<int>(
-	  test_001_t_json_data, "i",
+	  test_001_t_json_data,
+	  "i",
 	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
 	return result == 55;
 }
@@ -781,8 +784,8 @@ struct Unmapped9 {
 	int a8;
 
 	friend constexpr auto to_tuple( Unmapped9 const &um ) {
-		return std::forward_as_tuple( um.a0, um.a1, um.a2, um.a3, um.a4, um.a5,
-		                              um.a6, um.a7, um.a8 );
+		return std::forward_as_tuple(
+		  um.a0, um.a1, um.a2, um.a3, um.a4, um.a5, um.a6, um.a7, um.a8 );
 	}
 };
 
@@ -919,9 +922,10 @@ int main( int, char ** ) {
 
 		using namespace daw::json;
 		using num_t =
-		  json_number_no_name<double, options::number_opt(
-		                                options::LiteralAsStringOpt::Always,
-		                                options::JsonNumberErrors::AllowNanInf )>;
+		  json_number_no_name<double,
+		                      options::number_opt(
+		                        options::LiteralAsStringOpt::Always,
+		                        options::JsonNumberErrors::AllowNanInf )>;
 		std::cout << "Inf double: "
 		          << "serialize: "
 		          << to_json<num_t>( std::numeric_limits<double>::infinity( ) )
@@ -956,8 +960,7 @@ int main( int, char ** ) {
 		          << AS_CONSTEXPR( from_json<double>( "1.1125369292536007E-308" ) )
 		          << '\n';
 
-		std::cout << "min double: "
-		          << to_json( daw::min_value<double> ) << '\n';
+		std::cout << "min double: " << to_json( daw::min_value<double> ) << '\n';
 		std::cout << "2.2250738585072014E-308 -> "
 		          << AS_CONSTEXPR( from_json<double>( "2.2250738585072014E-308" ) )
 		          << '\n';
@@ -969,8 +972,7 @@ int main( int, char ** ) {
 		          << '\n';
 
 		std::cout << AS_CONSTEXPR( from_json<double>( "5E-324" ) ) << '\n';
-		std::cout << "max double: "
-		          << to_json( daw::max_value<double> ) << '\n';
+		std::cout << "max double: " << to_json( daw::max_value<double> ) << '\n';
 		std::cout << "1.7976931348623157E308 -> "
 		          << AS_CONSTEXPR( from_json<double>( "1.7976931348623157E308" ) )
 		          << '\n';
@@ -1235,7 +1237,8 @@ int main( int, char ** ) {
 		static_assert(
 		  from_json<
 		    json_key_value_no_name<std::array<std::pair<std::string_view, int>, 2>,
-		                           int, std::string_view>>( R"({"a":0,"b":1})" )[1]
+		                           int,
+		                           std::string_view>>( R"({"a":0,"b":1})" )[1]
 		    .second == 1 );
 
 		constexpr auto v =
@@ -1248,24 +1251,24 @@ int main( int, char ** ) {
 
 		std::cout << "FP Output formating of 123456789.23456789012345:\n";
 		constexpr double outfmt_dbl = 123456789.23456789012345;
-		std::cout
-		  << "auto: "
-		  << to_json<json_base::json_number<
-		       double, options::number_opt( options::FPOutputFormat::Auto )>>(
-		       outfmt_dbl )
-		  << '\n';
-		std::cout
-		  << "decimal: "
-		  << to_json<json_base::json_number<
-		       double, options::number_opt( options::FPOutputFormat::Decimal )>>(
-		       outfmt_dbl )
-		  << '\n';
-		std::cout
-		  << "scientific: "
-		  << to_json<json_base::json_number<
-		       double, options::number_opt( options::FPOutputFormat::Scientific )>>(
-		       outfmt_dbl )
-		  << '\n';
+		std::cout << "auto: "
+		          << to_json<json_base::json_number<
+		               double,
+		               options::number_opt( options::FPOutputFormat::Auto )>>(
+		               outfmt_dbl )
+		          << '\n';
+		std::cout << "decimal: "
+		          << to_json<json_base::json_number<
+		               double,
+		               options::number_opt( options::FPOutputFormat::Decimal )>>(
+		               outfmt_dbl )
+		          << '\n';
+		std::cout << "scientific: "
+		          << to_json<json_base::json_number<
+		               double,
+		               options::number_opt( options::FPOutputFormat::Scientific )>>(
+		               outfmt_dbl )
+		          << '\n';
 
 		auto byte_vec = to_json( 5.5, std::vector<std::byte>{ } );
 		ensure( byte_vec.size( ) == 3 );
@@ -1298,8 +1301,10 @@ int main( int, char ** ) {
 			ensure( not opt_int5 );
 		}
 
-		using strsigned_t = json_number_no_name<
-		  std::int64_t, options::number_opt( options::LiteralAsStringOpt::Always )>;
+		using strsigned_t =
+		  json_number_no_name<std::int64_t,
+		                      options::number_opt(
+		                        options::LiteralAsStringOpt::Always )>;
 
 		std::string negnumber_str = to_json<strsigned_t>( -1234567890LL );
 		ensure( negnumber_str == R"("-1234567890")" );
@@ -1342,20 +1347,21 @@ int main( int, char ** ) {
 		constexpr auto dbl_007 = -1.7e100;
 		std::cout << "Large negative double " << dbl_007 << '\n';
 		auto dbl_007_str = to_json<json_base::json_number<
-		  double, options::number_opt( options::FPOutputFormat::Decimal )>>(
-		  dbl_007 );
+		  double,
+		  options::number_opt( options::FPOutputFormat::Decimal )>>( dbl_007 );
 		ensure( dbl_007_str ==
 		        "-17000000000000000000000000000000000000000000000000000000000000000"
 		        "000000000000000000000000000000000000" );
 		std::cout << dbl_007_str << '\n';
 		auto dbl_007_str1 = to_json<json_base::json_number<
-		  double, options::number_opt( options::FPOutputFormat::Scientific )>>(
-		  dbl_007 );
+		  double,
+		  options::number_opt( options::FPOutputFormat::Scientific )>>( dbl_007 );
 		std::cout << dbl_007_str1 << '\n';
 		ensure( dbl_007_str1 == "-1.7e100" );
 
 		auto dbl_007_str2 = to_json<json_base::json_number<
-		  double, options::number_opt( options::FPOutputFormat::Auto )>>( dbl_007 );
+		  double,
+		  options::number_opt( options::FPOutputFormat::Auto )>>( dbl_007 );
 		ensure( dbl_007_str2 == "-1.7e100" );
 		std::cout << dbl_007_str2 << '\n';
 
@@ -1385,14 +1391,14 @@ int main( int, char ** ) {
 #if __cpp_lib_char8_t >= 201907L
 		static_assert(
 		  daw::json::concepts::is_writable_output_type_v<std::u8string> );
-		std::cout
-		  << "u8string\n"
-		  << reinterpret_cast<char const *>(
-		       to_json<json_base::json_number<
-		         double, options::number_opt( options::FPOutputFormat::Decimal )>>(
-		         outfmt_dbl, std::u8string{ } )
-		         .c_str( ) )
-		  << '\n';
+		std::cout << "u8string\n"
+		          << reinterpret_cast<char const *>(
+		               to_json<json_base::json_number<
+		                 double,
+		                 options::number_opt( options::FPOutputFormat::Decimal )>>(
+		                 outfmt_dbl, std::u8string{ } )
+		                 .c_str( ) )
+		          << '\n';
 #endif
 #endif
 		struct Unmapped0 {};
@@ -1477,11 +1483,13 @@ int main( int, char ** ) {
 		}
 		{
 			using namespace daw::json::options;
-			DAW_CONSTEXPR auto const x = daw::json::json_apply(
-			  R"json({ "x": "Hello" })json", "x", parse_flags<CheckedParseMode::no>,
-			  []( std::string_view s ) {
-				  return s.size( );
-			  } );
+			DAW_CONSTEXPR auto const x =
+			  daw::json::json_apply( R"json({ "x": "Hello" })json",
+			                         "x",
+			                         parse_flags<CheckedParseMode::no>,
+			                         []( std::string_view s ) {
+				                         return s.size( );
+			                         } );
 			ensure( x == 5 );
 		}
 #if defined( LLONG_MIN )

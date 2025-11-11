@@ -190,9 +190,10 @@ namespace daw::json {
 				return json_details::construct_value<
 				  JsonClass,
 				  daw::construct_a_t<json_details::json_result_t<JsonClass>>>(
-				  parse_state, json_details::parse_value<json_member, KnownBounds,
-				                                         json_member::expected_type>(
-				                 parse_state ) );
+				  parse_state,
+				  json_details::
+				    parse_value<json_member, KnownBounds, json_member::expected_type>(
+				      parse_state ) );
 			}
 		};
 
@@ -328,7 +329,8 @@ namespace daw::json {
 				               "Unexpected type" );
 
 				return json_details::parse_json_tuple_class<
-				  JsonClass, json_details::json_tuple_member_wrapper<JsonMembers>...>(
+				  JsonClass,
+				  json_details::json_tuple_member_wrapper<JsonMembers>...>(
 				  parse_state );
 			}
 		};
@@ -409,8 +411,10 @@ namespace daw::json {
 				daw_json_assert_weak( idx < sizeof...( JsonClasses ),
 				                      ErrorReason::UnexpectedJSONVariantType );
 				return json_details::parse_nth_class<
-				  0, JsonClass, false, json_base::json_class<JsonClasses>...>(
-				  idx, parse_state );
+				  0,
+				  JsonClass,
+				  false,
+				  json_base::json_class<JsonClasses>...>( idx, parse_state );
 			}
 		};
 

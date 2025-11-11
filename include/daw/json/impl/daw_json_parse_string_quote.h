@@ -161,10 +161,12 @@ namespace daw::json {
 								while( *first != '\0' ) {
 									char c = *first;
 									daw_json_ensure( static_cast<unsigned char>( c ) >= 0x20U,
-									                 ErrorReason::InvalidString, parse_state );
+									                 ErrorReason::InvalidString,
+									                 parse_state );
 									if( c == '\\' ) {
 										daw_json_ensure( last - first > 1,
-										                 ErrorReason::InvalidString, parse_state );
+										                 ErrorReason::InvalidString,
+										                 parse_state );
 										if( need_slow_path < 0 ) {
 											need_slow_path = first - parse_state.first;
 										}
@@ -211,10 +213,12 @@ namespace daw::json {
 								while( first < last ) {
 									char c = *first;
 									daw_json_ensure( static_cast<unsigned char>( c ) >= 0x20U,
-									                 ErrorReason::InvalidString, parse_state );
+									                 ErrorReason::InvalidString,
+									                 parse_state );
 									if( c == '\\' ) {
 										daw_json_ensure( last - first > 1,
-										                 ErrorReason::InvalidString, parse_state );
+										                 ErrorReason::InvalidString,
+										                 parse_state );
 										if( need_slow_path < 0 ) {
 											need_slow_path = first - parse_state.first;
 										}
@@ -259,11 +263,12 @@ namespace daw::json {
 						}
 					}
 					if constexpr( ParseState::is_zero_terminated_string ) {
-						daw_json_assert_weak( *first == '"', ErrorReason::InvalidString,
-						                      parse_state );
+						daw_json_assert_weak(
+						  *first == '"', ErrorReason::InvalidString, parse_state );
 					} else {
 						daw_json_assert_weak( first < last and *first == '"',
-						                      ErrorReason::InvalidString, parse_state );
+						                      ErrorReason::InvalidString,
+						                      parse_state );
 					}
 					parse_state.first = first;
 					return static_cast<std::size_t>( need_slow_path );

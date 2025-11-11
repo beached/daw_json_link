@@ -18,8 +18,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace parse_policy_details {
 			template<char... keys>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr bool
-			in( char c ) {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr bool in( char c ) {
 				auto const eq = [c]( char k ) {
 					return c == k;
 				};
@@ -59,7 +58,8 @@ namespace daw::json {
 					case '0':
 						if( parse_state.size( ) > 1 ) {
 							daw_json_ensure( is_number( *( parse_state.first + 1 ) ),
-							                 ErrorReason::InvalidNumberStart, parse_state );
+							                 ErrorReason::InvalidNumberStart,
+							                 parse_state );
 						}
 						return;
 					default:
@@ -77,7 +77,8 @@ namespace daw::json {
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr int
 			validate_signed_first( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
 				auto const c = parse_state.front( );
 				if( c == '-' ) {
 					parse_state.remove_prefix( );
@@ -97,8 +98,8 @@ namespace daw::json {
 							  static_cast<unsigned char>( *( parse_state.first + 1 ) ) );
 							auto const tst = next_dig - static_cast<unsigned char>( '0' );
 							// Cannot be a digit
-							daw_json_assert_weak( tst >= 10U, ErrorReason::InvalidNumberStart,
-							                      parse_state );
+							daw_json_assert_weak(
+							  tst >= 10U, ErrorReason::InvalidNumberStart, parse_state );
 						}
 						return 1;
 					}
@@ -126,5 +127,5 @@ namespace daw::json {
 				return false;
 			}
 		} // namespace parse_policy_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

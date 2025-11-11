@@ -224,7 +224,8 @@ namespace daw::json {
 				                         to_nibble_char( ( c >> 12U ) & 0xFU ),
 				                         to_nibble_char( ( c >> 8U ) & 0xFU ),
 				                         to_nibble_char( ( c >> 4U ) & 0xFU ),
-				                         to_nibble_char( c & 0xFU ), '\0' };
+				                         to_nibble_char( c & 0xFU ),
+				                         '\0' };
 
 				it.write( nibbles );
 				return it;
@@ -240,7 +241,8 @@ namespace daw::json {
 				if( cp <= 0x7FFU ) {
 					char const tmp[] = {
 					  static_cast<char>( ( cp >> 6U ) | 0b11000000U ),
-					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ), '\0' };
+					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ),
+					  '\0' };
 					it.write( tmp );
 					return;
 				}
@@ -248,7 +250,8 @@ namespace daw::json {
 					char const tmp[]{
 					  static_cast<char>( ( cp >> 12U ) | 0b11100000U ),
 					  static_cast<char>( ( ( cp >> 6U ) & 0b00111111U ) | 0b10000000U ),
-					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ), '\0' };
+					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ),
+					  '\0' };
 					it.write( tmp );
 					return;
 				}
@@ -257,7 +260,8 @@ namespace daw::json {
 					  static_cast<char>( ( cp >> 18U ) | 0b11110000U ),
 					  static_cast<char>( ( ( cp >> 12U ) & 0b00111111U ) | 0b10000000U ),
 					  static_cast<char>( ( ( cp >> 6U ) & 0b00111111U ) | 0b10000000U ),
-					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ), '\0' };
+					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ),
+					  '\0' };
 					it.write( tmp );
 					return;
 				}
@@ -798,8 +802,8 @@ namespace daw::json {
 			} // namespace utils_details
 
 			template<typename Integer, typename WriteableType>
-			static constexpr WriteableType
-			integer_to_string( WriteableType it, Integer const &value ) {
+			static constexpr WriteableType integer_to_string( WriteableType it,
+			                                                  Integer const &value ) {
 				static_assert( daw::is_integral_v<Integer> );
 
 				if constexpr( daw::is_unsigned_v<Integer> ) {
@@ -846,8 +850,7 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			[[nodiscard]] static constexpr bool
-			is_null( std::optional<T> const &v ) {
+			[[nodiscard]] static constexpr bool is_null( std::optional<T> const &v ) {
 				return not static_cast<bool>( v );
 			}
 
@@ -936,8 +939,8 @@ namespace daw::json {
 					      typename JsonMember::wrapped_type>::to_json_data( value ),
 					    value );
 				} else if constexpr( is_json_map_alias_v<parse_to_t> ) {
-					return json_data_contract_trait_t<parse_to_t>::serialize( it, value,
-					                                                          value );
+					return json_data_contract_trait_t<parse_to_t>::serialize(
+					  it, value, value );
 				} else if constexpr( std::is_empty_v<parse_to_t> and
 				                     std::is_default_constructible_v<parse_to_t> and
 				                     not has_json_data_contract_trait_v<parse_to_t> ) {
@@ -963,8 +966,10 @@ namespace daw::json {
 				              options::JsonCustomTypes::Literal ) {
 					it.put( '"' );
 					if constexpr( std::is_invocable_r_v<
-					                WriteableType, typename JsonMember::to_converter_t,
-					                WriteableType, parse_to_t> ) {
+					                WriteableType,
+					                typename JsonMember::to_converter_t,
+					                WriteableType,
+					                parse_to_t> ) {
 
 						it = typename JsonMember::to_converter_t{ }( it, value );
 					} else {
@@ -1023,7 +1028,8 @@ namespace daw::json {
 				using tuple_t = json_result_t<JsonMember>;
 
 				using element_pack = tuple_elements_pack<typename daw::conditional_t<
-				  is_tuple_v<tuple_t>, daw::traits::identity<tuple_t>,
+				  is_tuple_v<tuple_t>,
+				  daw::traits::identity<tuple_t>,
 				  json_details::identity_parts<tp_from_struct_binding_result_t,
 				                               parse_to_t>>::type>;
 
@@ -1481,7 +1487,8 @@ namespace daw::json {
 				  daw::jkj::dragonbox::to_chars_detail::decimal_length(
 				    dec.significand );
 
-				auto whole_dig = static_cast<std::int32_t>( digit_values ) + dec.exponent;
+				auto whole_dig =
+				  static_cast<std::int32_t>( digit_values ) + dec.exponent;
 
 				auto const br = [&] {
 					if constexpr( std::is_same_v<Real, float> ) {
@@ -1501,16 +1508,16 @@ namespace daw::json {
 				if( fp_output_format == options::FPOutputFormat::Scientific ) {
 					char buff[50]{ };
 					char *ptr = buff;
-					ptr =
-					  daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digit_values );
+					ptr = daw::jkj::dragonbox::to_chars_detail::to_chars(
+					  dec, ptr, digit_values );
 					out_it.copy_buffer( buff, ptr );
 					return out_it;
 				} else if( fp_output_format == options::FPOutputFormat::Auto ) {
 					if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
 						char buff[50]{ };
 						char *ptr = buff;
-						ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr,
-						                                                      digit_values );
+						ptr = daw::jkj::dragonbox::to_chars_detail::to_chars(
+						  dec, ptr, digit_values );
 						out_it.copy_buffer( buff, ptr );
 						return out_it;
 					}

@@ -67,8 +67,8 @@ namespace daw::json {
 				  DAW_FWD( data ),
 				  { std::data( member_path ), std::size( member_path ) } );
 				daw_json_ensure( is_found, ErrorReason::JSONPathNotFound );
-				daw_json_ensure( result.front( ) == '[', ErrorReason::InvalidArrayStart,
-				                 result );
+				daw_json_ensure(
+				  result.front( ) == '[', ErrorReason::InvalidArrayStart, result );
 				return result;
 			}
 
@@ -99,7 +99,8 @@ namespace daw::json {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, m_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      m_state );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
@@ -111,7 +112,8 @@ namespace daw::json {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, m_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      m_state );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
@@ -132,15 +134,16 @@ namespace daw::json {
 			/// @return The parsed result of ParseElement
 			[[nodiscard]] constexpr value_type operator*( ) const {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
 
 				auto tmp = m_state;
 
 				auto const run_after_parse =
 				  json_details::assign_on_dtor{ m_can_skip, tmp.first };
 				(void)run_after_parse;
-				return json_details::parse_value<element_type, false,
-				                                 element_type::expected_type>( tmp );
+				return json_details::
+				  parse_value<element_type, false, element_type::expected_type>( tmp );
 			}
 
 			/// @brief A dereferencable value proxy holding the result of operator*
@@ -158,7 +161,8 @@ namespace daw::json {
 			 */
 			constexpr json_array_iterator_t &operator++( ) {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
 				if( m_can_skip ) {
 					m_state.first = m_can_skip;
 					m_can_skip = nullptr;
@@ -242,8 +246,8 @@ namespace daw::json {
 				  DAW_FWD( data ),
 				  { std::data( member_path ), std::size( member_path ) } );
 				daw_json_ensure( is_found, ErrorReason::JSONPathNotFound );
-				daw_json_ensure( result.front( ) == '[', ErrorReason::InvalidArrayStart,
-				                 result );
+				daw_json_ensure(
+				  result.front( ) == '[', ErrorReason::InvalidArrayStart, result );
 				return result;
 			}
 
@@ -267,7 +271,8 @@ namespace daw::json {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, m_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      m_state );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
@@ -279,7 +284,8 @@ namespace daw::json {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, m_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      m_state );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
@@ -290,11 +296,12 @@ namespace daw::json {
 			/// @return The parsed result of ParseElement
 			[[nodiscard]] constexpr value_type operator*( ) const {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
 
-				return json_details::parse_value<element_type, false,
-				                                 element_type::expected_type>(
-				  m_state );
+				return json_details::
+				  parse_value<element_type, false, element_type::expected_type>(
+				    m_state );
 			}
 
 			/***
@@ -303,7 +310,8 @@ namespace daw::json {
 			 */
 			constexpr json_array_iterator_once &operator++( ) {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
 				m_state.move_next_member_or_end( );
 				return *this;
 			}

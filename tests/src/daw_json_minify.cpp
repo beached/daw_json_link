@@ -118,8 +118,8 @@ void minify( daw::Arguments const &args, std::string_view data,
 
 	if( auto pos = args.find_argument_position( "verbose" ); pos ) {
 		auto const time = daw::benchmark( [&] {
-			daw::json::json_event_parser( data, handler,
-			                              daw::json::ConformancePolicy );
+			daw::json::json_event_parser(
+			  data, handler, daw::json::ConformancePolicy );
 		} );
 		if( not has_out_file ) {
 			std::cout << '\n';

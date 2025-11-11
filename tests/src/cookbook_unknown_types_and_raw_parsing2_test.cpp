@@ -38,8 +38,8 @@ namespace daw::json {
 		                   json_link<opt_member, std::optional<json_value>>>;
 
 		static inline auto to_json_data( MyClass2 const &value ) {
-			return std::forward_as_tuple( value.member0, value.member_later,
-			                              value.member1, value.opt_member );
+			return std::forward_as_tuple(
+			  value.member0, value.member_later, value.member1, value.opt_member );
 		}
 	};
 } // namespace daw::json

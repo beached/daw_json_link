@@ -24,9 +24,11 @@ int main( int, char ** ) {
 	daw::expecting( t0_b == 0x04030201 );
 	test( "", 0, 0 );
 	test( "", 1, 0x514E'28B7ULL );
-	test( "", 0xFFFF'FFFF,
+	test( "",
+	      0xFFFF'FFFF,
 	      0x81F1'6F39ULL ); // make sure your seed uses unsigned 32-bit math
-	test( "\xFF\xFF\xFF\xFF", 0,
+	test( "\xFF\xFF\xFF\xFF",
+	      0,
 	      0x7629'3B50ULL ); // make sure 4-byte chunks use unsigned math
 	test( "\x21\x43\x65\x87", 0, 0xF55B'516BULL );
 	test( "\x21\x43\x65\x87", 0x5082'EDEE, 0x2362'F9DE );
@@ -55,6 +57,6 @@ int main( int, char ** ) {
 	test( aas, 0x9747b28c, 0x37405BDC );
 
 	test( "abc", 0, 0xB3DD93FA );
-	test( "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", 0,
-	      0xEE925B90 );
+	test(
+	  "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", 0, 0xEE925B90 );
 }

@@ -85,7 +85,8 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_next_member_unchecked( ParseState &parse_state ) {
 				parse_state.first =
-				  json_details::memchr_unchecked<'"', typename ParseState::exec_tag_t,
+				  json_details::memchr_unchecked<'"',
+				                                 typename ParseState::exec_tag_t,
 				                                 ParseState::expect_long_strings>(
 				    parse_state.first, parse_state.last );
 			}
@@ -103,8 +104,9 @@ namespace daw::json {
 					parse_state.first =
 					  json_details::mempbrk<ParseState::is_unchecked_input,
 					                        typename ParseState::exec_tag_t,
-					                        ParseState::expect_long_strings, keys...>(
-					    parse_state.first, parse_state.last );
+					                        ParseState::expect_long_strings,
+					                        keys...>( parse_state.first,
+					                                  parse_state.last );
 				} else {
 					CharT *first = parse_state.first;
 					CharT *const last = parse_state.last;
@@ -120,8 +122,8 @@ namespace daw::json {
 						while( not parse_policy_details::in<keys...>( *first ) ) {
 							++first;
 						}
-						daw_json_assert_weak( *first != 0, ErrorReason::UnexpectedEndOfData,
-						                      parse_state );
+						daw_json_assert_weak(
+						  *first != 0, ErrorReason::UnexpectedEndOfData, parse_state );
 					} else {
 						daw_json_assert_weak(
 						  first < last, ErrorReason::UnexpectedEndOfData, parse_state );
@@ -169,10 +171,11 @@ namespace daw::json {
 					case '"':
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input>( ParseState::exec_tag, ptr_first,
-						                                   ptr_last );
+						  ParseState::is_unchecked_input>(
+						  ParseState::exec_tag, ptr_first, ptr_last );
 						daw_json_ensure( ptr_first < ptr_last and *ptr_first == '"',
-						                 ErrorReason::UnexpectedEndOfData, parse_state );
+						                 ErrorReason::UnexpectedEndOfData,
+						                 parse_state );
 						break;
 					case ',':
 						if( DAW_UNLIKELY( ( prime_bracket_count == 1 ) &
@@ -188,7 +191,8 @@ namespace daw::json {
 						if( prime_bracket_count == 0 ) {
 							++ptr_first;
 							daw_json_ensure( second_bracket_count == 0,
-							                 ErrorReason::InvalidBracketing, parse_state );
+							                 ErrorReason::InvalidBracketing,
+							                 parse_state );
 							result.last = ptr_first;
 							result.counter = cnt;
 							parse_state.first = ptr_first;
@@ -206,7 +210,8 @@ namespace daw::json {
 				}
 				daw_json_ensure( ( prime_bracket_count == 0 ) &
 				                   ( second_bracket_count == 0 ),
-				                 ErrorReason::InvalidBracketing, parse_state );
+				                 ErrorReason::InvalidBracketing,
+				                 parse_state );
 				// We include the close primary bracket in the range so that subsequent
 				// parsers have a terminator inside their range
 				result.last = ptr_first;
@@ -240,8 +245,8 @@ namespace daw::json {
 					case '"':
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input>( ParseState::exec_tag, ptr_first,
-						                                   parse_state.last );
+						  ParseState::is_unchecked_input>(
+						  ParseState::exec_tag, ptr_first, parse_state.last );
 						break;
 					case ',':
 						if( DAW_UNLIKELY( ( prime_bracket_count == 1 ) &

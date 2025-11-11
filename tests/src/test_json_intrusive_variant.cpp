@@ -80,8 +80,8 @@ namespace daw::json {
 		                   json_bool<flag4>, json_string<path>>;
 
 		static inline auto to_json_data( ConfigV2 const &c ) {
-			return std::forward_as_tuple( c.flag1, c.flag2, c.flag3, c.flag4,
-			                              c.path );
+			return std::forward_as_tuple(
+			  c.flag1, c.flag2, c.flag3, c.flag4, c.path );
 		}
 	};
 	template<>

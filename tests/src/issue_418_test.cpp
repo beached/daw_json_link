@@ -88,7 +88,8 @@ int main( ) {
 	}
 	{
 		auto kx = from_json<my::Var2>( R"([1,2,3])" );
-		ensure( (std::get<std::vector<int>>( kx ) == std::vector<int>{ 1, 2, 3 }) );
+		ensure(
+		  ( std::get<std::vector<int>>( kx ) == std::vector<int>{ 1, 2, 3 } ) );
 	}
 	{
 		auto kx = from_json<my::Var2>( R"({"a":3})" );

@@ -64,7 +64,8 @@ namespace daw::json {
 				} else if constexpr( literal_as_string ==
 				                     options::LiteralAsStringOpt::Maybe ) {
 					daw_json_assert_weak( parse_state.has_more( ),
-					                      ErrorReason::UnexpectedEndOfData, parse_state );
+					                      ErrorReason::UnexpectedEndOfData,
+					                      parse_state );
 					if( parse_state.front( ) == '"' ) {
 						parse_state.remove_prefix( );
 					}
@@ -100,12 +101,14 @@ namespace daw::json {
 							}
 							if constexpr( KnownBounds ) {
 								daw_json_assert_weak( parse_state.empty( ),
-								                      ErrorReason::InvalidNumber, parse_state );
+								                      ErrorReason::InvalidNumber,
+								                      parse_state );
 							} else {
-								daw_json_assert_weak(
-								  parse_state.empty( ) or parse_policy_details::at_end_of_item(
-								                            parse_state.front( ) ),
-								  ErrorReason::InvalidEndOfValue, parse_state );
+								daw_json_assert_weak( parse_state.empty( ) or
+								                        parse_policy_details::at_end_of_item(
+								                          parse_state.front( ) ),
+								                      ErrorReason::InvalidEndOfValue,
+								                      parse_state );
 							}
 							return daw::cxmath::copy_sign(
 							  daw::numeric_limits<element_t>::infinity( ), sign );
@@ -122,12 +125,14 @@ namespace daw::json {
 							parse_state.remove_prefix( );
 							if constexpr( KnownBounds ) {
 								daw_json_assert_weak( parse_state.empty( ),
-								                      ErrorReason::InvalidNumber, parse_state );
+								                      ErrorReason::InvalidNumber,
+								                      parse_state );
 							} else {
-								daw_json_assert_weak(
-								  parse_state.empty( ) or parse_policy_details::at_end_of_item(
-								                            parse_state.front( ) ),
-								  ErrorReason::InvalidEndOfValue, parse_state );
+								daw_json_assert_weak( parse_state.empty( ) or
+								                        parse_policy_details::at_end_of_item(
+								                          parse_state.front( ) ),
+								                      ErrorReason::InvalidEndOfValue,
+								                      parse_state );
 							}
 							return daw::numeric_limits<element_t>::quiet_NaN( );
 						}
@@ -141,7 +146,8 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  parse_state.has_more( ) and
 					    parse_policy_details::is_number_start( parse_state.front( ) ),
-					  ErrorReason::InvalidNumberStart, parse_state );
+					  ErrorReason::InvalidNumberStart,
+					  parse_state );
 
 					auto result =
 					  construct_value<json_result_t<JsonMember>, constructor_t>(
@@ -151,7 +157,8 @@ namespace daw::json {
 						daw_json_assert_weak(
 						  parse_state.empty( ) or
 						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-						  ErrorReason::InvalidEndOfValue, parse_state );
+						  ErrorReason::InvalidEndOfValue,
+						  parse_state );
 					} else {
 						if constexpr( JsonMember::literal_as_string !=
 						              options::LiteralAsStringOpt::Never ) {
@@ -161,7 +168,8 @@ namespace daw::json {
 						daw_json_assert_weak(
 						  parse_state.empty( ) or
 						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-						  ErrorReason::InvalidEndOfValue, parse_state );
+						  ErrorReason::InvalidEndOfValue,
+						  parse_state );
 					}
 					return result;
 				}
@@ -181,7 +189,8 @@ namespace daw::json {
 				if constexpr( KnownBounds ) {
 					daw_json_assert_weak(
 					  parse_policy_details::is_number_start( parse_state.front( ) ),
-					  ErrorReason::InvalidNumberStart, parse_state );
+					  ErrorReason::InvalidNumberStart,
+					  parse_state );
 				} else {
 					if constexpr( JsonMember::literal_as_string !=
 					              options::LiteralAsStringOpt::Never ) {
@@ -220,7 +229,8 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  not parse_state.has_more( ) or
 					    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-					  ErrorReason::InvalidEndOfValue, parse_state );
+					  ErrorReason::InvalidEndOfValue,
+					  parse_state );
 					return result;
 				}
 			}
@@ -259,7 +269,8 @@ namespace daw::json {
 					}
 					daw_json_assert_weak(
 					  parse_policy_details::is_number( parse_state.front( ) ),
-					  ErrorReason::InvalidNumber, parse_state );
+					  ErrorReason::InvalidNumber,
+					  parse_state );
 					auto result =
 					  construct_value<json_result_t<JsonMember>, constructor_t>(
 					    parse_state,
@@ -278,7 +289,8 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  not parse_state.has_more( ) or
 					    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-					  ErrorReason::InvalidEndOfValue, parse_state );
+					  ErrorReason::InvalidEndOfValue,
+					  parse_state );
 					return result;
 				}
 			}
@@ -310,7 +322,8 @@ namespace daw::json {
 					}
 					return construct_value<base_member_type, constructor_t>(
 					  parse_state,
-					  parse_value<base_member_type, true,
+					  parse_value<base_member_type,
+					              true,
 					              base_member_type::expected_type>( parse_state ) );
 				} else if constexpr( ParseState::is_unchecked_input ) {
 					if( not parse_state.has_more( ) or
@@ -325,7 +338,8 @@ namespace daw::json {
 					}
 					return construct_value<base_member_type, constructor_t>(
 					  parse_state,
-					  parse_value<base_member_type, false,
+					  parse_value<base_member_type,
+					              false,
 					              base_member_type::expected_type>( parse_state ) );
 				} else {
 					if( not parse_state.has_more( ) or
@@ -337,7 +351,8 @@ namespace daw::json {
 						daw_json_assert_weak(
 						  not parse_state.has_more( ) or
 						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-						  ErrorReason::InvalidLiteral, parse_state );
+						  ErrorReason::InvalidLiteral,
+						  parse_state );
 						parse_state.trim_left_checked( );
 						return construct_empty( );
 					}
@@ -347,16 +362,20 @@ namespace daw::json {
 						static_assert(
 						  std::is_invocable_v<
 						    concepts::nullable_value_traits<json_result_t<JsonMember>>,
-						    concepts::construct_nullable_with_pointer_t, parse_to_t *> );
+						    concepts::construct_nullable_with_pointer_t,
+						    parse_to_t *> );
 						return construct_value<base_member_type, constructor_t>(
-						  parse_state, concepts::construct_nullable_with_pointer,
+						  parse_state,
+						  concepts::construct_nullable_with_pointer,
 						  new parse_to_t{
-						    parse_value<base_member_type, false,
+						    parse_value<base_member_type,
+						                false,
 						                base_member_type::expected_type>( parse_state ) } );
 					} else {
 						return construct_value<base_member_type, constructor_t>(
 						  parse_state,
-						  parse_value<base_member_type, false,
+						  parse_value<base_member_type,
+						              false,
 						              base_member_type::expected_type>( parse_state ) );
 					}
 				}
@@ -417,7 +436,8 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  not parse_state.has_more( ) or
 					    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-					  ErrorReason::InvalidEndOfValue, parse_state );
+					  ErrorReason::InvalidEndOfValue,
+					  parse_state );
 					return construct_value<json_result_t<JsonMember>, constructor_t>(
 					  parse_state, result );
 				}
@@ -487,13 +507,14 @@ namespace daw::json {
 					    needs_slow_path( parse_state2 ) ) {
 						// There are escapes in the string
 						return parse_string_known_stdstring<AllowHighEightbits::value,
-						                                    JsonMember, true>(
-						  parse_state2 );
+						                                    JsonMember,
+						                                    true>( parse_state2 );
 					}
 					// There are no escapes in the string, we can just use the ptr/size
 					// ctor
 					return construct_value<json_result_t<JsonMember>, constructor_t>(
-					  parse_state, std::data( parse_state2 ),
+					  parse_state,
+					  std::data( parse_state2 ),
 					  daw::data_end( parse_state2 ) );
 				} else {
 					auto parse_state2 =
@@ -505,13 +526,14 @@ namespace daw::json {
 					    needs_slow_path( parse_state2 ) ) {
 						// There are escapes in the string
 						return parse_string_known_stdstring<AllowHighEightbits::value,
-						                                    JsonMember, true>(
-						  parse_state2 );
+						                                    JsonMember,
+						                                    true>( parse_state2 );
 					}
 					// There are no escapes in the string, we can just use the ptr/size
 					// ctor
 					return construct_value<json_result_t<JsonMember>, constructor_t>(
-					  parse_state, std::data( parse_state2 ),
+					  parse_state,
+					  std::data( parse_state2 ),
 					  daw::data_end( parse_state2 ) );
 				}
 			}
@@ -521,7 +543,8 @@ namespace daw::json {
 			parse_value_date( ParseState &parse_state ) {
 
 				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
 				auto str = KnownBounds ? parse_state : skip_string( parse_state );
 				using constructor_t = json_constructor_t<JsonMember>;
 				return construct_value<json_result_t<JsonMember>, constructor_t>(
@@ -567,7 +590,8 @@ namespace daw::json {
 				}( );
 				daw_json_assert_weak(
 				  str.has_more( ) and not( str.front( ) == '[' or str.front( ) == '{' ),
-				  ErrorReason::InvalidStartOfValue, str );
+				  ErrorReason::InvalidStartOfValue,
+				  str );
 				using constructor_t = typename JsonMember::from_converter_t;
 				return construct_value<json_result_t<JsonMember>, constructor_t>(
 				  parse_state, std::string_view( std::data( str ), std::size( str ) ) );
@@ -579,25 +603,25 @@ namespace daw::json {
 
 				using element_t = typename JsonMember::wrapped_type;
 				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
 
 				if constexpr( KnownBounds ) {
-					return json_data_contract_trait_t<element_t>::template parse_to_class<
-					  JsonMember, KnownBounds>( parse_state );
+					return json_data_contract_trait_t<element_t>::
+					  template parse_to_class<JsonMember, KnownBounds>( parse_state );
 				} else if constexpr( is_pinned_type_v<element_t> ) {
 					auto const run_after_parse = daw::on_exit_success( [&] {
 						parse_state.trim_left_checked( );
 					} );
 					(void)run_after_parse;
-					return json_data_contract_trait_t<element_t>::template parse_to_class<
-					  JsonMember, KnownBounds>( parse_state );
+					return json_data_contract_trait_t<element_t>::
+					  template parse_to_class<JsonMember, KnownBounds>( parse_state );
 				} else if constexpr( is_deduced_empty_class_v<JsonMember> ) {
 					parse_state.trim_left_checked( );
 					return json_result_t<JsonMember>{ };
 				} else {
-					auto result =
-					  json_data_contract_trait_t<element_t>::template parse_to_class<
-					    JsonMember, KnownBounds>( parse_state );
+					auto result = json_data_contract_trait_t<element_t>::
+					  template parse_to_class<JsonMember, KnownBounds>( parse_state );
 					parse_state.trim_left_checked( );
 					return result;
 				}
@@ -625,7 +649,8 @@ namespace daw::json {
 				parse_state.trim_left( );
 
 				using iter_t =
-				  json_parse_kv_class_iterator<JsonMember, ParseState,
+				  json_parse_kv_class_iterator<JsonMember,
+				                               ParseState,
 				                               can_be_random_iterator_v<KnownBounds>>;
 
 				using constructor_t = json_constructor_t<JsonMember>;
@@ -650,12 +675,14 @@ namespace daw::json {
 				               "Expected a json_key_value" );
 				daw_json_assert_weak(
 				  parse_state.is_opening_bracket_checked( ),
-				  ErrorReason::ExpectedKeyValueArrayToStartWithBracket, parse_state );
+				  ErrorReason::ExpectedKeyValueArrayToStartWithBracket,
+				  parse_state );
 
 				parse_state.remove_prefix( );
 
 				using iter_t =
-				  json_parse_kv_array_iterator<JsonMember, ParseState,
+				  json_parse_kv_array_iterator<JsonMember,
+				                               ParseState,
 				                               can_be_random_iterator_v<KnownBounds>>;
 				using constructor_t = json_constructor_t<JsonMember>;
 				return construct_value<json_result_t<JsonMember>, constructor_t>(
@@ -667,14 +694,16 @@ namespace daw::json {
 			parse_value_array( ParseState &parse_state ) {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, parse_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      parse_state );
 				parse_state.remove_prefix( );
 				parse_state.trim_left_unchecked( );
 				// TODO: add parse option to disable random access iterators. This is
 				// coding to the implementations
 
 				using iterator_t =
-				  json_parse_array_iterator<JsonMember, ParseState,
+				  json_parse_array_iterator<JsonMember,
+				                            ParseState,
 				                            can_be_random_iterator_v<KnownBounds>>;
 				using constructor_t = json_constructor_t<JsonMember>;
 				return construct_value<json_result_t<JsonMember>, constructor_t>(
@@ -691,8 +720,8 @@ namespace daw::json {
 				  ParseState( parse_state.class_first, parse_state.last ),
 				  size_member::name );
 
-				daw_json_ensure( is_found, ErrorReason::TagMemberNotFound,
-				                 parse_state );
+				daw_json_ensure(
+				  is_found, ErrorReason::TagMemberNotFound, parse_state );
 				auto const sz =
 				  parse_value<size_member, false, size_member::expected_type>(
 				    parse_state2 );
@@ -702,11 +731,13 @@ namespace daw::json {
 					// match
 					auto cnt = static_cast<std::ptrdiff_t>( parse_state.counter );
 					daw_json_ensure( sz >= 0 and ( cnt < 0 or parse_state.counter == sz ),
-					                 ErrorReason::NumberOutOfRange, parse_state );
+					                 ErrorReason::NumberOutOfRange,
+					                 parse_state );
 				}
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, parse_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      parse_state );
 				parse_state.remove_prefix( );
 				parse_state.trim_left_unchecked( );
 				// TODO: add parse option to disable random access iterators. This is
@@ -715,7 +746,9 @@ namespace daw::json {
 				  json_parse_array_iterator<JsonMember, ParseState, false>;
 				using constructor_t = json_constructor_t<JsonMember>;
 				return construct_value<json_result_t<JsonMember>, constructor_t>(
-				  parse_state, iterator_t( parse_state ), iterator_t( ),
+				  parse_state,
+				  iterator_t( parse_state ),
+				  iterator_t( ),
 				  static_cast<std::size_t>( sz ) );
 			}
 
@@ -732,7 +765,8 @@ namespace daw::json {
 				              pack_size_v<typename element_t::element_map_t> ) {
 					using JsonMember =
 					  pack_element_t<idx::value, typename element_t::element_map_t>;
-					return parse_value<JsonMember, KnownBounds,
+					return parse_value<JsonMember,
+					                   KnownBounds,
 					                   JsonMember::expected_type>( parse_state );
 				} else {
 					daw_json_error( ErrorReason::UnexpectedJSONVariantType );
@@ -747,23 +781,28 @@ namespace daw::json {
 					// means we can look backwards
 					if( *( parse_state.first - 1 ) == '"' ) {
 						// We are a string, the skipper trims them
-						return parse_variant_value<JsonBaseParseTypes::String, JsonMember,
+						return parse_variant_value<JsonBaseParseTypes::String,
+						                           JsonMember,
 						                           KnownBounds>( parse_state );
 					}
 				}
 				switch( parse_state.front( ) ) {
 				case '{':
-					return parse_variant_value<JsonBaseParseTypes::Class, JsonMember,
+					return parse_variant_value<JsonBaseParseTypes::Class,
+					                           JsonMember,
 					                           KnownBounds>( parse_state );
 				case '[':
-					return parse_variant_value<JsonBaseParseTypes::Array, JsonMember,
+					return parse_variant_value<JsonBaseParseTypes::Array,
+					                           JsonMember,
 					                           KnownBounds>( parse_state );
 				case 't':
 				case 'f':
-					return parse_variant_value<JsonBaseParseTypes::Bool, JsonMember,
+					return parse_variant_value<JsonBaseParseTypes::Bool,
+					                           JsonMember,
 					                           KnownBounds>( parse_state );
 				case '"':
-					return parse_variant_value<JsonBaseParseTypes::String, JsonMember,
+					return parse_variant_value<JsonBaseParseTypes::String,
+					                           JsonMember,
 					                           KnownBounds>( parse_state );
 				case '0':
 				case '1':
@@ -777,7 +816,8 @@ namespace daw::json {
 				case '9':
 				case '+':
 				case '-':
-					return parse_variant_value<JsonBaseParseTypes::Number, JsonMember,
+					return parse_variant_value<JsonBaseParseTypes::Number,
+					                           JsonMember,
 					                           KnownBounds>( parse_state );
 				}
 				if constexpr( ParseState::is_unchecked_input ) {
@@ -820,20 +860,23 @@ namespace daw::json {
 				using class_wrapper_t = typename JsonMember::tag_member_class_wrapper;
 
 				using switcher_t = typename JsonMember::switcher;
-				auto parse_state2 =
-				  ParseState( parse_state.class_first, parse_state.class_last,
-				              parse_state.class_first, parse_state.class_last );
+				auto parse_state2 = ParseState( parse_state.class_first,
+				                                parse_state.class_last,
+				                                parse_state.class_first,
+				                                parse_state.class_last );
 				if constexpr( is_an_ordered_member_v<tag_member> ) {
 					// This is an ordered class, class must start with '['
 					daw_json_assert_weak( parse_state2.is_opening_bracket_checked( ),
-					                      ErrorReason::InvalidArrayStart, parse_state );
+					                      ErrorReason::InvalidArrayStart,
+					                      parse_state );
 					return switcher_t{ }( std::get<0>(
 					  parse_value<class_wrapper_t, false, class_wrapper_t::expected_type>(
 					    parse_state2 ) ) );
 				} else {
 					// This is a regular class, class must start with '{'
 					daw_json_assert_weak( parse_state2.is_opening_brace_checked( ),
-					                      ErrorReason::InvalidClassStart, parse_state );
+					                      ErrorReason::InvalidClassStart,
+					                      parse_state );
 					return switcher_t{ }( std::get<0>(
 					  parse_value<class_wrapper_t, false, class_wrapper_t::expected_type>(
 					    parse_state2 )
@@ -861,11 +904,13 @@ namespace daw::json {
 					using switcher_t = typename JsonMember::switcher;
 					if constexpr( is_an_ordered_member_v<tag_submember> ) {
 						return switcher_t{ }( std::get<0>(
-						  parse_value<class_wrapper_t, false,
+						  parse_value<class_wrapper_t,
+						              false,
 						              class_wrapper_t::expected_type>( parse_state2 ) ) );
 					} else {
 						return switcher_t{ }( std::get<0>(
-						  parse_value<class_wrapper_t, false,
+						  parse_value<class_wrapper_t,
+						              false,
 						              class_wrapper_t::expected_type>( parse_state2 )
 						    .members ) );
 					}
@@ -885,7 +930,8 @@ namespace daw::json {
 				if constexpr( AllMembersMustExist ) {
 					parse_state.trim_left( );
 					daw_json_assert_weak( parse_state.front( ) == ']',
-					                      ErrorReason::UnknownMember, parse_state );
+					                      ErrorReason::UnknownMember,
+					                      parse_state );
 					parse_state.remove_prefix( );
 					parse_state.trim_left_checked( );
 				} else {
@@ -949,7 +995,8 @@ namespace daw::json {
 				  std::array<position_info<ParseState>, N> &parse_locations ) {
 
 					auto const desired = daw::algorithm::find_if(
-					  std::data( parse_locations ), daw::data_end( parse_locations ),
+					  std::data( parse_locations ),
+					  daw::data_end( parse_locations ),
 					  [desired_position]( position_info<ParseState> const &loc ) {
 						  return loc.index == desired_position;
 					  } );
@@ -958,14 +1005,16 @@ namespace daw::json {
 					}
 #if not defined( NDEBUG )
 					daw_json_ensure( desired != daw::data_end( parse_locations ),
-					                 ErrorReason::UnexpectedEndOfData, parse_state );
+					                 ErrorReason::UnexpectedEndOfData,
+					                 parse_state );
 #endif
 					using skip_check_end =
 					  std::bool_constant<( ParseState::is_unchecked_input and Nullable )>;
 					while( ( current_position < desired_position ) &
 					       ( skip_check_end::value or parse_state.front( ) != ']' ) ) {
 						auto const current = daw::algorithm::find_if(
-						  std::data( parse_locations ), daw::data_end( parse_locations ),
+						  std::data( parse_locations ),
+						  daw::data_end( parse_locations ),
 						  [current_position]( position_info<ParseState> const &loc ) {
 							  return loc.index == current_position;
 						  } );
@@ -1001,7 +1050,8 @@ namespace daw::json {
 			parse_tuple_value( ParseState &parse_state, std::index_sequence<Is...> ) {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, parse_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      parse_state );
 
 				auto const old_class_pos = parse_state.get_class_position( );
 				parse_state.set_class_position( );
@@ -1036,7 +1086,8 @@ namespace daw::json {
 #if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 					ParseState parse_state2 =
 					  pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
-					    parse_state, ClassIdx, /*index_t::value*/
+					    parse_state,
+					    ClassIdx, /*index_t::value*/
 					    pocm_details::member_index_v<index_t, CurrentMember>,
 					    parse_locations );
 					if constexpr( sizeof...( Is ) > 1 ) {
@@ -1047,18 +1098,21 @@ namespace daw::json {
 									parse_state.move_next_member_or_end( );
 								} );
 								(void)run_after_parse;
-								return parse_value<json_member_t, false,
+								return parse_value<json_member_t,
+								                   false,
 								                   json_member_t::expected_type>( parse_state );
 							} else {
 								auto result =
-								  parse_value<json_member_t, false,
+								  parse_value<json_member_t,
+								              false,
 								              json_member_t::expected_type>( parse_state );
 								parse_state.move_next_member_or_end( );
 								return result;
 							}
 						} else {
 							// Known Bounds
-							return parse_value<json_member_t, true,
+							return parse_value<json_member_t,
+							                   true,
 							                   json_member_t::expected_type>( parse_state2 );
 						}
 					} else {
@@ -1078,7 +1132,8 @@ namespace daw::json {
 								parse_state.move_next_member_or_end( );
 							} );
 							(void)run_after_parse;
-							return parse_value<json_member_t, false,
+							return parse_value<json_member_t,
+							                   false,
 							                   json_member_t::expected_type>( parse_state );
 						} else {
 							auto result =
@@ -1101,35 +1156,41 @@ namespace daw::json {
 				if constexpr( is_pinned_type_v<json_result_t<JsonMember>> ) {
 					auto const run_after_parse = daw::on_exit_success( [&] {
 						ordered_class_cleanup<
-						  all_json_members_must_exist_v<JsonMember, ParseState>, ParseState,
+						  all_json_members_must_exist_v<JsonMember, ParseState>,
+						  ParseState,
 						  decltype( old_class_pos )>( parse_state, old_class_pos );
 					} );
 					(void)run_after_parse;
-					if constexpr( should_construct_explicitly_v<Constructor, tuple_t,
+					if constexpr( should_construct_explicitly_v<Constructor,
+					                                            tuple_t,
 					                                            ParseState> ) {
 						return tuple_t{
 						  parse_value_help( daw::constant_v<Is>, class_idx )... };
 					} else {
 						return construct_value_tp<tuple_t, Constructor>(
-						  parse_state, fwd_pack{ parse_value_help( daw::constant_v<Is>,
-						                                           class_idx )... } );
+						  parse_state,
+						  fwd_pack{
+						    parse_value_help( daw::constant_v<Is>, class_idx )... } );
 					}
 				} else {
 					auto result = [&] {
-						if constexpr( should_construct_explicitly_v<Constructor, tuple_t,
+						if constexpr( should_construct_explicitly_v<Constructor,
+						                                            tuple_t,
 						                                            ParseState> ) {
 							return tuple_t{
 							  parse_value_help( daw::constant_v<Is>, class_idx )... };
 						} else {
 							return construct_value_tp<tuple_t, Constructor>(
-							  parse_state, fwd_pack{ parse_value_help( daw::constant_v<Is>,
-							                                           class_idx )... } );
+							  parse_state,
+							  fwd_pack{
+							    parse_value_help( daw::constant_v<Is>, class_idx )... } );
 						}
 					}( );
 					if constexpr( all_json_members_must_exist_v<tuple_t, ParseState> ) {
 						parse_state.trim_left( );
 						daw_json_assert_weak( parse_state.front( ) == ']',
-						                      ErrorReason::UnknownMember, parse_state );
+						                      ErrorReason::UnknownMember,
+						                      parse_state );
 						parse_state.remove_prefix( );
 						parse_state.trim_left( );
 					} else {
@@ -1161,7 +1222,8 @@ namespace daw::json {
 				} else {
 					auto value_parse_state = skip_value<true>( parse_state );
 					return construct_value<json_result_t<JsonMember>, constructor_t>(
-					  parse_state, std::data( value_parse_state ),
+					  parse_state,
+					  std::data( value_parse_state ),
 					  std::size( value_parse_state ) );
 				}
 			}
@@ -1230,7 +1292,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 1: {
@@ -1238,7 +1301,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 2: {
@@ -1246,7 +1310,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 3: {
@@ -1254,7 +1319,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 3, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 4: {
@@ -1262,7 +1328,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 4, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 5: {
@@ -1270,7 +1337,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 5, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 6: {
@@ -1278,7 +1346,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 6, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 7: {
@@ -1286,12 +1355,15 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 7, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					default:
 						if constexpr( sizeof...( JsonClasses ) >= N + 8 ) {
-							return parse_nth_class<N + 8, JsonClass, KnownBounds,
+							return parse_nth_class<N + 8,
+							                       JsonClass,
+							                       KnownBounds,
 							                       JsonClasses...>( idx, parse_state );
 						} else {
 							DAW_UNREACHABLE( );
@@ -1304,7 +1376,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 1: {
@@ -1312,7 +1385,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 2: {
@@ -1320,7 +1394,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 3: {
@@ -1328,7 +1403,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 3, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 4: {
@@ -1336,7 +1412,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 4, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 5: {
@@ -1344,7 +1421,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 5, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					default: {
@@ -1353,7 +1431,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 6, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					}
@@ -1364,7 +1443,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 1: {
@@ -1372,7 +1452,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 2: {
@@ -1380,7 +1461,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 3: {
@@ -1388,7 +1470,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 3, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 4: {
@@ -1396,7 +1479,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 4, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					default: {
@@ -1405,7 +1489,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 5, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					}
@@ -1416,7 +1501,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 1: {
@@ -1424,7 +1510,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 2: {
@@ -1432,7 +1519,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 3: {
@@ -1440,7 +1528,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 3, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					default: {
@@ -1449,7 +1538,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 4, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					}
@@ -1460,7 +1550,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 1: {
@@ -1468,7 +1559,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 2: {
@@ -1476,7 +1568,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					default: {
@@ -1485,7 +1578,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 3, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					}
@@ -1496,7 +1590,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					case N + 1: {
@@ -1504,7 +1599,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 1, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					default: {
@@ -1513,7 +1609,8 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 2, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					}
@@ -1523,21 +1620,24 @@ namespace daw::json {
 						  daw::traits::nth_element<N + 0, JsonClasses...>;
 						return construct_value<T, Constructor>(
 						  parse_state,
-						  parse_value<cur_json_class_t, false,
+						  parse_value<cur_json_class_t,
+						              false,
 						              cur_json_class_t::expected_type>( parse_state ) );
 					}
 					using cur_json_class_t =
 					  daw::traits::nth_element<N + 1, JsonClasses...>;
 					return construct_value<T, Constructor>(
 					  parse_state,
-					  parse_value<cur_json_class_t, false,
+					  parse_value<cur_json_class_t,
+					              false,
 					              cur_json_class_t::expected_type>( parse_state ) );
 				} else {
 					using cur_json_class_t =
 					  daw::traits::nth_element<N + 0, JsonClasses...>;
 					return construct_value<T, Constructor>(
 					  parse_state,
-					  parse_value<cur_json_class_t, false,
+					  parse_value<cur_json_class_t,
+					              false,
 					              cur_json_class_t::expected_type>( parse_state ) );
 				}
 			}

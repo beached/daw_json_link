@@ -141,9 +141,10 @@ int main( int /*argc*/, char ** /*argv*/ ) {
 
 	try {
 		auto obj = daw::json::from_json<std::vector<variant_type>>( json_doc );
-		auto obj_json = daw::json::to_json(
-		  obj, daw::json::options::output_flags<
-		         daw::json::options::SerializationFormat::Pretty> );
+		auto obj_json =
+		  daw::json::to_json( obj,
+		                      daw::json::options::output_flags<
+		                        daw::json::options::SerializationFormat::Pretty> );
 		std::cout << obj_json.c_str( ) << std::endl;
 
 	} catch( const daw::json::json_exception &err ) {

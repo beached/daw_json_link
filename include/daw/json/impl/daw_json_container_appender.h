@@ -58,10 +58,12 @@ namespace daw::json {
 			template<typename Value>
 			DAW_ATTRIB_FLATINLINE constexpr void operator( )( Value &&value ) {
 				if constexpr( json_details::has_push_back_v<
-				                Container, daw::remove_cvref_t<Value>> ) {
+				                Container,
+				                daw::remove_cvref_t<Value>> ) {
 					m_container->push_back( DAW_FWD( value ) );
 				} else if constexpr( json_details::has_insert_end_v<
-				                       Container, daw::remove_cvref_t<Value>> ) {
+				                       Container,
+				                       daw::remove_cvref_t<Value>> ) {
 					m_container->insert( std::end( *m_container ), DAW_FWD( value ) );
 				} else {
 					static_assert(

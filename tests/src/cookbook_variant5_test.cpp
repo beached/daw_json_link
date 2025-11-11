@@ -96,8 +96,8 @@ namespace daw::json {
 
 		static constexpr auto
 		to_json_data( daw::cookbook_variant4::v1::Config const &v ) {
-			return std::forward_as_tuple( v.version, v.name, v.value,
-			                              v.next_question );
+			return std::forward_as_tuple(
+			  v.version, v.name, v.value, v.next_question );
 		}
 	};
 

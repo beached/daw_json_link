@@ -122,8 +122,8 @@ namespace daw::json {
 #endif
 		[[nodiscard]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Feature const &value ) {
-			return std::forward_as_tuple( value.type, value.properties,
-			                              value.geometry );
+			return std::forward_as_tuple(
+			  value.type, value.properties, value.geometry );
 		}
 	};
 

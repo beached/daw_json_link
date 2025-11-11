@@ -224,8 +224,8 @@ namespace daw::json {
 				if constexpr( std::is_same_v<Alloc, json_details::NoAllocator> ) {
 					return *this;
 				} else {
-					auto result = with_allocator( first, last, class_first, class_last,
-					                              p.get_allocator( ) );
+					auto result = with_allocator(
+					  first, last, class_first, class_last, p.get_allocator( ) );
 					result.counter = p.counter;
 					return result;
 				}
@@ -342,8 +342,8 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr char front_checked( ) const {
-				daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData,
-				                 *this );
+				daw_json_ensure(
+				  first < last, ErrorReason::UnexpectedEndOfData, *this );
 				return *first;
 			}
 
@@ -433,8 +433,7 @@ namespace daw::json {
 				}
 			}
 
-			DAW_ATTRIB_FLATINLINE constexpr void
-			move_next_member_or_end_checked( ) {
+			DAW_ATTRIB_FLATINLINE constexpr void move_next_member_or_end_checked( ) {
 				trim_left_checked( );
 				if constexpr( is_zero_terminated_string ) {
 					if( *first == ',' ) {

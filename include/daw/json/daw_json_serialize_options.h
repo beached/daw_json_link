@@ -83,6 +83,6 @@ namespace daw::json {
 				///
 				enum class OutputTrailingComma : unsigned { No, Yes };
 			} // namespace serialize_options
-		}   // namespace options
-	}     // namespace DAW_JSON_VER
+		} // namespace options
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

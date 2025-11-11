@@ -39,8 +39,8 @@ namespace daw::json {
 		                              json_array<mem_y, int>>;
 
 		static inline auto to_json_data( TestClass const &value ) {
-			return std::forward_as_tuple( value.i, value.d, value.b, value.s,
-			                              value.y );
+			return std::forward_as_tuple(
+			  value.i, value.d, value.b, value.s, value.y );
 		}
 	};
 } // namespace daw::json

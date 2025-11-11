@@ -91,30 +91,33 @@ namespace daw::json {
 
 		[[nodiscard]] static inline DAW_JSON_CX_VECTOR auto
 		to_json_data( apache_builds::apache_builds const &value ) {
-			return std::forward_as_tuple(
-			  value.mode, value.nodeDescription, value.nodeName, value.numExecutors,
-			  value.description, value.jobs, value.primaryView, value.quietingDown,
-			  value.slaveAgentPort, value.useCrumbs, value.useSecurity, value.views );
+			return std::forward_as_tuple( value.mode,
+			                              value.nodeDescription,
+			                              value.nodeName,
+			                              value.numExecutors,
+			                              value.description,
+			                              value.jobs,
+			                              value.primaryView,
+			                              value.quietingDown,
+			                              value.slaveAgentPort,
+			                              value.useCrumbs,
+			                              value.useSecurity,
+			                              value.views );
 		}
 	};
-//#if defined( DAW_JSON_HAS_CPP20_CX_VECTOR )
-//	static_assert( daw::json::from_json<apache_builds::apache_builds>( R"json({
-//	"mode": "simple",
-//	"nodeDescription": "xyz is a ...",
-//	"nodeName": "bobby tables",
-//	"numExecutors": 5,
-//	"description": "find a new name for bobby",
-//	"jobs": [],
-//	"primaryView": {
-//		"name": "hank",
-//		"url": "www.example.com",
-//	},
-//	"quietingDown": false,
-//	"slaveAgentPort": 5555,
-//	"useCrumbs": true,
-//	"useSecurity": true,
-//	"views": []
-//})json" )
-//	                 .useSecurity );
-//#endif
+	// #if defined( DAW_JSON_HAS_CPP20_CX_VECTOR )
+	//	static_assert( daw::json::from_json<apache_builds::apache_builds>(
+	//R"json({ 	"mode": "simple", 	"nodeDescription": "xyz is a ...", 	"nodeName":
+	//"bobby tables", 	"numExecutors": 5, 	"description": "find a new name for
+	//bobby", 	"jobs": [], 	"primaryView": { 		"name": "hank", 		"url":
+	//"www.example.com",
+	//	},
+	//	"quietingDown": false,
+	//	"slaveAgentPort": 5555,
+	//	"useCrumbs": true,
+	//	"useSecurity": true,
+	//	"views": []
+	// })json" )
+	//	                 .useSecurity );
+	// #endif
 } // namespace daw::json

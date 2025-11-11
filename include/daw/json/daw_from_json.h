@@ -56,11 +56,14 @@ namespace daw::json {
 			/// If the string is known to have a trailing zero, allow optimization on
 			/// that
 			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
-			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
+			  ParsePolicy,
+			  String,
+			  options::ZeroTerminatedString::yes>;
 
 			using ParseState =
 			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
-			                     DefaultParsePolicy, policy_zstring_t>;
+			                     DefaultParsePolicy,
+			                     policy_zstring_t>;
 			auto first = std::data( json_data );
 			auto last = daw::data_end( json_data );
 			if( first != last and last[-1] == 0 ) {
@@ -70,16 +73,17 @@ namespace daw::json {
 
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result =
-				  json_details::parse_value<json_member, KnownBounds,
+				  json_details::parse_value<json_member,
+				                            KnownBounds,
 				                            json_member::expected_type>( parse_state );
 				parse_state.trim_left( );
-				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
-				                 parse_state );
+				daw_json_ensure(
+				  parse_state.empty( ), ErrorReason::InvalidEndOfValue, parse_state );
 				return result;
 			} else {
-				return json_details::parse_value<json_member, KnownBounds,
-				                                 json_member::expected_type>(
-				  parse_state );
+				return json_details::
+				  parse_value<json_member, KnownBounds, json_member::expected_type>(
+				    parse_state );
 			}
 		}
 
@@ -138,21 +142,24 @@ namespace daw::json {
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
 			using ParseState = json_details::apply_zstring_policy_option_t<
-			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
+			  ParsePolicy,
+			  String,
+			  options::ZeroTerminatedString::yes>;
 
 			auto parse_state = ParseState::with_allocator( f, l, a );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result =
-				  json_details::parse_value<json_member, KnownBounds,
+				  json_details::parse_value<json_member,
+				                            KnownBounds,
 				                            json_member::expected_type>( parse_state );
 				parse_state.trim_left( );
-				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
-				                 parse_state );
+				daw_json_ensure(
+				  parse_state.empty( ), ErrorReason::InvalidEndOfValue, parse_state );
 				return result;
 			} else {
-				return json_details::parse_value<json_member, KnownBounds,
-				                                 json_member::expected_type>(
-				  parse_state );
+				return json_details::
+				  parse_value<json_member, KnownBounds, json_member::expected_type>(
+				    parse_state );
 			}
 		}
 
@@ -213,11 +220,14 @@ namespace daw::json {
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
 			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
-			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
+			  ParsePolicy,
+			  String,
+			  options::ZeroTerminatedString::yes>;
 
 			using ParseState =
 			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
-			                     DefaultParsePolicy, policy_zstring_t>;
+			                     DefaultParsePolicy,
+			                     policy_zstring_t>;
 			auto first = std::data( json_data );
 			auto last = daw::data_end( json_data );
 			if( first != last and last[-1] == 0 ) {
@@ -237,16 +247,17 @@ namespace daw::json {
 			auto parse_state = jv.get_raw_state( );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result =
-				  json_details::parse_value<json_member, KnownBounds,
+				  json_details::parse_value<json_member,
+				                            KnownBounds,
 				                            json_member::expected_type>( parse_state );
 				parse_state.trim_left( );
-				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
-				                 parse_state );
+				daw_json_ensure(
+				  parse_state.empty( ), ErrorReason::InvalidEndOfValue, parse_state );
 				return result;
 			} else {
-				return json_details::parse_value<json_member, KnownBounds,
-				                                 json_member::expected_type>(
-				  parse_state );
+				return json_details::
+				  parse_value<json_member, KnownBounds, json_member::expected_type>(
+				    parse_state );
 			}
 		}
 
@@ -310,7 +321,9 @@ namespace daw::json {
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
 			using ParseState = json_details::apply_zstring_policy_option_t<
-			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
+			  ParsePolicy,
+			  String,
+			  options::ZeroTerminatedString::yes>;
 
 			auto first = std::data( json_data );
 			auto last = daw::data_end( json_data );
@@ -332,16 +345,17 @@ namespace daw::json {
 			auto parse_state = jv.get_raw_state( );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result =
-				  json_details::parse_value<json_member, KnownBounds,
+				  json_details::parse_value<json_member,
+				                            KnownBounds,
 				                            json_member::expected_type>( parse_state );
 				parse_state.trim_left( );
-				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
-				                 parse_state );
+				daw_json_ensure(
+				  parse_state.empty( ), ErrorReason::InvalidEndOfValue, parse_state );
 				return result;
 			} else {
-				return json_details::parse_value<json_member, KnownBounds,
-				                                 json_member::expected_type>(
-				  parse_state );
+				return json_details::
+				  parse_value<json_member, KnownBounds, json_member::expected_type>(
+				    parse_state );
 			}
 		}
 
@@ -385,20 +399,23 @@ namespace daw::json {
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			using ParsePolicy = typename BasicParsePolicy<
-			  P, Allocator>::template SetPolicyOptions<PolicyFlags...>;
+			using ParsePolicy =
+			  typename BasicParsePolicy<P, Allocator>::template SetPolicyOptions<
+			    PolicyFlags...>;
 			using ParseState =
 			  daw::conditional_t<ParsePolicy::is_default_parse_policy,
-			                     DefaultParsePolicy, ParsePolicy>;
+			                     DefaultParsePolicy,
+			                     ParsePolicy>;
 			auto const old_parse_state = value.get_raw_state( );
-			auto parse_state =
-			  ParseState( old_parse_state.first, old_parse_state.last,
-			              old_parse_state.class_first, old_parse_state.class_last,
-			              old_parse_state.get_allocator( ) );
+			auto parse_state = ParseState( old_parse_state.first,
+			                               old_parse_state.last,
+			                               old_parse_state.class_first,
+			                               old_parse_state.class_last,
+			                               old_parse_state.get_allocator( ) );
 
-			return json_details::parse_value<json_member, KnownBounds,
-			                                 json_member::expected_type>(
-			  parse_state );
+			return json_details::
+			  parse_value<json_member, KnownBounds, json_member::expected_type>(
+			    parse_state );
 		}
 
 		/// @brief Parse a value from a json_value
@@ -443,11 +460,14 @@ namespace daw::json {
 			auto const old_parse_state = value.get_raw_state( );
 			using ParseState =
 			  daw::conditional_t<ParsePolicy::is_default_parse_policy,
-			                     DefaultParsePolicy, ParsePolicy>;
-			auto jv = basic_json_value(
-			  ParseState( old_parse_state.first, old_parse_state.last,
-			              old_parse_state.class_first, old_parse_state.class_last,
-			              old_parse_state.get_allocator( ) ) );
+			                     DefaultParsePolicy,
+			                     ParsePolicy>;
+			auto jv =
+			  basic_json_value( ParseState( old_parse_state.first,
+			                                old_parse_state.last,
+			                                old_parse_state.class_first,
+			                                old_parse_state.class_last,
+			                                old_parse_state.get_allocator( ) ) );
 
 			jv = jv.find_member( member_path );
 
@@ -460,9 +480,9 @@ namespace daw::json {
 				daw_json_ensure( jv, ErrorReason::JSONPathNotFound );
 			}
 			auto parse_state = jv.get_raw_state( );
-			return json_details::parse_value<json_member, KnownBounds,
-			                                 json_member::expected_type>(
-			  parse_state );
+			return json_details::
+			  parse_value<json_member, KnownBounds, json_member::expected_type>(
+			    parse_state );
 		}
 
 		/// @brief Parse a JSONMember from the json_data starting at member_path.
@@ -523,28 +543,33 @@ namespace daw::json {
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
 			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
-			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
+			  ParsePolicy,
+			  String,
+			  options::ZeroTerminatedString::yes>;
 
 			using ParseState =
 			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
-			                     DefaultParsePolicy, policy_zstring_t>;
+			                     DefaultParsePolicy,
+			                     policy_zstring_t>;
 			auto parse_state =
 			  ParseState{ std::data( json_data ), daw::data_end( json_data ) };
 
 			parse_state.trim_left_unchecked( );
 #if defined( DAW_JSON_BUGFIX_FROM_JSON_001 )
 			daw_json_ensure( parse_state.is_opening_bracket_checked( ),
-			                 ErrorReason::InvalidArrayStart, parse_state );
+			                 ErrorReason::InvalidArrayStart,
+			                 parse_state );
 #else
 			daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
-			                      ErrorReason::InvalidArrayStart, parse_state );
+			                      ErrorReason::InvalidArrayStart,
+			                      parse_state );
 #endif
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result =
 				  json_details::parse_value_array<parser_t, KnownBounds>( parse_state );
 				parse_state.trim_left( );
-				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
-				                 parse_state );
+				daw_json_ensure(
+				  parse_state.empty( ), ErrorReason::InvalidEndOfValue, parse_state );
 				return result;
 			} else {
 				return json_details::parse_value_array<parser_t, KnownBounds>(
@@ -617,11 +642,14 @@ namespace daw::json {
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
 			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
-			  ParsePolicy, String, options::ZeroTerminatedString::yes>;
+			  ParsePolicy,
+			  String,
+			  options::ZeroTerminatedString::yes>;
 
 			using ParseState =
 			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
-			                     DefaultParsePolicy, policy_zstring_t>;
+			                     DefaultParsePolicy,
+			                     policy_zstring_t>;
 			auto first = std::data( json_data );
 			auto last = daw::data_end( json_data );
 			if( first != last and last[-1] == 0 ) {
@@ -642,17 +670,19 @@ namespace daw::json {
 			parse_state.trim_left_unchecked( );
 #if defined( DAW_JSON_BUGFIX_FROM_JSON_001 )
 			daw_json_ensure( parse_state.is_opening_bracket_checked( ),
-			                 ErrorReason::InvalidArrayStart, parse_state );
+			                 ErrorReason::InvalidArrayStart,
+			                 parse_state );
 #else
 			daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
-			                      ErrorReason::InvalidArrayStart, parse_state );
+			                      ErrorReason::InvalidArrayStart,
+			                      parse_state );
 #endif
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result =
 				  json_details::parse_value_array<parser_t, KnownBounds>( parse_state );
 				parse_state.trim_left( );
-				daw_json_ensure( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
-				                 parse_state );
+				daw_json_ensure(
+				  parse_state.empty( ), ErrorReason::InvalidEndOfValue, parse_state );
 				return result;
 			} else {
 				return json_details::parse_value_array<parser_t, KnownBounds>(

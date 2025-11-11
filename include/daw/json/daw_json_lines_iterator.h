@@ -73,16 +73,16 @@ namespace daw::json {
 			/// @pre good( ) returns true
 			/// @return The parsed result of ParseElement
 			[[nodiscard]] constexpr value_type operator*( ) const {
-				daw_json_assert_weak( m_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				daw_json_assert_weak(
+				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
 
 				auto tmp = m_state;
 				auto const run_after_parse = daw::on_scope_exit( [&] {
 					m_can_skip = tmp.first;
 				} );
 				(void)run_after_parse;
-				return json_details::parse_value<element_type, false,
-				                                 element_type::expected_type>( tmp );
+				return json_details::
+				  parse_value<element_type, false, element_type::expected_type>( tmp );
 			}
 
 			/// @brief A dereferencable value proxy holding the result of operator* .
@@ -97,8 +97,8 @@ namespace daw::json {
 			/// @brief Move the parse state to the next element
 			/// @return iterator after moving
 			constexpr json_lines_iterator &operator++( ) {
-				daw_json_assert_weak( m_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				daw_json_assert_weak(
+				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
 				if( m_can_skip ) {
 					m_state.first = m_can_skip;
 					m_can_skip = nullptr;

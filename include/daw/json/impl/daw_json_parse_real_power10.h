@@ -131,8 +131,8 @@ namespace daw::json {
 			power10( runtime_exec_tag, Result result, Unsigned p ) {
 				if constexpr( std::is_same_v<Result, double> or
 				              std::is_same_v<Result, float> ) {
-					return power10( constexpr_exec_tag{ }, result,
-					                static_cast<std::int32_t>( p ) );
+					return power10(
+					  constexpr_exec_tag{ }, result, static_cast<std::int32_t>( p ) );
 				} else {
 					// For long double and others fallback to the slower std::pow
 					using std::pow;
@@ -140,5 +140,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

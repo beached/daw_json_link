@@ -32,7 +32,7 @@ namespace daw::json {
 				/// member to not be encoded as a string.
 				Always
 			}; // 2bits
-		}    // namespace options
+		} // namespace options
 
 		namespace json_details {
 			template<>
@@ -53,7 +53,7 @@ namespace daw::json {
 				/// Attempt to check for narrowing when parsing integral types
 				CheckForNarrowing
 			}; // 1bit
-		}    // namespace options
+		} // namespace options
 
 		namespace json_details {
 			template<>
@@ -159,7 +159,7 @@ namespace daw::json {
 				/// Allow the full 8bits in output without escaping
 				AllowFull
 			}; // 1bit
-		}    // namespace options
+		} // namespace options
 
 		namespace json_details {
 			template<>
@@ -243,7 +243,7 @@ namespace daw::json {
 				/// suitable
 				Any
 			}; // 2 bits
-		}    // namespace options
+		} // namespace options
 
 		namespace json_details {
 			template<>
@@ -270,5 +270,5 @@ namespace daw::json {
 				return json_custom_opts_t::options( options... );
 			}
 		} // namespace options
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

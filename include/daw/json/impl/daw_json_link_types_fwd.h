@@ -510,10 +510,10 @@ namespace daw::json {
 				( ( found[static_cast<int>( json_details::json_deduced_type<
 				                            JsonElements>::underlying_json_type )]++ ),
 				  ... );
-				return daw::algorithm::find_if( found.begin( ), found.end( ),
-				                                []( int x ) {
-					                                return x > 1;
-				                                } ) == found.end( );
+				return daw::algorithm::find_if(
+				         found.begin( ), found.end( ), []( int x ) {
+					         return x > 1;
+				         } ) == found.end( );
 			}
 
 			template<JsonBaseParseTypes PT>

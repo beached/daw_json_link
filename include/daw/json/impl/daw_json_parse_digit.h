@@ -29,6 +29,6 @@ namespace daw::json {
 				static inline constexpr unsigned plus_char = parse_digit( '+' );
 				static inline constexpr unsigned minus_char = parse_digit( '-' );
 			} // namespace parsed_constants
-		}   // namespace json_details
-	}     // namespace DAW_JSON_VER
+		} // namespace json_details
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

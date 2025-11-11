@@ -12,10 +12,10 @@
 
 #include "daw/json/daw_json_switches.h"
 
+#include <daw/algorithms/daw_algorithm_accumulate.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_unreachable.h>
-#include <daw/algorithms/daw_algorithm_accumulate.h>
 
 #include <cstddef>
 #include <exception>
@@ -23,15 +23,14 @@
 #include <string_view>
 
 namespace daw::json {
-	inline namespace
-	DAW_JSON_VER {
+	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			struct missing_member {
 				char const *member_name;
 
 				explicit constexpr missing_member( daw::string_view name )
-					: member_name( std::data( name ) ) {
-					if(member_name and member_name[0] == '\a') {
+				  : member_name( std::data( name ) ) {
+					if( member_name and member_name[0] == '\a' ) {
 						member_name = "no_name";
 					}
 				}
@@ -41,7 +40,7 @@ namespace daw::json {
 				char token;
 
 				explicit constexpr missing_token( char c )
-					: token( c ) {}
+				  : token( c ) {}
 			};
 		} // namespace json_details
 
@@ -96,7 +95,7 @@ namespace daw::json {
 
 		constexpr std::string_view reason_message( ErrorReason er ) {
 			using namespace std::string_view_literals;
-			switch(er) {
+			switch( er ) {
 			case ErrorReason::Unknown:
 				return "Unknown reason for error"sv;
 			case ErrorReason::UnexpectedEndOfData:
@@ -121,15 +120,15 @@ namespace daw::json {
 				return "Invalid or corrupt string"sv;
 			case ErrorReason::InvalidStringHighASCII:
 				return "String support limited to 0x20 < chr <= 0x7F when "
-					"DisallowHighEightBit or InvalidStringHighASCII is true"sv;
+				       "DisallowHighEightBit or InvalidStringHighASCII is true"sv;
 			case ErrorReason::ExpectedKeyValueToStartWithBrace:
 				return "Expected key/value's JSON type to be of class type and "
-					"beginning "
-					"with '{'"sv;
+				       "beginning "
+				       "with '{'"sv;
 			case ErrorReason::ExpectedKeyValueArrayToStartWithBracket:
 				return "Expected key/value's JSON type to be of array type and "
-					"beginning "
-					"with '['"sv;
+				       "beginning "
+				       "with '['"sv;
 			case ErrorReason::InvalidArrayStart:
 				return "Expected array type to begin with '['"sv;
 			case ErrorReason::InvalidClassStart:
@@ -147,8 +146,7 @@ namespace daw::json {
 			case ErrorReason::NumberIsNaN:
 				return "NaN encountered while serializing to JSON Number literal"sv;
 			case ErrorReason::NumberIsInf:
-				return
-					"Infinity encountered while serializing to JSON Number literal"sv;
+				return "Infinity encountered while serializing to JSON Number literal"sv;
 			case ErrorReason::NumberOutOfRange:
 				return "Number is outside of the representable range"sv;
 			case ErrorReason::EmptyJSONDocument:
@@ -183,7 +181,7 @@ namespace daw::json {
 				return "Expected member not found"sv;
 			case ErrorReason::TagMemberNotFound:
 				return "Expected tag member not found, they are required for tagged "
-					"Variants"sv;
+				       "Variants"sv;
 			case ErrorReason::ExpectedMemberNotFound:
 				return "Expected member missing"sv;
 			case ErrorReason::ExpectedTokenNotFound:
@@ -212,11 +210,11 @@ namespace daw::json {
 				char token;
 
 				explicit constexpr data_t( char const *p )
-					: pointer( p ) {}
+				  : pointer( p ) {}
 
 				explicit constexpr data_t( char t )
-					: token( t ) {}
-			} m_data{nullptr};
+				  : token( t ) {}
+			} m_data{ nullptr };
 
 			char const *m_parse_loc = nullptr;
 
@@ -224,36 +222,35 @@ namespace daw::json {
 			explicit json_exception( ) = default;
 
 			explicit DAW_JSON_CPP26_CX_EXCEPT json_exception( ErrorReason reason )
-				: m_reason( reason ) {}
+			  : m_reason( reason ) {}
 
-			explicit DAW_JSON_CPP26_CX_EXCEPT json_exception(
-				json_details::missing_member mm )
-				: m_reason( ErrorReason::MemberNotFound )
-				  , m_data( mm.member_name ) {}
+			explicit DAW_JSON_CPP26_CX_EXCEPT
+			json_exception( json_details::missing_member mm )
+			  : m_reason( ErrorReason::MemberNotFound )
+			  , m_data( mm.member_name ) {}
 
-			explicit DAW_JSON_CPP26_CX_EXCEPT json_exception(
-				json_details::missing_token mt )
-				: m_reason( ErrorReason::ExpectedTokenNotFound )
-				  , m_data( mt.token ) {}
+			explicit DAW_JSON_CPP26_CX_EXCEPT
+			json_exception( json_details::missing_token mt )
+			  : m_reason( ErrorReason::ExpectedTokenNotFound )
+			  , m_data( mt.token ) {}
 
-			explicit DAW_JSON_CPP26_CX_EXCEPT json_exception(
-				json_details::missing_member mm,
-				std::string_view location )
-				: m_reason( ErrorReason::MemberNotFound )
-				  , m_data( mm.member_name )
-				  , m_parse_loc( std::data( location ) ) {}
+			explicit DAW_JSON_CPP26_CX_EXCEPT
+			json_exception( json_details::missing_member mm,
+			                std::string_view location )
+			  : m_reason( ErrorReason::MemberNotFound )
+			  , m_data( mm.member_name )
+			  , m_parse_loc( std::data( location ) ) {}
 
-			explicit DAW_JSON_CPP26_CX_EXCEPT json_exception(
-				json_details::missing_token mt,
-				char const *location )
-				: m_reason( ErrorReason::ExpectedTokenNotFound )
-				  , m_data( mt.token )
-				  , m_parse_loc( location ) {}
+			explicit DAW_JSON_CPP26_CX_EXCEPT
+			json_exception( json_details::missing_token mt, char const *location )
+			  : m_reason( ErrorReason::ExpectedTokenNotFound )
+			  , m_data( mt.token )
+			  , m_parse_loc( location ) {}
 
 			explicit DAW_JSON_CPP26_CX_EXCEPT json_exception( ErrorReason reason,
-				char const *location )
-				: m_reason( reason )
-				  , m_parse_loc( location ) {}
+			                                                  char const *location )
+			  : m_reason( reason )
+			  , m_parse_loc( location ) {}
 
 			[[nodiscard]] DAW_JSON_CPP26_CX_EXCEPT ErrorReason reason_type( ) const {
 				return m_reason;
@@ -265,7 +262,7 @@ namespace daw::json {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch-enum"
 #endif
-				switch(m_reason) {
+				switch( m_reason ) {
 				case ErrorReason::MemberNotFound: {
 					using namespace std::string_literals;
 					auto result = "Could not find required class member '"s;
@@ -276,7 +273,7 @@ namespace daw::json {
 				case ErrorReason::ExpectedTokenNotFound: {
 					using namespace std::string_literals;
 					constexpr std::string_view m =
-						"Could not find expected parse token '";
+					  "Could not find expected parse token '";
 					auto result = std::string( );
 					result.reserve( m.size( ) + 2 );
 					result = m;
@@ -285,7 +282,7 @@ namespace daw::json {
 					return result;
 				}
 				default:
-					return static_cast<std::string>(( reason_message( m_reason ) ));
+					return static_cast<std::string>( ( reason_message( m_reason ) ) );
 				}
 #if defined( DAW_HAS_CLANG )
 #pragma clang diagnostic pop
@@ -306,12 +303,9 @@ namespace daw::json {
 			json_exception( json_exception && ) noexcept = default;
 			~json_exception( ) override = default;
 
-			json_exception &
-			operator=( json_exception const & ) = default;
+			json_exception &operator=( json_exception const & ) = default;
 
-			json_exception &
-			operator=( json_exception && ) noexcept = default;
-
+			json_exception &operator=( json_exception && ) noexcept = default;
 		};
 
 		/***
@@ -324,58 +318,56 @@ namespace daw::json {
 		                     char const *json_document = nullptr ) {
 			using namespace std::string_literals;
 			std::string result = "reason: "s + je.reason( );
-			if(json_document == nullptr or je.parse_location( ) == nullptr) {
+			if( json_document == nullptr or je.parse_location( ) == nullptr ) {
 				return result;
 			}
 			char const *last_nl = nullptr;
-			auto const line_no = daw::algorithm::accumulate(
-				json_document,
-				je.parse_location( ),
-				std::size_t{1},
-				[&]( std::size_t count, char const &c ) {
-					if(c == '\n') {
-						last_nl = &c;
-						++count;
-					}
-					return count;
-				} );
+			auto const line_no =
+			  daw::algorithm::accumulate( json_document,
+			                              je.parse_location( ),
+			                              std::size_t{ 1 },
+			                              [&]( std::size_t count, char const &c ) {
+				                              if( c == '\n' ) {
+					                              last_nl = &c;
+					                              ++count;
+				                              }
+				                              return count;
+			                              } );
 			auto const col_no =
-				static_cast<std::size_t>(je.parse_location( ) - last_nl) + 1U;
+			  static_cast<std::size_t>( je.parse_location( ) - last_nl ) + 1U;
 			auto const previous_char_count =
-				( std::min )( {static_cast<std::size_t>(50),
-				               static_cast<std::size_t>(std::distance(
-					               json_document,
-					               je.parse_location( ) + 1 ))} );
+			  ( std::min )( { static_cast<std::size_t>( 50 ),
+			                  static_cast<std::size_t>( std::distance(
+			                    json_document, je.parse_location( ) + 1 ) ) } );
 			auto const loc_data = std::string_view(
-				std::prev( je.parse_location( ),
-				           static_cast<std::ptrdiff_t>(previous_char_count) ),
-				previous_char_count + 1 );
+			  std::prev( je.parse_location( ),
+			             static_cast<std::ptrdiff_t>( previous_char_count ) ),
+			  previous_char_count + 1 );
 			result += " \nlocation: near line: " + std::to_string( line_no ) +
-				" col: " + std::to_string( col_no ) + "\n\"";
+			          " col: " + std::to_string( col_no ) + "\n\"";
 #if not defined( DAW_JSON_NO_COLOUR )
 			result += "\x1b[1m";
 #endif
 			result.reserve( result.size( ) + std::size( loc_data ) );
-			result += daw::algorithm::accumulate(
-				std::data( loc_data ),
-				daw::data_end( loc_data ),
-				std::string{},
-				[]( std::string s, char c ) {
-					switch(c) {
-					case '\n':
-					case '\r':
-						break;
+			result += daw::algorithm::accumulate( std::data( loc_data ),
+			                                      daw::data_end( loc_data ),
+			                                      std::string{ },
+			                                      []( std::string s, char c ) {
+				                                      switch( c ) {
+				                                      case '\n':
+				                                      case '\r':
+					                                      break;
 #if defined( DAW_JSON_NO_COLOUR )
-					case '"':
-						s += '\\';
-						[[fallthrough]];
+				                                      case '"':
+					                                      s += '\\';
+					                                      [[fallthrough]];
 #endif
-					default:
-						s += c;
-						break;
-					}
-					return s;
-				} );
+				                                      default:
+					                                      s += c;
+					                                      break;
+				                                      }
+				                                      return s;
+			                                      } );
 #if not defined( DAW_JSON_NO_COLOUR )
 			result += "\x1b[0m";
 #endif
@@ -383,4 +375,4 @@ namespace daw::json {
 			return result;
 		}
 	} // namespace DAW_JSON_VER
-}   // namespace daw::json
+} // namespace daw::json

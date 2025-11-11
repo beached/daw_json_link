@@ -98,7 +98,8 @@ namespace daw::json {
 				             fwd_pack<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
 
-					return Constructor{ }( std::allocator_arg, DAW_FWD( alloc ),
+					return Constructor{ }( std::allocator_arg,
+					                       DAW_FWD( alloc ),
 					                       get<Is>( std::move( tp ) )... );
 				}
 			};
@@ -125,9 +126,11 @@ namespace daw::json {
 						}( std::make_index_sequence<sizeof...( Args )>{ } );
 					} else if constexpr( std::is_invocable_v<Constructor,
 					                                         std::allocator_arg_t,
-					                                         alloc_t, Args...> ) {
+					                                         alloc_t,
+					                                         Args...> ) {
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
-							return Constructor{ }( std::allocator_arg, std::move( alloc ),
+							return Constructor{ }( std::allocator_arg,
+							                       std::move( alloc ),
 							                       get<Is>( std::move( tp_args ) )... );
 						}( std::make_index_sequence<sizeof...( Args )>{ } );
 					} else {
@@ -155,13 +158,17 @@ namespace daw::json {
 					auto alloc = parse_state.template get_allocator_for<Value>( );
 					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
 						return construct_value_tp_invoke<Constructor>(
-						  std::move( tp_args ), std::move( alloc ),
+						  std::move( tp_args ),
+						  std::move( alloc ),
 						  std::index_sequence_for<Args...>{ } );
 					} else if constexpr( std::is_invocable_v<Constructor,
 					                                         std::allocator_arg_t,
-					                                         alloc_t, Args...> ) {
+					                                         alloc_t,
+					                                         Args...> ) {
 						return construct_value_tp_invoke<Constructor>(
-						  std::allocator_arg, std::move( alloc ), std::move( tp_args ),
+						  std::allocator_arg,
+						  std::move( alloc ),
+						  std::move( tp_args ),
 						  std::index_sequence_for<Args...>{ } );
 					} else {
 						static_assert(

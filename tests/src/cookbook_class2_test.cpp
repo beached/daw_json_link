@@ -60,8 +60,8 @@ namespace daw::json {
 #endif
 		static inline auto
 		to_json_data( daw::cookbook_class2::MyClass1 const &value ) {
-			return std::forward_as_tuple( value.member_0, value.member_1,
-			                              value.member_2 );
+			return std::forward_as_tuple(
+			  value.member_0, value.member_1, value.member_2 );
 		}
 	};
 

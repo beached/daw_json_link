@@ -51,10 +51,11 @@ namespace daw {
 
 	template<typename Hash, typename CharT>
 	DAW_ATTRIB_NONNULL( )
-	[[nodiscard]] DAW_ATTRIB_INLINE static constexpr auto
-	fnv1a_N( CharT *first, Hash hash = fnv1a_basis_v<Hash> ) {
-		daw::algorithm::do_n_arg<sizeof(Hash)>( [&]( std::size_t n ) {
-			hash ^= static_cast<Hash>(static_cast<unsigned char>(first[n]));
+	[[nodiscard]] DAW_ATTRIB_INLINE
+	  static constexpr auto fnv1a_N( CharT *first,
+	                                 Hash hash = fnv1a_basis_v<Hash> ) {
+		daw::algorithm::do_n_arg<sizeof( Hash )>( [&]( std::size_t n ) {
+			hash ^= static_cast<Hash>( static_cast<unsigned char>( first[n] ) );
 			hash *= fnv1a_prime_v<Hash>;
 		} );
 		return hash;
@@ -67,20 +68,20 @@ namespace daw {
 		std::size_t len = std::size( key );
 		auto *ptr = std::data( key );
 		auto hash = fnv1a_basis_v<Hash>;
-		if constexpr(expect_long_strings) {
-			while(DAW_UNLIKELY( len >= 8 )) {
+		if constexpr( expect_long_strings ) {
+			while( DAW_UNLIKELY( len >= 8 ) ) {
 				hash = fnv1a_N<8>( ptr, hash );
 				len -= 8;
 				ptr += 8;
 			}
-			if(len >= 4) {
+			if( len >= 4 ) {
 				hash = fnv1a_N<4>( ptr, hash );
 				len -= 4;
 				ptr += 4;
 			}
 		}
-		for(std::size_t n = 0; n < len; ++n) {
-			hash ^= static_cast<unsigned char>(ptr[n]);
+		for( std::size_t n = 0; n < len; ++n ) {
+			hash ^= static_cast<unsigned char>( ptr[n] );
 			hash *= fnv1a_prime_v<Hash>;
 		}
 		return hash;
@@ -89,30 +90,30 @@ namespace daw {
 	template<bool expect_long_strings>
 	[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_name_hash_t
 	name_hash( daw::string_view key ) {
-		if(auto const Sz = std::size( key );
-			DAW_LIKELY( Sz <= sizeof( json_name_hash_t ) )) {
-			auto result = json_name_hash_t{};
+		if( auto const Sz = std::size( key );
+		    DAW_LIKELY( Sz <= sizeof( json_name_hash_t ) ) ) {
+			auto result = json_name_hash_t{ };
 			auto const *ptr = std::data( key );
-			for(std::size_t n = 0; n < Sz; ++n) {
+			for( std::size_t n = 0; n < Sz; ++n ) {
 				result <<= 8U;
-				result |= static_cast<unsigned char>(ptr[n]);
+				result |= static_cast<unsigned char>( ptr[n] );
 			}
-			return result;// * fnv1a_prime_v<json_name_hash_t>; // mix it up with an fnv1a prime
+			return result; // * fnv1a_prime_v<json_name_hash_t>; // mix it up with an
+			               // fnv1a prime
 		}
-		return fnv1a<
-			json_name_hash_t, expect_long_strings>( key );
+		return fnv1a<json_name_hash_t, expect_long_strings>( key );
 	}
 
 	template<typename StringView>
-	[[nodiscard]] static constexpr daw::UInt32 murmur3_32( StringView key,
-		std::uint32_t seed = 0 ) {
+	[[nodiscard]] static constexpr daw::UInt32
+	murmur3_32( StringView key, std::uint32_t seed = 0 ) {
 		static_assert( daw::traits::is_string_view_like_v<StringView>,
 		               "Can only pass contiguous character ranges to fnv1a" );
 		daw::UInt32 h = to_uint32( seed );
 		daw::UInt32 k = 0_u32;
 		char const *first = std::data( key );
 		char const *const last = daw::data_end( key );
-		while(( last - first ) >= 4) {
+		while( ( last - first ) >= 4 ) {
 			// Here is a source of differing results across endianness.
 			// A swap here has no effects on hash properties though.
 			k = daw::to_uint32_buffer( first );
@@ -124,9 +125,9 @@ namespace daw {
 
 		// Anything left over
 		k = 0_u32;
-		for(auto i = ( last - first ); i > 0; --i) {
+		for( auto i = ( last - first ); i > 0; --i ) {
 			k <<= 8U;
-			k |= static_cast<unsigned char>(first[i - 1]);
+			k |= static_cast<unsigned char>( first[i - 1] );
 		}
 
 		h ^= murmur3_details::murmur3_32_scramble( k );

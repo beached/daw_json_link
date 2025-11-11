@@ -72,7 +72,8 @@ void test_lots_of_doubles( ) {
 		numbers[i] = rng;
 	}
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "float parsing(unknown bounds)", bytes,
+	  "float parsing(unknown bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
@@ -85,7 +86,8 @@ void test_lots_of_doubles( ) {
 	  numbers );
 
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "double parsing(unknown bounds)", bytes,
+	  "double parsing(unknown bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
@@ -98,7 +100,8 @@ void test_lots_of_doubles( ) {
 	  numbers );
 
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "long double parsing(unknown bounds)", bytes,
+	  "long double parsing(unknown bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
@@ -112,7 +115,8 @@ void test_lots_of_doubles( ) {
 	  numbers );
 
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "float parsing(known bounds)", bytes,
+	  "float parsing(known bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
@@ -125,7 +129,8 @@ void test_lots_of_doubles( ) {
 	  numbers );
 
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "double parsing(known bounds)", bytes,
+	  "double parsing(known bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
@@ -138,7 +143,8 @@ void test_lots_of_doubles( ) {
 	  numbers );
 
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "long double parsing(known bounds)", bytes,
+	  "long double parsing(known bounds)",
+	  bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
@@ -153,7 +159,8 @@ void test_lots_of_doubles( ) {
 
 	// Too slow to need lots of tests
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS2>(
-	  "double parsing(strtod)", bytes,
+	  "double parsing(strtod)",
+	  bytes,
 	  []( std::vector<std::string> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  char **nend = nullptr;

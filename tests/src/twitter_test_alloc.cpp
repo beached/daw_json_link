@@ -59,7 +59,8 @@ void test( std::string_view json_data, AllocType &alloc )
 	std::optional<daw::twitter::twitter_object_t> twitter_result;
 	// ******************************
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(checked)", sz,
+	  "twitter bench(checked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -78,7 +79,8 @@ void test( std::string_view json_data, AllocType &alloc )
 
 	// options::CheckedParseMode::no
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(unchecked)", sz,
+	  "twitter bench(unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -97,7 +99,8 @@ void test( std::string_view json_data, AllocType &alloc )
 
 	// CppCommentSkippingPolicyChecked
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(cpp comments)", sz,
+	  "twitter bench(cpp comments)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -116,15 +119,16 @@ void test( std::string_view json_data, AllocType &alloc )
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// CppCommentSkippingPolicyUnchecked
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(cpp comments, unchecked)", sz,
+	  "twitter bench(cpp comments, unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
-		  twitter_result =
-		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-		      f1, alloc,
-		      parse_flags<ExecMode, PolicyCommentTypes::cpp,
-		                  CheckedParseMode::no> );
+		  twitter_result = daw::json::from_json_alloc<
+		    daw::twitter::twitter_object_t>(
+		    f1,
+		    alloc,
+		    parse_flags<ExecMode, PolicyCommentTypes::cpp, CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -137,7 +141,8 @@ void test( std::string_view json_data, AllocType &alloc )
 #endif
 	// HashCommentSkippingPolicyChecked
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(hash comments)", sz,
+	  "twitter bench(hash comments)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -156,15 +161,16 @@ void test( std::string_view json_data, AllocType &alloc )
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// HashCommentSkippingPolicyUnchecked
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(hash comments, unchecked)", sz,
+	  "twitter bench(hash comments, unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
-		  twitter_result =
-		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-		      f1, alloc,
-		      parse_flags<ExecMode, PolicyCommentTypes::hash,
-		                  CheckedParseMode::no> );
+		  twitter_result = daw::json::from_json_alloc<
+		    daw::twitter::twitter_object_t>(
+		    f1,
+		    alloc,
+		    parse_flags<ExecMode, PolicyCommentTypes::hash, CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -178,7 +184,8 @@ void test( std::string_view json_data, AllocType &alloc )
 	// ******************************
 	// Escaped Names
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(checked, escaped names)", sz,
+	  "twitter bench(checked, escaped names)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
@@ -197,13 +204,15 @@ void test( std::string_view json_data, AllocType &alloc )
 
 	// options::CheckedParseMode::no Escaped Names
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(unchecked, escaped names)", sz,
+	  "twitter bench(unchecked, escaped names)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc.release( );
 		  twitter_result =
 		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-		      f1, alloc,
+		      f1,
+		      alloc,
 		      parse_flags<ExecMode, AllowEscapedNames::yes, CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
@@ -266,7 +275,8 @@ int main( int argc, char **argv )
 		                                                              alloc );
 		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(to_json_string)", sz,
+		  "twitter bench(to_json_string)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
 			  daw::json::to_json( tr, str );

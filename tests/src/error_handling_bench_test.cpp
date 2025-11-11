@@ -27,16 +27,16 @@ int main( ) {
 	}( );
 	static constexpr std::size_t total = 7919;
 	using time_type = std::chrono::time_point<std::chrono::steady_clock,
-	                                       std::chrono::nanoseconds>;
+	                                          std::chrono::nanoseconds>;
 	{
 		auto total_time = std::chrono::nanoseconds{ };
 		auto start_time = std::chrono::steady_clock::now( );
 		daw::json::daw_json_error_handler_data = &start_time;
-		daw::json::daw_json_error_handler =
-		  +[]( daw::json::json_exception &&jex, void *st ) {
-			  *reinterpret_cast<time_type *>( st ) = std::chrono::steady_clock::now( );
-			  throw std::move( jex );
-		  };
+		daw::json::daw_json_error_handler = +[]( daw::json::json_exception &&jex,
+		                                         void *st ) {
+			*reinterpret_cast<time_type *>( st ) = std::chrono::steady_clock::now( );
+			throw std::move( jex );
+		};
 		for( std::size_t n = 0; n < total; ++n ) {
 			daw::do_not_optimize( total );
 			daw::do_not_optimize( numbers_str_bad );

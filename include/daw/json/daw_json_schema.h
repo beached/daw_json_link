@@ -21,9 +21,9 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace utils {
 			template<typename WriteableType>
-			static constexpr WriteableType
-			output_kv( WriteableType it, std::string_view key,
-			           std::string_view value ) {
+			static constexpr WriteableType output_kv( WriteableType it,
+			                                          std::string_view key,
+			                                          std::string_view value ) {
 				it.write( key, ":", it.space, value );
 				return it;
 			}
@@ -773,14 +773,16 @@ namespace daw::json {
 					}
 				} else {
 					return serialization_policy<
-					  WritableType, options::output_flags_t<PolicyFlags...>::value>( it );
+					  WritableType,
+					  options::output_flags_t<PolicyFlags...>::value>( it );
 				}
 			}( );
 			out_it.put( '{' );
 			out_it.add_indent( );
 			out_it.next_member( );
 			out_it = utils::output_kv(
-			  out_it, R"("$schema")",
+			  out_it,
+			  R"("$schema")",
 			  R"("https://json-schema.org/draft/2020-12/schema",)" );
 			out_it.next_member( );
 			out_it = utils::output_kv( out_it, R"("$id")", "\"" );

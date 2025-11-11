@@ -47,7 +47,8 @@ void test( std::string_view json_sv1 ) {
 
 		auto jarng = range_t( json_sv1 );
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter timeline bench(checked)", sz,
+		  "twitter timeline bench(checked)",
+		  sz,
 		  [&twitter_result]( auto rng ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
 		  },
@@ -58,7 +59,8 @@ void test( std::string_view json_sv1 ) {
 	{
 		using range_t = daw::json::json_array_range<daw::twitter::tweet, ExecMode>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter timeline bench(checked, nostore)", sz,
+		  "twitter timeline bench(checked, nostore)",
+		  sz,
 		  [&]( auto rng ) {
 			  for( auto v : rng ) {
 				  daw::do_not_optimize( v );
@@ -67,10 +69,13 @@ void test( std::string_view json_sv1 ) {
 		  range_t( json_sv1 ) );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet, daw::json::options::CheckedParseMode::no, ExecMode>;
+		using range_t =
+		  daw::json::json_array_range<daw::twitter::tweet,
+		                              daw::json::options::CheckedParseMode::no,
+		                              ExecMode>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter timeline bench(unchecked)", sz,
+		  "twitter timeline bench(unchecked)",
+		  sz,
 		  [&]( auto rng ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
 		  },
@@ -79,10 +84,13 @@ void test( std::string_view json_sv1 ) {
 		             "Exception while parsing: " + res.get_exception_message( ) );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  daw::twitter::tweet, daw::json::options::CheckedParseMode::no, ExecMode>;
+		using range_t =
+		  daw::json::json_array_range<daw::twitter::tweet,
+		                              daw::json::options::CheckedParseMode::no,
+		                              ExecMode>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter timeline bench(unchecked, nostore)", sz,
+		  "twitter timeline bench(unchecked, nostore)",
+		  sz,
 		  [&]( auto rng ) {
 			  for( auto v : rng ) {
 				  daw::do_not_optimize( v );

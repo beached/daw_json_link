@@ -43,7 +43,9 @@ int main( int argc, char **argv )
 
 	{
 		auto gsoc_result = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "gsoc bench(checked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "gsoc bench(checked)",
 		  []( daw::string_view jd ) {
 			  auto res = from_json<daw::gsoc::gsoc_object_t>( jd );
 			  daw::do_not_optimize( res );
@@ -55,7 +57,9 @@ int main( int argc, char **argv )
 
 	{
 		auto gsoc_result = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "gsoc bench(unchecked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "gsoc bench(unchecked)",
 		  []( daw::string_view jd ) {
 			  auto res = from_json<daw::gsoc::gsoc_object_t>(
 			    jd, options::parse_flags<options::CheckedParseMode::no> );
@@ -75,7 +79,9 @@ int main( int argc, char **argv )
 		str.reserve( json_data1.size( ) );
 
 		auto to_json_ret = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "gsoc bench(to_json)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "gsoc bench(to_json)",
 		  [&str]( daw::gsoc::gsoc_object_t const &obj ) {
 			  str.clear( );
 			  (void)to_json( obj, str );
@@ -93,7 +99,9 @@ int main( int argc, char **argv )
 		str.resize( str_sz * 2 );
 		char const *out_ptr = nullptr;
 		auto to_json_ret = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "gsoc bench(to_json2)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "gsoc bench(to_json2)",
 		  [&]( daw::gsoc::gsoc_object_t const &obj ) {
 			  auto *out_it = str.data( );
 			  out_ptr = to_json( obj, out_it );

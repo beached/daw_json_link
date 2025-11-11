@@ -117,19 +117,19 @@ int main( int argc, char **argv ) {
 	std::string const citm_doc = daw::read_file( argv[2] ).value( );
 	std::string const canada_doc = daw::read_file( argv[3] ).value( );
 
-	bench<constexpr_checked_pol>( b1, "constexpr checked", twitter_doc, citm_doc,
-	                              canada_doc );
-	bench<constexpr_unchecked_pol>( b1, "constexpr unchecked", twitter_doc,
-	                                citm_doc, canada_doc );
-	bench<runtime_checked_pol>( b1, "runtime checked", twitter_doc, citm_doc,
-	                            canada_doc );
-	bench<runtime_unchecked_pol>( b1, "runtime unchecked", twitter_doc, citm_doc,
-	                              canada_doc );
+	bench<constexpr_checked_pol>(
+	  b1, "constexpr checked", twitter_doc, citm_doc, canada_doc );
+	bench<constexpr_unchecked_pol>(
+	  b1, "constexpr unchecked", twitter_doc, citm_doc, canada_doc );
+	bench<runtime_checked_pol>(
+	  b1, "runtime checked", twitter_doc, citm_doc, canada_doc );
+	bench<runtime_unchecked_pol>(
+	  b1, "runtime unchecked", twitter_doc, citm_doc, canada_doc );
 
-	bench<simd_checked_pol>( b1, "simd checked", twitter_doc, citm_doc,
-	                         canada_doc );
-	bench<simd_unchecked_pol>( b1, "simd unchecked", twitter_doc, citm_doc,
-	                           canada_doc );
+	bench<simd_checked_pol>(
+	  b1, "simd checked", twitter_doc, citm_doc, canada_doc );
+	bench<simd_unchecked_pol>(
+	  b1, "simd unchecked", twitter_doc, citm_doc, canada_doc );
 
 	if( argc > 4 ) {
 		std::string_view const fname = argv[4];

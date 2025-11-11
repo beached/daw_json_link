@@ -11,8 +11,8 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_read_file.h>
 #include <daw/daw_graph.h>
+#include <daw/daw_read_file.h>
 
 #include <cstdint>
 #include <cstdio>
@@ -116,7 +116,9 @@ int main( int argc, char **argv )
 	using node_range_t =
 	  daw::json::json_array_range<daw::cookbook_graphs1::GraphNode>;
 	for( auto node : node_range_t( json_sv, "nodes" ) ) {
-		g.add_node( node.id, node.metadata.member0, node.metadata.member1,
+		g.add_node( node.id,
+		            node.metadata.member0,
+		            node.metadata.member1,
 		            node.metadata.member2 );
 	}
 

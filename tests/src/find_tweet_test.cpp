@@ -56,7 +56,9 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 		using range_t = daw::json::json_array_range<tweet, ExecMode>;
 		auto result = tweet{ };
 		auto res = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "find_tweet bench(checked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "find_tweet bench(checked)",
 		  [&]( auto rng ) {
 			  for( tweet t : rng ) {
 				  if( t.id == id ) {
@@ -71,11 +73,15 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 		test_assert( result.id == id, "Invalid id found" );
 	}
 	{
-		using range_t = daw::json::json_array_range<
-		  tweet, daw::json::options::CheckedParseMode::no, ExecMode>;
+		using range_t =
+		  daw::json::json_array_range<tweet,
+		                              daw::json::options::CheckedParseMode::no,
+		                              ExecMode>;
 		auto result = tweet{ };
 		auto res = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "find_tweet bench(unchecked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "find_tweet bench(unchecked)",
 		  [&]( auto rng ) {
 			  for( tweet t : rng ) {
 				  if( t.id == id ) {
@@ -93,7 +99,9 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 		auto result = tweet{ };
 		using namespace daw::json;
 		auto res = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "find_tweet bench(checked, json_value)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "find_tweet bench(checked, json_value)",
 		  [&]( json_value jv ) {
 			  for( auto jp : jv ) {
 				  if( as<std::uint64_t>( jp.value["id"] ) == id ) {
@@ -111,7 +119,9 @@ void test( std::string_view json_sv1, std::uint64_t id ) {
 		auto result = tweet{ };
 		using namespace daw::json;
 		auto res = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "find_tweet bench(unchecked, json_value)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "find_tweet bench(unchecked, json_value)",
 		  [&]( auto jv ) {
 			  for( auto jp : jv ) {
 				  if( as<std::uint64_t>( jp.value["id"] ) == id ) {

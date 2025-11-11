@@ -128,32 +128,32 @@ namespace daw::json {
 				}
 
 				friend constexpr bool operator==( iterator_wrapper const &lhs,
-				                                         iterator_wrapper const &rhs ) {
+				                                  iterator_wrapper const &rhs ) {
 					return lhs.ptr == rhs.ptr;
 				}
 
 				friend constexpr bool operator!=( iterator_wrapper const &lhs,
-				                                         iterator_wrapper const &rhs ) {
+				                                  iterator_wrapper const &rhs ) {
 					return lhs.ptr != rhs.ptr;
 				}
 
 				friend constexpr bool operator<( iterator_wrapper const &lhs,
-				                                        iterator_wrapper const &rhs ) {
+				                                 iterator_wrapper const &rhs ) {
 					return lhs.ptr < rhs.ptr;
 				}
 
 				friend constexpr bool operator<=( iterator_wrapper const &lhs,
-				                                         iterator_wrapper const &rhs ) {
+				                                  iterator_wrapper const &rhs ) {
 					return lhs.ptr <= rhs.ptr;
 				}
 
 				friend constexpr bool operator>( iterator_wrapper const &lhs,
-				                                        iterator_wrapper const &rhs ) {
+				                                 iterator_wrapper const &rhs ) {
 					return lhs.ptr > rhs.ptr;
 				}
 
 				friend constexpr bool operator>=( iterator_wrapper const &lhs,
-				                                         iterator_wrapper const &rhs ) {
+				                                  iterator_wrapper const &rhs ) {
 					return lhs.ptr >= rhs.ptr;
 				}
 			};

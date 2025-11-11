@@ -78,7 +78,8 @@ namespace daw::json {
 			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr std::array<T, Sz>
 			  operator( )( Iterator first,
 			               Last last ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
-				return construct_array( std::move( first ), std::move( last ),
+				return construct_array( std::move( first ),
+				                        std::move( last ),
 				                        std::make_index_sequence<Sz>{ } );
 			}
 			DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING
@@ -168,8 +169,8 @@ namespace daw::json {
 				                             typename std::iterator_traits<
 				                               Iterator>::iterator_category> or
 				              not json_details::is_std_allocator_v<Alloc> ) {
-					return std::vector<T, Alloc>( std::move( first ), std::move( last ),
-					                              alloc );
+					return std::vector<T, Alloc>(
+					  std::move( first ), std::move( last ), alloc );
 				} else {
 					constexpr auto reserve_amount = 4096U / ( sizeof( T ) * 8U );
 					auto result = std::vector<T, Alloc>( alloc );

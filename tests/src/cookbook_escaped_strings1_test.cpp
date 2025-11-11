@@ -54,9 +54,16 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_escaped_strings1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto const expected_wd = daw::cookbook_escaped_strings1::WebData{
-	  { "example.com", "Bücher.ch", "happy.cn", "happy快乐.cn", "快乐.cn",
-	    "happy.中国", "快乐.中国", "www.ハンドボールサムズ.com", "🦄.com" } };
+	auto const expected_wd =
+	  daw::cookbook_escaped_strings1::WebData{ { "example.com",
+	                                             "Bücher.ch",
+	                                             "happy.cn",
+	                                             "happy快乐.cn",
+	                                             "快乐.cn",
+	                                             "happy.中国",
+	                                             "快乐.中国",
+	                                             "www.ハンドボールサムズ.com",
+	                                             "🦄.com" } };
 
 	auto data = daw::read_file( argv[1] ).value( );
 

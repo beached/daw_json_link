@@ -57,7 +57,8 @@ int main( int argc, char **argv )
 	  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
 	std::string str{ };
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(to_json_string)", sz,
+	  "twitter bench(to_json_string)",
+	  sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
 		  daw::json::to_json( *tr, str );

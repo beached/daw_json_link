@@ -62,8 +62,8 @@ namespace daw::json {
 
 		static inline auto to_json_data(
 		  daw::cookbook_optional_values1::MyOptionalStuff1 const &value ) {
-			return std::forward_as_tuple( value.member0, value.member1,
-			                              value.member2 );
+			return std::forward_as_tuple(
+			  value.member0, value.member1, value.member2 );
 		}
 	};
 } // namespace daw::json

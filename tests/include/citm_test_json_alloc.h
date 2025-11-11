@@ -40,8 +40,8 @@ namespace daw::json {
 
 		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::events_value_t const &value ) {
-			return std::forward_as_tuple( value.id, value.logo, value.name,
-			                              value.subTopicIds, value.topicIds );
+			return std::forward_as_tuple(
+			  value.id, value.logo, value.name, value.subTopicIds, value.topicIds );
 		}
 	};
 
@@ -58,8 +58,8 @@ namespace daw::json {
 
 		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::prices_element_t const &value ) {
-			return std::forward_as_tuple( value.amount, value.audienceSubCategoryId,
-			                              value.seatCategoryId );
+			return std::forward_as_tuple(
+			  value.amount, value.audienceSubCategoryId, value.seatCategoryId );
 		}
 	};
 
@@ -109,9 +109,13 @@ namespace daw::json {
 
 		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::performances_element_t const &value ) {
-			return std::forward_as_tuple( value.eventId, value.id, value.logo,
-			                              value.prices, value.seatCategories,
-			                              value.start, value.venueCode );
+			return std::forward_as_tuple( value.eventId,
+			                              value.id,
+			                              value.logo,
+			                              value.prices,
+			                              value.seatCategories,
+			                              value.start,
+			                              value.venueCode );
 		}
 	};
 
@@ -178,10 +182,15 @@ namespace daw::json {
 
 		[[nodiscard]] static inline auto
 		to_json_data( daw::citm::citm_object_t const &value ) {
-			return std::forward_as_tuple(
-			  value.areaNames, value.audienceSubCategoryNames, value.events,
-			  value.performances, value.seatCategoryNames, value.subTopicNames,
-			  value.topicNames, value.topicSubTopics, value.venueNames );
+			return std::forward_as_tuple( value.areaNames,
+			                              value.audienceSubCategoryNames,
+			                              value.events,
+			                              value.performances,
+			                              value.seatCategoryNames,
+			                              value.subTopicNames,
+			                              value.topicNames,
+			                              value.topicSubTopics,
+			                              value.venueNames );
 		}
 	};
 } // namespace daw::json

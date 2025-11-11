@@ -159,8 +159,7 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonMember, bool KnownBounds = false, json_options_t P,
 		         typename A>
-		[[nodiscard]] constexpr auto
-		from_json( basic_json_value<P, A> value );
+		[[nodiscard]] constexpr auto from_json( basic_json_value<P, A> value );
 
 		/// @brief Parse a JSONMember from the json_data starting at member_path.
 		/// @param value JSON data, see basic_json_value
@@ -263,7 +262,8 @@ namespace daw::json {
 		/// @param json_data JSON string data containing array
 		/// @tparam KnownBounds The bounds of the json_data are known to contain the
 		/// whole value
-		/// @return A Container containing parsed data from JSON string.  Defaults to a std::vector
+		/// @return A Container containing parsed data from JSON string.  Defaults
+		/// to a std::vector
 		/// @throws daw::json::json_exception
 		template<typename JsonElement,
 		         typename Container =

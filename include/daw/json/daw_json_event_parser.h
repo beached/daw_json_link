@@ -166,8 +166,8 @@ namespace daw::json {
 			template<typename Handler, json_options_t P, typename A>
 			constexpr handler_result_holder
 			handle_on_array_start( Handler &&handler, basic_json_value<P, A> jv ) {
-				if constexpr( hnd_checks::has_on_array_start_handler_v<Handler, P,
-				                                                       A> ) {
+				if constexpr( hnd_checks::
+				                has_on_array_start_handler_v<Handler, P, A> ) {
 					return handler.handle_on_array_start( std::move( jv ) );
 				} else {
 					(void)jv;
@@ -187,8 +187,8 @@ namespace daw::json {
 			template<typename Handler, json_options_t P, typename A>
 			constexpr handler_result_holder
 			handle_on_class_start( Handler &&handler, basic_json_value<P, A> jv ) {
-				if constexpr( hnd_checks::has_on_class_start_handler_v<Handler, P,
-				                                                       A> ) {
+				if constexpr( hnd_checks::
+				                has_on_class_start_handler_v<Handler, P, A> ) {
 					return handler.handle_on_class_start( std::move( jv ) );
 				} else {
 					(void)jv;
@@ -320,8 +320,9 @@ namespace daw::json {
 		                                  Handler &&handler,
 		                                  options::parse_flags_t<ParseFlags...> ) {
 
-			using ParseState = TryDefaultParsePolicy<typename BasicParsePolicy<
-			  P, A>::template SetPolicyOptions<ParseFlags...>>;
+			using ParseState =
+			  TryDefaultParsePolicy<typename BasicParsePolicy<P, A>::
+			                          template SetPolicyOptions<ParseFlags...>>;
 
 			using iterator =
 			  basic_json_value_iterator<ParseState::policy_flags( ), A>;
@@ -544,7 +545,8 @@ namespace daw::json {
 		                                          Handler &&handler ) {
 
 			return json_event_parser<StackContainerPolicy>(
-			  basic_json_value( json_document ), DAW_FWD( handler ),
+			  basic_json_value( json_document ),
+			  DAW_FWD( handler ),
 			  options::parse_flags<> );
 		}
 

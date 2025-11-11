@@ -66,8 +66,7 @@ int main( int, char ** )
 	    exit( 1 );
 	  }
 	*/
-	auto const json_data =
-	  daw::read_file( "/tmp/1.json" ).value( );
+	auto const json_data = daw::read_file( "/tmp/1.json" ).value( );
 
 	using range_t =
 	  daw::json::json_array_range<coordinate_t, options::CheckedParseMode::no>;

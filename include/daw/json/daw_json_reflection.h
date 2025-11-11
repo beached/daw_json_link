@@ -114,8 +114,9 @@ namespace daw::json::inline DAW_JSON_VER {
 			    value, std::make_index_sequence<
 			             pub_nsdm_of( DAW_REFLECT( T ) ).size( )>{ } ) ) {
 				return refl_details::to_tuple(
-				  value, std::make_index_sequence<
-				           pub_nsdm_of( DAW_REFLECT( T ) ).size( )>{ } );
+				  value,
+				  std::make_index_sequence<
+				    pub_nsdm_of( DAW_REFLECT( T ) ).size( )>{ } );
 			}
 
 			template<JSONNAMETYPE Name, typename T>

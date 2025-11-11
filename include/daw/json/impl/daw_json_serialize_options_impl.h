@@ -83,5 +83,5 @@ namespace daw::json {
 			  default_json_option_value<options::OutputTrailingComma> =
 			    options::OutputTrailingComma::No;
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

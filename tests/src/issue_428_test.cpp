@@ -88,9 +88,10 @@ namespace daw::json {
 
 void json_test( std::string_view data_view ) {
 	auto obj = daw::json::from_json<vector_map<std::string, int>>( data_view );
-	auto obj_json = daw::json::to_json(
-	  obj, daw::json::options::output_flags<
-	         daw::json::options::SerializationFormat::Pretty> );
+	auto obj_json =
+	  daw::json::to_json( obj,
+	                      daw::json::options::output_flags<
+	                        daw::json::options::SerializationFormat::Pretty> );
 
 	std::cout << obj_json.c_str( ) << std::endl;
 }

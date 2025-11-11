@@ -101,8 +101,12 @@ namespace daw::json {
 				using Clock = typename TP::clock;
 				using Duration = typename TP::duration;
 				constexpr auto calc =
-				  []( std::int32_t y, std::uint32_t m, std::uint32_t d, std::uint32_t h,
-				      std::uint32_t min, std::uint32_t s,
+				  []( std::int32_t y,
+				      std::uint32_t m,
+				      std::uint32_t d,
+				      std::uint32_t h,
+				      std::uint32_t min,
+				      std::uint32_t s,
 				      std::uint64_t nano ) DAW_JSON_CPP23_STATIC_CALL_OP {
 					  y -= static_cast<std::int32_t>( m ) <= 2;
 					  std::int32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
@@ -291,8 +295,12 @@ namespace daw::json {
 						hms.minute += mn_offset;
 					}
 				}
-				return civil_to_time_point<TP>( ymd.year, ymd.month, ymd.day, hms.hour,
-				                                hms.minute, hms.second,
+				return civil_to_time_point<TP>( ymd.year,
+				                                ymd.month,
+				                                ymd.day,
+				                                hms.hour,
+				                                hms.minute,
+				                                hms.second,
 				                                hms.nanosecond );
 			}
 			struct ymdhms {

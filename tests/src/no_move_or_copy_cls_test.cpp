@@ -6,7 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-// define DAW_JSON_ENABLE_FULL_RVO so that all paths will use RVO when possible to return. 
+// define DAW_JSON_ENABLE_FULL_RVO so that all paths will use RVO when possible
+// to return.
 #define DAW_JSON_ENABLE_FULL_RVO
 
 #include "defines.h"

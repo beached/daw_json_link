@@ -28,7 +28,8 @@ int main( int, char ** ) {
 
 	using namespace daw::json;
 	auto rng = from_json<json_raw_no_name<>>(
-	  json_text, "coordinates",
+	  json_text,
+	  "coordinates",
 	  options::parse_flags<options::CheckedParseMode::no> );
 
 	auto val = json_value_state( );

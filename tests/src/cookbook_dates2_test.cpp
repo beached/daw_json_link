@@ -79,8 +79,8 @@ namespace daw::cookbook_dates2 {
 			  yr_sign *
 			  daw::json::parse_utils::parse_unsigned2<int_least32_t>( sv.data( ) );
 
-			return daw::json::datetime::civil_to_time_point( yr, mo, dy, hr, mn, se,
-			                                                 0 ) +
+			return daw::json::datetime::civil_to_time_point(
+			         yr, mo, dy, hr, mn, se, 0 ) +
 			       std::chrono::hours( off_hr ) + std::chrono::minutes( off_mn );
 		}
 

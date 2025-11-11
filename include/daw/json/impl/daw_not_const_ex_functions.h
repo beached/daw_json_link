@@ -95,8 +95,22 @@ namespace daw::json {
 			             char c5 = 0, char c6 = 0, char c7 = 0, char c8 = 0,
 			             char c9 = 0, char c10 = 0, char c11 = 0, char c12 = 0,
 			             char c13 = 0, char c14 = 0, char c15 = 0 ) {
-				return _mm_set_epi8( c15, c14, c13, c12, c11, c10, c9, c8, c7, c6, c5,
-				                     c4, c3, c2, c1, c0 );
+				return _mm_set_epi8( c15,
+				                     c14,
+				                     c13,
+				                     c12,
+				                     c11,
+				                     c10,
+				                     c9,
+				                     c8,
+				                     c7,
+				                     c6,
+				                     c5,
+				                     c4,
+				                     c3,
+				                     c2,
+				                     c1,
+				                     c0 );
 			}
 
 			DAW_ATTRIB_INLINE __m128i uload16_char_data( sse42_exec_tag,
@@ -187,7 +201,8 @@ namespace daw::json {
 #if defined( DAW_JSON_HAS_BUILTIN_UADD )
 				if constexpr( sizeof( unsigned ) == sizeof( U32 ) ) {
 					return __builtin_uadd_overflow(
-					  static_cast<unsigned>( value1 ), static_cast<unsigned>( value2 ),
+					  static_cast<unsigned>( value1 ),
+					  static_cast<unsigned>( value2 ),
 					  reinterpret_cast<unsigned *>( &result ) );
 				} else if constexpr( sizeof( unsigned long ) == sizeof( U32 ) ) {
 					return __builtin_uaddl_overflow(
@@ -201,7 +216,8 @@ namespace daw::json {
 					  reinterpret_cast<unsigned long long *>( &result ) );
 				}
 #else
-				return _addcarry_u32( 0, static_cast<std::uint32_t>( value1 ),
+				return _addcarry_u32( 0,
+				                      static_cast<std::uint32_t>( value1 ),
 				                      static_cast<std::uint32_t>( value2 ),
 				                      reinterpret_cast<std::uint32_t *>( &result ) );
 #endif
@@ -234,7 +250,8 @@ namespace daw::json {
 				__m128i const all_ones = _mm_set1_epi8( '\xFF' );
 				__m128i const result = _mm_clmulepi64_si128(
 				  _mm_set_epi32( 0, 0, 0, static_cast<std::int32_t>( bitmask ) ),
-				  all_ones, 0 );
+				  all_ones,
+				  0 );
 				return to_uint32( _mm_cvtsi128_si32( result ) );
 			}
 
@@ -378,8 +395,8 @@ namespace daw::json {
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_INLINE CharT *mem_skip_string(
 			  runtime_exec_tag const &tag, CharT *first, CharT *const last ) {
-				return mem_move_to_next_of<is_unchecked_input, '"', '\\'>( tag, first,
-				                                                           last );
+				return mem_move_to_next_of<is_unchecked_input, '"', '\\'>(
+				  tag, first, last );
 			}
 
 			template<bool is_unchecked_input, typename CharT>
@@ -390,8 +407,8 @@ namespace daw::json {
 				if constexpr( not is_unchecked_input ) {
 					daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData );
 				}
-				first = mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first,
-				                                                            last );
+				first = mem_move_to_next_of<is_unchecked_input, '\\', '"'>(
+				  tag, first, last );
 				while( is_unchecked_input or first < last ) {
 					switch( *first ) {
 					case '"':
@@ -465,8 +482,8 @@ namespace daw::json {
 				if constexpr( not is_unchecked_input ) {
 					daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData );
 				}
-				first = mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first,
-				                                                            last );
+				first = mem_move_to_next_of<is_unchecked_input, '\\', '"'>(
+				  tag, first, last );
 				while( is_unchecked_input or first < last ) {
 					switch( *first ) {
 					case '"':

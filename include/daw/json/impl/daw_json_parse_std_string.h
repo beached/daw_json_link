@@ -28,8 +28,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			[[nodiscard]] static constexpr UInt8
-			to_nibble( unsigned char chr ) {
+			[[nodiscard]] static constexpr UInt8 to_nibble( unsigned char chr ) {
 				int const b = static_cast<int>( chr );
 				int const maskLetter = ( ( '9' - b ) >> 31 );
 				int const maskSmall = ( ( 'Z' - b ) >> 31 );
@@ -61,7 +60,8 @@ namespace daw::json {
 			  ParseState &parse_state, char *it ) {
 				constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
 				daw_json_assert_weak( parse_state.size( ) >= 5,
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
 				char const *first = parse_state.first;
 				++first;
 				UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) )
@@ -146,8 +146,8 @@ namespace daw::json {
 				if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 					cp = ( cp - 0xD800U ) * 0x400U;
 					++first;
-					daw_json_assert_weak( *first == 'u', ErrorReason::InvalidUTFEscape,
-					                      parse_state );
+					daw_json_assert_weak(
+					  *first == 'u', ErrorReason::InvalidUTFEscape, parse_state );
 					++first;
 					auto trailing =
 					  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
@@ -205,7 +205,8 @@ namespace daw::json {
 			parse_string_known_stdstring( ParseState &parse_state ) {
 				using string_type = json_base_type_t<JsonMember>;
 				string_type result =
-				  string_type( std::size( parse_state ) + 1, '\0',
+				  string_type( std::size( parse_state ) + 1,
+				               '\0',
 				               parse_state.template get_allocator_for<char>( ) );
 				char *it = std::data( result );
 
@@ -217,7 +218,8 @@ namespace daw::json {
 				if( auto const first_slash =
 				      static_cast<std::ptrdiff_t>( parse_state.counter ) - 1;
 				    first_slash > 1 ) {
-					it = daw::algorithm::copy_n( parse_state.first, it,
+					it = daw::algorithm::copy_n( parse_state.first,
+					                             it,
 					                             static_cast<std::size_t>( first_slash ) )
 					       .output;
 					parse_state.first += first_slash;
@@ -251,8 +253,8 @@ namespace daw::json {
 							first =
 							  mem_move_to_next_of<( ParseState::is_unchecked_input or
 							                        ParseState::is_zero_terminated_string ),
-							                      '"', '\\'>( ParseState::exec_tag, first,
-							                                  last );
+							                      '"',
+							                      '\\'>( ParseState::exec_tag, first, last );
 						}
 						daw_json_assert_weak(
 						  static_cast<std::ptrdiff_t>( result.size( ) ) -
@@ -303,7 +305,8 @@ namespace daw::json {
 								  ( not parse_state.is_space_unchecked( ) ) &
 								    ( static_cast<unsigned char>( parse_state.front( ) ) <=
 								      0x7FU ),
-								  ErrorReason::InvalidStringHighASCII, parse_state );
+								  ErrorReason::InvalidStringHighASCII,
+								  parse_state );
 							}
 							*it++ = parse_state.front( );
 							parse_state.remove_prefix( );
@@ -311,15 +314,17 @@ namespace daw::json {
 					} else {
 						daw_json_assert_weak( not has_quote or
 						                        parse_state.is_quotes_checked( ),
-						                      ErrorReason::InvalidString, parse_state );
+						                      ErrorReason::InvalidString,
+						                      parse_state );
 					}
 					daw_json_assert_weak( not has_quote or parse_state.has_more( ),
-					                      ErrorReason::UnexpectedEndOfData, parse_state );
+					                      ErrorReason::UnexpectedEndOfData,
+					                      parse_state );
 				}
 				auto const sz =
 				  static_cast<std::size_t>( std::distance( std::data( result ), it ) );
-				daw_json_assert_weak( std::size( result ) >= sz,
-				                      ErrorReason::InvalidString, parse_state );
+				daw_json_assert_weak(
+				  std::size( result ) >= sz, ErrorReason::InvalidString, parse_state );
 				result.resize( sz );
 				if constexpr( std::is_convertible_v<string_type,
 				                                    json_result_t<JsonMember>> ) {

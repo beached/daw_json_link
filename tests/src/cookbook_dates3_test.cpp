@@ -79,8 +79,8 @@ namespace daw::json {
 			  std::chrono::floor<std::chrono::seconds>( v.last_modified )
 			    .time_since_epoch( )
 			    .count( );
-			return std::tuple( std::as_const( v.title ), v.id, date_added,
-			                   last_modified );
+			return std::tuple(
+			  std::as_const( v.title ), v.id, date_added, last_modified );
 		}
 	};
 } // namespace daw::json

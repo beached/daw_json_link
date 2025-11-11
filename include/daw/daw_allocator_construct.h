@@ -24,8 +24,10 @@ namespace daw {
 		if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
 			auto alloc = static_cast<alloc_t>( allocator );
 			return Constructor{ }( DAW_FWD( args )..., alloc );
-		} else if constexpr( std::is_invocable_v<Constructor, std::allocator_arg_t,
-		                                         alloc_t, Args...> ) {
+		} else if constexpr( std::is_invocable_v<Constructor,
+		                                         std::allocator_arg_t,
+		                                         alloc_t,
+		                                         Args...> ) {
 			auto alloc = static_cast<alloc_t>( allocator );
 			return Constructor{ }( std::allocator_arg, alloc, DAW_FWD( args )... );
 		} else {

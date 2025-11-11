@@ -88,8 +88,8 @@ namespace daw::json {
 #endif
 		[[nodiscard]] static inline DAW_JSON_CX_VECTOR auto
 		to_json_data( daw::geojson::Feature const &value ) {
-			return std::forward_as_tuple( value.type, value.properties,
-			                              value.geometry );
+			return std::forward_as_tuple(
+			  value.type, value.properties, value.geometry );
 		}
 	};
 

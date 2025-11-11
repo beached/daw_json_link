@@ -35,8 +35,7 @@ namespace daw::json {
 			template<char c, typename ExecTag, bool expect_long, typename CharT>
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
-			  static constexpr CharT *memchr_unchecked( CharT *first,
-			                                                   CharT *last ) {
+			  static constexpr CharT *memchr_unchecked( CharT *first, CharT *last ) {
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
 				if constexpr( expect_long ) {
 					return __builtin_char_memchr(
@@ -53,7 +52,8 @@ namespace daw::json {
 					if( ( not is_cxeval ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 						return static_cast<CharT *>(
-						  std::memchr( static_cast<void const *>( first ), '"',
+						  std::memchr( static_cast<void const *>( first ),
+						               '"',
 						               static_cast<std::size_t>( last - first ) ) );
 					}
 					(void)last;
@@ -84,8 +84,7 @@ namespace daw::json {
 			template<char c, typename ExecTag, bool expect_long, typename CharT>
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
-			  static constexpr CharT *memchr_checked( CharT *first,
-			                                                 CharT *last ) {
+			  static constexpr CharT *memchr_checked( CharT *first, CharT *last ) {
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
 				if constexpr( expect_long ) {
 					return __builtin_char_memchr(
@@ -107,7 +106,8 @@ namespace daw::json {
 					if( ( not is_cxeval ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 						return static_cast<CharT *>(
-						  std::memchr( static_cast<void const *>( first ), '"',
+						  std::memchr( static_cast<void const *>( first ),
+						               '"',
 						               static_cast<std::size_t>( last - first ) ) );
 					}
 					while( DAW_LIKELY( first < last ) and *first != c ) {
@@ -129,7 +129,7 @@ namespace daw::json {
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
 			  static constexpr CharT *mempbrk_unchecked( CharT *first,
-			                                                    CharT * /*last*/ ) {
+			                                             CharT * /*last*/ ) {
 #if DAW_HAS_BUILTIN( __builtin_strpbrk )
 				if constexpr( expect_long ) {
 					constexpr char const needles[]{ chars..., '\0' };
@@ -174,8 +174,7 @@ namespace daw::json {
 			         typename CharT>
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
-			  static constexpr CharT *mempbrk_checked( CharT *first,
-			                                                  CharT *last ) {
+			  static constexpr CharT *mempbrk_checked( CharT *first, CharT *last ) {
 				if constexpr( expect_long ) {
 #if defined( DAW_IS_CONSTANT_EVALUATED )
 					bool is_cxeval =
@@ -186,7 +185,8 @@ namespace daw::json {
 					if( ( not is_cxeval ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 
-						return mem_move_to_next_of<false, chars...>( ExecTag{}, first, last );
+						return mem_move_to_next_of<false, chars...>(
+						  ExecTag{ }, first, last );
 					}
 					while( DAW_LIKELY( first < last ) and
 					       not parse_policy_details::in<chars...>( *first ) ) {

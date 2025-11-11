@@ -69,7 +69,9 @@ void test( daw::string_view json ) {
 		auto result = std::map<std::string, brand, std::less<>>( );
 		auto json_lines_doc = json_lines_range<line_item_t>( json_sv );
 		auto res = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "amazon cellphone(checked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "amazon cellphone(checked)",
 		  [&result]( auto jl ) {
 			  for( auto [key, rating, reviews] : jl ) {
 				  auto pos = result.find( key );
@@ -93,7 +95,9 @@ void test( daw::string_view json ) {
 		auto json_lines_doc =
 		  json_lines_range<line_item_t, options::CheckedParseMode::no>( json_sv );
 		auto res = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "amazon cellphone(unchecked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "amazon cellphone(unchecked)",
 		  [&]( auto jl ) {
 			  for( auto [key, rating, reviews] : jl ) {
 				  auto pos = result.find( key );

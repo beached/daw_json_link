@@ -32,8 +32,7 @@
 #endif
 
 namespace daw::json {
-	inline namespace
-	DAW_JSON_VER {
+	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename CharT>
 			struct location_info_t {
@@ -100,13 +99,13 @@ namespace daw::json {
 					auto const hash = name_hash<expect_long_strings>( key );
 #if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 					(void)start_pos;
-					for(std::size_t n = 0; n < MemberCount; ++n) {
+					for( std::size_t n = 0; n < MemberCount; ++n ) {
 #else
-					for(std::size_t n = start_pos; n < MemberCount; ++n) {
+					for( std::size_t n = start_pos; n < MemberCount; ++n ) {
 #endif
-						if(hashes[n] == hash and names[n].name.size( ) == key.size( )) {
-							if constexpr(do_full_name_match) {
-								if(DAW_UNLIKELY( key != names[n].name )) {
+						if( hashes[n] == hash and names[n].name.size( ) == key.size( ) ) {
+							if constexpr( do_full_name_match ) {
+								if( DAW_UNLIKELY( key != names[n].name ) ) {
 									continue;
 								}
 							}
@@ -121,15 +120,15 @@ namespace daw::json {
 			template<typename... MemberNames>
 			static DAW_CONSTEVAL bool do_hashes_collide( ) {
 				json_name_hash_t hashes[sizeof...( MemberNames )]{
-					name_hash<false>( MemberNames::name )...};
+				  name_hash<false>( MemberNames::name )... };
 
 				daw::sort( std::data( hashes ), daw::data_end( hashes ) );
-				return daw::algorithm::adjacent_find(
-					       std::data( hashes ),
-					       daw::data_end( hashes ),
-					       []( auto l, auto r ) DAW_JSON_CPP23_STATIC_CALL_OP {
-						       return l == r;
-					       } ) != daw::data_end( hashes );
+				return daw::algorithm::adjacent_find( std::data( hashes ),
+				                                      daw::data_end( hashes ),
+				                                      []( auto l, auto r )
+				                                        DAW_JSON_CPP23_STATIC_CALL_OP {
+					                                        return l == r;
+				                                        } ) != daw::data_end( hashes );
 			}
 
 			// Should never be called outside a consteval context
@@ -141,14 +140,14 @@ namespace daw::json {
 				constexpr bool do_full_name_match = true;
 #else
 				constexpr bool do_full_name_match =
-					ParseState::force_name_equal_check or
-					do_hashes_collide<JsonMembers...>( );
+				  ParseState::force_name_equal_check or
+				  do_hashes_collide<JsonMembers...>( );
 #endif
-				return locations_info_t<sizeof...( JsonMembers ), CharT,
+				return locations_info_t<sizeof...( JsonMembers ),
+				                        CharT,
 				                        do_full_name_match>{
-					/*hashes*/{daw::name_hash<false>( JsonMembers::name )...},
-					          /*names*/{location_info_t<CharT>{
-						          JsonMembers::name}...}};
+				  /*hashes*/ { daw::name_hash<false>( JsonMembers::name )... },
+				  /*names*/ { location_info_t<CharT>{ JsonMembers::name }... } };
 			}
 
 			/***
@@ -175,23 +174,24 @@ namespace daw::json {
 				(void)member_name;
 
 				daw_json_assert_weak(
-					nsc_or( is_nullable, ( not locations[pos].missing( ) ),
-						( not parse_state.is_closing_brace_checked( ) ) ),
-					missing_member( member_name ),
-					parse_state );
+				  nsc_or( is_nullable,
+				          ( not locations[pos].missing( ) ),
+				          ( not parse_state.is_closing_brace_checked( ) ) ),
+				  missing_member( member_name ),
+				  parse_state );
 
 				parse_state.trim_left_unchecked( );
 				bool known = not locations[pos].missing( );
-				while(nsc_and(
-					locations[pos].missing( ),
-					( not parse_state.empty( ) and parse_state.front( ) != '}' ) )) {
+				while( nsc_and(
+				  locations[pos].missing( ),
+				  ( not parse_state.empty( ) and parse_state.front( ) != '}' ) ) ) {
 					// TODO: fully unescape name
 					// parse_name checks if we have more and are quotes
 					auto const name = parse_name( parse_state );
 					auto const name_pos =
-						locations.template find_name<ParseState::expect_long_strings,
-						                             ( from_start ? 0 : pos )>( name );
-					if constexpr(must_exist == AllMembersMustExist::yes) {
+					  locations.template find_name<ParseState::expect_long_strings,
+					                               ( from_start ? 0 : pos )>( name );
+					if constexpr( must_exist == AllMembersMustExist::yes ) {
 						daw_json_assert_weak( name_pos < std::size( locations ),
 						                      ErrorReason::UnknownMember,
 						                      parse_state );
@@ -199,25 +199,25 @@ namespace daw::json {
 #if defined( DAW_JSON_PARSER_DIAGNOSTICS )
 						std::cerr << "DEBUG: Unknown member '" << name << '\n';
 #endif
-						if(name_pos >= std::size( locations )) {
+						if( name_pos >= std::size( locations ) ) {
 							// This is not a member we are concerned with
 							(void)skip_value( parse_state );
 							parse_state.move_next_member_or_end( );
 							continue;
 						}
 					}
-					if(name_pos == pos) {
+					if( name_pos == pos ) {
 						locations[pos].set_range( parse_state );
 						break;
 					} else {
 #if defined( DAW_JSON_PARSER_DIAGNOSTICS )
 						std::cerr << "DEBUG:	Out of order member '"
-							<< locations.names[name_pos].name
-							<< "' found, looking for '" << locations.names[pos].name
-							<< ". It is "
-							<< std::abs( static_cast<long long>(pos) -
-							             static_cast<long long>(name_pos) )
-							<< " members ahead in constructor\n";
+						          << locations.names[name_pos].name
+						          << "' found, looking for '" << locations.names[pos].name
+						          << ". It is "
+						          << std::abs( static_cast<long long>( pos ) -
+						                       static_cast<long long>( name_pos ) )
+						          << " members ahead in constructor\n";
 #endif
 						// We are out of order, store position for later
 						// OLDTODO:	use type knowledge to speed up skip
@@ -229,8 +229,8 @@ namespace daw::json {
 						// Using locations to switch on BaseType is slower too
 						locations[name_pos].set_range( skip_value( parse_state ) );
 
-						if constexpr(ParseState::is_unchecked_input) {
-							if(name_pos + 1 < std::size( locations )) {
+						if constexpr( ParseState::is_unchecked_input ) {
+							if( name_pos + 1 < std::size( locations ) ) {
 								parse_state.move_next_member( );
 							} else {
 								parse_state.move_next_member_or_end( );
@@ -240,19 +240,19 @@ namespace daw::json {
 						}
 					}
 				}
-				if(locations[pos].missing( )) {
+				if( locations[pos].missing( ) ) {
 					known = true;
 				}
-				if constexpr(ParseState::has_allocator) {
+				if constexpr( ParseState::has_allocator ) {
 					return find_result{
-						locations[pos].template get_range<ParseState>( ).with_allocator(
-							parse_state ),
-						known};
+					  locations[pos].template get_range<ParseState>( ).with_allocator(
+					    parse_state ),
+					  known };
 				} else {
 					return find_result<ParseState>{
-						locations[pos].template get_range<ParseState>( ), known};
+					  locations[pos].template get_range<ParseState>( ), known };
 				}
 			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
-}     // namespace daw::json
+	} // namespace DAW_JSON_VER
+} // namespace daw::json

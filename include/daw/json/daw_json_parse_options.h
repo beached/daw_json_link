@@ -142,8 +142,10 @@ namespace daw::json {
 				///
 
 				enum class [[deprecated(
-				  "This is not used" )]] TemporarilyMutateBuffer : unsigned{
-				  no, yes }; // 1bit
+				  "This is not used" )]] TemporarilyMutateBuffer : unsigned {
+					no,
+					yes
+				}; // 1bit
 
 				///
 				/// @brief Exclude characters under 0x20 that are not explicitly
@@ -153,6 +155,6 @@ namespace daw::json {
 				///
 				enum class ExcludeSpecialEscapes : unsigned { no, yes }; // 1bit
 			} // namespace parser_options
-		}   // namespace options
-	}     // namespace DAW_JSON_VER
+		} // namespace options
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

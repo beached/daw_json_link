@@ -120,8 +120,9 @@ namespace daw::json {
 					using Names = daw::fwd_pack<JsonMembers...>;
 					daw::empty_t const expander[]{
 					  ( dependent_member_to_json_str<
-					      Is, daw::traits::nth_element<Is, JsonMembers...>, Names>(
-					      is_first, it, args, value, visited_members ),
+					      Is,
+					      daw::traits::nth_element<Is, JsonMembers...>,
+					      Names>( is_first, it, args, value, visited_members ),
 					    daw::empty_t{ } )...,
 					  daw::empty_t{} };
 					(void)expander;

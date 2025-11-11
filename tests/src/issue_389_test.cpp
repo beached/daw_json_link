@@ -37,9 +37,10 @@ int main( ) {
 		auto request_json_payload = daw::json::to_json( document, buff );
 		std::cerr << "Expected error\n";
 		return 1;
-	} catch( daw::json::json_exception const & jex ) {
-		if( jex.reason_type()	!= daw::json::ErrorReason::InvalidStringHighASCII ) {
-			std::cerr << "Unexpected JSON error " << to_formatted_string( jex ) << '\n';
+	} catch( daw::json::json_exception const &jex ) {
+		if( jex.reason_type( ) != daw::json::ErrorReason::InvalidStringHighASCII ) {
+			std::cerr << "Unexpected JSON error " << to_formatted_string( jex )
+			          << '\n';
 			return 1;
 		}
 	}

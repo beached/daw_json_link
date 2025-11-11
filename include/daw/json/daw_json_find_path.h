@@ -26,8 +26,7 @@
 #include <vector>
 
 namespace daw::json {
-	inline namespace
-	DAW_JSON_VER {
+	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			struct less {
 				DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING
@@ -35,7 +34,7 @@ namespace daw::json {
 				template<typename T, typename U>
 				DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr bool
 				operator( )( T const &lhs, U const &rhs )
-				DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
+				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
 					return lhs < rhs;
 				}
 
@@ -50,23 +49,23 @@ namespace daw::json {
 		                         char const *doc_start );
 
 		class json_path_node {
-			std::string_view m_name{};
+			std::string_view m_name{ };
 			char const *m_value_start = nullptr;
 			long long m_index = -1;
 			JsonBaseParseTypes m_type = JsonBaseParseTypes::None;
 
 			friend std::vector<json_path_node>
-			DAW_CPP20_CX_ALLOC find_json_path_stack_to( char const *parse_location,
-			                                            char const *doc_start );
+			  DAW_CPP20_CX_ALLOC find_json_path_stack_to( char const *parse_location,
+			                                              char const *doc_start );
 
 			json_path_node( ) = default;
 
 			constexpr json_path_node( JsonBaseParseTypes Type, std::string_view Name,
 			                          long long Index, char const *ValueStart )
-				: m_name( Name )
-				  , m_value_start( ValueStart )
-				  , m_index( Index )
-				  , m_type( Type ) {}
+			  : m_name( Name )
+			  , m_value_start( ValueStart )
+			  , m_index( Index )
+			  , m_type( Type ) {}
 
 		public:
 			/// What type of value is represented.
@@ -96,21 +95,21 @@ namespace daw::json {
 		[[nodiscard]] DAW_ATTRIB_NOINLINE DAW_CPP20_CX_ALLOC std::string
 		to_json_path_string( std::vector<json_path_node> const &path_stack ) {
 			return daw::algorithm::accumulate(
-				std::data( path_stack ),
-				daw::data_end( path_stack ),
-				std::string{},
-				[]( auto &&state, json_path_node const &sv )
-				DAW_JSON_CPP23_STATIC_CALL_OP {
-					if( sv.index( ) >= 0 ) {
-						state += '[';
-						state += std::to_string( sv.index( ) );
-						state += ']';
-					}else if( not sv.name( ).empty( ) ) {
-						state += '.';
-						state += std::string( sv.name( ) );
-					}
-					return DAW_FWD( state );
-				} );
+			  std::data( path_stack ),
+			  daw::data_end( path_stack ),
+			  std::string{ },
+			  []( auto &&state, json_path_node const &sv )
+			    DAW_JSON_CPP23_STATIC_CALL_OP {
+				    if( sv.index( ) >= 0 ) {
+					    state += '[';
+					    state += std::to_string( sv.index( ) );
+					    state += ']';
+				    } else if( not sv.name( ).empty( ) ) {
+					    state += '.';
+					    state += std::string( sv.name( ) );
+				    }
+				    return DAW_FWD( state );
+			    } );
 		}
 
 		/// Get the json_path_nodes representing the path to the nearest value's
@@ -120,43 +119,43 @@ namespace daw::json {
 		[[nodiscard]] DAW_CPP20_CX_ALLOC std::vector<json_path_node>
 		find_json_path_stack_to( char const *parse_location,
 		                         char const *doc_start ) {
-			if(parse_location == nullptr or doc_start == nullptr) {
-				return {};
+			if( parse_location == nullptr or doc_start == nullptr ) {
+				return { };
 			}
-			if(json_details::less{}( parse_location, doc_start )) {
-				return {};
+			if( json_details::less{ }( parse_location, doc_start ) ) {
+				return { };
 			}
 
 			struct handler_t {
 				char const *first;
 				char const *last;
-				std::vector<json_path_node> parse_stack{};
+				std::vector<json_path_node> parse_stack{ };
 
 				// This is for when we throw after array/class end, but before the
 				// next value starts
-				std::optional<json_path_node> last_popped{};
-				json_path_node state{};
+				std::optional<json_path_node> last_popped{ };
+				json_path_node state{ };
 
 				JsonBaseParseTypes child_of( ) {
-					if(parse_stack.empty( )) {
+					if( parse_stack.empty( ) ) {
 						return JsonBaseParseTypes::None;
 					}
 					return parse_stack.back( ).type( );
 				}
 
 				[[nodiscard]] bool handle_on_value( json_pair jp ) {
-					if(auto const range = jp.value.get_raw_state( );
-						range.empty( ) or last <= std::data( range )) {
+					if( auto const range = jp.value.get_raw_state( );
+					    range.empty( ) or last <= std::data( range ) ) {
 						return false;
 					}
-					if(auto const t = child_of( ); t == JsonBaseParseTypes::Class) {
+					if( auto const t = child_of( ); t == JsonBaseParseTypes::Class ) {
 						state.m_name = *jp.name;
 						state.m_index = -1;
-					} else if(t == JsonBaseParseTypes::Array) {
-						state.m_name = {};
+					} else if( t == JsonBaseParseTypes::Array ) {
+						state.m_name = { };
 						state.m_index++;
 					} else {
-						state.m_name = {};
+						state.m_name = { };
 						state.m_index = -1;
 					}
 					state.m_value_start = jp.value.get_raw_state( ).first;
@@ -167,12 +166,12 @@ namespace daw::json {
 
 				[[nodiscard]] bool handle_on_array_start( json_value const & ) {
 					parse_stack.push_back( state );
-					state = {};
+					state = { };
 					return true;
 				}
 
 				[[nodiscard]] bool handle_on_array_end( ) {
-					if(not parse_stack.empty( )) {
+					if( not parse_stack.empty( ) ) {
 						last_popped = parse_stack.back( );
 						state = parse_stack.back( );
 						parse_stack.pop_back( );
@@ -182,12 +181,12 @@ namespace daw::json {
 
 				[[nodiscard]] bool handle_on_class_start( json_value const & ) {
 					parse_stack.push_back( state );
-					state = {};
+					state = { };
 					return true;
 				}
 
 				[[nodiscard]] bool handle_on_class_end( ) {
-					if(not parse_stack.empty( )) {
+					if( not parse_stack.empty( ) ) {
 						last_popped = parse_stack.back( );
 						state = parse_stack.back( );
 						parse_stack.pop_back( );
@@ -202,12 +201,12 @@ namespace daw::json {
 #endif
 						sv = jv.get_string_view( );
 #if defined( DAW_USE_EXCEPTIONS )
-					} catch(json_exception const &) {
+					} catch( json_exception const & ) {
 						parse_stack.push_back( state );
 						return false;
 					}
 #endif
-					if(std::data( sv ) <= last and last <= daw::data_end( sv )) {
+					if( std::data( sv ) <= last and last <= daw::data_end( sv ) ) {
 						parse_stack.push_back( state );
 						return false;
 					}
@@ -221,12 +220,12 @@ namespace daw::json {
 #endif
 						sv = jv.get_string_view( );
 #if defined( DAW_USE_EXCEPTIONS )
-					} catch(json_exception const &) {
+					} catch( json_exception const & ) {
 						parse_stack.push_back( state );
 						return false;
 					}
 #endif
-					if(std::data( sv ) <= last and last <= daw::data_end( sv )) {
+					if( std::data( sv ) <= last and last <= daw::data_end( sv ) ) {
 						parse_stack.push_back( state );
 						return false;
 					}
@@ -240,12 +239,12 @@ namespace daw::json {
 #endif
 						sv = jv.get_string_view( );
 #if defined( DAW_USE_EXCEPTIONS )
-					} catch(json_exception const &) {
+					} catch( json_exception const & ) {
 						parse_stack.push_back( state );
 						return false;
 					}
 #endif
-					if(std::data( sv ) <= last and last <= daw::data_end( sv )) {
+					if( std::data( sv ) <= last and last <= daw::data_end( sv ) ) {
 						parse_stack.push_back( state );
 						return false;
 					}
@@ -259,30 +258,30 @@ namespace daw::json {
 #endif
 						sv = jv.get_string_view( );
 #if defined( DAW_USE_EXCEPTIONS )
-					} catch(json_exception const &) {
+					} catch( json_exception const & ) {
 						parse_stack.push_back( state );
 						return false;
 					}
 #endif
-					if(std::data( sv ) <= last and last <= daw::data_end( sv )) {
+					if( std::data( sv ) <= last and last <= daw::data_end( sv ) ) {
 						parse_stack.push_back( state );
 						return false;
 					}
 					return true;
 				}
-			} handler{doc_start, parse_location + 1};
+			} handler{ doc_start, parse_location + 1 };
 
 #if defined( DAW_USE_EXCEPTIONS )
 			try {
 #endif
 				json_event_parser( doc_start, handler );
 #if defined( DAW_USE_EXCEPTIONS )
-			} catch(json_exception const &) {
+			} catch( json_exception const & ) {
 				// Ignoring because we are only looking for the stack leading up to
 				// this and it may have come from an error
 			}
 #endif
-			if(handler.last_popped) {
+			if( handler.last_popped ) {
 				handler.parse_stack.push_back( *handler.last_popped );
 			}
 			return std::move( handler.parse_stack );
@@ -297,13 +296,13 @@ namespace daw::json {
 		[[nodiscard]] DAW_CPP20_CX_ALLOC std::string
 		find_json_path_to( char const *parse_location, char const *doc_start ) {
 			return to_json_path_string(
-				find_json_path_stack_to( parse_location, doc_start ) );
+			  find_json_path_stack_to( parse_location, doc_start ) );
 		}
 
 		[[nodiscard]] DAW_CPP20_CX_ALLOC std::string
 		find_json_path_to( json_exception const &jex, char const *doc_start ) {
 			return to_json_path_string(
-				find_json_path_stack_to( jex.parse_location( ), doc_start ) );
+			  find_json_path_stack_to( jex.parse_location( ), doc_start ) );
 		}
 
 		[[nodiscard]] constexpr std::size_t
@@ -315,14 +314,14 @@ namespace daw::json {
 
 			return daw::algorithm::accumulate( doc_start,
 			                                   doc_pos,
-			                                   std::size_t{},
+			                                   std::size_t{ },
 			                                   []( std::size_t count, char c )
-			                                   DAW_JSON_CPP23_STATIC_CALL_OP {
-				                                   if( c == '\n' ) {
-					                                   return count + 1;
-				                                   }
-				                                   return count;
-			                                   } );
+			                                     DAW_JSON_CPP23_STATIC_CALL_OP {
+				                                     if( c == '\n' ) {
+					                                     return count + 1;
+				                                     }
+				                                     return count;
+			                                     } );
 		}
 
 		[[nodiscard]] constexpr std::size_t
@@ -341,7 +340,7 @@ namespace daw::json {
 			auto const last = daw::reverse_iterator<char const *>( doc_start );
 			auto const pos = daw::algorithm::find( first, last, '\n' ) - first;
 			daw_json_ensure( pos >= 0, ErrorReason::Unknown );
-			return static_cast<std::size_t>(pos);
+			return static_cast<std::size_t>( pos );
 		}
 
 		[[nodiscard]] constexpr std::size_t
@@ -349,4 +348,4 @@ namespace daw::json {
 			return find_column_number_of( node.value_start( ), doc_start );
 		}
 	} // namespace DAW_JSON_VER
-}   // namespace daw::json
+} // namespace daw::json

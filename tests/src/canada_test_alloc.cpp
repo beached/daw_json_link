@@ -59,7 +59,8 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 	//**************************
 	std::optional<daw::geojson::Polygon> canada_result;
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(checked)", sz,
+	  "canada bench(checked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  canada_result.reset( );
 		  alloc.release( );
@@ -73,12 +74,15 @@ void test( std::string_view json_sv1, AllocType &alloc ) {
 	test_assert( canada_result, "Missing value" );
 	//**************************
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(unchecked)", sz,
+	  "canada bench(unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  canada_result.reset( );
 		  alloc.release( );
 		  canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
-		    f1, "features[0].geometry", alloc,
+		    f1,
+		    "features[0].geometry",
+		    alloc,
 		    parse_flags<ExecMode, CheckedParseMode::no> );
 		  daw::do_not_optimize( canada_result );
 	  },
@@ -124,7 +128,8 @@ int main( int argc, char **argv )
 	{
 		str.reserve( json_sv1.size( ) );
 		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "canada bench(to_json_string)", sz,
+		  "canada bench(to_json_string)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
 			  daw::json::to_json( tr, str );
@@ -142,7 +147,8 @@ int main( int argc, char **argv )
 		str.clear( );
 		str.resize( str_sz * 2 );
 		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "canada bench(to_json_string2)", sz,
+		  "canada bench(to_json_string2)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  auto *out_it = str.data( );
 			  daw::json::to_json( tr, out_it );
