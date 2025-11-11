@@ -167,7 +167,7 @@ namespace daw::json {
 			  "this context" );
 
 			template<typename OutputIterator, typename Member, typename Value>
-			[[nodiscard]] static inline constexpr OutputIterator
+			[[nodiscard]] static constexpr OutputIterator
 			serialize( OutputIterator it, Member const &m, Value const & ) {
 				return json_details::member_to_string<json_member>( it, m );
 			}
@@ -286,7 +286,7 @@ namespace daw::json {
 			 */
 			template<typename OutputIterator, typename Value,
 			         template<class...> class Tuple, typename... Ts>
-			[[nodiscard]] static inline constexpr OutputIterator
+			[[nodiscard]] static constexpr OutputIterator
 			serialize( OutputIterator it, Tuple<Ts...> const &args, Value const &v ) {
 				static_assert( sizeof...( Ts ) == sizeof...( JsonMembers ),
 				               "Argument count is incorrect" );
@@ -361,7 +361,7 @@ namespace daw::json {
 			 * @return the OutputIterator it
 			 */
 			template<typename OutputIterator, typename Value>
-			[[nodiscard]] static inline constexpr OutputIterator
+			[[nodiscard]] static constexpr OutputIterator
 			serialize( OutputIterator it, Value const &v ) {
 
 				return daw::visit_nt( v, [&it]( auto const &alternative ) {

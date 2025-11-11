@@ -109,7 +109,7 @@ namespace daw::json {
 
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
-			DAW_ATTRIB_FLATINLINE static inline constexpr auto
+			DAW_ATTRIB_FLATINLINE static constexpr auto
 			construct_value_tp( ParseState &parse_state,
 			                    fwd_pack<Args...> &&tp_args ) {
 

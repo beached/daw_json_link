@@ -33,7 +33,7 @@ namespace daw::json {
 		namespace json_details {
 			template<bool skip_end_check, typename Unsigned>
 			DAW_ATTRIB_NONNULL( )
-			DAW_ATTRIB_FLATINLINE inline constexpr void parse_digits_until_last(
+			DAW_ATTRIB_FLATINLINE constexpr void parse_digits_until_last(
 			  char const *DAW_RESTRICT first, char const *const DAW_RESTRICT last,
 			  Unsigned &DAW_RESTRICT v ) {
 				Unsigned value = v;
@@ -57,7 +57,7 @@ namespace daw::json {
 
 			template<bool skip_end_check, typename Unsigned, typename CharT>
 			[[nodiscard]] DAW_ATTRIB_NONNULL( ) DAW_ATTRIB_FLATINLINE
-			  inline constexpr CharT *parse_digits_while_number(
+			  constexpr CharT *parse_digits_while_number(
 			    CharT *DAW_RESTRICT first, CharT *const DAW_RESTRICT last,
 			    Unsigned &DAW_RESTRICT v ) {
 
@@ -95,7 +95,7 @@ namespace daw::json {
 			template<typename ParseState, typename Result,
 			         typename max_storage_digits, typename CharT>
 			DAW_ATTRIB_NONNULL( ( 1, 2 ) )
-			[[nodiscard]] inline constexpr bool should_use_strtod(
+			[[nodiscard]] constexpr bool should_use_strtod(
 			  CharT *whole_first, CharT *whole_last, CharT *fract_first,
 			  CharT *fract_last ) {
 				if constexpr( std::is_floating_point_v<Result> and

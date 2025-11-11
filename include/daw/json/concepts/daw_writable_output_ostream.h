@@ -28,7 +28,7 @@ namespace daw::json {
 			  std::is_base_of_v<std::ostream, T> )> : std::true_type {
 
 				template<typename... StringViews>
-				static inline void write( std::ostream &os,
+				static void write( std::ostream &os,
 				                          StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					constexpr auto writer = []( std::ostream &o,
@@ -44,7 +44,7 @@ namespace daw::json {
 					( (void)writer( os, svs ), ... );
 				}
 
-				static inline void put( std::ostream &os, char c ) {
+				static void put( std::ostream &os, char c ) {
 					os.put( c );
 					daw_json_ensure( static_cast<bool>( os ),
 					                 daw::json::ErrorReason::OutputError );

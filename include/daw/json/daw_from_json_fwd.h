@@ -146,7 +146,7 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonMember, bool KnownBounds = false, json_options_t P,
 		         typename A, auto... PolicyFlags>
-		[[nodiscard]] inline constexpr auto
+		[[nodiscard]] constexpr auto
 		from_json( basic_json_value<P, A> value,
 		           options::parse_flags_t<PolicyFlags...> );
 
@@ -159,7 +159,7 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonMember, bool KnownBounds = false, json_options_t P,
 		         typename A>
-		[[nodiscard]] inline constexpr auto
+		[[nodiscard]] constexpr auto
 		from_json( basic_json_value<P, A> value );
 
 		/// @brief Parse a JSONMember from the json_data starting at member_path.

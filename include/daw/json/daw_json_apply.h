@@ -23,7 +23,7 @@ namespace daw::json {
 			inline constexpr bool has_call_operator = std::is_function_v<T>;
 
 			template<typename T>
-			inline constexpr bool has_call_operator<
+			constexpr bool has_call_operator<
 			  T, std::void_t<decltype( &std::remove_reference_t<T>::operator( ) )>> =
 			  true;
 

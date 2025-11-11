@@ -35,7 +35,7 @@ namespace daw::json {
 			template<char c, typename ExecTag, bool expect_long, typename CharT>
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
-			  static inline constexpr CharT *memchr_unchecked( CharT *first,
+			  static constexpr CharT *memchr_unchecked( CharT *first,
 			                                                   CharT *last ) {
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
 				if constexpr( expect_long ) {
@@ -84,7 +84,7 @@ namespace daw::json {
 			template<char c, typename ExecTag, bool expect_long, typename CharT>
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
-			  static inline constexpr CharT *memchr_checked( CharT *first,
+			  static constexpr CharT *memchr_checked( CharT *first,
 			                                                 CharT *last ) {
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
 				if constexpr( expect_long ) {
@@ -128,7 +128,7 @@ namespace daw::json {
 			         typename CharT>
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
-			  static inline constexpr CharT *mempbrk_unchecked( CharT *first,
+			  static constexpr CharT *mempbrk_unchecked( CharT *first,
 			                                                    CharT * /*last*/ ) {
 #if DAW_HAS_BUILTIN( __builtin_strpbrk )
 				if constexpr( expect_long ) {
@@ -174,7 +174,7 @@ namespace daw::json {
 			         typename CharT>
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
-			  static inline constexpr CharT *mempbrk_checked( CharT *first,
+			  static constexpr CharT *mempbrk_checked( CharT *first,
 			                                                  CharT *last ) {
 				if constexpr( expect_long ) {
 #if defined( DAW_IS_CONSTANT_EVALUATED )
@@ -206,7 +206,7 @@ namespace daw::json {
 			         char... chars, typename CharT>
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
-			  static inline constexpr CharT *mempbrk( CharT *first, CharT *last ) {
+			  static constexpr CharT *mempbrk( CharT *first, CharT *last ) {
 
 				if constexpr( is_unchecked_input ) {
 					return mempbrk_unchecked<ExecTag, expect_long, chars...>( first,

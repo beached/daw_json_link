@@ -22,18 +22,18 @@ namespace daw::json {
 		namespace json_details {
 			template<typename OutputIterator>
 			struct iterator_wrapper : OutputIterator {
-				inline constexpr OutputIterator get( ) const {
+				constexpr OutputIterator get( ) const {
 					return *this;
 				}
 
 				static constexpr bool is_pointer = false;
 
-				inline constexpr void set( OutputIterator it ) {
+				constexpr void set( OutputIterator it ) {
 					*static_cast<OutputIterator *>( this ) = it;
 				}
 
 			protected:
-				inline constexpr OutputIterator &raw_it( ) {
+				constexpr OutputIterator &raw_it( ) {
 					return *this;
 				}
 			};
@@ -52,107 +52,107 @@ namespace daw::json {
 				static constexpr bool is_pointer = true;
 
 			protected:
-				inline constexpr CharT *raw_it( ) {
+				constexpr CharT *raw_it( ) {
 					return ptr;
 				}
 
 			public:
-				inline constexpr CharT *get( ) const {
+				constexpr CharT *get( ) const {
 					return ptr;
 				}
 
-				inline constexpr void set( CharT *p ) {
+				constexpr void set( CharT *p ) {
 					ptr = p;
 				}
 
-				inline constexpr reference operator*( ) {
+				constexpr reference operator*( ) {
 					return *ptr;
 				}
 
-				inline constexpr pointer operator->( ) {
+				constexpr pointer operator->( ) {
 					return ptr;
 				}
 
-				inline constexpr iterator_wrapper &operator++( ) {
+				constexpr iterator_wrapper &operator++( ) {
 					++ptr;
 					return *this;
 				}
 
-				inline constexpr iterator_wrapper operator++( int ) & {
+				constexpr iterator_wrapper operator++( int ) & {
 					auto result = *this;
 					++ptr;
 					return result;
 				}
 
-				inline constexpr iterator_wrapper &operator--( ) {
+				constexpr iterator_wrapper &operator--( ) {
 					--ptr;
 					return *this;
 				}
 
-				inline constexpr iterator_wrapper operator--( int ) & {
+				constexpr iterator_wrapper operator--( int ) & {
 					auto result = *this;
 					--ptr;
 					return result;
 				}
 
-				inline constexpr iterator_wrapper &operator+=( difference_type n ) {
+				constexpr iterator_wrapper &operator+=( difference_type n ) {
 					ptr += n;
 					return *this;
 				}
 
-				inline constexpr iterator_wrapper &operator-=( difference_type n ) {
+				constexpr iterator_wrapper &operator-=( difference_type n ) {
 					ptr -= n;
 					return *this;
 				}
 
-				inline constexpr iterator_wrapper
+				constexpr iterator_wrapper
 				operator+( difference_type n ) const noexcept {
 					iterator_wrapper result = *this;
 					ptr += n;
 					return result;
 				}
 
-				inline constexpr iterator_wrapper
+				constexpr iterator_wrapper
 				operator-( difference_type n ) const noexcept {
 					iterator_wrapper result = *this;
 					ptr -= n;
 					return result;
 				}
 
-				inline constexpr reference operator[]( size_type n ) noexcept {
+				constexpr reference operator[]( size_type n ) noexcept {
 					return *( ptr + static_cast<difference_type>( n ) );
 				}
 
-				explicit inline constexpr operator bool( ) const {
+				explicit constexpr operator bool( ) const {
 					return static_cast<bool>( ptr );
 				}
 
-				friend inline constexpr bool operator==( iterator_wrapper const &lhs,
+				friend constexpr bool operator==( iterator_wrapper const &lhs,
 				                                         iterator_wrapper const &rhs ) {
 					return lhs.ptr == rhs.ptr;
 				}
 
-				friend inline constexpr bool operator!=( iterator_wrapper const &lhs,
+				friend constexpr bool operator!=( iterator_wrapper const &lhs,
 				                                         iterator_wrapper const &rhs ) {
 					return lhs.ptr != rhs.ptr;
 				}
 
-				friend inline constexpr bool operator<( iterator_wrapper const &lhs,
+				friend constexpr bool operator<( iterator_wrapper const &lhs,
 				                                        iterator_wrapper const &rhs ) {
 					return lhs.ptr < rhs.ptr;
 				}
 
-				friend inline constexpr bool operator<=( iterator_wrapper const &lhs,
+				friend constexpr bool operator<=( iterator_wrapper const &lhs,
 				                                         iterator_wrapper const &rhs ) {
 					return lhs.ptr <= rhs.ptr;
 				}
 
-				friend inline constexpr bool operator>( iterator_wrapper const &lhs,
+				friend constexpr bool operator>( iterator_wrapper const &lhs,
 				                                        iterator_wrapper const &rhs ) {
 					return lhs.ptr > rhs.ptr;
 				}
 
-				friend inline constexpr bool operator>=( iterator_wrapper const &lhs,
+				friend constexpr bool operator>=( iterator_wrapper const &lhs,
 				                                         iterator_wrapper const &rhs ) {
 					return lhs.ptr >= rhs.ptr;
 				}

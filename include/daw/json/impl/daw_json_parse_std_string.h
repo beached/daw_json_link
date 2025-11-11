@@ -28,7 +28,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			[[nodiscard]] static inline constexpr UInt8
+			[[nodiscard]] static constexpr UInt8
 			to_nibble( unsigned char chr ) {
 				int const b = static_cast<int>( chr );
 				int const maskLetter = ( ( '9' - b ) >> 31 );
@@ -41,7 +41,7 @@ namespace daw::json {
 
 			template<bool is_unchecked_input>
 			DAW_ATTRIB_NONNULL( )
-			[[nodiscard]] static inline constexpr UInt16
+			[[nodiscard]] static constexpr UInt16
 			  byte_from_nibbles( char const *&first ) {
 				auto const n0 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				auto const n1 = to_nibble( static_cast<unsigned char>( *first++ ) );

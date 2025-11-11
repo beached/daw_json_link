@@ -36,7 +36,7 @@ namespace daw::json {
 			 * Skip a string, after the initial quote has been skipped already
 			 */
 			template<typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE static inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_string_nq( ParseState &parse_state ) {
 				auto result = parse_state;
 				result.counter =
@@ -53,7 +53,7 @@ namespace daw::json {
 			 * Skip a string and store the first escaped element's position, if any
 			 */
 			template<bool KeepQuotes = false, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE static inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_string( ParseState &parse_state ) {
 				if( parse_state.empty( ) ) {
 					return parse_state;
@@ -73,7 +73,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] static inline constexpr ParseState
+			[[nodiscard]] static constexpr ParseState
 			skip_true( ParseState &parse_state ) {
 				auto result = parse_state;
 				if constexpr( ( ParseState::is_zero_terminated_string or
@@ -95,7 +95,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] static inline constexpr ParseState
+			[[nodiscard]] static constexpr ParseState
 			skip_false( ParseState &parse_state ) {
 				auto result = parse_state;
 				if constexpr( ( ParseState::is_zero_terminated_string or
@@ -117,7 +117,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] static inline constexpr ParseState
+			[[nodiscard]] static constexpr ParseState
 			skip_null( ParseState &parse_state ) {
 				if constexpr( ( ParseState::is_zero_terminated_string or
 				                ParseState::is_unchecked_input ) ) {
@@ -143,7 +143,7 @@ namespace daw::json {
 			template<bool skip_end_check, typename CharT>
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
-			  [[nodiscard]] static inline constexpr CharT *skip_digits(
+			  [[nodiscard]] static constexpr CharT *skip_digits(
 			    CharT *first, CharT *const last ) {
 				(void)last; // only used inside if constexpr and gcc9 warns
 				unsigned dig = parse_digit( *first );
@@ -367,7 +367,7 @@ namespace daw::json {
 			 * are skipping
 			 */
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE static inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_known_value( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
@@ -403,7 +403,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] static inline constexpr ParseState
+			[[nodiscard]] static constexpr ParseState
 			skip_literal( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );

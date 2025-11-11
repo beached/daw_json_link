@@ -15,7 +15,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			DAW_ATTRIB_FLATINLINE [[nodiscard]] static inline constexpr unsigned
+			DAW_ATTRIB_FLATINLINE [[nodiscard]] static constexpr unsigned
 			parse_digit( char c ) {
 				return static_cast<unsigned>(
 				  static_cast<unsigned char>( static_cast<unsigned char>( c ) -

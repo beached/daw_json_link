@@ -90,14 +90,14 @@ namespace daw::json {
 		template<typename T>
 		struct default_to_json_converter_t {
 			template<typename U>
-			[[nodiscard]] static inline auto use_stream( U const &v ) {
+			[[nodiscard]] static std::string use_stream( U const &v ) {
 				std::stringstream ss{ };
 				ss << v;
 				return std::move( ss ).str( );
 			}
 
 			template<typename U>
-			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr auto
+			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
 			operator( )( U const &value ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				if constexpr( json_details::is_string_view_like_v<U> ) {
 					return std::string_view( std::data( value ), std::size( value ) );
@@ -168,7 +168,7 @@ namespace daw::json {
 
 		namespace from_json_conv_details {
 			template<typename T>
-			[[nodiscard]] static inline auto use_stream( std::string_view sv ) {
+			[[nodiscard]] static auto use_stream( std::string_view sv ) {
 				std::stringstream ss{ };
 				ss << sv;
 				T result;
@@ -179,7 +179,7 @@ namespace daw::json {
 
 		template<typename T>
 		struct default_from_json_converter_t {
-			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr decltype( auto )
+			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP constexpr decltype( auto )
 			operator( )( std::string_view sv ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				if constexpr( std::is_same_v<T, std::string_view> or
 				              std::is_same_v<T, std::optional<std::string_view>> ) {
@@ -497,7 +497,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_variant( WriteableType it, parse_to_t const &value ) {
 
 				assert( value.index( ) >= 0 );
@@ -506,7 +506,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_variant_tagged( WriteableType it,
 			                               parse_to_t const &value ) {
 
@@ -515,7 +515,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_variant_intrusive( WriteableType it,
 			                                  parse_to_t const &value ) {
 
@@ -524,7 +524,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename Optional>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_null( WriteableType it, Optional const &value ) {
 
 				if constexpr( has_op_bool_v<Optional> ) {
@@ -798,7 +798,7 @@ namespace daw::json {
 			} // namespace utils_details
 
 			template<typename Integer, typename WriteableType>
-			static inline constexpr WriteableType
+			static constexpr WriteableType
 			integer_to_string( WriteableType it, Integer const &value ) {
 				static_assert( daw::is_integral_v<Integer> );
 
@@ -814,7 +814,7 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_string_raw( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
@@ -833,7 +833,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_string_escaped( WriteableType it,
 			                               parse_to_t const &value ) {
 
@@ -846,13 +846,13 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			[[nodiscard]] static inline constexpr bool
+			[[nodiscard]] static constexpr bool
 			is_null( std::optional<T> const &v ) {
 				return not static_cast<bool>( v );
 			}
 
 			template<typename T>
-			[[nodiscard]] static inline constexpr bool is_null( T const & ) {
+			[[nodiscard]] static constexpr bool is_null( T const & ) {
 				return false;
 			}
 
@@ -910,14 +910,14 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_unknown( WriteableType it, parse_to_t const &value ) {
 
 				return utils::copy_to_iterator( it, value );
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_class( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
@@ -952,7 +952,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_custom( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
@@ -1126,13 +1126,13 @@ namespace daw::json {
 			}
 
 			template<typename Key, typename Value>
-			static inline constexpr Key const &
+			static constexpr Key const &
 			json_get_key( std::pair<Key, Value> const &kv ) {
 				return kv.first;
 			}
 
 			template<typename Key, typename Value>
-			static inline constexpr Value const &
+			static constexpr Value const &
 			json_get_value( std::pair<Key, Value> const &kv ) {
 				return kv.second;
 			}
@@ -1292,7 +1292,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename T>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			member_to_string( WriteableType it, T const &value ) {
 				return to_daw_json_string<JsonMember, JsonMember::expected_type>(
 				  std::move( it ), value );
@@ -1408,7 +1408,7 @@ namespace daw::json {
 			template<std::size_t pos, typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename Tuple,
 			         typename Value, typename Visited>
-			static inline constexpr void to_json_str(
+			static constexpr void to_json_str(
 			  bool &is_first,
 			  serialization_policy<WriteableType, SerializationOptions> &it,
 			  Tuple const &tp, Value const &, Visited &visited_members ) {

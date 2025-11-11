@@ -84,7 +84,7 @@ namespace daw::json {
 		using desc_t = typename describe_impl::describe_member<U>::type;
 
 		template<template<typename...> typename List, typename... Ts>
-		static inline constexpr auto
+		static constexpr auto
 		to_json_data_impl( T const &value, List<Ts...> const & ) noexcept {
 			return std::forward_as_tuple( value.*Ts::pointer... );
 		}

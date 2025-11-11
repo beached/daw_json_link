@@ -153,7 +153,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler, json_options_t P, typename A>
-			inline constexpr handler_result_holder
+			constexpr handler_result_holder
 			handle_on_value( Handler &&handler, basic_json_pair<P, A> p ) {
 				if constexpr( hnd_checks::has_on_value_handler_v<Handler, P, A> ) {
 					return handler.handle_on_value( std::move( p ) );

@@ -75,7 +75,7 @@ namespace daw::json {
 			    : max_dbl_exp;
 
 			template<typename Result, typename Unsigned>
-			DAW_ATTRIB_FLATINLINE static inline constexpr Result
+			DAW_ATTRIB_FLATINLINE static constexpr Result
 			power10( constexpr_exec_tag, Result result, Unsigned p ) {
 				// We only have a double table, of which float is a subset.  Long double
 				// will be calculated in terms of that
@@ -127,7 +127,7 @@ namespace daw::json {
 			}
 
 			template<typename Result, typename Unsigned>
-			DAW_ATTRIB_FLATINLINE static inline constexpr Result
+			DAW_ATTRIB_FLATINLINE static constexpr Result
 			power10( runtime_exec_tag, Result result, Unsigned p ) {
 				if constexpr( std::is_same_v<Result, double> or
 				              std::is_same_v<Result, float> ) {

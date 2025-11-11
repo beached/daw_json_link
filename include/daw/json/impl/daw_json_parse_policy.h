@@ -433,7 +433,7 @@ namespace daw::json {
 				}
 			}
 
-			DAW_ATTRIB_FLATINLINE inline constexpr void
+			DAW_ATTRIB_FLATINLINE constexpr void
 			move_next_member_or_end_checked( ) {
 				trim_left_checked( );
 				if constexpr( is_zero_terminated_string ) {

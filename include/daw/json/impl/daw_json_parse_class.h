@@ -282,7 +282,7 @@ namespace daw::json {
 			/// Point
 			///
 			template<typename JsonClass, typename... JsonMembers, typename ParseState>
-			[[nodiscard]] static inline constexpr json_result_t<JsonClass>
+			[[nodiscard]] static constexpr json_result_t<JsonClass>
 			parse_json_tuple_class( ParseState &parse_state ) {
 				static_assert( is_a_json_type_v<JsonClass> );
 				using T = json_base_type_t<JsonClass>;

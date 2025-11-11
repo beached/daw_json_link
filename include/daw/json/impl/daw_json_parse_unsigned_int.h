@@ -49,7 +49,7 @@ namespace daw::json {
 			}
 
 			[[nodiscard]]
-			DAW_ATTRIB_NONNULL( ) inline constexpr bool is_made_of_eight_digits_cx(
+			DAW_ATTRIB_NONNULL( ) constexpr bool is_made_of_eight_digits_cx(
 			  char const *ptr ) {
 				// The copy to local buffer is to get the compiler to treat it like a
 				// reinterpret_cast
@@ -81,7 +81,7 @@ namespace daw::json {
 			// Constexpr'ified version from
 			// https://kholdstare.github.io/technical/2020/05/26/faster-integer-parsing.html
 			DAW_ATTRIB_NONNULL( )
-			inline constexpr UInt64 parse_8_digits( char const *const str ) {
+			constexpr UInt64 parse_8_digits( char const *const str ) {
 				auto const chunk = daw::to_uint64_buffer( str );
 				// 1-byte mask trick (works on 4 pairs of single digits)
 				auto const lower_digits =
@@ -111,7 +111,7 @@ namespace daw::json {
 			               "8 digit parser does not work on this platform" );
 
 			DAW_ATTRIB_NONNULL( )
-			inline constexpr UInt64 parse_16_digits( char const *const str ) {
+			constexpr UInt64 parse_16_digits( char const *const str ) {
 				auto const upper = parse_8_digits( str );
 				auto const lower = parse_8_digits( str + 8 );
 				return upper * 100'000'000_u64 + lower;

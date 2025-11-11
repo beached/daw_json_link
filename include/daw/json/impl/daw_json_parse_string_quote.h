@@ -23,7 +23,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details::string_quote {
 			template<std::size_t N, char c>
-			inline constexpr UInt8 test_at_byte( UInt64 b ) {
+			constexpr UInt8 test_at_byte( UInt64 b ) {
 				auto const lhs = b & ( 0xFF_u64 << ( N * 8U ) );
 				using rhs = daw::constant<to_uint64( static_cast<unsigned char>( c ) )
 				                          << ( N * 8U )>;
@@ -40,7 +40,7 @@ namespace daw::json {
 
 			template<typename CharT>
 			DAW_ATTRIB_NONNULL( )
-			inline constexpr void skip_to_first8( CharT *&first, CharT *const last ) {
+			constexpr void skip_to_first8( CharT *&first, CharT *const last ) {
 				bool keep_going = last - first >= 8;
 				while( keep_going ) {
 					auto buff = daw::to_uint64_buffer( first );
@@ -71,7 +71,7 @@ namespace daw::json {
 
 			template<typename CharT>
 			DAW_ATTRIB_NONNULL( )
-			inline constexpr void skip_to_first4( CharT *&first, CharT *const last ) {
+			constexpr void skip_to_first4( CharT *&first, CharT *const last ) {
 				bool keep_going = last - first >= 4;
 				while( keep_going ) {
 					// Need to look for escapes as this is fast path

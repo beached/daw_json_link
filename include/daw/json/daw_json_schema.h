@@ -21,7 +21,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace utils {
 			template<typename WriteableType>
-			static inline constexpr WriteableType
+			static constexpr WriteableType
 			output_kv( WriteableType it, std::string_view key,
 			           std::string_view value ) {
 				it.write( key, ":", it.space, value );

@@ -213,7 +213,7 @@ namespace daw::json {
 			}
 
 			/// @brief Move parser to next value
-			inline constexpr void operator++( int ) & {
+			constexpr void operator++( int ) & {
 				operator++( );
 			}
 
@@ -361,7 +361,7 @@ namespace daw::json {
 			/// @brief Construct from IteratorRange
 			/// @param parse_state string data where start is the start of our value
 			template<json_options_t P, typename A>
-			explicit inline constexpr basic_json_value(
+			explicit constexpr basic_json_value(
 			  BasicParsePolicy<P, A> parse_state )
 			  : m_parse_state( std::move( parse_state ) ) {
 				// Ensure we are at the actual value.
@@ -369,30 +369,30 @@ namespace daw::json {
 			}
 
 			/// @brief Construct from string_view
-			explicit inline constexpr basic_json_value( daw::string_view sv )
+			explicit constexpr basic_json_value( daw::string_view sv )
 			  : m_parse_state( std::data( sv ), daw::data_end( sv ) ) {
 				m_parse_state.trim_left( );
 			}
 
 			/// @brief Construct from CharT *, std::size_t
-			explicit inline constexpr basic_json_value( CharT *first, std::size_t sz )
+			explicit constexpr basic_json_value( CharT *first, std::size_t sz )
 			  : m_parse_state( first, first + static_cast<std::ptrdiff_t>( sz ) ) {
 				m_parse_state.trim_left( );
 			}
 
 			/// @brief Construct from CharT *, CharT *
-			explicit inline constexpr basic_json_value( CharT *first, CharT *last )
+			explicit constexpr basic_json_value( CharT *first, CharT *last )
 			  : m_parse_state( first, last ) {
 				m_parse_state.trim_left( );
 			}
 
 			/// @brief Get a copy of the underlying parse state
 			/// @return IteratorRange containing values JSON data
-			[[nodiscard]] inline constexpr ParseState get_raw_state( ) const {
+			[[nodiscard]] constexpr ParseState get_raw_state( ) const {
 				return m_parse_state;
 			}
 
-			[[nodiscard]] inline constexpr std::string_view
+			[[nodiscard]] constexpr std::string_view
 			get_raw_json_document( ) const {
 				return std::string_view( m_parse_state.first, m_parse_state.size( ) );
 			}
@@ -400,7 +400,7 @@ namespace daw::json {
 			/// @brief Get the first member/item
 			/// @pre type of value is class or array
 			/// @return basic_json_value_iterator to the first item/member
-			[[nodiscard]] inline constexpr iterator begin( ) const {
+			[[nodiscard]] constexpr iterator begin( ) const {
 				auto parse_state = ParseState( m_parse_state.first, m_parse_state.last,
 				                               m_parse_state.first, m_parse_state.last,
 				                               m_parse_state.get_allocator( ) );
@@ -411,7 +411,7 @@ namespace daw::json {
 
 			/// @brief End of range over class/arrays members/items
 			/// @return default constructed basic_json_value_iterator
-			[[nodiscard]] inline constexpr iterator end( ) const {
+			[[nodiscard]] constexpr iterator end( ) const {
 				return iterator( );
 			}
 
@@ -667,7 +667,7 @@ namespace daw::json {
 
 			/// @brief Is the JSON value a string
 			/// @return true if the value is a string
-			[[nodiscard]] inline constexpr bool is_string( ) const {
+			[[nodiscard]] constexpr bool is_string( ) const {
 				return type( ) == JsonBaseParseTypes::String;
 			}
 
@@ -681,7 +681,7 @@ namespace daw::json {
 			/// one of ",[,{,0,1,2,3,4,5,6,7,8,9,-,t,f, or n.  This is generally an
 			/// error
 			/// @return true if the parser is unsure what the data is
-			[[nodiscard]] inline constexpr bool is_unknown( ) const {
+			[[nodiscard]] constexpr bool is_unknown( ) const {
 				return type( ) == JsonBaseParseTypes::None;
 			}
 

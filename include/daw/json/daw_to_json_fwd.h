@@ -14,33 +14,36 @@
 #include "impl/daw_json_serialize_policy.h"
 
 namespace daw::json {
-	inline namespace DAW_JSON_VER {
+	inline namespace
+	DAW_JSON_VER {
 		namespace options {
 			/// @brief Specify output policy flags in to_json calls.  See cookbook
 			/// item output_options.md
 			template<auto... PolicyFlags>
 			struct output_flags_t {
 				static_assert(
-				  ( json_details::is_output_option_v<decltype( PolicyFlags )> and ... ),
-				  "Only valid output flags can be used.  See cookbook "
-				  "output_options.md" );
+					( json_details::is_output_option_v<decltype( PolicyFlags )> and ... ),
+					"Only valid output flags can be used.  See cookbook "
+					"output_options.md" );
 				static constexpr json_options_t value =
-				  json_details::serialization::set_bits(
-				    json_details::serialization::default_policy_flag, PolicyFlags... );
+					json_details::serialization::set_bits(
+						json_details::serialization::default_policy_flag,
+						PolicyFlags... );
 			};
+
 			/// @brief Specify output policy flags in to_json calls.  See cookbook
 			/// item output_options.md
 			template<>
 			struct output_flags_t<> {
 				static constexpr json_options_t value =
-				  json_details::serialization::default_policy_flag;
+					json_details::serialization::default_policy_flag;
 			};
 
 			/// @brief Specify output policy flags in to_json calls.  See cookbook
 			/// item output_options.md
 			template<auto... PolicyFlags>
 			inline constexpr auto output_flags =
-			  options::output_flags_t<PolicyFlags...>{ };
+				options::output_flags_t<PolicyFlags...>{};
 		} // namespace options
 
 		/// @brief Serialize a value to JSON.  Some types(std::string, string_view,
@@ -56,13 +59,13 @@ namespace daw::json {
 		template<typename JsonClass = use_default, typename Value,
 		         typename WritableType = std::string,
 		         auto... PolicyFlags DAW_JSON_ENABLEIF(
-		           concepts::is_writable_output_type_v<
-		             daw::remove_cvref_t<WritableType>> )>
+			         concepts::is_writable_output_type_v<
+			         daw::remove_cvref_t<WritableType>> )>
 		DAW_JSON_REQUIRES(
-		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
+			concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json(
-		  Value const &value, WritableType &&it = std::string{ },
-		  options::output_flags_t<PolicyFlags...> = options::output_flags<> );
+			Value const &value, WritableType &&it = std::string{},
+			options::output_flags_t<PolicyFlags...> = options::output_flags<> );
 
 		/// @brief Serialize a value to JSON.  Some types(std::string, string_view,
 		/// integer's and floating point numbers do not need a mapping setup).  For
@@ -74,8 +77,9 @@ namespace daw::json {
 		/// @return std::string with JSON representation of value
 		template<typename JsonClass = use_default, typename Value,
 		         auto... PolicyFlags>
-		inline std::string to_json( Value const &value,
-		                            options::output_flags_t<PolicyFlags...> );
+		DAW_CPP20_CX_ALLOC std::string to_json( Value const &value,
+		                                        options::output_flags_t<PolicyFlags
+			                                        ...> );
 
 		/**
 		 * Serialize a container to JSON.  This convenience method allows for easier
@@ -89,13 +93,13 @@ namespace daw::json {
 		template<typename JsonElement = use_default, typename Container,
 		         typename WritableType,
 		         auto... PolicyFlags DAW_JSON_ENABLEIF(
-		           concepts::is_writable_output_type_v<
-		             daw::remove_cvref_t<WritableType>> )>
+			         concepts::is_writable_output_type_v<
+			         daw::remove_cvref_t<WritableType>> )>
 		DAW_JSON_REQUIRES(
-		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
+			concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json_array(
-		  Container const &c, WritableType &&it,
-		  options::output_flags_t<PolicyFlags...> = options::output_flags<> );
+			Container const &c, WritableType &&it,
+			options::output_flags_t<PolicyFlags...> = options::output_flags<> );
 		/**
 		 * Serialize a container to JSON.  This convenience method allows for
 		 * easier serialization of containers when the root of the document is an
@@ -106,8 +110,8 @@ namespace daw::json {
 		 */
 		template<typename JsonElement = use_default, typename Container,
 		         auto... PolicyFlags>
-		inline std::string to_json_array(
-		  Container const &c,
-		  options::output_flags_t<PolicyFlags...> = options::output_flags<> );
+		DAW_CPP20_CX_ALLOC std::string to_json_array(
+			Container const &c,
+			options::output_flags_t<PolicyFlags...> = options::output_flags<> );
 	} // namespace DAW_JSON_VER
-} // namespace daw::json
+}   // namespace daw::json

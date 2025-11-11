@@ -94,7 +94,7 @@ namespace daw::json {
 				using OptionList = typename option_list_impl<JsonOptions...>::type;
 
 				template<typename Option>
-				static inline constexpr unsigned option_bits_start =
+				static constexpr unsigned option_bits_start =
 				  basic_option_bits_start<Option, OptionList>;
 
 				template<typename... /*OptionList*/, typename Option>

@@ -377,7 +377,7 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonMember, bool KnownBounds, json_options_t P,
 		         typename Allocator, auto... PolicyFlags>
-		[[nodiscard]] inline constexpr auto
+		[[nodiscard]] constexpr auto
 		from_json( basic_json_value<P, Allocator> value,
 		           options::parse_flags_t<PolicyFlags...> ) {
 			using json_member = json_details::json_deduced_type<JsonMember>;
@@ -410,7 +410,7 @@ namespace daw::json {
 		/// @throws daw::json::json_exception
 		template<typename JsonMember, bool KnownBounds, json_options_t PolicyFlags,
 		         typename Allocator>
-		[[nodiscard]] inline constexpr auto
+		[[nodiscard]] constexpr auto
 		from_json( basic_json_value<PolicyFlags, Allocator> value ) {
 
 			return from_json<JsonMember, KnownBounds>( std::move( value ),

@@ -281,3 +281,15 @@
 #define DAW_JSON_ENABLEIF_S( ... ) , std::enable_if_t<( __VA_ARGS__ )>
 #define DAW_JSON_REQUIRES( ... )
 #endif
+
+#if defined( __cpp_lib_constexpr_exceptions )
+#if __cpp_lib_constexpr_exceptions >= 202411L
+#define DAW_JSON_HAS_CONSTEXPR_EXCEPTIONS
+#endif
+#endif
+
+#if defined( DAW_JSON_HAS_CONSTEXPR_EXCEPTIONS )
+#define DAW_JSON_CPP26_CX_EXCEPT constexpr
+#else
+#define DAW_JSON_CPP26_CX_EXCEPT inline
+#endif

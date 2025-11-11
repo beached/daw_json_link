@@ -175,7 +175,7 @@ namespace daw::json {
 			inline constexpr unsigned policy_bits_start =
 			  basic_policy_bits_start<Policy, policy_list>;
 
-			DAW_CONSTEVAL inline json_options_t set_bits( json_options_t value ) {
+			DAW_CONSTEVAL json_options_t set_bits( json_options_t value ) {
 				return value;
 			}
 

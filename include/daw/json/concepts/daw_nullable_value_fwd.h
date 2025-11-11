@@ -76,11 +76,11 @@ namespace daw::json {
 				/// @brief read the value in the nullable type
 				/// @return A value_type with the current value
 				/// @pre has_value( ) == true
-				inline constexpr value_type read( T const &v ) const noexcept {
+				constexpr value_type read( T const &v ) const noexcept {
 					return v;
 				}
 				/// @brief Construct a value in nullable type and return it
-				DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr nullable_type
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
 				operator( )( construct_nullable_with_value_t )
 				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_default_constructible_v<value_type> ) {
