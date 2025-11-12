@@ -43,15 +43,14 @@ namespace daw::json {
 		  json_member_list<json_string<member0>, json_number<member1, int>,
 		                   json_bool<member2>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_class1::MyClass1 const &value ) {
+		static auto to_json_data( daw::cookbook_class1::MyClass1 const &value ) {
 			return std::forward_as_tuple(
 			  value.member_0, value.member_1, value.member_2 );
 		}
 	};
 } // namespace daw::json
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif

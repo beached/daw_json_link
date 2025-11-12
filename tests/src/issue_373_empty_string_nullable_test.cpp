@@ -44,7 +44,7 @@ namespace impl {
 
 	template<typename T>
 	struct ToConverter {
-		inline T operator( )( T const &value ) {
+		T operator( )( T const &value ) {
 			return daw::json::to_json( value );
 		}
 	};

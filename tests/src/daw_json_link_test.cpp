@@ -255,7 +255,7 @@ DAW_CONSTEXPR bool test_004( ) {
 	if( result == 55 ) {
 		return true;
 	}
-	throw result == 55;
+	throw false;// result == 55;
 }
 
 DAW_CONSTEXPR bool test_005( ) {
@@ -789,7 +789,7 @@ struct Unmapped9 {
 	}
 };
 
-int main( int, char ** ) {
+int main( ) {
 #if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif
@@ -853,10 +853,11 @@ int main( int, char ** ) {
 #endif
 
 		// daw::do_not_optimize( test_001_t_json_data );
-		CX auto data = daw::json::from_json<test_001_t>( test_001_t_json_data );
+		CX auto const data =
+		  daw::json::from_json<test_001_t>( test_001_t_json_data );
 		{
 			std::string tmp = to_json( data );
-			auto data2 = daw::json::from_json<test_001_t>( tmp );
+			auto const data2 = daw::json::from_json<test_001_t>( tmp );
 			daw::do_not_optimize( data2 );
 		}
 		to_json( data, std::cout ) << '\n';

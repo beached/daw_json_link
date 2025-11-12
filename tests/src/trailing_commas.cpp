@@ -227,7 +227,7 @@ bool test_array_trail( ) {
 	return true;
 }
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif

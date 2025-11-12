@@ -56,7 +56,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
@@ -67,7 +67,7 @@ int main( int, char ** )
 				"key1": 1,
 				"key2": 2
 	}})";
-	kv_t kv_test = daw::json::from_json<kv_t>( json_data3 );
+	auto const kv_test = daw::json::from_json<kv_t>( json_data3 );
 	daw::do_not_optimize( kv_test );
 
 	DAW_CONSTEXPR

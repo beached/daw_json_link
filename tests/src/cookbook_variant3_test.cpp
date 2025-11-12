@@ -64,7 +64,7 @@ struct daw::json::json_data_contract<daw::cookbook_variant3::MyClass> {
 	    json_variant_type_list<std::string, json_number_no_name<int>,
 	                           json_bool_no_name<>>>>;
 #endif
-	static DAW_CONSTEXPR inline auto
+	static DAW_CONSTEXPR auto
 	to_json_data( daw::cookbook_variant3::MyClass const &v ) {
 		return std::forward_as_tuple( v.name, v.value );
 	}
@@ -79,7 +79,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_variant3.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 	auto json_data = std::string_view( data.data( ), data.size( ) );
 
 	std::vector<daw::cookbook_variant3::MyClass> values1 =

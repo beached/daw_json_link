@@ -54,7 +54,7 @@ struct parser_t {
 };
 
 template<typename ParsePolicy, typename... ParseObjs, typename... JsonDocs>
-static inline void do_test( JsonDocs const &...jds ) try {
+static void do_test( JsonDocs const &...jds ) try {
 	using namespace daw::json;
 
 	(void)( parser_t<ParseObjs, ParsePolicy>{ }( jds ) and ... );

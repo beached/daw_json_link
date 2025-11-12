@@ -145,7 +145,7 @@ namespace tests {
 
 	bool invalid_strings( ) {
 		std::string data =
-		  R"({"uris": [ "http://www.example.com", "http://www.example.com/missing_quote ] })";
+		  R"({"uris": [ "https://www.example.com", "http://www.example.com/missing_quote ] })";
 		try {
 			auto const ul = daw::json::from_json<tests::UriList>( data );
 			(void)ul;
@@ -285,7 +285,7 @@ namespace tests {
 	while( false )
 #endif
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif

@@ -58,7 +58,7 @@ void test( daw::string_view json ) {
 
 	auto it = json_lines_iterator( json );
 	++it;
-	auto json_sv =
+	auto const json_sv =
 	  daw::string_view( it.get_raw_json_document( ) ).trim_prefix_copy( );
 
 	daw_json_ensure( json_sv.starts_with( '[' ),

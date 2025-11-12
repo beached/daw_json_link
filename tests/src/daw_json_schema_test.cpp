@@ -70,7 +70,7 @@ struct IdentitySwitcher {
 		return n;
 	}
 
-	inline std::size_t operator( )( Foo const &f ) const {
+	std::size_t operator( )( Foo const &f ) const {
 		return f.i.index( );
 	}
 
@@ -86,8 +86,8 @@ struct UniquePtrArrayCtor {
 	}
 
 	template<typename Iterator>
-	inline std::unique_ptr<T[]> operator( )( Iterator first, Iterator last,
-	                                         std::size_t sz ) const {
+	std::unique_ptr<T[]> operator( )( Iterator first, Iterator last,
+	                                  std::size_t sz ) const {
 		auto result = std::unique_ptr<T[]>( new T[static_cast<std::size_t>( sz )] );
 		auto out_last = std::copy( first, last, result.get( ) );
 		(void)out_last;
@@ -167,7 +167,7 @@ namespace daw::json {
 		                 std::variant<Bar, Umm>, json_tuple_member<2, std::size_t>,
 		                 IdentitySwitcher<Bar, Umm>>>>>;
 
-		static inline auto to_json_data( Foo const &v ) {
+		static auto to_json_data( Foo const &v ) {
 			return daw::forward_nonrvalue_as_tuple(
 			  v.a,
 			  v.b,
@@ -214,7 +214,7 @@ namespace daw::json {
 		                                  json_tuple_member<2, std::size_t>,
 		                                  IdentitySwitcher<Bar, Umm>>>>>;
 
-		static inline auto to_json_data( FooBoo const &v ) {
+		static auto to_json_data( FooBoo const &v ) {
 			return daw::forward_nonrvalue_as_tuple(
 			  v.a, v.b, v.c, v.e, v.h, v.i, v.j, v.k, v.m, v.n, v.o );
 		}

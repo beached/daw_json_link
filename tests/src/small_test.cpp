@@ -33,7 +33,7 @@ namespace daw::json {
 		static constexpr char const a[] = "a";
 		using type = json_member_list<json_number<a, int>>;
 #endif
-		static inline auto to_json_data( daw::Data const &value ) {
+		static auto to_json_data( daw::Data const &value ) {
 			return std::forward_as_tuple( value.a );
 		}
 	}; // namespace daw::json
@@ -48,7 +48,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to small_test.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 
 	auto const cls = daw::json::from_json<daw::Data>(
 	  std::string_view( data.data( ), data.size( ) ) );

@@ -66,7 +66,7 @@ namespace daw::json {
 		              options::number_opt( options::LiteralAsStringOpt::Always )>>;
 #endif
 
-		static inline auto to_json_data( City const &c ) {
+		static auto to_json_data( City const &c ) {
 			return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
 		}
 	};
@@ -256,7 +256,7 @@ int main( int argc, char **argv )
 			                             return l.lat;
 		                             } );
 
-		  auto result = daw::algorithm::accumulate(
+		  auto const result = daw::algorithm::accumulate(
 		    std::cbegin( lats ), std::cend( lats ), 0.0f );
 		  return result / static_cast<float>( lats.size( ) );
 	  },

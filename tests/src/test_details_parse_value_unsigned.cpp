@@ -88,7 +88,7 @@ bool test_real_untrusted( ) {
 		          << "'\n";                                                        \
 	} while( false )
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif

@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include <daw/json/daw_json_exception.h>
+#include "daw/json/daw_json_exception.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_likely.h>

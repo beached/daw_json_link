@@ -62,7 +62,7 @@ void test( ) {
 	}
 }
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif

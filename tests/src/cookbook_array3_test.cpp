@@ -49,7 +49,7 @@ namespace daw::json {
 		  json_member_list<json_number<member0, int>, json_array<member1, int>,
 		                   json_array<member2, std::string>>;
 #endif
-		static inline auto
+		static auto
 		to_json_data( daw::cookbook_array3::MyArrayClass1 const &value ) {
 			return std::forward_as_tuple(
 			  value.member0, value.member1, value.member2 );

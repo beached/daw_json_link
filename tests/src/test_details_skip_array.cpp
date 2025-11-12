@@ -120,7 +120,7 @@ bool test_embedded_arrays_broken_001( ) {
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif

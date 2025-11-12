@@ -174,7 +174,7 @@ int main( int argc, char **argv )
 		          << " json_in.json [json_out.json] [--verbose]\n";
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( std::string( args[0].value ) ).value( );
+	auto const data = daw::read_file( std::string( args[0].value ) ).value( );
 
 #if defined( DAW_USE_EXCEPTIONS )
 	try {

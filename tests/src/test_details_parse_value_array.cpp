@@ -49,7 +49,7 @@ struct InlineClass {
 	  std::enable_if_t<( not daw::traits::is_first_type_v<InlineClass, Ts...> and
 	                     ( std::is_convertible_v<Ts, Members> and ... ) ),
 	                   std::nullptr_t> = nullptr>
-	inline DAW_CONSTEXPR InlineClass( Ts &&...values )
+	DAW_CONSTEXPR InlineClass( Ts &&...values )
 	  : members{ std::forward<Ts>( values )... } {}
 };
 
@@ -60,7 +60,7 @@ namespace daw::json {
 	};
 
 	template<typename... Members>
-	[[nodiscard]] static inline auto const &
+	[[nodiscard]] static auto const &
 	to_json_data( InlineClass<Members...> const &value ) {
 		return value.members;
 	}
@@ -97,7 +97,7 @@ bool array_with_closing_class_fail( ) {
 		          << "'\n";                                                        \
 	} while( false )
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif

@@ -41,7 +41,7 @@ int main( int argc, char **argv ) {
 	catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Exception thrown by parser: "
 		          << to_formatted_string( jex, json_data1.data( ) ) << '\n';
-		if( jex.parse_location( ) ) {
+		if( jex.parse_location( ) != nullptr ) {
 			std::cerr << "Error happened around "
 			          << ( jex.parse_location( ) - json_sv1.data( ) )
 			          << " bytes into file\n";

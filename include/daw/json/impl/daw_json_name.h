@@ -36,7 +36,6 @@ namespace daw::json {
 			static_assert( N > 0 );
 			char const m_data[N]{ };
 
-		public:
 			template<std::size_t... Is>
 			DAW_ATTRIB_NONNULL( )
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL

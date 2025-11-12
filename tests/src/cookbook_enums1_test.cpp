@@ -75,8 +75,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_array<member0, json_custom_no_name<daw::cookbook_enums1::Colours>>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_enums1::MyClass1 const &value ) {
+		static auto to_json_data( daw::cookbook_enums1::MyClass1 const &value ) {
 			return std::forward_as_tuple( value.member0 );
 		}
 	};
@@ -91,7 +90,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_enums1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 
 	auto const cls = daw::json::from_json<daw::cookbook_enums1::MyClass1>(
 	  std::string_view( data.data( ), data.size( ) ) );

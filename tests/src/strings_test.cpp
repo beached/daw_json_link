@@ -59,8 +59,7 @@ auto operator<<( std::ostream &os, std::vector<T, A> const &rhs )
 }
 
 template<typename T, typename U>
-inline constexpr void test_equal( T const &lhs, U const &rhs,
-                                  std::string_view msg ) {
+constexpr void test_equal( T const &lhs, U const &rhs, std::string_view msg ) {
 	if( lhs != rhs ) {
 		std::cerr << msg << '\n';
 		if constexpr( can_ostream_v<T> ) {

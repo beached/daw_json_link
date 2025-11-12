@@ -24,7 +24,7 @@ namespace daw::json {
 		static constexpr char const ary[] = "ary";
 		using type = json_member_list<json_string<s>, json_array<ary, int>>;
 
-		static inline auto to_json_data( OutputFlags1 const &v ) {
+		static auto to_json_data( OutputFlags1 const &v ) {
 			return std::forward_as_tuple( v.s, v.ary );
 		}
 	};

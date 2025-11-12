@@ -39,8 +39,7 @@ namespace daw::json {
 		                              options::LiteralAsStringOpt::Always
 		   )>>>;*/
 
-		static inline auto
-		to_json_data( daw::cookbook_kv1b::MyKeyValue1 const &value ) {
+		static auto to_json_data( daw::cookbook_kv1b::MyKeyValue1 const &value ) {
 			return std::forward_as_tuple( value.kv );
 		}
 	};

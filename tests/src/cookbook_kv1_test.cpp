@@ -40,8 +40,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_key_value<kv, std::unordered_map<std::string, int>, int>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_kv1::MyKeyValue1 const &value ) {
+		static auto to_json_data( daw::cookbook_kv1::MyKeyValue1 const &value ) {
 			return std::forward_as_tuple( value.kv );
 		}
 	};
@@ -56,7 +55,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_kv1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 
 	auto kv = daw::json::from_json<daw::cookbook_kv1::MyKeyValue1>(
 	  std::string_view( data.data( ), data.size( ) ) );

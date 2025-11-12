@@ -45,7 +45,7 @@ namespace daw::json {
 		constexpr inline static char const unicode[] = "unicode";
 		using type = json_member_list<json_string<escaped>, json_string<unicode>>;
 #endif
-		static inline auto to_json_data( unicode_data const &value ) {
+		static auto to_json_data( unicode_data const &value ) {
 			return std::forward_as_tuple( value.escaped, value.unicode );
 		}
 	};

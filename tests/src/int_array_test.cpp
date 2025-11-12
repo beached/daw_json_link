@@ -35,6 +35,7 @@ static_assert( DAW_NUM_RUNS > 0 );
 struct Number {
 	intmax_t a{ };
 };
+
 namespace daw::json {
 	template<>
 	struct json_data_contract<Number> {
@@ -106,7 +107,8 @@ void test_func( ) {
 	}( );
 
 	std::cout << "Unchecked\n";
-	{ // Class of ints
+	{
+		// Class of ints
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
@@ -142,7 +144,8 @@ void test_func( ) {
 
 		std::cout << "element count: " << count2 << '\n';
 	}
-	{ // just ints
+	{
+		// just ints
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "array of intmax_t: from_json_array",
 		  json_sv_intmax.size( ),
@@ -158,8 +161,7 @@ void test_func( ) {
 		using iterator_t =
 		  daw::json::json_array_iterator<intmax_t, options::CheckedParseMode::no>;
 
-		auto data = std::vector<intmax_t>( );
-		data.resize( NUMVALUES );
+		auto data = std::vector<intmax_t>( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "array of intmax_t: json_array_iterator copy to presized vector",
@@ -236,7 +238,8 @@ void test_func( ) {
 	}
 
 	std::cout << "Checked\n";
-	{ // Class of ints
+	{
+		// Class of ints
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
@@ -270,7 +273,8 @@ void test_func( ) {
 
 		std::cout << "element count 2: " << count2 << '\n';
 	}
-	{ // just ints
+	{
+		// just ints
 		std::cout << "p2. Processing " << json_sv_intmax.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv_intmax.size( ) )
 		          << '\n';
@@ -307,7 +311,7 @@ void test_func( ) {
 		std::cout << "element count 2: " << count2 << '\n';
 
 		{
-			auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
+			auto const data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p3. int parsing 3",
 			  json_sv_intmax.size( ),
@@ -330,7 +334,7 @@ void test_func( ) {
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
-		auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
+		auto const data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p4. parsing",
@@ -375,7 +379,7 @@ void test_func( ) {
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
-		auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
+		auto const data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p4. parsing",
@@ -448,7 +452,7 @@ void test_func( ) {
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
-		auto data2 = std::unique_ptr<uintmax_t[]>( new uintmax_t[NUMVALUES] );
+		auto const data2 = std::unique_ptr<uintmax_t[]>( new uintmax_t[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p4. parsing sse3",

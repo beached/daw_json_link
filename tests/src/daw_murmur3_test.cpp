@@ -18,7 +18,7 @@ static void test( daw::string_view key, std::uint32_t seed,
 	daw::expecting( answer == expected );
 }
 
-int main( int, char ** ) {
+int main( ) {
 	DAW_CONSTEXPR char const t0_a[] = { 0x01, 0x02, 0x03, 0x04, 0 };
 	DAW_CONSTEXPR daw::UInt32 t0_b = daw::to_uint32_buffer( t0_a );
 	daw::expecting( t0_b == 0x04030201 );

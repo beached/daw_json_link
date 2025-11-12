@@ -41,7 +41,7 @@ int main( ) {
 		"fields": {"city": "Chicago", "Title": "Manager"},
 		}
 	)_" };
-	PersonObject person = daw::json::from_json<PersonObject>( raw_json );
+	auto person = daw::json::from_json<PersonObject>( raw_json );
 
 	return 0;
 }

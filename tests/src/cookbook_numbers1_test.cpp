@@ -52,8 +52,7 @@ namespace daw::json {
 		                              json_number<member2>, json_number<member3>,
 		                              json_number<member4>>;
 #endif
-		static inline auto
-		to_json_data( cookbook_numbers1::MyClass1 const &value ) {
+		static auto to_json_data( cookbook_numbers1::MyClass1 const &value ) {
 			return std::forward_as_tuple( value.member0,
 			                              value.member1,
 			                              value.member2,
@@ -72,7 +71,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_numbers1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 
 	auto const cls = daw::json::from_json<daw::cookbook_numbers1::MyClass1>(
 	  std::string_view( data.data( ), data.size( ) ) );

@@ -33,7 +33,7 @@ struct ArrayPointerConstructor {
 	  std::numeric_limits<std::size_t>::max( );
 
 	struct SizeCtor {
-		inline std::size_t operator( )( std::size_t v ) const noexcept {
+		std::size_t operator( )( std::size_t v ) const noexcept {
 			size = v;
 			return v;
 		}

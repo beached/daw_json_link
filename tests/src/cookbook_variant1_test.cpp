@@ -77,7 +77,7 @@ namespace daw::json {
 		                           std::vector<int>>>,
 		  json_variant<member1, std::variant<std::string, bool>>>;
 #endif
-		static inline auto
+		static auto
 		to_json_data( daw::cookbook_variant1::MyVariantStuff1 const &value ) {
 			return std::forward_as_tuple( value.member0, value.member1 );
 		}

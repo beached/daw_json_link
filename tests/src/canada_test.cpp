@@ -51,7 +51,7 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 
 template<daw::json::options::ExecModeTypes ExecMode =
            daw::json::options::ExecModeTypes::compile_time>
-inline auto get_canada_check( std::string_view f1 ) {
+auto get_canada_check( std::string_view f1 ) {
 	/*return daw::json::from_json<daw::geojson::Polygon>(
 	  f1, "features[0].geometry", daw::json::options::parse_flags<ExecMode> );
 	  */
@@ -60,7 +60,7 @@ inline auto get_canada_check( std::string_view f1 ) {
 }
 
 template<daw::json::options::ExecModeTypes ExecMode>
-inline auto get_canada_nocheck( std::string_view f1 ) {
+auto get_canada_nocheck( std::string_view f1 ) {
 	/*return daw::json::from_json<daw::geojson::Polygon>(
 	  f1, "features[0].geometry",
 	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,

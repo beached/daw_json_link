@@ -18,7 +18,7 @@
 #include <string_view>
 #include <unistd.h>
 
-int main( int, char ** ) {
+int main( ) {
 	std::string const json_text = daw::read_file( "/tmp/1.json" ).value( );
 
 	double x = 0;

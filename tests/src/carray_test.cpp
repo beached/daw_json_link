@@ -50,7 +50,7 @@ int main( ) {
     "data": [1,2,3,4,5]
 }
 )json";
-	auto f = daw::json::from_json<Foo>( json_doc );
+	auto const f = daw::json::from_json<Foo>( json_doc );
 	display_all( f.data );
 	daw::json::to_json( f, std::cout );
 }

@@ -53,7 +53,7 @@ void test_func( ankerl::nanobench::Bench &b ) {
 
 	auto const json_sv =
 	  daw::string_view( json_data3.data( ), json_data3.size( ) );
-	auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
+	auto const data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
 	b.batch( sizeof( float ) * NUMVALUES );
 	b.run( "float", [&]( ) noexcept {
 		auto *ptr = std::copy( iterator_t( json_sv ), iterator_t( ), data2.get( ) );

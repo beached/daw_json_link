@@ -42,8 +42,9 @@ int main( ) {
 	using namespace daw::json;
 	std::string_view const jsonA = R"({ "a": 42 } )";
 	std::string_view const jsonB = R"([ 42 ] )";
-	Thing a = from_json<Thing>( jsonA );
-	Thing b = from_json<json_base::json_class<json_alt<Thing>>>( jsonB );
+	auto a = from_json<Thing>( jsonA );
+	auto b = from_json<json_base::json_class<json_alt<Thing>>>( jsonB );
+	static_assert( std::is_same_v<DAW_TYPEOF( a ), DAW_TYPEOF( b )> );
 	if( a.a != b.a ) {
 		std::cerr << "Error parsing\n";
 		std::terminate( );

@@ -41,7 +41,7 @@ namespace daw::json {
 	struct json_data_contract<daw::Empty> {
 		using type = json_member_list<>;
 
-		[[nodiscard]] static inline auto to_json_data( daw::Empty const & ) {
+		[[nodiscard]] static auto to_json_data( daw::Empty const & ) {
 			return std::tuple<>( );
 		}
 	};
@@ -155,7 +155,7 @@ bool wrong_member_stored_pos_fail( ) {
 	return true;
 }
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif

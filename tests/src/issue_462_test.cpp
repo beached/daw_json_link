@@ -27,7 +27,7 @@ namespace daw::json {
 		using type = json_member_list<json_key_value<
 		  header, std::unordered_map<std::string, std::string>, std::string>>;
 #endif
-		static inline auto to_json_data( request const &v ) {
+		static auto to_json_data( request const &v ) {
 			return std::forward_as_tuple( v.header );
 		}
 	};
