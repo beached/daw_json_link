@@ -511,7 +511,7 @@ namespace daw::json {
 				                            JsonElements>::underlying_json_type )]++ ),
 				  ... );
 				return daw::algorithm::find_if(
-				         found.begin( ), found.end( ), []( int x ) {
+				         found.begin( ), found.end( ), []( int x ) DAW_CPP23_STATIC_CALL_OP {
 					         return x > 1;
 				         } ) == found.end( );
 			}

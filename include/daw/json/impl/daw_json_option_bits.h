@@ -29,7 +29,7 @@ namespace daw::json {
 			inline constexpr unsigned json_option_bits_width = 0;
 
 			template<typename>
-			inline constexpr auto default_json_option_value = [] {
+			inline constexpr auto default_json_option_value = [] DAW_CPP23_STATIC_CALL_OP {
 				struct unknown_policy {};
 				return unknown_policy{ };
 			}( );

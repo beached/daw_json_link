@@ -39,6 +39,8 @@ namespace daw::json {
 		 */
 		template<typename... JsonMembers>
 		struct json_member_list {
+			static constexpr auto member_count = sizeof...( JsonMembers );
+
 			using i_am_a_json_member_list = void;
 			static_assert( json_details::are_json_types_v<JsonMembers...>,
 			               "Only JSON Link mapping types can appear in a "

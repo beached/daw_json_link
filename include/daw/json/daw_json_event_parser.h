@@ -331,7 +331,7 @@ namespace daw::json {
 			  JsonEventParserStackValue<ParseState::policy_flags( ), A>;
 			auto jvalue = basic_json_value( bjv );
 
-			auto parent_stack = [] {
+			auto parent_stack = [] DAW_CPP23_STATIC_CALL_OP {
 				if constexpr( std::is_same_v<StackContainerPolicy, use_default> ) {
 					return DefaultJsonEventParserStackPolicy<stack_value_t>{ };
 				} else {

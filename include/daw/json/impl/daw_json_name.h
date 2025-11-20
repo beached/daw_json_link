@@ -65,8 +65,12 @@ namespace daw::json {
 				return m_data + static_cast<ptrdiff_t>( size( ) );
 			}
 
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t size( ) noexcept {
+			[[nodiscard]] static DAW_CONSTEVAL std::size_t size( ) {
 				return N - 1;
+			}
+
+			[[nodiscard]] static DAW_CONSTEVAL bool empty( ) {
+				return size( ) == 0;
 			}
 
 			template<std::size_t M>

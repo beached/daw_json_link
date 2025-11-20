@@ -352,22 +352,23 @@ namespace daw::json {
 			result += daw::algorithm::accumulate( std::data( loc_data ),
 			                                      daw::data_end( loc_data ),
 			                                      std::string{ },
-			                                      []( std::string s, char c ) {
-				                                      switch( c ) {
-				                                      case '\n':
-				                                      case '\r':
-					                                      break;
+			                                      []( std::string s, char c )
+			                                        DAW_CPP23_STATIC_CALL_OP {
+				                                        switch( c ) {
+				                                        case '\n':
+				                                        case '\r':
+					                                        break;
 #if defined( DAW_JSON_NO_COLOUR )
-				                                      case '"':
-					                                      s += '\\';
-					                                      [[fallthrough]];
+				                                        case '"':
+					                                        s += '\\';
+					                                        [[fallthrough]];
 #endif
-				                                      default:
-					                                      s += c;
-					                                      break;
-				                                      }
-				                                      return s;
-			                                      } );
+				                                        default:
+					                                        s += c;
+					                                        break;
+				                                        }
+				                                        return s;
+			                                        } );
 #if not defined( DAW_JSON_NO_COLOUR )
 			result += "\x1b[0m";
 #endif

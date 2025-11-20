@@ -687,7 +687,7 @@ namespace daw::jkj::dragonbox {
 
 				template<class UInt, UInt a, int N>
 				struct table_holder {
-					static constexpr table_t<UInt, a, N> table = [] {
+					static constexpr table_t<UInt, a, N> table = [] DAW_CPP23_STATIC_CALL_OP {
 						constexpr auto mod_inverse = modular_inverse<UInt, a>( );
 						table_t<UInt, a, N> tbl{ };
 						std::common_type_t<UInt, unsigned int> pow_of_mod_inverse = 1;
@@ -1564,7 +1564,7 @@ namespace daw::jkj::dragonbox {
 				struct cache_holder_t {
 					wuint::uint128 table[compressed_table_size];
 				};
-				static constexpr cache_holder_t cache = [] {
+				static constexpr cache_holder_t cache = [] DAW_CPP23_STATIC_CALL_OP {
 					cache_holder_t res{ };
 					for( std::size_t i = 0; i < compressed_table_size; ++i ) {
 						res.table[i] =
@@ -1577,7 +1577,7 @@ namespace daw::jkj::dragonbox {
 				struct pow5_holder_t {
 					std::uint64_t table[compression_ratio];
 				};
-				static constexpr pow5_holder_t pow5 = [] {
+				static constexpr pow5_holder_t pow5 = [] DAW_CPP23_STATIC_CALL_OP {
 					pow5_holder_t res{ };
 					std::uint64_t p = 1;
 					for( std::uint64_t &item : res.table ) {
@@ -2329,7 +2329,7 @@ namespace daw::jkj::dragonbox {
 				static_assert( carrier_bits >= significand_bits + 2 +
 				                                 log::floor_log2_pow10( kappa + 1 ) );
 
-				static constexpr int min_k = [] {
+				static constexpr int min_k = [] DAW_CPP23_STATIC_CALL_OP {
 					constexpr auto a = -log::floor_log10_pow2_minus_log10_4_over_3(
 					  int( max_exponent - significand_bits ) );
 					constexpr auto b =
@@ -2339,7 +2339,7 @@ namespace daw::jkj::dragonbox {
 				}( );
 				static_assert( min_k >= cache_holder<format>::min_k );
 
-				static constexpr int max_k = [] {
+				static constexpr int max_k = [] DAW_CPP23_STATIC_CALL_OP {
 					constexpr auto a = -log::floor_log10_pow2_minus_log10_4_over_3(
 					  int( min_exponent - significand_bits + 1 ) );
 					constexpr auto b =
@@ -2862,7 +2862,7 @@ namespace daw::jkj::dragonbox {
 				// Remove trailing zeros from n and return the number of zeros removed
 				[[nodiscard]] DAW_ATTRIB_INLINE static constexpr int
 				remove_trailing_zeros( carrier_uint &n ) noexcept {
-					constexpr auto max_power = [] {
+					constexpr auto max_power = [] DAW_CPP23_STATIC_CALL_OP {
 						auto max_possible_significand =
 						  daw::max_value<carrier_uint> /
 						  compute_power<kappa + 1>( std::uint32_t( 10 ) );

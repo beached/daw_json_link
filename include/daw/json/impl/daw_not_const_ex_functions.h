@@ -61,7 +61,7 @@ namespace daw::json {
 			};
 
 			template<char... keys>
-			static constexpr inline key_table_t key_table = [] {
+			static constexpr inline key_table_t key_table = [] DAW_CPP23_STATIC_CALL_OP {
 				auto result = key_table_t{ };
 				(void)( ( result.values[static_cast<unsigned char>( keys )] = true ) |
 				        ... );

@@ -101,7 +101,8 @@ namespace daw::json {
 				using CharT = typename Container::value_type;
 
 				template<typename... StringViews>
-				static constexpr void write( Container &out, StringViews const &...svs ) {
+				static constexpr void write( Container &out,
+				                             StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					auto const start_pos = out.size( );
 					auto const total_size = ( std::size( svs ) + ... );
