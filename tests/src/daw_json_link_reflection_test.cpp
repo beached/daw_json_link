@@ -19,11 +19,13 @@
 using daw::json::reflect;
 
 struct[[= reflect]] X {
-	[[= reflect.map_as<daw::json::json_number<"member1", int>>( )]] int m1;
+	[[= reflect.map_as<daw::json::json_number<"member1", int>>]] int m1;
 
 	[[= reflect.rename<"member2">]] int m2;
 };
-
+static_assert(
+  daw::json::refl_details::get_annotation<daw::json::reflect_t, ^^X>( ) );
+static_assert( daw::json::refl_details::get_non_ignored_reflectible_members<X>( ).size( ) == 2 );
 struct[[= reflect]] Y {
 	X m0;
 	std::string m1;
@@ -85,7 +87,13 @@ struct[[= reflect]] EnumMemberString {
 	[[= reflect.enum_string]] EFoo foo;
 };
 
-int main( ) {
+struct[[= reflect]] HasHidden {
+	int x;
+	[[= reflect.ignored( 42 )]] int y;
+	int z;
+};
+
+int main( ) try {
 	constexpr daw::string_view json_doc0 = R"json(
 {
 	"member1": 55,
@@ -188,4 +196,16 @@ int main( ) {
 	auto const val9_json = daw::json::to_json( bfoo1 );
 	daw::println( "EnumMemberString{{ EFoo::BlessYou }}; as json: {}",
 	              val9_json );
+
+	static constexpr daw::string_view h0_doc = R"json({"x": 55, "z": 66 })json";
+	daw::println( "json: {}", h0_doc );
+	auto const h0 = daw::json::from_json<HasHidden>( h0_doc );
+	daw::println( "HasHidden parsed x: {}, defaulted to 42 y: {}, z: {}", h0.x, h0.y, h0.z );
+	daw_ensure( h0.x == 55 );
+	daw_ensure( h0.y == 42 );
+	daw_ensure( h0.z == 66 );
+	return EXIT_SUCCESS;
+} catch( daw::json::json_exception const & jex ) {
+	daw::println( "unexpected JSON Exception: {}", to_formatted_string(jex) );
+	return EXIT_FAILURE;
 }
