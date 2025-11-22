@@ -25,7 +25,9 @@ struct[[= reflect]] X {
 };
 static_assert(
   daw::json::refl_details::get_annotation<daw::json::reflect_t, ^^X>( ) );
-static_assert( daw::json::refl_details::get_non_ignored_reflectible_members<X>( ).size( ) == 2 );
+static_assert(
+  daw::json::refl_details::get_non_ignored_reflectible_members<X>( ).size( ) ==
+  2 );
 struct[[= reflect]] Y {
 	X m0;
 	std::string m1;
@@ -92,6 +94,25 @@ struct[[= reflect]] HasHidden {
 	[[= reflect.ignored( 42 )]] int y;
 	int z;
 };
+static_assert( daw::json::ReflectionEnabled<HasHidden> );
+
+struct[[= reflect]] Value {
+	int value = 21212;
+	explicit Value( ) = default;
+	explicit Value( int x )
+	  : value( x ) {}
+};
+static_assert( daw::json::ReflectionEnabled<Value> );
+struct[[= reflect]] HasHidden2 {
+	int x;
+	[[= reflect.ignored( [] {
+		return Value( 4242 );
+	} )]] Value y;
+	int z;
+};
+static_assert( daw::json::refl_details::construction_test_v<
+               HasHidden2, daw::json::refl_details::to_tuple_t<HasHidden2>> );
+static_assert( daw::json::ReflectionEnabled<HasHidden2> );
 
 int main( ) try {
 	constexpr daw::string_view json_doc0 = R"json(
@@ -200,12 +221,22 @@ int main( ) try {
 	static constexpr daw::string_view h0_doc = R"json({"x": 55, "z": 66 })json";
 	daw::println( "json: {}", h0_doc );
 	auto const h0 = daw::json::from_json<HasHidden>( h0_doc );
-	daw::println( "HasHidden parsed x: {}, defaulted to 42 y: {}, z: {}", h0.x, h0.y, h0.z );
+	daw::println(
+	  "HasHidden parsed x: {}, defaulted to 42 y: {}, z: {}", h0.x, h0.y, h0.z );
 	daw_ensure( h0.x == 55 );
 	daw_ensure( h0.y == 42 );
 	daw_ensure( h0.z == 66 );
+
+	auto const h1 = daw::json::from_json<HasHidden2>( h0_doc );
+	daw::println( "HasHidden2 parsed x: {}, defaulted to 4242 y: {}, z: {}",
+	              h1.x,
+	              h1.y.value,
+	              h1.z );
+	daw_ensure( h1.x == 55 );
+	daw_ensure( h1.y.value == 4242 );
+	daw_ensure( h1.z == 66 );
 	return EXIT_SUCCESS;
-} catch( daw::json::json_exception const & jex ) {
-	daw::println( "unexpected JSON Exception: {}", to_formatted_string(jex) );
+} catch( daw::json::json_exception const &jex ) {
+	daw::println( "unexpected JSON Exception: {}", to_formatted_string( jex ) );
 	return EXIT_FAILURE;
 }
