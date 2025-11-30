@@ -1,4 +1,3 @@
-// Copyright (c) Darrell Wright
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -127,7 +126,7 @@ namespace daw::json {
 		using type = json_member_list<json_string<result_type>,
 		                              json_string<iso_language_code>>;
 #endif
-		[[nodiscard]] static inline DAW_JSON_CX_STRING auto
+		[[nodiscard]] static DAW_JSON_CX_STRING auto
 		to_json_data( daw::twitter::metadata_t const &value ) {
 			return std::forward_as_tuple( value.result_type,
 			                              value.iso_language_code );
