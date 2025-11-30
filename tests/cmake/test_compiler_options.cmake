@@ -79,9 +79,10 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 					-Wno-missing-noreturn
 					)
 		endif()
-		if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL "17.0.0" )
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 )
 			add_compile_options(
 					-Wno-c++26-extensions
+					-Wno-c++2c-extensions
 					)
 		endif()
 		add_compile_options( -Wno-poison-system-directories )
