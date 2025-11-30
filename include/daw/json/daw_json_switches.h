@@ -305,3 +305,15 @@
 #define DAW_JSON_CPP20_TEMPLATE_LAMBDAS
 #endif
 #endif
+
+#if defined( __cpp_lib_constexpr_string )
+#if __cpp_lib_constexpr_string >= 201907L
+#define DAW_JSON_HAS_CONSTEXPR_STRING
+#endif
+#endif
+
+#if defined( DAW_JSON_HAS_CONSTEXPR_STRING )
+#define DAW_JSON_CX_STRING constexpr
+#else
+#define DAW_JSON_CX_STRING inline
+#endif

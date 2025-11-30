@@ -313,7 +313,7 @@ namespace daw::json {
 		 * @param je json_exception to be formatted
 		 * @return string representation of json_exception
 		 */
-		DAW_ATTRIB_NOINLINE [[nodiscard]] DAW_CPP20_CX_ALLOC std::string
+		DAW_ATTRIB_NOINLINE [[nodiscard]] DAW_JSON_CPP26_CX_EXCEPT std::string
 		to_formatted_string( json_exception const &je,
 		                     char const *json_document = nullptr ) {
 			using namespace std::string_literals;
