@@ -73,7 +73,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result_t<JsonMember>
+			[[nodiscard]] constexpr json_result_t<JsonMember>
 			parse_value_real( ParseState &parse_state ) {
 				using constructor_t = json_constructor_t<JsonMember>;
 				using element_t = json_base_type_t<JsonMember>;
@@ -488,7 +488,7 @@ namespace daw::json {
 			                                       json_result_t<T> );
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result_t<JsonMember>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result_t<JsonMember>
 			parse_value_string_escaped( ParseState &parse_state ) {
 				static_assert( has_json_member_constructor_v<JsonMember> );
 				static_assert( has_json_member_parse_to_v<JsonMember> );
@@ -754,8 +754,7 @@ namespace daw::json {
 
 			template<JsonBaseParseTypes BPT, typename JsonMembers, bool KnownBounds,
 			         typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr json_result_t<
-			  JsonMembers>
+			[[nodiscard]] constexpr json_result_t<JsonMembers>
 			parse_variant_value( ParseState &parse_state ) {
 				using element_t = typename JsonMembers::json_elements;
 				using idx = daw::constant<( JsonMembers::base_map::base_map
@@ -829,7 +828,7 @@ namespace daw::json {
 
 			template<typename Result, typename TypeList, std::size_t pos = 0,
 			         typename ParseState>
-			DAW_ATTRIB_INLINE static constexpr Result
+			DAW_ATTRIB_INLINE constexpr Result
 			parse_visit( std::size_t idx, ParseState &parse_state ) {
 				if( idx == pos ) {
 					using JsonMember = pack_element_t<pos, TypeList>;
@@ -923,7 +922,7 @@ namespace daw::json {
 
 			template<bool AllMembersMustExist, typename ParseState,
 			         typename OldClassPos>
-			DAW_ATTRIB_INLINE static constexpr void ordered_class_cleanup(
+			DAW_ATTRIB_INLINE constexpr void ordered_class_cleanup(
 			  ParseState &parse_state,
 			  OldClassPos const
 			    &old_class_pos ) noexcept( not use_daw_json_exceptions_v ) {
@@ -949,10 +948,9 @@ namespace daw::json {
 				 * @param desired_position desired member index
 				 */
 				template<bool Nullable, typename ParseState>
-				DAW_ATTRIB_INLINE static constexpr void
-				maybe_skip_members( ParseState &parse_state,
-				                    std::size_t &current_position,
-				                    std::size_t desired_position ) {
+				constexpr void maybe_skip_members( ParseState &parse_state,
+				                                   std::size_t &current_position,
+				                                   std::size_t desired_position ) {
 
 					daw_json_assert_weak( current_position <= desired_position,
 					                      ErrorReason::OutOfOrderOrderedMembers,

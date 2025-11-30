@@ -45,7 +45,7 @@ namespace daw::json {
 				using tp_policies = pack_list<Options...>;
 
 				template<std::size_t Pos, int End>
-				static constexpr unsigned do_step( ) {
+				static DAW_CONSTEVAL unsigned do_step( ) {
 					if constexpr( Pos >= static_cast<std::size_t>( End ) ) {
 						return 0U;
 					}
@@ -53,7 +53,7 @@ namespace daw::json {
 				}
 
 				template<std::size_t... Is>
-				DAW_ATTRIB_INLINE static constexpr unsigned
+				DAW_ATTRIB_INLINE static DAW_CONSTEVAL unsigned
 				calc( std::index_sequence<Is...> ) {
 					return ( do_step<Is, idx>( ) + ... );
 				}

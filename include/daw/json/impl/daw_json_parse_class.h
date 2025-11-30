@@ -10,18 +10,19 @@
 
 #include "version.h"
 
-#include "daw_json_assert.h"
-#include "daw_json_location_info.h"
-#include "daw_json_name.h"
-#include "daw_json_parse_common.h"
-#include "daw_json_parse_value.h"
-#include "daw_json_skip.h"
-#include <daw/json/daw_json_exception.h>
+#include "daw/json/daw_json_exception.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_location_info.h"
+#include "daw/json/impl/daw_json_name.h"
+#include "daw/json/impl/daw_json_parse_common.h"
+#include "daw/json/impl/daw_json_parse_value.h"
+#include "daw/json/impl/daw_json_skip.h"
 
 #include <daw/daw_consteval.h>
 #include <daw/daw_constinit.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
+#include <daw/traits/daw_traits_nth_element.h>
 
 #include <cstddef>
 #include <type_traits>
@@ -92,25 +93,13 @@ namespace daw::json {
 			///@param parse_state JSON data
 			///@return parsed value from JSON data
 			///
-			template<std::size_t member_position, typename JsonMember,
-			         AllMembersMustExist must_exist, bool NeedsClassPositions,
-			         typename ParseState, std::size_t N, typename CharT, bool B>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr json_result_t<
-			  JsonMember>
-			parse_class_member( ParseState &parse_state,
-			                    locations_info_t<N, CharT, B> &locations ) {
-				parse_state.move_next_member_or_end( );
+			template<typename JsonMember, bool NeedsClassPositions,
+			         typename ParseState>
+			[[nodiscard]] constexpr json_result_t<JsonMember>
+			parse_class_member_impl( ParseState &parse_state,
+			                         find_result<ParseState> fr ) {
 
-				daw_json_assert_weak( not parse_state.empty( ) and
-				                        parse_state.is_at_next_class_member( ),
-				                      ErrorReason::MissingMemberNameOrEndOfClass,
-				                      parse_state );
-
-				auto [loc, known] = find_class_member<member_position, must_exist>(
-				  parse_state,
-				  locations,
-				  is_json_nullable_v<JsonMember>,
-				  JsonMember::name );
+				auto [loc, known] = fr;
 
 				// If the member was found loc will have it's position
 				if( not known ) {
@@ -157,6 +146,28 @@ namespace daw::json {
 				return parse_value<without_name<JsonMember>,
 				                   true,
 				                   JsonMember::expected_type>( loc );
+			}
+
+			template<std::size_t member_position, typename JsonMember,
+			         AllMembersMustExist must_exist, bool NeedsClassPositions,
+			         typename ParseState, std::size_t N, typename CharT, bool B>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result_t<JsonMember>
+			parse_class_member( ParseState &parse_state,
+			                    locations_info_t<N, CharT, B> &locations ) {
+				parse_state.move_next_member_or_end( );
+
+				daw_json_assert_weak( not parse_state.empty( ) and
+				                        parse_state.is_at_next_class_member( ),
+				                      ErrorReason::MissingMemberNameOrEndOfClass,
+				                      parse_state );
+
+				return parse_class_member_impl<JsonMember, NeedsClassPositions>(
+				  parse_state,
+				  find_class_member<member_position, must_exist>(
+				    parse_state,
+				    locations,
+				    is_json_nullable_v<JsonMember>,
+				    JsonMember::name ) );
 			}
 
 			template<bool IsExactClass, typename ParseState, typename OldClassPos>
@@ -255,29 +266,29 @@ namespace daw::json {
 						                                            ParseState> ) {
 							return T{
 							  parse_class_member<Is,
-							                     daw::traits::nth_type<Is, JsonMembers...>,
+							                     daw::traits::nth_element<Is, JsonMembers...>,
 							                     must_exist::value,
 							                     NeedClassPositions::value>(
 							    parse_state, known_locations )... };
 						} else {
 							return construct_value_tp<T, Constructor>(
 							  parse_state,
-							  fwd_pack{
-							    parse_class_member<Is,
-							                       daw::traits::nth_type<Is, JsonMembers...>,
-							                       must_exist::value,
-							                       NeedClassPositions::value>(
-							      parse_state, known_locations )... } );
+							  fwd_pack{ parse_class_member<
+							    Is,
+							    daw::traits::nth_element<Is, JsonMembers...>,
+							    must_exist::value,
+							    NeedClassPositions::value>( parse_state,
+							                                known_locations )... } );
 						}
 					} else {
 						if constexpr( should_construct_explicitly_v<Constructor,
 						                                            T,
 						                                            ParseState> ) {
-							auto result =
-							  T{ parse_class_member<Is,
-							                        daw::traits::nth_type<Is, JsonMembers...>,
-							                        must_exist::value,
-							                        NeedClassPositions::value>(
+							auto result = T{
+							  parse_class_member<Is,
+							                     daw::traits::nth_element<Is, JsonMembers...>,
+							                     must_exist::value,
+							                     NeedClassPositions::value>(
 							    parse_state, known_locations )... };
 
 							class_cleanup_now<all_json_members_must_exist_v<T, ParseState>>(
@@ -286,12 +297,12 @@ namespace daw::json {
 						} else {
 							auto result = construct_value_tp<T, Constructor>(
 							  parse_state,
-							  fwd_pack{
-							    parse_class_member<Is,
-							                       daw::traits::nth_type<Is, JsonMembers...>,
-							                       must_exist::value,
-							                       NeedClassPositions::value>(
-							      parse_state, known_locations )... } );
+							  fwd_pack{ parse_class_member<
+							    Is,
+							    daw::traits::nth_element<Is, JsonMembers...>,
+							    must_exist::value,
+							    NeedClassPositions::value>( parse_state,
+							                                known_locations )... } );
 
 							class_cleanup_now<all_json_members_must_exist_v<T, ParseState>>(
 							  parse_state, old_class_pos );

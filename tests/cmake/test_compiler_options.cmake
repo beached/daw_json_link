@@ -19,7 +19,11 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 	else()
 		set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc -D_LIBCPP_ENABLE_ASSERTIONS=1" )
 	endif()
-
+	if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL "19.1.0" )
+		add_compile_options(
+				-Wno-c++2c-extensions
+				)
+	endif()
 	set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 -DNDEBUG /permissive- /EHsc" )
 	set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /O2 -DNDEBUG /permissive- /EHsc" )
 	if( DAW_WERROR )
@@ -75,6 +79,11 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 					-Wno-missing-noreturn
 					)
 		endif()
+		if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL "17.0.0" )
+			add_compile_options(
+					-Wno-c++26-extensions
+					)
+		endif()
 		add_compile_options( -Wno-poison-system-directories )
 		if( DAW_WERROR )
 			add_compile_options( -Werror -pedantic-errors )
@@ -108,6 +117,11 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 )
 			add_compile_options(
 					-Wno-missing-noreturn
+					)
+		endif()
+		if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 20.0.0 )
+			add_compile_options(
+					-Wno-c++26-extensions
 					)
 		endif()
 		if( DAW_WERROR )

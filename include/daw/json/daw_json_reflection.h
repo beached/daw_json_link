@@ -11,6 +11,7 @@
 #include "daw/json/impl/version.h"
 
 #include "daw/json/daw_json_link.h"
+#include "daw/json/daw_json_switches.h"
 
 #include <daw/daw_bind_args_at.h>
 #include <daw/daw_concepts.h>
@@ -25,13 +26,13 @@
 #include <utility>
 #include <vector>
 
-#define CONSTEVAL constexpr
+#if defined( DAW_JSON_HAS_REFLECTION )
 
 namespace daw::json::inline DAW_JSON_VER {
 	inline namespace experimental {
 		namespace refl_details {
-			template<typename E, json_options_t Options = json_custom_opts_def>
-			requires std::is_enum_v<E> struct enum_string;
+			template<EnumType E, json_options_t Options = json_custom_opts_def>
+			struct enum_string;
 
 			struct refl_map_as {
 				std::meta::info type;
@@ -62,12 +63,12 @@ namespace daw::json::inline DAW_JSON_VER {
 
 			struct refl_ignored : refl_ignored_base {
 				template<typename T>
-				static CONSTEVAL auto operator( )( T &&rhs ) {
+				static consteval auto operator( )( T &&rhs ) {
 					return refl_ignored_value<T>{ DAW_FWD( rhs ) };
 				}
 
 				template<typename T>
-				CONSTEVAL operator T( ) const {
+				consteval operator T( ) const {
 					return T{ };
 				}
 			};
@@ -90,7 +91,7 @@ namespace daw::json::inline DAW_JSON_VER {
 			template<std::ranges::input_range R>
 			requires( std::is_constructible_v<std::ranges::range_value_t<R>,
 			                                  std::ranges::range_reference_t<R>> )
-			  CONSTEVAL auto as_stdarray( R &&elems ) {
+			  consteval auto as_stdarray( R &&elems ) {
 
 				auto args = std::vector{ ^^std::ranges::range_value_t<R> };
 				for( const auto &V : elems ) {
@@ -100,7 +101,7 @@ namespace daw::json::inline DAW_JSON_VER {
 			}
 
 #if defined( __clang__ )
-			CONSTEVAL std::vector<std::meta::info>
+			consteval std::vector<std::meta::info>
 			annotations_of_with_type( std::meta::info item, std::meta::info type ) {
 				auto result = std::vector<std::meta::info>{ };
 				for( auto annot : annotations_of( item ) ) {
@@ -114,7 +115,7 @@ namespace daw::json::inline DAW_JSON_VER {
 
 			// Checks for an annotation of a specific type and returns it if it exists
 			template<typename AnnotationType, std::meta::info r>
-			CONSTEVAL std::optional<AnnotationType> get_annotation( ) {
+			consteval std::optional<AnnotationType> get_annotation( ) {
 				auto annotations = annotations_of_with_type( r, ^^AnnotationType );
 				if( annotations.empty( ) ) {
 					return std::nullopt;
@@ -123,7 +124,7 @@ namespace daw::json::inline DAW_JSON_VER {
 			}
 
 			template<typename AnnotationType, typename T>
-			CONSTEVAL bool has_annotation( ) {
+			consteval bool has_annotation( ) {
 				return not annotations_of_with_type( ^^T, ^^AnnotationType ).empty( );
 			}
 
@@ -141,7 +142,7 @@ namespace daw::json::inline DAW_JSON_VER {
 			}
 
 			template<typename T>
-			CONSTEVAL std::vector<std::meta::info>
+			consteval std::vector<std::meta::info>
 			get_non_ignored_reflectible_members( ) {
 				using namespace daw::pipelines;
 				auto result = std::vector<std::meta::info>{ };
@@ -161,6 +162,11 @@ namespace daw::json::inline DAW_JSON_VER {
 				  members = [:as_stdarray( get_non_ignored_reflectible_members<T>( )
 				                           ):];
 
+				/* This currently fails to compile
+				static constexpr auto [... Is] =
+				  std::make_index_sequence<members.size( )>{ };
+				return daw::forward_nonrvalue_as_tuple( value.[:members[Is]:]... );
+				*/
 				return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 					return daw::forward_nonrvalue_as_tuple( value.[:members[Is]:]... );
 				}( std::make_index_sequence<members.size( )>{ } );
@@ -177,7 +183,7 @@ namespace daw::json::inline DAW_JSON_VER {
 			using submember_type_t = std::tuple_element_t<Idx, to_tuple_t<T>>;
 
 			template<auto member_info, json_name name>
-			CONSTEVAL std::optional<refl_map_as> get_map_as_annotation( ) {
+			consteval std::optional<refl_map_as> get_map_as_annotation( ) {
 				static constexpr auto refl_map_as_annot =
 				  get_annotation<refl_map_as, member_info>( );
 
@@ -203,7 +209,7 @@ namespace daw::json::inline DAW_JSON_VER {
 			}
 
 			template<auto member_info>
-			CONSTEVAL std::meta::info get_member_link_func( ) {
+			consteval std::meta::info get_member_link_func( ) {
 				static constexpr auto annot_rename =
 				  get_annotation<refl_rename, member_info>( );
 
@@ -267,84 +273,74 @@ namespace daw::json::inline DAW_JSON_VER {
 			};
 
 			template<typename T, std::size_t... Idx>
-			CONSTEVAL std::meta::info
+			consteval std::meta::info
 			get_json_members_list_impl( std::index_sequence<Idx...> ) {
 				return ^^json_member_list<get_member_link_t<T, Idx>...>;
 			}
 
 			template<typename T>
-			CONSTEVAL std::meta::info get_json_member_list( ) {
+			consteval std::meta::info get_json_member_list( ) {
 				static constexpr auto sz =
 				  get_non_ignored_reflectible_members<T>( ).size( );
 				return get_json_members_list_impl<T>( std::make_index_sequence<sz>{ } );
 			}
 
-			template<typename E, json_options_t Options>
-			requires std::is_enum_v<E> struct enum_string
+			template<EnumType E, json_options_t Options>
+			struct enum_string
 			  : json_custom_no_name<E, reflect_enum_as_string<E>,
 			                        reflect_enum_as_string<E>, Options> {};
 
-			template<typename Fn>
-			struct FnCaller {
-				Fn fn;
-
-				constexpr auto operator( )( auto &&...args ) {
-					return fn( DAW_FWD( args )... );
-				}
-			};
-
-			template<typename R, std::meta::info annotation>
+			template<typename result_t, std::meta::info annotation>
 			struct DefaultReturn {
 				static constexpr auto operator( )( auto &&... ) {
 					static constexpr auto const ignored_default = [:constant_of(
 					                                                  annotation ):];
-					return static_cast<R>( ignored_default );
+					return static_cast<result_t>( ignored_default );
 				}
 			};
 
-			template<std::size_t index>
+			// Function to return the Nth parsed JSON member
+			template<typename result_t, std::size_t index>
 			struct ArgReturn {
 				static constexpr auto operator( )( auto &&...arguments ) {
-					return DAW_FWD( arguments...[index] );
+					return static_cast<result_t>( DAW_FWD( arguments...[index] ) );
 				}
 			};
 
 			template<std::meta::info members_i, std::meta::info arg_indexes_i,
 			         typename... Args, typename C>
-			CONSTEVAL auto maker( C ) {
+			consteval auto fn_maker( C ) {
 				static constexpr auto members = [:members_i:];
-				static constexpr auto arg_indexes = [:arg_indexes_i:];
-				(void)arg_indexes;
 				static constexpr auto index = C::value;
 				static constexpr auto member = members[index];
 				static constexpr auto annotations = [:as_stdarray(
 				                                        annotations_of_with_base_type(
 				                                          member, ^^refl_ignored_base )
 				                                        ):];
-				if constexpr( not annotations.empty( ) ) {
-					using result_t =
-					  std::remove_cvref_t<typename[:std::meta::type_of( member ):]>;
+				using result_t = [:type_of( member ):];
+				if constexpr( annotations.empty( ) ) {
+					static constexpr auto arg_indexes = [:arg_indexes_i:];
+					static constexpr auto i = arg_indexes[index];
+					static_assert( i != daw::max_value<std::size_t> );
+					static constexpr auto fn = ArgReturn<result_t, i>{ };
+					return fn;
+				} else {
 					static_assert( annotations.size( ) == 1 );
 					static constexpr std::meta::info annotation = annotations.front( );
 					static constexpr auto fn = DefaultReturn<result_t, annotation>{ };
-					return fn;
-				} else {
-					static constexpr auto i = arg_indexes[index];
-					static_assert( i != daw::max_value<std::size_t> );
-					static constexpr auto fn = ArgReturn<i>{ };
 					return fn;
 				}
 			}
 
 			template<std::meta::info members_i, std::meta::info arg_indexes_i,
 			         typename... Args, std::size_t... Is>
-			constexpr auto make_member_fns( std::index_sequence<Is...> ) {
-				return std::tuple{ maker<members_i, arg_indexes_i, Args...>(
+			consteval auto make_member_fns( std::index_sequence<Is...> ) {
+				return std::tuple{ fn_maker<members_i, arg_indexes_i, Args...>(
 				  std::integral_constant<std::size_t, Is>{ } )... };
 			}
 
 			template<std::meta::info members_i>
-			CONSTEVAL auto make_arg_indexes( ) {
+			consteval auto make_arg_indexes( ) {
 				static constexpr auto members = [:members_i:];
 				auto r = std::array<std::size_t, members.size( )>{ };
 				for( auto const [index, member] :
@@ -366,18 +362,11 @@ namespace daw::json::inline DAW_JSON_VER {
 
 			template<typename T, typename... Fns>
 			struct construct_t {
-				std::tuple<Fns...> m_fns;
-
-				constexpr T operator( )( auto &&...args ) const {
-					auto const [... fns] = m_fns;
-					return T{ fns( DAW_FWD( args )... )... };
+				static constexpr T operator( )( auto &&fns, auto &&...args ) {
+					auto const &[... member_fns] = fns;
+					return T{ member_fns( DAW_FWD( args )... )... };
 				}
 			};
-
-			template<typename T, typename... Fns>
-			constexpr auto construct( std::tuple<Fns...> fns ) {
-				return construct_t<T, Fns...>{ fns };
-			}
 
 			template<typename T>
 			struct reflected_constructor {
@@ -390,8 +379,7 @@ namespace daw::json::inline DAW_JSON_VER {
 					static constexpr auto const member_fns =
 					  make_member_fns<^^members_b, ^^arg_indexes, Args...>(
 					    std::make_index_sequence<members_b.size( )>{ } );
-					auto const ctor = construct<result_t>( member_fns );
-					return ctor( DAW_FWD( args )... );
+					return construct_t<result_t>{ }( member_fns, DAW_FWD( args )... );
 				}
 			};
 
@@ -415,23 +403,30 @@ namespace daw::json::inline DAW_JSON_VER {
 
 		} // namespace refl_details
 
+		///
+		/// class for daw::json::reflection that allows marking user data structures
+		/// as reflectable and update the mappings of their members
 		struct reflect_t {
+			/// By default the reflection mappings use the members name.  This allows
+			/// overriding that
 			template<json_name Name>
 			static constexpr auto rename = refl_details::refl_rename{ Name.m_data };
 
 			template<typename JsonMember>
 			static constexpr auto map_as = refl_details::refl_map_as{ ^^JsonMember };
 
+			/// Do not map this member.  One can add a default value or provide a
+			/// callable that generates a value convertible to the member.  The
+			/// default is T{}
 			static constexpr auto ignored = refl_details::refl_ignored{ };
 
+			/// Map the enum as a string
 			template<json_options_t Options>
 			static constexpr auto enum_string_with_opt =
 			  refl_details::refl_enum_string{ Options };
 
 			static constexpr auto enum_string =
 			  enum_string_with_opt<json_custom_opts_def>;
-
-			// static constexpr auto ignored = refl_ignored{ };
 		};
 
 		inline constexpr auto reflect = reflect_t{ };
@@ -452,4 +447,4 @@ namespace daw::json::inline DAW_JSON_VER {
 	};
 } // namespace daw::json::inline DAW_JSON_VER
 
-#undef CONSTEVAL
+#endif

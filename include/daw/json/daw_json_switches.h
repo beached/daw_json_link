@@ -293,3 +293,15 @@
 #else
 #define DAW_JSON_CPP26_CX_EXCEPT inline
 #endif
+
+#if defined( __cpp_lib_reflection )
+#if __cpp_lib_reflection >= 202506L
+#define DAW_JSON_HAS_REFLECTION
+#endif
+#endif
+
+#if defined( __cpp_generic_lambdas )
+#if __cpp_generic_lambdas >= 201707L
+#define DAW_JSON_CPP20_TEMPLATE_LAMBDAS
+#endif
+#endif
