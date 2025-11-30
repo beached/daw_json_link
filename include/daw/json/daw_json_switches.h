@@ -239,7 +239,7 @@
 #if defined( DAW_JSON_HAS_CPP20_CX_STRING )
 #define DAW_JSON_CX_STRING constexpr
 #else
-#define DAW_JSON_CX_STRING
+#define DAW_JSON_CX_STRING inline
 #endif
 
 #if defined( DAW_JSON_HAS_CPP20_CX_STRING ) and \
@@ -304,16 +304,4 @@
 #if __cpp_generic_lambdas >= 201707L
 #define DAW_JSON_CPP20_TEMPLATE_LAMBDAS
 #endif
-#endif
-
-#if defined( __cpp_lib_constexpr_string )
-#if __cpp_lib_constexpr_string >= 201907L
-#define DAW_JSON_HAS_CONSTEXPR_STRING
-#endif
-#endif
-
-#if defined( DAW_JSON_HAS_CONSTEXPR_STRING )
-#define DAW_JSON_CX_STRING constexpr
-#else
-#define DAW_JSON_CX_STRING inline
 #endif
