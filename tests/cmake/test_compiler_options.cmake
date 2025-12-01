@@ -19,7 +19,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 	else()
 		set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc -D_LIBCPP_ENABLE_ASSERTIONS=1" )
 	endif()
-	if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL "19.1.0" )
+	if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.1 )
 		add_compile_options(
 				-Wno-c++2c-extensions
 				)
@@ -209,7 +209,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 	endif()
 	#-Wdisabled-optimization)
 	if( CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)" )
-		if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 9.0.0 )
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9.0.0 )
 			if( LINUX )
 				message( STATUS "Adding Intel JCC bugfix" )
 				add_compile_options( -Wa,-mbranches-within-32B-boundaries )
@@ -222,7 +222,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 	endif()
 	# Prior to gcc-12, it tries to concept check an input iterator as a bidirectional and requires
 	# *it-- = *it to be a valid expression
-	if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
+	if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.0.0 )
 		set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer" )
 		set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wnull-dereference" )
 		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS -Wnull-dereference" )
