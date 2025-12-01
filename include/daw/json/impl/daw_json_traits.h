@@ -347,7 +347,7 @@ namespace daw::json {
 
 			template<std::size_t Idx>
 			using element_t =
-			  daw::remove_cvref_t<typename daw::tuple_element<Idx, type>::type>;
+			  daw::remove_cvref_t<typename std::tuple_element_t<Idx, type>>;
 
 			template<std::size_t Idx, typename Tuple>
 			static constexpr decltype( auto ) get( Tuple &&tp ) {

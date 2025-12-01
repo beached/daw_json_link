@@ -100,8 +100,13 @@ namespace std {
 	};
 
 	template<daw::json::json_options_t PolicyFlags, typename Allocator>
-	class tuple_size<daw::json::basic_json_pair<PolicyFlags, Allocator>>
-	  : public std::integral_constant<std::size_t, 2> {};
+	inline constexpr std::size_t
+	  tuple_size_v<daw::json::basic_json_pair<PolicyFlags, Allocator>> = 2;
+
+	template<daw::json::json_options_t PolicyFlags, typename Allocator>
+	class tuple_size<daw::json::basic_json_pair<PolicyFlags, Allocator>> {
+		static constexpr std::size_t value = 2;
+	};
 } // namespace std
 
 namespace daw::json {
