@@ -8,13 +8,14 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include <daw/json/concepts/daw_nullable_value.h>
-#include <daw/json/daw_json_default_constuctor_fwd.h>
+#include "daw/json/concepts/daw_nullable_value.h"
+#include "daw/json/daw_json_default_constuctor_fwd.h"
+#include "daw/json/impl/daw_json_assert.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_move.h>
 #include <daw/daw_scope_guard.h>
 
@@ -218,9 +219,9 @@ namespace daw::json {
 
 		/// @brief Default constructor for readable nullable types.
 		template<typename T>
-		DAW_JSON_REQUIRES( concepts::is_nullable_value_v<T> )
+		DAW_REQUIRES( concepts::is_nullable_value_v<T> )
 		struct nullable_constructor<
-		  T DAW_JSON_ENABLEIF_S( concepts::is_nullable_value_v<T> )> {
+		  T DAW_ENABLEIF_S( concepts::is_nullable_value_v<T> )> {
 			using value_type = concepts::nullable_value_type_t<T>;
 			using rtraits_t = concepts::nullable_value_traits<T>;
 
@@ -234,10 +235,9 @@ namespace daw::json {
 				return rtraits_t{ }( concepts::construct_nullable_with_empty );
 			}
 
-			template<typename... Args DAW_JSON_ENABLEIF(
+			template<typename... Args DAW_ENABLEIF(
 			  concepts::is_nullable_value_constructible_v<T, Args...> )>
-			DAW_JSON_REQUIRES(
-			  concepts::is_nullable_value_constructible_v<T, Args...> )
+			DAW_REQUIRES( concepts::is_nullable_value_constructible_v<T, Args...> )
 			[[nodiscard]] DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP
 			  constexpr auto
 			  operator( )( Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
@@ -247,9 +247,9 @@ namespace daw::json {
 				                     DAW_FWD( args )... );
 			}
 
-			template<typename Pointer DAW_JSON_ENABLEIF(
+			template<typename Pointer DAW_ENABLEIF(
 			  concepts::is_nullable_pointer_constructible_v<T, Pointer *> )>
-			DAW_JSON_REQUIRES(
+			DAW_REQUIRES(
 			  concepts::is_nullable_pointer_constructible_v<T, Pointer *> )
 			[[nodiscard]] DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP
 			  constexpr auto

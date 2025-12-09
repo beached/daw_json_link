@@ -10,6 +10,7 @@
 
 #include "daw/json/impl/version.h"
 
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_is_detected.h>
 
 #include <cstddef>
@@ -80,19 +81,17 @@ namespace daw::json {
 					return v;
 				}
 				/// @brief Construct a value in nullable type and return it
-				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
-				operator( )( construct_nullable_with_value_t )
-				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type operator( )(
+				  construct_nullable_with_value_t ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_default_constructible_v<value_type> ) {
 					return value_type{ };
 				}
 				/// @brief Return an empty nullable type
-				template<typename... Args DAW_JSON_ENABLEIF(
+				template<typename... Args DAW_ENABLEIF(
 				  nullable_impl::is_nullable_value_type_constructible_v<nullable_type,
 				                                                        Args...> )>
-				DAW_JSON_REQUIRES(
-				  nullable_impl::is_nullable_value_type_constructible_v<nullable_type,
-				                                                        Args...> )
+				DAW_REQUIRES( nullable_impl::is_nullable_value_type_constructible_v<
+				              nullable_type, Args...> )
 				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
 				operator( )( construct_nullable_with_empty_t,
 				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST

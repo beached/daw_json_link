@@ -8,20 +8,21 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_enums.h"
-#include "daw_json_link_types_iso8601.h"
-#include "daw_json_parse_class.h"
-#include "daw_json_parse_name.h"
-#include "daw_json_parse_value_fwd.h"
-#include "daw_json_traits.h"
-#include "daw_json_value_fwd.h"
-#include "to_daw_json_string.h"
+#include "daw/json/impl/daw_json_enums.h"
+#include "daw/json/impl/daw_json_link_types_iso8601.h"
+#include "daw/json/impl/daw_json_parse_class.h"
+#include "daw/json/impl/daw_json_parse_name.h"
+#include "daw/json/impl/daw_json_parse_value_fwd.h"
+#include "daw/json/impl/daw_json_traits.h"
+#include "daw/json/impl/daw_json_value_fwd.h"
+#include "daw/json/impl/to_daw_json_string.h"
 
 #include <daw/algorithms/daw_algorithm_find.h>
 #include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
@@ -510,10 +511,11 @@ namespace daw::json {
 				( ( found[static_cast<int>( json_details::json_deduced_type<
 				                            JsonElements>::underlying_json_type )]++ ),
 				  ... );
-				return daw::algorithm::find_if(
-				         found.begin( ), found.end( ), []( int x ) DAW_CPP23_STATIC_CALL_OP {
-					         return x > 1;
-				         } ) == found.end( );
+				return daw::algorithm::find_if( found.begin( ),
+				                                found.end( ),
+				                                []( int x ) DAW_CPP23_STATIC_CALL_OP {
+					                                return x > 1;
+				                                } ) == found.end( );
 			}
 
 			template<JsonBaseParseTypes PT>
@@ -557,9 +559,9 @@ namespace daw::json {
 			struct tuple_types_list;
 
 			template<template<class...> class Tuple, typename... Ts>
-			DAW_JSON_REQUIRES( not is_std_tuple_v<Tuple<Ts...>> and
-			                   not can_convert_to_tuple_v<Tuple<Ts...>> )
-			struct tuple_types_list<Tuple<Ts...> DAW_JSON_ENABLEIF_S(
+			DAW_REQUIRES( not is_std_tuple_v<Tuple<Ts...>> and
+			              not can_convert_to_tuple_v<Tuple<Ts...>> )
+			struct tuple_types_list<Tuple<Ts...> DAW_ENABLEIF_S(
 			  not is_std_tuple_v<Tuple<Ts...>> and
 			  not can_convert_to_tuple_v<Tuple<Ts...>> )> {
 				static_assert( are_deduced_type_mapped_v<daw::remove_cvref_t<Ts>...>,
@@ -577,9 +579,9 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			DAW_JSON_REQUIRES( can_convert_to_tuple_v<T> and not is_tuple_v<T> )
-			struct tuple_types_list<T DAW_JSON_ENABLEIF_S(
-			  can_convert_to_tuple_v<T> and not is_tuple_v<T> )> {
+			DAW_REQUIRES( can_convert_to_tuple_v<T> and not is_tuple_v<T> )
+			struct tuple_types_list<T DAW_ENABLEIF_S( can_convert_to_tuple_v<T> and
+			                                          not is_tuple_v<T> )> {
 				using tp_type_t =
 				  daw::remove_cvref_t<decltype( to_tuple_impl( std::declval<T>( ) ) )>;
 				using jt_types_list = tuple_types_list<tp_type_t>;

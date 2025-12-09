@@ -8,14 +8,15 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "impl/daw_json_arrow_proxy.h"
-#include "impl/daw_json_parse_class.h"
-#include "impl/daw_json_parse_name.h"
-#include "impl/daw_json_value.h"
-#include "impl/daw_murmur3.h"
+#include "daw/json/impl/daw_json_arrow_proxy.h"
+#include "daw/json/impl/daw_json_parse_class.h"
+#include "daw/json/impl/daw_json_parse_name.h"
+#include "daw/json/impl/daw_json_value.h"
+#include "daw/json/impl/daw_murmur3.h"
 
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_move.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
@@ -322,9 +323,8 @@ namespace daw::json {
 			 * @pre index must exist
 			 * @return A new basic_json_value for the indexed member
 			 */
-			template<
-			  typename Integer DAW_JSON_ENABLEIF( std::is_integral_v<Integer> )>
-			DAW_JSON_REQUIRES( std::is_integral_v<Integer> )
+			template<typename Integer DAW_ENABLEIF( std::is_integral_v<Integer> )>
+			DAW_REQUIRES( std::is_integral_v<Integer> )
 			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
 			operator[]( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {
@@ -350,9 +350,8 @@ namespace daw::json {
 			 * from one past last, e.g. -1 is last item
 			 * @return A new basic_json_value for the indexed member
 			 */
-			template<
-			  typename Integer DAW_JSON_ENABLEIF( std::is_integral_v<Integer> )>
-			DAW_JSON_REQUIRES( std::is_integral_v<Integer> )
+			template<typename Integer DAW_ENABLEIF( std::is_integral_v<Integer> )>
+			DAW_REQUIRES( std::is_integral_v<Integer> )
 			[[nodiscard]] constexpr std::optional<
 			  basic_json_value<PolicyFlags, Allocator>> at( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {

@@ -21,6 +21,7 @@
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_cxmath.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_move.h>
 #include <daw/daw_simple_array.h>
@@ -274,9 +275,9 @@ namespace daw::json {
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
 			  typename WritableType,
-			  typename Container DAW_JSON_ENABLEIF(
+			  typename Container DAW_ENABLEIF(
 			    daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )>
-			DAW_JSON_REQUIRES(
+			DAW_REQUIRES(
 			  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )
 			[[nodiscard]] static constexpr WritableType
 			  copy_to_iterator( WritableType it, Container const &container ) {
@@ -1011,7 +1012,7 @@ namespace daw::json {
 				daw::empty_t const expander[]{
 				  ( to_daw_json_string_help( daw::constant_v<Is> ),
 				    daw::empty_t{ } )...,
-				  daw::empty_t{} };
+				  daw::empty_t{ } };
 				(void)expander;
 
 				return it;

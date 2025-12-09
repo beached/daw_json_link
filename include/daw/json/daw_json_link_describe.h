@@ -8,9 +8,11 @@
 
 #pragma once
 
-#include <daw/daw_consteval.h>
-#include <daw/daw_traits.h>
 #include <daw/json/daw_json_link.h>
+
+#include <daw/daw_consteval.h>
+#include <daw/daw_enable_requires.h>
+#include <daw/daw_traits.h>
 
 #if not __has_include( <boost/describe.hpp> ) and __has_include( <boost/mp11.hpp> )
 #error \
@@ -63,8 +65,8 @@ namespace daw::json {
 	} // namespace describe_impl
 
 	template<typename T>
-	DAW_JSON_REQUIRES( boost::describe::has_describe_members<T>::value
-	                     and use_boost_describe_v<T> )
+	DAW_REQUIRES( boost::describe::has_describe_members<T>::value
+	                and use_boost_describe_v<T> )
 	struct json_data_contract<T> {
 	private:
 		using pub_desc_t =

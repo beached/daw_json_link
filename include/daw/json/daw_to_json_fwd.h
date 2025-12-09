@@ -8,10 +8,14 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "impl/daw_json_link_types_fwd.h"
-#include "impl/daw_json_serialize_policy.h"
+#include "daw/json/impl/daw_json_link_types_fwd.h"
+#include "daw/json/impl/daw_json_serialize_policy.h"
+
+#include <daw/daw_enable_requires.h>
+
+#include <string>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -54,12 +58,12 @@ namespace daw::json {
 		/// via the writeable_output_trait
 		/// @param out_it result to serialize to
 		/// @return it as is with ref qual or as a value if rvalue ref
-		template<typename JsonClass = use_default, typename Value,
-		         typename WritableType = std::string,
-		         auto... PolicyFlags DAW_JSON_ENABLEIF(
-		           concepts::is_writable_output_type_v<
-		             daw::remove_cvref_t<WritableType>> )>
-		DAW_JSON_REQUIRES(
+		template<
+		  typename JsonClass = use_default, typename Value,
+		  typename WritableType = std::string,
+		  auto... PolicyFlags DAW_ENABLEIF( concepts::is_writable_output_type_v<
+		                                    daw::remove_cvref_t<WritableType>> )>
+		DAW_REQUIRES(
 		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json(
 		  Value const &value, WritableType &&it = std::string{ },
@@ -87,12 +91,12 @@ namespace daw::json {
 		 * @param c Container containing data to serialize.
 		 * @return WritableType withstate of iterator
 		 */
-		template<typename JsonElement = use_default, typename Container,
-		         typename WritableType,
-		         auto... PolicyFlags DAW_JSON_ENABLEIF(
-		           concepts::is_writable_output_type_v<
-		             daw::remove_cvref_t<WritableType>> )>
-		DAW_JSON_REQUIRES(
+		template<
+		  typename JsonElement = use_default, typename Container,
+		  typename WritableType,
+		  auto... PolicyFlags DAW_ENABLEIF( concepts::is_writable_output_type_v<
+		                                    daw::remove_cvref_t<WritableType>> )>
+		DAW_REQUIRES(
 		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json_array(
 		  Container const &c, WritableType &&it,

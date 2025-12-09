@@ -16,6 +16,7 @@
 #include "daw/json/impl/daw_json_link_types_fwd.h"
 #include "daw/json/impl/to_daw_json_string.h"
 
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_traits.h>
 
 #include <iterator>
@@ -45,11 +46,11 @@ namespace daw::json {
 			}
 		} // namespace json_details
 
-		template<typename JsonClass, typename Value, typename WritableType,
-		         auto... PolicyFlags DAW_JSON_ENABLEIF2(
-		           concepts::is_writable_output_type_v<
-		             daw::remove_cvref_t<WritableType>> )>
-		DAW_JSON_REQUIRES(
+		template<
+		  typename JsonClass, typename Value, typename WritableType,
+		  auto... PolicyFlags DAW_ENABLEIF2( concepts::is_writable_output_type_v<
+		                                     daw::remove_cvref_t<WritableType>> )>
+		DAW_REQUIRES(
 		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json(
 		  Value const &value, WritableType &&it,
@@ -83,11 +84,11 @@ namespace daw::json {
 			return result;
 		}
 
-		template<typename JsonElement, typename Container, typename WritableType,
-		         auto... PolicyFlags DAW_JSON_ENABLEIF2(
-		           concepts::is_writable_output_type_v<
-		             daw::remove_cvref_t<WritableType>> )>
-		DAW_JSON_REQUIRES(
+		template<
+		  typename JsonElement, typename Container, typename WritableType,
+		  auto... PolicyFlags DAW_ENABLEIF2( concepts::is_writable_output_type_v<
+		                                     daw::remove_cvref_t<WritableType>> )>
+		DAW_REQUIRES(
 		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json_array(
 		  Container const &c, WritableType &&it,

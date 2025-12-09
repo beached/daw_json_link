@@ -8,13 +8,14 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_option_bits.h"
-#include <daw/json/daw_json_parse_options.h>
+#include "daw/json/daw_json_parse_options.h"
+#include "daw/json/impl/daw_json_option_bits.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_unreachable.h>
@@ -180,9 +181,9 @@ namespace daw::json {
 			}
 
 			template<typename PolicyFlag,
-			         typename... PolicyFlags DAW_JSON_ENABLEIF(
+			         typename... PolicyFlags DAW_ENABLEIF(
 			           are_option_flags<PolicyFlag, PolicyFlags...> )>
-			DAW_JSON_REQUIRES( are_option_flags<PolicyFlag, PolicyFlags...> )
+			DAW_REQUIRES( are_option_flags<PolicyFlag, PolicyFlags...> )
 			DAW_CONSTEVAL json_options_t
 			  set_bits( json_options_t value, PolicyFlag pol, PolicyFlags... pols ) {
 				static_assert( are_option_flags<PolicyFlags...>,

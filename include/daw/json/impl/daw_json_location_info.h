@@ -59,9 +59,7 @@ namespace daw::json {
 				template<typename ParseState>
 				constexpr auto get_range( ) const {
 					using range_t = typename ParseState::without_allocator_type;
-					auto result = range_t( first, last, class_first, class_last );
-					result.counter = counter;
-					return result;
+					return range_t( first, last, class_first, class_last, counter );
 				}
 			};
 

@@ -17,6 +17,7 @@
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_character_traits.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_string_view.h>
 
 #include <cstdio>
@@ -26,11 +27,10 @@ namespace daw::json {
 		namespace concepts {
 			/// @brief Specialization for character pointer
 			template<typename T>
-			DAW_JSON_REQUIRES(
-			  writeable_output_details::is_char_sized_character_v<T> or
-			  writeable_output_details::is_byte_type_v<T> )
+			DAW_REQUIRES( writeable_output_details::is_char_sized_character_v<T> or
+			              writeable_output_details::is_byte_type_v<T> )
 			struct writable_output_trait<
-			  T * DAW_JSON_ENABLEIF_S(
+			  T * DAW_ENABLEIF_S(
 			        writeable_output_details::is_char_sized_character_v<T> or
 			        writeable_output_details::is_byte_type_v<T> )> : std::true_type {
 
@@ -58,11 +58,11 @@ namespace daw::json {
 
 			/// @brief Specialization for a span to a buffer with a fixed size
 			template<typename T>
-			DAW_JSON_REQUIRES( writeable_output_details::is_span_like_range_v<
-			                   T, typename T::value_type> )
+			DAW_REQUIRES( writeable_output_details::is_span_like_range_v<
+			              T, typename T::value_type> )
 			struct writable_output_trait<
-			  T DAW_JSON_ENABLEIF_S( writeable_output_details::is_span_like_range_v<
-			                         T, typename T::value_type> )> : std::true_type {
+			  T DAW_ENABLEIF_S( writeable_output_details::is_span_like_range_v<
+			                    T, typename T::value_type> )> : std::true_type {
 				using CharT = typename T::value_type;
 
 				template<typename... StringViews>
@@ -92,10 +92,9 @@ namespace daw::json {
 
 			/// @brief Specialization for a resizable container like vector/string
 			template<typename Container>
-			DAW_JSON_REQUIRES(
-			  writeable_output_details::is_string_like_writable_output_v<
-			    Container, typename Container::value_type> )
-			struct writable_output_trait<Container DAW_JSON_ENABLEIF_S(
+			DAW_REQUIRES( writeable_output_details::is_string_like_writable_output_v<
+			              Container, typename Container::value_type> )
+			struct writable_output_trait<Container DAW_ENABLEIF_S(
 			  writeable_output_details::is_string_like_writable_output_v<
 			    Container, typename Container::value_type> )> : std::true_type {
 				using CharT = typename Container::value_type;
@@ -127,9 +126,8 @@ namespace daw::json {
 
 			/// @brief Specialization for output iterators
 			template<typename T>
-			DAW_JSON_REQUIRES(
-			  writeable_output_details::is_writable_output_iterator_v<T> )
-			struct writable_output_trait<T DAW_JSON_ENABLEIF_S(
+			DAW_REQUIRES( writeable_output_details::is_writable_output_iterator_v<T> )
+			struct writable_output_trait<T DAW_ENABLEIF_S(
 			  writeable_output_details::is_writable_output_iterator_v<T> )>
 			  : std::true_type {
 

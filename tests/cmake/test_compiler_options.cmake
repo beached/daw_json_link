@@ -120,9 +120,14 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 					-Wno-missing-noreturn
 					)
 		endif()
-		if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 20.0.0 )
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 20 )
 			add_compile_options(
 					-Wno-c++26-extensions
+					)
+		endif()
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 21 )
+			add_compile_options(
+					-Wno-nrvo
 					)
 		endif()
 		if( DAW_WERROR )
@@ -140,7 +145,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 
 	if( CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)" )
 		if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
-			if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
+			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 10 )
 				message( STATUS "Adding Intel JCC bugfix" )
 				add_compile_options( -mbranches-within-32B-boundaries )
 			endif()

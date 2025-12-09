@@ -8,8 +8,9 @@
 
 #pragma once
 
-#include "daw_json_link.h"
+#include "daw/json/daw_json_link.h"
 
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_function_traits.h>
 
 #include <string_view>
@@ -62,9 +63,9 @@ namespace daw::json {
 		/// @param callable The callable used to evaluate the parsed values.
 		/// @return The result of calling Callable
 		template<typename Signature = use_default, typename String,
-		         typename Callable DAW_JSON_ENABLEIF(
+		         typename Callable DAW_ENABLEIF(
 		           json_details::has_call_operator<Callable> )>
-		DAW_JSON_REQUIRES( json_details::has_call_operator<Callable> )
+		DAW_REQUIRES( json_details::has_call_operator<Callable> )
 		constexpr auto json_apply( String &&json_doc, Callable &&callable ) {
 			return json_details::json_apply_impl<Signature>( DAW_FWD( callable ),
 			                                                 DAW_FWD( json_doc ) );
@@ -83,9 +84,9 @@ namespace daw::json {
 		/// @param callable The callable used to evaluate the parsed values.
 		/// @return The result of calling Callable
 		template<typename Signature = use_default, typename String,
-		         typename Callable DAW_JSON_ENABLEIF(
+		         typename Callable DAW_ENABLEIF(
 		           json_details::has_call_operator<Callable> )>
-		DAW_JSON_REQUIRES( json_details::has_call_operator<Callable> )
+		DAW_REQUIRES( json_details::has_call_operator<Callable> )
 		constexpr auto json_apply( String &&json_doc, std::string_view json_path,
 		                           Callable &&callable ) {
 			return json_details::json_apply_impl<Signature>(
@@ -108,9 +109,9 @@ namespace daw::json {
 		/// @return The result of calling Callable
 		template<typename Signature = use_default, typename String,
 		         auto... PolicyFlags,
-		         typename Callable DAW_JSON_ENABLEIF(
+		         typename Callable DAW_ENABLEIF(
 		           json_details::has_call_operator<Callable> )>
-		DAW_JSON_REQUIRES( json_details::has_call_operator<Callable> )
+		DAW_REQUIRES( json_details::has_call_operator<Callable> )
 		constexpr auto json_apply(
 		  String &&json_doc, std::string_view json_path,
 		  daw::json::options::parse_flags_t<PolicyFlags...> flags,
@@ -134,9 +135,9 @@ namespace daw::json {
 		/// @return The result of calling Callable
 		template<typename Signature = use_default, typename String,
 		         auto... PolicyFlags,
-		         typename Callable DAW_JSON_ENABLEIF(
+		         typename Callable DAW_ENABLEIF(
 		           json_details::has_call_operator<Callable> )>
-		DAW_JSON_REQUIRES( json_details::has_call_operator<Callable> )
+		DAW_REQUIRES( json_details::has_call_operator<Callable> )
 		constexpr auto json_apply(
 		  String &&json_doc,
 		  daw::json::options::parse_flags_t<PolicyFlags...> flags,

@@ -12,6 +12,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_move.h>
 
 #include <cstddef>
@@ -77,9 +78,9 @@ namespace daw::json {
 				}
 			}
 
-			template<typename Value DAW_JSON_ENABLEIF(
+			template<typename Value DAW_ENABLEIF(
 			  not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>> )>
-			DAW_JSON_REQUIRES(
+			DAW_REQUIRES(
 			  not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>> )
 			DAW_ATTRIB_INLINE constexpr basic_appender &
 			operator=( Value &&v ) {

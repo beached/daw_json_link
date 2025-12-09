@@ -8,12 +8,13 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_enums.h"
-#include "daw_json_traits.h"
+#include "daw/json/impl/daw_json_enums.h"
+#include "daw/json/impl/daw_json_traits.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_tuple_forward.h>
 
@@ -26,8 +27,8 @@ namespace daw::json {
 			DAW_JSON_MAKE_REQ_TRAIT( has_to_tuple_v,
 			                         to_tuple( std::declval<T const &>( ) ) );
 
-			template<typename T DAW_JSON_ENABLEIF( has_to_tuple_v<T> )>
-			DAW_JSON_REQUIRES( has_to_tuple_v<T> )
+			template<typename T DAW_ENABLEIF( has_to_tuple_v<T> )>
+			DAW_REQUIRES( has_to_tuple_v<T> )
 			constexpr auto to_tuple_impl( T const &value ) {
 				return to_tuple( value );
 			}

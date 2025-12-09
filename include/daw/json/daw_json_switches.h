@@ -267,21 +267,6 @@
 #endif
 #endif
 
-#if defined( DAW_HAS_CONCEPTS ) and not defined( DAW_JSON_NO_REQUIRES )
-#define DAW_JSON_USE_REQUIRES
-#define DAW_JSON_ENABLEIF( ... )
-#define DAW_JSON_ENABLEIF2( ... )
-#define DAW_JSON_ENABLEIF_S( ... )
-#define DAW_JSON_REQUIRES( ... ) requires( __VA_ARGS__ )
-#else
-#define DAW_JSON_ENABLEIF( ... ) \
-	, std::enable_if_t<( __VA_ARGS__ ), std::nullptr_t> = nullptr
-#define DAW_JSON_ENABLEIF2( ... ) \
-	, std::enable_if_t<( __VA_ARGS__ ), std::nullptr_t>
-#define DAW_JSON_ENABLEIF_S( ... ) , std::enable_if_t<( __VA_ARGS__ )>
-#define DAW_JSON_REQUIRES( ... )
-#endif
-
 #if defined( __cpp_lib_constexpr_exceptions )
 #if __cpp_lib_constexpr_exceptions >= 202411L
 #define DAW_JSON_HAS_CONSTEXPR_EXCEPTIONS

@@ -172,6 +172,14 @@ namespace daw::json {
 			  , class_last( cl ) {}
 
 			explicit constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
+			                                     iterator cl, std::size_t cnter )
+			  : first( f )
+			  , last( l )
+			  , class_first( cf )
+			  , class_last( cl )
+			  , counter( cnter ) {}
+
+			explicit constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
 			                                     iterator cl, Allocator const &alloc )
 			  : json_details::AllocatorWrapper<Allocator>( alloc )
 			  , first( f )
@@ -282,7 +290,7 @@ namespace daw::json {
 					return true;
 				}
 				if constexpr( is_zero_terminated_string ) {
-					return first >= last or * first == '\0';
+					return first >= last or *first == '\0';
 				} else {
 					return first >= last;
 				}
@@ -402,19 +410,19 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] constexpr bool is_opening_bracket_checked( ) const {
-				return DAW_LIKELY( first < last ) and * first == '[';
+				return DAW_LIKELY( first < last ) and *first == '[';
 			}
 
 			[[nodiscard]] constexpr bool is_opening_brace_checked( ) const {
-				return DAW_LIKELY( first < last ) and * first == '{';
+				return DAW_LIKELY( first < last ) and *first == '{';
 			}
 
 			[[nodiscard]] constexpr bool is_closing_brace_checked( ) const {
-				return DAW_LIKELY( first < last ) and * first == '}';
+				return DAW_LIKELY( first < last ) and *first == '}';
 			}
 
 			[[nodiscard]] constexpr bool is_quotes_checked( ) const {
-				return DAW_LIKELY( first < last ) and * first == '"';
+				return DAW_LIKELY( first < last ) and *first == '"';
 			}
 
 			DAW_ATTRIB_INLINE constexpr void trim_left( ) {

@@ -8,17 +8,18 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_json_enums.h"
-#include "daw_json_parse_digit.h"
-#include "daw_json_parse_policy_policy_details.h"
-#include "daw_json_parse_string_quote.h"
-#include <daw/json/daw_json_exception.h>
+#include "daw/json/daw_json_exception.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_enums.h"
+#include "daw/json/impl/daw_json_parse_digit.h"
+#include "daw/json/impl/daw_json_parse_policy_policy_details.h"
+#include "daw/json/impl/daw_json_parse_string_quote.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_cast.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_is_any_of.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_unreachable.h>
@@ -174,10 +175,10 @@ namespace daw::json {
 
 			// DAW TODO: This branch has a bug that shows up in twitter_test2
 #if false and defined( DAW_CX_BIT_CAST )
-			template<typename ParseState DAW_JSON_ENABLEIF(
+			template<typename ParseState DAW_ENABLEIF(
 			  ParseState::is_unchecked_input or
 			  ParseState::is_zero_terminated_string )>
-			DAW_JSON_REQUIRES( ParseState::is_unchecked_input or
+			DAW_REQUIRES( ParseState::is_unchecked_input or
 			                     ParseState::is_zero_terminated_string )
 			[[nodiscard]] static constexpr ParseState
 			  skip_number( ParseState &parse_state ) {
@@ -219,10 +220,10 @@ namespace daw::json {
 				return result;
 			}
 
-			template<typename ParseState DAW_JSON_ENABLEIF(
+			template<typename ParseState DAW_ENABLEIF(
 			  not( ParseState::is_unchecked_input or
 			       ParseState::is_zero_terminated_string ) )>
-			DAW_JSON_REQUIRES( not( ParseState::is_unchecked_input or
+			DAW_REQUIRES( not( ParseState::is_unchecked_input or
 			                          ParseState::is_zero_terminated_string ) )
 #else
 			template<typename ParseState>
