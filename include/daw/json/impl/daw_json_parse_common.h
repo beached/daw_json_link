@@ -293,10 +293,8 @@ namespace daw::json {
 				using constructor_t = default_constructor<T>;
 				using parse_to_t = T;
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
-
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::Class;
+				static constexpr auto expected_type = JsonParseTypes::Class;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
 			};
 
 			template<typename T>
@@ -313,10 +311,9 @@ namespace daw::json {
 				using constructor_t = default_constructor<T>;
 				using parse_to_t = T;
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Tuple;
+				static constexpr auto expected_type = JsonParseTypes::Tuple;
 
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::Class;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
 			};
 		} // namespace json_details
 
@@ -433,8 +430,6 @@ namespace daw::json {
 			 * std::begin/std::end and the iterator returned has a value_type of char
 			 * @tparam T type to hold raw JSON data, defaults to json_value
 			 * @tparam Constructor A callable used to construct T.
-			 * @tparam Nullable Does the value have to exist in the document or can it
-			 * have a null value
 			 */
 			template<typename T, typename Constructor = use_default>
 			struct json_raw;
@@ -485,7 +480,7 @@ namespace daw::json {
 			template<typename, typename = void>
 			struct json_deduced_type_map {
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
+				static constexpr auto parse_type = JsonParseTypes::Unknown;
 
 				static constexpr bool type_map_found = false;
 			};
@@ -495,7 +490,7 @@ namespace daw::json {
 			struct json_deduced_type_map<
 			  JsonType DAW_ENABLEIF_S( is_a_json_type_v<JsonType> )> {
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
+				static constexpr auto parse_type = JsonParseTypes::Unknown;
 
 				using type = JsonType;
 				static constexpr bool type_map_found = true;
@@ -509,7 +504,7 @@ namespace daw::json {
 				using type = typename json_data_contract<T>::type;
 				static_assert( is_json_member_list_v<type>,
 				               "Expected a JSON member list" );
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
+				static constexpr auto parse_type = JsonParseTypes::Unknown;
 
 				static constexpr bool type_map_found = true;
 			};
@@ -517,7 +512,7 @@ namespace daw::json {
 			template<>
 			struct json_deduced_type_map<daw::string_view> {
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::StringRaw;
+				static constexpr auto parse_type = JsonParseTypes::StringRaw;
 
 				static constexpr bool type_map_found = true;
 			};
@@ -525,7 +520,7 @@ namespace daw::json {
 			template<>
 			struct json_deduced_type_map<std::string_view> {
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::StringRaw;
+				static constexpr auto parse_type = JsonParseTypes::StringRaw;
 
 				static constexpr bool type_map_found = true;
 			};
@@ -533,8 +528,7 @@ namespace daw::json {
 			template<>
 			struct json_deduced_type_map<std::string> {
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type =
-				  JsonParseTypes::StringEscaped;
+				static constexpr auto parse_type = JsonParseTypes::StringEscaped;
 
 				static constexpr bool type_map_found = true;
 			};
@@ -542,8 +536,7 @@ namespace daw::json {
 			template<>
 			struct json_deduced_type_map<bool> {
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::Bool;
-
+				static constexpr auto parse_type = JsonParseTypes::Bool;
 				static constexpr bool type_map_found = true;
 			};
 
@@ -555,7 +548,7 @@ namespace daw::json {
 			  typename std::vector<bool>::const_reference> {
 
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::Bool;
+				static constexpr auto parse_type = JsonParseTypes::Bool;
 
 				static constexpr bool type_map_found = true;
 			};
@@ -569,9 +562,9 @@ namespace daw::json {
 			  not json_details::has_json_data_contract_trait_v<Integer> and
 			  daw::is_integral_v<Integer> )> {
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type =
-				  daw::is_signed_v<Integer> ? JsonParseTypes::Signed
-				                            : JsonParseTypes::Unsigned;
+				static constexpr auto parse_type = daw::is_signed_v<Integer>
+				                                     ? JsonParseTypes::Signed
+				                                     : JsonParseTypes::Unsigned;
 
 				static constexpr bool type_map_found = true;
 			};
@@ -583,7 +576,7 @@ namespace daw::json {
 			  not json_details::has_json_data_contract_trait_v<Enum> and
 			  std::is_enum_v<Enum> )> {
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type =
+				static constexpr auto parse_type =
 				  daw::is_signed_v<std::underlying_type<Enum>>
 				    ? JsonParseTypes::Signed
 				    : JsonParseTypes::Unsigned;
@@ -599,7 +592,7 @@ namespace daw::json {
 			  not json_details::has_json_data_contract_trait_v<FloatingPoint> and
 			  daw::is_floating_point_v<FloatingPoint> )> {
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::Real;
+				static constexpr auto parse_type = JsonParseTypes::Real;
 
 				static constexpr bool type_map_found = true;
 			};
@@ -611,7 +604,7 @@ namespace daw::json {
 			  not json_details::has_json_data_contract_trait_v<Tuple> and
 			  is_tuple_v<Tuple> )> {
 				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::Tuple;
+				static constexpr auto parse_type = JsonParseTypes::Tuple;
 
 				static constexpr bool type_map_found = true;
 			};
@@ -649,7 +642,7 @@ namespace daw::json {
 				static constexpr bool is_null = false;
 				using key = typename AssociativeContainer::key_type;
 				using value = typename AssociativeContainer::mapped_type;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::KeyValue;
+				static constexpr auto parse_type = JsonParseTypes::KeyValue;
 
 				static constexpr bool type_map_found = true;
 			};
@@ -666,7 +659,7 @@ namespace daw::json {
 			  Container DAW_ENABLEIF_S( is_deduced_array_v<Container> )> {
 				static constexpr bool is_null = false;
 				using value = typename Container::value_type;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::Array;
+				static constexpr auto parse_type = JsonParseTypes::Array;
 
 				static constexpr bool type_map_found = true;
 			};
@@ -685,7 +678,7 @@ namespace daw::json {
 				static constexpr bool is_null = true;
 				using sub_type = concepts::nullable_value_type_t<T>;
 				using type = json_deduced_type_map<sub_type>;
-				static constexpr JsonParseTypes parse_type = type::parse_type;
+				static constexpr auto parse_type = type::parse_type;
 				static constexpr bool type_map_found = true;
 			};
 

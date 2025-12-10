@@ -52,7 +52,6 @@ namespace daw::json {
 			/**
 			 * Serialize a C++ class to JSON data
 			 * @tparam OutputIterator An output iterator with a char value_type
-			 * @tparam Args  tuple of values that map to the JSON members of v
 			 * @tparam Value Value type being serialized
 			 * @param it OutputIterator to append string data to
 			 * @param args members from C++ class
@@ -282,9 +281,10 @@ namespace daw::json {
 			/**
 			 * Serialize a C++ class to JSON data
 			 * @tparam OutputIterator An output iterator with a char value_type
-			 * @tparam Args  tuple of values that map to the JSON members
+			 * @tparam Ts  tuple of values that map to the JSON members
 			 * @param it OutputIterator to append string data to
 			 * @param args members from C++ class
+			 * @param v value to serialize
 			 * @return the OutputIterator it
 			 */
 			template<typename OutputIterator, typename Value,
@@ -362,6 +362,7 @@ namespace daw::json {
 			 * Serialize a C++ class to JSON data
 			 * @tparam OutputIterator An output iterator with a char value_type
 			 * @param it OutputIterator to append string data to
+			 * @param v Value to serialzie
 			 * @return the OutputIterator it
 			 */
 			template<typename OutputIterator, typename Value>
@@ -440,7 +441,7 @@ namespace daw::json {
 				using parse_to_t =
 				  typename json_details::construction_result<constructor_t, T>::type;
 
-				static constexpr JsonParseTypes expected_type =
+				static constexpr auto expected_type =
 				  json_details::number_parse_type_v<T>;
 
 				static constexpr options::LiteralAsStringOpt literal_as_string =
@@ -465,8 +466,7 @@ namespace daw::json {
 				               "Cannot allow NaN/Inf/-Inf when numbers cannot be "
 				               "serialized/parsed as a string" );
 
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::Number;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Number;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -513,7 +513,6 @@ namespace daw::json {
 		 * The member is a range checked number
 		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
 		 * Constructor
-		 * @tparam LiteralAsString Could this number be embedded in a string
 		 * @tparam Constructor Callable used to construct result
 		 */
 		template<typename T = double, json_options_t Options = number_opts_def,
@@ -526,10 +525,8 @@ namespace daw::json {
 
 		/**
 		 * The member is a nullable range checked number
-		 * @tparam Name name of json member
 		 * @tparam T type of number(e.g. optional<double>, optional<int>,
 		 * optional<unsigned>...) to pass to Constructor
-		 * @tparam LiteralAsString Could this number be embedded in a string
 		 * @tparam Constructor Callable used to construct result
 		 */
 		template<typename T = std::optional<double>,
@@ -558,14 +555,13 @@ namespace daw::json {
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, T>;
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
+				static constexpr auto expected_type = JsonParseTypes::Bool;
 
 				static constexpr options::LiteralAsStringOpt literal_as_string =
 				  json_details::get_bits_for<options::LiteralAsStringOpt>( bool_opts,
 				                                                           Options );
 
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::Bool;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Bool;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -583,7 +579,6 @@ namespace daw::json {
 		 * The member is a nullable boolean
 		 * @tparam Name name of json member
 		 * @tparam T result type to pass to Constructor
-		 * @tparam LiteralAsString Could this number be embedded in a string
 		 * @tparam Constructor Callable used to construct result
 		 */
 		template<JSONNAMETYPE Name, typename T, json_options_t Options,
@@ -622,11 +617,9 @@ namespace daw::json {
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, String>;
 
-				static constexpr JsonParseTypes expected_type =
-				  JsonParseTypes::StringRaw;
+				static constexpr auto expected_type = JsonParseTypes::StringRaw;
 
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::String;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::String;
 
 				static constexpr options::EightBitModes eight_bit_mode =
 				  json_details::get_bits_for<options::EightBitModes>( string_raw_opts,
@@ -649,10 +642,6 @@ namespace daw::json {
 		 * @tparam String result type constructed by Constructor
 		 * @tparam Constructor a callable taking as arguments ( char const *,
 		 * std::size_t )
-		 * @tparam EightBitMode Allow filtering of characters with the MSB set
-		 * arguments
-		 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
-		 * data
 		 */
 		template<JSONNAMETYPE Name, typename String, json_options_t Options,
 		         typename Constructor>
@@ -694,15 +683,13 @@ namespace daw::json {
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, String>;
 
-				static constexpr JsonParseTypes expected_type =
-				  JsonParseTypes::StringEscaped;
+				static constexpr auto expected_type = JsonParseTypes::StringEscaped;
 
 				static constexpr options::EightBitModes eight_bit_mode =
 				  json_details::get_bits_for<options::EightBitModes>( string_opts,
 				                                                      Options );
 
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::String;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::String;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -720,7 +707,6 @@ namespace daw::json {
 		 * @tparam Constructor a callable taking as arguments ( InputIterator,
 		 * InputIterator ).  If others are needed use the Constructor callable
 		 * convert
-		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 */
 		template<JSONNAMETYPE Name, typename String, json_options_t Options,
 		         typename Constructor>
@@ -756,9 +742,8 @@ namespace daw::json {
 
 				using parse_to_t = T;
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::String;
+				static constexpr auto expected_type = JsonParseTypes::Date;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::String;
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_date<NewName, T, Constructor>;
@@ -800,7 +785,7 @@ namespace daw::json {
 			struct json_nullable {
 				using i_am_a_json_type = void;
 				using i_am_a_json_nullable = void;
-				static constexpr JsonNullable nullable = NullableType;
+				static constexpr auto nullable = NullableType;
 				using wrapped_type = T;
 				using raw_member_type = typename daw::conditional_t<
 				  not std::is_same_v<JsonMember, use_default>,
@@ -824,12 +809,11 @@ namespace daw::json {
 				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
 				                     nullable_constructor<T>, Constructor>;
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Null;
+				static constexpr auto expected_type = JsonParseTypes::Null;
 
-				static constexpr JsonParseTypes base_expected_type =
-				  member_type::expected_type;
+				static constexpr auto base_expected_type = member_type::expected_type;
 
-				static constexpr JsonBaseParseTypes underlying_json_type =
+				static constexpr auto underlying_json_type =
 				  member_type::underlying_json_type;
 
 				template<JSONNAMETYPE NewName>
@@ -885,10 +869,9 @@ namespace daw::json {
 				  daw::traits::identity<
 				    typename data_contract::template result_type<constructor_t>>>::type;
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
+				static constexpr auto expected_type = JsonParseTypes::Class;
 
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::Class;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_class<NewName, T, Constructor>;
@@ -991,10 +974,9 @@ namespace daw::json {
 				  json_details::json_class_constructor_t<Variant, Constructor>;
 				using parse_to_t = Variant;
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Variant;
+				static constexpr auto expected_type = JsonParseTypes::Variant;
 
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::None;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::None;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -1006,8 +988,6 @@ namespace daw::json {
 		 * Link to a basic variant type that has no more than one of each of string,
 		 * boolean, number, class, or array.
 		 * @tparam Name name of JSON member to link to
-		 * @tparam T type that has specialization of
-		 * daw::json::json_data_contract
 		 * @tparam JsonElements a json_variant_type_list
 		 * @tparam Constructor A callable used to construct T.  The
 		 * default supports normal and aggregate construction
@@ -1081,11 +1061,9 @@ namespace daw::json {
 
 				using parse_to_t = T;
 
-				static constexpr JsonParseTypes expected_type =
-				  JsonParseTypes::VariantTagged;
+				static constexpr auto expected_type = JsonParseTypes::VariantTagged;
 
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::None;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::None;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -1167,16 +1145,14 @@ namespace daw::json {
 				    std::is_invocable_r_v<char *, to_converter_t, char *, parse_to_t>,
 				  "ToConverter must be callable with T or T and and OutputIterator" );
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Custom;
-				static constexpr JsonParseTypes base_expected_type =
-				  JsonParseTypes::Custom;
+				static constexpr auto expected_type = JsonParseTypes::Custom;
+				static constexpr auto base_expected_type = JsonParseTypes::Custom;
 
 				static constexpr options::JsonCustomTypes custom_json_type =
 				  json_details::get_bits_for<options::JsonCustomTypes>(
 				    json_custom_opts, Options );
 
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::String;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::String;
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_custom<NewName, T, FromJsonConverter,
@@ -1190,7 +1166,6 @@ namespace daw::json {
 		/// @tparam FromJsonConverter Callable that accepts a std::string_view of
 		/// the range to parse
 		/// @tparam ToJsonConverter Returns a string from the value
-		/// @tparam JsonRawType JSON type value is encoded as literal/string
 		template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
 		         typename ToJsonConverter, json_options_t Options>
 		struct json_custom
@@ -1259,12 +1234,11 @@ namespace daw::json {
 				static_assert( json_details::is_a_json_type_v<json_element_t>,
 				               "Error determining element type" );
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
+				static constexpr auto expected_type = JsonParseTypes::Array;
 
 				static_assert( json_details::is_no_name_v<json_element_t>,
 				               "All elements of json_array must be have no_name" );
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::Array;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Array;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -1353,13 +1327,11 @@ namespace daw::json {
 				  std::invoke_result_t<constructor_t, json_element_parse_to_t const *,
 				                       json_element_parse_to_t const *, std::size_t>;
 
-				static constexpr JsonParseTypes expected_type =
-				  JsonParseTypes::SizedArray;
+				static constexpr auto expected_type = JsonParseTypes::SizedArray;
 
 				static_assert( json_details::is_no_name_v<json_element_t>,
 				               "All elements of json_array must be have	no_name" );
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::Array;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Array;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -1455,10 +1427,8 @@ namespace daw::json {
 
 				using parse_to_t = Container;
 
-				static constexpr JsonParseTypes expected_type =
-				  JsonParseTypes::KeyValue;
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::Class;
+				static constexpr auto expected_type = JsonParseTypes::KeyValue;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -1559,10 +1529,8 @@ namespace daw::json {
 				               "Must supply a valid value member name" );
 				static_assert( json_key_t::name != json_value_t::name,
 				               "Key and Value member names cannot be the same" );
-				static constexpr JsonParseTypes expected_type =
-				  JsonParseTypes::KeyValueArray;
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::Array;
+				static constexpr auto expected_type = JsonParseTypes::KeyValueArray;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Array;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -1639,9 +1607,8 @@ namespace daw::json {
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, Tuple>;
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Tuple;
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::Array;
+				static constexpr auto expected_type = JsonParseTypes::Tuple;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Array;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -1720,10 +1687,8 @@ namespace daw::json {
 
 				using parse_to_t = Variant;
 
-				static constexpr JsonParseTypes expected_type =
-				  JsonParseTypes::VariantIntrusive;
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::None;
+				static constexpr auto expected_type = JsonParseTypes::VariantIntrusive;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::None;
 
 				using json_container_type = daw::conditional_t<
 				  (json_details::is_an_ordered_member_v<
@@ -1829,12 +1794,9 @@ namespace daw::json {
 				using parse_to_t =
 				  std::invoke_result_t<constructor_t, char const *, std::size_t>;
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Unknown;
-				static constexpr JsonParseTypes base_expected_type =
-				  JsonParseTypes::Unknown;
-
-				static constexpr JsonBaseParseTypes underlying_json_type =
-				  JsonBaseParseTypes::None;
+				static constexpr auto expected_type = JsonParseTypes::Unknown;
+				static constexpr auto base_expected_type = JsonParseTypes::Unknown;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::None;
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_raw<NewName, T, Constructor>;

@@ -56,9 +56,15 @@ namespace daw::jkj::dragonbox {
 			inline constexpr std::size_t physical_bits =
 			  sizeof( T ) * daw::digits<unsigned char>;
 
+#if defined( DAW_HAS_CPP20_CONCEPTS )
+			template<class T>
+			requires( std::is_unsigned_v<T> ) //
+			  inline constexpr std::size_t value_bits = daw::digits<T>;
+#else
 			template<class T>
 			inline constexpr std::size_t value_bits =
 			  daw::digits<std::enable_if_t<std::is_unsigned_v<T>, T>>;
+#endif
 		} // namespace detail
 
 		enum class ieee754_format { binary32, binary64 };
@@ -618,35 +624,47 @@ namespace daw::jkj::dragonbox {
 
 				[[nodiscard]] inline constexpr int floor_log10_pow2( int e ) noexcept {
 					using namespace log;
-					return compute<0, log10_2_fractional_digits,
-					               floor_log10_pow2_shift_amount, 1700>( e );
+					return compute<0,
+					               log10_2_fractional_digits,
+					               floor_log10_pow2_shift_amount,
+					               1700>( e );
 				}
 
 				[[nodiscard]] inline constexpr int floor_log2_pow10( int e ) noexcept {
 					using namespace log;
-					return compute<3, log2_10_fractional_digits,
-					               floor_log2_pow10_shift_amount, 1233>( e );
+					return compute<3,
+					               log2_10_fractional_digits,
+					               floor_log2_pow10_shift_amount,
+					               1233>( e );
 				}
 
 				[[nodiscard]] inline constexpr int floor_log5_pow2( int e ) noexcept {
 					using namespace log;
-					return compute<0, log5_2_fractional_digits,
-					               floor_log5_pow2_shift_amount, 1492>( e );
+					return compute<0,
+					               log5_2_fractional_digits,
+					               floor_log5_pow2_shift_amount,
+					               1492>( e );
 				}
 
 				[[nodiscard]] inline constexpr int
 				floor_log5_pow2_minus_log5_3( int e ) noexcept {
 					using namespace log;
-					return compute<0, log5_2_fractional_digits,
-					               floor_log5_pow2_shift_amount, 2427, 0,
+					return compute<0,
+					               log5_2_fractional_digits,
+					               floor_log5_pow2_shift_amount,
+					               2427,
+					               0,
 					               log5_3_fractional_digits>( e );
 				}
 
 				[[nodiscard]] inline constexpr int
 				floor_log10_pow2_minus_log10_4_over_3( int e ) noexcept {
 					using namespace log;
-					return compute<0, log10_2_fractional_digits,
-					               floor_log10_pow2_shift_amount, 1700, 0,
+					return compute<0,
+					               log10_2_fractional_digits,
+					               floor_log10_pow2_shift_amount,
+					               1700,
+					               0,
 					               log10_4_over_3_fractional_digits>( e );
 				}
 			} // namespace log
@@ -687,21 +705,22 @@ namespace daw::jkj::dragonbox {
 
 				template<class UInt, UInt a, int N>
 				struct table_holder {
-					static constexpr table_t<UInt, a, N> table = [] DAW_CPP23_STATIC_CALL_OP {
-						constexpr auto mod_inverse = modular_inverse<UInt, a>( );
-						table_t<UInt, a, N> tbl{ };
-						std::common_type_t<UInt, unsigned int> pow_of_mod_inverse = 1;
-						UInt pow_of_a = 1;
-						for( int i = 0; i < N; ++i ) {
-							tbl.mod_inv[i] = UInt( pow_of_mod_inverse );
-							tbl.max_quotients[i] = UInt( daw::max_value<UInt> / pow_of_a );
+					static constexpr table_t<UInt, a, N> table =
+					  [] DAW_CPP23_STATIC_CALL_OP {
+						  constexpr auto mod_inverse = modular_inverse<UInt, a>( );
+						  table_t<UInt, a, N> tbl{ };
+						  std::common_type_t<UInt, unsigned int> pow_of_mod_inverse = 1;
+						  UInt pow_of_a = 1;
+						  for( int i = 0; i < N; ++i ) {
+							  tbl.mod_inv[i] = UInt( pow_of_mod_inverse );
+							  tbl.max_quotients[i] = UInt( daw::max_value<UInt> / pow_of_a );
 
-							pow_of_mod_inverse *= mod_inverse;
-							pow_of_a *= a;
-						}
+							  pow_of_mod_inverse *= mod_inverse;
+							  pow_of_a *= a;
+						  }
 
-						return tbl;
-					}( );
+						  return tbl;
+					  }( );
 				};
 
 				template<std::size_t table_size, class UInt>
@@ -2423,9 +2442,11 @@ namespace daw::jkj::dragonbox {
 
 						// Shorter interval case; proceed like Schubfach
 						if( significand == 0 ) {
-							shorter_interval_case<TrailingZeroPolicy, CorrectRoundingPolicy,
+							shorter_interval_case<TrailingZeroPolicy,
+							                      CorrectRoundingPolicy,
 							                      CachePolicy>(
-							  ret_value, exponent,
+							  ret_value,
+							  exponent,
 							  IntervalTypeProvider::interval_type_shorter( br ) );
 							return ret_value;
 						}
@@ -2466,7 +2487,8 @@ namespace daw::jkj::dragonbox {
 					// division better than the compiler; we are computing zi /
 					// big_divisor here
 					ret_value.significand =
-					  div::divide_by_pow10<kappa + 1, significand_bits + kappa + 2,
+					  div::divide_by_pow10<kappa + 1,
+					                       significand_bits + kappa + 2,
 					                       kappa + 1>( zi );
 					auto r = std::uint32_t( zi - big_divisor * ret_value.significand );
 
@@ -2727,7 +2749,8 @@ namespace daw::jkj::dragonbox {
 					// division better than the compiler; we are computing xi /
 					// big_divisor here
 					ret_value.significand =
-					  div::divide_by_pow10<kappa + 1, significand_bits + kappa + 2,
+					  div::divide_by_pow10<kappa + 1,
+					                       significand_bits + kappa + 2,
 					                       kappa + 1>( xi );
 					auto r = std::uint32_t( xi - big_divisor * ret_value.significand );
 
@@ -2821,7 +2844,8 @@ namespace daw::jkj::dragonbox {
 					// division better than the compiler; we are computing zi /
 					// big_divisor here
 					ret_value.significand =
-					  div::divide_by_pow10<kappa + 1, significand_bits + kappa + 2,
+					  div::divide_by_pow10<kappa + 1,
+					                       significand_bits + kappa + 2,
 					                       kappa + 1>( zi );
 					auto const r =
 					  std::uint32_t( zi - big_divisor * ret_value.significand );
@@ -2842,8 +2866,8 @@ namespace daw::jkj::dragonbox {
 					} else if( r == deltai ) {
 						// Compare the fractional parts
 						if( closer_boundary ) {
-							if( not compute_mul_parity( ( significand * 2 ) - 1, cache,
-							                            beta - 1 ) ) {
+							if( not compute_mul_parity(
+							      ( significand * 2 ) - 1, cache, beta - 1 ) ) {
 								return small_divisor_case_label( );
 							}
 						} else {
@@ -3271,7 +3295,9 @@ namespace daw::jkj::dragonbox {
 					  base_default_pair_list<RemainingBaseDefaultPairs...>{ },
 					  found_policy_pair_list < repeated or
 					    new_found_policy_pair::found_info == policy_found_info::repeated,
-					  new_found_policy_pair, FoundPolicyPairs... > { }, policies... );
+					  new_found_policy_pair,
+					  FoundPolicyPairs... > { },
+					  policies... );
 				}
 
 				template<bool repeated, class... RawPolicies>
@@ -3289,7 +3315,8 @@ namespace daw::jkj::dragonbox {
 				  RawPolicies... policies ) {
 					return convert_to_policy_holder(
 					  found_policy_pair_list<repeated, RemainingFoundPolicyPairs...>{ },
-					  typename FirstFoundPolicyPair::policy{ }, policies... );
+					  typename FirstFoundPolicyPair::policy{ },
+					  policies... );
 				}
 
 				template<class BaseDefaultPairList, class... Policies>
@@ -3299,9 +3326,10 @@ namespace daw::jkj::dragonbox {
 					                                           Policies{ }... ),
 					               "jkj::dragonbox: an invalid policy is specified" );
 
-					using policy_pair_list = decltype( make_policy_holder_impl(
-					  BaseDefaultPairList{ }, found_policy_pair_list<false>{ },
-					  policies... ) );
+					using policy_pair_list =
+					  decltype( make_policy_holder_impl( BaseDefaultPairList{ },
+					                                     found_policy_pair_list<false>{ },
+					                                     policies... ) );
 
 					static_assert(
 					  not policy_pair_list::repeated,
@@ -3330,20 +3358,24 @@ namespace daw::jkj::dragonbox {
 
 						if constexpr( tag_tmp == rounding_mode::tag_t::to_nearest ) {
 							return detail::impl<Float>::template compute_nearest<
-							  return_type, TypeProvider, typename policy_holder::sign_policy,
+							  return_type,
+							  TypeProvider,
+							  typename policy_holder::sign_policy,
 							  typename policy_holder::trailing_zero_policy,
 							  typename policy_holder::correct_rounding_policy,
 							  typename policy_holder::cache_policy>( br );
 						} else if constexpr( tag_tmp ==
 						                     rounding_mode::tag_t::left_closed_directed ) {
 							return detail::impl<Float>::template compute_left_closed_directed<
-							  return_type, typename policy_holder::sign_policy,
+							  return_type,
+							  typename policy_holder::sign_policy,
 							  typename policy_holder::trailing_zero_policy,
 							  typename policy_holder::cache_policy>( br );
 						} else {
 							return detail::impl<Float>::
 							  template compute_right_closed_directed<
-							    return_type, typename policy_holder::sign_policy,
+							    return_type,
+							    typename policy_holder::sign_policy,
 							    typename policy_holder::trailing_zero_policy,
 							    typename policy_holder::cache_policy>( br );
 						}
@@ -3369,15 +3401,18 @@ namespace daw::jkj::dragonbox {
 			                      input_validation::assert_finite>>{ },
 			  policies... ) );
 
-			using return_type = fp_t<Float, policy_holder::return_has_sign,
+			using return_type = fp_t<Float,
+			                         policy_holder::return_has_sign,
 			                         policy_holder::report_trailing_zeros>;
 
 			auto br = ieee754_bits( x );
 			policy_holder::validate_input( br );
 
 			return policy_holder::delegate(
-			  br, detail::delegate_helper<Float, return_type, policy_holder,
-			                              decltype( br )>{ br } );
+			  br,
+			  detail::
+			    delegate_helper<Float, return_type, policy_holder, decltype( br )>{
+			      br } );
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::jkj::dragonbox

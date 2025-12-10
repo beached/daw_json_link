@@ -24,6 +24,11 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-c++2c-extensions
 				)
 	endif()
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.1.5 )
+		add_compile_options(
+				-Wno-c++26-extensions
+				)
+	endif()
 	set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 -DNDEBUG /permissive- /EHsc" )
 	set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /O2 -DNDEBUG /permissive- /EHsc" )
 	if( DAW_WERROR )
