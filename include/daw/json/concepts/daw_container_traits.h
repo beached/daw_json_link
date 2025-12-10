@@ -13,6 +13,7 @@
 #include "daw/json/concepts/daw_container_traits_fwd.h"
 
 #include <daw/cpp_17.h>
+#include <daw/daw_cpp20_concept.h>
 #include <daw/daw_enable_requires.h>
 
 #include <array>

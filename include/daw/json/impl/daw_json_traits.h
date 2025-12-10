@@ -20,6 +20,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_callable.h>
+#include <daw/daw_cpp20_concept.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
