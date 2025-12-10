@@ -23,6 +23,7 @@
 #include <daw/cpp_17.h>
 #include <daw/daw_allocator_construct.h>
 #include <daw/daw_arith_traits.h>
+#include <daw/daw_callable.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_enable_requires.h>
 #include <daw/daw_fwd_pack_apply.h>
@@ -69,7 +70,7 @@ namespace daw::json {
 					  std::move( alloc ), DAW_FWD( args )... );
 				} else {
 					static_assert(
-					  std::is_invocable_v<Constructor, Args...>,
+					  daw::is_callable_v<Constructor, Args...>,
 					  "Unable to construct value with the supplied arguments" );
 					return Constructor{ }( DAW_FWD( args )... );
 				}
@@ -123,16 +124,16 @@ namespace daw::json {
 					  typename ParseState::template allocator_type_as<Value>;
 					auto alloc = parse_state.template get_allocator_for<Value>( );
 					// There are several ways that the allocator is passed on
-					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
+					if constexpr( daw::is_callable_v<Constructor, Args..., alloc_t> ) {
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 							// Type( args..., alloc )
 							return Constructor{ }( get<Is>( std::move( tp_args ) )...,
 							                       std::move( alloc ) );
 						}( std::make_index_sequence<sizeof...( Args )>{ } );
-					} else if constexpr( std::is_invocable_v<Constructor,
-					                                         std::allocator_arg_t,
-					                                         alloc_t,
-					                                         Args...> ) {
+					} else if constexpr( daw::is_callable_v<Constructor,
+					                                      std::allocator_arg_t,
+					                                      alloc_t,
+					                                      Args...> ) {
 						// Type( std::allocator_arg, alloc, args... )
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 							return Constructor{ }( std::allocator_arg,
@@ -144,7 +145,7 @@ namespace daw::json {
 						// fallback to normal construction
 						// Type( args... )
 						static_assert(
-						  std::is_invocable_v<Constructor, Args...>,
+						  daw::is_callable_v<Constructor, Args...>,
 						  "Unable to construct value with the supplied arguments" );
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 							return Constructor{ }( get<Is>( std::move( tp_args ) )... );
@@ -156,7 +157,7 @@ namespace daw::json {
 					// Silence MSVC warning, used in other if constexpr case
 					(void)parse_state;
 					static_assert(
-					  std::is_invocable_v<Constructor, Args...>,
+					  daw::is_callable_v<Constructor, Args...>,
 					  "Unable to construct value with the supplied arguments" );
 					return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 						return Constructor{ }( get<Is>( std::move( tp_args ) )... );
@@ -169,16 +170,16 @@ namespace daw::json {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
 					auto alloc = parse_state.template get_allocator_for<Value>( );
-					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
+					if constexpr( daw::is_callable_v<Constructor, Args..., alloc_t> ) {
 						// Type( args..., alloc )
 						return construct_value_tp_invoke<Constructor>(
 						  std::move( tp_args ),
 						  std::move( alloc ),
 						  std::index_sequence_for<Args...>{ } );
-					} else if constexpr( std::is_invocable_v<Constructor,
-					                                         std::allocator_arg_t,
-					                                         alloc_t,
-					                                         Args...> ) {
+					} else if constexpr( daw::is_callable_v<Constructor,
+					                                        std::allocator_arg_t,
+					                                        alloc_t,
+					                                        Args...> ) {
 						// Type( std::allocator_arg, alloc, args... )
 						return construct_value_tp_invoke<Constructor>(
 						  std::allocator_arg,
@@ -190,7 +191,7 @@ namespace daw::json {
 						// fallback to normal construction
 						// Type( args... )
 						static_assert(
-						  std::is_invocable_v<Constructor, Args...>,
+						  daw::is_callable_v<Constructor, Args...>,
 						  "Unable to construct value with the supplied arguments" );
 						return construct_value_tp_invoke<Constructor>(
 						  std::move( tp_args ), std::index_sequence_for<Args...>{ } );
@@ -201,7 +202,7 @@ namespace daw::json {
 					// Type( args... )
 					(void)parse_state;
 					static_assert(
-					  std::is_invocable_v<Constructor, Args...>,
+					  daw::is_callable_v<Constructor, Args...>,
 					  "Unable to construct value with the supplied arguments" );
 					return construct_value_tp_invoke<Constructor>(
 					  std::move( tp_args ), std::index_sequence_for<Args...>{ } );
@@ -898,8 +899,8 @@ namespace daw::json {
 				                     default_constructor<container_t>, Constructor>;
 
 				static_assert(
-				  std::is_invocable_v<type, json_element_parse_to_t const *,
-				                      json_element_parse_to_t const *>,
+				  daw::is_callable_v<type, json_element_parse_to_t const *,
+				                     json_element_parse_to_t const *>,
 				  "Constructor must support copy and/or move construction" );
 			};
 
@@ -936,7 +937,7 @@ namespace daw::json {
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_t = typename daw::conditional_t<
-			  std::is_invocable_v<Constructor, json_result_t<Members>...>,
+			  daw::is_callable_v<Constructor, json_result_t<Members>...>,
 			  std::invoke_result<Constructor, json_result_t<Members>...>,
 			  daw::traits::identity<could_not_construct_from_members_error<
 			    Constructor, Members...>>>::type;
@@ -963,7 +964,7 @@ namespace daw::json {
 			template<typename Constructor>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto
 			construct_nullable_empty( ) {
-				if constexpr( std::is_invocable_v<
+				if constexpr( daw::is_callable_v<
 				                Constructor,
 				                concepts::construct_nullable_with_empty_t> ) {
 					return Constructor{ }( concepts::construct_nullable_with_empty );

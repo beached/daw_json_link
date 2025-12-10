@@ -15,6 +15,7 @@
 #include "daw/json/impl/daw_json_traits.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_callable.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -22,6 +23,8 @@
 #include <daw/traits/daw_traits_conditional.h>
 #include <daw/traits/daw_traits_first_type.h>
 #include <daw/traits/daw_traits_identity.h>
+
+#include <daw/daw_cpp_feature_check.h>
 
 #include <cstddef>
 #include <daw/stdinc/integer_sequence.h>
@@ -551,7 +554,7 @@ namespace daw::json {
 				                     default_constructor<T>, Constructor>;
 
 				static_assert(
-				  std::is_invocable_v<constructor_t, T>,
+				  daw::is_callable_v<constructor_t, T>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, T>;
 
@@ -613,7 +616,7 @@ namespace daw::json {
 				                     default_constructor<String>, Constructor>;
 
 				static_assert(
-				  std::is_invocable_v<constructor_t, String>,
+				  daw::is_callable_v<constructor_t, String>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, String>;
 
@@ -679,7 +682,7 @@ namespace daw::json {
 				                     default_constructor<String>, Constructor>;
 
 				static_assert(
-				  std::is_invocable_v<constructor_t, String>,
+				  daw::is_callable_v<constructor_t, String>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, String>;
 
@@ -1135,14 +1138,14 @@ namespace daw::json {
 				using constructor_t = from_converter_t;
 
 				static_assert(
-				  std::is_invocable_v<from_converter_t, std::string_view>,
+				  daw::is_callable_v<from_converter_t, std::string_view>,
 				  "Constructor must support construction from std::string_view" );
 				using parse_to_t =
 				  std::invoke_result_t<from_converter_t, std::string_view>;
 
 				static_assert(
-				  std::is_invocable_v<to_converter_t, parse_to_t> or
-				    std::is_invocable_r_v<char *, to_converter_t, char *, parse_to_t>,
+				  daw::is_callable_v<to_converter_t, parse_to_t> or
+				    daw::is_callable_r_v<char *, to_converter_t, char *, parse_to_t>,
 				  "ToConverter must be callable with T or T and and OutputIterator" );
 
 				static constexpr auto expected_type = JsonParseTypes::Custom;
@@ -1320,8 +1323,8 @@ namespace daw::json {
 				using dependent_member = SizeMember;
 
 				static_assert(
-				  std::is_invocable_v<constructor_t, json_element_parse_to_t const *,
-				                      json_element_parse_to_t const *, std::size_t>,
+				  daw::is_callable_v<constructor_t, json_element_parse_to_t const *,
+				                     json_element_parse_to_t const *, std::size_t>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t =
 				  std::invoke_result_t<constructor_t, json_element_parse_to_t const *,
@@ -1504,7 +1507,7 @@ namespace daw::json {
 				                     default_constructor<Container>, Constructor>;
 
 				static_assert(
-				  std::is_invocable_v<constructor_t, Container>,
+				  daw::is_callable_v<constructor_t, Container>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, Container>;
 
@@ -1603,7 +1606,7 @@ namespace daw::json {
 				  json_details::json_class_constructor_t<Tuple, Constructor>;
 
 				static_assert(
-				  std::is_invocable_v<constructor_t, Tuple>,
+				  daw::is_callable_v<constructor_t, Tuple>,
 				  "Constructor must support copy and/or move construction" );
 				using parse_to_t = std::invoke_result_t<constructor_t, Tuple>;
 
@@ -1669,8 +1672,8 @@ namespace daw::json {
 				               "member of the same object as this" );
 
 				static_assert(
-				  std::is_invocable_v<Switcher,
-				                      json_details::json_result_t<tag_submember>>,
+				  daw::is_callable_v<Switcher,
+				                     json_details::json_result_t<tag_submember>>,
 				  "There is a mismatch between the Switcher and the TagMember's parsed "
 				  "result" );
 
@@ -1789,7 +1792,7 @@ namespace daw::json {
 				  json_details::json_class_constructor_t<T, Constructor>;
 
 				static_assert(
-				  std::is_invocable_v<constructor_t, char const *, std::size_t>,
+				  daw::is_callable_v<constructor_t, char const *, std::size_t>,
 				  "Constructor must be constructible from char const *, std::size_t" );
 				using parse_to_t =
 				  std::invoke_result_t<constructor_t, char const *, std::size_t>;

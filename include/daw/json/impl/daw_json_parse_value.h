@@ -8,25 +8,26 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_json_parse_array_iterator.h"
-#include "daw_json_parse_kv_array_iterator.h"
-#include "daw_json_parse_kv_class_iterator.h"
-#include "daw_json_parse_name.h"
-#include "daw_json_parse_real.h"
-#include "daw_json_parse_std_string.h"
-#include "daw_json_parse_string_need_slow.h"
-#include "daw_json_parse_string_quote.h"
-#include "daw_json_parse_unsigned_int.h"
-#include "daw_json_parse_value_fwd.h"
-#include "daw_json_traits.h"
-#include "daw_json_value_fwd.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_array_iterator.h"
+#include "daw/json/impl/daw_json_parse_kv_array_iterator.h"
+#include "daw/json/impl/daw_json_parse_kv_class_iterator.h"
+#include "daw/json/impl/daw_json_parse_name.h"
+#include "daw/json/impl/daw_json_parse_real.h"
+#include "daw/json/impl/daw_json_parse_std_string.h"
+#include "daw/json/impl/daw_json_parse_string_need_slow.h"
+#include "daw/json/impl/daw_json_parse_string_quote.h"
+#include "daw/json/impl/daw_json_parse_unsigned_int.h"
+#include "daw/json/impl/daw_json_parse_value_fwd.h"
+#include "daw/json/impl/daw_json_traits.h"
+#include "daw/json/impl/daw_json_value_fwd.h"
 
 #include <daw/algorithms/daw_algorithm_find.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_callable.h>
 #include <daw/daw_constant.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_scope_guard.h>
@@ -301,7 +302,7 @@ namespace daw::json {
 
 				using constructor_t = json_constructor_t<JsonMember>;
 				auto const construct_empty = [&] {
-					if constexpr( std::is_invocable_v<
+					if constexpr( daw::is_callable_v<
 					                constructor_t,
 					                concepts::construct_nullable_with_empty_t> ) {
 						return construct_value<typename JsonMember::wrapped_type,
@@ -360,7 +361,7 @@ namespace daw::json {
 					if constexpr( not std::is_move_constructible_v<parse_to_t> and
 					              not std::is_copy_constructible_v<parse_to_t> ) {
 						static_assert(
-						  std::is_invocable_v<
+						  daw::is_callable_v<
 						    concepts::nullable_value_traits<json_result_t<JsonMember>>,
 						    concepts::construct_nullable_with_pointer_t,
 						    parse_to_t *> );

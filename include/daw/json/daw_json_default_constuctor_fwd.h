@@ -14,6 +14,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_concepts.h>
 #include <daw/daw_enable_requires.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
@@ -29,7 +30,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename T, typename... Args>
-			inline constexpr bool should_list_construct_v =
+			DAW_CPP20_CONCEPT should_list_construct_v =
 			  not std::is_constructible_v<T, Args...> and
 			  daw::traits::is_list_constructible_v<T, Args...>;
 		}

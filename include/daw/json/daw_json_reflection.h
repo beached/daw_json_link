@@ -55,7 +55,9 @@ namespace daw::json::inline DAW_JSON_VER {
 				constexpr operator T( ) const {
 					if constexpr( std::is_convertible_v<D, T> ) {
 						return default_value;
-					} else if( std::is_invocable_r_v<T, D> ) {
+					} else if constexpr( requires( D v ) {
+						                     { v( ) }->std::convertible_to<T>;
+					                     } ) {
 						return default_value( );
 					}
 				}
@@ -159,8 +161,8 @@ namespace daw::json::inline DAW_JSON_VER {
 			template<typename T>
 			constexpr auto to_tuple( T const &value ) {
 				static constexpr auto
-				  members = [:as_stdarray( get_non_ignored_reflectible_members<T>( )
-				                           ):];
+				  members = [:as_stdarray(
+				                get_non_ignored_reflectible_members<T>( ) ):];
 
 				/* This currently fails to compile
 				static constexpr auto [... Is] =
@@ -196,9 +198,8 @@ namespace daw::json::inline DAW_JSON_VER {
 					               "at the same time" );
 					return refl_map_as_annot;
 				} else if constexpr( refl_enum_string_annot ) {
-					using json_member_no_name =
-					  enum_string<typename[:type_of( member_info
-					                                 ):],
+					using json_member_no_name = enum_string<
+					  typename[:type_of( member_info ):],
 					                                    refl_enum_string_annot->Options>;
 					static constexpr auto info =
 					  ^^typename json_member_no_name::template with_name<name>;
@@ -315,8 +316,8 @@ namespace daw::json::inline DAW_JSON_VER {
 				static constexpr auto member = members[index];
 				static constexpr auto annotations = [:as_stdarray(
 				                                        annotations_of_with_base_type(
-				                                          member, ^^refl_ignored_base )
-				                                        ):];
+				                                          member,
+				                                          ^^refl_ignored_base ) ):];
 				using result_t = [:type_of( member ):];
 				if constexpr( annotations.empty( ) ) {
 					static constexpr auto arg_indexes = [:arg_indexes_i:];

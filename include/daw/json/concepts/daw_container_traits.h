@@ -43,7 +43,7 @@ namespace daw::json {
 
 			/// @brief Is the type deduced or specialized as a container
 			template<typename T>
-			inline constexpr bool is_container_v = container_traits<T>::value;
+			DAW_CPP20_CONCEPT is_container_v = container_traits<T>::value;
 		} // namespace concepts
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

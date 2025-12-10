@@ -19,6 +19,7 @@
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
+#include <daw/daw_callable.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_enable_requires.h>
@@ -32,6 +33,9 @@
 #include <daw/utf8/unchecked.h>
 
 #include <array>
+#if defined( DAW_HAS_CPP20_CONCEPTS )
+#include <concepts>
+#endif
 #include <daw/stdinc/move_fwd_exch.h>
 #include <daw/stdinc/tuple_traits.h>
 #include <optional>
@@ -966,12 +970,12 @@ namespace daw::json {
 				if constexpr( JsonMember::custom_json_type !=
 				              options::JsonCustomTypes::Literal ) {
 					it.put( '"' );
-					if constexpr( std::is_invocable_r_v<
+
+					if constexpr( daw::is_callable_r_v<
 					                WriteableType,
 					                typename JsonMember::to_converter_t,
 					                WriteableType,
 					                parse_to_t> ) {
-
 						it = typename JsonMember::to_converter_t{ }( it, value );
 					} else {
 						it = utils::copy_to_iterator(

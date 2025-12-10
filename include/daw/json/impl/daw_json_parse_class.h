@@ -18,6 +18,7 @@
 #include "daw/json/impl/daw_json_parse_value.h"
 #include "daw/json/impl/daw_json_skip.h"
 
+#include <daw/daw_callable.h>
 #include <daw/daw_consteval.h>
 #include <daw/daw_constinit.h>
 #include <daw/daw_likely.h>
@@ -325,7 +326,7 @@ namespace daw::json {
 				using Constructor = json_constructor_t<JsonClass>;
 				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
 				static_assert(
-				  std::is_invocable_v<Constructor, json_result_t<JsonMembers>...>,
+				  daw::is_callable_v<Constructor, json_result_t<JsonMembers>...>,
 				  "Supplied types cannot be used for construction of this type" );
 
 				parse_state.trim_left( ); // Move to array start '['

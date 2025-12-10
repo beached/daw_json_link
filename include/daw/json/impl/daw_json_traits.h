@@ -19,6 +19,7 @@
 #include "daw/json/impl/daw_json_req_helper.h"
 
 #include <daw/cpp_17.h>
+#include <daw/daw_callable.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
@@ -55,7 +56,7 @@ namespace daw::json {
 			template<typename Constructor, typename... Args>
 			struct construction_result
 			  : daw::conditional_t<
-			      std::is_invocable_v<Constructor, Args...>,
+			      daw::is_callable_v<Constructor, Args...>,
 			      std::invoke_result<Constructor, Args...>,
 			      daw::traits::identity<
 			        constructor_cannot_be_invoked<Constructor, Args...>>> {};
@@ -157,7 +158,7 @@ namespace daw::json {
 		    not json_details::has_stateless_allocator_v<ParseState> );
 
 		template<typename... Ts>
-		inline constexpr bool is_empty_pack_v = sizeof...( Ts ) == 0;
+		DAW_CPP20_CONCEPT is_empty_pack_v = sizeof...( Ts ) == 0;
 
 		/// @brief Can use the fast, pseudo random string iterators.  They are
 		/// InputIterators with an operator- that allows for O(1) distance
@@ -211,8 +212,8 @@ namespace daw::json {
 			    daw::traits::identity<Default>>::type,
 			  json_class_constructor_t_impl, T>;
 
-			DAW_JSON_MAKE_REQ_TRAIT( is_string_view_like_v,
-			                         ( (void)( std::data( std::declval<T>( ) ) ),
+			DAW_JSON_MAKE_REQ_TRAIT_CUSTOM(
+			  is_string_view_like_v, ( (void)( std::data( std::declval<T>( ) ) ),
 			                           (void)( std::size( std::declval<T>( ) ) ) ) );
 
 			static_assert( is_string_view_like_v<std::string_view> );
@@ -250,18 +251,6 @@ namespace daw::json {
 			  not std::is_const_v<std::remove_pointer_t<std::remove_reference_t<
 			    decltype( std::data( std::declval<String &&>( ) ) )>>>;
 
-			template<typename String>
-			constexpr bool is_mutable_string =
-			  json_details::is_mutable_string_v<String>;
-
-			template<typename String>
-			constexpr bool is_rvalue_string = std::is_rvalue_reference_v<String>;
-
-			template<typename String>
-			constexpr bool is_ref_string =
-			  not is_rvalue_string<String> and
-			  std::is_const_v<std::remove_reference_t<String>>;
-
 			/*
 			template<typename ParsePolicy, typename String, auto OptionMutable,
 			         auto OptionImmutable>
@@ -282,7 +271,7 @@ namespace daw::json {
 		 * when the default is exact
 		 * Set to true when data contract has type alias ignore_unknown_members
 		 */
-		DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT(
+		DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT_CUSTOM(
 		  ignore_unknown_members_v, json_data_contract<T>::ignore_unknown_members );
 
 		/***
@@ -292,12 +281,12 @@ namespace daw::json {
 		 * have a type in your json_data_contract named exact_class_mapping for your
 		 * type
 		 */
-		DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT(
+		DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT_CUSTOM(
 		  is_exact_class_mapping_v, json_data_contract<T>::exact_class_mapping );
 
 		namespace json_details {
 			template<typename T, typename ParseState>
-			inline constexpr bool all_json_members_must_exist_v =
+			DAW_CPP20_CONCEPT all_json_members_must_exist_v =
 			  not ignore_unknown_members_v<T> and
 			  ( is_exact_class_mapping_v<T> or
 			    ParseState::use_exact_mappings_by_default );
@@ -328,7 +317,7 @@ namespace daw::json {
 		struct tuple_elements_pack<std::tuple<Ts...>> {
 			using type = std::tuple<Ts...>;
 
-			static constexpr std::size_t size = sizeof...( Ts );
+			static constexpr auto size = sizeof...( Ts );
 
 			template<std::size_t Idx>
 			using element_t = std::tuple_element_t<Idx, type>;
@@ -343,7 +332,7 @@ namespace daw::json {
 		struct tuple_elements_pack<daw::fwd_pack<Ts...>> {
 			using type = daw::fwd_pack<Ts...>;
 
-			static constexpr std::size_t size = sizeof...( Ts );
+			static constexpr auto size = sizeof...( Ts );
 
 			template<std::size_t Idx>
 			using element_t =
