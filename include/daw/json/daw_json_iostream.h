@@ -12,6 +12,7 @@
 
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_enable_requires.h>
 #include <daw/daw_traits.h>
 
@@ -25,6 +26,13 @@ namespace daw::json {
 			  is_opted_into_json_iostreams_v,
 			  json_data_contract<T>::opt_into_iostreams );
 
+#if defined( DAW_HAS_CPP20_CONCEPTS )
+			template<typename Container>
+			concept is_container_opted_into_json_iostreams_v = requires {
+				typename Container::value_type;
+			}
+			and is_opted_into_json_iostreams_v<typename Container::value_type>;
+#else
 			template<typename, typename = void>
 			inline constexpr bool is_container_opted_into_json_iostreams_v = false;
 
@@ -32,7 +40,7 @@ namespace daw::json {
 			inline constexpr bool is_container_opted_into_json_iostreams_v<
 			  Container, std::void_t<typename Container::value_type>> =
 			  is_opted_into_json_iostreams_v<typename Container::value_type>;
-
+#endif
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -232,7 +232,7 @@ namespace daw::json {
 			/***
 			 * The defaults for all known policies encoded as a json_options_t
 			 */
-			inline static constexpr json_options_t default_policy_flag =
+			inline constexpr json_options_t default_policy_flag =
 			  default_policy_flag_t<policy_list>::value;
 
 			template<typename Policy, typename Result = Policy>

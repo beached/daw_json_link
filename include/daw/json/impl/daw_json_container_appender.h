@@ -26,6 +26,12 @@ namespace daw::json {
 			DAW_MAKE_REQ_TRAIT2(
 			  has_push_back_v, std::declval<T &>( ).push_back( std::declval<U>( ) ) );
 
+#if defined( DAW_HAS_CPP20_CONCEPTS )
+			template<typename Container, typename Value>
+			concept has_insert_end_v = requires( Container & c, Value v ) {
+				c.insert( std::end( c ), v );
+			};
+#else
 			template<typename, typename, typename = void>
 			inline constexpr bool has_insert_end_v = false;
 
@@ -35,6 +41,7 @@ namespace daw::json {
 			  std::void_t<decltype( std::declval<Container &>( ).insert(
 			    std::end( std::declval<Container &>( ) ),
 			    std::declval<Value>( ) ) )>> = true;
+#endif
 		} // namespace json_details
 		/***
 		 * @brief A generic output iterator that can push_back or insert depending

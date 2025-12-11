@@ -13,6 +13,7 @@
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_count.h>
+#include <daw/daw_cpp20_concept.h>
 #include <daw/daw_traits.h>
 
 #include <climits>
@@ -29,10 +30,11 @@ namespace daw::json {
 			inline constexpr unsigned json_option_bits_width = 0;
 
 			template<typename>
-			inline constexpr auto default_json_option_value = [] DAW_CPP23_STATIC_CALL_OP {
-				struct unknown_policy {};
-				return unknown_policy{ };
-			}( );
+			inline constexpr auto default_json_option_value =
+			  [] DAW_CPP23_STATIC_CALL_OP {
+				  struct unknown_policy {};
+				  return unknown_policy{ };
+			  }( );
 
 			template<typename Policy, typename Options>
 			struct option_bits_start_impl;
@@ -71,11 +73,10 @@ namespace daw::json {
 			};
 
 			template<typename Option>
-			inline constexpr bool is_option_flag = json_option_bits_width<Option> > 0;
+			DAW_CPP20_CONCEPT is_option_flag = json_option_bits_width<Option> > 0;
 
 			template<typename... Options>
-			inline constexpr bool are_option_flags =
-			  ( is_option_flag<Options> and ... );
+			DAW_CPP20_CONCEPT are_option_flags = ( is_option_flag<Options> and ... );
 
 			template<typename Option, typename Options>
 			inline constexpr unsigned basic_option_bits_start =

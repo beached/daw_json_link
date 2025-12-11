@@ -10,6 +10,8 @@
 
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_cpp20_concept.h>
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_enable_requires.h>
 #include <daw/daw_function_traits.h>
 
@@ -20,14 +22,20 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+#if defined( DAW_HAS_CPP20_CONCEPTS )
+			template<typename T>
+			concept has_call_operator = std::is_function_v<T> or requires {
+				&std::remove_reference_t<T>::operator( );
+			};
+#else
 			template<typename T, typename = void>
 			inline constexpr bool has_call_operator = std::is_function_v<T>;
 
 			template<typename T>
-			constexpr bool has_call_operator<
+			inline constexpr bool has_call_operator<
 			  T, std::void_t<decltype( &std::remove_reference_t<T>::operator( ) )>> =
 			  true;
-
+#endif
 			template<typename Signature, typename Callable,
 			         typename... FromJsonParams>
 			DAW_ATTRIB_INLINE constexpr auto

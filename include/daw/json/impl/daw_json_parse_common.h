@@ -24,6 +24,7 @@
 #include <daw/daw_allocator_construct.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_callable.h>
+#include <daw/daw_cpp20_concept.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_enable_requires.h>
 #include <daw/daw_fwd_pack_apply.h>
@@ -131,9 +132,9 @@ namespace daw::json {
 							                       std::move( alloc ) );
 						}( std::make_index_sequence<sizeof...( Args )>{ } );
 					} else if constexpr( daw::is_callable_v<Constructor,
-					                                      std::allocator_arg_t,
-					                                      alloc_t,
-					                                      Args...> ) {
+					                                        std::allocator_arg_t,
+					                                        alloc_t,
+					                                        Args...> ) {
 						// Type( std::allocator_arg, alloc, args... )
 						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
 							return Constructor{ }( std::allocator_arg,
@@ -211,13 +212,9 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			inline constexpr bool has_json_data_contract_trait_v =
+			DAW_CPP20_CONCEPT has_json_data_contract_trait_v =
 			  not std::is_same_v<missing_json_data_contract_for_or_unknown_type<T>,
 			                     json_data_contract_trait_t<T>>;
-
-			template<typename T>
-			using has_json_data_contract_trait =
-			  std::bool_constant<has_json_data_contract_trait_v<T>>;
 
 			DAW_JSON_MAKE_REQ_TRAIT(
 			  has_json_to_json_data_v,
@@ -297,10 +294,6 @@ namespace daw::json {
 				static constexpr auto expected_type = JsonParseTypes::Class;
 				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
 			};
-
-			template<typename T>
-			inline constexpr bool is_deduced_empty_class_v<
-			  T, std::void_t<typename T::i_am_a_deduced_empty_class>> = true;
 
 			template<typename T>
 			struct json_ordered_class {
