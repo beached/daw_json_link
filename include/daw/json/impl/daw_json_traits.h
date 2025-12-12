@@ -185,6 +185,8 @@ namespace daw::json {
 			template<typename... Ts>
 			inline constexpr bool are_json_types_v = ( is_a_json_type_v<Ts> and ... );
 
+			/// Checks if the type has opted into being an ordered member map(like
+			/// tuple)
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT( is_an_ordered_member_v,
 			                                    T::i_am_an_ordered_member );
 
