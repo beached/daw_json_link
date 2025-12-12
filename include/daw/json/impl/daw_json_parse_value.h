@@ -478,7 +478,7 @@ namespace daw::json {
 			 * pointer to the data( ).
 			 */
 			template<typename JsonMember>
-			inline constexpr bool can_parse_to_stdstring_fast_v =
+			DAW_CPP20_CONCEPT can_parse_to_stdstring_fast_v =
 			  can_single_allocation_string_v<json_result_t<JsonMember>> or
 			  can_single_allocation_string_v<json_base_type_t<JsonMember>>;
 

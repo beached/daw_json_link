@@ -34,14 +34,13 @@ namespace daw::json {
 				    { std::declval<Args>( )... } ) );
 #endif
 				template<typename T, typename... Args>
-				inline constexpr bool is_list_constructible_v =
+				DAW_CPP20_CONCEPT is_list_constructible_v =
 				  daw::is_detected_v<is_list_constructible_test, T, Args...>;
 
 				template<typename T, typename... Args>
-				inline constexpr bool is_nullable_value_type_constructible_v =
+				DAW_CPP20_CONCEPT is_nullable_value_type_constructible_v =
 				  std::is_constructible_v<T, Args...> or
 				  is_list_constructible_v<T, Args...>;
-
 			} // namespace nullable_impl
 
 			struct construct_nullable_with_value_t {
@@ -119,7 +118,7 @@ namespace daw::json {
 
 			/// @brief Is T a nullable type
 			template<typename T>
-			inline constexpr bool is_nullable_value_v =
+			DAW_CPP20_CONCEPT is_nullable_value_v =
 			  nullable_value_traits<T>::is_nullable;
 
 			/// @brief Check if nullable value has a value
@@ -134,67 +133,37 @@ namespace daw::json {
 			constexpr auto const &nullable_value_read( T const &opt ) {
 				return nullable_value_traits<T>::read( opt );
 			}
-#if defined( DAW_HAS_CPP20_CONCEPTS )
+
 			template<typename T, typename... Args>
-			concept is_nullable_value_constructible_v =
+			DAW_CPP20_CONCEPT is_nullable_value_constructible_v =
 			  is_nullable_value_v<T> and
 			  daw::is_callable_v<nullable_value_traits<T>,
 			                     construct_nullable_with_value_t, Args...>;
 
 			template<typename T, typename... Args>
-			concept is_nullable_pointer_constructible_v =
+			DAW_CPP20_CONCEPT is_nullable_pointer_constructible_v =
 			  is_nullable_value_v<T> and
 			  daw::is_callable_v<nullable_value_traits<T>,
 			                     construct_nullable_with_pointer_t, Args...>;
 
 			template<typename T, typename... Args>
-			concept is_nullable_value_nothrow_constructible_v =
+			DAW_CPP20_CONCEPT is_nullable_value_nothrow_constructible_v =
 			  is_nullable_value_constructible_v<T, Args...> and
 			  daw::is_nothrow_callable_v<nullable_value_traits<T>,
 			                             construct_nullable_with_value_t, Args...>;
 
 			template<typename T>
-			concept is_nullable_empty_constructible_v =
+			DAW_CPP20_CONCEPT is_nullable_empty_constructible_v =
 			  is_nullable_value_v<T> and
 			  daw::is_callable_v<nullable_value_traits<T>,
 			                     construct_nullable_with_empty_t>;
 
 			template<typename T>
-			concept is_nullable_empty_nothrow_constructible_v =
+			DAW_CPP20_CONCEPT is_nullable_empty_nothrow_constructible_v =
 			  is_nullable_empty_constructible_v<T> and
 			  daw::is_nothrow_callable_v<nullable_value_traits<T>,
 			                             construct_nullable_with_empty_t>;
-#else
-			template<typename T, typename... Args>
-			inline constexpr bool is_nullable_value_constructible_v =
-			  is_nullable_value_v<T> and
-			  daw::is_callable_v<nullable_value_traits<T>,
-			                     construct_nullable_with_value_t, Args...>;
 
-			template<typename T, typename... Args>
-			inline constexpr bool is_nullable_pointer_constructible_v =
-			  is_nullable_value_v<T> and
-			  daw::is_callable_v<nullable_value_traits<T>,
-			                     construct_nullable_with_pointer_t, Args...>;
-
-			template<typename T, typename... Args>
-			inline constexpr bool is_nullable_value_nothrow_constructible_v =
-			  is_nullable_value_constructible_v<T, Args...> and
-			  daw::is_nothrow_callable_v<nullable_value_traits<T>,
-			                             construct_nullable_with_value_t, Args...>;
-
-			template<typename T>
-			inline constexpr bool is_nullable_empty_constructible_v =
-			  is_nullable_value_v<T> and
-			  daw::is_callable_v<nullable_value_traits<T>,
-			                     construct_nullable_with_empty_t>;
-
-			template<typename T>
-			inline constexpr bool is_nullable_empty_nothrow_constructible_v =
-			  is_nullable_empty_constructible_v<T> and
-			  daw::is_nothrow_callable_v<nullable_value_traits<T>,
-			                             construct_nullable_with_empty_t>;
-#endif
 		} // namespace concepts
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

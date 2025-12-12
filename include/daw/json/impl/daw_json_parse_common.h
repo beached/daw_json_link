@@ -612,7 +612,7 @@ namespace daw::json {
 			} // namespace container_detect
 
 			template<typename String>
-			inline constexpr bool is_string_v = std::is_convertible_v<
+			DAW_CPP20_CONCEPT is_string_v = std::is_convertible_v<
 			  char, daw::detected_t<container_detect::is_string_test, String>>;
 
 			DAW_JSON_MAKE_REQ_TRAIT(
@@ -622,10 +622,6 @@ namespace daw::json {
 			    (void)( std::declval<typename T::value_type>( ) ),
 			    (void)( std::declval<typename T::key_type>( ) ),
 			    (void)( std::declval<typename T::mapped_type>( ) ) ) );
-
-			template<typename T>
-			using is_associative_container =
-			  std::bool_constant<is_associative_container_v<T>>;
 
 			template<typename AssociativeContainer>
 			DAW_REQUIRES( not has_json_data_contract_trait_v<AssociativeContainer> and
@@ -642,7 +638,7 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			inline constexpr bool is_deduced_array_v =
+			DAW_CPP20_CONCEPT is_deduced_array_v =
 			  not has_json_data_contract_trait_v<T> and
 			  not is_associative_container_v<T> and concepts::is_container_v<T> and
 			  not is_string_v<T>;
@@ -659,7 +655,7 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			inline constexpr bool has_nullable_type_map_v =
+			DAW_CPP20_CONCEPT has_nullable_type_map_v =
 			  concepts::is_nullable_value_v<T> and
 			  not has_json_data_contract_trait_v<T> and
 			  daw::is_detected_v<json_deduced_type_map,
@@ -677,11 +673,11 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			inline constexpr bool has_deduced_type_mapping_v =
+			DAW_CPP20_CONCEPT has_deduced_type_mapping_v =
 			  json_deduced_type_map<T>::type_map_found;
 
 			template<typename... Ts>
-			inline constexpr bool are_deduced_type_mapped_v =
+			DAW_CPP20_CONCEPT are_deduced_type_mapped_v =
 			  ( has_deduced_type_mapping_v<Ts> and ... );
 
 			template<typename Mapped, bool Found = true>
@@ -691,7 +687,7 @@ namespace daw::json {
 			};
 
 			template<JsonParseTypes Value>
-			inline constexpr bool is_arithmetic_parse_type_v =
+			DAW_CPP20_CONCEPT is_arithmetic_parse_type_v =
 			  daw::traits::equal_to_any_of_v<Value, JsonParseTypes::Signed,
 			                                 JsonParseTypes::Unsigned,
 			                                 JsonParseTypes::Real>;
@@ -784,7 +780,7 @@ namespace daw::json {
 
 			/// Check if the current type has a quick map specialized for it
 			template<typename T>
-			inline constexpr bool has_json_link_quick_map_v =
+			DAW_CPP20_CONCEPT has_json_link_quick_map_v =
 			  decltype( json_link_quick_map<T>( ) )::value;
 
 			/// @brief Get the quick mapped json type for type T
@@ -800,6 +796,7 @@ namespace daw::json {
 			template<typename>
 			struct is_json_class_map : std::false_type {};
 
+			// This maybe specialized
 			template<typename T>
 			inline constexpr bool is_json_class_map_v =
 			  has_json_data_contract_trait_v<T> and
@@ -869,12 +866,12 @@ namespace daw::json {
 			  typename DAW_TYPEOF( json_deduced_type_impl<T>( ) )::type;
 
 			template<typename T>
-			inline constexpr bool has_json_deduced_type_v =
+			DAW_CPP20_CONCEPT has_json_deduced_type_v =
 			  not std::is_same_v<json_deduced_type<T>,
 			                     missing_json_data_contract_for_or_unknown_type<T>>;
 
 			template<typename... Ts>
-			inline constexpr bool all_have_deduced_type_v =
+			DAW_CPP20_CONCEPT all_have_deduced_type_v =
 			  ( has_json_deduced_type_v<Ts> and ... );
 
 			template<typename JsonElement, typename Container, typename Constructor>
@@ -911,7 +908,7 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			inline constexpr bool has_unnamed_default_type_mapping_v =
+			DAW_CPP20_CONCEPT has_unnamed_default_type_mapping_v =
 			  has_json_deduced_type_v<T>;
 
 			template<typename JsonMember>

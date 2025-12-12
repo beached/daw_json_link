@@ -826,6 +826,7 @@ namespace daw::json {
 		} // namespace json_base
 
 		namespace json_details {
+			// Will be specialized
 			template<typename T, typename JsonMember, JsonNullable NullableType,
 			         typename Constructor>
 			inline constexpr bool must_be_class_member_v<

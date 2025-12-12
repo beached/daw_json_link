@@ -13,6 +13,7 @@
 #include "daw_json_req_helper.h"
 
 #include <daw/daw_consteval.h>
+#include <daw/daw_cpp20_concept.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_string_view.h>
@@ -121,13 +122,13 @@ namespace daw::json {
 			DAW_JSON_MAKE_REQ_TRAIT( has_name_v, T::name );
 
 			template<typename... Ts>
-			inline constexpr bool all_have_name_v = ( has_name_v<Ts> and ... );
+			DAW_CPP20_CONCEPT all_have_name_v = ( has_name_v<Ts> and ... );
 
 			template<typename T>
-			inline constexpr bool is_no_name_v = not has_name_v<T>;
+			DAW_CPP20_CONCEPT is_no_name_v = not has_name_v<T>;
 
 			template<typename... Ts>
-			inline constexpr bool are_no_name_v = ( is_no_name_v<Ts> and ... );
+			DAW_CPP20_CONCEPT are_no_name_v = ( is_no_name_v<Ts> and ... );
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

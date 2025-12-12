@@ -735,6 +735,7 @@ namespace daw::json {
 		}
 
 		namespace json_details {
+			// Will be specialized
 			template<typename>
 			inline constexpr bool is_json_value = false;
 

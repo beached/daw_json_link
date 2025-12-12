@@ -26,7 +26,9 @@ namespace daw::json {
 #if defined( DAW_IS_CONSTANT_EVALUATED )
 				if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 #endif
-					daw::algorithm::transform_n( source.data( ), buff, source.size( ),
+					daw::algorithm::transform_n( source.data( ),
+					                             buff,
+					                             source.size( ),
 					                             []( auto c )
 					                               DAW_JSON_CPP23_STATIC_CALL_OP {
 						                               return static_cast<T>( c );
@@ -40,21 +42,18 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			inline constexpr bool is_byte_type_v =
+			DAW_CPP20_CONCEPT is_byte_type_v =
 			  std::is_same_v<T, std::byte> or std::is_same_v<T, unsigned char>;
 
 			template<typename T>
-			inline constexpr bool is_char_sized_character_v = false;
-
-			template<>
-			inline constexpr bool is_char_sized_character_v<char> = true;
-
+			DAW_CPP20_CONCEPT is_char_sized_character_v =
+			  std::is_same_v<T, char>
 #if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L
-			template<>
-			inline constexpr bool is_char_sized_character_v<char8_t> = true;
+			  or std::is_same_v<T, char8_t>
 #endif
 #endif
+			  ;
 
 			template<typename T, typename CharT>
 			using span_like_range_test =
@@ -66,7 +65,7 @@ namespace daw::json {
 			            (void)( *std::declval<T &>( ).data( ) =
 			                      std::declval<CharT>( ) ) );
 			template<typename T, typename CharT>
-			inline constexpr bool is_span_like_range_v =
+			DAW_CPP20_CONCEPT is_span_like_range_v =
 			  daw::is_detected_v<span_like_range_test, T, CharT> and
 			  ( writeable_output_details::is_char_sized_character_v<CharT> or
 			    writeable_output_details::is_byte_type_v<CharT> );
@@ -83,22 +82,22 @@ namespace daw::json {
 			            (void)( static_cast<CharT>( 'a' ) ) );
 
 			template<typename Container, typename CharT>
-			inline constexpr bool is_resizable_contiguous_range_v =
+			DAW_CPP20_CONCEPT is_resizable_contiguous_range_v =
 			  daw::is_detected_v<resizable_contiguous_range_test, Container, CharT>;
 
 			template<typename Container, typename CharT>
-			inline constexpr bool is_string_like_writable_output_v =
-			  (writeable_output_details::is_char_sized_character_v<CharT> or
-			   writeable_output_details::is_byte_type_v<
-			     CharT>)and writeable_output_details::
-			    is_resizable_contiguous_range_v<Container, CharT>;
+			DAW_CPP20_CONCEPT is_string_like_writable_output_v =
+			  ( writeable_output_details::is_char_sized_character_v<CharT> or
+			    writeable_output_details::is_byte_type_v<CharT> ) and
+			  writeable_output_details::is_resizable_contiguous_range_v<Container,
+			                                                            CharT>;
 
 			template<typename T>
 			using is_writable_output_iterator_test =
 			  decltype( *std::declval<T &>( ) = 'c', ++std::declval<T &>( ) );
 
 			template<typename T>
-			inline constexpr bool is_writable_output_iterator_v =
+			DAW_CPP20_CONCEPT is_writable_output_iterator_v =
 			  not std::is_pointer_v<T> and
 			  daw::is_detected_v<is_writable_output_iterator_test, T>;
 		} // namespace concepts::writeable_output_details

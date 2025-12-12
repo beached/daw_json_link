@@ -378,10 +378,10 @@ namespace daw::json {
 			// DAW disabling to fix #357
 #if true or defined( DAW_JSON_DISABLE_RANDOM )
 			template<bool>
-			inline constexpr bool can_be_random_iterator_v = false;
+			DAW_CPP20_CONCEPT can_be_random_iterator_v = false;
 #else
 			template<bool IsKnown>
-			inline constexpr bool can_be_random_iterator_v = IsKnown;
+			DAW_CPP20_CONCEPT can_be_random_iterator_v = IsKnown;
 #endif
 
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT( is_literal_json_type_v,
