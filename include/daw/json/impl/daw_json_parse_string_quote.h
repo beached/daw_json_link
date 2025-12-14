@@ -201,7 +201,7 @@ namespace daw::json {
 										++first;
 									}
 
-									if( ( ( *first != 0 ) & ( *first == '\\' ) ) ) {
+									if( daw::nsc_and( *first != 0, *first == '\\' ) ) {
 										if( need_slow_path < 0 ) {
 											need_slow_path = first - parse_state.first;
 										}
