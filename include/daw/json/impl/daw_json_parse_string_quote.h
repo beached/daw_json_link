@@ -249,7 +249,7 @@ namespace daw::json {
 							} else {
 								while( first < last and *first != '"' ) {
 									while( first < last and
-									       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
+									       daw::nsc_and( *first != '"', *first != '\\' ) ) {
 										++first;
 									}
 
