@@ -119,7 +119,7 @@ namespace daw::json {
 						}
 						while( *first != '"' ) {
 							while( []( char c ) DAW_JSON_CPP23_STATIC_CALL_OP {
-								return ( c != '"' ) & ( c != '\\' );
+								return daw::nsc_and( c != '"', c != '\\' );
 							}( *first ) ) {
 								++first;
 							}
@@ -195,9 +195,9 @@ namespace daw::json {
 									++first;
 								}
 							} else {
-								while( ( *first != 0 ) & ( *first != '"' ) ) {
-									while( ( *first != 0 ) & ( *first != '"' ) &
-									       ( *first != '\\' ) ) {
+								while( daw::nsc_and( *first != 0, *first != '"' ) ) {
+									while( daw::nsc_and(
+									  *first != 0, *first != '"', *first != '\\' ) ) {
 										++first;
 									}
 
