@@ -84,11 +84,13 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_next_member_unchecked( ParseState &parse_state ) {
+				auto pf = daw::not_null( daw::never_null, parse_state.first );
+				auto pl = daw::not_null( daw::never_null, parse_state.last );
 				parse_state.first =
 				  json_details::memchr_unchecked<'"',
 				                                 typename ParseState::exec_tag_t,
-				                                 ParseState::expect_long_strings>(
-				    parse_state.first, parse_state.last );
+				                                 ParseState::expect_long_strings>( pf,
+				                                                                   pl );
 			}
 
 			template<char... keys, typename ParseState>
@@ -99,17 +101,19 @@ namespace daw::json {
 
 				using CharT = typename ParseState::CharT;
 
-				if constexpr( daw::traits::not_same<typename ParseState::exec_tag_t,
-				                                    constexpr_exec_tag>::value ) {
+				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
+				    std::is_base_of_v<runtime_exec_tag,
+				                      typename ParseState::exec_tag_t> ) {
+					auto pf = daw::not_null{ parse_state.first };
+					auto pl = daw::not_null{ parse_state.last };
 					parse_state.first =
 					  json_details::mempbrk<ParseState::is_unchecked_input,
 					                        typename ParseState::exec_tag_t,
 					                        ParseState::expect_long_strings,
-					                        keys...>( parse_state.first,
-					                                  parse_state.last );
+					                        keys...>( pf, pl );
 				} else {
-					CharT *first = parse_state.first;
-					CharT *const last = parse_state.last;
+					auto first = daw::not_null<CharT *>( parse_state.first );
+					auto const last = daw::not_null<CharT *>( parse_state.last );
 
 					// silencing gcc9 unused warning.  last is used inside if constexpr
 					// blocks
@@ -150,8 +154,8 @@ namespace daw::json {
 
 				using CharT = typename ParseState::CharT;
 				// Not checking for Left as it is required to be skipped already
-				CharT *ptr_first = parse_state.first;
-				CharT *const ptr_last = parse_state.last;
+				auto ptr_first = daw::not_null<CharT *>( parse_state.first );
+				auto const ptr_last = daw::not_null<CharT *>( parse_state.last );
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return parse_state;
 				}
@@ -232,7 +236,8 @@ namespace daw::json {
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
+				auto ptr_first = daw::not_null<CharT *>( parse_state.first );
+				auto const ptr_last = daw::not_null<CharT *>( parse_state.last );
 
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
@@ -246,7 +251,7 @@ namespace daw::json {
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
 						  ParseState::is_unchecked_input>(
-						  ParseState::exec_tag, ptr_first, parse_state.last );
+						  ParseState::exec_tag, ptr_first, ptr_last );
 						break;
 					case ',':
 						if( DAW_UNLIKELY( ( prime_bracket_count == 1 ) &

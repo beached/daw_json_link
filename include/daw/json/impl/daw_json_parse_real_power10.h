@@ -76,7 +76,7 @@ namespace daw::json {
 
 			template<typename Result, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE static constexpr Result
-			power10( constexpr_exec_tag, Result result, Unsigned p ) {
+			power10_constexpr( Result result, Unsigned p ) {
 				// We only have a double table, of which float is a subset.  Long double
 				// will be calculated in terms of that
 
@@ -128,16 +128,25 @@ namespace daw::json {
 
 			template<typename Result, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE static constexpr Result
-			power10( runtime_exec_tag, Result result, Unsigned p ) {
+			power10_runtime( Result result, Unsigned p ) {
 				if constexpr( std::is_same_v<Result, double> or
 				              std::is_same_v<Result, float> ) {
-					return power10(
-					  constexpr_exec_tag{ }, result, static_cast<std::int32_t>( p ) );
+					return power10_constexpr( result, static_cast<std::int32_t>( p ) );
 				} else {
 					// For long double and others fallback to the slower std::pow
 					using std::pow;
 					return result * pow( static_cast<Result>( 10.0 ), p );
 				}
+			}
+
+			template<typename Result, typename ExecTag, typename Unsigned>
+			DAW_ATTRIB_FLATINLINE static constexpr Result
+			power10( ExecTag, Result result, Unsigned p ) {
+				if( std::is_base_of_v<runtime_exec_tag, ExecTag> or
+				    not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+					return power10_runtime<Result>( result, p );
+				}
+				return power10_constexpr<Result>( result, p );
 			}
 		} // namespace json_details
 	} // namespace DAW_JSON_VER

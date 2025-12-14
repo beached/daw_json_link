@@ -17,6 +17,7 @@
 #include "daw/json/impl/daw_json_link_types_aggregate.h"
 #include "daw/json/impl/daw_json_name.h"
 #include "daw/json/impl/daw_json_req_helper.h"
+#include "daw/json/impl/daw_json_type_options.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_callable.h>

@@ -156,8 +156,8 @@ namespace daw::json {
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
-				CharT *const ptr_last = parse_state.last;
+				auto ptr_first = daw::not_null<CharT *>( parse_state.first );
+				auto const ptr_last = daw::not_null<CharT *>( parse_state.last );
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
 				}
@@ -173,7 +173,7 @@ namespace daw::json {
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
 						  ParseState::is_unchecked_input>(
-						  ParseState::exec_tag, ptr_first, parse_state.last );
+						  ParseState::exec_tag, ptr_first, ptr_last );
 						daw_json_ensure( ptr_first < ptr_last,
 						                 ErrorReason::UnexpectedEndOfData,
 						                 parse_state );
@@ -222,7 +222,7 @@ namespace daw::json {
 						case '*':
 							++ptr_first;
 							while( ( ptr_last - ptr_first ) >= 3 and *ptr_first != '*' and
-							       *std::next( ptr_first ) != '/' ) {
+							       *std::next( ptr_first.get( ) ) != '/' ) {
 								++ptr_first;
 							}
 							break;
@@ -257,7 +257,8 @@ namespace daw::json {
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
+				auto ptr_first = daw::not_null<CharT *>( parse_state.first );
+				auto const ptr_last = daw::not_null<CharT *>( parse_state.last );
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}
@@ -270,7 +271,7 @@ namespace daw::json {
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
 						  ParseState::is_unchecked_input>(
-						  ParseState::exec_tag, ptr_first, parse_state.last );
+						  ParseState::exec_tag, ptr_first, ptr_last );
 						break;
 					case ',':
 						if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
@@ -309,7 +310,8 @@ namespace daw::json {
 							break;
 						case '*':
 							++ptr_first;
-							while( *ptr_first != '*' and *std::next( ptr_first ) != '/' ) {
+							while( *ptr_first != '*' and
+							       *std::next( ptr_first.get( ) ) != '/' ) {
 								++ptr_first;
 							}
 							break;

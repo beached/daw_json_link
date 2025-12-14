@@ -30,12 +30,12 @@ namespace apache_builds {
 		std::string_view mode;
 		std::string_view nodeDescription;
 		std::string_view nodeName;
-		int64_t numExecutors;
+		std::int64_t numExecutors;
 		std::string_view description;
 		std::vector<jobs_t> jobs;
 		views_t primaryView;
 		bool quietingDown;
-		int64_t slaveAgentPort;
+		std::int64_t slaveAgentPort;
 		bool useCrumbs;
 		bool useSecurity;
 		std::vector<views_t> views;

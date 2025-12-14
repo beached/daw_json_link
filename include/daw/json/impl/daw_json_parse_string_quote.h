@@ -39,11 +39,11 @@ namespace daw::json {
 			}
 
 			template<typename CharT>
-			DAW_ATTRIB_NONNULL( )
-			constexpr void skip_to_first8( CharT *&first, CharT *const last ) {
+			constexpr void skip_to_first8( daw::not_null<CharT *> &first,
+			                               daw::not_null<CharT *> const last ) {
 				bool keep_going = last - first >= 8;
 				while( keep_going ) {
-					auto buff = daw::to_uint64_buffer( first );
+					auto buff = daw::to_uint64_buffer( first.get( ) );
 					auto const q7 = test_at_byte<7U, '"'>( buff );
 					auto const q6 = test_at_byte<6U, '"'>( buff );
 					auto const q5 = test_at_byte<5U, '"'>( buff );
@@ -71,11 +71,12 @@ namespace daw::json {
 
 			template<typename CharT>
 			DAW_ATTRIB_NONNULL( )
-			constexpr void skip_to_first4( CharT *&first, CharT *const last ) {
+			constexpr void skip_to_first4( daw::not_null<CharT *> &first,
+			                               daw::not_null<CharT *> const last ) {
 				bool keep_going = last - first >= 4;
 				while( keep_going ) {
 					// Need to look for escapes as this is fast path
-					auto buff = daw::to_uint32_buffer( first );
+					auto buff = daw::to_uint32_buffer( first.get( ) );
 					auto const q3 = test_at_byte<3U, '"'>( buff );
 					auto const q2 = test_at_byte<2U, '"'>( buff );
 					auto const q1 = test_at_byte<1U, '"'>( buff );
@@ -97,17 +98,17 @@ namespace daw::json {
 				parse_nq_uncheck( ParseState &parse_state ) {
 					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
-					CharT *first = parse_state.first;
-					CharT *const last = parse_state.last;
+					auto first = daw::not_null<CharT *>( parse_state.first );
+					auto const last = daw::not_null<CharT *>( parse_state.last );
 					// This is a logic error to happen.
 					// daw_json_assert_weak( first != '"', "Unexpected quote", parse_state
 					// );
-					if constexpr( daw::traits::not_same_v<typename ParseState::exec_tag_t,
-					                                      constexpr_exec_tag> ) {
+					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
+					    std::is_base_of_v<runtime_exec_tag,
+					                      typename ParseState::exec_tag_t> ) {
 						first = mem_skip_until_end_of_string<true>(
 						  ParseState::exec_tag, first, last, need_slow_path );
 					} else {
-
 						{
 							auto const sz = last - first;
 							if( sz >= 8 ) {
@@ -142,15 +143,17 @@ namespace daw::json {
 
 					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
-					CharT *first = parse_state.first;
-					CharT *const last = parse_state.class_last;
-					if constexpr( daw::traits::not_same_v<typename ParseState::exec_tag_t,
-					                                      constexpr_exec_tag> ) {
+					auto first = daw::not_null<CharT *>( parse_state.first );
+					auto const last = daw::not_null<CharT *>( parse_state.class_last );
+					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
+					    std::is_base_of_v<runtime_exec_tag,
+					                      typename ParseState::exec_tag_t> ) {
 						first = mem_skip_until_end_of_string<false>(
 						  ParseState::exec_tag, first, last, need_slow_path );
 					} else {
 						if constexpr( not ParseState::exclude_special_escapes ) {
-							if( CharT *const l = parse_state.last; l - first >= 8 ) {
+							if( auto const l = daw::not_null<CharT *>( parse_state.last );
+							    l - first >= 8 ) {
 								skip_to_first8( first, l );
 							} else if( last - first >= 4 ) {
 								skip_to_first4( first, l );

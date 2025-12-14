@@ -41,7 +41,7 @@ namespace daw::json {
 			template<bool is_unchecked_input>
 			DAW_ATTRIB_NONNULL( )
 			[[nodiscard]] static constexpr UInt16
-			  byte_from_nibbles( char const *&first ) {
+			  byte_from_nibbles( daw::not_null<char const *> &first ) {
 				auto const n0 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				auto const n1 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				if constexpr( is_unchecked_input ) {
@@ -55,14 +55,13 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			DAW_ATTRIB_NONNULL( )
-			DAW_ATTRIB_RET_NONNULL [[nodiscard]] static constexpr char *decode_utf16(
-			  ParseState &parse_state, char *it ) {
+			[[nodiscard]] static constexpr daw::not_null<char *>
+			decode_utf16( ParseState &parse_state, daw::not_null<char *> it ) {
 				constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
 				daw_json_assert_weak( parse_state.size( ) >= 5,
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
-				char const *first = parse_state.first;
+				daw::not_null<char const *> first = parse_state.first;
 				++first;
 				UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) )
 				            << 8U;
@@ -133,7 +132,7 @@ namespace daw::json {
 			static constexpr void decode_utf16( ParseState &parse_state,
 			                                    Appender &app ) {
 				constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
-				char const *first = parse_state.first;
+				daw::not_null<char const *> first = parse_state.first;
 				++first;
 				UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) )
 				            << 8U;
@@ -208,7 +207,7 @@ namespace daw::json {
 				  string_type( std::size( parse_state ) + 1,
 				               '\0',
 				               parse_state.template get_allocator_for<char>( ) );
-				char *it = std::data( result );
+				daw::not_null<char *> it = std::data( result );
 
 				bool const has_quote = parse_state.front( ) == '"';
 				if( has_quote ) {
@@ -219,7 +218,7 @@ namespace daw::json {
 				      static_cast<std::ptrdiff_t>( parse_state.counter ) - 1;
 				    first_slash > 1 ) {
 					it = daw::algorithm::copy_n( parse_state.first,
-					                             it,
+					                             it.get( ),
 					                             static_cast<std::size_t>( first_slash ) )
 					       .output;
 					parse_state.first += first_slash;
@@ -235,10 +234,11 @@ namespace daw::json {
 
 				while( pred( parse_state ) ) {
 					{
-						char const *first = parse_state.first;
-						char const *const last = parse_state.last;
-						if constexpr( std::is_same_v<typename ParseState::exec_tag_t,
-						                             constexpr_exec_tag> ) {
+						daw::not_null<char const *> first = parse_state.first;
+						daw::not_null<char const *> const last = parse_state.last;
+						if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
+						    std::is_base_of_v<runtime_exec_tag,
+						                      typename ParseState::exec_tag_t> ) {
 
 							daw_json_assert_weak( KnownBounds or first < last,
 							                      ErrorReason::UnexpectedEndOfData,
@@ -258,10 +258,11 @@ namespace daw::json {
 						}
 						daw_json_assert_weak(
 						  static_cast<std::ptrdiff_t>( result.size( ) ) -
-						      std::distance( result.data( ), it ) >=
-						    std::distance( parse_state.first, first ),
+						      std::distance( result.data( ), it.get( ) ) >=
+						    std::distance( parse_state.first, first.get( ) ),
 						  ErrorReason::UnexpectedEndOfData );
-						it = daw::algorithm::copy( parse_state.first, first, it );
+						it = daw::algorithm::copy(
+						  parse_state.first, first.get( ), it.get( ) );
 						parse_state.first = first;
 					}
 					if( parse_state.front( ) == '\\' ) {
@@ -321,8 +322,8 @@ namespace daw::json {
 					                      ErrorReason::UnexpectedEndOfData,
 					                      parse_state );
 				}
-				auto const sz =
-				  static_cast<std::size_t>( std::distance( std::data( result ), it ) );
+				auto const sz = static_cast<std::size_t>(
+				  std::distance( std::data( result ), it.get( ) ) );
 				daw_json_assert_weak(
 				  std::size( result ) >= sz, ErrorReason::InvalidString, parse_state );
 				result.resize( sz );

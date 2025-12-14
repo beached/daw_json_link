@@ -68,12 +68,14 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 			-Wno-switch-default
 			-Wno-unused-template
 			-Wno-weak-vtables
+			-Wno-gcc-compat
 			)
 	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
 		# Apple Clang
 		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
 			add_compile_options(
 					-Wno-c++20-extensions
+					-Wno-bitwise-instead-of-logical
 					)
 		endif()
 		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 15 )
@@ -112,6 +114,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 			add_compile_options(
 					-Wno-c++20-attribute-extensions
 					-Wno-c++20-compat
+					-Wno-bitwise-instead-of-logical
 					)
 		endif()
 		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16 )
@@ -207,6 +210,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 											 -Wshadow
 											 -Wzero-as-null-pointer-constant
 											 -Wnull-dereference
+											 -ftemplate-backtrace-limit=0
 											 )
 	if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
 		add_compile_options(

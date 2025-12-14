@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_from_json_fwd.h"
-#include "impl/daw_json_parse_class.h"
-#include "impl/daw_json_parse_value.h"
-#include "impl/daw_json_value.h"
+#include "daw/json/daw_from_json_fwd.h"
+#include "daw/json/impl/daw_json_parse_class.h"
+#include "daw/json/impl/daw_json_parse_value.h"
+#include "daw/json/impl/daw_json_value.h"
 
 #include <daw/daw_data_end.h>
 #include <daw/traits/daw_traits_conditional.h>
@@ -40,8 +40,6 @@ namespace daw::json {
 			static_assert(
 			  json_details::is_string_view_like_v<String>,
 			  "String type must have a be a contiguous range of Characters" );
-			daw_json_ensure( std::data( json_data ) != nullptr,
-			                 ErrorReason::EmptyJSONDocument );
 			daw_json_ensure( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
 
@@ -60,16 +58,18 @@ namespace daw::json {
 			  String,
 			  options::ZeroTerminatedString::yes>;
 
+			auto first = daw::not_null<char const *>( std::data( json_data ) );
+			auto last = daw::not_null<char const *>( daw::data_end( json_data ) );
+			if( first != last and last[-1] == 0 ) {
+				--last;
+			}
+
 			using ParseState =
 			  daw::conditional_t<policy_zstring_t::is_default_parse_policy,
 			                     DefaultParsePolicy,
 			                     policy_zstring_t>;
-			auto first = std::data( json_data );
-			auto last = daw::data_end( json_data );
-			if( first != last and last[-1] == 0 ) {
-				--last;
-			}
-			auto parse_state = ParseState( first, last );
+
+			auto parse_state = ParseState( first.get( ), last.get( ) );
 
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result =
@@ -122,8 +122,6 @@ namespace daw::json {
 			  "String type must have a be a contiguous range of Characters" );
 			daw_json_ensure( std::size( json_data ) != 0,
 			                 ErrorReason::EmptyJSONDocument );
-			daw_json_ensure( std::data( json_data ) != nullptr,
-			                 ErrorReason::EmptyJSONPath );
 
 			using json_member = json_details::json_deduced_type<JsonMember>;
 
@@ -132,8 +130,8 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 
-			char const *f = std::data( json_data );
-			char const *l = daw::data_end( json_data );
+			auto f = daw::not_null<char const *>( std::data( json_data ) );
+			auto l = daw::not_null<char const *>( daw::data_end( json_data ) );
 			Allocator a = alloc;
 
 			using ParsePolicy =
@@ -146,7 +144,7 @@ namespace daw::json {
 			  String,
 			  options::ZeroTerminatedString::yes>;
 
-			auto parse_state = ParseState::with_allocator( f, l, a );
+			auto parse_state = ParseState::with_allocator( f.get( ), l.get( ), a );
 			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result =
 				  json_details::parse_value<json_member,
