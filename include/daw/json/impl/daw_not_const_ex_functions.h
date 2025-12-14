@@ -339,7 +339,7 @@ namespace daw::json {
 							return first;
 						}
 						if( first_escape < 0 ) {
-							first_escape = first_first - first;
+							first_escape = first - first_first;
 						}
 						first += 2;
 					}
@@ -356,7 +356,7 @@ namespace daw::json {
 							return first;
 						}
 						if( first_escape < 0 ) {
-							first_escape = first_first - first;
+							first_escape = first - first_first;
 						}
 						first += 2;
 					}
@@ -514,7 +514,7 @@ namespace daw::json {
 			DAW_ATTRIB_INLINE daw::not_null<CharT *> mem_skip_until_end_of_string(
 			  runtime_exec_tag tag, daw::not_null<CharT *> first,
 			  daw::not_null<CharT *> const last, std::ptrdiff_t &first_escape ) {
-				CharT *const first_first = first;
+				auto first_first = first;
 				if constexpr( not is_unchecked_input ) {
 					daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData );
 				}
@@ -526,7 +526,7 @@ namespace daw::json {
 						return first;
 					case '\\':
 						if( first_escape < 0 ) {
-							first_escape = first_first - first;
+							first_escape = first - first_first;
 						}
 						if constexpr( is_unchecked_input ) {
 							++first;

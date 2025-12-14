@@ -223,23 +223,29 @@ namespace daw::json {
 					       .output;
 					parse_state.first += first_slash;
 				}
-				constexpr auto pred =
-				  []( auto const &r ) DAW_JSON_CPP23_STATIC_CALL_OP {
-					  if constexpr( ParseState::is_unchecked_input ) {
-						  return DAW_LIKELY( r.front( ) != '"' );
-					  } else {
-						  return DAW_LIKELY( r.has_more( ) ) and ( r.front( ) != '"' );
-					  }
-				  };
+				constexpr auto in_json_string =
+				  []( auto const &r ) DAW_JSON_CPP23_STATIC_CALL_OP -> bool {
+					if constexpr( not ParseState::is_unchecked_input ) {
+						if( not DAW_LIKELY( r.has_more( ) ) ) {
+							return false;
+						}
+					}
+					return DAW_LIKELY( r.front( ) != '"' );
+				};
 
-				while( pred( parse_state ) ) {
+				while( in_json_string( parse_state ) ) {
 					{
 						daw::not_null<char const *> first = parse_state.first;
 						daw::not_null<char const *> const last = parse_state.last;
 						if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
 						    std::is_base_of_v<runtime_exec_tag,
 						                      typename ParseState::exec_tag_t> ) {
-
+							first =
+							  mem_move_to_next_of<( ParseState::is_unchecked_input or
+							                        ParseState::is_zero_terminated_string ),
+							                      '"',
+							                      '\\'>( ParseState::exec_tag, first, last );
+						} else {
 							daw_json_assert_weak( KnownBounds or first < last,
 							                      ErrorReason::UnexpectedEndOfData,
 							                      parse_state );
@@ -249,12 +255,6 @@ namespace daw::json {
 								                      ErrorReason::UnexpectedEndOfData,
 								                      parse_state );
 							}
-						} else {
-							first =
-							  mem_move_to_next_of<( ParseState::is_unchecked_input or
-							                        ParseState::is_zero_terminated_string ),
-							                      '"',
-							                      '\\'>( ParseState::exec_tag, first, last );
 						}
 						daw_json_assert_weak(
 						  static_cast<std::ptrdiff_t>( result.size( ) ) -

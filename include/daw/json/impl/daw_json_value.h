@@ -244,7 +244,7 @@ namespace daw::json {
 			/// @brief Can we increment more
 			/// @return True if safe to increment more
 			[[nodiscard]] constexpr bool good( ) const {
-				if( not m_state.has_more( ) or m_state.is_null( ) ) {
+				if( m_state.is_null( ) or not m_state.has_more( ) ) {
 					return false;
 				}
 				switch( m_state.front( ) ) {
@@ -574,7 +574,7 @@ namespace daw::json {
 			/// @return a JSONBaseParseTypes enum value with the type of this JSON
 			/// value
 			[[nodiscard]] constexpr JsonBaseParseTypes type( ) const {
-				if( not m_parse_state.has_more( ) ) {
+				if( m_parse_state.empty( ) ) {
 					return JsonBaseParseTypes::None;
 				}
 				switch( m_parse_state.front( ) ) {
