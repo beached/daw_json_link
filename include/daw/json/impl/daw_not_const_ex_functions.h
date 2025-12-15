@@ -8,16 +8,17 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_json_exec_modes.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_exec_modes.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_do_n.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_logic.h>
 #include <daw/daw_not_null.h>
 #include <daw/daw_uint_buffer.h>
 #include <daw/daw_unreachable.h>
@@ -66,8 +67,8 @@ namespace daw::json {
 			static constexpr inline key_table_t key_table =
 			  [] DAW_CPP23_STATIC_CALL_OP {
 				  auto result = key_table_t{ };
-				  (void)( ( result.values[static_cast<unsigned char>( keys )] = true ) |
-				          ... );
+				  (void)( daw::nsc_or(
+				    ( result.values[static_cast<unsigned char>( keys )] = true )... ) );
 				  return result;
 			  }( );
 
