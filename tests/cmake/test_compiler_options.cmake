@@ -1,13 +1,9 @@
 
 option( DAW_JSON_USE_SANITIZERS "Enable address and undefined sanitizers" OFF )
 option( DAW_WERROR "Enable WError for test builds" OFF )
-option( DAW_ALLOW_SSE42 "EXPERIMENTAL: Enable WError for test builds" OFF )
 option( DAW_JSON_COVERAGE "Enable code coverage(gcc/clang)" OFF )
 
-if( DAW_ALLOW_SSE42 )
-	add_compile_definitions( DAW_ALLOW_SSE42 )
-endif()
-if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND MSVC )
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND MSVC )
 	########################
 	# Clang CL
 	########################
@@ -24,7 +20,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-c++2c-extensions
 				)
 	endif()
-		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.1.5 )
+	if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.1.5 )
 		add_compile_options(
 				-Wno-c++26-extensions
 				)
