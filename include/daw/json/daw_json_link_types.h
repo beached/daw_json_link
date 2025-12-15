@@ -371,7 +371,6 @@ namespace daw::json {
 			template<typename OutputIterator, typename Value>
 			[[nodiscard]] static constexpr OutputIterator
 			serialize( OutputIterator it, Value const &v ) {
-
 				return daw::visit_nt( v, [&it]( auto const &alternative ) {
 					using Alternative = DAW_TYPEOF( alternative );
 					static_assert( ( std::is_same_v<Alternative, JsonClasses> or ... ),
