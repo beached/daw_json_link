@@ -101,9 +101,8 @@ namespace daw::json {
 
 				using CharT = typename ParseState::CharT;
 
-				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
-				    std::is_base_of_v<runtime_exec_tag,
-				                      typename ParseState::exec_tag_t> ) {
+				if( json_details::use_constexpr_exec_mode<
+				      typename ParseState::exec_tag_t>( ) ) {
 					auto pf = daw::not_null{ parse_state.first };
 					auto pl = daw::not_null{ parse_state.last };
 					parse_state.first =
@@ -175,8 +174,8 @@ namespace daw::json {
 					case '"':
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input>(
-						  ParseState::exec_tag, ptr_first, ptr_last );
+						  ParseState::is_unchecked_input,
+						  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
 						daw_json_ensure( ptr_first < ptr_last and *ptr_first == '"',
 						                 ErrorReason::UnexpectedEndOfData,
 						                 parse_state );
@@ -250,8 +249,8 @@ namespace daw::json {
 					case '"':
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input>(
-						  ParseState::exec_tag, ptr_first, ptr_last );
+						  ParseState::is_unchecked_input,
+						  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
 						break;
 					case ',':
 						if( DAW_UNLIKELY( ( prime_bracket_count == 1 ) &

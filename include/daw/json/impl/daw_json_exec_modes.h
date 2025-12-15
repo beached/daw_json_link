@@ -10,7 +10,10 @@
 
 #include "version.h"
 
+#include <daw/daw_is_constant_evaluated.h>
+
 #include <string_view>
+#include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -32,5 +35,13 @@ namespace daw::json {
 		struct simd_exec_tag : runtime_exec_tag {};
 #endif
 		using default_exec_tag = constexpr_exec_tag;
+
+		namespace json_details {
+			template<typename ExecTag>
+			DAW_ATTRIB_INLINE constexpr bool use_constexpr_exec_mode( ) {
+				return not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
+				       std::is_base_of_v<runtime_exec_tag, ExecTag>;
+			}
+		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

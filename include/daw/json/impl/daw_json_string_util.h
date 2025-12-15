@@ -34,8 +34,7 @@ namespace daw::json {
 				return __builtin_char_memchr(
 				  first, '"', static_cast<std::size_t>( last - first ) );
 #else
-				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
-				    std::is_base_of_v<runtime_exec_tag, ExecTag> ) {
+				if( json_details::use_constexpr_exec_mode<ExecTag>( ) ) {
 					return static_cast<CharT *>(
 					  std::memchr( static_cast<void const *>( first ),
 					               '"',
@@ -95,8 +94,7 @@ namespace daw::json {
 				return static_cast<CharT *>( __builtin_memchr(
 				  first, '"', static_cast<std::size_t>( last - first ) ) );
 #else
-				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
-				    std::is_base_of_v<runtime_exec_tag, ExecTag> ) {
+				if( json_details::use_constexpr_exec_mode<ExecTag>( ) ) {
 					return static_cast<CharT *>(
 					  std::memchr( static_cast<void const *>( first ),
 					               '"',
@@ -150,8 +148,7 @@ namespace daw::json {
 				daw::not_null<CharT *> res = __builtin_strpbrk( first, needles );
 				return res;
 #else
-				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
-				    std::is_base_of_v<runtime_exec_tag, ExecTag> ) {
+				if( json_details::use_constexpr_exec_mode<ExecTag>( ) ) {
 					constexpr char const needles[]{ chars..., '\0' };
 					CharT *res = std::strpbrk( first, needles );
 #if not defined( NDEBUG )
@@ -193,8 +190,7 @@ namespace daw::json {
 #if not defined( NDEBUG )
 				daw_json_ensure( first <= last, ErrorReason::Unknown );
 #endif
-				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
-				    std::is_base_of_v<runtime_exec_tag, ExecTag> ) {
+				if( json_details::use_constexpr_exec_mode<ExecTag>( ) ) {
 					return mem_move_to_next_of<false, chars...>(
 					  ExecTag{ }, first, last );
 				}

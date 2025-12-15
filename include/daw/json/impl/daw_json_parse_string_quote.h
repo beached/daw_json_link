@@ -103,11 +103,12 @@ namespace daw::json {
 					// This is a logic error to happen.
 					// daw_json_assert_weak( first != '"', "Unexpected quote", parse_state
 					// );
-					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
-					    std::is_base_of_v<runtime_exec_tag,
-					                      typename ParseState::exec_tag_t> ) {
-						first = mem_skip_until_end_of_string<true>(
-						  ParseState::exec_tag, first, last, need_slow_path );
+					if( json_details::use_constexpr_exec_mode<
+					      typename ParseState::exec_tag_t>( ) ) {
+						first =
+						  mem_skip_until_end_of_string<true,
+						                               typename ParseState::exec_tag_t>(
+						    first, last, need_slow_path );
 					} else {
 						{
 							auto const sz = last - first;
@@ -145,11 +146,13 @@ namespace daw::json {
 					std::ptrdiff_t need_slow_path = -1;
 					auto first = daw::not_null<CharT *>( parse_state.first );
 					auto const last = daw::not_null<CharT *>( parse_state.class_last );
-					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
-					    std::is_base_of_v<runtime_exec_tag,
-					                      typename ParseState::exec_tag_t> ) {
-						first = mem_skip_until_end_of_string<false>(
-						  ParseState::exec_tag, first, last, need_slow_path );
+
+					if( json_details::use_constexpr_exec_mode<
+					      typename ParseState::exec_tag_t>( ) ) {
+						first =
+						  mem_skip_until_end_of_string<false,
+						                               typename ParseState::exec_tag_t>(
+						    first, last, need_slow_path );
 					} else {
 						if constexpr( not ParseState::exclude_special_escapes ) {
 							if( auto const l = daw::not_null<CharT *>( parse_state.last );

@@ -23,9 +23,7 @@ namespace daw::json {
 		namespace concepts::writeable_output_details {
 			template<typename T>
 			constexpr T *copy_to_buffer( T *buff, daw::string_view source ) {
-#if defined( DAW_IS_CONSTANT_EVALUATED )
-				if( DAW_IS_CONSTANT_EVALUATED( ) ) {
-#endif
+				if( DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
 					daw::algorithm::transform_n( source.data( ),
 					                             buff,
 					                             source.size( ),
@@ -33,11 +31,9 @@ namespace daw::json {
 					                               DAW_JSON_CPP23_STATIC_CALL_OP {
 						                               return static_cast<T>( c );
 					                               } );
-#if defined( DAW_IS_CONSTANT_EVALUATED )
 				} else {
 					memcpy( buff, source.data( ), source.size( ) );
 				}
-#endif
 				return buff + source.size( );
 			}
 

@@ -259,11 +259,10 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename CharT>
-			DAW_ATTRIB_NONNULL( )
-			DAW_ATTRIB_RET_NONNULL
-			  inline CharT *mem_skip_until_end_of_string_simd( CharT *first,
-			                                                   CharT *const last ) {
-				constexpr auto tag = simd_exec_tag{ };
+			inline daw::not_null<CharT *>
+			mem_skip_until_end_of_string_simd( daw::not_null<CharT *> first,
+			                                   daw::not_null<CharT *> const last ) {
+				static constexpr auto tag = simd_exec_tag{ };
 				UInt32 prev_escapes = 0_u32;
 				while( last - first >= 16 ) {
 					auto const val0 = uload16_char_data( tag, first );
@@ -308,12 +307,13 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename CharT>
-			DAW_ATTRIB_NONNULL( )
-			DAW_ATTRIB_RET_NONNULL inline CharT *mem_skip_until_end_of_string(
-			  simd_exec_tag tag, CharT *first, CharT *const last,
-			  std::ptrdiff_t &first_escape ) {
-				CharT *const first_first = first;
+			inline daw::not_null<CharT *>
+			mem_skip_until_end_of_string_simd( daw::not_null<CharT *> first,
+			                                   daw::not_null<CharT *> const last,
+			                                   std::ptrdiff_t &first_escape ) {
+				auto const first_first = first;
 				UInt32 prev_escapes = 0_u32;
+				static constexpr auto tag = simd_exec_tag{ };
 				while( last - first >= 16 ) {
 					auto const val0 = uload16_char_data( tag, first );
 					UInt32 const backslashes = mem_find_eq<'\\'>( tag, val0 );
@@ -493,7 +493,7 @@ namespace daw::json {
 
 			template<bool is_unchecked_input, typename ExecTag, typename CharT>
 			DAW_ATTRIB_INLINE constexpr daw::not_null<CharT *>
-			mem_skip_until_end_of_string( ExecTag, daw::not_null<CharT *> first,
+			mem_skip_until_end_of_string( daw::not_null<CharT *> first,
 			                              daw::not_null<CharT *> const last ) {
 #if defined( DAW_ALLOW_SSE42 )
 				if( std::is_base_of_v<simd_exec_tag, ExecTag> ) {
@@ -501,8 +501,7 @@ namespace daw::json {
 					                                                              last );
 				}
 #endif
-				if( std::is_base_of_v<runtime_exec_tag, ExecTag> or
-				    not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+				if( use_constexpr_exec_mode<ExecTag>( ) ) {
 					return mem_skip_until_end_of_string_runtime<is_unchecked_input>(
 					  first, last );
 				}
@@ -511,13 +510,15 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename CharT>
-			DAW_ATTRIB_INLINE daw::not_null<CharT *> mem_skip_until_end_of_string(
-			  runtime_exec_tag tag, daw::not_null<CharT *> first,
-			  daw::not_null<CharT *> const last, std::ptrdiff_t &first_escape ) {
+			DAW_ATTRIB_INLINE daw::not_null<CharT *>
+			mem_skip_until_end_of_string_runtime( daw::not_null<CharT *> first,
+			                                      daw::not_null<CharT *> const last,
+			                                      std::ptrdiff_t &first_escape ) {
 				auto first_first = first;
 				if constexpr( not is_unchecked_input ) {
 					daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData );
 				}
+				static constexpr auto tag = runtime_exec_tag{ };
 				first = mem_move_to_next_of<is_unchecked_input, '\\', '"'>(
 				  tag, first, last );
 				while( is_unchecked_input or first < last ) {
@@ -542,12 +543,19 @@ namespace daw::json {
 				return first;
 			}
 
-			template<bool is_unchecked_input, typename CharT>
-			DAW_ATTRIB_FLATINLINE daw::not_null<CharT *> mem_skip_until_end_of_string(
-			  constexpr_exec_tag, daw::not_null<CharT *> first,
-			  daw::not_null<CharT *> const last, std::ptrdiff_t &first_escape ) {
-				return mem_skip_until_end_of_string<is_unchecked_input>(
-				  runtime_exec_tag{ }, first, last, first_escape );
+			template<bool is_unchecked_input, typename ExecTag, typename CharT>
+			DAW_ATTRIB_FLATINLINE daw::not_null<CharT *>
+			mem_skip_until_end_of_string( daw::not_null<CharT *> first,
+			                              daw::not_null<CharT *> const last,
+			                              std::ptrdiff_t &first_escape ) {
+#if defined( DAW_ALLOW_SSE42 )
+				if constexpr( std::is_base_of_v<simd_exec_tag, ExecTag> ) {
+					return mem_skip_until_end_of_string_simd<is_unchecked_input>(
+					  first, last, first_escape );
+				}
+#endif
+				return mem_skip_until_end_of_string_runtime<is_unchecked_input>(
+				  first, last, first_escape );
 			}
 		} // namespace json_details
 	} // namespace DAW_JSON_VER

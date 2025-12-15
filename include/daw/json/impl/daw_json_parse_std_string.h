@@ -237,9 +237,8 @@ namespace daw::json {
 					{
 						daw::not_null<char const *> first = parse_state.first;
 						daw::not_null<char const *> const last = parse_state.last;
-						if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) or
-						    std::is_base_of_v<runtime_exec_tag,
-						                      typename ParseState::exec_tag_t> ) {
+
+				if( json_details::use_constexpr_exec_mode<typename ParseState::exec_tag_t>( ) ) {
 							first =
 							  mem_move_to_next_of<( ParseState::is_unchecked_input or
 							                        ParseState::is_zero_terminated_string ),

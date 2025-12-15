@@ -172,8 +172,8 @@ namespace daw::json {
 					case '"':
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input>(
-						  ParseState::exec_tag, ptr_first, ptr_last );
+						  ParseState::is_unchecked_input,
+						  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
 						daw_json_ensure( ptr_first < ptr_last,
 						                 ErrorReason::UnexpectedEndOfData,
 						                 parse_state );
@@ -270,8 +270,8 @@ namespace daw::json {
 					case '"':
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input>(
-						  ParseState::exec_tag, ptr_first, ptr_last );
+						  ParseState::is_unchecked_input,
+						  typename ParseState::exec_tag_t>(ptr_first, ptr_last );
 						break;
 					case ',':
 						if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
