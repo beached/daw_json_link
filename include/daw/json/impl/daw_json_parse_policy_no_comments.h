@@ -101,7 +101,7 @@ namespace daw::json {
 
 				using CharT = typename ParseState::CharT;
 
-				if( json_details::use_constexpr_exec_mode<
+				if( not json_details::use_constexpr_exec_mode<
 				      typename ParseState::exec_tag_t>( ) ) {
 					auto pf = daw::not_null{ parse_state.first };
 					auto pl = daw::not_null{ parse_state.last };

@@ -75,8 +75,8 @@ namespace daw::json {
 			    : max_dbl_exp;
 
 			template<typename Result, typename Unsigned>
-			DAW_ATTRIB_FLATINLINE constexpr Result
-			power10_constexpr( Result result, Unsigned p ) {
+			DAW_ATTRIB_FLATINLINE constexpr Result power10_constexpr( Result result,
+			                                                          Unsigned p ) {
 				// We only have a double table, of which float is a subset.  Long double
 				// will be calculated in terms of that
 
@@ -144,9 +144,9 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE constexpr Result power10( ExecTag, Result result,
 			                                                Unsigned p ) {
 				if( use_constexpr_exec_mode<ExecTag>( ) ) {
-					return power10_runtime<Result>( result, p );
+					return power10_constexpr<Result>( result, p );
 				}
-				return power10_constexpr<Result>( result, p );
+				return power10_runtime<Result>( result, p );
 			}
 		} // namespace json_details
 	} // namespace DAW_JSON_VER

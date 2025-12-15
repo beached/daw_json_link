@@ -110,6 +110,13 @@
 
 // Allow experimental SIMD paths, if available
 // by defining DAW_ALLOW_SSE42 and using the parser policy ExecModeType simd
+#if not defined( DAW_JSON_NO_SSE42 )
+#if defined( __SSE4_2__ ) or defined( __AVX__ ) or defined( __AVX2__ )
+#if not defined( DAW_ALLOW_SSE42 )
+#define DAW_ALLOW_SSE42 1
+#endif
+#endif
+#endif
 
 // Use strtod instead of from_chars when avialable by defining
 // DAW_JSON_USE_STRTOD
@@ -281,7 +288,7 @@
 
 #if defined( __cpp_lib_reflection )
 #if __cpp_lib_reflection >= 202506L
-#define DAW_JSON_HAS_REFLECTION
+#define DAW_JSON_HAS_REFLECTION 1
 #endif
 #endif
 
