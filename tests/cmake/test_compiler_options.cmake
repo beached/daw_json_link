@@ -124,7 +124,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 					-Wno-missing-noreturn
 					)
 		endif()
-		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 20 )
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 )
 			add_compile_options(
 					-Wno-c++26-extensions
 					)
