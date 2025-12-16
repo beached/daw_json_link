@@ -34,8 +34,8 @@ namespace daw::json {
 		namespace json_details {
 			template<bool skip_end_check, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE constexpr void parse_digits_until_last(
-			  daw::not_null<char const *> DAW_RESTRICT first,
-			  daw::not_null<char const *> DAW_RESTRICT const last,
+			  daw::not_null<char const *> first,
+			  daw::not_null<char const *> const last,
 			  Unsigned &DAW_RESTRICT v ) {
 				auto value = v;
 				if constexpr( skip_end_check ) {
@@ -59,8 +59,8 @@ namespace daw::json {
 			template<bool skip_end_check, typename Unsigned>
 			[[nodiscard]] DAW_ATTRIB_NONNULL( ) DAW_ATTRIB_FLATINLINE
 			  constexpr daw::not_null<char const *> parse_digits_while_number(
-			    daw::not_null<char const *> DAW_RESTRICT first,
-			    daw::not_null<char const *> const DAW_RESTRICT last,
+			    daw::not_null<char const *> first,
+			    daw::not_null<char const *> const last,
 			    Unsigned &DAW_RESTRICT v ) {
 
 				// silencing gcc9 unused warning.  last is used inside if constexpr

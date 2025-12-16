@@ -51,8 +51,8 @@ namespace daw::json {
 			}
 
 			[[nodiscard]]
-			constexpr bool is_made_of_eight_digits_cx(
-			  daw::not_null<char const *> DAW_RESTRICT ptr ) {
+			constexpr bool
+			is_made_of_eight_digits_cx( daw::not_null<char const *> ptr ) {
 				// The copy to local buffer is to get the compiler to treat it like a
 				// reinterpret_cast
 
