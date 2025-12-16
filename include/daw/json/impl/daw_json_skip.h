@@ -22,6 +22,7 @@
 #include <daw/daw_enable_requires.h>
 #include <daw/daw_is_any_of.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_unreachable.h>
 
 #if defined( DAW_CX_BIT_CAST )
@@ -150,11 +151,10 @@ namespace daw::json {
 				return result;
 			}
 
-			template<bool skip_end_check, typename CharT>
-			DAW_ATTRIB_NONNULL( )
-			DAW_ATTRIB_RET_NONNULL DAW_ATTRIB_FLATINLINE
-			  [[nodiscard]] static constexpr CharT *skip_digits( CharT *first,
-			                                                     CharT *const last ) {
+			template<bool skip_end_check>
+			DAW_ATTRIB_FLATINLINE [[nodiscard]] constexpr daw::not_null<char const *>
+			skip_digits( daw::not_null<char const *> first,
+			             daw::not_null<char const *> const last ) {
 				(void)last; // only used inside if constexpr and gcc9 warns
 				unsigned dig = parse_digit( *first );
 				while( dig < 10 ) {
@@ -182,11 +182,10 @@ namespace daw::json {
 			                     ParseState::is_zero_terminated_string )
 			[[nodiscard]] static constexpr ParseState
 			  skip_number( ParseState &parse_state ) {
-				using CharT = typename ParseState::CharT;
 
 				auto result = parse_state;
-				CharT *first = parse_state.first;
-				CharT *const last = parse_state.last;
+				char const *first = parse_state.first;
+				char const *const last = parse_state.last;
 
 				if( *first == '-' ) {
 					++first;
@@ -194,13 +193,13 @@ namespace daw::json {
 
 				first = count_digits( first, last );
 
-				CharT *decimal = nullptr;
+				char const *decimal = nullptr;
 				if( *first == '.' ) {
 					decimal = first++;
 					first = count_digits( first, last );
 				}
 
-				CharT *exp = nullptr;
+				char const *exp = nullptr;
 				char const maybe_e = *first;
 				if( ( maybe_e == 'e' ) | ( maybe_e == 'E' ) ) {
 					exp = ++first;
@@ -230,14 +229,13 @@ namespace daw::json {
 #endif
 			[[nodiscard]] static constexpr ParseState
 			skip_number( ParseState &parse_state ) {
-				using CharT = typename ParseState::CharT;
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
 
 				auto result = parse_state;
-				CharT *first = parse_state.first;
-				CharT *const last = parse_state.last;
+				daw::not_null<char const *> first = parse_state.first;
+				daw::not_null<char const *> const last = parse_state.last;
 				if constexpr( ParseState::allow_leading_zero_plus ) {
 					if( *first == '-' ) {
 						++first;
@@ -267,7 +265,7 @@ namespace daw::json {
 					                ParseState::is_unchecked_input )>( first, last );
 				}
 
-				CharT *decimal = nullptr;
+				char const *decimal = nullptr;
 				if( ( ( ParseState::is_zero_terminated_string or
 				        ParseState::is_unchecked_input ) or
 				      first < last ) and
@@ -281,7 +279,7 @@ namespace daw::json {
 						                ParseState::is_unchecked_input )>( first, last );
 					}
 				}
-				CharT *exp = nullptr;
+				char const *exp = nullptr;
 
 				unsigned dig = [&] {
 					if( ParseState::is_zero_terminated_string or first < last ) {

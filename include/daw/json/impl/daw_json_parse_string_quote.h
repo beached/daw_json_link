@@ -38,9 +38,8 @@ namespace daw::json {
 				return to_uint8( not( lhs - rhs::value ) );
 			}
 
-			template<typename CharT>
-			constexpr void skip_to_first8( daw::not_null<CharT *> &first,
-			                               daw::not_null<CharT *> const last ) {
+			constexpr void skip_to_first8( daw::not_null<char const *> &first,
+			                               daw::not_null<char const *> const last ) {
 				bool keep_going = last - first >= 8;
 				while( keep_going ) {
 					auto buff = daw::to_uint64_buffer( first.get( ) );
@@ -69,10 +68,8 @@ namespace daw::json {
 				first -= *( first - 1 ) == '\\' ? 1 : 0;
 			}
 
-			template<typename CharT>
-			DAW_ATTRIB_NONNULL( )
-			constexpr void skip_to_first4( daw::not_null<CharT *> &first,
-			                               daw::not_null<CharT *> const last ) {
+			constexpr void skip_to_first4( daw::not_null<char const *> &first,
+			                               daw::not_null<char const *> const last ) {
 				bool keep_going = last - first >= 4;
 				while( keep_going ) {
 					// Need to look for escapes as this is fast path
@@ -96,10 +93,11 @@ namespace daw::json {
 				template<typename ParseState>
 				[[nodiscard]] static constexpr std::size_t
 				parse_nq_uncheck( ParseState &parse_state ) {
-					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
-					auto first = daw::not_null<CharT *>( parse_state.first );
-					auto const last = daw::not_null<CharT *>( parse_state.last );
+					auto first =
+					  daw::not_null<char const *>( daw::never_null, parse_state.first );
+					auto const last =
+					  daw::not_null<char const *>( daw::never_null, parse_state.last );
 					// This is a logic error to happen.
 					// daw_json_assert_weak( first != '"', "Unexpected quote", parse_state
 					// );
@@ -142,10 +140,10 @@ namespace daw::json {
 				[[nodiscard]] static constexpr std::size_t
 				parse_nq_check( ParseState &parse_state ) {
 
-					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
-					auto first = daw::not_null<CharT *>( parse_state.first );
-					auto const last = daw::not_null<CharT *>( parse_state.class_last );
+					auto first = daw::not_null<char const *>( parse_state.first );
+					auto const last =
+					  daw::not_null<char const *>( parse_state.class_last );
 
 					if( json_details::use_constexpr_exec_mode<
 					      typename ParseState::exec_tag_t>( ) ) {
@@ -155,7 +153,7 @@ namespace daw::json {
 						    first, last, need_slow_path );
 					} else {
 						if constexpr( not ParseState::exclude_special_escapes ) {
-							if( auto const l = daw::not_null<CharT *>( parse_state.last );
+							if( auto const l = daw::not_null<char const *>( parse_state.last );
 							    l - first >= 8 ) {
 								skip_to_first8( first, l );
 							} else if( last - first >= 4 ) {

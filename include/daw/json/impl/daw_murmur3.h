@@ -49,11 +49,11 @@ namespace daw {
 	template<>
 	inline constexpr auto fnv1a_prime_v<daw::UInt64> = 0x0000'0100'0000'01b3_u64;
 
-// Unrolled fnv1a to N elements
-	template<std::size_t N, typename Hash, typename CharT>
-	[[nodiscard]] DAW_ATTRIB_INLINE
-	  static constexpr auto fnv1a_N( daw::not_null<CharT *> first,
-	                                 Hash hash = fnv1a_basis_v<Hash> ) {
+	// Unrolled fnv1a to N elements
+	template<std::size_t N, typename Hash>
+	[[nodiscard]] DAW_ATTRIB_INLINE static constexpr auto
+	fnv1a_N( daw::not_null<char const *> first,
+	         Hash hash = fnv1a_basis_v<Hash> ) {
 		daw::algorithm::do_n_arg<N>( [&]( std::size_t n ) {
 			hash ^= static_cast<Hash>( static_cast<unsigned char>( first[n] ) );
 			hash *= fnv1a_prime_v<Hash>;

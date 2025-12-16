@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_req_helper.h"
+#include "daw/json/impl/daw_json_req_helper.h"
 
 #include <daw/daw_consteval.h>
 #include <daw/daw_cpp20_concept.h>

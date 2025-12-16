@@ -8,18 +8,20 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_json_exec_modes.h"
-#include "daw_json_parse_digit.h"
-#include "daw_json_parse_unsigned_int.h"
-#include "daw_json_type_options.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_exec_modes.h"
+#include "daw/json/impl/daw_json_parse_digit.h"
+#include "daw/json/impl/daw_json_parse_unsigned_int.h"
+#include "daw/json/impl/daw_json_type_options.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_construct_a.h>
 #include <daw/daw_cxmath.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_remove_cvref.h>
+#include <daw/daw_restrict.h>
 #include <daw/daw_uint_buffer.h>
 
 #include <cstddef>
@@ -49,8 +51,8 @@ namespace daw::json {
 			}
 
 			[[nodiscard]]
-			DAW_ATTRIB_NONNULL( ) constexpr bool is_made_of_eight_digits_cx(
-			  char const *ptr ) {
+			constexpr bool is_made_of_eight_digits_cx(
+			  daw::not_null<char const *> DAW_RESTRICT ptr ) {
 				// The copy to local buffer is to get the compiler to treat it like a
 				// reinterpret_cast
 
@@ -83,9 +85,8 @@ namespace daw::json {
 
 			// Constexpr'ified version from
 			// https://kholdstare.github.io/technical/2020/05/26/faster-integer-parsing.html
-			DAW_ATTRIB_NONNULL( )
-			constexpr UInt64 parse_8_digits( char const *const str ) {
-				auto const chunk = daw::to_uint64_buffer( str );
+			constexpr UInt64 parse_8_digits( daw::not_null<char const *> const str ) {
+				auto const chunk = daw::to_uint64_buffer( str.get( ) );
 				// 1-byte mask trick (works on 4 pairs of single digits)
 				auto const lower_digits =
 				  ( chunk & 0x0F'00'0F'00'0F'00'0F'00_u64 ) >> 8U;
@@ -113,8 +114,8 @@ namespace daw::json {
 			static_assert( parse_8_digits( "12345678" ) == 1234'5678_u64,
 			               "8 digit parser does not work on this platform" );
 
-			DAW_ATTRIB_NONNULL( )
-			constexpr UInt64 parse_16_digits( char const *const str ) {
+			constexpr UInt64
+			parse_16_digits( daw::not_null<char const *> const str ) {
 				auto const upper = parse_8_digits( str );
 				auto const lower = parse_8_digits( str + 8 );
 				return upper * 100'000'000_u64 + lower;
@@ -184,7 +185,6 @@ namespace daw::json {
 			[[nodiscard]] static constexpr Unsigned
 			unsigned_parser_known( constexpr_exec_tag const &,
 			                       ParseState &parse_state ) {
-				using CharT = typename ParseState::CharT;
 				// We know how many digits are in the number
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 				using uresult_t = max_unsigned_t<RangeChecked,
@@ -195,8 +195,8 @@ namespace daw::json {
 				    std::is_same_v<uresult_t, UInt64>,
 				  "Range checking is only supported for std integral types" );
 
-				CharT *first = parse_state.first;
-				CharT *const last = parse_state.last;
+				daw::not_null<char const *> first = parse_state.first;
+				daw::not_null<char const *> const last = parse_state.last;
 				uresult_t result = uresult_t( );
 
 				while( last - first >= 16 ) {
@@ -249,7 +249,6 @@ namespace daw::json {
 			[[nodiscard]] static constexpr Unsigned
 			unsigned_parser_not_known( constexpr_exec_tag const &,
 			                           ParseState &parse_state ) {
-				using CharT = typename ParseState::CharT;
 				// We do not know how long the string is
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 				using uresult_t = max_unsigned_t<RangeChecked,
@@ -262,10 +261,10 @@ namespace daw::json {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
-				CharT *first = parse_state.first;
-				CharT *const orig_first = first;
+				daw::not_null<char const *> first = parse_state.first;
+				auto const orig_first = first;
 				(void)orig_first; // only used inside if constexpr and gcc9 warns
-				CharT *const last = parse_state.last;
+				daw::not_null<char const *> const last = parse_state.last;
 				uresult_t result = uresult_t( );
 				bool has_eight =
 				  last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
@@ -397,8 +396,8 @@ namespace daw::json {
 			  daw_json_assert_weak( parse_state.has_more( ),
 			ErrorRange::UnexpectedEndOfData, parse_state
 			); using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
-			result_t result = result_t( ); CharT *first = parse_state.first; CharT
-			 *const last = parse_state.last; CharT *const orig_first =
+			result_t result = result_t( ); char const *first = parse_state.first; char const
+			 *const last = parse_state.last; char const *const orig_first =
 			first;
 			  {
 			    auto sz = last - first;

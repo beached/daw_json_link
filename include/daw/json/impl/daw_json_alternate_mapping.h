@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_parse_common.h"
-#include "daw_json_traits.h"
+#include "daw/json/impl/daw_json_parse_common.h"
+#include "daw/json/impl/daw_json_traits.h"
 
 #include <cstddef>
 

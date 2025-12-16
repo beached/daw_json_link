@@ -117,7 +117,7 @@ namespace daw::json {
 			DAW_ATTRIB_INLINE constexpr void output_indent( ) {
 				if constexpr( serialization_format !=
 				              options::SerializationFormat::Minified ) {
-					constexpr std::string_view indent =
+					DAW_CPP23_STATIC_LOCAL constexpr std::string_view indent =
 					  json_details::serialization::generate_indent<serialization_format,
 					                                               indentation_type>;
 					if( not indent.empty( ) ) {

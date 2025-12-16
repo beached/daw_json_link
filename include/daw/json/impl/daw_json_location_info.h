@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_json_find_result.h"
-#include "daw_murmur3.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_find_result.h"
+#include "daw/json/impl/daw_murmur3.h"
 
 #include <daw/algorithms/daw_algorithm_adjacent_find.h>
 #include <daw/daw_consteval.h>
@@ -34,13 +34,12 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename CharT>
 			struct location_info_t {
 				daw::string_view name;
-				CharT *first = nullptr;
-				CharT *last = nullptr;
-				CharT *class_first = nullptr;
-				CharT *class_last = nullptr;
+				char const *first = nullptr;
+				char const *last = nullptr;
+				char const *class_first = nullptr;
+				char const *class_last = nullptr;
 				std::size_t counter = 0;
 
 				[[nodiscard]] constexpr bool missing( ) const {
@@ -67,10 +66,9 @@ namespace daw::json {
 			 * Contains an array of member location_info mapped in a json_class
 			 * @tparam MemberCount Number of mapped members from json_class
 			 */
-			template<std::size_t MemberCount, typename CharT,
-			         bool DoFullNameMatch = true>
+			template<std::size_t MemberCount, bool DoFullNameMatch = true>
 			struct locations_info_t {
-				using value_type = location_info_t<CharT>;
+				using value_type = location_info_t;
 				using reference = value_type &;
 				using const_reference = value_type const &;
 				static constexpr bool do_full_name_match = DoFullNameMatch;
@@ -133,19 +131,17 @@ namespace daw::json {
 			template<typename ParseState, typename... JsonMembers>
 			DAW_ATTRIB_FLATINLINE static DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto
 			make_locations_info( ) {
-				using CharT = typename ParseState::CharT;
 #if defined( DAW_JSON_ALWAYS_FULL_NAME_MATCH )
-				constexpr bool do_full_name_match = true;
+				using do_full_name_match = std::true_type;
 #else
-				constexpr bool do_full_name_match =
-				  ParseState::force_name_equal_check or
-				  do_hashes_collide<JsonMembers...>( );
+				using do_full_name_match =
+				  std::bool_constant<ParseState::force_name_equal_check or
+				                     do_hashes_collide<JsonMembers...>( )>;
 #endif
 				return locations_info_t<sizeof...( JsonMembers ),
-				                        CharT,
-				                        do_full_name_match>{
+				                        do_full_name_match::value>{
 				  /*hashes*/ { daw::name_hash<false>( JsonMembers::name )... },
-				  /*names*/ { location_info_t<CharT>{ JsonMembers::name }... } };
+				  /*names*/ { location_info_t{ JsonMembers::name }... } };
 			}
 
 			/***
@@ -161,10 +157,10 @@ namespace daw::json {
 
 			template<std::size_t pos, AllMembersMustExist must_exist,
 			         bool from_start = false, std::size_t N, typename ParseState,
-			         bool B, typename CharT>
+			         bool B>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr find_result<ParseState>
 			find_class_member( ParseState &parse_state,
-			                   locations_info_t<N, CharT, B> &locations,
+			                   locations_info_t<N, B> &locations,
 			                   bool is_nullable, daw::string_view member_name ) {
 
 				// silencing gcc9 warning as these are selectively used

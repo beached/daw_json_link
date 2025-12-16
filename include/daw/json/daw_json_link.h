@@ -8,23 +8,25 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_from_json.h"
-#include "daw_json_apply.h"
-#include "daw_json_exception.h"
-#include "daw_json_link_types.h"
-#include "daw_to_json.h"
-#include "impl/daw_json_alternate_mapping.h"
-#include "impl/daw_json_value.h"
+#include "daw/json/daw_from_json.h"
+#include "daw/json/daw_json_apply.h"
+#include "daw/json/daw_json_exception.h"
+#include "daw/json/daw_json_link_types.h"
+#include "daw/json/daw_to_json.h"
+#include "daw/json/impl/daw_json_alternate_mapping.h"
+#include "daw/json/impl/daw_json_value.h"
+
+#include <daw/daw_consteval.h>
 
 namespace daw::json::literals {
 	/***
 	 * Construct a json_value from a string literal
 	 * @return A json_value representing the json document
 	 */
-	constexpr daw::json::json_value operator""_dawjson( char const *ptr,
-	                                                    std::size_t sz ) {
+	DAW_CONSTEVAL daw::json::json_value operator""_dawjson( char const *ptr,
+	                                                        std::size_t sz ) {
 		return daw::json::json_value( ptr, sz );
 	}
 } // namespace daw::json::literals

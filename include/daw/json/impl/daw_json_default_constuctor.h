@@ -135,7 +135,8 @@ namespace daw::json {
 					  json_details::iter_range_t{ std::move( first ), std::move( last ) },
 					  alloc );
 				} else {
-					constexpr auto reserve_amount = 4096U / ( sizeof( T ) * 8U );
+					DAW_CPP23_STATIC_LOCAL constexpr auto reserve_amount =
+					  4096U / ( sizeof( T ) * 8U );
 					auto result = std::vector<T, Alloc>( alloc );
 					// Lets use a WAG and go for a 4k page size
 					result.reserve( reserve_amount );
@@ -173,7 +174,8 @@ namespace daw::json {
 					return std::vector<T, Alloc>(
 					  std::move( first ), std::move( last ), alloc );
 				} else {
-					constexpr auto reserve_amount = 4096U / ( sizeof( T ) * 8U );
+					DAW_CPP23_STATIC_LOCAL constexpr auto reserve_amount =
+					  4096U / ( sizeof( T ) * 8U );
 					auto result = std::vector<T, Alloc>( alloc );
 					// Lets use a WAG and go for a 4k page size
 					result.reserve( reserve_amount );

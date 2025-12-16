@@ -8,16 +8,17 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
 #include "daw/json/daw_json_switches.h"
-#include "daw_json_assert.h"
-#include "daw_json_parse_digit.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_digit.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_cxmath.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
@@ -25,14 +26,14 @@
 #include <cassert>
 #include <chrono>
 #include <cstdint>
+#include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace parse_utils {
 			template<typename Result, std::size_t count>
-			DAW_ATTRIB_NONNULL( )
-			constexpr Result parse_unsigned( char const *digit_str ) {
-				UInt64 result = UInt64( );
+			constexpr Result parse_unsigned( daw::not_null<char const *> digit_str ) {
+				auto result = UInt64( );
 				for( std::size_t n = 0; n < count; ++n ) {
 					auto const dig =
 					  to_uint64( json_details::parse_digit( digit_str[n] ) );
@@ -46,9 +47,9 @@ namespace daw::json {
 			}
 
 			template<typename Result>
-			DAW_ATTRIB_NONNULL( )
-			constexpr Result parse_unsigned2( char const *digit_str ) {
-				UInt64 result = UInt64( );
+			constexpr Result
+			parse_unsigned2( daw::not_null<char const *> digit_str ) {
+				auto result = UInt64( );
 				unsigned dig = json_details::parse_digit( *digit_str );
 				while( dig < 10 ) {
 					result *= 10U;
@@ -59,14 +60,13 @@ namespace daw::json {
 				return static_cast<Result>( result );
 			}
 
-			constexpr bool is_number( char c ) {
+			DAW_ATTRIB_FLATINLINE constexpr bool is_number( char c ) {
 				return json_details::parse_digit( c ) < 10U;
 			}
 		} // namespace parse_utils
 
 		namespace datetime {
 			namespace datetime_details {
-
 				template<typename Result>
 				constexpr Result parse_number( daw::string_view sv ) {
 					static_assert( daw::digits10<Result> >= 4 );
@@ -100,7 +100,7 @@ namespace daw::json {
 			                                  std::uint64_t ns ) {
 				using Clock = typename TP::clock;
 				using Duration = typename TP::duration;
-				constexpr auto calc =
+				DAW_CPP23_STATIC_LOCAL constexpr auto calc =
 				  []( std::int32_t y,
 				      std::uint32_t m,
 				      std::uint32_t d,
@@ -161,7 +161,7 @@ namespace daw::json {
 					auto const clock_epoch = std::chrono::floor<std::chrono::hours>(
 					  Clock::now( ).time_since_epoch( ) + std::chrono::minutes( 30 ) );
 
-					constexpr auto offset =
+					DAW_CPP23_STATIC_LOCAL constexpr auto offset =
 					  std::chrono::duration_cast<std::chrono::milliseconds>(
 					    clock_epoch - system_epoch );
 					return std::chrono::duration_cast<Duration>( result + offset );
@@ -241,7 +241,7 @@ namespace daw::json {
 
 			template<typename TP>
 			constexpr TP parse_iso8601_timestamp( daw::string_view ts ) {
-				constexpr daw::string_view t_str = "T";
+				DAW_CPP23_STATIC_LOCAL constexpr daw::string_view t_str = "T";
 				auto const date_str = ts.pop_front_until( t_str );
 				if( ts.empty( ) ) {
 					daw_json_error(
@@ -256,7 +256,7 @@ namespace daw::json {
 					              ( c == '.' ) );
 				  } );
 				// TODO: verify or parse timezone
-				time_parts hms = parse_iso_8601_time( time_str );
+				auto hms = parse_iso_8601_time( time_str );
 				if( not( ts.empty( ) or ts.front( ) == 'Z' ) ) {
 					daw_json_ensure( std::size( ts ) == 5 or std::size( ts ) == 6,
 					                 ErrorReason::InvalidTimestamp );
@@ -314,8 +314,8 @@ namespace daw::json {
 			};
 
 			template<typename Clock, typename Duration>
-			constexpr ymdhms time_point_to_civil(
-			  std::chrono::time_point<Clock, Duration> const &tp ) {
+			constexpr ymdhms
+			time_point_to_civil( std::chrono::time_point<Clock, Duration> const tp ) {
 				auto dur_from_epoch = tp.time_since_epoch( );
 				using Days =
 				  std::chrono::duration<std::int_least32_t, std::ratio<86400>>;

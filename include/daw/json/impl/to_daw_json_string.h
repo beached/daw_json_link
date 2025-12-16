@@ -285,13 +285,14 @@ namespace daw::json {
 			  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )
 			[[nodiscard]] static constexpr WritableType
 			  copy_to_iterator( WritableType it, Container const &container ) {
-				constexpr bool restrict_high =
+				using restrict_high = std::bool_constant<
 				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( WritableType::restricted_string_output ==
-				    options::RestrictedStringOutput::OnlyAllow7bitsStrings );
+				    options::RestrictedStringOutput::OnlyAllow7bitsStrings )>;
 				if constexpr( do_escape ) {
 					using iter = DAW_TYPEOF( std::begin( container ) );
 					using it_t = utf8::unchecked::iterator<iter>;
+
 					auto first = it_t( std::begin( container ) );
 					auto const last = it_t( std::end( container ) );
 					while( first != last ) {
@@ -335,7 +336,7 @@ namespace daw::json {
 								                               it );
 								break;
 							}
-							if constexpr( restrict_high ) {
+							if constexpr( restrict_high::value ) {
 								if( cp >= 0x7FU and cp <= 0xFFFFU ) {
 									it = json_details::output_hex(
 									  static_cast<std::uint16_t>( cp ), it );
@@ -356,7 +357,7 @@ namespace daw::json {
 					}
 				} else {
 					for( auto c : container ) {
-						if constexpr( restrict_high ) {
+						if constexpr( restrict_high::value ) {
 							daw_json_ensure( ( static_cast<unsigned char>( c ) >= 0x20U and
 							                   static_cast<unsigned char>( c ) <= 0x7FU ),
 							                 ErrorReason::InvalidStringHighASCII );
@@ -376,10 +377,10 @@ namespace daw::json {
 				if( ptr == nullptr ) {
 					return it;
 				}
-				constexpr bool restrict_high =
+				using restrict_high = std::bool_constant<
 				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( WriteableType::restricted_string_output ==
-				    options::RestrictedStringOutput::OnlyAllow7bitsStrings );
+				    options::RestrictedStringOutput::OnlyAllow7bitsStrings )>;
 
 				if constexpr( do_escape ) {
 					auto chr_it = utf8::unchecked::iterator<char const *>( ptr );
@@ -413,7 +414,7 @@ namespace daw::json {
 								                               it );
 								break;
 							}
-							if constexpr( restrict_high ) {
+							if constexpr( restrict_high::value ) {
 								if( cp >= 0x7FU and cp <= 0xFFFFU ) {
 									it = json_details::output_hex(
 									  static_cast<std::uint16_t>( cp ), it );
@@ -434,7 +435,7 @@ namespace daw::json {
 					}
 				} else {
 					while( *ptr != '\0' ) {
-						if constexpr( restrict_high ) {
+						if constexpr( restrict_high::value ) {
 							daw_json_ensure( ( static_cast<unsigned>( *ptr ) >= 0x20U and
 							                   static_cast<unsigned>( *ptr ) <= 0x7FU ),
 							                 ErrorReason::InvalidStringHighASCII );
@@ -831,7 +832,7 @@ namespace daw::json {
 				  "Value must be convertible to specialized type in "
 				  "json_data_contract" );
 
-				constexpr options::EightBitModes eight_bit_mode =
+				DAW_CPP23_STATIC_LOCAL constexpr options::EightBitModes eight_bit_mode =
 				  JsonMember::eight_bit_mode;
 				it.put( '"' );
 				if( std::size( value ) > 0U ) {
@@ -846,7 +847,7 @@ namespace daw::json {
 			to_json_string_string_escaped( WriteableType it,
 			                               parse_to_t const &value ) {
 
-				constexpr options::EightBitModes eight_bit_mode =
+				DAW_CPP23_STATIC_LOCAL constexpr options::EightBitModes eight_bit_mode =
 				  JsonMember::eight_bit_mode;
 				it.put( '"' );
 				it = utils::copy_to_iterator<true, eight_bit_mode>( it, value );
@@ -1408,7 +1409,7 @@ namespace daw::json {
 						it = member_to_string<dependent_member>(
 						  it, typename base_member_t::switcher{ }( v ) );
 					} else {
-						constexpr auto idx =
+						DAW_CPP23_STATIC_LOCAL constexpr auto idx =
 						  find_names_in_pack_v<dependent_member, NamePack>;
 						it = member_to_string<dependent_member>( it, get<idx>( args ) );
 					}
@@ -1423,8 +1424,9 @@ namespace daw::json {
 			  bool &is_first,
 			  serialization_policy<WriteableType, SerializationOptions> &it,
 			  Tuple const &tp, Value const &, Visited &visited_members ) {
-				constexpr auto json_member_name = daw::string_view(
-				  std::data( JsonMember::name ), std::size( JsonMember::name ) );
+				DAW_CPP23_STATIC_LOCAL constexpr auto json_member_name =
+				  daw::string_view( std::data( JsonMember::name ),
+				                    std::size( JsonMember::name ) );
 				if( daw::algorithm::contains( std::data( visited_members ),
 				                              daw::data_end( visited_members ),
 				                              json_member_name ) ) {

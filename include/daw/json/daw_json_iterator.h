@@ -59,7 +59,6 @@ namespace daw::json {
 		 */
 		template<typename JsonElement, typename ParseState, typename = void>
 		class json_array_iterator_t {
-			using CharT = typename ParseState::CharT;
 
 			static constexpr ParseState get_range( daw::string_view data,
 			                                       daw::string_view member_path ) {
@@ -89,7 +88,7 @@ namespace daw::json {
 			 * This lets us fastpath and just skip n characters as we have already
 			 * parsed them
 			 */
-			mutable CharT *m_can_skip = nullptr;
+			mutable char const *m_can_skip = nullptr;
 
 		public:
 			explicit json_array_iterator_t( ) = default;
@@ -238,7 +237,6 @@ namespace daw::json {
 		class json_array_iterator_once {
 			using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
-			using CharT = typename ParseState::CharT;
 
 			static constexpr ParseState get_range( daw::string_view data,
 			                                       daw::string_view member_path ) {
@@ -375,7 +373,6 @@ namespace daw::json {
 			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using iterator = json_array_iterator<JsonElement, PolicyFlags...>;
-			using CharT = typename ParsePolicy::CharT;
 
 		private:
 			iterator m_first{ };
@@ -417,7 +414,6 @@ namespace daw::json {
 			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using iterator = json_array_iterator_once<JsonElement, PolicyFlags...>;
-			using CharT = typename ParsePolicy::CharT;
 
 		private:
 			iterator m_first{ };

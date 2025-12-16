@@ -8,12 +8,13 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
+#include "daw/json/impl/daw_json_assert.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_not_null.h>
 
 #include <cstdlib>
 #include <limits>
@@ -33,7 +34,8 @@ namespace daw::json {
 			/// via ADL
 			template<typename Real>
 			DAW_ATTRIB_NOINLINE DAW_ATTRIB_NONNULL( ) [[nodiscard]] Real
-			  parse_with_strtod( char const *first, char const *last ) {
+			  parse_with_strtod( daw::not_null<char const *> first,
+			                     daw::not_null<char const *> last ) {
 				static_assert( std::is_floating_point_v<Real>,
 				               "Unexpected type passed to parse_with_strtod" );
 #if defined( DAW_JSON_USE_STRTOD )

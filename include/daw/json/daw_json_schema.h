@@ -8,14 +8,18 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
+
+#include "daw/json/daw_json_link_types.h"
+#include "daw/json/daw_to_json_fwd.h"
+#include "daw/json/impl/daw_json_serialize_policy.h"
+#include "daw/json/impl/to_daw_json_string.h"
 
 #include <daw/daw_utility.h>
 
-#include "daw_json_link_types.h"
-#include "daw_to_json_fwd.h"
-#include "impl/daw_json_serialize_policy.h"
-#include "impl/to_daw_json_string.h"
+#include <cstddef>
+#include <string_view>
+#include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -513,7 +517,7 @@ namespace daw::json {
 								is_first = false;
 							}
 							out_it.next_member( );
-							constexpr std::size_t index = Idx.value;
+							DAW_CPP23_STATIC_LOCAL constexpr std::size_t index = Idx.value;
 							using pack_element = tuple_elements_pack<Tuple>;
 							using JsonMember = json_deduced_type<
 							  typename pack_element::template element_t<index>>;
@@ -524,7 +528,7 @@ namespace daw::json {
 
 						daw::empty_t expander[] = {
 						  ( process_member( daw::constant_v<Is> ), daw::empty_t{ } )...,
-						  daw::empty_t{} };
+						  daw::empty_t{ } };
 						(void)expander;
 						out_it.del_indent( );
 						out_it.next_member( );

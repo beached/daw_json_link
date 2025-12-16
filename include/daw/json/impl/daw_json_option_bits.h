@@ -136,7 +136,8 @@ namespace daw::json {
 				static_assert( is_option_flag<Option>,
 				               "Only registered policy types are allowed" );
 				auto new_bits = static_cast<unsigned>( e );
-				constexpr unsigned mask = (1U << json_option_bits_width<Option>)-1U;
+				DAW_CPP23_STATIC_LOCAL constexpr unsigned mask =
+				  (1U << json_option_bits_width<Option>)-1U;
 				new_bits &= mask;
 				new_bits <<=
 				  JsonOptionList<OptionList...>::template option_bits_start<Option>;
@@ -152,7 +153,8 @@ namespace daw::json {
 				               "Only registered policy types are allowed" );
 
 				auto new_bits = static_cast<unsigned>( pol );
-				constexpr unsigned mask = ( (1U << json_option_bits_width<Option>)-1U );
+				DAW_CPP23_STATIC_LOCAL constexpr unsigned mask =
+				  ( (1U << json_option_bits_width<Option>)-1U );
 				new_bits &= mask;
 				new_bits <<=
 				  JsonOptionList<OptionList...>::template option_bits_start<Option>;
@@ -183,7 +185,7 @@ namespace daw::json {
 				               "Underlying type should be unsigned" );
 				static_assert( is_option_flag<Option>,
 				               "Only registered option types are allowed" );
-				constexpr unsigned mask =
+				DAW_CPP23_STATIC_LOCAL constexpr unsigned mask =
 				  ( 1U << (JsonOptionList<OptionList...>::template option_bits_start<
 				             Option> +
 				           json_option_bits_width<Option>)) -

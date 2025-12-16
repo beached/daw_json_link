@@ -38,14 +38,14 @@ namespace daw::json {
 				static constexpr void write( T *&ptr, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 					daw_json_ensure( ptr, daw::json::ErrorReason::OutputError );
-					constexpr auto writer = []( T *&p,
-					                            auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
-						if( sv.empty( ) ) {
-							return 0;
-						}
-						p = writeable_output_details::copy_to_buffer( p, sv );
-						return 1;
-					};
+					DAW_CPP23_STATIC_LOCAL constexpr auto writer =
+					  []( T *&p, auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
+						  if( sv.empty( ) ) {
+							  return 0;
+						  }
+						  p = writeable_output_details::copy_to_buffer( p, sv );
+						  return 1;
+					  };
 					( (void)writer( ptr, svs ), ... );
 				}
 
@@ -70,15 +70,15 @@ namespace daw::json {
 					static_assert( sizeof...( StringViews ) > 0 );
 					daw_json_ensure( out.size( ) >= ( std::size( svs ) + ... ),
 					                 daw::json::ErrorReason::OutputError );
-					constexpr auto writer = []( T &s,
-					                            auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
-						if( sv.empty( ) ) {
-							return 0;
-						}
-						(void)writeable_output_details::copy_to_buffer( s.data( ), sv );
-						s = s.subspan( sv.size( ) );
-						return 1;
-					};
+					DAW_CPP23_STATIC_LOCAL constexpr auto writer =
+					  []( T &s, auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
+						  if( sv.empty( ) ) {
+							  return 0;
+						  }
+						  (void)writeable_output_details::copy_to_buffer( s.data( ), sv );
+						  s = s.subspan( sv.size( ) );
+						  return 1;
+					  };
 					( (void)writer( out, svs ), ... );
 				}
 
@@ -107,14 +107,14 @@ namespace daw::json {
 					auto const total_size = ( std::size( svs ) + ... );
 					out.resize( start_pos + total_size );
 
-					constexpr auto writer = []( CharT *&p,
-					                            auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
-						if( sv.empty( ) ) {
-							return 0;
-						}
-						p = writeable_output_details::copy_to_buffer( p, sv );
-						return 1;
-					};
+					DAW_CPP23_STATIC_LOCAL constexpr auto writer =
+					  []( CharT *&p, auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
+						  if( sv.empty( ) ) {
+							  return 0;
+						  }
+						  p = writeable_output_details::copy_to_buffer( p, sv );
+						  return 1;
+					  };
 					auto *ptr = out.data( ) + start_pos;
 					( (void)writer( ptr, svs ), ... );
 				}
@@ -135,14 +135,14 @@ namespace daw::json {
 				static constexpr void write( T &it, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
 
-					constexpr auto writer = []( T &i, auto sv )
-					                          DAW_JSON_CPP23_STATIC_CALL_OP {
-						                          for( char c : daw::string_view( sv ) ) {
-							                          *i = c;
-							                          ++i;
-						                          }
-						                          return 0;
-					                          };
+					DAW_CPP23_STATIC_LOCAL constexpr auto writer =
+					  []( T &i, auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
+						  for( char c : daw::string_view( sv ) ) {
+							  *i = c;
+							  ++i;
+						  }
+						  return 0;
+					  };
 					( (void)writer( it, svs ), ... );
 				}
 

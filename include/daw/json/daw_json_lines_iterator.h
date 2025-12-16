@@ -38,7 +38,6 @@ namespace daw::json {
 		class json_lines_iterator {
 			using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
-			using CharT = typename ParseState::CharT;
 
 		public:
 			using element_type = json_details::json_deduced_type<JsonElement>;
@@ -57,7 +56,7 @@ namespace daw::json {
 			 * This lets us fastpath and just skip n characters as we have already
 			 * parsed them
 			 */
-			mutable CharT *m_can_skip = nullptr;
+			mutable char const *m_can_skip = nullptr;
 
 		public:
 			explicit json_lines_iterator( ) = default;
@@ -168,7 +167,6 @@ namespace daw::json {
 			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using iterator = json_lines_iterator<JsonElement, PolicyFlags...>;
-			using CharT = typename ParsePolicy::CharT;
 
 		private:
 			iterator m_first{ };

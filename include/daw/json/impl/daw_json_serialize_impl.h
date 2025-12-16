@@ -101,7 +101,7 @@ namespace daw::json {
 				it.put( '{' );
 				it.add_indent( );
 
-				constexpr auto visit_size =
+				DAW_CPP23_STATIC_LOCAL constexpr auto visit_size =
 				  sizeof...( JsonMembers ) +
 				  ( static_cast<std::size_t>( has_dependent_member_v<JsonMembers> ) +
 				    ... + 0 );
@@ -124,7 +124,7 @@ namespace daw::json {
 					      daw::traits::nth_element<Is, JsonMembers...>,
 					      Names>( is_first, it, args, value, visited_members ),
 					    daw::empty_t{ } )...,
-					  daw::empty_t{} };
+					  daw::empty_t{ } };
 					(void)expander;
 				}
 
@@ -134,7 +134,7 @@ namespace daw::json {
 					  ( to_json_str<Is, daw::traits::nth_element<Is, JsonMembers...>>(
 					      is_first, it, args, value, visited_members ),
 					    daw::empty_t{ } )...,
-					  daw::empty_t{} };
+					  daw::empty_t{ } };
 					(void)expander;
 				}
 				it.del_indent( );
@@ -170,7 +170,7 @@ namespace daw::json {
 					                        daw::traits::nth_element<Is, JsonMembers...>>(
 					      array_idx, sizeof...( Is ), it, args ),
 					    daw::empty_t{ } )...,
-					  daw::empty_t{} };
+					  daw::empty_t{ } };
 					(void)expander;
 				}
 				it.del_indent( );

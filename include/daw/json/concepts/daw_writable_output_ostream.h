@@ -31,16 +31,16 @@ namespace daw::json {
 				template<typename... StringViews>
 				static void write( std::ostream &os, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
-					constexpr auto writer = []( std::ostream &o,
-					                            auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
-						if( sv.empty( ) ) {
-							return 0;
-						}
-						o.write( sv.data( ), static_cast<std::streamsize>( sv.size( ) ) );
-						daw_json_ensure( static_cast<bool>( o ),
-						                 daw::json::ErrorReason::OutputError );
-						return 1;
-					};
+					DAW_CPP23_STATIC_LOCAL constexpr auto writer =
+					  []( std::ostream &o, auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
+						  if( sv.empty( ) ) {
+							  return 0;
+						  }
+						  o.write( sv.data( ), static_cast<std::streamsize>( sv.size( ) ) );
+						  daw_json_ensure( static_cast<bool>( o ),
+						                   daw::json::ErrorReason::OutputError );
+						  return 1;
+					  };
 					( (void)writer( os, svs ), ... );
 				}
 

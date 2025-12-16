@@ -151,10 +151,10 @@ namespace daw::json {
 
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
-			         typename ParseState, std::size_t N, typename CharT, bool B>
+			         typename ParseState, std::size_t N, bool B>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result_t<JsonMember>
 			parse_class_member( ParseState &parse_state,
-			                    locations_info_t<N, CharT, B> &locations ) {
+			                    locations_info_t<N, B> &locations ) {
 				parse_state.move_next_member_or_end( );
 
 				daw_json_assert_weak( not parse_state.empty( ) and

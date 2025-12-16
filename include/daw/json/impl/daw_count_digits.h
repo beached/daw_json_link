@@ -32,7 +32,7 @@ namespace daw::json {
 
 			template<typename Predicate>
 			DAW_ATTRIB_FLATINLINE DAW_ATTRIB_NONNULL( ) constexpr std::int32_t
-			  count_4digits( char const *first, Predicate pred ) {
+			  count_4digits( daw::not_null<char const *> first, Predicate pred ) {
 				daw::simple_array<daw::UInt8, 4> const buff{ pred( first[3] ),
 				                                             pred( first[2] ),
 				                                             pred( first[2] ),
@@ -48,7 +48,7 @@ namespace daw::json {
 
 			template<typename Predicate>
 			DAW_ATTRIB_FLATINLINE DAW_ATTRIB_NONNULL( ) constexpr std::int32_t
-			  count_8digits( char const *first, Predicate pred ) {
+			  count_8digits( daw::not_null<char const *> first, Predicate pred ) {
 				daw::simple_array<daw::UInt8, 8> const buff{ pred( first[7] ),
 				                                             pred( first[6] ),
 				                                             pred( first[5] ),
@@ -67,10 +67,10 @@ namespace daw::json {
 				return -1;
 			}
 
-			template<typename CharT>
-			DAW_ATTRIB_FLATTEN DAW_ATTRIB_RET_NONNULL
-			DAW_ATTRIB_NONNULL( ) constexpr CharT *count_digits( CharT *first,
-			                                                     CharT *last ) {
+			DAW_ATTRIB_FLATTEN
+			constexpr daw::not_null<char const *>
+			count_digits( daw::not_null<char const *> first,
+			              daw::not_null<char const *> last ) {
 				while( DAW_LIKELY( last - first >= 8 ) ) {
 					auto const v = count_8digits( first, is_digit );
 					if( v >= 0 ) {

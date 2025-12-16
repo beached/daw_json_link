@@ -23,10 +23,10 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<char c, typename ExecTag, typename CharT>
-			DAW_ATTRIB_FLATINLINE static constexpr daw::not_null<CharT *>
-			memchr_unchecked_long( daw::not_null<CharT *> first,
-			                       daw::not_null<CharT *> last ) {
+			template<char c, typename ExecTag>
+			DAW_ATTRIB_FLATINLINE static constexpr daw::not_null<char const *>
+			memchr_unchecked_long( daw::not_null<char const *> first,
+			                       daw::not_null<char const *> last ) {
 #if not defined( NDEBUG )
 				daw_json_ensure( first <= last, ErrorReason::Unknown );
 #endif
@@ -35,7 +35,7 @@ namespace daw::json {
 				  first, '"', static_cast<std::size_t>( last - first ) );
 #else
 				if( not json_details::use_constexpr_exec_mode<ExecTag>( ) ) {
-					return static_cast<CharT *>(
+					return static_cast<char const *>(
 					  std::memchr( static_cast<void const *>( first ),
 					               '"',
 					               static_cast<std::size_t>( last - first ) ) );
@@ -48,9 +48,9 @@ namespace daw::json {
 #endif
 			}
 
-			template<char c, typename CharT>
-			DAW_ATTRIB_FLATINLINE static constexpr daw::not_null<CharT *>
-			memchr_unchecked_short( daw::not_null<CharT *> first ) {
+			template<char c>
+			DAW_ATTRIB_FLATINLINE static constexpr daw::not_null<char const *>
+			memchr_unchecked_short( daw::not_null<char const *> first ) {
 				while( *first != c ) {
 					++first;
 				}
@@ -61,15 +61,14 @@ namespace daw::json {
 			/// \tparam c character to find in string
 			/// \tparam ExecTag The current execution policy
 			/// \tparam expect_long Use methods optimized for longer strings
-			/// \tparam CharT character type in string
 			/// \param first Iterator to the start of string
 			/// \param last Iterator at one past end of string
-			/// \return CharT * with position of first after search
+			/// \return char const * with position of first after search
 			/// \pre first can be read from(not null)
-			template<char c, typename ExecTag, bool expect_long, typename CharT>
-			DAW_ATTRIB_FLATINLINE static constexpr daw::not_null<CharT *>
-			memchr_unchecked( daw::not_null<CharT *> first,
-			                  daw::not_null<CharT *> last ) {
+			template<char c, typename ExecTag, bool expect_long>
+			DAW_ATTRIB_FLATINLINE static constexpr daw::not_null<char const *>
+			memchr_unchecked( daw::not_null<char const *> first,
+			                  daw::not_null<char const *> last ) {
 #if not defined( NDEBUG )
 				daw_json_ensure( first <= last, ErrorReason::Unknown );
 #endif
@@ -80,10 +79,10 @@ namespace daw::json {
 				}
 			}
 
-			template<char c, typename ExecTag, typename CharT>
-			DAW_ATTRIB_FLATINLINE static constexpr daw::not_null<CharT *>
-			memchr_checked_long( daw::not_null<CharT *> first,
-			                     daw::not_null<CharT *> last ) {
+			template<char c, typename ExecTag>
+			DAW_ATTRIB_FLATINLINE static constexpr daw::not_null<char const *>
+			memchr_checked_long( daw::not_null<char const *> first,
+			                     daw::not_null<char const *> last ) {
 #if not defined( NDEBUG )
 				daw_json_ensure( first <= last, ErrorReason::Unknown );
 #endif
@@ -91,11 +90,11 @@ namespace daw::json {
 				return __builtin_char_memchr(
 				  first, '"', static_cast<std::size_t>( last - first ) );
 #elif DAW_HAS_BUILTIN( __builtin_memchr )
-				return static_cast<CharT *>( __builtin_memchr(
+				return static_cast<char const *>( __builtin_memchr(
 				  first, '"', static_cast<std::size_t>( last - first ) ) );
 #else
 				if( not json_details::use_constexpr_exec_mode<ExecTag>( ) ) {
-					return static_cast<CharT *>(
+					return static_cast<char const *>(
 					  std::memchr( static_cast<void const *>( first ),
 					               '"',
 					               static_cast<std::size_t>( last - first ) ) );
@@ -107,10 +106,10 @@ namespace daw::json {
 #endif
 			}
 
-			template<char c, typename CharT>
-			DAW_ATTRIB_INLINE static constexpr daw::not_null<CharT *>
-			memchr_checked_short( daw::not_null<CharT *> first,
-			                      daw::not_null<CharT *> last ) {
+			template<char c>
+			DAW_ATTRIB_INLINE static constexpr daw::not_null<char const *>
+			memchr_checked_short( daw::not_null<char const *> first,
+			                      daw::not_null<char const *> const last ) {
 #if not defined( NDEBUG )
 				daw_json_ensure( first <= last, ErrorReason::Unknown );
 #endif
@@ -124,15 +123,14 @@ namespace daw::json {
 			/// \tparam c character to find in string
 			/// \tparam ExecTag The current execution policy
 			/// \tparam expect_long Use methods optimized for longer strings
-			/// \tparam CharT character type in string
 			/// \param first Iterator to the start of string
 			/// \param last Iterator at one past end of string
-			/// \return CharT * with position of first after search
+			/// \return char const * with position of first after search
 			/// \pre first can be read from(not null)
-			template<char c, typename ExecTag, bool expect_long, typename CharT>
-			DAW_ATTRIB_FLATINLINE static constexpr daw::not_null<CharT *>
-			memchr_checked( daw::not_null<CharT *> first,
-			                daw::not_null<CharT *> last ) {
+			template<char c, typename ExecTag, bool expect_long>
+			DAW_ATTRIB_FLATINLINE static constexpr daw::not_null<char const *>
+			memchr_checked( daw::not_null<char const *> first,
+			                daw::not_null<char const *> last ) {
 				if constexpr( expect_long ) {
 					return memchr_checked_long<c, ExecTag>( first, last );
 				} else {
@@ -140,17 +138,17 @@ namespace daw::json {
 				}
 			}
 
-			template<typename ExecTag, char... chars, typename CharT>
-			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<CharT *>
-			mempbrk_unchecked_long( daw::not_null<CharT *> first ) {
+			template<typename ExecTag, char... chars>
+			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<char const *>
+			mempbrk_unchecked_long( daw::not_null<char const *> first ) {
 #if DAW_HAS_BUILTIN( __builtin_strpbrk )
 				constexpr char const needles[]{ chars..., '\0' };
-				daw::not_null<CharT *> res = __builtin_strpbrk( first, needles );
+				daw::not_null<char const *> res = __builtin_strpbrk( first, needles );
 				return res;
 #else
 				if( not json_details::use_constexpr_exec_mode<ExecTag>( ) ) {
 					constexpr char const needles[]{ chars..., '\0' };
-					CharT *res = std::strpbrk( first, needles );
+					char const *res = std::strpbrk( first, needles );
 #if not defined( NDEBUG )
 					daw_json_ensure( res != nullptr, ErrorReason::UnexpectedEndOfData );
 #endif
@@ -163,19 +161,18 @@ namespace daw::json {
 #endif
 			}
 
-			template<char... chars, typename CharT>
-			DAW_ATTRIB_INLINE constexpr daw::not_null<CharT *>
-			mempbrk_unchecked_short( daw::not_null<CharT *> first ) {
+			template<char... chars>
+			DAW_ATTRIB_INLINE constexpr daw::not_null<char const *>
+			mempbrk_unchecked_short( daw::not_null<char const *> first ) {
 				while( not parse_policy_details::in<chars...>( *first ) ) {
 					++first;
 				}
 				return first;
 			}
 
-			template<typename ExecTag, bool expect_long, char... chars,
-			         typename CharT>
-			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<CharT *>
-			mempbrk_unchecked( daw::not_null<CharT *> first ) {
+			template<typename ExecTag, bool expect_long, char... chars>
+			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<char const *>
+			mempbrk_unchecked( daw::not_null<char const *> first ) {
 				if constexpr( expect_long ) {
 					return mempbrk_unchecked_long<ExecTag, chars...>( first );
 				} else {
@@ -183,10 +180,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename ExecTag, char... chars, typename CharT>
-			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<CharT *>
-			mempbrk_checked_long( daw::not_null<CharT *> first,
-			                      daw::not_null<CharT *> last ) {
+			template<typename ExecTag, char... chars>
+			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<char const *>
+			mempbrk_checked_long( daw::not_null<char const *> first,
+			                      daw::not_null<char const *> last ) {
 #if not defined( NDEBUG )
 				daw_json_ensure( first <= last, ErrorReason::Unknown );
 #endif
@@ -201,10 +198,10 @@ namespace daw::json {
 				return first;
 			}
 
-			template<char... chars, typename CharT>
-			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<CharT *>
-			mempbrk_checked_short( daw::not_null<CharT *> first,
-			                       daw::not_null<CharT *> last ) {
+			template<char... chars>
+			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<char const *>
+			mempbrk_checked_short( daw::not_null<char const *> first,
+			                       daw::not_null<char const *> last ) {
 #if not defined( NDEBUG )
 				daw_json_ensure( first <= last, ErrorReason::Unknown );
 #endif
@@ -215,11 +212,10 @@ namespace daw::json {
 				return first;
 			}
 
-			template<typename ExecTag, bool expect_long, char... chars,
-			         typename CharT>
-			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<CharT *>
-			mempbrk_checked( daw::not_null<CharT *> first,
-			                 daw::not_null<CharT *> last ) {
+			template<typename ExecTag, bool expect_long, char... chars>
+			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<char const *>
+			mempbrk_checked( daw::not_null<char const *> first,
+			                 daw::not_null<char const *> last ) {
 				if constexpr( expect_long ) {
 					return mempbrk_checked_long<ExecTag, chars...>( first, last );
 				} else {
@@ -228,9 +224,10 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename ExecTag, bool expect_long,
-			         char... chars, typename CharT>
-			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<CharT *>
-			mempbrk( daw::not_null<CharT *> first, daw::not_null<CharT *> last ) {
+			         char... chars>
+			DAW_ATTRIB_FLATINLINE constexpr daw::not_null<char const *>
+			mempbrk( daw::not_null<char const *> first,
+			         daw::not_null<char const *> last ) {
 
 				if constexpr( is_unchecked_input ) {
 					return mempbrk_unchecked<ExecTag, expect_long, chars...>( first );

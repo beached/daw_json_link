@@ -8,17 +8,18 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
 #include "daw/json/daw_json_switches.h"
-#include "daw_json_assert.h"
-#include "daw_json_parse_common.h"
-#include "daw_not_const_ex_functions.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_common.h"
+#include "daw/json/impl/daw_not_const_ex_functions.h"
 
 #include <daw/algorithms/daw_algorithm_copy.h>
 #include <daw/algorithms/daw_algorithm_copy_n.h>
 #include <daw/daw_data_end.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
 
 #include <cstddef>
 #include <daw/stdinc/data_access.h>
@@ -57,15 +58,16 @@ namespace daw::json {
 			template<typename ParseState>
 			[[nodiscard]] static constexpr daw::not_null<char *>
 			decode_utf16( ParseState &parse_state, daw::not_null<char *> it ) {
-				constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
 				daw_json_assert_weak( parse_state.size( ) >= 5,
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
-				daw::not_null<char const *> first = parse_state.first;
+				auto first = daw::not_null<char const *>( parse_state.first );
 				++first;
-				UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) )
-				            << 8U;
-				cp |= byte_from_nibbles<is_unchecked_input>( first );
+				UInt32 cp =
+				  to_uint32(
+				    byte_from_nibbles<ParseState::is_unchecked_input>( first ) )
+				  << 8U;
+				cp |= byte_from_nibbles<ParseState::is_unchecked_input>( first );
 				if( cp <= 0x7FU ) {
 					*it++ = static_cast<char>( static_cast<unsigned char>( cp ) );
 					parse_state.first = first;
@@ -82,8 +84,11 @@ namespace daw::json {
 					  parse_state ); // Expected parse_state to start with a \\u
 					++first;
 					auto trailing =
-					  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
-					trailing |= byte_from_nibbles<is_unchecked_input>( first );
+					  to_uint32(
+					    byte_from_nibbles<ParseState::is_unchecked_input>( first ) )
+					  << 8U;
+					trailing |=
+					  byte_from_nibbles<ParseState::is_unchecked_input>( first );
 					trailing -= 0xDC00U;
 					cp += trailing;
 					cp += 0x10000;
@@ -131,12 +136,13 @@ namespace daw::json {
 			template<typename ParseState, typename Appender>
 			static constexpr void decode_utf16( ParseState &parse_state,
 			                                    Appender &app ) {
-				constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
-				daw::not_null<char const *> first = parse_state.first;
+				auto first = daw::not_null<char const *>( parse_state.first );
 				++first;
-				UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) )
-				            << 8U;
-				cp |= byte_from_nibbles<is_unchecked_input>( first );
+				UInt32 cp =
+				  to_uint32(
+				    byte_from_nibbles<ParseState::is_unchecked_input>( first ) )
+				  << 8U;
+				cp |= byte_from_nibbles<ParseState::is_unchecked_input>( first );
 				if( cp <= 0x7FU ) {
 					app( u32toC( cp ) );
 					parse_state.first = first;
@@ -149,8 +155,11 @@ namespace daw::json {
 					  *first == 'u', ErrorReason::InvalidUTFEscape, parse_state );
 					++first;
 					auto trailing =
-					  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
-					trailing |= byte_from_nibbles<is_unchecked_input>( first );
+					  to_uint32(
+					    byte_from_nibbles<ParseState::is_unchecked_input>( first ) )
+					  << 8U;
+					trailing |=
+					  byte_from_nibbles<ParseState::is_unchecked_input>( first );
 					trailing -= 0xDC00U;
 					cp += trailing;
 					cp += 0x10000;
@@ -193,7 +202,7 @@ namespace daw::json {
 			}
 
 			namespace parse_tokens {
-				inline constexpr char const escape_quotes[] = "\\\"";
+				inline constexpr char escape_quotes[] = "\\\"";
 			}
 
 			// Fast path for parsing escaped strings to a std::string with the default
@@ -223,7 +232,7 @@ namespace daw::json {
 					       .output;
 					parse_state.first += first_slash;
 				}
-				constexpr auto in_json_string =
+				DAW_CPP23_STATIC_LOCAL constexpr auto in_json_string =
 				  []( auto const &r ) DAW_JSON_CPP23_STATIC_CALL_OP -> bool {
 					if constexpr( not ParseState::is_unchecked_input ) {
 						if( not DAW_LIKELY( r.has_more( ) ) ) {

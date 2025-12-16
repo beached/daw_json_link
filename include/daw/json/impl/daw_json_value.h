@@ -336,7 +336,6 @@ namespace daw::json {
 		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_value_iterator_range {
 			using iterator = basic_json_value_iterator<PolicyFlags, Allocator>;
-			using CharT = typename BasicParsePolicy<PolicyFlags, Allocator>::CharT;
 			iterator first;
 			iterator last;
 
@@ -362,7 +361,6 @@ namespace daw::json {
 			using ParseState =
 			  TryDefaultParsePolicy<BasicParsePolicy<PolicyFlags, Allocator>>;
 			ParseState m_parse_state{ };
-			using CharT = typename ParseState::CharT;
 			using iterator = basic_json_value_iterator<PolicyFlags, Allocator>;
 			using value_type = basic_json_pair<PolicyFlags, Allocator>;
 			using size_type = std::size_t;
@@ -385,14 +383,14 @@ namespace daw::json {
 				m_parse_state.trim_left( );
 			}
 
-			/// @brief Construct from CharT *, std::size_t
-			explicit constexpr basic_json_value( CharT *first, std::size_t sz )
+			/// @brief Construct from char const *, std::size_t
+			explicit constexpr basic_json_value( char const *first, std::size_t sz )
 			  : m_parse_state( first, first + static_cast<std::ptrdiff_t>( sz ) ) {
 				m_parse_state.trim_left( );
 			}
 
-			/// @brief Construct from CharT *, CharT *
-			explicit constexpr basic_json_value( CharT *first, CharT *last )
+			/// @brief Construct from char const *, char const *
+			explicit constexpr basic_json_value( char const *first, char const *last )
 			  : m_parse_state( first, last ) {
 				m_parse_state.trim_left( );
 			}

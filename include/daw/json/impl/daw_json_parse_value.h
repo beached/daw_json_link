@@ -855,7 +855,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename ParseState>
-			static constexpr auto find_index( ParseState const &parse_state ) {
+			[[nodiscard]] constexpr auto find_index( ParseState const &parse_state ) {
 				using tag_member = typename JsonMember::tag_member;
 				using class_wrapper_t = typename JsonMember::tag_member_class_wrapper;
 
@@ -885,7 +885,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] static constexpr json_result_t<JsonMember>
+			[[nodiscard]] constexpr json_result_t<JsonMember>
 			parse_value_variant_tagged( ParseState &parse_state ) {
 				auto const index = find_index<JsonMember>( parse_state );
 				return parse_visit<json_result_t<JsonMember>,
@@ -894,7 +894,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] static constexpr json_result_t<JsonMember>
+			[[nodiscard]] constexpr json_result_t<JsonMember>
 			parse_value_variant_intrusive( ParseState &parse_state ) {
 				auto const index = [&] {
 					using tag_submember = typename JsonMember::tag_submember;

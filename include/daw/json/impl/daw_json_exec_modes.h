@@ -8,8 +8,10 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
+#include "daw/json/daw_json_switches.h"
 
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_is_constant_evaluated.h>
 
 #include <string_view>

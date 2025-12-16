@@ -8,15 +8,16 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_json_parse_common.h"
-#include "daw_json_parse_policy_policy_details.h"
-#include "daw_not_const_ex_functions.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_common.h"
+#include "daw/json/impl/daw_json_parse_policy_policy_details.h"
+#include "daw/json/impl/daw_not_const_ex_functions.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_traits.h>
 
 #include <cstddef>
@@ -108,17 +109,20 @@ namespace daw::json {
 			template<char PrimLeft, typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
-				constexpr char PrimRight = PrimLeft == '{' ? '}' : ']';
-				constexpr char SecLeft = PrimLeft == '{' ? '[' : '{';
-				constexpr char SecRight = SecLeft == '{' ? '}' : ']';
-				using CharT = typename ParseState::CharT;
+				DAW_CPP23_STATIC_LOCAL constexpr char PrimRight =
+				  PrimLeft == '{' ? '}' : ']';
+				DAW_CPP23_STATIC_LOCAL constexpr char SecLeft =
+				  PrimLeft == '{' ? '[' : '{';
+				DAW_CPP23_STATIC_LOCAL constexpr char SecRight =
+				  SecLeft == '{' ? '}' : ']';
+
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				auto ptr_first = daw::not_null<CharT *>( parse_state.first );
-				auto const ptr_last = daw::not_null<CharT *>( parse_state.last );
+				auto ptr_first = daw::not_null<char const *>( parse_state.first );
+				auto const ptr_last = daw::not_null<char const *>( parse_state.last );
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
 				}
@@ -197,16 +201,21 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
-				constexpr char PrimRight = PrimLeft == '{' ? '}' : ']';
-				constexpr char SecLeft = PrimLeft == '{' ? '[' : '{';
-				constexpr char SecRight = SecLeft == '{' ? '}' : ']';
-				using CharT = typename ParseState::CharT;
+				DAW_CPP23_STATIC_LOCAL constexpr char PrimRight =
+				  PrimLeft == '{' ? '}' : ']';
+				DAW_CPP23_STATIC_LOCAL constexpr char SecLeft =
+				  PrimLeft == '{' ? '[' : '{';
+				DAW_CPP23_STATIC_LOCAL constexpr char SecRight =
+				  SecLeft == '{' ? '}' : ']';
+
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				auto ptr_first = daw::not_null<CharT *>( parse_state.first );
-				auto const ptr_last = daw::not_null<CharT *>( parse_state.last );
+				auto ptr_first =
+				  daw::not_null<char const *>( daw::never_null, parse_state.first );
+				auto const ptr_last =
+				  daw::not_null<char const *>( daw::never_null, parse_state.last );
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}

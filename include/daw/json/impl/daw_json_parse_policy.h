@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
 #include "daw/json/impl/daw_json_allocator_wrapper.h"
 #include "daw/json/impl/daw_json_assert.h"
@@ -57,8 +57,7 @@ namespace daw::json {
 				return PolicyFlags;
 			}
 
-			using CharT = char const;
-			using iterator = CharT *;
+			using iterator = char const *;
 
 			/***
 			 * see options::CheckedParseMode
@@ -307,6 +306,7 @@ namespace daw::json {
 			}
 
 			template<std::size_t N>
+			DAW_ATTRIB_NONNULL( )
 			constexpr bool starts_with( char const ( &rhs )[N] ) const {
 				static_assert( N > 0 );
 				if( size( ) < ( N - 1 ) ) {
@@ -385,8 +385,8 @@ namespace daw::json {
 			}
 
 			struct class_pos_t {
-				CharT *f;
-				CharT *l;
+				char const *f;
+				char const *l;
 			};
 
 			constexpr void set_class_position( class_pos_t new_pos ) {

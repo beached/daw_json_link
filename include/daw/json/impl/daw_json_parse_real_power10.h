@@ -60,8 +60,8 @@ namespace daw::json {
 			  std::numeric_limits<double>::max_exponent10;
 
 			template<typename T>
-			DAW_ATTRIB_INLINE constexpr T const &Min( T const &l,
-			                                          T const &r ) noexcept {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T const &
+			Min( T const &l, T const &r ) noexcept {
 				if( l <= r ) {
 					return l;
 				}
@@ -75,12 +75,12 @@ namespace daw::json {
 			    : max_dbl_exp;
 
 			template<typename Result, typename Unsigned>
-			DAW_ATTRIB_FLATINLINE constexpr Result power10_constexpr( Result result,
-			                                                          Unsigned p ) {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr Result
+			power10_constexpr( Result result, Unsigned p ) {
 				// We only have a double table, of which float is a subset.  Long double
 				// will be calculated in terms of that
 
-				constexpr auto max_v =
+				DAW_CPP23_STATIC_LOCAL constexpr auto max_v =
 				  static_cast<Result>( dpow10_tbl[max_exp<Result>] );
 
 				if( DAW_UNLIKELY( p > max_exp<Result> ) ) {
@@ -128,8 +128,8 @@ namespace daw::json {
 			}
 
 			template<typename Result, typename Unsigned>
-			DAW_ATTRIB_FLATINLINE constexpr Result power10_runtime( Result result,
-			                                                        Unsigned p ) {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr Result
+			power10_runtime( Result result, Unsigned p ) {
 				if constexpr( std::is_same_v<Result, double> or
 				              std::is_same_v<Result, float> ) {
 					return power10_constexpr( result, static_cast<std::int32_t>( p ) );
@@ -141,8 +141,8 @@ namespace daw::json {
 			}
 
 			template<typename Result, typename ExecTag, typename Unsigned>
-			DAW_ATTRIB_FLATINLINE constexpr Result power10( ExecTag, Result result,
-			                                                Unsigned p ) {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr Result
+			power10( ExecTag, Result result, Unsigned p ) {
 				if( use_constexpr_exec_mode<ExecTag>( ) ) {
 					return power10_constexpr<Result>( result, p );
 				}

@@ -16,6 +16,7 @@
 #include "daw/json/impl/daw_json_value.h"
 
 #include <daw/daw_data_end.h>
+#include <daw/daw_not_null.h>
 #include <daw/traits/daw_traits_conditional.h>
 
 #include <daw/stdinc/data_access.h>
