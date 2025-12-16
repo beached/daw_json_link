@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_not_const_ex_functions.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_not_const_ex_functions.h"
 
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
@@ -153,7 +153,8 @@ namespace daw::json {
 						    first, last, need_slow_path );
 					} else {
 						if constexpr( not ParseState::exclude_special_escapes ) {
-							if( auto const l = daw::not_null<char const *>( parse_state.last );
+							if( auto const l =
+							      daw::not_null<char const *>( parse_state.last );
 							    l - first >= 8 ) {
 								skip_to_first8( first, l );
 							} else if( last - first >= 4 ) {

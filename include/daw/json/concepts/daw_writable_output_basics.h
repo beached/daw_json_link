@@ -10,10 +10,10 @@
 
 #include <daw/json/impl/version.h>
 
+#include "daw/json/concepts/daw_writable_output_fwd.h"
+#include "daw/json/concepts/impl/daw_writable_output_details.h"
 #include "daw/json/daw_json_switches.h"
 #include "daw/json/impl/daw_json_assert.h"
-#include "daw_writable_output_fwd.h"
-#include "impl/daw_writable_output_details.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_character_traits.h>

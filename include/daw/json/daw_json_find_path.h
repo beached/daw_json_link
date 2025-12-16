@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_event_parser.h"
-#include "daw_json_link_types.h"
-#include "impl/daw_json_assert.h"
+#include "daw/json/daw_json_event_parser.h"
+#include "daw/json/daw_json_link_types.h"
+#include "daw/json/impl/daw_json_assert.h"
 
 #include <daw/algorithms/daw_algorithm_accumulate.h>
 #include <daw/algorithms/daw_algorithm_find.h>
