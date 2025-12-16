@@ -20,6 +20,7 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_callable.h>
+#include <daw/daw_constant.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_enable_requires.h>
@@ -832,11 +833,10 @@ namespace daw::json {
 				  "Value must be convertible to specialized type in "
 				  "json_data_contract" );
 
-				DAW_CPP23_STATIC_LOCAL constexpr options::EightBitModes eight_bit_mode =
-				  JsonMember::eight_bit_mode;
 				it.put( '"' );
 				if( std::size( value ) > 0U ) {
-					it = utils::copy_to_iterator<false, eight_bit_mode>( it, value );
+					it = utils::copy_to_iterator<false, JsonMember::eight_bit_mode>(
+					  it, value );
 				}
 				it.put( '"' );
 				return it;
@@ -847,10 +847,9 @@ namespace daw::json {
 			to_json_string_string_escaped( WriteableType it,
 			                               parse_to_t const &value ) {
 
-				DAW_CPP23_STATIC_LOCAL constexpr options::EightBitModes eight_bit_mode =
-				  JsonMember::eight_bit_mode;
 				it.put( '"' );
-				it = utils::copy_to_iterator<true, eight_bit_mode>( it, value );
+				it = utils::copy_to_iterator<true, JsonMember::eight_bit_mode>( it,
+				                                                                value );
 				it.put( '"' );
 				return it;
 			}
@@ -1409,9 +1408,10 @@ namespace daw::json {
 						it = member_to_string<dependent_member>(
 						  it, typename base_member_t::switcher{ }( v ) );
 					} else {
-						DAW_CPP23_STATIC_LOCAL constexpr auto idx =
-						  find_names_in_pack_v<dependent_member, NamePack>;
-						it = member_to_string<dependent_member>( it, get<idx>( args ) );
+						using idx =
+						  daw::constant<find_names_in_pack_v<dependent_member, NamePack>>;
+						it =
+						  member_to_string<dependent_member>( it, get<idx::value>( args ) );
 					}
 					(void)it;
 				}

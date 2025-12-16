@@ -517,10 +517,10 @@ namespace daw::json {
 								is_first = false;
 							}
 							out_it.next_member( );
-							DAW_CPP23_STATIC_LOCAL constexpr std::size_t index = Idx.value;
+							using index = daw::constant<DAW_TYPEOF( Idx )::value>;
 							using pack_element = tuple_elements_pack<Tuple>;
 							using JsonMember = json_deduced_type<
-							  typename pack_element::template element_t<index>>;
+							  typename pack_element::template element_t<index::value>>;
 
 							out_it = to_json_schema<JsonMember>(
 							  ParseTag<JsonMember::expected_type>{ }, out_it );

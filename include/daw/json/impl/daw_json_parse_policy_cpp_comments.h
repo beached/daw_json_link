@@ -16,6 +16,7 @@
 #include "daw/json/impl/daw_not_const_ex_functions.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_constant.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_not_null.h>
 #include <daw/daw_traits.h>
@@ -148,12 +149,9 @@ namespace daw::json {
 			template<char PrimLeft, typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
-				DAW_CPP23_STATIC_LOCAL constexpr char PrimRight =
-				  PrimLeft == '{' ? '}' : ']';
-				DAW_CPP23_STATIC_LOCAL constexpr char SecLeft =
-				  PrimLeft == '{' ? '[' : '{';
-				DAW_CPP23_STATIC_LOCAL constexpr char SecRight =
-				  SecLeft == '{' ? '}' : ']';
+				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
+				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;
+				using SecRight = daw::constant<SecLeft::value == '{' ? '}' : ']'>;
 
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
@@ -190,7 +188,7 @@ namespace daw::json {
 					case PrimLeft:
 						++prime_bracket_count;
 						break;
-					case PrimRight:
+					case PrimRight::value:
 						--prime_bracket_count;
 						if( prime_bracket_count == 0 ) {
 							daw_json_ensure( second_bracket_count == 0,
@@ -205,10 +203,10 @@ namespace daw::json {
 							return result;
 						}
 						break;
-					case SecLeft:
+					case SecLeft::value:
 						++second_bracket_count;
 						break;
-					case SecRight:
+					case SecRight::value:
 						--second_bracket_count;
 						break;
 					case '/':
@@ -252,12 +250,9 @@ namespace daw::json {
 			template<char PrimLeft, typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
-				DAW_CPP23_STATIC_LOCAL constexpr char PrimRight =
-				  PrimLeft == '{' ? '}' : ']';
-				DAW_CPP23_STATIC_LOCAL constexpr char SecLeft =
-				  PrimLeft == '{' ? '[' : '{';
-				DAW_CPP23_STATIC_LOCAL constexpr char SecRight =
-				  SecLeft == '{' ? '}' : ']';
+				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
+				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;
+				using SecRight = daw::constant<SecLeft::value == '{' ? '}' : ']'>;
 
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
@@ -290,7 +285,7 @@ namespace daw::json {
 					case PrimLeft:
 						++prime_bracket_count;
 						break;
-					case PrimRight:
+					case PrimRight::value:
 						--prime_bracket_count;
 						if( prime_bracket_count == 0 ) {
 							++ptr_first;
@@ -302,10 +297,10 @@ namespace daw::json {
 							return result;
 						}
 						break;
-					case SecLeft:
+					case SecLeft::value:
 						++second_bracket_count;
 						break;
-					case SecRight:
+					case SecRight::value:
 						--second_bracket_count;
 						break;
 					case '/':

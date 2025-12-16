@@ -23,6 +23,7 @@
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_cast.h>
+#include <daw/daw_constant.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_likely.h>

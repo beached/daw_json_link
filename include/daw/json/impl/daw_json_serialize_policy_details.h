@@ -8,14 +8,17 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_option_bits.h"
-#include "daw_json_parse_options_impl.h"
-#include "daw_json_serialize_options_impl.h"
+#include "daw/json/impl/daw_json_option_bits.h"
+#include "daw/json/impl/daw_json_parse_options_impl.h"
+#include "daw/json/impl/daw_json_serialize_options_impl.h"
+
+#include <daw/daw_constant.h>
 
 #include <cstddef>
-#include <iterator>
+#include <string_view>
+#include <utility>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -39,11 +42,10 @@ namespace daw::json {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				auto new_bits = static_cast<unsigned>( e );
-				DAW_CPP23_STATIC_LOCAL constexpr unsigned mask =
-				  (1U << json_option_bits_width<Policy>)-1U;
-				new_bits &= mask;
+				using mask = daw::constant<(1U << json_option_bits_width<Policy>)-1U>;
+				new_bits &= mask::value;
 				new_bits <<= policy_bits_start<Policy>;
-				value &= ~mask;
+				value &= ~mask::value;
 				value |= new_bits;
 			}
 
@@ -54,11 +56,11 @@ namespace daw::json {
 				               "Only registered policy types are allowed" );
 
 				auto new_bits = static_cast<unsigned>( pol );
-				DAW_CPP23_STATIC_LOCAL constexpr unsigned mask =
-				  ( (1U << json_option_bits_width<Policy>)-1U );
-				new_bits &= mask;
+				using mask =
+				  daw::constant<( (1U << json_option_bits_width<Policy>)-1U )>;
+				new_bits &= mask::value;
 				new_bits <<= policy_bits_start<Policy>;
-				value &= ~( mask << policy_bits_start<Policy> );
+				value &= ~( mask::value << policy_bits_start<Policy> );
 				value |= new_bits;
 				if constexpr( sizeof...( Policies ) > 0 ) {
 					if constexpr( sizeof...( pols ) > 0 ) {
@@ -100,11 +102,10 @@ namespace daw::json {
 			static constexpr Result get_bits_for( json_options_t value ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
-				DAW_CPP23_STATIC_LOCAL constexpr unsigned mask =
-				  ( 1U << (policy_bits_start<Policy> +
-				           json_option_bits_width<Policy>)) -
-				  1U;
-				value &= mask;
+				using mask = daw::constant<( 1U << (policy_bits_start<Policy> +
+				                                    json_option_bits_width<Policy>)) -
+				                           1U>;
+				value &= mask::value;
 				value >>= policy_bits_start<Policy>;
 				return static_cast<Result>( Policy{ value } );
 			}
