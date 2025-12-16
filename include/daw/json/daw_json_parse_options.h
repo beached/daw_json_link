@@ -24,6 +24,8 @@ namespace daw::json {
 				/// default: compile_time
 				///
 				enum class ExecModeTypes : unsigned {
+					/// @brief Use the best available code path that can be detected
+					default_mode,
 					/// @brief Only use code paths that can run at compile time
 					compile_time,
 					/// @brief *testing* Allow code paths that use non-compile time

@@ -69,10 +69,10 @@ namespace daw::json {
 			/***
 			 * See options::ExecModeTypes
 			 */
-			using exec_tag_t =
-			  switch_t<json_details::get_bits_for<options::ExecModeTypes,
-			                                      std::size_t>( PolicyFlags ),
-			           constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
+			using exec_tag_t = switch_t<
+			  json_details::get_bits_for<options::ExecModeTypes, std::size_t>(
+			    PolicyFlags ),
+			  default_exec_tag, constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
 
 			static constexpr auto exec_tag = exec_tag_t{ };
 

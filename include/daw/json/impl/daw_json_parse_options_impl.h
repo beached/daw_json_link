@@ -30,6 +30,8 @@ namespace daw::json {
 		namespace options {
 			constexpr daw::string_view to_string( ExecModeTypes mode ) {
 				switch( mode ) {
+				case ExecModeTypes::default_mode:
+					return "default_mode";
 				case ExecModeTypes::compile_time:
 					return "compile_time";
 				case ExecModeTypes::runtime:
@@ -48,7 +50,7 @@ namespace daw::json {
 
 			template<>
 			inline constexpr auto default_json_option_value<options::ExecModeTypes> =
-			  options::ExecModeTypes::compile_time;
+			  options::ExecModeTypes::default_mode;
 
 			template<>
 			inline constexpr unsigned
