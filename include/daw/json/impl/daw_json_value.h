@@ -497,8 +497,7 @@ namespace daw::json {
 						auto const index =
 						  json_details::unsigned_parser<std::size_t,
 						                                options::JsonRangeCheck::Never,
-						                                true>( constexpr_exec_tag{ },
-						                                       index_ps );
+						                                true>( index_ps );
 
 						jv = jv.find_element( index );
 						if( not json_path.empty( ) and json_path.front( ) == '.' ) {

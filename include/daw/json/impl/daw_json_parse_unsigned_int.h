@@ -52,7 +52,7 @@ namespace daw::json {
 
 			[[nodiscard]]
 			constexpr bool
-			is_made_of_eight_digits_cx( daw::not_null<char const *> ptr ) {
+			is_made_of_eight_digits_cx( daw::not_null<char const *> const ptr ) {
 				// The copy to local buffer is to get the compiler to treat it like a
 				// reinterpret_cast
 
@@ -65,7 +65,7 @@ namespace daw::json {
 				                         static_cast<std::byte>( ptr[6] ),
 				                         static_cast<std::byte>( ptr[7] ) };
 
-				UInt64 val = UInt64( );
+				auto val = UInt64( );
 				for( std::size_t n = 0; n < 8; ++n ) {
 					val |= to_uint64( buff[n] ) << ( 8 * n );
 				}
@@ -183,8 +183,7 @@ namespace daw::json {
 			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
 			         typename ParseState>
 			[[nodiscard]] static constexpr Unsigned
-			unsigned_parser_known( constexpr_exec_tag const &,
-			                       ParseState &parse_state ) {
+			unsigned_parser_known( ParseState &parse_state ) {
 				// We know how many digits are in the number
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 				using uresult_t = max_unsigned_t<RangeChecked,
@@ -247,8 +246,7 @@ namespace daw::json {
 			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
 			         typename ParseState>
 			[[nodiscard]] static constexpr Unsigned
-			unsigned_parser_not_known( constexpr_exec_tag const &,
-			                           ParseState &parse_state ) {
+			unsigned_parser_not_known( ParseState &parse_state ) {
 				// We do not know how long the string is
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 				using uresult_t = max_unsigned_t<RangeChecked,
@@ -443,14 +441,12 @@ namespace daw::json {
 			template<typename Unsigned, options::JsonRangeCheck RangeChecked,
 			         bool KnownBounds, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr Unsigned
-			unsigned_parser( constexpr_exec_tag const &tag,
-			                 ParseState &parse_state ) {
+			unsigned_parser( ParseState &parse_state ) {
 				if constexpr( KnownBounds ) {
-					return unsigned_parser_known<Unsigned, RangeChecked>( tag,
-					                                                      parse_state );
+					return unsigned_parser_known<Unsigned, RangeChecked>( parse_state );
 				} else {
 					return unsigned_parser_not_known<Unsigned, RangeChecked>(
-					  tag, parse_state );
+					  parse_state );
 				}
 			}
 		} // namespace json_details
