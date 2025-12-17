@@ -84,6 +84,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">daw/json/impl/version.h</a>&quot;</code><br />
+<code>#include &quot;daw/daw_callable.h&quot;</code><br />
+<code>#include &lt;daw/daw_cpp_feature_check.h&gt;</code><br />
+<code>#include &lt;daw/daw_enable_requires.h&gt;</code><br />
 <code>#include &lt;daw/daw_is_detected.h&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
@@ -140,25 +143,25 @@ Variables</h2></td></tr>
 <tr class="separator:adfed3243b3ad85a3581637c1ba6ae491"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8aed2cb0700f4e85188593e8aca63d2" id="r_ab8aed2cb0700f4e85188593e8aca63d2"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#ab8aed2cb0700f4e85188593e8aca63d2">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::construct_nullable_with_value</a></td></tr>
 <tr class="separator:ab8aed2cb0700f4e85188593e8aca63d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afca64b43a7335a2b00c80e7098ff96f3" id="r_afca64b43a7335a2b00c80e7098ff96f3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:afca64b43a7335a2b00c80e7098ff96f3"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#afca64b43a7335a2b00c80e7098ff96f3">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_empty_constructible_v</a></td></tr>
-<tr class="separator:afca64b43a7335a2b00c80e7098ff96f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a740f3d1b356543235561dd2e7ddf051a" id="r_a740f3d1b356543235561dd2e7ddf051a"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a740f3d1b356543235561dd2e7ddf051a"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a740f3d1b356543235561dd2e7ddf051a">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_empty_nothrow_constructible_v</a></td></tr>
-<tr class="separator:a740f3d1b356543235561dd2e7ddf051a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a25ffa3f7b2a6d548e5eaa3e3e90f1a" id="r_a6a25ffa3f7b2a6d548e5eaa3e3e90f1a"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
-<tr class="memitem:a6a25ffa3f7b2a6d548e5eaa3e3e90f1a"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a6a25ffa3f7b2a6d548e5eaa3e3e90f1a">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_pointer_constructible_v</a></td></tr>
-<tr class="separator:a6a25ffa3f7b2a6d548e5eaa3e3e90f1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a096c141ae57a27611b63cd107eb18ac0" id="r_a096c141ae57a27611b63cd107eb18ac0"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
-<tr class="memitem:a096c141ae57a27611b63cd107eb18ac0"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a096c141ae57a27611b63cd107eb18ac0">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_value_constructible_v</a></td></tr>
-<tr class="separator:a096c141ae57a27611b63cd107eb18ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6aa771938cee3f103152a884aadaa448" id="r_a6aa771938cee3f103152a884aadaa448"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
-<tr class="memitem:a6aa771938cee3f103152a884aadaa448"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a6aa771938cee3f103152a884aadaa448">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_value_nothrow_constructible_v</a></td></tr>
-<tr class="separator:a6aa771938cee3f103152a884aadaa448"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1719377b29a11dbbd22d927c4a241a96" id="r_a1719377b29a11dbbd22d927c4a241a96"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a1719377b29a11dbbd22d927c4a241a96"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a1719377b29a11dbbd22d927c4a241a96">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_value_v</a></td></tr>
-<tr class="memdesc:a1719377b29a11dbbd22d927c4a241a96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is T a nullable type.  <br /></td></tr>
-<tr class="separator:a1719377b29a11dbbd22d927c4a241a96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a213a763e7e9d55b431eab7e34435e5ce" id="r_a213a763e7e9d55b431eab7e34435e5ce"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a213a763e7e9d55b431eab7e34435e5ce"><td class="memTemplItemLeft" align="right" valign="top">DAW_CPP20_CONCEPT&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a213a763e7e9d55b431eab7e34435e5ce">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_empty_constructible_v</a></td></tr>
+<tr class="separator:a213a763e7e9d55b431eab7e34435e5ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaab984a1f1fe60a798f36885b873087b" id="r_aaab984a1f1fe60a798f36885b873087b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aaab984a1f1fe60a798f36885b873087b"><td class="memTemplItemLeft" align="right" valign="top">DAW_CPP20_CONCEPT&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#aaab984a1f1fe60a798f36885b873087b">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_empty_nothrow_constructible_v</a></td></tr>
+<tr class="separator:aaab984a1f1fe60a798f36885b873087b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab54227164b915b0fb2a1e407eecc3487" id="r_ab54227164b915b0fb2a1e407eecc3487"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:ab54227164b915b0fb2a1e407eecc3487"><td class="memTemplItemLeft" align="right" valign="top">DAW_CPP20_CONCEPT&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#ab54227164b915b0fb2a1e407eecc3487">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_pointer_constructible_v</a></td></tr>
+<tr class="separator:ab54227164b915b0fb2a1e407eecc3487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acac18b0f08ea2fcf6d38ae071d3068b4" id="r_acac18b0f08ea2fcf6d38ae071d3068b4"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:acac18b0f08ea2fcf6d38ae071d3068b4"><td class="memTemplItemLeft" align="right" valign="top">DAW_CPP20_CONCEPT&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#acac18b0f08ea2fcf6d38ae071d3068b4">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_value_constructible_v</a></td></tr>
+<tr class="separator:acac18b0f08ea2fcf6d38ae071d3068b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a179dcce3060e182a3877dffae8b8857b" id="r_a179dcce3060e182a3877dffae8b8857b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:a179dcce3060e182a3877dffae8b8857b"><td class="memTemplItemLeft" align="right" valign="top">DAW_CPP20_CONCEPT&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a179dcce3060e182a3877dffae8b8857b">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_value_nothrow_constructible_v</a></td></tr>
+<tr class="separator:a179dcce3060e182a3877dffae8b8857b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cd621c422f99ffd58dc67eaaafdbba9" id="r_a7cd621c422f99ffd58dc67eaaafdbba9"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a7cd621c422f99ffd58dc67eaaafdbba9"><td class="memTemplItemLeft" align="right" valign="top">DAW_CPP20_CONCEPT&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__nullable__value__fwd_8h_03_1_1concepts.html#a7cd621c422f99ffd58dc67eaaafdbba9">daw::json::anonymous_namespace{daw_nullable_value_fwd.h}::concepts::is_nullable_value_v</a></td></tr>
+<tr class="memdesc:a7cd621c422f99ffd58dc67eaaafdbba9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is T a nullable type.  <br /></td></tr>
+<tr class="separator:a7cd621c422f99ffd58dc67eaaafdbba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

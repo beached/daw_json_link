@@ -81,20 +81,22 @@ $(function() {
   <div class="headertitle"><div class="title">daw_json_parse_iso8601_utils.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">daw/json/impl/version.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__switches_8h_source.html">daw/json/daw_json_switches.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__parse__digit_8h_source.html">daw_json_parse_digit.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">daw/json/impl/daw_json_assert.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__parse__digit_8h_source.html">daw/json/impl/daw_json_parse_digit.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_arith_traits.h&gt;</code><br />
 <code>#include &lt;daw/daw_attributes.h&gt;</code><br />
 <code>#include &lt;daw/daw_cpp_feature_check.h&gt;</code><br />
 <code>#include &lt;daw/daw_cxmath.h&gt;</code><br />
+<code>#include &lt;daw/daw_not_null.h&gt;</code><br />
 <code>#include &lt;daw/daw_string_view.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;daw/daw_uint_buffer.h&gt;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;chrono&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
 </div>
 <p><a href="daw__json__parse__iso8601__utils_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -139,18 +141,18 @@ Functions</h2></td></tr>
 <tr class="separator:aac95395c69a97ab44b1d8a0f1b5c0a6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac667197340e297cf4782554978ff1673" id="r_ac667197340e297cf4782554978ff1673"><td class="memItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime.html#ac667197340e297cf4782554978ff1673">daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::datetime::parse_short_month</a> (std::string_view ts)</td></tr>
 <tr class="separator:ac667197340e297cf4782554978ff1673"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5032e2cb05386570dd2b6389a226137" id="r_ad5032e2cb05386570dd2b6389a226137"><td class="memTemplParams" colspan="2">template&lt;typename Result , std::size_t count&gt; </td></tr>
-<tr class="memitem:ad5032e2cb05386570dd2b6389a226137"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1parse__utils.html#ad5032e2cb05386570dd2b6389a226137">daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::parse_utils::parse_unsigned</a> (char const *digit_str)</td></tr>
-<tr class="separator:ad5032e2cb05386570dd2b6389a226137"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c098a4cad8629b31f2b337fedd11070" id="r_a5c098a4cad8629b31f2b337fedd11070"><td class="memTemplParams" colspan="2">template&lt;typename Result &gt; </td></tr>
-<tr class="memitem:a5c098a4cad8629b31f2b337fedd11070"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1parse__utils.html#a5c098a4cad8629b31f2b337fedd11070">daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::parse_utils::parse_unsigned2</a> (char const *digit_str)</td></tr>
-<tr class="separator:a5c098a4cad8629b31f2b337fedd11070"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e40a77a0547674f6cba8c5ece76a517" id="r_a0e40a77a0547674f6cba8c5ece76a517"><td class="memTemplParams" colspan="2">template&lt;typename Result , std::size_t count&gt; </td></tr>
+<tr class="memitem:a0e40a77a0547674f6cba8c5ece76a517"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1parse__utils.html#a0e40a77a0547674f6cba8c5ece76a517">daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::parse_utils::parse_unsigned</a> (daw::not_null&lt; char const * &gt; digit_str)</td></tr>
+<tr class="separator:a0e40a77a0547674f6cba8c5ece76a517"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c037f14b1150c0d5565828a65e2e0c0" id="r_a4c037f14b1150c0d5565828a65e2e0c0"><td class="memTemplParams" colspan="2">template&lt;typename Result &gt; </td></tr>
+<tr class="memitem:a4c037f14b1150c0d5565828a65e2e0c0"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1parse__utils.html#a4c037f14b1150c0d5565828a65e2e0c0">daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::parse_utils::parse_unsigned2</a> (daw::not_null&lt; char const * &gt; digit_str)</td></tr>
+<tr class="separator:a4c037f14b1150c0d5565828a65e2e0c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1dded3baf44fc5c9028abe1904edc1c1" id="r_a1dded3baf44fc5c9028abe1904edc1c1"><td class="memTemplParams" colspan="2">template&lt;typename Duration &gt; </td></tr>
 <tr class="memitem:a1dded3baf44fc5c9028abe1904edc1c1"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime.html#a1dded3baf44fc5c9028abe1904edc1c1">daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::datetime::short_day_of_week</a> (std::chrono::time_point&lt; std::chrono::system_clock, Duration &gt; tp)</td></tr>
 <tr class="separator:a1dded3baf44fc5c9028abe1904edc1c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad238a433bee2fc7f0fcb3d6070135cd6" id="r_ad238a433bee2fc7f0fcb3d6070135cd6"><td class="memTemplParams" colspan="2">template&lt;typename Clock , typename Duration &gt; </td></tr>
-<tr class="memitem:ad238a433bee2fc7f0fcb3d6070135cd6"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime_1_1ymdhms.html">ymdhms</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime.html#ad238a433bee2fc7f0fcb3d6070135cd6">daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::datetime::time_point_to_civil</a> (std::chrono::time_point&lt; Clock, Duration &gt; const &amp;tp)</td></tr>
-<tr class="separator:ad238a433bee2fc7f0fcb3d6070135cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f65838d6773a9dc64aaf253f93a2a12" id="r_a5f65838d6773a9dc64aaf253f93a2a12"><td class="memTemplParams" colspan="2">template&lt;typename Clock , typename Duration &gt; </td></tr>
+<tr class="memitem:a5f65838d6773a9dc64aaf253f93a2a12"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime_1_1ymdhms.html">ymdhms</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__iso8601__utils_8h_03_1_1datetime.html#a5f65838d6773a9dc64aaf253f93a2a12">daw::json::anonymous_namespace{daw_json_parse_iso8601_utils.h}::datetime::time_point_to_civil</a> (std::chrono::time_point&lt; Clock, Duration &gt; const tp)</td></tr>
+<tr class="separator:a5f65838d6773a9dc64aaf253f93a2a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

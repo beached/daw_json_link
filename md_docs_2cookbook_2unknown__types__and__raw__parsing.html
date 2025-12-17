@@ -73,8 +73,8 @@ $(function() {
   <div class="headertitle"><div class="title">Unknown Types and Delayed Parsing</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md148"></a> </p>
-<h1><a class="anchor" id="autotoc_md149"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md156"></a> </p>
+<h1><a class="anchor" id="autotoc_md157"></a>
 Unknown JSON Data</h1>
 <p>When the data structure is unknown or partially known it can be parsed as a <code>json_raw</code> type. This also, allows for skipping the parsing of certain members and returning later.</p>
 <div class="fragment"><div class="line">[</div>
@@ -100,7 +100,7 @@ Unknown JSON Data</h1>
 <div class="line">}</div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a03ce1a19bcc03c87524a09913907d38d"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">daw::json::anonymous_namespace{daw_json_enums.h}::to_string</a></div><div class="ttdeci">constexpr std::string_view to_string(JsonBaseParseTypes pt)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__enums_8h_source.html#l00062">daw_json_enums.h:62</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value__fwd_8h_03_html_a0cb1fa415c11a965b691fe2cdbcb6012"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value__fwd_8h_03.html#a0cb1fa415c11a965b691fe2cdbcb6012">daw::json::anonymous_namespace{daw_json_value_fwd.h}::json_value</a></div><div class="ttdeci">basic_json_value&lt;&gt; json_value</div><div class="ttdoc">An untyped JSON value.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__value__fwd_8h_source.html#l00027">daw_json_value_fwd.h:27</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md150"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md158"></a>
 Delayed Parsing</h1>
 <p>It is possible to delay the parsing of json members until a later time. The <code>json_raw</code> member type will store the character range and allow full parsing later. The cost of doing so is similar to that of skipping the value and is already paid for when parsing JSON data.</p>
 <div class="fragment"><div class="line">{</div>
@@ -161,10 +161,10 @@ Delayed Parsing</h1>
 <div class="line">MyClass2 val = from_json&lt;MyClass2&gt;( json_data );</div>
 <div class="line"> </div>
 <div class="line">MyDelayedClass delayed_val = cls2.member_layer.template parse&lt;MyDelayedClass&gt;( );</div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00039">daw_json_data_contract.h:39</a></div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">daw::json::basic_json_value</a></div><div class="ttdoc">A non-owning container for arbitrary JSON values that allows movement/iteration through.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__value_8h_source.html#l00349">daw_json_value.h:349</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md151"></a>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">daw::json::basic_json_value</a></div><div class="ttdoc">A non-owning container for arbitrary JSON values that allows movement/iteration through.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__value_8h_source.html#l00360">daw_json_value.h:360</a></div></div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md159"></a>
 RAW JSON</h1>
 <p>Parsing to a raw JSON string can be done too. the <code>json_raw</code> mapping type allows for an optional type argument that specifies the destination/source type. It requires that the type be constructable from a char const * and a std::size_t.</p>
 <p>To see a working example using this code, refer to <a href="../../tests/src/cookbook_unknown_types_and_raw_parsing3_test.cpp">cookbook_unknown_types_and_delayed_parsing3_test.cpp</a>.</p>
@@ -188,8 +188,8 @@ RAW JSON</h1>
 <div class="line">} <span class="comment">// namespace daw::json</span></div>
 <div class="line"> </div>
 <div class="line">Thing my_thing = Thing{ <span class="stringliteral">&quot;skywalker&quot;</span>, 12345, R<span class="stringliteral">&quot;({ &quot;name&quot;: &quot;last&quot; })&quot; };</span></div>
-<div class="line"><span class="stringliteral"></span><span class="keyword">auto</span> json_string = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a1b0ae10d78464e8ad4060170d184b4d7">daw::json::to_json</a>( my_thing );</div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a1b0ae10d78464e8ad4060170d184b4d7"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a1b0ae10d78464e8ad4060170d184b4d7">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00077">daw_to_json.h:77</a></div></div>
+<div class="line"><span class="stringliteral"></span><span class="keyword">auto</span> json_string = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( my_thing );</div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00078">daw_to_json.h:78</a></div></div>
 </div><!-- fragment --><p><code>json_string</code> will have a value of</p>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;name&quot;: &quot;skywalker&quot;,</div>

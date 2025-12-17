@@ -88,28 +88,25 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a48f7b1e880b613ae5a9067e5149180c7" id="r_a48f7b1e880b613ae5a9067e5149180c7"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass  = use_default, typename Value , auto... PolicyFlags&gt; </td></tr>
-<tr class="memitem:a48f7b1e880b613ae5a9067e5149180c7"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacedaw_1_1json.html#a2e6e121adcc3170845c2f633e551f208">DAW_JSON_REQUIRES</a>(concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt; &gt;) const expr daw std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json__fwd_8h_03.html#a48f7b1e880b613ae5a9067e5149180c7">to_json</a> (Value const &amp;value, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__to__json__fwd_8h_03_1_1options_1_1output__flags__t.html">options::output_flags_t</a>&lt; PolicyFlags... &gt;)</td></tr>
-<tr class="memdesc:a48f7b1e880b613ae5a9067e5149180c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize a value to JSON. Some types(std::string, string_view, integer's and floating point numbers do not need a mapping setup). For user classes, a <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">json_data_contract</a> specialization is needed.  <br /></td></tr>
-<tr class="separator:a48f7b1e880b613ae5a9067e5149180c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f0fcd3f98af01d0ed491a769c311266" id="r_a3f0fcd3f98af01d0ed491a769c311266"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement  = use_default, typename Container , auto... PolicyFlags&gt; </td></tr>
-<tr class="memitem:a3f0fcd3f98af01d0ed491a769c311266"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacedaw_1_1json.html#a2e6e121adcc3170845c2f633e551f208">DAW_JSON_REQUIRES</a>(concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt; &gt;) const expr daw std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json__fwd_8h_03.html#a3f0fcd3f98af01d0ed491a769c311266">to_json_array</a> (Container const &amp;c, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__to__json__fwd_8h_03_1_1options_1_1output__flags__t.html">options::output_flags_t</a>&lt; PolicyFlags... &gt;=<a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json__fwd_8h_03_1_1options.html#ab0d4c919778ff037ed69a144e04e9f22">options::output_flags</a>&lt;&gt;)</td></tr>
-<tr class="separator:a3f0fcd3f98af01d0ed491a769c311266"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab76aec923265858c44b2186470ce1311" id="r_ab76aec923265858c44b2186470ce1311"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass  = use_default, typename Value , auto... PolicyFlags&gt; </td></tr>
+<tr class="memitem:ab76aec923265858c44b2186470ce1311"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacedaw_1_1json.html#a44c423da81720772fabd157569eb8684">DAW_REQUIRES</a>(concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt; &gt;) const expr daw DAW_CPP20_CX_ALLOC std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json__fwd_8h_03.html#ab76aec923265858c44b2186470ce1311">to_json</a> (Value const &amp;value, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__to__json__fwd_8h_03_1_1options_1_1output__flags__t.html">options::output_flags_t</a>&lt; PolicyFlags... &gt;)</td></tr>
+<tr class="memdesc:ab76aec923265858c44b2186470ce1311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize a value to JSON. Some types(std::string, string_view, integer's and floating point numbers do not need a mapping setup). For user classes, a <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">json_data_contract</a> specialization is needed.  <br /></td></tr>
+<tr class="separator:ab76aec923265858c44b2186470ce1311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab81c75c322406b3c26aa876de0285400" id="r_ab81c75c322406b3c26aa876de0285400"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement  = use_default, typename Container , auto... PolicyFlags&gt; </td></tr>
+<tr class="memitem:ab81c75c322406b3c26aa876de0285400"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacedaw_1_1json.html#a44c423da81720772fabd157569eb8684">DAW_REQUIRES</a>(concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt; &gt;) const expr daw DAW_CPP20_CX_ALLOC std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json__fwd_8h_03.html#ab81c75c322406b3c26aa876de0285400">to_json_array</a> (Container const &amp;c, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__to__json__fwd_8h_03_1_1options_1_1output__flags__t.html">options::output_flags_t</a>&lt; PolicyFlags... &gt;=<a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json__fwd_8h_03_1_1options.html#ab0d4c919778ff037ed69a144e04e9f22">options::output_flags</a>&lt;&gt;)</td></tr>
+<tr class="separator:ab81c75c322406b3c26aa876de0285400"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a48f7b1e880b613ae5a9067e5149180c7" name="a48f7b1e880b613ae5a9067e5149180c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a48f7b1e880b613ae5a9067e5149180c7">&#9670;&#160;</a></span>to_json()</h2>
+<a id="ab76aec923265858c44b2186470ce1311" name="ab76aec923265858c44b2186470ce1311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab76aec923265858c44b2186470ce1311">&#9670;&#160;</a></span>to_json()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename JsonClass  = use_default, typename Value , auto... PolicyFlags&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacedaw_1_1json.html#a2e6e121adcc3170845c2f633e551f208">DAW_JSON_REQUIRES</a>(concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt; &gt;) const expr daw std::string daw::json::anonymous_namespace{daw_to_json_fwd.h}::to_json </td>
+          <td class="memname"><a class="el" href="namespacedaw_1_1json.html#a44c423da81720772fabd157569eb8684">DAW_REQUIRES</a>(concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt; &gt;) const expr daw DAW_CPP20_CX_ALLOC std::string daw::json::anonymous_namespace{daw_to_json_fwd.h}::to_json </td>
           <td>(</td>
           <td class="paramtype">Value const &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
@@ -126,11 +123,6 @@ template&lt;typename JsonClass  = use_default, typename Value , auto... PolicyFl
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Serialize a value to JSON. Some types(std::string, string_view, integer's and floating point numbers do not need a mapping setup). For user classes, a <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">json_data_contract</a> specialization is needed. </p>
@@ -166,19 +158,16 @@ template&lt;typename JsonClass  = use_default, typename Value , auto... PolicyFl
 
 </div>
 </div>
-<a id="a3f0fcd3f98af01d0ed491a769c311266" name="a3f0fcd3f98af01d0ed491a769c311266"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3f0fcd3f98af01d0ed491a769c311266">&#9670;&#160;</a></span>to_json_array()</h2>
+<a id="ab81c75c322406b3c26aa876de0285400" name="ab81c75c322406b3c26aa876de0285400"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab81c75c322406b3c26aa876de0285400">&#9670;&#160;</a></span>to_json_array()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename JsonElement  = use_default, typename Container , auto... PolicyFlags&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacedaw_1_1json.html#a2e6e121adcc3170845c2f633e551f208">DAW_JSON_REQUIRES</a>(concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt; &gt;) const expr daw std::string daw::json::anonymous_namespace{daw_to_json_fwd.h}::to_json_array </td>
+          <td class="memname"><a class="el" href="namespacedaw_1_1json.html#a44c423da81720772fabd157569eb8684">DAW_REQUIRES</a>(concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt; &gt;) const expr daw DAW_CPP20_CX_ALLOC std::string daw::json::anonymous_namespace{daw_to_json_fwd.h}::to_json_array </td>
           <td>(</td>
           <td class="paramtype">Container const &amp;&#160;</td>
           <td class="paramname"><em>c</em>, </td>
@@ -195,11 +184,6 @@ template&lt;typename JsonElement  = use_default, typename Container , auto... Po
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <p>Serialize a container to JSON. This convenience method allows for easier serialization of containers when the root of the document is an array Serialize Container </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">

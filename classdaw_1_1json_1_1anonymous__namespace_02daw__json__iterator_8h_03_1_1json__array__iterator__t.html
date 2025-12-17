@@ -77,7 +77,6 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pri-types">Private Types</a> &#124;
 <a href="#pri-static-methods">Static Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t-members.html">List of all members</a>  </div>
@@ -137,11 +136,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a85abc2e9e1c498948710a64982c8d254"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare rhs for equivalence.  <br /></td></tr>
 <tr class="separator:a85abc2e9e1c498948710a64982c8d254"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-types" name="pri-types"></a>
-Private Types</h2></td></tr>
-<tr class="memitem:a5dc80486471bca7c1b9087f665bd6264" id="r_a5dc80486471bca7c1b9087f665bd6264"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a5dc80486471bca7c1b9087f665bd6264">CharT</a> = typename ParseState::CharT</td></tr>
-<tr class="separator:a5dc80486471bca7c1b9087f665bd6264"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-static-methods" name="pri-static-methods"></a>
 Static Private Member Functions</h2></td></tr>
 <tr class="memitem:a88a30c69e9e6ff28dcae126c807ba6c8" id="r_a88a30c69e9e6ff28dcae126c807ba6c8"><td class="memItemLeft" align="right" valign="top">static constexpr ParseState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a88a30c69e9e6ff28dcae126c807ba6c8">get_range</a> (daw::string_view data, daw::string_view member_path)</td></tr>
@@ -149,8 +143,8 @@ Static Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a3b108ce213f30fbd58e08e9d9bb3a913" id="r_a3b108ce213f30fbd58e08e9d9bb3a913"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a5dc80486471bca7c1b9087f665bd6264">CharT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a3b108ce213f30fbd58e08e9d9bb3a913">m_can_skip</a> = nullptr</td></tr>
-<tr class="separator:a3b108ce213f30fbd58e08e9d9bb3a913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16ea127db9edd47912a06d152f2c37f9" id="r_a16ea127db9edd47912a06d152f2c37f9"><td class="memItemLeft" align="right" valign="top">char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a16ea127db9edd47912a06d152f2c37f9">m_can_skip</a> = nullptr</td></tr>
+<tr class="separator:a16ea127db9edd47912a06d152f2c37f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acccc563020deb877b377be07b5989e9b" id="r_acccc563020deb877b377be07b5989e9b"><td class="memItemLeft" align="right" valign="top">ParseState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#acccc563020deb877b377be07b5989e9b">m_state</a> = ParseState( )</td></tr>
 <tr class="separator:acccc563020deb877b377be07b5989e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -159,32 +153,6 @@ Private Attributes</h2></td></tr>
 class daw::json::anonymous_namespace{daw_json_iterator.h}::json_array_iterator_t&lt; JsonElement, ParseState, typename &gt;</div>
 <p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00061">61</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a5dc80486471bca7c1b9087f665bd6264" name="a5dc80486471bca7c1b9087f665bd6264"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5dc80486471bca7c1b9087f665bd6264">&#9670;&#160;</a></span>CharT</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_json_iterator.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a92d6f6f4052d3b4cb34b1bea2d5e3c36">::json_array_iterator_t</a>&lt; JsonElement, ParseState, typename &gt;::CharT =  typename ParseState::CharT</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00062">62</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
-
-</div>
-</div>
 <a id="a34c3c5a347380aacb5e52937f9ec6f56" name="a34c3c5a347380aacb5e52937f9ec6f56"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a34c3c5a347380aacb5e52937f9ec6f56">&#9670;&#160;</a></span>difference_type</h2>
 
@@ -199,7 +167,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00082">82</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00081">81</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -217,7 +185,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00076">76</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00075">75</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -235,7 +203,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00084">84</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00083">83</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -253,7 +221,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00081">81</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00080">80</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -271,7 +239,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00080">80</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00079">79</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -289,7 +257,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00079">79</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00078">78</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -347,7 +315,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00097">97</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00096">96</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -418,7 +386,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The iterator representing the beginning of the iteration. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00121">121</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00122">122</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -448,7 +416,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The iterator representing the end sentinel of the iteration. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00126">126</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00127">127</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -488,7 +456,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00064">64</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00063">63</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -517,7 +485,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00183">183</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00186">186</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -549,7 +517,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 <p>Are we <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a2f528d6d7a9316263e6b8ef1793b4926">good( )</a> </p>
 <dl class="section return"><dt>Returns</dt><dd>result of <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a2f528d6d7a9316263e6b8ef1793b4926">good( )</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00190">190</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00193">193</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -588,7 +556,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true when rhs is not equivalent </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00212">212</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00215">215</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -621,7 +589,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 <dl class="section pre"><dt>Precondition</dt><dd><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a2f528d6d7a9316263e6b8ef1793b4926">good( )</a> returns true </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>The parsed result of ParseElement </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00133">133</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00134">134</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -650,7 +618,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00159">159</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00161">161</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -682,7 +650,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 
 <p>Move the parse state to the next element. </p>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00175">175</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00178">178</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -715,7 +683,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 <dl class="section pre"><dt>Precondition</dt><dd><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a2f528d6d7a9316263e6b8ef1793b4926">good( )</a> returns true </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>an arrow_proxy of the operator* result </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00151">151</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00153">153</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -754,13 +722,13 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true when equivalent to rhs </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00198">198</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00201">201</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a3b108ce213f30fbd58e08e9d9bb3a913" name="a3b108ce213f30fbd58e08e9d9bb3a913"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b108ce213f30fbd58e08e9d9bb3a913">&#9670;&#160;</a></span>m_can_skip</h2>
+<a id="a16ea127db9edd47912a06d152f2c37f9" name="a16ea127db9edd47912a06d152f2c37f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16ea127db9edd47912a06d152f2c37f9">&#9670;&#160;</a></span>m_can_skip</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -771,7 +739,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a5dc80486471bca7c1b9087f665bd6264">CharT</a>* daw::json::anonymous_namespace{daw_json_iterator.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a92d6f6f4052d3b4cb34b1bea2d5e3c36">::json_array_iterator_t</a>&lt; JsonElement, ParseState, typename &gt;::m_can_skip = nullptr</td>
+          <td class="memname">char const* daw::json::anonymous_namespace{daw_json_iterator.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__iterator_8h_03_1_1json__array__iterator__t.html#a92d6f6f4052d3b4cb34b1bea2d5e3c36">::json_array_iterator_t</a>&lt; JsonElement, ParseState, typename &gt;::m_can_skip = nullptr</td>
         </tr>
       </table>
   </td>
@@ -781,7 +749,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00092">92</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00091">91</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -807,7 +775,7 @@ template&lt;typename JsonElement , typename ParseState , typename  = void&gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00087">87</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__iterator_8h_source.html#l00086">86</a> of file <a class="el" href="daw__json__iterator_8h_source.html">daw_json_iterator.h</a>.</p>
 
 </div>
 </div>

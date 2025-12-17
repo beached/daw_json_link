@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['lines_20support_0',['JSON Lines Support',['../md_docs_2cookbook_2json__lines.html',1,'']]],
-  ['link_1',['DAW JSON Link',['../index.html',1,'']]]
+  ['key_20values_0',['Key Values',['../md_docs_2cookbook_2key__values.html',1,'']]],
+  ['kostya_5fbenchmark_5fresults_1',['kostya_benchmark_results',['../md_docs_2kostya__benchmark__results.html',1,'']]]
 ];

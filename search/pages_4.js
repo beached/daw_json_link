@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['from_20array_20s_0',['Classes from array&apos;s',['../md_docs_2cookbook_2class__from__array.html',1,'']]]
+  ['enums_0',['Enums',['../md_docs_2cookbook_2enums.html',1,'']]],
+  ['exact_5fclass_5fmappings_1',['exact_class_mappings',['../md_docs_2cookbook_2exact__class__mappings.html',1,'']]],
+  ['exporting_20json_20schema_2',['Exporting JSON Schema',['../md_docs_2cookbook_2json__schema.html',1,'']]]
 ];

@@ -74,134 +74,25 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a> &#124;
-<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">daw_json_reflection.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;daw/daw_pipelines.h&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__link_8h_source.html">daw_json_link.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">daw/json/impl/version.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__link_8h_source.html">daw/json/daw_json_link.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__switches_8h_source.html">daw/json/daw_json_switches.h</a>&quot;</code><br />
+<code>#include &lt;daw/daw_bind_args_at.h&gt;</code><br />
+<code>#include &lt;daw/daw_concepts.h&gt;</code><br />
+<code>#include &lt;daw/daw_move.h&gt;</code><br />
+<code>#include &lt;daw/daw_pipelines.h&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
-<code>#include &lt;experimental/meta&gt;</code><br />
+<code>#include &lt;meta&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div>
 <p><a href="daw__json__reflection_8h_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1enum__string.html">daw::json::inline::experimental::enum_string&lt; E, Options &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1json__data__contract_3_01_t_01_4.html">daw::json::inline::json_data_contract&lt; T &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1refl__enum__string.html">daw::json::inline::experimental::refl_enum_string</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1refl__ignore__with__default.html">daw::json::inline::experimental::refl_ignore_with_default</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1refl__ignore__with__value.html">daw::json::inline::experimental::refl_ignore_with_value&lt; T &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1refl__map__as.html">daw::json::inline::experimental::refl_map_as</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1refl__rename.html">daw::json::inline::experimental::refl_rename</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1reflect__t.html">daw::json::inline::experimental::reflect_t</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespacedaw" id="r_namespacedaw"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json" id="r_namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
-<tr class="memdesc:namespacedaw_1_1json"><td class="mdescLeft">&#160;</td><td class="mdescRight">Customization point traits. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json_1_1inline" id="r_namespacedaw_1_1json_1_1inline"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1inline.html">daw::json::inline</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json_1_1inline_1_1experimental" id="r_namespacedaw_1_1json_1_1inline_1_1experimental"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1inline_1_1experimental.html">daw::json::inline::experimental</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:aef47864b33458d05b45b68722f3ed2a7" id="r_aef47864b33458d05b45b68722f3ed2a7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__reflection_8h.html#aef47864b33458d05b45b68722f3ed2a7">DAW_REFLECT</a>(...)&#160;&#160;&#160;^^__VA_ARGS__</td></tr>
-<tr class="separator:aef47864b33458d05b45b68722f3ed2a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e90b66f50b6ba43a21b8cb851a769d8" id="r_a4e90b66f50b6ba43a21b8cb851a769d8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__reflection_8h.html#a4e90b66f50b6ba43a21b8cb851a769d8">DAW_SPLICE</a>(...)&#160;&#160;&#160;[:__VA_ARGS__:]</td></tr>
-<tr class="separator:a4e90b66f50b6ba43a21b8cb851a769d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e90b66f50b6ba43a21b8cb851a769d8" id="r_a4e90b66f50b6ba43a21b8cb851a769d8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__reflection_8h.html#a4e90b66f50b6ba43a21b8cb851a769d8">DAW_SPLICE</a>(...)&#160;&#160;&#160;[:__VA_ARGS__:]</td></tr>
-<tr class="separator:a4e90b66f50b6ba43a21b8cb851a769d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a61a5e2412039ff18a76a1ded84b9813b" id="r_a61a5e2412039ff18a76a1ded84b9813b"><td class="memTemplParams" colspan="2">template&lt;refl_details::Reflectable T&gt; </td></tr>
-<tr class="memitem:a61a5e2412039ff18a76a1ded84b9813b"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1inline_1_1experimental.html#a61a5e2412039ff18a76a1ded84b9813b">daw::json::inline::experimental::is_reflectible_type_v</a></td></tr>
-<tr class="separator:a61a5e2412039ff18a76a1ded84b9813b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa32c6401ac373900c7bc603f638338e2" id="r_aa32c6401ac373900c7bc603f638338e2"><td class="memItemLeft" align="right" valign="top">constexpr struct <a class="el" href="structdaw_1_1json_1_1inline_1_1experimental_1_1reflect__t.html">daw::json::inline::experimental::reflect_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1inline_1_1experimental.html#aa32c6401ac373900c7bc603f638338e2">daw::json::inline::experimental::reflect</a></td></tr>
-<tr class="separator:aa32c6401ac373900c7bc603f638338e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="aef47864b33458d05b45b68722f3ed2a7" name="aef47864b33458d05b45b68722f3ed2a7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef47864b33458d05b45b68722f3ed2a7">&#9670;&#160;</a></span>DAW_REFLECT</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define DAW_REFLECT</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em></td><td>)</td>
-          <td>&#160;&#160;&#160;^^__VA_ARGS__</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00022">22</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
-
-</div>
-</div>
-<a id="a4e90b66f50b6ba43a21b8cb851a769d8" name="a4e90b66f50b6ba43a21b8cb851a769d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4e90b66f50b6ba43a21b8cb851a769d8">&#9670;&#160;</a></span>DAW_SPLICE <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define DAW_SPLICE</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em></td><td>)</td>
-          <td>&#160;&#160;&#160;[:__VA_ARGS__:]</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00023">23</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
-
-</div>
-</div>
-<a id="a4e90b66f50b6ba43a21b8cb851a769d8" name="a4e90b66f50b6ba43a21b8cb851a769d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4e90b66f50b6ba43a21b8cb851a769d8">&#9670;&#160;</a></span>DAW_SPLICE <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define DAW_SPLICE</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em></td><td>)</td>
-          <td>&#160;&#160;&#160;[:__VA_ARGS__:]</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__reflection_8h_source.html#l00023">23</a> of file <a class="el" href="daw__json__reflection_8h_source.html">daw_json_reflection.h</a>.</p>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

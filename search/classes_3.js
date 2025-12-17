@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['enum_5fstring_0',['enum_string',['../structdaw_1_1json_1_1inline_1_1experimental_1_1enum__string.html',1,'daw::json::inline::enum_string&lt; E, Options &gt;'],['../structdaw_1_1json_1_1inline_1_1experimental_1_1enum__string.html',1,'daw::json::inline::experimental::enum_string&lt; E, Options &gt;']]]
+  ['hashcommentskippingpolicy_0',['hashcommentskippingpolicy',['../classdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy__hash__comments_8h_03_1_1_hash_comment_skipping_policy.html',1,'daw::json::anonymous_namespace{daw_json_parse_policy_hash_comments.h}::HashCommentSkippingPolicy'],['../classdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy__hash__comments_8h_03_1_1_hash_comment_skipping_policy.html',1,'daw::json::HashCommentSkippingPolicy']]]
 ];

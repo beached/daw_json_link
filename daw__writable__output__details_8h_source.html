@@ -92,9 +92,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;<a class="code" href="version_8h.html">daw/json/impl/version.h</a>&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">daw/json/impl/version.h</a>&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;<a class="code" href="daw__json__assert_8h.html">daw/json/impl/daw_json_assert.h</a>&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="daw__json__assert_8h.html">daw/json/impl/daw_json_assert.h</a>&quot;</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;daw/daw_algorithm.h&gt;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;daw/daw_character_traits.h&gt;</span></div>
@@ -108,91 +108,86 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">namespace </span>concepts::writeable_output_details {</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>      <span class="keyword">constexpr</span> T *copy_to_buffer( T *buff, daw::string_view source ) {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">if</span>( DAW_IS_CONSTANT_EVALUATED( ) ) {</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>          daw::algorithm::transform_n( source.data( ), buff, source.size( ),</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">if</span>( DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>          daw::algorithm::transform_n( source.data( ),</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                                       buff,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                                       source.size( ),</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                                       []( <span class="keyword">auto</span> c )</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                                         <a class="code hl_define" href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a> {</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                           return static_cast&lt;T&gt;( c );</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                                         } );</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#if defined( DAW_IS_CONSTANT_EVALUATED )</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>          memcpy( buff, source.data( ), source.size( ) );</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        }</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">return</span> buff + source.size( );</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>      }</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_byte_type_v =</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        std::is_same_v&lt;T, std::byte&gt; or std::is_same_v&lt;T, unsigned char&gt;;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_char_sized_character_v = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>      <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_char_sized_character_v&lt;char&gt; = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="preprocessor">#if defined( __cpp_lib_char8_t )</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="preprocessor">#if __cpp_lib_char8_t &gt;= 201907L</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_char_sized_character_v&lt;char8_t&gt; = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>      <span class="keyword">using </span>span_like_range_test =</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keyword">decltype</span>( (void)( std::declval&lt;T &amp;&gt;( ).subspan( 1 ) ),</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                  (<span class="keywordtype">void</span>)( std::declval&lt;std::size_t &amp;&gt;( ) =</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                            std::declval&lt;T &amp;&gt;( ).size( ) ),</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                  (<span class="keywordtype">void</span>)( std::declval&lt;bool &amp;&gt;( ) =</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                            std::declval&lt;T &amp;&gt;( ).empty( ) ),</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                  (<span class="keywordtype">void</span>)( *std::declval&lt;T &amp;&gt;( ).data( ) =</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                            std::declval&lt;CharT&gt;( ) ) );</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_span_like_range_v =</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        daw::is_detected_v&lt;span_like_range_test, T, CharT&gt; and</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        ( writeable_output_details::is_char_sized_character_v&lt;CharT&gt; or</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>          writeable_output_details::is_byte_type_v&lt;CharT&gt; );</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>      <span class="keyword">using </span>resizable_contiguous_range_test =</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">decltype</span>( (void)( std::declval&lt;T &amp;&gt;( ).resize( std::size_t{ 0 } ) ),</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                  (void)( std::declval&lt;T &amp;&gt;( ).size( ) ),</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                  (<span class="keywordtype">void</span>)( *std::declval&lt;T &amp;&gt;( ).data( ) ),</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                  (<span class="keywordtype">void</span>)( *std::declval&lt;T &amp;&gt;( ).data( ) =</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                            std::declval&lt;CharT&gt;( ) ),</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                  (<span class="keywordtype">void</span>)( std::declval&lt;T &amp;&gt;( ).push_back(</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                    std::declval&lt;CharT&gt;( ) ) ),</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                  (<span class="keywordtype">void</span>)( <span class="keyword">static_cast&lt;</span>CharT<span class="keyword">&gt;</span>( <span class="charliteral">&#39;a&#39;</span> ) ) );</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_resizable_contiguous_range_v =</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        daw::is_detected_v&lt;resizable_contiguous_range_test, Container, CharT&gt;;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container, <span class="keyword">typename</span> CharT&gt;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_string_like_writable_output_v =</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        (writeable_output_details::is_char_sized_character_v&lt;CharT&gt; or</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>         writeable_output_details::is_byte_type_v&lt;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>           CharT&gt;)and writeable_output_details::</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>          is_resizable_contiguous_range_v&lt;Container, CharT&gt;;</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>      <span class="keyword">using </span>is_writable_output_iterator_test =</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keyword">decltype</span>( *std::declval&lt;T &amp;&gt;( ) = <span class="charliteral">&#39;c&#39;</span>, ++std::declval&lt;T &amp;&gt;( ) );</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_writable_output_iterator_v =</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        not std::is_pointer_v&lt;T&gt; and</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        daw::is_detected_v&lt;is_writable_output_iterator_test, T&gt;;</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    } <span class="comment">// namespace concepts::writeable_output_details</span></div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>          memcpy( buff, source.data( ), source.size( ) );</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> buff + source.size( );</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>      }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>      DAW_CPP20_CONCEPT is_byte_type_v =</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        std::is_same_v&lt;T, std::byte&gt; or std::is_same_v&lt;T, unsigned char&gt;;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>      DAW_CPP20_CONCEPT is_char_sized_character_v =</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        std::is_same_v&lt;T, char&gt;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#if defined( __cpp_lib_char8_t )</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#if __cpp_lib_char8_t &gt;= 201907L</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        or std::is_same_v&lt;T, char8_t&gt;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        ;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>      <span class="keyword">using </span>span_like_range_test =</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keyword">decltype</span>( (void)( std::declval&lt;T &amp;&gt;( ).subspan( 1 ) ),</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                  (<span class="keywordtype">void</span>)( std::declval&lt;std::size_t &amp;&gt;( ) =</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                            std::declval&lt;T &amp;&gt;( ).size( ) ),</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                  (<span class="keywordtype">void</span>)( std::declval&lt;bool &amp;&gt;( ) =</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                            std::declval&lt;T &amp;&gt;( ).empty( ) ),</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                  (<span class="keywordtype">void</span>)( *std::declval&lt;T &amp;&gt;( ).data( ) =</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                            std::declval&lt;CharT&gt;( ) ) );</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>      DAW_CPP20_CONCEPT is_span_like_range_v =</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        daw::is_detected_v&lt;span_like_range_test, T, CharT&gt; and</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        ( writeable_output_details::is_char_sized_character_v&lt;CharT&gt; or</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>          writeable_output_details::is_byte_type_v&lt;CharT&gt; );</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>      <span class="keyword">using </span>resizable_contiguous_range_test =</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">decltype</span>( (void)( std::declval&lt;T &amp;&gt;( ).resize( std::size_t{ 0 } ) ),</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                  (void)( std::declval&lt;T &amp;&gt;( ).size( ) ),</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                  (<span class="keywordtype">void</span>)( *std::declval&lt;T &amp;&gt;( ).data( ) ),</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                  (<span class="keywordtype">void</span>)( *std::declval&lt;T &amp;&gt;( ).data( ) =</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                            std::declval&lt;CharT&gt;( ) ),</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                  (<span class="keywordtype">void</span>)( std::declval&lt;T &amp;&gt;( ).push_back(</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                    std::declval&lt;CharT&gt;( ) ) ),</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                  (<span class="keywordtype">void</span>)( <span class="keyword">static_cast&lt;</span>CharT<span class="keyword">&gt;</span>( <span class="charliteral">&#39;a&#39;</span> ) ) );</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>      DAW_CPP20_CONCEPT is_resizable_contiguous_range_v =</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        daw::is_detected_v&lt;resizable_contiguous_range_test, Container, CharT&gt;;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Container, <span class="keyword">typename</span> CharT&gt;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>      DAW_CPP20_CONCEPT is_string_like_writable_output_v =</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        ( writeable_output_details::is_char_sized_character_v&lt;CharT&gt; or</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>          writeable_output_details::is_byte_type_v&lt;CharT&gt; ) and</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        writeable_output_details::is_resizable_contiguous_range_v&lt;Container,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                                                  CharT&gt;;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>      <span class="keyword">using </span>is_writable_output_iterator_test =</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keyword">decltype</span>( *std::declval&lt;T &amp;&gt;( ) = <span class="charliteral">&#39;c&#39;</span>, ++std::declval&lt;T &amp;&gt;( ) );</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>      DAW_CPP20_CONCEPT is_writable_output_iterator_v =</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        not std::is_pointer_v&lt;T&gt; and</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        daw::is_detected_v&lt;is_writable_output_iterator_test, T&gt;;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    } <span class="comment">// namespace concepts::writeable_output_details</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
-<div class="ttc" id="adaw__json__switches_8h_html_ac7bc190776b7ebf5b5c752c685569e1f"><div class="ttname"><a href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a></div><div class="ttdeci">#define DAW_JSON_CPP23_STATIC_CALL_OP</div><div class="ttdef"><b>Definition</b> <a href="daw__json__switches_8h_source.html#l00200">daw_json_switches.h:200</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00022">daw_container_traits.h:22</a></div></div>
+<div class="ttc" id="adaw__json__switches_8h_html_ac7bc190776b7ebf5b5c752c685569e1f"><div class="ttname"><a href="daw__json__switches_8h.html#ac7bc190776b7ebf5b5c752c685569e1f">DAW_JSON_CPP23_STATIC_CALL_OP</a></div><div class="ttdeci">#define DAW_JSON_CPP23_STATIC_CALL_OP</div><div class="ttdef"><b>Definition</b> <a href="daw__json__switches_8h_source.html#l00207">daw_json_switches.h:207</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition</b> <a href="version_8h_source.html#l00020">version.h:20</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

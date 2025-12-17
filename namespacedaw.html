@@ -72,7 +72,9 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">daw Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -83,35 +85,66 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespacedaw_1_1json"><td class="mdescLeft">&#160;</td><td class="mdescRight">Customization point traits. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a5d9729b9fd4294455c868e57d2c36428" id="r_a5d9729b9fd4294455c868e57d2c36428"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a5d9729b9fd4294455c868e57d2c36428">json_name_hash_t</a> = daw::UInt64</td></tr>
+<tr class="separator:a5d9729b9fd4294455c868e57d2c36428"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a9d1152fde81422ab173fec3b56b047e6" id="r_a9d1152fde81422ab173fec3b56b047e6"><td class="memTemplParams" colspan="2">template&lt;bool expect_long_strings, typename StringView &gt; </td></tr>
-<tr class="memitem:a9d1152fde81422ab173fec3b56b047e6"><td class="memTemplItemLeft" align="right" valign="top">static constexpr UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a9d1152fde81422ab173fec3b56b047e6">fnv1a_32</a> (StringView key)</td></tr>
-<tr class="separator:a9d1152fde81422ab173fec3b56b047e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95ae080d05403d39a099af4964e35141" id="r_a95ae080d05403d39a099af4964e35141"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, typename CharT &gt; </td></tr>
-<tr class="memitem:a95ae080d05403d39a099af4964e35141"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIB_INLINE constexpr UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a95ae080d05403d39a099af4964e35141">fnv1a_32_N</a> (CharT *first, UInt32 hash=0x811c '9dc5_u32)</td></tr>
-<tr class="separator:a95ae080d05403d39a099af4964e35141"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fc025577840b7e0e6012e6997451a39" id="r_a0fc025577840b7e0e6012e6997451a39"><td class="memTemplParams" colspan="2">template&lt;typename StringView &gt; </td></tr>
-<tr class="memitem:a0fc025577840b7e0e6012e6997451a39"><td class="memTemplItemLeft" align="right" valign="top">static constexpr UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a0fc025577840b7e0e6012e6997451a39">murmur3_32</a> (StringView key, std::uint32_t seed=0)</td></tr>
-<tr class="separator:a0fc025577840b7e0e6012e6997451a39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac25993d60ece765efb872c55260b8568" id="r_ac25993d60ece765efb872c55260b8568"><td class="memTemplParams" colspan="2">template&lt;bool expect_long_strings&gt; </td></tr>
-<tr class="memitem:ac25993d60ece765efb872c55260b8568"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIB_INLINE constexpr UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#ac25993d60ece765efb872c55260b8568">name_hash</a> (daw::string_view key)</td></tr>
-<tr class="separator:ac25993d60ece765efb872c55260b8568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6fd7552ad7e8e2669eff0ae33fceb26" id="r_af6fd7552ad7e8e2669eff0ae33fceb26"><td class="memTemplParams" colspan="2">template&lt;typename Hash , bool expect_long_strings, typename StringView &gt; </td></tr>
+<tr class="memitem:af6fd7552ad7e8e2669eff0ae33fceb26"><td class="memTemplItemLeft" align="right" valign="top">static constexpr Hash&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#af6fd7552ad7e8e2669eff0ae33fceb26">fnv1a</a> (StringView key)</td></tr>
+<tr class="separator:af6fd7552ad7e8e2669eff0ae33fceb26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ac9fb6fce68f184cabd0cf8594342e3" id="r_a5ac9fb6fce68f184cabd0cf8594342e3"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, typename Hash &gt; </td></tr>
+<tr class="memitem:a5ac9fb6fce68f184cabd0cf8594342e3"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIB_INLINE constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a5ac9fb6fce68f184cabd0cf8594342e3">fnv1a_N</a> (daw::not_null&lt; char const * &gt; first, Hash hash=<a class="el" href="namespacedaw.html#a62ddeb3bcbb06977886e52789c0b9c70">fnv1a_basis_v</a>&lt; Hash &gt;)</td></tr>
+<tr class="separator:a5ac9fb6fce68f184cabd0cf8594342e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c8af2c6959685b41d5cf6fc712d79fc" id="r_a1c8af2c6959685b41d5cf6fc712d79fc"><td class="memTemplParams" colspan="2">template&lt;typename StringView &gt; </td></tr>
+<tr class="memitem:a1c8af2c6959685b41d5cf6fc712d79fc"><td class="memTemplItemLeft" align="right" valign="top">static constexpr daw::UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a1c8af2c6959685b41d5cf6fc712d79fc">murmur3_32</a> (StringView key, std::uint32_t seed=0)</td></tr>
+<tr class="separator:a1c8af2c6959685b41d5cf6fc712d79fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2c5e0643e24f0e711e1d545957ab4b0" id="r_aa2c5e0643e24f0e711e1d545957ab4b0"><td class="memTemplParams" colspan="2">template&lt;bool expect_long_strings&gt; </td></tr>
+<tr class="memitem:aa2c5e0643e24f0e711e1d545957ab4b0"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIB_INLINE constexpr <a class="el" href="namespacedaw.html#a5d9729b9fd4294455c868e57d2c36428">json_name_hash_t</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#aa2c5e0643e24f0e711e1d545957ab4b0">name_hash</a> (daw::string_view key)</td></tr>
+<tr class="separator:aa2c5e0643e24f0e711e1d545957ab4b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a62ddeb3bcbb06977886e52789c0b9c70" id="r_a62ddeb3bcbb06977886e52789c0b9c70"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a62ddeb3bcbb06977886e52789c0b9c70"><td class="memTemplItemLeft" align="right" valign="top">constexpr T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a62ddeb3bcbb06977886e52789c0b9c70">fnv1a_basis_v</a> = daw::undefined_v&lt;T&gt;</td></tr>
+<tr class="separator:a62ddeb3bcbb06977886e52789c0b9c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07c2db902d9efbbc85a26623284dc29c" id="r_a07c2db902d9efbbc85a26623284dc29c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a07c2db902d9efbbc85a26623284dc29c"><td class="memTemplItemLeft" align="right" valign="top">constexpr T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a07c2db902d9efbbc85a26623284dc29c">fnv1a_prime_v</a> = daw::undefined_v&lt;T&gt;</td></tr>
+<tr class="separator:a07c2db902d9efbbc85a26623284dc29c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="a5d9729b9fd4294455c868e57d2c36428" name="a5d9729b9fd4294455c868e57d2c36428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d9729b9fd4294455c868e57d2c36428">&#9670;&#160;</a></span>json_name_hash_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacedaw.html#a5d9729b9fd4294455c868e57d2c36428">daw::json_name_hash_t</a> = typedef daw::UInt64</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00023">23</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a9d1152fde81422ab173fec3b56b047e6" name="a9d1152fde81422ab173fec3b56b047e6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9d1152fde81422ab173fec3b56b047e6">&#9670;&#160;</a></span>fnv1a_32()</h2>
+<a id="af6fd7552ad7e8e2669eff0ae33fceb26" name="af6fd7552ad7e8e2669eff0ae33fceb26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6fd7552ad7e8e2669eff0ae33fceb26">&#9670;&#160;</a></span>fnv1a()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool expect_long_strings, typename StringView &gt; </div>
+template&lt;typename Hash , bool expect_long_strings, typename StringView &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static constexpr UInt32 daw::fnv1a_32 </td>
+          <td class="memname">static constexpr Hash daw::fnv1a </td>
           <td>(</td>
           <td class="paramtype">StringView&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
@@ -125,32 +158,32 @@ template&lt;bool expect_long_strings, typename StringView &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00047">47</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00065">65</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
 
 </div>
 </div>
-<a id="a95ae080d05403d39a099af4964e35141" name="a95ae080d05403d39a099af4964e35141"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a95ae080d05403d39a099af4964e35141">&#9670;&#160;</a></span>fnv1a_32_N()</h2>
+<a id="a5ac9fb6fce68f184cabd0cf8594342e3" name="a5ac9fb6fce68f184cabd0cf8594342e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ac9fb6fce68f184cabd0cf8594342e3">&#9670;&#160;</a></span>fnv1a_N()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;std::size_t N, typename CharT &gt; </div>
+template&lt;std::size_t N, typename Hash &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static DAW_ATTRIB_INLINE constexpr UInt32 daw::fnv1a_32_N </td>
+          <td class="memname">static DAW_ATTRIB_INLINE constexpr auto daw::fnv1a_N </td>
           <td>(</td>
-          <td class="paramtype">CharT *&#160;</td>
+          <td class="paramtype">daw::not_null&lt; char const * &gt;&#160;</td>
           <td class="paramname"><em>first</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">UInt32&#160;</td>
-          <td class="paramname"><em>hash</em> = <code>0x811c'9dc5_u32</code>&#160;</td>
+          <td class="paramtype">Hash&#160;</td>
+          <td class="paramname"><em>hash</em> = <code><a class="el" href="namespacedaw.html#a62ddeb3bcbb06977886e52789c0b9c70">fnv1a_basis_v</a>&lt;Hash&gt;</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -165,12 +198,12 @@ template&lt;std::size_t N, typename CharT &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00038">38</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00055">55</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
 
 </div>
 </div>
-<a id="a0fc025577840b7e0e6012e6997451a39" name="a0fc025577840b7e0e6012e6997451a39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0fc025577840b7e0e6012e6997451a39">&#9670;&#160;</a></span>murmur3_32()</h2>
+<a id="a1c8af2c6959685b41d5cf6fc712d79fc" name="a1c8af2c6959685b41d5cf6fc712d79fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c8af2c6959685b41d5cf6fc712d79fc">&#9670;&#160;</a></span>murmur3_32()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -181,7 +214,7 @@ template&lt;typename StringView &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static constexpr UInt32 daw::murmur3_32 </td>
+          <td class="memname">static constexpr daw::UInt32 daw::murmur3_32 </td>
           <td>(</td>
           <td class="paramtype">StringView&#160;</td>
           <td class="paramname"><em>key</em>, </td>
@@ -205,12 +238,12 @@ template&lt;typename StringView &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00089">89</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00109">109</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
 
 </div>
 </div>
-<a id="ac25993d60ece765efb872c55260b8568" name="ac25993d60ece765efb872c55260b8568"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac25993d60ece765efb872c55260b8568">&#9670;&#160;</a></span>name_hash()</h2>
+<a id="aa2c5e0643e24f0e711e1d545957ab4b0" name="aa2c5e0643e24f0e711e1d545957ab4b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2c5e0643e24f0e711e1d545957ab4b0">&#9670;&#160;</a></span>name_hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -221,7 +254,7 @@ template&lt;bool expect_long_strings&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static DAW_ATTRIB_INLINE constexpr UInt32 daw::name_hash </td>
+          <td class="memname">static DAW_ATTRIB_INLINE constexpr <a class="el" href="namespacedaw.html#a5d9729b9fd4294455c868e57d2c36428">json_name_hash_t</a> daw::name_hash </td>
           <td>(</td>
           <td class="paramtype">daw::string_view&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
@@ -235,7 +268,60 @@ template&lt;bool expect_long_strings&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00074">74</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00092">92</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a62ddeb3bcbb06977886e52789c0b9c70" name="a62ddeb3bcbb06977886e52789c0b9c70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62ddeb3bcbb06977886e52789c0b9c70">&#9670;&#160;</a></span>fnv1a_basis_v</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr T daw::fnv1a_basis_v = daw::undefined_v&lt;T&gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00038">38</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
+
+</div>
+</div>
+<a id="a07c2db902d9efbbc85a26623284dc29c" name="a07c2db902d9efbbc85a26623284dc29c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07c2db902d9efbbc85a26623284dc29c">&#9670;&#160;</a></span>fnv1a_prime_v</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr T daw::fnv1a_prime_v = daw::undefined_v&lt;T&gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__murmur3_8h_source.html#l00040">40</a> of file <a class="el" href="daw__murmur3_8h_source.html">daw_murmur3.h</a>.</p>
 
 </div>
 </div>

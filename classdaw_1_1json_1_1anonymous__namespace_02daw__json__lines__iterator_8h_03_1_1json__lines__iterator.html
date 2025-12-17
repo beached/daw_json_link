@@ -139,15 +139,13 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-types" name="pri-types"></a>
 Private Types</h2></td></tr>
-<tr class="memitem:a913459a8c6be30c08adf19ef553b68c0" id="r_a913459a8c6be30c08adf19ef553b68c0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a913459a8c6be30c08adf19ef553b68c0">CharT</a> = typename ParseState::CharT</td></tr>
-<tr class="separator:a913459a8c6be30c08adf19ef553b68c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39c13ea663daa0fc6834a38c9295baa0" id="r_a39c13ea663daa0fc6834a38c9295baa0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a39c13ea663daa0fc6834a38c9295baa0">ParseState</a> = <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03.html#ac9ab9fa0b15bcff980813b41589246af">TryDefaultParsePolicy</a>&lt; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__parse__policy_8h_03_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; options::details::make_parse_flags&lt; PolicyFlags... &gt;().value &gt; &gt;</td></tr>
 <tr class="separator:a39c13ea663daa0fc6834a38c9295baa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a98b1ccd1b16d083b5893b5f34b8aef5f" id="r_a98b1ccd1b16d083b5893b5f34b8aef5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a913459a8c6be30c08adf19ef553b68c0">CharT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a98b1ccd1b16d083b5893b5f34b8aef5f">m_can_skip</a> = nullptr</td></tr>
-<tr class="separator:a98b1ccd1b16d083b5893b5f34b8aef5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a488b8777abd76d94df88c343e35d0fa2" id="r_a488b8777abd76d94df88c343e35d0fa2"><td class="memItemLeft" align="right" valign="top">char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a488b8777abd76d94df88c343e35d0fa2">m_can_skip</a> = nullptr</td></tr>
+<tr class="separator:a488b8777abd76d94df88c343e35d0fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40d9d9f6d69627a31141348e6994667a" id="r_a40d9d9f6d69627a31141348e6994667a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a39c13ea663daa0fc6834a38c9295baa0">ParseState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a40d9d9f6d69627a31141348e6994667a">m_state</a> = <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a39c13ea663daa0fc6834a38c9295baa0">ParseState</a>( )</td></tr>
 <tr class="separator:a40d9d9f6d69627a31141348e6994667a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -163,32 +161,6 @@ class daw::json::anonymous_namespace{daw_json_lines_iterator.h}::json_lines_iter
 
 <p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00038">38</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a913459a8c6be30c08adf19ef553b68c0" name="a913459a8c6be30c08adf19ef553b68c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a913459a8c6be30c08adf19ef553b68c0">&#9670;&#160;</a></span>CharT</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_json_lines_iterator.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a2e1f974855e4f8e322b97d14e51d9109">::json_lines_iterator</a>&lt; JsonElement, PolicyFlags &gt;::CharT =  typename ParseState::CharT</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00041">41</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
-
-</div>
-</div>
 <a id="a826cea6a041a0c3e489b3a37bce01d81" name="a826cea6a041a0c3e489b3a37bce01d81"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a826cea6a041a0c3e489b3a37bce01d81">&#9670;&#160;</a></span>difference_type</h2>
 
@@ -203,7 +175,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00050">50</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00049">49</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -221,7 +193,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00044">44</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00043">43</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -239,7 +211,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00052">52</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00051">51</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -283,7 +255,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00049">49</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00048">48</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -301,7 +273,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00048">48</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00047">47</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -319,7 +291,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00047">47</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00046">46</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -377,7 +349,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00065">65</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00064">64</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -407,7 +379,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00157">157</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00156">156</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -439,7 +411,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 <p>Is it ok to dereference iterator. </p>
 <dl class="section return"><dt>Returns</dt><dd>true when there is parse data available </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00119">119</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00118">118</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -471,7 +443,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 <p>Are we <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a21441d0b700dbb8004c81e24db6edb2c" title="Is it ok to dereference iterator.">good( )</a> </p>
 <dl class="section return"><dt>Returns</dt><dd>result of <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a21441d0b700dbb8004c81e24db6edb2c" title="Is it ok to dereference iterator.">good( )</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00125">125</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00124">124</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -510,7 +482,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true when rhs is not equivalent </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00147">147</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00146">146</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -543,7 +515,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 <dl class="section pre"><dt>Precondition</dt><dd><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a21441d0b700dbb8004c81e24db6edb2c" title="Is it ok to dereference iterator.">good( )</a> returns true </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>The parsed result of ParseElement </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00075">75</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00074">74</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -575,7 +547,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 <p>Move the parse state to the next element. </p>
 <dl class="section return"><dt>Returns</dt><dd>iterator after moving </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00099">99</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00098">98</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -607,7 +579,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 
 <p>Move the parse state to the next element. </p>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00113">113</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00112">112</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -640,7 +612,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 <dl class="section pre"><dt>Precondition</dt><dd><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a21441d0b700dbb8004c81e24db6edb2c" title="Is it ok to dereference iterator.">good( )</a> returns true </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>an arrow_proxy of the operator* result </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00093">93</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00092">92</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -679,13 +651,13 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true when equivalent to rhs </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00133">133</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00132">132</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a98b1ccd1b16d083b5893b5f34b8aef5f" name="a98b1ccd1b16d083b5893b5f34b8aef5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a98b1ccd1b16d083b5893b5f34b8aef5f">&#9670;&#160;</a></span>m_can_skip</h2>
+<a id="a488b8777abd76d94df88c343e35d0fa2" name="a488b8777abd76d94df88c343e35d0fa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a488b8777abd76d94df88c343e35d0fa2">&#9670;&#160;</a></span>m_can_skip</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -696,7 +668,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a913459a8c6be30c08adf19ef553b68c0">CharT</a>* daw::json::anonymous_namespace{daw_json_lines_iterator.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a2e1f974855e4f8e322b97d14e51d9109">::json_lines_iterator</a>&lt; JsonElement, PolicyFlags &gt;::m_can_skip = nullptr</td>
+          <td class="memname">char const* daw::json::anonymous_namespace{daw_json_lines_iterator.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__lines__iterator_8h_03_1_1json__lines__iterator.html#a2e1f974855e4f8e322b97d14e51d9109">::json_lines_iterator</a>&lt; JsonElement, PolicyFlags &gt;::m_can_skip = nullptr</td>
         </tr>
       </table>
   </td>
@@ -706,7 +678,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00060">60</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00059">59</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>
@@ -732,7 +704,7 @@ template&lt;typename JsonElement  = json_value, auto... PolicyFlags&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00055">55</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__lines__iterator_8h_source.html#l00054">54</a> of file <a class="el" href="daw__json__lines__iterator_8h_source.html">daw_json_lines_iterator.h</a>.</p>
 
 </div>
 </div>

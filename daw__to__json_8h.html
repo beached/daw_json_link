@@ -80,16 +80,16 @@ $(function() {
   <div class="headertitle"><div class="title">daw_to_json.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">impl/version.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__writable__output_8h_source.html">concepts/daw_writable_output.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__to__json__fwd_8h_source.html">daw_to_json_fwd.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__container__appender_8h_source.html">impl/daw_json_container_appender.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__link__types__fwd_8h_source.html">impl/daw_json_link_types_fwd.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="to__daw__json__string_8h_source.html">impl/to_daw_json_string.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">daw/json/impl/version.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__writable__output_8h_source.html">daw/json/concepts/daw_writable_output.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__to__json__fwd_8h_source.html">daw/json/daw_to_json_fwd.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__container__appender_8h_source.html">daw/json/impl/daw_json_container_appender.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__link__types__fwd_8h_source.html">daw/json/impl/daw_json_link_types_fwd.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="to__daw__json__string_8h_source.html">daw/json/impl/to_daw_json_string.h</a>&quot;</code><br />
+<code>#include &lt;daw/daw_enable_requires.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;iterator&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
-<code>#include &lt;string_view&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
 </div>
 <p><a href="daw__to__json_8h_source.html">Go to the source code of this file.</a></p>
@@ -106,15 +106,15 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a671911387b73690626d3a1625db0306b" id="r_a671911387b73690626d3a1625db0306b"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename Value , typename WritableType , auto... PolicyFlags  DAW_JSON_ENABLEIF2&gt; </td></tr>
-<tr class="memitem:a671911387b73690626d3a1625db0306b"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a671911387b73690626d3a1625db0306b">daw::json::anonymous_namespace{daw_to_json.h}::DAW_JSON_REQUIRES</a> (concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt; &gt;) const expr daw</td></tr>
-<tr class="separator:a671911387b73690626d3a1625db0306b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b0ae10d78464e8ad4060170d184b4d7" id="r_a1b0ae10d78464e8ad4060170d184b4d7"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename Value , auto... PolicyFlags&gt; </td></tr>
-<tr class="memitem:a1b0ae10d78464e8ad4060170d184b4d7"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a1b0ae10d78464e8ad4060170d184b4d7">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a> (Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</td></tr>
-<tr class="separator:a1b0ae10d78464e8ad4060170d184b4d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c68962d2cee35480daec18fc98ceeb6" id="r_a7c68962d2cee35480daec18fc98ceeb6"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement , typename Container , auto... PolicyFlags&gt; </td></tr>
-<tr class="memitem:a7c68962d2cee35480daec18fc98ceeb6"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a7c68962d2cee35480daec18fc98ceeb6">daw::json::anonymous_namespace{daw_to_json.h}::to_json_array</a> (Container const &amp;c, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</td></tr>
-<tr class="separator:a7c68962d2cee35480daec18fc98ceeb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad89adaab033473883217f0216548fb85" id="r_ad89adaab033473883217f0216548fb85"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename Value , typename WritableType , auto... PolicyFlags  DAW_ENABLEIF2&gt; </td></tr>
+<tr class="memitem:ad89adaab033473883217f0216548fb85"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#ad89adaab033473883217f0216548fb85">daw::json::anonymous_namespace{daw_to_json.h}::DAW_REQUIRES</a> (concepts::is_writable_output_type_v&lt; daw::remove_cvref_t&lt; WritableType &gt; &gt;) const expr daw</td></tr>
+<tr class="separator:ad89adaab033473883217f0216548fb85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f6ea38246217a2dfc5fafe865901d44" id="r_a5f6ea38246217a2dfc5fafe865901d44"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename Value , auto... PolicyFlags&gt; </td></tr>
+<tr class="memitem:a5f6ea38246217a2dfc5fafe865901d44"><td class="memTemplItemLeft" align="right" valign="top">DAW_CPP20_CX_ALLOC std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a> (Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</td></tr>
+<tr class="separator:a5f6ea38246217a2dfc5fafe865901d44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb50401aa25d0fc39723df50b115017e" id="r_aeb50401aa25d0fc39723df50b115017e"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement , typename Container , auto... PolicyFlags&gt; </td></tr>
+<tr class="memitem:aeb50401aa25d0fc39723df50b115017e"><td class="memTemplItemLeft" align="right" valign="top">DAW_CPP20_CX_ALLOC std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#aeb50401aa25d0fc39723df50b115017e">daw::json::anonymous_namespace{daw_to_json.h}::to_json_array</a> (Container const &amp;c, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</td></tr>
+<tr class="separator:aeb50401aa25d0fc39723df50b115017e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

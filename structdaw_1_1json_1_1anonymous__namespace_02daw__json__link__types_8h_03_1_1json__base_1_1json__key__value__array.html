@@ -111,21 +111,21 @@ Public Types</h2></td></tr>
 <tr class="separator:adfa0f9cb19546989608b4e91403befa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeba1116907ee29b314a8a409495e734f" id="r_aeba1116907ee29b314a8a409495e734f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__key__value__array.html#aeba1116907ee29b314a8a409495e734f">value_type_t</a> = typename daw::conditional_t&lt; std::is_same_v&lt; use_default, JsonValueType &gt;, json_details::ident_trait&lt; json_details::mapped_type_t, Container &gt;, daw::traits::identity&lt; JsonValueType &gt; &gt;::type</td></tr>
 <tr class="separator:aeba1116907ee29b314a8a409495e734f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa82bdeaa9ab53bd5700742a3cb1352e2" id="r_aa82bdeaa9ab53bd5700742a3cb1352e2"><td class="memTemplParams" colspan="2">template&lt;char const * NewName&gt; </td></tr>
+<tr class="memitem:aa82bdeaa9ab53bd5700742a3cb1352e2" id="r_aa82bdeaa9ab53bd5700742a3cb1352e2"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> NewName&gt; </td></tr>
 <tr class="memitem:aa82bdeaa9ab53bd5700742a3cb1352e2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__key__value__array.html#aa82bdeaa9ab53bd5700742a3cb1352e2">with_name</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__key__value__array.html">daw::json::json_key_value_array</a>&lt; NewName, Container, JsonValueType, JsonKeyType, Constructor &gt;</td></tr>
 <tr class="separator:aa82bdeaa9ab53bd5700742a3cb1352e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a3a23ab97dd3ab1c095d39f37882d6439" id="r_a3a23ab97dd3ab1c095d39f37882d6439"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674">JsonParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__key__value__array.html#a3a23ab97dd3ab1c095d39f37882d6439">expected_type</a></td></tr>
-<tr class="separator:a3a23ab97dd3ab1c095d39f37882d6439"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5fd7e0baa1cd9165755d7cefdc64c82" id="r_aa5fd7e0baa1cd9165755d7cefdc64c82"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#acd40264b57a9a9f908f31622031701de">JsonBaseParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__key__value__array.html#aa5fd7e0baa1cd9165755d7cefdc64c82">underlying_json_type</a></td></tr>
-<tr class="separator:aa5fd7e0baa1cd9165755d7cefdc64c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dc5f109ed9472752da5efaa5b92f4a4" id="r_a7dc5f109ed9472752da5efaa5b92f4a4"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__key__value__array.html#a7dc5f109ed9472752da5efaa5b92f4a4">expected_type</a> = JsonParseTypes::KeyValueArray</td></tr>
+<tr class="separator:a7dc5f109ed9472752da5efaa5b92f4a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0655a190227efd47a150c14f4588c851" id="r_a0655a190227efd47a150c14f4588c851"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__key__value__array.html#a0655a190227efd47a150c14f4588c851">underlying_json_type</a> = JsonBaseParseTypes::Array</td></tr>
+<tr class="separator:a0655a190227efd47a150c14f4588c851"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Container, typename JsonValueType, typename JsonKeyType, typename Constructor&gt;<br />
 struct daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_key_value_array&lt; Container, JsonValueType, JsonKeyType, Constructor &gt;</div>
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01513">1513</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01492">1492</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="ae13dd6f8e89b02d6785a58711e994423" name="ae13dd6f8e89b02d6785a58711e994423"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae13dd6f8e89b02d6785a58711e994423">&#9670;&#160;</a></span>constructor_t</h2>
@@ -141,7 +141,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01526">1526</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01505">1505</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -159,7 +159,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01514">1514</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01493">1493</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -177,7 +177,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01546">1546</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01525">1525</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -195,7 +195,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01535">1535</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01514">1514</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -213,7 +213,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01543">1543</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01522">1522</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -231,7 +231,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01521">1521</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01500">1500</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -249,7 +249,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01533">1533</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01512">1512</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -267,7 +267,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01516">1516</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01495">1495</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -279,7 +279,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
 <div class="memtemplate">
 template&lt;typename Container , typename JsonValueType , typename JsonKeyType , typename Constructor &gt; </div>
 <div class="memtemplate">
-template&lt;char const * NewName&gt; </div>
+template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> NewName&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_key_value_array&lt; Container, JsonValueType, JsonKeyType, Constructor &gt;::with_name =  <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__key__value__array.html">daw::json::json_key_value_array</a>&lt;NewName, Container, JsonValueType, JsonKeyType, Constructor&gt;</td>
@@ -287,13 +287,13 @@ template&lt;char const * NewName&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01562">1562</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01539">1539</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a3a23ab97dd3ab1c095d39f37882d6439" name="a3a23ab97dd3ab1c095d39f37882d6439"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a23ab97dd3ab1c095d39f37882d6439">&#9670;&#160;</a></span>expected_type</h2>
+<a id="a7dc5f109ed9472752da5efaa5b92f4a4" name="a7dc5f109ed9472752da5efaa5b92f4a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dc5f109ed9472752da5efaa5b92f4a4">&#9670;&#160;</a></span>expected_type</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -304,7 +304,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674">JsonParseTypes</a> daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_key_value_array&lt; Container, JsonValueType, JsonKeyType, Constructor &gt;::expected_type</td>
+          <td class="memname">constexpr auto daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_key_value_array&lt; Container, JsonValueType, JsonKeyType, Constructor &gt;::expected_type = JsonParseTypes::KeyValueArray</td>
         </tr>
       </table>
   </td>
@@ -313,15 +313,13 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">          JsonParseTypes::KeyValueArray</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01556">1556</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01535">1535</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
-<a id="aa5fd7e0baa1cd9165755d7cefdc64c82" name="aa5fd7e0baa1cd9165755d7cefdc64c82"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa5fd7e0baa1cd9165755d7cefdc64c82">&#9670;&#160;</a></span>underlying_json_type</h2>
+<a id="a0655a190227efd47a150c14f4588c851" name="a0655a190227efd47a150c14f4588c851"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0655a190227efd47a150c14f4588c851">&#9670;&#160;</a></span>underlying_json_type</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -332,7 +330,7 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#acd40264b57a9a9f908f31622031701de">JsonBaseParseTypes</a> daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_key_value_array&lt; Container, JsonValueType, JsonKeyType, Constructor &gt;::underlying_json_type</td>
+          <td class="memname">constexpr auto daw::json::anonymous_namespace{daw_json_link_types.h}::json_base::json_key_value_array&lt; Container, JsonValueType, JsonKeyType, Constructor &gt;::underlying_json_type = JsonBaseParseTypes::Array</td>
         </tr>
       </table>
   </td>
@@ -341,10 +339,8 @@ template&lt;typename Container , typename JsonValueType , typename JsonKeyType ,
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">          JsonBaseParseTypes::Array</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01558">1558</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l01536">1536</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>

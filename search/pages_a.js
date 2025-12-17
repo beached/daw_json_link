@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['mapping_20types_0',['Mapping Types',['../md_docs_2cookbook_2mapping__overview.html',1,'']]],
-  ['mapping_5fdeduction_1',['mapping_deduction',['../md_docs_2cookbook_2mapping__deduction.html',1,'']]],
-  ['member_20options_20type_20options_2',['Member Options/Type Options',['../md_docs_2cookbook_2member__options.html',1,'']]],
-  ['members_3',['Parsing Individual Members',['../md_docs_2cookbook_2parsing__individual__members.html',1,'']]]
+  ['lines_20support_0',['JSON Lines Support',['../md_docs_2cookbook_2json__lines.html',1,'']]],
+  ['link_1',['DAW JSON Link',['../index.html',1,'']]]
 ];
