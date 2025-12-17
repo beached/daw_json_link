@@ -114,6 +114,15 @@ static_assert( daw::json::refl_details::construction_test_v<
                HasHidden2, daw::json::refl_details::to_tuple_t<HasHidden2>> );
 static_assert( daw::json::ReflectionEnabled<HasHidden2> );
 
+struct ExternallyEnabled {
+	int member1;
+	int member2;
+};
+
+template<>
+inline constexpr bool daw::json::enable_reflection_for<ExternallyEnabled> =
+  true;
+
 int main( ) try {
 	constexpr daw::string_view json_doc0 = R"json(
 {
@@ -126,6 +135,12 @@ int main( ) try {
 	daw_ensure( val0.m2 == 123 );
 	auto const val0_json = daw::json::to_json( val0 );
 	daw::println( "json: {}", val0_json );
+
+	constexpr auto val0b = daw::json::from_json<ExternallyEnabled>( json_doc0 );
+	daw_ensure( val0b.member1 == 55 );
+	daw_ensure( val0b.member2 == 123 );
+	auto const val0b_json = daw::json::to_json( val0b );
+	daw::println( "json: {}", val0b_json );
 
 	constexpr daw::string_view json_doc1 = R"json(
 	{
@@ -235,6 +250,7 @@ int main( ) try {
 	daw_ensure( h1.x == 55 );
 	daw_ensure( h1.y.value == 4242 );
 	daw_ensure( h1.z == 66 );
+
 	return EXIT_SUCCESS;
 } catch( daw::json::json_exception const &jex ) {
 	daw::println( "unexpected JSON Exception: {}", to_formatted_string( jex ) );

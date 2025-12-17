@@ -1,4 +1,4 @@
-# Member Options/Type Options
+::# Member Options/Type Options
 
 Many of the member types have options that can change how they are parsed. The options and their setters are located in
 the `daw::json::options` namespace and are placed into `Options` template parameter via a setter function that encodes

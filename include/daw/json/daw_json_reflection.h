@@ -432,9 +432,13 @@ namespace daw::json::inline DAW_JSON_VER {
 
 		inline constexpr auto reflect = reflect_t{ };
 
-		template<typename T>
-		concept ReflectionEnabled = refl_details::has_annotation<reflect_t, T>( );
 	} // namespace experimental
+	template<typename T>
+	inline constexpr bool enable_reflection_for = false;
+
+	template<typename T>
+	concept ReflectionEnabled =
+	  enable_reflection_for<T> or refl_details::has_annotation<reflect_t, T>( );
 
 	template<ReflectionEnabled T>
 	struct json_data_contract<T> {
