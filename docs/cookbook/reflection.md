@@ -24,7 +24,7 @@ struct [[= reflect ]] Person {
 };
 
 int main( ) {
-    static constexpr std::string_view json_doc = R"json(
+    std::string_view json_doc = R"json(
 {
  "age": 42,
  "name": "Jane Smith",
@@ -35,7 +35,7 @@ int main( ) {
     assert( p.age == 42 );
     assert( p.name == "Jane Smith" );
     assert( p.eyeColour == Colour::blue );
-    std::println( daw::json::to_json( p ) ); 
+    std::println( "{}", daw::json::to_json( p ) ); 
 }
 ```
 
@@ -76,7 +76,7 @@ struct [[= reflect ]] Person {
 };
 
 int main( ) {
-    static constexpr std::string_view json_doc = R"json(
+    std::string_view json_doc = R"json(
 {
  "age": 42,
  "fullName": "Jane Smith",
@@ -87,7 +87,7 @@ int main( ) {
     assert( p.age == 42 );
     assert( p.name == "Jane Smith" );
     assert( p.eyeColour == Colour::blue );
-    std::println( daw::json::to_json( p ) ); 
+    std::println( "{}", daw::json::to_json( p ) ); 
 }
 ```
 
@@ -127,7 +127,7 @@ struct [[= reflect ]] Person {
 };
 
 int main( ) {
-    static constexpr std::string_view json_doc = R"json(
+    std::string_view json_doc = R"json(
 {
  "age": "42",
  "fullName": "Jane Smith"
@@ -136,7 +136,7 @@ int main( ) {
     auto p = daw::json::from_json<Person>( json_doc );
     assert( p.age == 42 );
     assert( p.name == "Jane Smith" );
-    std::println( daw::json::to_json( p ) ); 
+    std::println( "{}", daw::json::to_json( p ) ); 
 }
 ```
 
@@ -186,7 +186,7 @@ struct [[= reflect ]] Person {
 };
 
 int main( ) {
-    static constexpr std::string_view json_doc = R"json(
+    std::string_view json_doc = R"json(
 {
  "age": "42",
  "fullName": "Jane Smith"
@@ -197,7 +197,7 @@ int main( ) {
     assert( p.age == 42 );
     assert( p.name == "Jane Smith" );
     assert( p.eyeColour == Colour::blue );
-    std::println( daw::json::to_json( p ) ); 
+    std::println( "{}", daw::json::to_json( p ) ); 
 }
 ```
 
@@ -243,7 +243,7 @@ struct [[= reflect ]] Person {
 };
 
 int main( ) {
-    static constexpr std::string_view json_doc = R"json(
+    std::string_view json_doc = R"json(
 {
  "age": "42",
  "fullName": "Jane Smith"
@@ -255,7 +255,7 @@ int main( ) {
     assert( p.name == "Jane Smith" );
     assert( p.eyeColour == Colour::blue );
     assert( p.code == 0 );
-    std::println( daw::json::to_json( p ) ); 
+    std::println( "{}", daw::json::to_json( p ) ); 
 }
 ```
 
@@ -301,7 +301,7 @@ struct [[= reflect ]] Person {
 };
 
 int main( ) {
-    static constexpr std::string_view json_doc = R"json(
+    std::string_view json_doc = R"json(
 {
  "age": "42",
  "fullName": "Jane Smith"
@@ -313,7 +313,7 @@ int main( ) {
     assert( p.name == "Jane Smith" );
     assert( p.eyeColour == Colour::blue );
     assert( p.code == 55 );
-    std::println( daw::json::to_json( p ) ); 
+    std::println( "{}", daw::json::to_json( p ) ); 
 }
 ```
 
@@ -358,7 +358,7 @@ struct [[= reflect ]] Person {
 };
 
 int main( ) {
-    static constexpr std::string_view json_doc = R"json(
+    std::string_view json_doc = R"json(
 {
  "age": "42",
  "fullName": "Jane Smith"
@@ -370,7 +370,7 @@ int main( ) {
     assert( p.name == "Jane Smith" );
     assert( p.eyeColour == Colour::blue );
     assert( p.code == 5555 );
-    std::println( daw::json::to_json( p ) ); 
+    std::println( "{}", daw::json::to_json( p ) ); 
 }
 ```
 
