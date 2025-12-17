@@ -95,7 +95,7 @@ Basic example</h1>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
+<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
 <div class="line"><span class="stringliteral">{</span></div>
 <div class="line"><span class="stringliteral"> &quot;age&quot;: 42,</span></div>
 <div class="line"><span class="stringliteral"> &quot;name&quot;: &quot;Jane Smith&quot;,</span></div>
@@ -106,7 +106,7 @@ Basic example</h1>
 <div class="line">    assert( p.age == 42 );</div>
 <div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
 <div class="line">    assert( p.eyeColour == Colour::blue );</div>
-<div class="line">    std::println( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
+<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
 <div class="line">}</div>
 <div class="ttc" id="adaw__json__link_8h_html"><div class="ttname"><a href="daw__json__link_8h.html">daw_json_link.h</a></div></div>
 <div class="ttc" id="adaw__json__reflection_8h_html"><div class="ttname"><a href="daw__json__reflection_8h.html">daw_json_reflection.h</a></div></div>
@@ -140,7 +140,7 @@ Renaming members</h1>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
+<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
 <div class="line"><span class="stringliteral">{</span></div>
 <div class="line"><span class="stringliteral"> &quot;age&quot;: 42,</span></div>
 <div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;,</span></div>
@@ -151,7 +151,7 @@ Renaming members</h1>
 <div class="line">    assert( p.age == 42 );</div>
 <div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
 <div class="line">    assert( p.eyeColour == Colour::blue );</div>
-<div class="line">    std::println( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
+<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:0}</div>
@@ -184,7 +184,7 @@ Explicitly setting the member mapping</h1>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
+<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
 <div class="line"><span class="stringliteral">{</span></div>
 <div class="line"><span class="stringliteral"> &quot;age&quot;: &quot;42&quot;,</span></div>
 <div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;</span></div>
@@ -193,7 +193,7 @@ Explicitly setting the member mapping</h1>
 <div class="line"><span class="stringliteral">    </span><span class="keyword">auto</span> p = daw::json::from_json&lt;Person&gt;( json_doc );</div>
 <div class="line">    assert( p.age == 42 );</div>
 <div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
-<div class="line">    std::println( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
+<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
 <div class="line">}</div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00495">daw_json_link_types.h:495</a></div></div>
 </div><!-- fragment --><p>The program will output</p>
@@ -234,7 +234,7 @@ Enumerations as strings</h1>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
+<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
 <div class="line"><span class="stringliteral">{</span></div>
 <div class="line"><span class="stringliteral"> &quot;age&quot;: &quot;42&quot;,</span></div>
 <div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;</span></div>
@@ -245,7 +245,7 @@ Enumerations as strings</h1>
 <div class="line">    assert( p.age == 42 );</div>
 <div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
 <div class="line">    assert( p.eyeColour == Colour::blue );</div>
-<div class="line">    std::println( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
+<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
@@ -283,7 +283,7 @@ Ignoring members</h1>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
+<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
 <div class="line"><span class="stringliteral">{</span></div>
 <div class="line"><span class="stringliteral"> &quot;age&quot;: &quot;42&quot;,</span></div>
 <div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;</span></div>
@@ -295,7 +295,7 @@ Ignoring members</h1>
 <div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
 <div class="line">    assert( p.eyeColour == Colour::blue );</div>
 <div class="line">    assert( p.code == 0 );</div>
-<div class="line">    std::println( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
+<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
@@ -333,7 +333,7 @@ Ignored with default value</h2>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
+<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
 <div class="line"><span class="stringliteral">{</span></div>
 <div class="line"><span class="stringliteral"> &quot;age&quot;: &quot;42&quot;,</span></div>
 <div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;</span></div>
@@ -345,7 +345,7 @@ Ignored with default value</h2>
 <div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
 <div class="line">    assert( p.eyeColour == Colour::blue );</div>
 <div class="line">    assert( p.code == 55 );</div>
-<div class="line">    std::println( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
+<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
@@ -383,7 +383,7 @@ Ignored with a default callable</h2>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
+<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
 <div class="line"><span class="stringliteral">{</span></div>
 <div class="line"><span class="stringliteral"> &quot;age&quot;: &quot;42&quot;,</span></div>
 <div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;</span></div>
@@ -395,7 +395,7 @@ Ignored with a default callable</h2>
 <div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
 <div class="line">    assert( p.eyeColour == Colour::blue );</div>
 <div class="line">    assert( p.code == 5555 );</div>
-<div class="line">    std::println( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
+<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
