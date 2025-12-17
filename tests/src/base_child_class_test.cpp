@@ -113,7 +113,7 @@ struct Foo {
 struct FooMaker {
 	std::unique_ptr<Base> operator( )( char const *str, std::size_t sz ) const {
 		using namespace daw::json;
-		auto jv = json_value( daw::string_view( str, sz ) );
+		auto const jv = json_value( daw::string_view( str, sz ) );
 		(void)jv;
 		switch( as<std::size_t>( jv["type"] ) ) {
 		case 0:
@@ -148,7 +148,7 @@ constexpr std::string_view json_doc = R"json(
 )json";
 
 int main( ) {
-	auto foo = daw::json::from_json<std::vector<Foo>>( json_doc );
+	auto const foo = daw::json::from_json<std::vector<Foo>>( json_doc );
 	ensure( foo[0].value->type( ) == 0 );
 	ensure( foo[0].value->value( ) == 42 );
 	ensure( foo[1].value->type( ) == 1 );
@@ -158,6 +158,6 @@ int main( ) {
 
 	auto str = daw::json::to_json( foo );
 	std::cout << str << '\n';
-	auto foo2 = daw::json::from_json<std::vector<Foo>>( str );
+	auto const foo2 = daw::json::from_json<std::vector<Foo>>( str );
 	ensure( foo == foo2 );
 }

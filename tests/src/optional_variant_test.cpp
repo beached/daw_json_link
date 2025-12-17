@@ -44,7 +44,7 @@ namespace daw::json {
 		  json_variant_null<member1, std::optional<std::variant<std::string, bool>>,
 		                    json_variant_type_list<std::string, bool>>>;
 
-		static inline auto
+		static auto
 		to_json_data( daw::cookbook_variant1::MyVariantStuff1 const &value ) {
 			return std::forward_as_tuple( value.member0, value.member1 );
 		}
@@ -60,7 +60,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to optional_variant.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 	puts( "Original" );
 	puts( data.c_str( ) );
 	auto stuff =

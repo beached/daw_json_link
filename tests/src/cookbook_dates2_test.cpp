@@ -79,8 +79,8 @@ namespace daw::cookbook_dates2 {
 			  yr_sign *
 			  daw::json::parse_utils::parse_unsigned2<int_least32_t>( sv.data( ) );
 
-			return daw::json::datetime::civil_to_time_point( yr, mo, dy, hr, mn, se,
-			                                                 0 ) +
+			return daw::json::datetime::civil_to_time_point(
+			         yr, mo, dy, hr, mn, se, 0 ) +
 			       std::chrono::hours( off_hr ) + std::chrono::minutes( off_mn );
 		}
 
@@ -144,8 +144,7 @@ namespace daw::json {
 		  json_member_list<json_string<name>,
 		                   daw::cookbook_dates2::json_timestamp<timestamp>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_dates2::MyClass2 const &value ) {
+		static auto to_json_data( daw::cookbook_dates2::MyClass2 const &value ) {
 			return std::forward_as_tuple( value.name, value.timestamp );
 		}
 	};
@@ -160,7 +159,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_dates2.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 	puts( data.data( ) );
 
 	auto const cls = daw::json::from_json<daw::cookbook_dates2::MyClass2>(

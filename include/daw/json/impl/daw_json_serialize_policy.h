@@ -76,7 +76,8 @@ namespace daw::json {
 				return *m_writable;
 			}
 
-			DAW_ATTRIB_INLINE explicit constexpr serialization_policy( WritableType &writable )
+			DAW_ATTRIB_INLINE explicit constexpr serialization_policy(
+			  WritableType &writable )
 			  : m_writable( std::addressof( writable ) ) {}
 
 			static constexpr options::SerializationFormat serialization_format =
@@ -116,7 +117,7 @@ namespace daw::json {
 			DAW_ATTRIB_INLINE constexpr void output_indent( ) {
 				if constexpr( serialization_format !=
 				              options::SerializationFormat::Minified ) {
-					constexpr std::string_view indent =
+					DAW_CPP23_STATIC_LOCAL constexpr std::string_view indent =
 					  json_details::serialization::generate_indent<serialization_format,
 					                                               indentation_type>;
 					if( not indent.empty( ) ) {
@@ -152,7 +153,8 @@ namespace daw::json {
 			write( ContiguousCharRange const &chr,
 			       ContiguousCharRanges const &...chrs ) {
 
-				write_output( *m_writable, json_details::as_sv( chr ),
+				write_output( *m_writable,
+				              json_details::as_sv( chr ),
 				              json_details::as_sv( chrs )... );
 			}
 

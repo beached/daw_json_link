@@ -26,7 +26,7 @@ namespace daw::json {
 	struct json_data_contract<MyClass> {
 		using type = json_type_alias<std::string>;
 
-		static inline auto to_json_data( MyClass const &v ) {
+		static auto to_json_data( MyClass const &v ) {
 			return v.value;
 		}
 	};
@@ -44,8 +44,8 @@ int main( int argc, char **argv )
 	auto const data = daw::read_file( argv[1] );
 	assert( data and data->size( ) > 0 );
 
-	MyClass c0 = daw::json::from_json<MyClass>( *data );
-	std::string json0 = daw::json::to_json( c0 );
+	MyClass const c0 = daw::json::from_json<MyClass>( *data );
+	std::string const json0 = daw::json::to_json( c0 );
 	std::cout << json0 << '\n';
 	(void)c0;
 }

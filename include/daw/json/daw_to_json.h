@@ -8,19 +8,19 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "concepts/daw_writable_output.h"
-#include "daw_to_json_fwd.h"
-#include "impl/daw_json_container_appender.h"
-#include "impl/daw_json_link_types_fwd.h"
-#include "impl/to_daw_json_string.h"
+#include "daw/json/concepts/daw_writable_output.h"
+#include "daw/json/daw_to_json_fwd.h"
+#include "daw/json/impl/daw_json_container_appender.h"
+#include "daw/json/impl/daw_json_link_types_fwd.h"
+#include "daw/json/impl/to_daw_json_string.h"
 
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_traits.h>
 
 #include <iterator>
 #include <string>
-#include <string_view>
 #include <type_traits>
 
 namespace daw::json {
@@ -46,11 +46,11 @@ namespace daw::json {
 			}
 		} // namespace json_details
 
-		template<typename JsonClass, typename Value, typename WritableType,
-		         auto... PolicyFlags DAW_JSON_ENABLEIF2(
-		           concepts::is_writable_output_type_v<
-		             daw::remove_cvref_t<WritableType>> )>
-		DAW_JSON_REQUIRES(
+		template<
+		  typename JsonClass, typename Value, typename WritableType,
+		  auto... PolicyFlags DAW_ENABLEIF2( concepts::is_writable_output_type_v<
+		                                     daw::remove_cvref_t<WritableType>> )>
+		DAW_REQUIRES(
 		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json(
 		  Value const &value, WritableType &&it,
@@ -74,8 +74,9 @@ namespace daw::json {
 		}
 
 		template<typename JsonClass, typename Value, auto... PolicyFlags>
-		inline std::string to_json( Value const &value,
-		                            options::output_flags_t<PolicyFlags...> flgs ) {
+		DAW_CPP20_CX_ALLOC std::string
+		to_json( Value const &value,
+		         options::output_flags_t<PolicyFlags...> flgs ) {
 			std::string result{ };
 			result.reserve( 4096 );
 			(void)to_json( value, result, flgs );
@@ -83,11 +84,11 @@ namespace daw::json {
 			return result;
 		}
 
-		template<typename JsonElement, typename Container, typename WritableType,
-		         auto... PolicyFlags DAW_JSON_ENABLEIF2(
-		           concepts::is_writable_output_type_v<
-		             daw::remove_cvref_t<WritableType>> )>
-		DAW_JSON_REQUIRES(
+		template<
+		  typename JsonElement, typename Container, typename WritableType,
+		  auto... PolicyFlags DAW_ENABLEIF2( concepts::is_writable_output_type_v<
+		                                     daw::remove_cvref_t<WritableType>> )>
+		DAW_REQUIRES(
 		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json_array(
 		  Container const &c, WritableType &&it,
@@ -159,11 +160,11 @@ namespace daw::json {
 		}
 
 		template<typename JsonElement, typename Container, auto... PolicyFlags>
-		inline std::string
+		DAW_CPP20_CX_ALLOC std::string
 		to_json_array( Container const &c,
 		               options::output_flags_t<PolicyFlags...> flgs ) {
 			static_assert( not std::is_same_v<std::string, JsonElement> );
-			std::string result{ };
+			auto result = std::string{ };
 			result.reserve( 4096 );
 			(void)to_json_array( c, result, flgs );
 			result.shrink_to_fit( );

@@ -60,10 +60,10 @@ namespace daw::json {
 		  json_bool_null<member2, std::unique_ptr<bool>,
 		                 options::bool_opt( options::LiteralAsStringOpt::Never )>>;
 
-		static inline auto to_json_data(
+		static auto to_json_data(
 		  daw::cookbook_optional_values1::MyOptionalStuff1 const &value ) {
-			return std::forward_as_tuple( value.member0, value.member1,
-			                              value.member2 );
+			return std::forward_as_tuple(
+			  value.member0, value.member1, value.member2 );
 		}
 	};
 } // namespace daw::json
@@ -77,7 +77,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_optional_values1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 	puts( "Original" );
 	puts( data.c_str( ) );
 

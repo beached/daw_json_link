@@ -66,8 +66,8 @@ namespace daw::twitter {
 			  yr_sign *
 			  daw::json::parse_utils::parse_unsigned2<int_least32_t>( sv.data( ) );
 
-			return daw::json::datetime::civil_to_time_point( yr, mo, dy, hr, mn, se,
-			                                                 0 ) +
+			return daw::json::datetime::civil_to_time_point(
+			         yr, mo, dy, hr, mn, se, 0 ) +
 			       std::chrono::hours( off_hr ) + std::chrono::minutes( off_mn );
 		}
 
@@ -156,8 +156,8 @@ namespace daw::json {
 #endif
 		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::urls_element_t const &value ) {
-			return std::forward_as_tuple( value.url, value.expanded_url,
-			                              value.display_url, value.indices );
+			return std::forward_as_tuple(
+			  value.url, value.expanded_url, value.display_url, value.indices );
 		}
 	};
 
@@ -342,22 +342,44 @@ namespace daw::json {
 #endif
 		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::user_t const &value ) {
-			return std::forward_as_tuple(
-			  value.id, value.id_str, value.name, value.screen_name, value.location,
-			  value.description, value.url, value.entities, value._jsonprotected,
-			  value.followers_count, value.friends_count, value.listed_count,
-			  value.created_at, value.favourites_count, value.geo_enabled,
-			  value.verified, value.statuses_count, value.lang,
-			  value.contributors_enabled, value.is_translator,
-			  value.is_translation_enabled, value.profile_background_color,
-			  value.profile_background_image_url,
-			  value.profile_background_image_url_https, value.profile_background_tile,
-			  value.profile_image_url, value.profile_image_url_https,
-			  value.profile_banner_url, value.profile_link_color,
-			  value.profile_sidebar_border_color, value.profile_sidebar_fill_color,
-			  value.profile_text_color, value.profile_use_background_image,
-			  value.default_profile, value.default_profile_image, value.following,
-			  value.follow_request_sent, value.notifications );
+			return std::forward_as_tuple( value.id,
+			                              value.id_str,
+			                              value.name,
+			                              value.screen_name,
+			                              value.location,
+			                              value.description,
+			                              value.url,
+			                              value.entities,
+			                              value._jsonprotected,
+			                              value.followers_count,
+			                              value.friends_count,
+			                              value.listed_count,
+			                              value.created_at,
+			                              value.favourites_count,
+			                              value.geo_enabled,
+			                              value.verified,
+			                              value.statuses_count,
+			                              value.lang,
+			                              value.contributors_enabled,
+			                              value.is_translator,
+			                              value.is_translation_enabled,
+			                              value.profile_background_color,
+			                              value.profile_background_image_url,
+			                              value.profile_background_image_url_https,
+			                              value.profile_background_tile,
+			                              value.profile_image_url,
+			                              value.profile_image_url_https,
+			                              value.profile_banner_url,
+			                              value.profile_link_color,
+			                              value.profile_sidebar_border_color,
+			                              value.profile_sidebar_fill_color,
+			                              value.profile_text_color,
+			                              value.profile_use_background_image,
+			                              value.default_profile,
+			                              value.default_profile_image,
+			                              value.following,
+			                              value.follow_request_sent,
+			                              value.notifications );
 		}
 	};
 
@@ -453,14 +475,26 @@ namespace daw::json {
 #endif
 		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::tweet_object_t const &value ) {
-			return std::forward_as_tuple(
-			  value.metadata, value.created_at, value.id, value.id_str, value.text,
-			  value.source, value.truncated, value.in_reply_to_status_id,
-			  value.in_reply_to_status_id_str, value.in_reply_to_user_id,
-			  value.in_reply_to_user_id_str, value.in_reply_to_screen_name,
-			  value.user, value.retweet_count, value.favorite_count, value.entities,
-			  value.favorited, value.retweeted, value.possibly_sensitive,
-			  value.lang );
+			return std::forward_as_tuple( value.metadata,
+			                              value.created_at,
+			                              value.id,
+			                              value.id_str,
+			                              value.text,
+			                              value.source,
+			                              value.truncated,
+			                              value.in_reply_to_status_id,
+			                              value.in_reply_to_status_id_str,
+			                              value.in_reply_to_user_id,
+			                              value.in_reply_to_user_id_str,
+			                              value.in_reply_to_screen_name,
+			                              value.user,
+			                              value.retweet_count,
+			                              value.favorite_count,
+			                              value.entities,
+			                              value.favorited,
+			                              value.retweeted,
+			                              value.possibly_sensitive,
+			                              value.lang );
 		}
 	};
 
@@ -487,8 +521,8 @@ namespace daw::json {
 #endif
 		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::user_mentions_element_t const &value ) {
-			return std::forward_as_tuple( value.screen_name, value.name, value.id,
-			                              value.id_str, value.indices );
+			return std::forward_as_tuple(
+			  value.screen_name, value.name, value.id, value.id_str, value.indices );
 		}
 	};
 
@@ -591,8 +625,8 @@ namespace daw::json {
 #endif
 		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::sizes_t const &value ) {
-			return std::forward_as_tuple( value.medium, value.small_, value.thumb,
-			                              value.large );
+			return std::forward_as_tuple(
+			  value.medium, value.small_, value.thumb, value.large );
 		}
 	};
 
@@ -633,10 +667,16 @@ namespace daw::json {
 #endif
 		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::media_element_t const &value ) {
-			return std::forward_as_tuple(
-			  value.id, value.id_str, value.indices, value.media_url,
-			  value.media_url_https, value.url, value.display_url, value.expanded_url,
-			  value.type, value.sizes );
+			return std::forward_as_tuple( value.id,
+			                              value.id_str,
+			                              value.indices,
+			                              value.media_url,
+			                              value.media_url_https,
+			                              value.url,
+			                              value.display_url,
+			                              value.expanded_url,
+			                              value.type,
+			                              value.sizes );
 		}
 	};
 
@@ -712,14 +752,26 @@ namespace daw::json {
 #endif
 		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::retweeted_status_t const &value ) {
-			return std::forward_as_tuple(
-			  value.metadata, value.created_at, value.id, value.id_str, value.text,
-			  value.source, value.truncated, value.in_reply_to_status_id,
-			  value.in_reply_to_status_id_str, value.in_reply_to_user_id,
-			  value.in_reply_to_user_id_str, value.in_reply_to_screen_name,
-			  value.user, value.retweet_count, value.favorite_count, value.entities,
-			  value.favorited, value.retweeted, value.possibly_sensitive,
-			  value.lang );
+			return std::forward_as_tuple( value.metadata,
+			                              value.created_at,
+			                              value.id,
+			                              value.id_str,
+			                              value.text,
+			                              value.source,
+			                              value.truncated,
+			                              value.in_reply_to_status_id,
+			                              value.in_reply_to_status_id_str,
+			                              value.in_reply_to_user_id,
+			                              value.in_reply_to_user_id_str,
+			                              value.in_reply_to_screen_name,
+			                              value.user,
+			                              value.retweet_count,
+			                              value.favorite_count,
+			                              value.entities,
+			                              value.favorited,
+			                              value.retweeted,
+			                              value.possibly_sensitive,
+			                              value.lang );
 		}
 	};
 
@@ -756,10 +808,15 @@ namespace daw::json {
 #endif
 		[[nodiscard]] static inline auto
 		to_json_data( daw::twitter::search_metadata_t const &value ) {
-			return std::forward_as_tuple( value.completed_in, value.max_id,
-			                              value.max_id_str, value.next_results,
-			                              value.query, value.refresh_url, value.count,
-			                              value.since_id, value.since_id_str );
+			return std::forward_as_tuple( value.completed_in,
+			                              value.max_id,
+			                              value.max_id_str,
+			                              value.next_results,
+			                              value.query,
+			                              value.refresh_url,
+			                              value.count,
+			                              value.since_id,
+			                              value.since_id_str );
 		}
 	};
 

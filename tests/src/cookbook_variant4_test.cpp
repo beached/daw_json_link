@@ -70,8 +70,8 @@ namespace daw::json {
 
 		static constexpr auto
 		to_json_data( daw::cookbook_variant4::v1::Config const &v ) {
-			return std::forward_as_tuple( v.version, v.name, v.value,
-			                              v.next_question );
+			return std::forward_as_tuple(
+			  v.version, v.name, v.value, v.next_question );
 		}
 	};
 
@@ -112,7 +112,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_variant4.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 	auto json_data = std::string_view( data.data( ), data.size( ) );
 
 	auto configs =

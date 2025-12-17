@@ -63,7 +63,7 @@ namespace daw::json {
 		static constexpr char const flag[] = "flag";
 		using type = json_member_list<json_string<file>, json_bool<flag>>;
 
-		static inline auto to_json_data( ConfigV1 const &c ) {
+		static auto to_json_data( ConfigV1 const &c ) {
 			return std::forward_as_tuple( c.file, c.flag );
 		}
 	};
@@ -79,9 +79,9 @@ namespace daw::json {
 		  json_member_list<json_bool<flag1>, json_bool<flag2>, json_bool<flag3>,
 		                   json_bool<flag4>, json_string<path>>;
 
-		static inline auto to_json_data( ConfigV2 const &c ) {
-			return std::forward_as_tuple( c.flag1, c.flag2, c.flag3, c.flag4,
-			                              c.path );
+		static auto to_json_data( ConfigV2 const &c ) {
+			return std::forward_as_tuple(
+			  c.flag1, c.flag2, c.flag3, c.flag4, c.path );
 		}
 	};
 	template<>

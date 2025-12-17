@@ -1,159 +1,197 @@
 
 option( DAW_JSON_USE_SANITIZERS "Enable address and undefined sanitizers" OFF )
 option( DAW_WERROR "Enable WError for test builds" OFF )
-option( DAW_ALLOW_SSE42 "EXPERIMENTAL: Enable WError for test builds" OFF )
 option( DAW_JSON_COVERAGE "Enable code coverage(gcc/clang)" OFF )
 
-if( DAW_ALLOW_SSE42 )
-	add_compile_definitions( DAW_ALLOW_SSE42 )
-endif()
-if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
-	if( MSVC )
-		message( STATUS "Clang-CL ${CMAKE_CXX_COMPILER_VERSION} detected" )
-		add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 -D_CRT_SECURE_NO_WARNINGS )
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND MSVC )
+	########################
+	# Clang CL
+	########################
+	message( STATUS "Clang-CL ${CMAKE_CXX_COMPILER_VERSION} detected" )
+	add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 -D_CRT_SECURE_NO_WARNINGS )
 
-		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
-			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" )
-		else()
-			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc -D_LIBCPP_ENABLE_ASSERTIONS=1" )
+	if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
+		set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" )
+	else()
+		set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive- /EHsc -D_LIBCPP_ENABLE_ASSERTIONS=1" )
+	endif()
+	if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.1 )
+		add_compile_options(
+				-Wno-c++2c-extensions
+				)
+	endif()
+	if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.1.5 )
+		add_compile_options(
+				-Wno-c++26-extensions
+				)
+	endif()
+	set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 -DNDEBUG /permissive- /EHsc" )
+	set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /O2 -DNDEBUG /permissive- /EHsc" )
+	if( DAW_WERROR )
+		add_compile_options( /WX )
+	endif()
+	if( DAW_ALLOW_SSE42 )
+		message( STATUS "Using /arch:AVX2" )
+		add_compile_options( /arch:AVX2 )
+	endif()
+elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
+	# Clang and Apple Clang
+	if( DAW_JSON_COVERAGE )
+		add_compile_options( -fprofile-instr-generate -fcoverage-mapping )
+		add_link_options( -fprofile-instr-generate -fcoverage-mapping )
+	endif()
+	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
+		message( STATUS "Apple Clang ${CMAKE_CXX_COMPILER_VERSION} detected" )
+	else()
+		message( STATUS "Clang ${CMAKE_CXX_COMPILER_VERSION} detected" )
+	endif()
+	add_compile_options(
+			-pedantic
+			-Weverything
+			-ftemplate-backtrace-limit=0
+			-Wincompatible-pointer-types-discards-qualifiers
+			-Wno-c++2b-extensions
+			-Wno-c++98-compat
+			-Wno-c++98-compat-pedantic
+			-Wno-covered-switch-default
+			-Wno-documentation
+			-Wno-exit-time-destructors
+			-Wno-float-equal
+			-Wno-global-constructors
+			-Wno-missing-prototypes
+			# This is for when specializing things like tuple_size and each implementer gets to choose struct/class
+			-Wno-mismatched-tags
+			-Wno-newline-eof
+			-Wno-nullability-extension
+			-Wno-padded
+			-Wno-redundant-parens
+			-Wno-switch-default
+			-Wno-unused-template
+			-Wno-weak-vtables
+			-Wno-gcc-compat
+			)
+	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
+		# Apple Clang
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
+			add_compile_options(
+					-Wno-c++20-extensions
+					-Wno-bitwise-instead-of-logical
+					)
 		endif()
-
-		set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 -DNDEBUG /permissive- /EHsc" )
-		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /O2 -DNDEBUG /permissive- /EHsc" )
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 15 )
+			add_compile_options(
+					-Wno-c++20-attribute-extensions
+					-Wno-c++2b-extensions
+					-Wno-c++20-compat
+					-Wno-missing-noreturn
+					)
+		endif()
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 )
+			add_compile_options(
+					-Wno-c++26-extensions
+					-Wno-c++2c-extensions
+					)
+		endif()
+		add_compile_options( -Wno-poison-system-directories )
 		if( DAW_WERROR )
-			add_compile_options( /WX )
-		endif()
-		if( DAW_ALLOW_SSE42 )
-			message( STATUS "Using /arch:AVX2" )
-			add_compile_options( /arch:AVX2 )
+			add_compile_options( -Werror -pedantic-errors )
+			# Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
+			# https://bugs.llvm.org/show_bug.cgi?id=16404
+			string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
+			if( HAS_LIBCXX EQUAL -1 )
+				add_compile_options( -ftrapv )
+			endif()
 		endif()
 	else()
-		if( DAW_JSON_COVERAGE )
-			add_compile_options( -fprofile-instr-generate -fcoverage-mapping )
-			add_link_options( -fprofile-instr-generate -fcoverage-mapping )
+		# Not Apple Clang Clang
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 10 )
+			add_compile_options(
+					-Wno-c++20-extensions
+					-Wno-poison-system-directories
+					)
 		endif()
-		message( STATUS "Clang ${CMAKE_CXX_COMPILER_VERSION} detected" )
-		add_compile_options(
-				-pedantic
-				-Weverything
-				-ftemplate-backtrace-limit=0
-				-Wincompatible-pointer-types-discards-qualifiers
-				-Wno-c++2b-extensions
-				-Wno-c++98-compat
-				-Wno-c++98-compat-pedantic
-				-Wno-covered-switch-default
-				-Wno-documentation
-				-Wno-exit-time-destructors
-				-Wno-float-equal
-				-Wno-global-constructors
-				-Wno-missing-prototypes
-				# This is for when specializing things like tuple_size and each implementer gets to choose struct/class
-				-Wno-mismatched-tags
-				-Wno-newline-eof
-				-Wno-nullability-extension
-				-Wno-padded
-				-Wno-redundant-parens
-				-Wno-switch-default
-				-Wno-unused-template
-				-Wno-weak-vtables
-				)
-		if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
-			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
-				add_compile_options(
-						-Wno-c++20-extensions
-						)
-			endif()
-			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 15 )
-				add_compile_options(
-						-Wno-c++20-attribute-extensions
-						-Wno-c++2b-extensions
-						-Wno-c++20-compat
-						)
-			endif()
-			add_compile_options( -Wno-poison-system-directories )
-			if( DAW_WERROR )
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
+			add_compile_options(
+					-Wno-c++20-attribute-extensions
+					-Wno-c++20-compat
+					-Wno-bitwise-instead-of-logical
+					)
+		endif()
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16 )
+			add_compile_options(
+					-Wno-c++2b-extensions
+					-Wno-unsafe-buffer-usage
+					)
+		endif()
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 )
+			add_compile_options(
+					-Wno-missing-noreturn
+					)
+		endif()
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 )
+			add_compile_options(
+					-Wno-c++26-extensions
+					)
+		endif()
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 21 )
+			add_compile_options(
+					-Wno-nrvo
+					)
+		endif()
+		if( DAW_WERROR )
+			if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13 )
 				add_compile_options( -Werror -pedantic-errors )
-				# Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
-				# https://bugs.llvm.org/show_bug.cgi?id=16404
-				string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
-				if( HAS_LIBCXX EQUAL -1 )
-					add_compile_options( -ftrapv )
-				endif()
 			endif()
-		else() # Not Apple Clang Clang
+			# Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
+			# https://bugs.llvm.org/show_bug.cgi?id=16404
+			string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
+			if( HAS_LIBCXX EQUAL -1 )
+				add_compile_options( -ftrapv )
+			endif()
+		endif()
+	endif()
+
+	if( CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)" )
+		if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
 			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 10 )
-				add_compile_options(
-						-Wno-c++20-extensions
-						-Wno-poison-system-directories
-						)
-			endif()
-			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14 )
-				add_compile_options(
-						-Wno-c++20-attribute-extensions
-						-Wno-c++20-compat
-						)
-			endif()
-			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16 )
-				add_compile_options(
-						-Wno-c++2b-extensions
-						-Wno-unsafe-buffer-usage
-						)
-			endif()
-			if( DAW_WERROR )
-				if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13 )
-					add_compile_options( -Werror -pedantic-errors )
-				endif()
-				# Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
-				# https://bugs.llvm.org/show_bug.cgi?id=16404
-				string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
-				if( HAS_LIBCXX EQUAL -1 )
-					add_compile_options( -ftrapv )
-				endif()
+				message( STATUS "Adding Intel JCC bugfix" )
+				add_compile_options( -mbranches-within-32B-boundaries )
 			endif()
 		endif()
+	endif()
+	if( DAW_ALLOW_SSE42 )
+		message( STATUS "Using -march=native" )
+		add_compile_options( -march=native )
+	endif()
+	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
+			AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9 )
 
-		if( CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)" )
-			if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
-				if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
-					message( STATUS "Adding Intel JCC bugfix" )
-					add_compile_options( -mbranches-within-32B-boundaries )
-				endif()
-			endif()
-		endif()
-		if( DAW_ALLOW_SSE42 )
-			message( STATUS "Using -march=native" )
-			add_compile_options( -march=native )
-		endif()
-		if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
-				AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9 )
-
-			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
-				set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -D_FORTIFY_SOURCE=2" )
-			else()
-				set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_ENABLE_ASSERTIONS=1 -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -D_FORTIFY_SOURCE=2" )
-			endif()
-			set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
-			set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
+			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -D_FORTIFY_SOURCE=2" )
 		else()
-			if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
-				set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" )
-			else()
-				set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_ENABLE_ASSERTIONS=1" )
-			endif()
-			set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG" )
-			set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG" )
+			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_ENABLE_ASSERTIONS=1 -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -D_FORTIFY_SOURCE=2" )
 		endif()
+		set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
+		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS" )
+	else()
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
+			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE" )
+		else()
+			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_ENABLE_ASSERTIONS=1" )
+		endif()
+		set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG" )
+		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG" )
+	endif()
 
-		if( DAW_JSON_USE_SANITIZERS )
-			message( STATUS "Using sanitizers" )
-			add_compile_options( -fsanitize=undefined,address )
-			add_link_options( -fsanitize=undefined,address )
-		endif()
-		if( CMAKE_BUILD_TYPE STREQUAL "coverage" OR CODE_COVERAGE )
-			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-instr-generate -fcoverage-mapping" )
-			set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fprofile-instr-generate -fcoverage-mapping" )
-			set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -fprofile-instr-generate -fcoverage-mapping" )
-		endif()
+	if( DAW_JSON_USE_SANITIZERS )
+		message( STATUS "Using sanitizers" )
+		add_compile_options( -fsanitize=undefined,address )
+		add_link_options( -fsanitize=undefined,address )
+	endif()
+	if( CMAKE_BUILD_TYPE STREQUAL "coverage" OR CODE_COVERAGE )
+		set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-instr-generate -fcoverage-mapping" )
+		set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fprofile-instr-generate -fcoverage-mapping" )
+		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -fprofile-instr-generate -fcoverage-mapping" )
 	endif()
 elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 	if( DAW_JSON_COVERAGE )
@@ -172,6 +210,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 											 -Wshadow
 											 -Wzero-as-null-pointer-constant
 											 -Wnull-dereference
+											 -ftemplate-backtrace-limit=0
 											 )
 	if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
 		add_compile_options(
@@ -184,7 +223,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 	endif()
 	#-Wdisabled-optimization)
 	if( CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)" )
-		if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 9.0.0 )
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9.0.0 )
 			if( LINUX )
 				message( STATUS "Adding Intel JCC bugfix" )
 				add_compile_options( -Wa,-mbranches-within-32B-boundaries )
@@ -197,7 +236,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 	endif()
 	# Prior to gcc-12, it tries to concept check an input iterator as a bidirectional and requires
 	# *it-- = *it to be a valid expression
-	if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
+	if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.0.0 )
 		set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer" )
 		set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wnull-dereference" )
 		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS -Wnull-dereference" )

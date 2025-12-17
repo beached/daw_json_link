@@ -10,10 +10,10 @@
 
 #include "defines.h"
 
-#include <daw/daw_read_file.h>
-
-#include "daw/json/daw_json_link.h"
 #include <daw/daw_fnv1a_hash.h>
+#include <daw/json/daw_json_link.h>
+
+#include <daw/daw_read_file.h>
 
 #include <chrono>
 #include <cstdint>
@@ -70,7 +70,7 @@ namespace daw::json {
 		              options::number_opt( options::LiteralAsStringOpt::Always )>,
 		  json_number<lastModified, int64_t>>;
 #endif
-		static inline auto to_json_data( daw::cookbook_dates3::MyClass3 const &v ) {
+		static auto to_json_data( daw::cookbook_dates3::MyClass3 const &v ) {
 			auto const date_added =
 			  std::chrono::floor<std::chrono::seconds>( v.date_added )
 			    .time_since_epoch( )
@@ -79,8 +79,8 @@ namespace daw::json {
 			  std::chrono::floor<std::chrono::seconds>( v.last_modified )
 			    .time_since_epoch( )
 			    .count( );
-			return std::tuple( std::as_const( v.title ), v.id, date_added,
-			                   last_modified );
+			return std::tuple(
+			  std::as_const( v.title ), v.id, date_added, last_modified );
 		}
 	};
 } // namespace daw::json
@@ -94,7 +94,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_dates3.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 
 	auto const cls = daw::json::from_json<daw::cookbook_dates3::MyClass3>(
 	  std::string_view( data.data( ), data.size( ) ) );

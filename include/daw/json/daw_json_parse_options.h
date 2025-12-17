@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -24,6 +24,8 @@ namespace daw::json {
 				/// default: compile_time
 				///
 				enum class ExecModeTypes : unsigned {
+					/// @brief Use the best available code path that can be detected
+					default_mode,
 					/// @brief Only use code paths that can run at compile time
 					compile_time,
 					/// @brief *testing* Allow code paths that use non-compile time
@@ -142,8 +144,10 @@ namespace daw::json {
 				///
 
 				enum class [[deprecated(
-				  "This is not used" )]] TemporarilyMutateBuffer : unsigned{
-				  no, yes }; // 1bit
+				  "This is not used" )]] TemporarilyMutateBuffer : unsigned {
+					no,
+					yes
+				}; // 1bit
 
 				///
 				/// @brief Exclude characters under 0x20 that are not explicitly
@@ -153,6 +157,6 @@ namespace daw::json {
 				///
 				enum class ExcludeSpecialEscapes : unsigned { no, yes }; // 1bit
 			} // namespace parser_options
-		}   // namespace options
-	}     // namespace DAW_JSON_VER
+		} // namespace options
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

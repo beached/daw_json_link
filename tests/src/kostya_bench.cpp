@@ -15,10 +15,10 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 
 #include <cstdint>
-#include <daw/daw_benchmark.h>
 #include <fstream>
 #include <iostream>
 #include <streambuf>
@@ -53,7 +53,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
@@ -66,8 +66,7 @@ int main( int, char ** )
 	    exit( 1 );
 	  }
 	*/
-	auto const json_data =
-	  daw::read_file( "/tmp/1.json" ).value( );
+	auto const json_data = daw::read_file( "/tmp/1.json" ).value( );
 
 	using range_t =
 	  daw::json::json_array_range<coordinate_t, options::CheckedParseMode::no>;

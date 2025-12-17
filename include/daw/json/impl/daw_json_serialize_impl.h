@@ -7,10 +7,11 @@
 //
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "to_daw_json_string.h"
+#include "daw/json/impl/to_daw_json_string.h"
 
+#include <daw/daw_constant.h>
 #include <daw/daw_empty.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_string_view.h>
@@ -101,11 +102,13 @@ namespace daw::json {
 				it.put( '{' );
 				it.add_indent( );
 
-				constexpr auto visit_size =
-				  sizeof...( JsonMembers ) +
-				  ( static_cast<std::size_t>( has_dependent_member_v<JsonMembers> ) +
-				    ... + 0 );
-				auto visited_members = basic_array_t<daw::string_view, visit_size>{ };
+				using visit_size =
+				  daw::constant<sizeof...( JsonMembers ) +
+				                ( static_cast<std::size_t>(
+				                    has_dependent_member_v<JsonMembers> ) +
+				                  ... + 0 )>;
+				auto visited_members =
+				  basic_array_t<daw::string_view, visit_size::value>{ };
 
 				// Tag Members, if any.  Putting them ahead means we can parse this
 				// faster in the future
@@ -120,10 +123,11 @@ namespace daw::json {
 					using Names = daw::fwd_pack<JsonMembers...>;
 					daw::empty_t const expander[]{
 					  ( dependent_member_to_json_str<
-					      Is, daw::traits::nth_element<Is, JsonMembers...>, Names>(
-					      is_first, it, args, value, visited_members ),
+					      Is,
+					      daw::traits::nth_element<Is, JsonMembers...>,
+					      Names>( is_first, it, args, value, visited_members ),
 					    daw::empty_t{ } )...,
-					  daw::empty_t{} };
+					  daw::empty_t{ } };
 					(void)expander;
 				}
 
@@ -133,7 +137,7 @@ namespace daw::json {
 					  ( to_json_str<Is, daw::traits::nth_element<Is, JsonMembers...>>(
 					      is_first, it, args, value, visited_members ),
 					    daw::empty_t{ } )...,
-					  daw::empty_t{} };
+					  daw::empty_t{ } };
 					(void)expander;
 				}
 				it.del_indent( );
@@ -169,7 +173,7 @@ namespace daw::json {
 					                        daw::traits::nth_element<Is, JsonMembers...>>(
 					      array_idx, sizeof...( Is ), it, args ),
 					    daw::empty_t{ } )...,
-					  daw::empty_t{} };
+					  daw::empty_t{ } };
 					(void)expander;
 				}
 				it.del_indent( );

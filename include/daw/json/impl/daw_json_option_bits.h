@@ -8,11 +8,13 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_count.h>
+#include <daw/daw_constant.h>
+#include <daw/daw_cpp20_concept.h>
 #include <daw/daw_traits.h>
 
 #include <climits>
@@ -29,10 +31,11 @@ namespace daw::json {
 			inline constexpr unsigned json_option_bits_width = 0;
 
 			template<typename>
-			inline constexpr auto default_json_option_value = [] {
-				struct unknown_policy {};
-				return unknown_policy{ };
-			}( );
+			inline constexpr auto default_json_option_value =
+			  [] DAW_CPP23_STATIC_CALL_OP {
+				  struct unknown_policy {};
+				  return unknown_policy{ };
+			  }( );
 
 			template<typename Policy, typename Options>
 			struct option_bits_start_impl;
@@ -45,7 +48,7 @@ namespace daw::json {
 				using tp_policies = pack_list<Options...>;
 
 				template<std::size_t Pos, int End>
-				static constexpr unsigned do_step( ) {
+				static DAW_CONSTEVAL unsigned do_step( ) {
 					if constexpr( Pos >= static_cast<std::size_t>( End ) ) {
 						return 0U;
 					}
@@ -53,7 +56,7 @@ namespace daw::json {
 				}
 
 				template<std::size_t... Is>
-				DAW_ATTRIB_INLINE static constexpr unsigned
+				DAW_ATTRIB_INLINE static DAW_CONSTEVAL unsigned
 				calc( std::index_sequence<Is...> ) {
 					return ( do_step<Is, idx>( ) + ... );
 				}
@@ -71,11 +74,10 @@ namespace daw::json {
 			};
 
 			template<typename Option>
-			inline constexpr bool is_option_flag = json_option_bits_width<Option> > 0;
+			DAW_CPP20_CONCEPT is_option_flag = json_option_bits_width<Option> > 0;
 
 			template<typename... Options>
-			inline constexpr bool are_option_flags =
-			  ( is_option_flag<Options> and ... );
+			DAW_CPP20_CONCEPT are_option_flags = ( is_option_flag<Options> and ... );
 
 			template<typename Option, typename Options>
 			inline constexpr unsigned basic_option_bits_start =
@@ -94,7 +96,7 @@ namespace daw::json {
 				using OptionList = typename option_list_impl<JsonOptions...>::type;
 
 				template<typename Option>
-				static inline constexpr unsigned option_bits_start =
+				static constexpr unsigned option_bits_start =
 				  basic_option_bits_start<Option, OptionList>;
 
 				template<typename... /*OptionList*/, typename Option>
@@ -135,11 +137,11 @@ namespace daw::json {
 				static_assert( is_option_flag<Option>,
 				               "Only registered policy types are allowed" );
 				auto new_bits = static_cast<unsigned>( e );
-				constexpr unsigned mask = (1U << json_option_bits_width<Option>)-1U;
-				new_bits &= mask;
+				using mask = daw::constant<(1U << json_option_bits_width<Option>)-1U>;
+				new_bits &= mask::value;
 				new_bits <<=
 				  JsonOptionList<OptionList...>::template option_bits_start<Option>;
-				value &= ~mask;
+				value &= ~mask::value;
 				value |= new_bits;
 			}
 
@@ -151,11 +153,12 @@ namespace daw::json {
 				               "Only registered policy types are allowed" );
 
 				auto new_bits = static_cast<unsigned>( pol );
-				constexpr unsigned mask = ( (1U << json_option_bits_width<Option>)-1U );
-				new_bits &= mask;
+				using mask =
+				  daw::constant<( (1U << json_option_bits_width<Option>)-1U )>;
+				new_bits &= mask::value;
 				new_bits <<=
 				  JsonOptionList<OptionList...>::template option_bits_start<Option>;
-				value &= ~( mask << JsonOptionList<
+				value &= ~( mask::value << JsonOptionList<
 				              OptionList...>::template option_bits_start<Option> );
 				value |= new_bits;
 				if constexpr( sizeof...( Options ) > 0 ) {
@@ -182,12 +185,12 @@ namespace daw::json {
 				               "Underlying type should be unsigned" );
 				static_assert( is_option_flag<Option>,
 				               "Only registered option types are allowed" );
-				constexpr unsigned mask =
-				  ( 1U << (JsonOptionList<OptionList...>::template option_bits_start<
-				             Option> +
-				           json_option_bits_width<Option>)) -
-				  1U;
-				value &= mask;
+				using mask =
+				  daw::constant<( 1U << (JsonOptionList<OptionList...>::
+				                           template option_bits_start<Option> +
+				                         json_option_bits_width<Option>)) -
+				                1U>;
+				value &= mask::value;
 				value >>=
 				  JsonOptionList<OptionList...>::template option_bits_start<Option>;
 				return static_cast<Result>( Option{ value } );

@@ -44,7 +44,7 @@ namespace daw::json {
 				return magic_enum::enum_name( e );
 			}
 
-			inline Enum operator( )( std::string_view sv ) const {
+			Enum operator( )( std::string_view sv ) const {
 				auto test = magic_enum::enum_cast<Enum>( sv );
 				if( !test ) {
 					std::string msg = "Bad enum value ";
@@ -77,7 +77,7 @@ namespace daw::json {
 		using type = json_member_list<json_class<mem_dtype, data_type>,
 		                              json_number<mem_field_1, int>>;
 
-		static inline auto to_json_data( const foo_type &val ) {
+		static auto to_json_data( const foo_type &val ) {
 			return daw::forward_nonrvalue_as_tuple( data_type::FOO, val.field_1 );
 		}
 	};
@@ -99,7 +99,7 @@ namespace daw::json {
 		                              json_class<mem_field_1, test_enum>>;
 		// using type = json_member_list<json_class<dtype, data_type>,
 		// json_string<field_1>>;
-		static inline auto to_json_data( const bar_type &val ) {
+		static auto to_json_data( const bar_type &val ) {
 			return daw::forward_nonrvalue_as_tuple( data_type::BAR, val.field_1 );
 		}
 	};
@@ -141,9 +141,10 @@ int main( int /*argc*/, char ** /*argv*/ ) {
 
 	try {
 		auto obj = daw::json::from_json<std::vector<variant_type>>( json_doc );
-		auto obj_json = daw::json::to_json(
-		  obj, daw::json::options::output_flags<
-		         daw::json::options::SerializationFormat::Pretty> );
+		auto obj_json =
+		  daw::json::to_json( obj,
+		                      daw::json::options::output_flags<
+		                        daw::json::options::SerializationFormat::Pretty> );
 		std::cout << obj_json.c_str( ) << std::endl;
 
 	} catch( const daw::json::json_exception &err ) {

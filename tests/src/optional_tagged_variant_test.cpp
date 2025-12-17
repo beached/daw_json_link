@@ -65,7 +65,7 @@ struct daw::json::json_data_contract<MyClass> {
 	    json_number<type_mem, int>, MyClassSwitcher>>;
 #endif
 
-	static DAW_CONSTEXPR inline auto to_json_data( MyClass const &v ) {
+	static DAW_CONSTEXPR auto to_json_data( MyClass const &v ) {
 		return std::forward_as_tuple( v.name, v.value );
 	}
 };
@@ -79,7 +79,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to optional_tagged_variant.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 	auto json_data = std::string_view( data.data( ), data.size( ) );
 
 	std::vector<MyClass> values1 =

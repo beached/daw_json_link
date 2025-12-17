@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_not_const_ex_functions.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_not_const_ex_functions.h"
 
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
@@ -23,7 +23,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details::string_quote {
 			template<std::size_t N, char c>
-			inline constexpr UInt8 test_at_byte( UInt64 b ) {
+			constexpr UInt8 test_at_byte( UInt64 b ) {
 				auto const lhs = b & ( 0xFF_u64 << ( N * 8U ) );
 				using rhs = daw::constant<to_uint64( static_cast<unsigned char>( c ) )
 				                          << ( N * 8U )>;
@@ -38,12 +38,11 @@ namespace daw::json {
 				return to_uint8( not( lhs - rhs::value ) );
 			}
 
-			template<typename CharT>
-			DAW_ATTRIB_NONNULL( )
-			inline constexpr void skip_to_first8( CharT *&first, CharT *const last ) {
+			constexpr void skip_to_first8( daw::not_null<char const *> &first,
+			                               daw::not_null<char const *> const last ) {
 				bool keep_going = last - first >= 8;
 				while( keep_going ) {
-					auto buff = daw::to_uint64_buffer( first );
+					auto buff = daw::to_uint64_buffer( first.get( ) );
 					auto const q7 = test_at_byte<7U, '"'>( buff );
 					auto const q6 = test_at_byte<6U, '"'>( buff );
 					auto const q5 = test_at_byte<5U, '"'>( buff );
@@ -69,13 +68,12 @@ namespace daw::json {
 				first -= *( first - 1 ) == '\\' ? 1 : 0;
 			}
 
-			template<typename CharT>
-			DAW_ATTRIB_NONNULL( )
-			inline constexpr void skip_to_first4( CharT *&first, CharT *const last ) {
+			constexpr void skip_to_first4( daw::not_null<char const *> &first,
+			                               daw::not_null<char const *> const last ) {
 				bool keep_going = last - first >= 4;
 				while( keep_going ) {
 					// Need to look for escapes as this is fast path
-					auto buff = daw::to_uint32_buffer( first );
+					auto buff = daw::to_uint32_buffer( first.get( ) );
 					auto const q3 = test_at_byte<3U, '"'>( buff );
 					auto const q2 = test_at_byte<2U, '"'>( buff );
 					auto const q1 = test_at_byte<1U, '"'>( buff );
@@ -95,19 +93,21 @@ namespace daw::json {
 				template<typename ParseState>
 				[[nodiscard]] static constexpr std::size_t
 				parse_nq_uncheck( ParseState &parse_state ) {
-					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
-					CharT *first = parse_state.first;
-					CharT *const last = parse_state.last;
+					auto first =
+					  daw::not_null<char const *>( daw::never_null, parse_state.first );
+					auto const last =
+					  daw::not_null<char const *>( daw::never_null, parse_state.last );
 					// This is a logic error to happen.
 					// daw_json_assert_weak( first != '"', "Unexpected quote", parse_state
 					// );
-					if constexpr( daw::traits::not_same_v<typename ParseState::exec_tag_t,
-					                                      constexpr_exec_tag> ) {
-						first = mem_skip_until_end_of_string<true>(
-						  ParseState::exec_tag, first, last, need_slow_path );
+					if( json_details::use_constexpr_exec_mode<
+					      typename ParseState::exec_tag_t>( ) ) {
+						first =
+						  mem_skip_until_end_of_string<true,
+						                               typename ParseState::exec_tag_t>(
+						    first, last, need_slow_path );
 					} else {
-
 						{
 							auto const sz = last - first;
 							if( sz >= 8 ) {
@@ -118,7 +118,7 @@ namespace daw::json {
 						}
 						while( *first != '"' ) {
 							while( []( char c ) DAW_JSON_CPP23_STATIC_CALL_OP {
-								return ( c != '"' ) & ( c != '\\' );
+								return daw::nsc_and( c != '"', c != '\\' );
 							}( *first ) ) {
 								++first;
 							}
@@ -140,17 +140,22 @@ namespace daw::json {
 				[[nodiscard]] static constexpr std::size_t
 				parse_nq_check( ParseState &parse_state ) {
 
-					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
-					CharT *first = parse_state.first;
-					CharT *const last = parse_state.class_last;
-					if constexpr( daw::traits::not_same_v<typename ParseState::exec_tag_t,
-					                                      constexpr_exec_tag> ) {
-						first = mem_skip_until_end_of_string<false>(
-						  ParseState::exec_tag, first, last, need_slow_path );
+					auto first = daw::not_null<char const *>( parse_state.first );
+					auto const last =
+					  daw::not_null<char const *>( parse_state.class_last );
+
+					if( not json_details::use_constexpr_exec_mode<
+					      typename ParseState::exec_tag_t>( ) ) {
+						first =
+						  mem_skip_until_end_of_string<false,
+						                               typename ParseState::exec_tag_t>(
+						    first, last, need_slow_path );
 					} else {
 						if constexpr( not ParseState::exclude_special_escapes ) {
-							if( CharT *const l = parse_state.last; l - first >= 8 ) {
+							if( auto const l =
+							      daw::not_null<char const *>( parse_state.last );
+							    l - first >= 8 ) {
 								skip_to_first8( first, l );
 							} else if( last - first >= 4 ) {
 								skip_to_first4( first, l );
@@ -161,10 +166,12 @@ namespace daw::json {
 								while( *first != '\0' ) {
 									char c = *first;
 									daw_json_ensure( static_cast<unsigned char>( c ) >= 0x20U,
-									                 ErrorReason::InvalidString, parse_state );
+									                 ErrorReason::InvalidString,
+									                 parse_state );
 									if( c == '\\' ) {
 										daw_json_ensure( last - first > 1,
-										                 ErrorReason::InvalidString, parse_state );
+										                 ErrorReason::InvalidString,
+										                 parse_state );
 										if( need_slow_path < 0 ) {
 											need_slow_path = first - parse_state.first;
 										}
@@ -190,13 +197,13 @@ namespace daw::json {
 									++first;
 								}
 							} else {
-								while( ( *first != 0 ) & ( *first != '"' ) ) {
-									while( ( *first != 0 ) & ( *first != '"' ) &
-									       ( *first != '\\' ) ) {
+								while( daw::nsc_and( *first != 0, *first != '"' ) ) {
+									while( daw::nsc_and(
+									  *first != 0, *first != '"', *first != '\\' ) ) {
 										++first;
 									}
 
-									if( ( ( *first != 0 ) & ( *first == '\\' ) ) ) {
+									if( daw::nsc_and( *first != 0, *first == '\\' ) ) {
 										if( need_slow_path < 0 ) {
 											need_slow_path = first - parse_state.first;
 										}
@@ -211,10 +218,12 @@ namespace daw::json {
 								while( first < last ) {
 									char c = *first;
 									daw_json_ensure( static_cast<unsigned char>( c ) >= 0x20U,
-									                 ErrorReason::InvalidString, parse_state );
+									                 ErrorReason::InvalidString,
+									                 parse_state );
 									if( c == '\\' ) {
 										daw_json_ensure( last - first > 1,
-										                 ErrorReason::InvalidString, parse_state );
+										                 ErrorReason::InvalidString,
+										                 parse_state );
 										if( need_slow_path < 0 ) {
 											need_slow_path = first - parse_state.first;
 										}
@@ -242,7 +251,7 @@ namespace daw::json {
 							} else {
 								while( first < last and *first != '"' ) {
 									while( first < last and
-									       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
+									       daw::nsc_and( *first != '"', *first != '\\' ) ) {
 										++first;
 									}
 
@@ -259,11 +268,12 @@ namespace daw::json {
 						}
 					}
 					if constexpr( ParseState::is_zero_terminated_string ) {
-						daw_json_assert_weak( *first == '"', ErrorReason::InvalidString,
-						                      parse_state );
+						daw_json_assert_weak(
+						  *first == '"', ErrorReason::InvalidString, parse_state );
 					} else {
 						daw_json_assert_weak( first < last and *first == '"',
-						                      ErrorReason::InvalidString, parse_state );
+						                      ErrorReason::InvalidString,
+						                      parse_state );
 					}
 					parse_state.first = first;
 					return static_cast<std::size_t>( need_slow_path );

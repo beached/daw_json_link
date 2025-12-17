@@ -64,7 +64,8 @@ void test( std::string_view json_sv1 ) {
 	             "Bad value for numExecutors" );
 
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "apache_builds bench", sz,
+	  "apache_builds bench",
+	  sz,
 	  []( auto f1 ) {
 		  auto r =
 		    daw::json::from_json<apache_builds::apache_builds>( f1, ParsePolicy );
@@ -74,7 +75,8 @@ void test( std::string_view json_sv1 ) {
 
 	std::string str{ };
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "apache_builds bench(to_json_string)", sz,
+	  "apache_builds bench(to_json_string)",
+	  sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
 		  daw::json::to_json( tr, str );
@@ -105,7 +107,7 @@ int main( int argc, char **argv )
 		std::cerr << "Must supply a path to apache_builds.json\n";
 		exit( 1 );
 	}
-	auto fname = argv[1];
+	auto const fname = argv[1];
 	auto const json_data1 = *daw::read_file( fname );
 	test_assert( json_data1.size( ) > 2, "Minimum json data size is 2 '{}'" );
 	auto const json_sv1 =

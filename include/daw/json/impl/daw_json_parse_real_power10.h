@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_exec_modes.h"
+#include "daw/json/impl/daw_json_exec_modes.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_likely.h>
@@ -60,8 +60,8 @@ namespace daw::json {
 			  std::numeric_limits<double>::max_exponent10;
 
 			template<typename T>
-			DAW_ATTRIB_INLINE constexpr T const &Min( T const &l,
-			                                          T const &r ) noexcept {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr T const &
+			Min( T const &l, T const &r ) noexcept {
 				if( l <= r ) {
 					return l;
 				}
@@ -75,12 +75,12 @@ namespace daw::json {
 			    : max_dbl_exp;
 
 			template<typename Result, typename Unsigned>
-			DAW_ATTRIB_FLATINLINE static inline constexpr Result
-			power10( constexpr_exec_tag, Result result, Unsigned p ) {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr Result
+			power10_constexpr( Result result, Unsigned p ) {
 				// We only have a double table, of which float is a subset.  Long double
 				// will be calculated in terms of that
 
-				constexpr auto max_v =
+				DAW_CPP23_STATIC_LOCAL constexpr auto max_v =
 				  static_cast<Result>( dpow10_tbl[max_exp<Result>] );
 
 				if( DAW_UNLIKELY( p > max_exp<Result> ) ) {
@@ -99,7 +99,8 @@ namespace daw::json {
 					return static_cast<Result>( result ) *
 					       ( exp2 * static_cast<Result>(
 					                  dpow10_tbl[static_cast<std::size_t>( p )] ) );
-				} else if( DAW_UNLIKELY( p < -max_exp<Result> ) ) {
+				}
+				if( DAW_UNLIKELY( p < -max_exp<Result> ) ) {
 					if constexpr( std::is_floating_point_v<Result> ) {
 						if( DAW_UNLIKELY( p <
 						                  daw::numeric_limits<Result>::min_exponent ) ) {
@@ -127,18 +128,26 @@ namespace daw::json {
 			}
 
 			template<typename Result, typename Unsigned>
-			DAW_ATTRIB_FLATINLINE static inline constexpr Result
-			power10( runtime_exec_tag, Result result, Unsigned p ) {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr Result
+			power10_runtime( Result result, Unsigned p ) {
 				if constexpr( std::is_same_v<Result, double> or
 				              std::is_same_v<Result, float> ) {
-					return power10( constexpr_exec_tag{ }, result,
-					                static_cast<std::int32_t>( p ) );
+					return power10_constexpr( result, static_cast<std::int32_t>( p ) );
 				} else {
 					// For long double and others fallback to the slower std::pow
 					using std::pow;
 					return result * pow( static_cast<Result>( 10.0 ), p );
 				}
 			}
+
+			template<typename Result, typename ExecTag, typename Unsigned>
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr Result
+			power10( ExecTag, Result result, Unsigned p ) {
+				if( use_constexpr_exec_mode<ExecTag>( ) ) {
+					return power10_constexpr<Result>( result, p );
+				}
+				return power10_runtime<Result>( result, p );
+			}
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

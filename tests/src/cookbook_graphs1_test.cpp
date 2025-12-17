@@ -11,8 +11,8 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_read_file.h>
 #include <daw/daw_graph.h>
+#include <daw/daw_read_file.h>
 
 #include <cstdint>
 #include <cstdio>
@@ -108,15 +108,16 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_graphs1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
-	std::string_view json_sv = std::string_view( data.data( ), data.size( ) );
-
-	daw::graph_t<Node> g{ };
+	auto const data = daw::read_file( argv[1] ).value( );
+	auto json_sv = std::string_view( data.data( ), data.size( ) );
+	auto g = daw::graph_t<Node>{ };
 
 	using node_range_t =
 	  daw::json::json_array_range<daw::cookbook_graphs1::GraphNode>;
 	for( auto node : node_range_t( json_sv, "nodes" ) ) {
-		g.add_node( node.id, node.metadata.member0, node.metadata.member1,
+		g.add_node( node.id,
+		            node.metadata.member0,
+		            node.metadata.member1,
 		            node.metadata.member2 );
 	}
 

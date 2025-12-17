@@ -38,7 +38,7 @@ namespace daw::json {
 		static constexpr char const uris[] = "uris";
 		using type = json_member_list<json_array<uris, std::string>>;
 #endif
-		static inline auto
+		static auto
 		to_json_data( daw::cookbook_escaped_strings1::WebData const &value ) {
 			return std::forward_as_tuple( value.uris );
 		}
@@ -54,11 +54,18 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_escaped_strings1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto const expected_wd = daw::cookbook_escaped_strings1::WebData{
-	  { "example.com", "Bücher.ch", "happy.cn", "happy快乐.cn", "快乐.cn",
-	    "happy.中国", "快乐.中国", "www.ハンドボールサムズ.com", "🦄.com" } };
+	auto const expected_wd =
+	  daw::cookbook_escaped_strings1::WebData{ { "example.com",
+	                                             "Bücher.ch",
+	                                             "happy.cn",
+	                                             "happy快乐.cn",
+	                                             "快乐.cn",
+	                                             "happy.中国",
+	                                             "快乐.中国",
+	                                             "www.ハンドボールサムズ.com",
+	                                             "🦄.com" } };
 
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 
 	auto const cls =
 	  daw::json::from_json<daw::cookbook_escaped_strings1::WebData>(

@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_event_parser.h"
-#include "daw_json_link_types.h"
-#include "impl/daw_json_assert.h"
+#include "daw/json/daw_json_event_parser.h"
+#include "daw/json/daw_json_link_types.h"
+#include "daw/json/impl/daw_json_assert.h"
 
 #include <daw/algorithms/daw_algorithm_accumulate.h>
 #include <daw/algorithms/daw_algorithm_find.h>
@@ -30,19 +30,21 @@ namespace daw::json {
 		namespace json_details {
 			struct less {
 				DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING
+
 				template<typename T, typename U>
 				DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr bool
 				operator( )( T const &lhs, U const &rhs )
 				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
 					return lhs < rhs;
 				}
+
 				DAW_JSON_CPP23_STATIC_CALL_OP_ENABLE_WARNING
 			};
 		} // namespace json_details
 
 		class json_path_node;
 
-		[[nodiscard]] inline std::vector<json_path_node>
+		[[nodiscard]] DAW_CPP20_CX_ALLOC std::vector<json_path_node>
 		find_json_path_stack_to( char const *parse_location,
 		                         char const *doc_start );
 
@@ -53,10 +55,11 @@ namespace daw::json {
 			JsonBaseParseTypes m_type = JsonBaseParseTypes::None;
 
 			friend std::vector<json_path_node>
-			find_json_path_stack_to( char const *parse_location,
-			                         char const *doc_start );
+			  DAW_CPP20_CX_ALLOC find_json_path_stack_to( char const *parse_location,
+			                                              char const *doc_start );
 
 			json_path_node( ) = default;
+
 			constexpr json_path_node( JsonBaseParseTypes Type, std::string_view Name,
 			                          long long Index, char const *ValueStart )
 			  : m_name( Name )
@@ -89,10 +92,12 @@ namespace daw::json {
 		/// Convert a json_path_node stack to a JSON Path string
 		/// \param path_stack A vector with json_path_nodes representing the path
 		/// in the JSON document tree \return A string in JSON Path format
-		[[nodiscard]] DAW_ATTRIB_NOINLINE inline std::string
+		[[nodiscard]] DAW_ATTRIB_NOINLINE DAW_CPP20_CX_ALLOC std::string
 		to_json_path_string( std::vector<json_path_node> const &path_stack ) {
 			return daw::algorithm::accumulate(
-			  std::data( path_stack ), daw::data_end( path_stack ), std::string{ },
+			  std::data( path_stack ),
+			  daw::data_end( path_stack ),
+			  std::string{ },
 			  []( auto &&state, json_path_node const &sv )
 			    DAW_JSON_CPP23_STATIC_CALL_OP {
 				    if( sv.index( ) >= 0 ) {
@@ -111,7 +116,7 @@ namespace daw::json {
 		/// position in the document
 		/// \param parse_location The position in the document to find
 		/// \param doc_start A pointer to the stat of the JSON document
-		[[nodiscard]] inline std::vector<json_path_node>
+		[[nodiscard]] DAW_CPP20_CX_ALLOC std::vector<json_path_node>
 		find_json_path_stack_to( char const *parse_location,
 		                         char const *doc_start ) {
 			if( parse_location == nullptr or doc_start == nullptr ) {
@@ -282,19 +287,19 @@ namespace daw::json {
 			return std::move( handler.parse_stack );
 		}
 
-		[[nodiscard]] inline std::vector<json_path_node>
+		[[nodiscard]] DAW_CPP20_CX_ALLOC std::vector<json_path_node>
 		find_json_path_stack_to( json_exception const &jex,
 		                         char const *doc_start ) {
 			return find_json_path_stack_to( jex.parse_location( ), doc_start );
 		}
 
-		[[nodiscard]] inline std::string
+		[[nodiscard]] DAW_CPP20_CX_ALLOC std::string
 		find_json_path_to( char const *parse_location, char const *doc_start ) {
 			return to_json_path_string(
 			  find_json_path_stack_to( parse_location, doc_start ) );
 		}
 
-		[[nodiscard]] inline std::string
+		[[nodiscard]] DAW_CPP20_CX_ALLOC std::string
 		find_json_path_to( json_exception const &jex, char const *doc_start ) {
 			return to_json_path_string(
 			  find_json_path_stack_to( jex.parse_location( ), doc_start ) );
@@ -307,7 +312,9 @@ namespace daw::json {
 			daw_json_ensure( json_details::less{ }( doc_start, doc_pos ),
 			                 ErrorReason::UnexpectedEndOfData );
 
-			return daw::algorithm::accumulate( doc_start, doc_pos, std::size_t{ },
+			return daw::algorithm::accumulate( doc_start,
+			                                   doc_pos,
+			                                   std::size_t{ },
 			                                   []( std::size_t count, char c )
 			                                     DAW_JSON_CPP23_STATIC_CALL_OP {
 				                                     if( c == '\n' ) {

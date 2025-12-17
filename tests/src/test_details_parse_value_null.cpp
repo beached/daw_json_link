@@ -46,7 +46,7 @@ bool test_null_number_untrusted( ) {
 	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value_null<my_number, false>( rng );
-	return v and *v == 5;
+	return v and * v == 5;
 }
 
 bool test_null_number_trusted( ) {
@@ -57,7 +57,7 @@ bool test_null_number_trusted( ) {
 	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value_null<my_number, false>( rng );
-	return v and *v == 5;
+	return v and * v == 5;
 }
 
 bool test_null_number_untrusted_known( ) {
@@ -68,7 +68,7 @@ bool test_null_number_untrusted_known( ) {
 	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) - 1 );
 	auto v = parse_value_null<my_number, true>( rng );
-	return v and *v == 5;
+	return v and * v == 5;
 }
 
 #if defined( DAW_USE_EXCEPTIONS )

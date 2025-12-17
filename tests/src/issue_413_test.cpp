@@ -33,7 +33,7 @@ int main( ) {
 		std::cout << "Expected and out of range error\n";
 		return EXIT_FAILURE;
 	} catch( daw::json::json_exception const &e ) {
-		if( e.reason_type() != daw::json::ErrorReason::NumberOutOfRange ) {
+		if( e.reason_type( ) != daw::json::ErrorReason::NumberOutOfRange ) {
 			std::cout << "Expected and out of range error\n";
 			return EXIT_FAILURE;
 		}

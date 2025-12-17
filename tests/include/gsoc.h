@@ -60,9 +60,12 @@ namespace daw::json {
 		                              json_sv<mem_logo>>;
 
 		static inline auto to_json_data( daw::gsoc::sponsor_t const &value ) {
-			return std::forward_as_tuple( value.type, value.name,
+			return std::forward_as_tuple( value.type,
+			                              value.name,
 			                              value.disambiguatingDescription,
-			                              value.description, value.url, value.logo );
+			                              value.description,
+			                              value.url,
+			                              value.logo );
 		}
 	};
 
@@ -91,8 +94,11 @@ namespace daw::json {
 		                              json_class<mem_author, daw::gsoc::author_t>>;
 
 		static inline auto to_json_data( daw::gsoc::gsoc_element_t const &value ) {
-			return std::forward_as_tuple( value.context, value.type, value.name,
-			                              value.description, value.sponsor,
+			return std::forward_as_tuple( value.context,
+			                              value.type,
+			                              value.name,
+			                              value.description,
+			                              value.sponsor,
 			                              value.author );
 		}
 	};

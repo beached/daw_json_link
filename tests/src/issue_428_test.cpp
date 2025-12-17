@@ -36,6 +36,7 @@ public:
 			++first;
 		}
 	}
+
 	template<typename Container,
 	         std::enable_if_t<
 	           not std::is_same_v<vector_map, daw::remove_cvref_t<Container>>,
@@ -87,10 +88,12 @@ namespace daw::json {
 } // namespace daw::json
 
 void json_test( std::string_view data_view ) {
-	auto obj = daw::json::from_json<vector_map<std::string, int>>( data_view );
-	auto obj_json = daw::json::to_json(
-	  obj, daw::json::options::output_flags<
-	         daw::json::options::SerializationFormat::Pretty> );
+	auto const obj =
+	  daw::json::from_json<vector_map<std::string, int>>( data_view );
+	auto const obj_json =
+	  daw::json::to_json( obj,
+	                      daw::json::options::output_flags<
+	                        daw::json::options::SerializationFormat::Pretty> );
 
 	std::cout << obj_json.c_str( ) << std::endl;
 }
@@ -99,7 +102,7 @@ int main( ) {
 	auto v = vector_map<std::string, int>{ };
 	v.emplace( "Hello", 42 );
 	v.emplace( "World", 24 );
-	auto json_doc = daw::json::to_json( v );
+	auto const json_doc = daw::json::to_json( v );
 	json_test( json_doc );
 	auto v2 = daw::json::from_json<vector_map<std::string, int>>( json_doc );
 	daw_ensure( v == v2 );

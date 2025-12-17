@@ -8,21 +8,23 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_allocator_wrapper.h"
-#include "daw_json_assert.h"
-#include "daw_json_parse_common.h"
-#include "daw_json_parse_options_impl.h"
-#include "daw_json_parse_policy_cpp_comments.h"
-#include "daw_json_parse_policy_hash_comments.h"
-#include "daw_json_parse_policy_no_comments.h"
-#include "daw_json_parse_policy_policy_details.h"
-#include "daw_json_string_util.h"
+#include "daw/json/impl/daw_json_allocator_wrapper.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_common.h"
+#include "daw/json/impl/daw_json_parse_options_impl.h"
+#include "daw/json/impl/daw_json_parse_policy_cpp_comments.h"
+#include "daw/json/impl/daw_json_parse_policy_hash_comments.h"
+#include "daw/json/impl/daw_json_parse_policy_no_comments.h"
+#include "daw/json/impl/daw_json_parse_policy_policy_details.h"
+#include "daw/json/impl/daw_json_string_util.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
+#include <daw/daw_rw_ref.h>
 #include <daw/daw_traits.h>
 
 #include <cassert>
@@ -55,8 +57,7 @@ namespace daw::json {
 				return PolicyFlags;
 			}
 
-			using CharT = char const;
-			using iterator = CharT *;
+			using iterator = char const *;
 
 			/***
 			 * see options::CheckedParseMode
@@ -68,12 +69,12 @@ namespace daw::json {
 			/***
 			 * See options::ExecModeTypes
 			 */
-			using exec_tag_t =
-			  switch_t<json_details::get_bits_for<options::ExecModeTypes,
-			                                      std::size_t>( PolicyFlags ),
-			           constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
+			using exec_tag_t = switch_t<
+			  json_details::get_bits_for<options::ExecModeTypes, std::size_t>(
+			    PolicyFlags ),
+			  default_exec_tag, constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
 
-			static constexpr exec_tag_t exec_tag = exec_tag_t{ };
+			static constexpr auto exec_tag = exec_tag_t{ };
 
 			/***
 			 * see options::AllowEscapedNames
@@ -172,6 +173,14 @@ namespace daw::json {
 			  , class_last( cl ) {}
 
 			explicit constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
+			                                     iterator cl, std::size_t cnter )
+			  : first( f )
+			  , last( l )
+			  , class_first( cf )
+			  , class_last( cl )
+			  , counter( cnter ) {}
+
+			explicit constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
 			                                     iterator cl, Allocator const &alloc )
 			  : json_details::AllocatorWrapper<Allocator>( alloc )
 			  , first( f )
@@ -224,8 +233,8 @@ namespace daw::json {
 				if constexpr( std::is_same_v<Alloc, json_details::NoAllocator> ) {
 					return *this;
 				} else {
-					auto result = with_allocator( first, last, class_first, class_last,
-					                              p.get_allocator( ) );
+					auto result = with_allocator(
+					  first, last, class_first, class_last, p.get_allocator( ) );
 					result.counter = p.counter;
 					return result;
 				}
@@ -251,14 +260,14 @@ namespace daw::json {
 			template<typename Alloc>
 			[[nodiscard]] static constexpr with_allocator_type<Alloc>
 			with_allocator( iterator f, iterator l, Alloc const &alloc ) {
-				return { f, l, f, l, alloc };
+				return with_allocator_type<Alloc>{ f, l, f, l, alloc };
 			}
 
 			template<typename Alloc>
 			[[nodiscard]] static constexpr BasicParsePolicy
 			with_allocator( iterator f, iterator l,
 			                json_details::NoAllocator const & ) {
-				return { f, l, f, l };
+				return BasicParsePolicy{ f, l, f, l };
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr iterator data( ) const {
@@ -289,10 +298,15 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool has_more( ) const {
+#if not defined( NDEBUG )
+				daw_json_ensure( first != nullptr and last != nullptr,
+				                 ErrorReason::InvalidNull );
+#endif
 				return first < last;
 			}
 
 			template<std::size_t N>
+			DAW_ATTRIB_NONNULL( )
 			constexpr bool starts_with( char const ( &rhs )[N] ) const {
 				static_assert( N > 0 );
 				if( size( ) < ( N - 1 ) ) {
@@ -305,18 +319,28 @@ namespace daw::json {
 				return result;
 			}
 
+			template<std::size_t N>
+			constexpr bool starts_with_skip( char const ( &rhs )[N] ) {
+				if( not starts_with( rhs ) ) {
+					return false;
+				}
+				first += static_cast<std::ptrdiff_t>( N - 1 );
+				return true;
+			}
+
 			template<char c>
 			DAW_ATTRIB_INLINE constexpr void move_to_next_of_unchecked( ) {
 				first =
 				  json_details::memchr_unchecked<c, exec_tag_t, expect_long_strings>(
-				    first, last );
+				    daw::not_null{ daw::never_null, first },
+				    daw::not_null{ daw::never_null, last } );
 			}
 
 			template<char c>
 			DAW_ATTRIB_INLINE constexpr void move_to_next_of_checked( ) {
 				first =
 				  json_details::memchr_checked<c, exec_tag_t, expect_long_strings>(
-				    first, last );
+				    daw::not_null{ first }, daw::not_null{ last } );
 			}
 
 			template<char c>
@@ -333,8 +357,8 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr char front_checked( ) const {
-				daw_json_ensure( first < last, ErrorReason::UnexpectedEndOfData,
-				                 *this );
+				daw_json_ensure(
+				  first < last, ErrorReason::UnexpectedEndOfData, *this );
 				return *first;
 			}
 
@@ -361,8 +385,8 @@ namespace daw::json {
 			}
 
 			struct class_pos_t {
-				CharT *f;
-				CharT *l;
+				char const *f;
+				char const *l;
 			};
 
 			constexpr void set_class_position( class_pos_t new_pos ) {
@@ -424,8 +448,7 @@ namespace daw::json {
 				}
 			}
 
-			DAW_ATTRIB_FLATINLINE inline constexpr void
-			move_next_member_or_end_checked( ) {
+			DAW_ATTRIB_FLATINLINE constexpr void move_next_member_or_end_checked( ) {
 				trim_left_checked( );
 				if constexpr( is_zero_terminated_string ) {
 					if( *first == ',' ) {

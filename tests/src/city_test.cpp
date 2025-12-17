@@ -66,7 +66,7 @@ namespace daw::json {
 		              options::number_opt( options::LiteralAsStringOpt::Always )>>;
 #endif
 
-		static inline auto to_json_data( City const &c ) {
+		static auto to_json_data( City const &c ) {
 			return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
 		}
 	};
@@ -89,7 +89,8 @@ int main( int argc, char **argv )
 
 	std::cout << "-------------------------------------------------\n";
 	auto count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "cities parsing 1", json_data.size( ),
+	  "cities parsing 1",
+	  json_data.size( ),
 	  []( auto sv ) {
 		  std::vector<City> data = daw::json::from_json_array<City>( sv );
 		  daw::do_not_optimize( data );
@@ -107,7 +108,8 @@ int main( int argc, char **argv )
 
 	std::cout << "-------------------------------------------------\n";
 	auto count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "cities parsing 2", json_data.size( ),
+	  "cities parsing 2",
+	  json_data.size( ),
 	  [&]( auto const &sv ) {
 		  data.clear( );
 		  std::copy( iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
@@ -119,7 +121,8 @@ int main( int argc, char **argv )
 	std::cout << "element count 2: " << count2 << '\n';
 	std::cout << "-------------------------------------------------\n";
 	auto count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "cities parsing 3", json_data.size( ),
+	  "cities parsing 3",
+	  json_data.size( ),
 	  []( auto const &sv ) {
 		  return static_cast<size_t>(
 		    std::distance( iterator_t( sv ), iterator_t( ) ) );
@@ -130,7 +133,8 @@ int main( int argc, char **argv )
 
 	std::cout << "-------------------------------------------------\n";
 	auto has_toronto = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "Find Toronto", json_data.size( ),
+	  "Find Toronto",
+	  json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
 		    std::find_if( iterator_t( sv ), iterator_t( ), []( City const &city ) {
@@ -149,7 +153,8 @@ int main( int argc, char **argv )
 	std::cout << '\n';
 	std::cout << "-------------------------------------------------\n";
 	auto has_chitungwiza = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "Find Chitungwiza(last item)", json_data.size( ),
+	  "Find Chitungwiza(last item)",
+	  json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
 		    std::find_if( iterator_t( sv ), iterator_t( ), []( City const &city ) {
@@ -169,7 +174,8 @@ int main( int argc, char **argv )
 
 	std::cout << "-------------------------------------------------\n";
 	auto has_chitungwiza2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "Find Chitungwiza2(last item)", json_data.size( ),
+	  "Find Chitungwiza2(last item)",
+	  json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  for( auto jp : daw::json::json_value( sv ) ) {
 			  auto name = jp.value["name"].get_string_view( );
@@ -195,7 +201,8 @@ int main( int argc, char **argv )
 	          << sv_city_ary.substr( sv_city_ary.size( ) - 100 ) << '\n';
 	std::cout << "-------------------------------------------------\n";
 	auto has_chitungwiza3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "Find Chitungwiza3(last item)", json_data.size( ),
+	  "Find Chitungwiza3(last item)",
+	  json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  for( auto jp : daw::json::json_value( sv ) ) {
 			  if( jp.value[1].get_string_view( ) == "Chitungwiza" ) {
@@ -219,10 +226,13 @@ int main( int argc, char **argv )
 	  << '\n';
 	std::cout << "-------------------------------------------------\n";
 	auto mid_lat = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "Calculate Middle Latitude", json_data.size( ),
+	  "Calculate Middle Latitude",
+	  json_data.size( ),
 	  []( auto const &jstr ) -> float {
 		  uint32_t tot = 0;
-		  auto result = std::accumulate( iterator_t( jstr ), iterator_t( ), 0.0f,
+		  auto result = std::accumulate( iterator_t( jstr ),
+		                                 iterator_t( ),
+		                                 0.0f,
 		                                 [&tot]( float cur, City const &city ) {
 			                                 ++tot;
 			                                 return cur + city.lat;
@@ -235,16 +245,19 @@ int main( int argc, char **argv )
 
 	std::cout << "-------------------------------------------------\n";
 	auto mid_lat2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "Calculate Middle Latitude2", json_data.size( ),
+	  "Calculate Middle Latitude2",
+	  json_data.size( ),
 	  []( auto const &jstr ) -> float {
 		  std::vector<float> lats{ };
-		  daw::algorithm::transform( iterator_t( jstr ), iterator_t( ),
-		                             daw::back_inserter( lats ), []( auto &&l ) {
+		  daw::algorithm::transform( iterator_t( jstr ),
+		                             iterator_t( ),
+		                             daw::back_inserter( lats ),
+		                             []( auto &&l ) {
 			                             return l.lat;
 		                             } );
 
-		  auto result = daw::algorithm::accumulate( std::cbegin( lats ),
-		                                            std::cend( lats ), 0.0f );
+		  auto const result = daw::algorithm::accumulate(
+		    std::cbegin( lats ), std::cend( lats ), 0.0f );
 		  return result / static_cast<float>( lats.size( ) );
 	  },
 	  json_data );

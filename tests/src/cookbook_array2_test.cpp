@@ -49,8 +49,7 @@ namespace daw::json {
 		using type = json_member_list<json_string<a>, json_number<b, unsigned>,
 		                              json_number<c, float>, json_bool<d>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_array2::MyClass4 const &value ) {
+		static auto to_json_data( daw::cookbook_array2::MyClass4 const &value ) {
 			return std::forward_as_tuple( value.a, value.b, value.c, value.d );
 		}
 	};

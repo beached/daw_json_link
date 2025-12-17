@@ -105,17 +105,13 @@ int main( ) {
 		// Per class error, only exact for Foo2, not child objects are errors
 		auto f = daw::json::from_json<Foo2>( json_doc2 );
 		(void)f;
-	} catch( daw::json::json_exception const & ) {
-		error2_found = true;
-	}
+	} catch( daw::json::json_exception const & ) { error2_found = true; }
 	ensure( not error2_found );
 
 	try {
 		// Per class error, only exact for Foo2, not child objects are errors
 		auto f = daw::json::from_json<Foo2>( json_doc3 );
 		(void)f;
-	} catch( daw::json::json_exception const & ) {
-		error2_found = true;
-	}
+	} catch( daw::json::json_exception const & ) { error2_found = true; }
 	ensure( error2_found );
 }

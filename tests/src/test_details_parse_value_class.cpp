@@ -41,7 +41,7 @@ namespace daw::json {
 	struct json_data_contract<daw::Empty> {
 		using type = json_member_list<>;
 
-		[[nodiscard]] static inline auto to_json_data( daw::Empty const & ) {
+		[[nodiscard]] static auto to_json_data( daw::Empty const & ) {
 			return std::tuple<>( );
 		}
 	};
@@ -114,7 +114,8 @@ bool wrong_member_number_type_fail( ) {
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 
 	auto v = parse_value_class<
-	  json_class_no_name<wrong_member_number_type_fail_t::class_t>, false>( rng );
+	  json_class_no_name<wrong_member_number_type_fail_t::class_t>,
+	  false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -129,7 +130,8 @@ bool unexpected_eof_in_class1_fail( ) {
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 
 	auto v = parse_value_class<
-	  json_class_no_name<unexpected_eof_in_class1_fail_t::class_t>, false>( rng );
+	  json_class_no_name<unexpected_eof_in_class1_fail_t::class_t>,
+	  false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -147,19 +149,20 @@ bool wrong_member_stored_pos_fail( ) {
 	auto rng = BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 
 	auto v = parse_value_class<
-	  json_class_no_name<wrong_member_stored_pos_fail_t::class_t>, false>( rng );
+	  json_class_no_name<wrong_member_stored_pos_fail_t::class_t>,
+	  false>( rng );
 	daw::do_not_optimize( v );
 	return true;
 }
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif
 {
 	do_test( empty_class_empty_json_class( ) );
 	do_test( empty_class_nonempty_json_class( ) );
-#if( not defined( _MSC_VER ) or __cpp_constexpr > 201700L ) or \
+#if ( not defined( _MSC_VER ) or __cpp_constexpr > 201700L ) or \
   defined( __clang__ )
 #endif
 	do_fail_test( missing_members_fail( ) );

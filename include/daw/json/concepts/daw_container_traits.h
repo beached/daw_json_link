@@ -8,11 +8,13 @@
 
 #pragma once
 
-#include <daw/json/impl/version.h>
+#include "daw/json/impl/version.h"
 
-#include "daw_container_traits_fwd.h"
+#include "daw/json/concepts/daw_container_traits_fwd.h"
 
 #include <daw/cpp_17.h>
+#include <daw/daw_cpp20_concept.h>
+#include <daw/daw_enable_requires.h>
 
 #include <array>
 #include <cstddef>
@@ -33,8 +35,8 @@ namespace daw::json {
 			} // namespace container_detect
 
 			template<typename T>
-			DAW_JSON_REQUIRES( container_detect::is_container_v<T> )
-			struct container_traits<T DAW_JSON_ENABLEIF_S(
+			DAW_REQUIRES( container_detect::is_container_v<T> )
+			struct container_traits<T DAW_ENABLEIF_S(
 			  container_detect::is_container_v<T> )> : std::true_type {};
 
 			template<typename T, std::size_t N>
@@ -42,7 +44,7 @@ namespace daw::json {
 
 			/// @brief Is the type deduced or specialized as a container
 			template<typename T>
-			inline constexpr bool is_container_v = container_traits<T>::value;
+			DAW_CPP20_CONCEPT is_container_v = container_traits<T>::value;
 		} // namespace concepts
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

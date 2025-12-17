@@ -43,7 +43,9 @@ inline namespace {
 		std::optional<daw::twitter::twitter_object_t> twitter_result;
 		// ******************************
 		(void)daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "twitter bench(checked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "twitter bench(checked)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<ExecMode> );
@@ -60,7 +62,9 @@ inline namespace {
 
 		// options::CheckedParseMode::no
 		(void)daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "twitter bench(unchecked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "twitter bench(unchecked)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<CheckedParseMode::no, ExecMode> );
@@ -76,7 +80,9 @@ inline namespace {
 		}
 		// CppCommentSkippingPolicyChecked
 		(void)daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "twitter bench(cpp comments)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "twitter bench(cpp comments)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<ExecMode, PolicyCommentTypes::cpp> );
@@ -93,11 +99,15 @@ inline namespace {
 #if not defined( _MSC_VER ) or defined( __clang__ )
 		// CppCommentSkippingPolicyUnchecked
 		(void)daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "twitter bench(cpp comments, unchecked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "twitter bench(cpp comments, unchecked)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1, parse_flags<ExecMode, CheckedParseMode::no,
-			                    PolicyCommentTypes::cpp> );
+			    f1,
+			    parse_flags<ExecMode,
+			                CheckedParseMode::no,
+			                PolicyCommentTypes::cpp> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -111,7 +121,9 @@ inline namespace {
 #endif
 		// HashCommentSkippingPolicyChecked
 		(void)daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "twitter bench(hash comments)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "twitter bench(hash comments)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result =
 			    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
@@ -129,11 +141,15 @@ inline namespace {
 #if not defined( _MSC_VER ) or defined( __clang__ )
 		// HashCommentSkippingPolicyUnchecked
 		(void)daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "twitter bench(hash comments, unchecked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "twitter bench(hash comments, unchecked)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1, parse_flags<ExecMode, CheckedParseMode::no,
-			                    PolicyCommentTypes::hash> );
+			    f1,
+			    parse_flags<ExecMode,
+			                CheckedParseMode::no,
+			                PolicyCommentTypes::hash> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -148,7 +164,9 @@ inline namespace {
 		// ******************************
 		// Escaped Names
 		(void)daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "twitter bench(checked, escaped names)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "twitter bench(checked, escaped names)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1, parse_flags<ExecMode, AllowEscapedNames::yes> );
@@ -165,11 +183,16 @@ inline namespace {
 
 		// options::CheckedParseMode::no Escaped Names
 		(void)daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "twitter bench(unchecked, escaped names)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "twitter bench(unchecked, escaped names)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1, parse_flags<ExecMode, CheckedParseMode::no,
-			                    PolicyCommentTypes::cpp, AllowEscapedNames::yes> );
+			    f1,
+			    parse_flags<ExecMode,
+			                CheckedParseMode::no,
+			                PolicyCommentTypes::cpp,
+			                AllowEscapedNames::yes> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -234,7 +257,9 @@ int main( int argc, char **argv )
 	  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
 	std::string str{ };
 	(void)daw::json::benchmark::benchmark(
-	  DAW_NUM_RUNS, sz, "twitter bench(to_json_string)",
+	  DAW_NUM_RUNS,
+	  sz,
+	  "twitter bench(to_json_string)",
 	  [&]( auto const &tr ) {
 		  str.clear( );
 		  daw::json::to_json( *tr, str );

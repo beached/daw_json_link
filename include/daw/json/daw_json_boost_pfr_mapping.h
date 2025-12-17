@@ -9,7 +9,7 @@
 #pragma once
 
 #include "daw/daw_tuple_forward.h"
-#include "daw_json_link.h"
+#include "daw/json/daw_json_link.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_consteval.h>
@@ -30,7 +30,8 @@ namespace daw::json {
 	namespace pfr_details {
 		template<typename T, std::size_t Idx>
 		DAW_CONSTEVAL auto get_member_name( ) {
-			constexpr auto name = boost::pfr::get_name<Idx, T>( );
+			DAW_CPP23_STATIC_LOCAL constexpr auto name =
+			  boost::pfr::get_name<Idx, T>( );
 			static_assert( not name.empty( ) );
 			return json_name<name.size( ) + 1>(
 			  name.data( ), std::make_index_sequence<name.size( ) + 1>{ } );

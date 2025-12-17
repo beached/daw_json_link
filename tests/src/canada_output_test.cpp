@@ -51,7 +51,7 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 
 template<daw::json::options::ExecModeTypes ExecMode =
            daw::json::options::ExecModeTypes::compile_time>
-inline auto get_canada_check( std::string_view f1 ) {
+auto get_canada_check( std::string_view f1 ) {
 	return daw::json::from_json<daw::geojson::FeatureCollection>(
 	  f1, daw::json::options::parse_flags<ExecMode> );
 }
@@ -81,7 +81,8 @@ int main( int argc, char **argv )
 	{
 		str.reserve( json_data.size( ) );
 		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "canada bench(to_json_string - string & output)", sz,
+		  "canada bench(to_json_string - string & output)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
 			  daw::json::to_json( tr, str );
@@ -98,11 +99,13 @@ int main( int argc, char **argv )
 		str.clear( );
 		str.resize( str_sz * 20 );
 		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "canada bench(to_json_string2 - char * output)", sz,
+		  "canada bench(to_json_string2 - char * output)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  auto *out_it = str.data( );
 			  daw::json::to_json(
-			    tr, out_it,
+			    tr,
+			    out_it,
 			    options::output_flags<options::SerializationFormat::Pretty> );
 			  daw::do_not_optimize( str );
 		  },

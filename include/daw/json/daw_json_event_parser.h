@@ -10,10 +10,11 @@
 
 #include "impl/version.h"
 
-#include "daw_from_json_fwd.h"
-#include "impl/daw_json_parse_policy.h"
-#include "impl/daw_json_value.h"
+#include "daw/json/daw_from_json_fwd.h"
+#include "daw/json/impl/daw_json_parse_policy.h"
+#include "daw/json/impl/daw_json_value.h"
 
+#include <daw/daw_cpp20_concept.h>
 #include <daw/daw_move.h>
 #include <daw/daw_string_view.h>
 
@@ -59,7 +60,7 @@ namespace daw::json {
 				  std::declval<T>( ).handle_on_value( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t, typename JPair>
-				inline constexpr bool has_on_value_handler_v =
+				DAW_CPP20_CONCEPT has_on_value_handler_v =
 				  has_on_value_handler_impl<Handler, JPair>;
 
 				// On Array Start
@@ -68,7 +69,7 @@ namespace daw::json {
 				  std::declval<T>( ).handle_on_array_start( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t /*O*/, typename JValue>
-				inline constexpr bool has_on_array_start_handler_v =
+				DAW_CPP20_CONCEPT has_on_array_start_handler_v =
 				  has_on_array_start_handler_impl<Handler, JValue>;
 
 				// On Array End
@@ -81,7 +82,7 @@ namespace daw::json {
 				  std::declval<T>( ).handle_on_class_start( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t /*Opt*/, typename JValue>
-				inline constexpr bool has_on_class_start_handler_v =
+				DAW_CPP20_CONCEPT has_on_class_start_handler_v =
 				  has_on_class_start_handler_impl<Handler, JValue>;
 
 				// On Class End
@@ -94,7 +95,7 @@ namespace daw::json {
 				  std::declval<T>( ).handle_on_number( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t P, typename A>
-				inline constexpr bool has_on_number_handler_jv_v =
+				DAW_CPP20_CONCEPT has_on_number_handler_jv_v =
 				  has_on_number_handler_jv_impl<Handler, basic_json_value<P, A>>;
 
 				DAW_JSON_MAKE_REQ_TRAIT( has_on_number_handler_dbl_v,
@@ -106,7 +107,7 @@ namespace daw::json {
 				  std::declval<T>( ).handle_on_bool( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t P, typename A>
-				inline constexpr bool has_on_bool_handler_jv_v =
+				DAW_CPP20_CONCEPT has_on_bool_handler_jv_v =
 				  has_on_bool_handler_jv_impl<Handler, basic_json_value<P, A>>;
 
 				DAW_JSON_MAKE_REQ_TRAIT( has_on_bool_handler_bl_v,
@@ -118,7 +119,7 @@ namespace daw::json {
 				  std::declval<T>( ).handle_on_string( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t P, typename A>
-				inline constexpr bool has_on_string_handler_jv_v =
+				DAW_CPP20_CONCEPT has_on_string_handler_jv_v =
 				  has_on_string_handler_impl<Handler, basic_json_value<P, A>>;
 
 				DAW_JSON_MAKE_REQ_TRAIT(
@@ -131,7 +132,7 @@ namespace daw::json {
 				  std::declval<T>( ).handle_on_null( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t P, typename A>
-				inline constexpr bool has_on_null_handler_jv_v =
+				DAW_CPP20_CONCEPT has_on_null_handler_jv_v =
 				  has_on_null_handler_impl<Handler, basic_json_value<P, A>>;
 
 				DAW_JSON_MAKE_REQ_TRAIT( has_on_null_handler_v,
@@ -143,7 +144,7 @@ namespace daw::json {
 				  std::declval<T>( ).handle_on_error( std::declval<U>( ) ) );
 
 				template<typename Handler, json_options_t P, typename A>
-				inline constexpr bool has_on_error_handler_v =
+				DAW_CPP20_CONCEPT has_on_error_handler_v =
 				  has_on_error_handler_impl<Handler, basic_json_value<P, A>>;
 			} // namespace hnd_checks
 
@@ -153,7 +154,7 @@ namespace daw::json {
 			}
 
 			template<typename Handler, json_options_t P, typename A>
-			inline constexpr handler_result_holder
+			constexpr handler_result_holder
 			handle_on_value( Handler &&handler, basic_json_pair<P, A> p ) {
 				if constexpr( hnd_checks::has_on_value_handler_v<Handler, P, A> ) {
 					return handler.handle_on_value( std::move( p ) );
@@ -166,8 +167,8 @@ namespace daw::json {
 			template<typename Handler, json_options_t P, typename A>
 			constexpr handler_result_holder
 			handle_on_array_start( Handler &&handler, basic_json_value<P, A> jv ) {
-				if constexpr( hnd_checks::has_on_array_start_handler_v<Handler, P,
-				                                                       A> ) {
+				if constexpr( hnd_checks::
+				                has_on_array_start_handler_v<Handler, P, A> ) {
 					return handler.handle_on_array_start( std::move( jv ) );
 				} else {
 					(void)jv;
@@ -187,8 +188,8 @@ namespace daw::json {
 			template<typename Handler, json_options_t P, typename A>
 			constexpr handler_result_holder
 			handle_on_class_start( Handler &&handler, basic_json_value<P, A> jv ) {
-				if constexpr( hnd_checks::has_on_class_start_handler_v<Handler, P,
-				                                                       A> ) {
+				if constexpr( hnd_checks::
+				                has_on_class_start_handler_v<Handler, P, A> ) {
 					return handler.handle_on_class_start( std::move( jv ) );
 				} else {
 					(void)jv;
@@ -320,8 +321,9 @@ namespace daw::json {
 		                                  Handler &&handler,
 		                                  options::parse_flags_t<ParseFlags...> ) {
 
-			using ParseState = TryDefaultParsePolicy<typename BasicParsePolicy<
-			  P, A>::template SetPolicyOptions<ParseFlags...>>;
+			using ParseState =
+			  TryDefaultParsePolicy<typename BasicParsePolicy<P, A>::
+			                          template SetPolicyOptions<ParseFlags...>>;
 
 			using iterator =
 			  basic_json_value_iterator<ParseState::policy_flags( ), A>;
@@ -330,7 +332,7 @@ namespace daw::json {
 			  JsonEventParserStackValue<ParseState::policy_flags( ), A>;
 			auto jvalue = basic_json_value( bjv );
 
-			auto parent_stack = [] {
+			auto parent_stack = [] DAW_CPP23_STATIC_CALL_OP {
 				if constexpr( std::is_same_v<StackContainerPolicy, use_default> ) {
 					return DefaultJsonEventParserStackPolicy<stack_value_t>{ };
 				} else {
@@ -544,7 +546,8 @@ namespace daw::json {
 		                                          Handler &&handler ) {
 
 			return json_event_parser<StackContainerPolicy>(
-			  basic_json_value( json_document ), DAW_FWD( handler ),
+			  basic_json_value( json_document ),
+			  DAW_FWD( handler ),
 			  options::parse_flags<> );
 		}
 

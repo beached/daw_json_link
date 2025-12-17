@@ -158,7 +158,7 @@ bool test_class_close_mid_array_without_open( ) {
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
 
-int main( int, char ** )
+int main( )
 #if defined( DAW_USE_EXCEPTIONS )
   try
 #endif

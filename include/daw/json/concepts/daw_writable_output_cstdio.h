@@ -27,22 +27,22 @@ namespace daw::json {
 			struct writable_output_trait<std::FILE *> : std::true_type {
 
 				template<typename... StringViews>
-				static inline void write( std::FILE *fp, StringViews const &...svs ) {
+				static void write( std::FILE *fp, StringViews const &...svs ) {
 					static_assert( sizeof...( StringViews ) > 0 );
-					constexpr auto writer = []( std::FILE *f,
-					                            auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
-						if( sv.empty( ) ) {
-							return 0;
-						}
-						auto ret = std::fwrite( sv.data( ), 1, sv.size( ), f );
-						daw_json_ensure( ret == sv.size( ),
-						                 daw::json::ErrorReason::OutputError );
-						return 1;
-					};
+					DAW_CPP23_STATIC_LOCAL constexpr auto writer =
+					  []( std::FILE *f, auto sv ) DAW_JSON_CPP23_STATIC_CALL_OP {
+						  if( sv.empty( ) ) {
+							  return 0;
+						  }
+						  auto ret = std::fwrite( sv.data( ), 1, sv.size( ), f );
+						  daw_json_ensure( ret == sv.size( ),
+						                   daw::json::ErrorReason::OutputError );
+						  return 1;
+					  };
 					( (void)writer( fp, svs ), ... );
 				}
 
-				static inline void put( std::FILE *f, char c ) {
+				static void put( std::FILE *f, char c ) {
 					auto ret = std::fputc( c, f );
 					daw_json_ensure( ret == c, daw::json::ErrorReason::OutputError );
 				}

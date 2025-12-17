@@ -8,14 +8,15 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "impl/daw_json_arrow_proxy.h"
-#include "impl/daw_json_parse_class.h"
-#include "impl/daw_json_parse_name.h"
-#include "impl/daw_json_value.h"
-#include "impl/daw_murmur3.h"
+#include "daw/json/impl/daw_json_arrow_proxy.h"
+#include "daw/json/impl/daw_json_parse_class.h"
+#include "daw/json/impl/daw_json_parse_name.h"
+#include "daw/json/impl/daw_json_value.h"
+#include "daw/json/impl/daw_murmur3.h"
 
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_move.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
@@ -36,7 +37,7 @@ namespace daw::json {
 
 			public:
 				daw::string_view name;
-				daw::UInt32 hash_value;
+				json_name_hash_t hash_value;
 				basic_json_value_iterator<PolicyFlags, Allocator> location;
 
 				explicit constexpr basic_stateful_json_value_state(
@@ -52,7 +53,7 @@ namespace daw::json {
 				}
 
 				[[nodiscard]] constexpr bool is_match( daw::string_view Name,
-				                                       daw::UInt32 hash ) const {
+				                                       json_name_hash_t hash ) const {
 					if( hash != hash_value ) {
 						return false;
 					}
@@ -63,7 +64,7 @@ namespace daw::json {
 
 		struct json_member_name {
 			daw::string_view name;
-			daw::UInt32 hash_value;
+			json_name_hash_t hash_value;
 
 			constexpr json_member_name( std::string_view Name )
 			  : name( std::data( Name ), std::size( Name ) )
@@ -180,6 +181,7 @@ namespace daw::json {
 			constexpr basic_stateful_json_value( daw::string_view json_data )
 			  : basic_stateful_json_value(
 			      basic_json_value<PolicyFlags, Allocator>( json_data ) ) {}
+
 			/**
 			 * Reuse state storage for another basic_json_value
 			 * @param val Value to contain state for
@@ -321,9 +323,8 @@ namespace daw::json {
 			 * @pre index must exist
 			 * @return A new basic_json_value for the indexed member
 			 */
-			template<
-			  typename Integer DAW_JSON_ENABLEIF( std::is_integral_v<Integer> )>
-			DAW_JSON_REQUIRES( std::is_integral_v<Integer> )
+			template<typename Integer DAW_ENABLEIF( std::is_integral_v<Integer> )>
+			DAW_REQUIRES( std::is_integral_v<Integer> )
 			[[nodiscard]] constexpr basic_json_value<PolicyFlags, Allocator>
 			operator[]( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {
@@ -349,9 +350,8 @@ namespace daw::json {
 			 * from one past last, e.g. -1 is last item
 			 * @return A new basic_json_value for the indexed member
 			 */
-			template<
-			  typename Integer DAW_JSON_ENABLEIF( std::is_integral_v<Integer> )>
-			DAW_JSON_REQUIRES( std::is_integral_v<Integer> )
+			template<typename Integer DAW_ENABLEIF( std::is_integral_v<Integer> )>
+			DAW_REQUIRES( std::is_integral_v<Integer> )
 			[[nodiscard]] constexpr std::optional<
 			  basic_json_value<PolicyFlags, Allocator>> at( Integer index ) {
 				if constexpr( std::is_signed_v<Integer> ) {

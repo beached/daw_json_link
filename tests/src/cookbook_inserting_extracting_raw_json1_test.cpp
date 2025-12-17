@@ -43,14 +43,14 @@ int main( int argc, char **argv )
 		  "file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 
 	puts( data.c_str( ) );
 
 	auto my_foo = daw::json::from_json<Foo>( data );
 	my_foo.raw_json = R"({"a":55})";
 
-	auto data2 = daw::json::to_json( my_foo );
+	auto const data2 = daw::json::to_json( my_foo );
 
 	puts( data2.c_str( ) );
 }

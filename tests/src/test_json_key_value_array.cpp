@@ -24,7 +24,7 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_key_value_array<kv, std::map<std::string, int>>>;
 
-		static inline auto to_json_data( KVArray const &v ) {
+		static auto to_json_data( KVArray const &v ) {
 			return std::forward_as_tuple( v.kv );
 		}
 	};
@@ -41,7 +41,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_key_value_array_null<kv, std::optional<std::map<std::string, int>>>>;
 
-		static inline auto to_json_data( NullableKVArray const &v ) {
+		static auto to_json_data( NullableKVArray const &v ) {
 			return std::forward_as_tuple( v.kv );
 		}
 	};
@@ -58,7 +58,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_key_value_array_null<kv, std::map<std::string, int>>>;
 
-		static inline auto to_json_data( NullableKVArray2 const &v ) {
+		static auto to_json_data( NullableKVArray2 const &v ) {
 			return std::forward_as_tuple( v.kv );
 		}
 	};

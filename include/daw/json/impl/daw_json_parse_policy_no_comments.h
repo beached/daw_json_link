@@ -8,17 +8,19 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_json_parse_common.h"
-#include "daw_json_parse_policy_policy_details.h"
-#include "daw_json_string_util.h"
-#include "daw_not_const_ex_functions.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_common.h"
+#include "daw/json/impl/daw_json_parse_policy_policy_details.h"
+#include "daw/json/impl/daw_json_string_util.h"
+#include "daw/json/impl/daw_not_const_ex_functions.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_constant.h>
 #include <daw/daw_function_table.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_traits.h>
 
 #include <cstddef>
@@ -31,14 +33,10 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_checked( ParseState &parse_state ) {
-				if constexpr( ParseState::minified_document ) {
-					return;
-				} else {
-					using CharT = typename ParseState::CharT;
+				if constexpr( not ParseState::minified_document ) {
 					// SIMD here was much slower, most JSON has very minimal whitespace
-					CharT *first = parse_state.first;
-					daw_json_assert_weak( first, ErrorReason::Unknown );
-					CharT *const last = parse_state.last;
+					auto first = daw::not_null<char const *>( parse_state.first );
+					auto const last = daw::not_null<char const *>( parse_state.last );
 
 					// only used when not zero terminated string and gcc9 warns
 					(void)last;
@@ -66,11 +64,9 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_unchecked( ParseState &parse_state ) {
-				if constexpr( ParseState::minified_document ) {
-					return;
-				} else {
-					using CharT = typename ParseState::CharT;
-					CharT *first = parse_state.first;
+				if constexpr( not ParseState::minified_document ) {
+					auto first =
+					  daw::not_null<char const *>( daw::never_null, parse_state.first );
 					while( DAW_UNLIKELY(
 					  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 					    1U ) <= 0x1F ) ) {
@@ -84,10 +80,13 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_next_member_unchecked( ParseState &parse_state ) {
+				auto pf = daw::not_null( daw::never_null, parse_state.first );
+				auto pl = daw::not_null( daw::never_null, parse_state.last );
 				parse_state.first =
-				  json_details::memchr_unchecked<'"', typename ParseState::exec_tag_t,
-				                                 ParseState::expect_long_strings>(
-				    parse_state.first, parse_state.last );
+				  json_details::memchr_unchecked<'"',
+				                                 typename ParseState::exec_tag_t,
+				                                 ParseState::expect_long_strings>( pf,
+				                                                                   pl );
 			}
 
 			template<char... keys, typename ParseState>
@@ -96,18 +95,18 @@ namespace daw::json {
 				static_assert( sizeof...( keys ) > 0 );
 				static_assert( sizeof...( keys ) <= 16 );
 
-				using CharT = typename ParseState::CharT;
-
-				if constexpr( daw::traits::not_same<typename ParseState::exec_tag_t,
-				                                    constexpr_exec_tag>::value ) {
+				if( not json_details::use_constexpr_exec_mode<
+				      typename ParseState::exec_tag_t>( ) ) {
+					auto pf = daw::not_null<char const *>{ parse_state.first };
+					auto pl = daw::not_null<char const *>{ parse_state.last };
 					parse_state.first =
 					  json_details::mempbrk<ParseState::is_unchecked_input,
 					                        typename ParseState::exec_tag_t,
-					                        ParseState::expect_long_strings, keys...>(
-					    parse_state.first, parse_state.last );
+					                        ParseState::expect_long_strings,
+					                        keys...>( pf, pl );
 				} else {
-					CharT *first = parse_state.first;
-					CharT *const last = parse_state.last;
+					auto first = daw::not_null<char const *>( parse_state.first );
+					auto const last = daw::not_null<char const *>( parse_state.last );
 
 					// silencing gcc9 unused warning.  last is used inside if constexpr
 					// blocks
@@ -120,8 +119,8 @@ namespace daw::json {
 						while( not parse_policy_details::in<keys...>( *first ) ) {
 							++first;
 						}
-						daw_json_assert_weak( *first != 0, ErrorReason::UnexpectedEndOfData,
-						                      parse_state );
+						daw_json_assert_weak(
+						  *first != '\0', ErrorReason::UnexpectedEndOfData, parse_state );
 					} else {
 						daw_json_assert_weak(
 						  first < last, ErrorReason::UnexpectedEndOfData, parse_state );
@@ -142,14 +141,13 @@ namespace daw::json {
 			template<char PrimLeft, typename ParseState>
 			DAW_ATTRIB_FLATTEN static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
-				constexpr char PrimRight = PrimLeft == '{' ? '}' : ']';
-				constexpr char SecLeft = PrimLeft == '{' ? '[' : '{';
-				constexpr char SecRight = SecLeft == '{' ? '}' : ']';
+				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
+				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;
+				using SecRight = daw::constant<SecLeft::value == '{' ? '}' : ']'>;
 
-				using CharT = typename ParseState::CharT;
 				// Not checking for Left as it is required to be skipped already
-				CharT *ptr_first = parse_state.first;
-				CharT *const ptr_last = parse_state.last;
+				auto ptr_first = daw::not_null<char const *>( parse_state.first );
+				auto const ptr_last = daw::not_null<char const *>( parse_state.last );
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return parse_state;
 				}
@@ -169,10 +167,11 @@ namespace daw::json {
 					case '"':
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input>( ParseState::exec_tag, ptr_first,
-						                                   ptr_last );
+						  ParseState::is_unchecked_input,
+						  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
 						daw_json_ensure( ptr_first < ptr_last and *ptr_first == '"',
-						                 ErrorReason::UnexpectedEndOfData, parse_state );
+						                 ErrorReason::UnexpectedEndOfData,
+						                 parse_state );
 						break;
 					case ',':
 						if( DAW_UNLIKELY( ( prime_bracket_count == 1 ) &
@@ -183,22 +182,23 @@ namespace daw::json {
 					case PrimLeft:
 						++prime_bracket_count;
 						break;
-					case PrimRight:
+					case PrimRight::value:
 						--prime_bracket_count;
 						if( prime_bracket_count == 0 ) {
 							++ptr_first;
 							daw_json_ensure( second_bracket_count == 0,
-							                 ErrorReason::InvalidBracketing, parse_state );
+							                 ErrorReason::InvalidBracketing,
+							                 parse_state );
 							result.last = ptr_first;
 							result.counter = cnt;
 							parse_state.first = ptr_first;
 							return result;
 						}
 						break;
-					case SecLeft:
+					case SecLeft::value:
 						++second_bracket_count;
 						break;
-					case SecRight:
+					case SecRight::value:
 						--second_bracket_count;
 						break;
 					}
@@ -206,7 +206,8 @@ namespace daw::json {
 				}
 				daw_json_ensure( ( prime_bracket_count == 0 ) &
 				                   ( second_bracket_count == 0 ),
-				                 ErrorReason::InvalidBracketing, parse_state );
+				                 ErrorReason::InvalidBracketing,
+				                 parse_state );
 				// We include the close primary bracket in the range so that subsequent
 				// parsers have a terminator inside their range
 				result.last = ptr_first;
@@ -219,15 +220,16 @@ namespace daw::json {
 			DAW_ATTRIB_NOINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
-				constexpr char PrimRight = PrimLeft == '{' ? '}' : ']';
-				constexpr char SecLeft = PrimLeft == '{' ? '[' : '{';
-				constexpr char SecRight = SecLeft == '{' ? '}' : ']';
-				using CharT = typename ParseState::CharT;
+				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
+				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;
+				using SecRight = daw::constant<SecLeft::value == '{' ? '}' : ']'>;
+
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
+				auto ptr_first = daw::not_null<char const *>( parse_state.first );
+				auto const ptr_last = daw::not_null<char const *>( parse_state.last );
 
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
@@ -240,8 +242,8 @@ namespace daw::json {
 					case '"':
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input>( ParseState::exec_tag, ptr_first,
-						                                   parse_state.last );
+						  ParseState::is_unchecked_input,
+						  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
 						break;
 					case ',':
 						if( DAW_UNLIKELY( ( prime_bracket_count == 1 ) &
@@ -252,7 +254,7 @@ namespace daw::json {
 					case PrimLeft:
 						++prime_bracket_count;
 						break;
-					case PrimRight:
+					case PrimRight::value:
 						--prime_bracket_count;
 						if( prime_bracket_count == 0 ) {
 							++ptr_first;
@@ -264,10 +266,10 @@ namespace daw::json {
 							return result;
 						}
 						break;
-					case SecLeft:
+					case SecLeft::value:
 						++second_bracket_count;
 						break;
-					case SecRight:
+					case SecRight::value:
 						--second_bracket_count;
 						break;
 					}

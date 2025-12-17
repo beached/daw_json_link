@@ -8,13 +8,14 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_option_bits.h"
-#include <daw/json/daw_json_parse_options.h>
+#include "daw/json/daw_json_parse_options.h"
+#include "daw/json/impl/daw_json_option_bits.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_unreachable.h>
@@ -29,6 +30,8 @@ namespace daw::json {
 		namespace options {
 			constexpr daw::string_view to_string( ExecModeTypes mode ) {
 				switch( mode ) {
+				case ExecModeTypes::default_mode:
+					return "default_mode";
 				case ExecModeTypes::compile_time:
 					return "compile_time";
 				case ExecModeTypes::runtime:
@@ -47,7 +50,7 @@ namespace daw::json {
 
 			template<>
 			inline constexpr auto default_json_option_value<options::ExecModeTypes> =
-			  options::ExecModeTypes::compile_time;
+			  options::ExecModeTypes::default_mode;
 
 			template<>
 			inline constexpr unsigned
@@ -175,25 +178,25 @@ namespace daw::json {
 			inline constexpr unsigned policy_bits_start =
 			  basic_policy_bits_start<Policy, policy_list>;
 
-			DAW_CONSTEVAL inline json_options_t set_bits( json_options_t value ) {
+			DAW_CONSTEVAL json_options_t set_bits( json_options_t value ) {
 				return value;
 			}
 
 			template<typename PolicyFlag,
-			         typename... PolicyFlags DAW_JSON_ENABLEIF(
+			         typename... PolicyFlags DAW_ENABLEIF(
 			           are_option_flags<PolicyFlag, PolicyFlags...> )>
-			DAW_JSON_REQUIRES( are_option_flags<PolicyFlag, PolicyFlags...> )
+			DAW_REQUIRES( are_option_flags<PolicyFlag, PolicyFlags...> )
 			DAW_CONSTEVAL json_options_t
 			  set_bits( json_options_t value, PolicyFlag pol, PolicyFlags... pols ) {
 				static_assert( are_option_flags<PolicyFlags...>,
 				               "Only registered policy types are allowed" );
 
 				auto new_bits = static_cast<unsigned>( pol );
-				constexpr unsigned mask =
-				  ( (1U << json_option_bits_width<PolicyFlag>)-1U );
-				new_bits &= mask;
+				using mask =
+				  daw::constant<( (1U << json_option_bits_width<PolicyFlag>)-1U )>;
+				new_bits &= mask::value;
 				new_bits <<= policy_bits_start<PolicyFlag>;
-				value &= ~( mask << policy_bits_start<PolicyFlag> );
+				value &= ~( mask::value << policy_bits_start<PolicyFlag> );
 				value |= new_bits;
 				if constexpr( sizeof...( PolicyFlags ) > 0 ) {
 					if constexpr( sizeof...( pols ) > 0 ) {
@@ -228,17 +231,17 @@ namespace daw::json {
 			/***
 			 * The defaults for all known policies encoded as a json_options_t
 			 */
-			inline static constexpr json_options_t default_policy_flag =
+			inline constexpr json_options_t default_policy_flag =
 			  default_policy_flag_t<policy_list>::value;
 
 			template<typename Policy, typename Result = Policy>
 			DAW_CONSTEVAL Result get_bits_for( json_options_t value ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
-				constexpr unsigned mask = ( 1U << (policy_bits_start<Policy> +
-				                                   json_option_bits_width<Policy>)) -
-				                          1U;
-				value &= mask;
+				using mask = daw::constant<( 1U << (policy_bits_start<Policy> +
+				                                    json_option_bits_width<Policy>)) -
+				                           1U>;
+				value &= mask::value;
 				value >>= policy_bits_start<Policy>;
 				return static_cast<Result>( Policy{ value } );
 			}

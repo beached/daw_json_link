@@ -80,7 +80,9 @@ void test( char **argv, bool do_asserts ) {
 #endif
 	{
 		auto ret = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, json_sv1.size( ), "twitter bench(checked)",
+		  DAW_NUM_RUNS,
+		  json_sv1.size( ),
+		  "twitter bench(checked)",
 		  []( auto const &f1 ) {
 			  return from_json<daw::twitter::twitter_object_t>(
 			    f1, checked_policy_v<ExecMode, true> );
@@ -110,7 +112,9 @@ void test( char **argv, bool do_asserts ) {
 
 	{
 		auto ret = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, json_sv1.size( ), "twitter bench(unchecked)",
+		  DAW_NUM_RUNS,
+		  json_sv1.size( ),
+		  "twitter bench(unchecked)",
 		  []( auto f1 ) {
 			  return from_json<daw::twitter::twitter_object_t>(
 			    f1, checked_policy_v<ExecMode, true> );
@@ -130,7 +134,9 @@ void test( char **argv, bool do_asserts ) {
 
 	{
 		auto ret = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, json_sv2.size( ), "citm bench(checked)",
+		  DAW_NUM_RUNS,
+		  json_sv2.size( ),
+		  "citm bench(checked)",
 		  []( auto const &f2 ) {
 			  return from_json<daw::citm::citm_object_t>(
 			    f2, checked_policy_v<ExecMode, true> );
@@ -152,7 +158,9 @@ void test( char **argv, bool do_asserts ) {
 
 	{
 		auto ret = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, json_sv2.size( ), "citm bench(unchecked)",
+		  DAW_NUM_RUNS,
+		  json_sv2.size( ),
+		  "citm bench(unchecked)",
 		  []( auto const &f2 ) {
 			  return from_json<daw::citm::citm_object_t>(
 			    f2, checked_policy_v<ExecMode, true> );
@@ -173,7 +181,9 @@ void test( char **argv, bool do_asserts ) {
 
 	{
 		auto ret = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, json_sv3.size( ), "canada bench(checked)",
+		  DAW_NUM_RUNS,
+		  json_sv3.size( ),
+		  "canada bench(checked)",
 		  []( auto const &f3 ) {
 			  return from_json<daw::geojson::Polygon>(
 			    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
@@ -190,7 +200,9 @@ void test( char **argv, bool do_asserts ) {
 
 	{
 		auto ret = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, json_sv3.size( ), "canada bench(unchecked)",
+		  DAW_NUM_RUNS,
+		  json_sv3.size( ),
+		  "canada bench(unchecked)",
 		  []( auto const &f3 ) {
 			  return from_json<daw::geojson::Polygon>(
 			    f3, "features[0].geometry", checked_policy_v<ExecMode, false> );
@@ -207,7 +219,9 @@ void test( char **argv, bool do_asserts ) {
 
 	{
 		auto ret = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "nativejson bench(checked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "nativejson bench(checked)",
 		  []( auto const &f1, auto const &f2, auto const &f3 ) {
 			  return std::tuple{
 			    from_json<daw::twitter::twitter_object_t>(
@@ -217,7 +231,9 @@ void test( char **argv, bool do_asserts ) {
 			    from_json<daw::geojson::Polygon>(
 			      f3, "features[0].geometry", checked_policy_v<ExecMode, false> ) };
 		  },
-		  json_sv1, json_sv2, json_sv3 );
+		  json_sv1,
+		  json_sv2,
+		  json_sv3 );
 		std::tie( twitter_result, citm_result, canada_result ) = ret.get( );
 	}
 
@@ -246,7 +262,9 @@ void test( char **argv, bool do_asserts ) {
 
 	{
 		auto ret = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, sz, "nativejson bench(unchecked)",
+		  DAW_NUM_RUNS,
+		  sz,
+		  "nativejson bench(unchecked)",
 		  []( auto const &f1, auto const &f2, auto const &f3 ) {
 			  return std::tuple{
 			    from_json<daw::twitter::twitter_object_t>(
@@ -256,7 +274,9 @@ void test( char **argv, bool do_asserts ) {
 			    from_json<daw::geojson::Polygon>(
 			      f3, "features[0].geometry", unchecked_policy_v<ExecMode, false> ) };
 		  },
-		  json_sv1, json_sv2, json_sv3 );
+		  json_sv1,
+		  json_sv2,
+		  json_sv3 );
 		std::tie( twitter_result, citm_result, canada_result ) = ret.get( );
 	}
 

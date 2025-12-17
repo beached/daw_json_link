@@ -22,7 +22,7 @@
 
 std::ostream &operator<<( std::ostream &os, std::chrono::nanoseconds t ) {
 	auto const ae = daw::on_scope_exit(
-	  [&os, old_flags = std::ios_base::fmtflags( os.flags( ) )] {
+	  [&os, old_flags = std::ios_base::fmtflags{ os.flags( ) }] {
 		  os.flags( old_flags );
 	  } );
 

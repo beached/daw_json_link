@@ -8,12 +8,14 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "concepts/daw_nullable_value.h"
+#include "daw/json/concepts/daw_nullable_value.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_cpp20_concept.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
 
@@ -28,7 +30,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename T, typename... Args>
-			inline constexpr bool should_list_construct_v =
+			DAW_CPP20_CONCEPT should_list_construct_v =
 			  not std::is_constructible_v<T, Args...> and
 			  daw::traits::is_list_constructible_v<T, Args...>;
 		}
@@ -39,18 +41,18 @@ namespace daw::json {
 		struct default_constructor {
 			using i_am_the_default_default_constructor_type = void;
 
-			template<typename... Args DAW_JSON_ENABLEIF(
-			  std::is_constructible_v<T, Args...> )>
-			DAW_JSON_REQUIRES( std::is_constructible_v<T, Args...> )
+			template<
+			  typename... Args DAW_ENABLEIF( std::is_constructible_v<T, Args...> )>
+			DAW_REQUIRES( std::is_constructible_v<T, Args...> )
 			[[nodiscard]] DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr T
 			operator( )( Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 
 				return T( DAW_FWD( args )... );
 			}
 
-			template<typename... Args DAW_JSON_ENABLEIF(
+			template<typename... Args DAW_ENABLEIF(
 			  json_details::should_list_construct_v<T, Args...> )>
-			DAW_JSON_REQUIRES( json_details::should_list_construct_v<T, Args...> )
+			DAW_REQUIRES( json_details::should_list_construct_v<T, Args...> )
 			[[nodiscard]] DAW_ATTRIB_INLINE DAW_JSON_CPP23_STATIC_CALL_OP constexpr T
 			operator( )( Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 			  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
@@ -69,9 +71,9 @@ namespace daw::json {
 		};
 
 		template<typename T>
-		DAW_JSON_REQUIRES( concepts::nullable_impl::is_list_constructible_v<T> and
-		                   not concepts::is_nullable_value_v<T> )
-		struct nullable_constructor<T DAW_JSON_ENABLEIF_S(
+		DAW_REQUIRES( concepts::nullable_impl::is_list_constructible_v<T> and
+		              not concepts::is_nullable_value_v<T> )
+		struct nullable_constructor<T DAW_ENABLEIF_S(
 		  concepts::nullable_impl::is_list_constructible_v<T> and
 		  not concepts::is_nullable_value_v<T> )> : default_constructor<T> {
 			/// used for types like string_view that have an empty state

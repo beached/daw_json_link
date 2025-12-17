@@ -29,7 +29,7 @@ int main( int argc, char **argv )
 		  "file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 
 	auto val = daw::json::json_value( data );
 	for( auto member : val ) {

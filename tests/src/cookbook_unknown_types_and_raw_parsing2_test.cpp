@@ -37,9 +37,9 @@ namespace daw::json {
 		                   json_string<member1>,
 		                   json_link<opt_member, std::optional<json_value>>>;
 
-		static inline auto to_json_data( MyClass2 const &value ) {
-			return std::forward_as_tuple( value.member0, value.member_later,
-			                              value.member1, value.opt_member );
+		static auto to_json_data( MyClass2 const &value ) {
+			return std::forward_as_tuple(
+			  value.member0, value.member_later, value.member1, value.opt_member );
 		}
 	};
 } // namespace daw::json
@@ -66,7 +66,7 @@ namespace daw::json {
 		using type = json_member_list<json_number<a, int>, json_bool<b>>;
 #endif
 
-		static inline auto to_json_data( MyDelayedClass const &value ) {
+		static auto to_json_data( MyDelayedClass const &value ) {
 			return std::forward_as_tuple( value.a, value.b );
 		}
 	};
@@ -92,7 +92,7 @@ int main( int argc, char **argv )
 		  "file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 
 	auto const val = daw::json::from_json<MyClass2>( data );
 

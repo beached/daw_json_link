@@ -138,8 +138,8 @@ void roundtrip( daw::Arguments const &args, std::string_view data,
 
 	if( auto pos = args.find_argument_position( "verbose" ); pos ) {
 		auto const time = daw::benchmark( [&] {
-			daw::json::json_event_parser( data, handler,
-			                              daw::json::ConformancePolicy );
+			daw::json::json_event_parser(
+			  data, handler, daw::json::ConformancePolicy );
 		} );
 		if( not has_out_file ) {
 			std::cout << '\n';
@@ -174,7 +174,7 @@ int main( int argc, char **argv )
 		          << " json_in.json [json_out.json] [--verbose]\n";
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( std::string( args[0].value ) ).value( );
+	auto const data = daw::read_file( std::string( args[0].value ) ).value( );
 
 #if defined( DAW_USE_EXCEPTIONS )
 	try {

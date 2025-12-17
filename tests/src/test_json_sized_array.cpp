@@ -6,8 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#include <daw/json/daw_json_link.h>
 #include <daw/daw_ensure.h>
+#include <daw/json/daw_json_link.h>
 
 #include <cassert>
 #include <memory>
@@ -25,8 +25,8 @@ struct UniquePtrArrayCtor {
 	}
 
 	template<typename Iterator>
-	inline std::unique_ptr<T[]> operator( )( Iterator first, Iterator last,
-	                                         std::size_t sz ) const {
+	std::unique_ptr<T[]> operator( )( Iterator first, Iterator last,
+	                                  std::size_t sz ) const {
 		assert( sz <= 1024 ); // ensure size isn't too large
 		auto result = std::unique_ptr<T[]>( new T[static_cast<std::size_t>( sz )] );
 		auto out_last = std::copy( first, last, result.get( ) );

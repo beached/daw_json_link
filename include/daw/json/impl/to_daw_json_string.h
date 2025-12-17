@@ -8,19 +8,22 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_json_parse_iso8601_utils.h"
-#include "daw_json_serialize_options_impl.h"
-#include "daw_json_serialize_policy.h"
-#include "daw_json_value.h"
-#include <daw/json/daw_json_data_contract.h>
+#include "daw/json/daw_json_data_contract.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_iso8601_utils.h"
+#include "daw/json/impl/daw_json_serialize_options_impl.h"
+#include "daw/json/impl/daw_json_serialize_policy.h"
+#include "daw/json/impl/daw_json_value.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
+#include <daw/daw_callable.h>
+#include <daw/daw_constant.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_cxmath.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_move.h>
 #include <daw/daw_simple_array.h>
@@ -31,6 +34,9 @@
 #include <daw/utf8/unchecked.h>
 
 #include <array>
+#if defined( DAW_HAS_CPP20_CONCEPTS )
+#include <concepts>
+#endif
 #include <daw/stdinc/move_fwd_exch.h>
 #include <daw/stdinc/tuple_traits.h>
 #include <optional>
@@ -90,14 +96,14 @@ namespace daw::json {
 		template<typename T>
 		struct default_to_json_converter_t {
 			template<typename U>
-			[[nodiscard]] static inline auto use_stream( U const &v ) {
+			[[nodiscard]] static std::string use_stream( U const &v ) {
 				std::stringstream ss{ };
 				ss << v;
 				return std::move( ss ).str( );
 			}
 
 			template<typename U>
-			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr auto
+			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP constexpr auto
 			operator( )( U const &value ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				if constexpr( json_details::is_string_view_like_v<U> ) {
 					return std::string_view( std::data( value ), std::size( value ) );
@@ -168,7 +174,7 @@ namespace daw::json {
 
 		namespace from_json_conv_details {
 			template<typename T>
-			[[nodiscard]] static inline auto use_stream( std::string_view sv ) {
+			[[nodiscard]] static auto use_stream( std::string_view sv ) {
 				std::stringstream ss{ };
 				ss << sv;
 				T result;
@@ -179,7 +185,7 @@ namespace daw::json {
 
 		template<typename T>
 		struct default_from_json_converter_t {
-			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr decltype( auto )
+			[[nodiscard]] DAW_JSON_CPP23_STATIC_CALL_OP constexpr decltype( auto )
 			operator( )( std::string_view sv ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				if constexpr( std::is_same_v<T, std::string_view> or
 				              std::is_same_v<T, std::optional<std::string_view>> ) {
@@ -224,7 +230,8 @@ namespace daw::json {
 				                         to_nibble_char( ( c >> 12U ) & 0xFU ),
 				                         to_nibble_char( ( c >> 8U ) & 0xFU ),
 				                         to_nibble_char( ( c >> 4U ) & 0xFU ),
-				                         to_nibble_char( c & 0xFU ), '\0' };
+				                         to_nibble_char( c & 0xFU ),
+				                         '\0' };
 
 				it.write( nibbles );
 				return it;
@@ -240,7 +247,8 @@ namespace daw::json {
 				if( cp <= 0x7FFU ) {
 					char const tmp[] = {
 					  static_cast<char>( ( cp >> 6U ) | 0b11000000U ),
-					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ), '\0' };
+					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ),
+					  '\0' };
 					it.write( tmp );
 					return;
 				}
@@ -248,7 +256,8 @@ namespace daw::json {
 					char const tmp[]{
 					  static_cast<char>( ( cp >> 12U ) | 0b11100000U ),
 					  static_cast<char>( ( ( cp >> 6U ) & 0b00111111U ) | 0b10000000U ),
-					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ), '\0' };
+					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ),
+					  '\0' };
 					it.write( tmp );
 					return;
 				}
@@ -257,7 +266,8 @@ namespace daw::json {
 					  static_cast<char>( ( cp >> 18U ) | 0b11110000U ),
 					  static_cast<char>( ( ( cp >> 12U ) & 0b00111111U ) | 0b10000000U ),
 					  static_cast<char>( ( ( cp >> 6U ) & 0b00111111U ) | 0b10000000U ),
-					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ), '\0' };
+					  static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U ),
+					  '\0' };
 					it.write( tmp );
 					return;
 				}
@@ -270,19 +280,20 @@ namespace daw::json {
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
 			  typename WritableType,
-			  typename Container DAW_JSON_ENABLEIF(
+			  typename Container DAW_ENABLEIF(
 			    daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )>
-			DAW_JSON_REQUIRES(
+			DAW_REQUIRES(
 			  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )
 			[[nodiscard]] static constexpr WritableType
 			  copy_to_iterator( WritableType it, Container const &container ) {
-				constexpr bool restrict_high =
+				using restrict_high = std::bool_constant<
 				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( WritableType::restricted_string_output ==
-				    options::RestrictedStringOutput::OnlyAllow7bitsStrings );
+				    options::RestrictedStringOutput::OnlyAllow7bitsStrings )>;
 				if constexpr( do_escape ) {
 					using iter = DAW_TYPEOF( std::begin( container ) );
 					using it_t = utf8::unchecked::iterator<iter>;
+
 					auto first = it_t( std::begin( container ) );
 					auto const last = it_t( std::end( container ) );
 					while( first != last ) {
@@ -326,7 +337,7 @@ namespace daw::json {
 								                               it );
 								break;
 							}
-							if constexpr( restrict_high ) {
+							if constexpr( restrict_high::value ) {
 								if( cp >= 0x7FU and cp <= 0xFFFFU ) {
 									it = json_details::output_hex(
 									  static_cast<std::uint16_t>( cp ), it );
@@ -347,7 +358,7 @@ namespace daw::json {
 					}
 				} else {
 					for( auto c : container ) {
-						if constexpr( restrict_high ) {
+						if constexpr( restrict_high::value ) {
 							daw_json_ensure( ( static_cast<unsigned char>( c ) >= 0x20U and
 							                   static_cast<unsigned char>( c ) <= 0x7FU ),
 							                 ErrorReason::InvalidStringHighASCII );
@@ -367,10 +378,10 @@ namespace daw::json {
 				if( ptr == nullptr ) {
 					return it;
 				}
-				constexpr bool restrict_high =
+				using restrict_high = std::bool_constant<
 				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( WriteableType::restricted_string_output ==
-				    options::RestrictedStringOutput::OnlyAllow7bitsStrings );
+				    options::RestrictedStringOutput::OnlyAllow7bitsStrings )>;
 
 				if constexpr( do_escape ) {
 					auto chr_it = utf8::unchecked::iterator<char const *>( ptr );
@@ -404,7 +415,7 @@ namespace daw::json {
 								                               it );
 								break;
 							}
-							if constexpr( restrict_high ) {
+							if constexpr( restrict_high::value ) {
 								if( cp >= 0x7FU and cp <= 0xFFFFU ) {
 									it = json_details::output_hex(
 									  static_cast<std::uint16_t>( cp ), it );
@@ -425,7 +436,7 @@ namespace daw::json {
 					}
 				} else {
 					while( *ptr != '\0' ) {
-						if constexpr( restrict_high ) {
+						if constexpr( restrict_high::value ) {
 							daw_json_ensure( ( static_cast<unsigned>( *ptr ) >= 0x20U and
 							                   static_cast<unsigned>( *ptr ) <= 0x7FU ),
 							                 ErrorReason::InvalidStringHighASCII );
@@ -497,7 +508,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_variant( WriteableType it, parse_to_t const &value ) {
 
 				assert( value.index( ) >= 0 );
@@ -506,7 +517,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_variant_tagged( WriteableType it,
 			                               parse_to_t const &value ) {
 
@@ -515,7 +526,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_variant_intrusive( WriteableType it,
 			                                  parse_to_t const &value ) {
 
@@ -524,7 +535,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename Optional>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_null( WriteableType it, Optional const &value ) {
 
 				if constexpr( has_op_bool_v<Optional> ) {
@@ -798,8 +809,8 @@ namespace daw::json {
 			} // namespace utils_details
 
 			template<typename Integer, typename WriteableType>
-			static inline constexpr WriteableType
-			integer_to_string( WriteableType it, Integer const &value ) {
+			static constexpr WriteableType integer_to_string( WriteableType it,
+			                                                  Integer const &value ) {
 				static_assert( daw::is_integral_v<Integer> );
 
 				if constexpr( daw::is_unsigned_v<Integer> ) {
@@ -814,7 +825,7 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_string_raw( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
@@ -822,37 +833,34 @@ namespace daw::json {
 				  "Value must be convertible to specialized type in "
 				  "json_data_contract" );
 
-				constexpr options::EightBitModes eight_bit_mode =
-				  JsonMember::eight_bit_mode;
 				it.put( '"' );
 				if( std::size( value ) > 0U ) {
-					it = utils::copy_to_iterator<false, eight_bit_mode>( it, value );
+					it = utils::copy_to_iterator<false, JsonMember::eight_bit_mode>(
+					  it, value );
 				}
 				it.put( '"' );
 				return it;
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_string_escaped( WriteableType it,
 			                               parse_to_t const &value ) {
 
-				constexpr options::EightBitModes eight_bit_mode =
-				  JsonMember::eight_bit_mode;
 				it.put( '"' );
-				it = utils::copy_to_iterator<true, eight_bit_mode>( it, value );
+				it = utils::copy_to_iterator<true, JsonMember::eight_bit_mode>( it,
+				                                                                value );
 				it.put( '"' );
 				return it;
 			}
 
 			template<typename T>
-			[[nodiscard]] static inline constexpr bool
-			is_null( std::optional<T> const &v ) {
+			[[nodiscard]] static constexpr bool is_null( std::optional<T> const &v ) {
 				return not static_cast<bool>( v );
 			}
 
 			template<typename T>
-			[[nodiscard]] static inline constexpr bool is_null( T const & ) {
+			[[nodiscard]] static constexpr bool is_null( T const & ) {
 				return false;
 			}
 
@@ -910,14 +918,14 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_unknown( WriteableType it, parse_to_t const &value ) {
 
 				return utils::copy_to_iterator( it, value );
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_class( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
@@ -936,8 +944,8 @@ namespace daw::json {
 					      typename JsonMember::wrapped_type>::to_json_data( value ),
 					    value );
 				} else if constexpr( is_json_map_alias_v<parse_to_t> ) {
-					return json_data_contract_trait_t<parse_to_t>::serialize( it, value,
-					                                                          value );
+					return json_data_contract_trait_t<parse_to_t>::serialize(
+					  it, value, value );
 				} else if constexpr( std::is_empty_v<parse_to_t> and
 				                     std::is_default_constructible_v<parse_to_t> and
 				                     not has_json_data_contract_trait_v<parse_to_t> ) {
@@ -952,7 +960,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_custom( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
@@ -962,10 +970,12 @@ namespace daw::json {
 				if constexpr( JsonMember::custom_json_type !=
 				              options::JsonCustomTypes::Literal ) {
 					it.put( '"' );
-					if constexpr( std::is_invocable_r_v<
-					                WriteableType, typename JsonMember::to_converter_t,
-					                WriteableType, parse_to_t> ) {
 
+					if constexpr( daw::is_callable_r_v<
+					                WriteableType,
+					                typename JsonMember::to_converter_t,
+					                WriteableType,
+					                parse_to_t> ) {
 						it = typename JsonMember::to_converter_t{ }( it, value );
 					} else {
 						it = utils::copy_to_iterator(
@@ -1006,7 +1016,7 @@ namespace daw::json {
 				daw::empty_t const expander[]{
 				  ( to_daw_json_string_help( daw::constant_v<Is> ),
 				    daw::empty_t{ } )...,
-				  daw::empty_t{} };
+				  daw::empty_t{ } };
 				(void)expander;
 
 				return it;
@@ -1023,7 +1033,8 @@ namespace daw::json {
 				using tuple_t = json_result_t<JsonMember>;
 
 				using element_pack = tuple_elements_pack<typename daw::conditional_t<
-				  is_tuple_v<tuple_t>, daw::traits::identity<tuple_t>,
+				  is_tuple_v<tuple_t>,
+				  daw::traits::identity<tuple_t>,
 				  json_details::identity_parts<tp_from_struct_binding_result_t,
 				                               parse_to_t>>::type>;
 
@@ -1126,13 +1137,13 @@ namespace daw::json {
 			}
 
 			template<typename Key, typename Value>
-			static inline constexpr Key const &
+			static constexpr Key const &
 			json_get_key( std::pair<Key, Value> const &kv ) {
 				return kv.first;
 			}
 
 			template<typename Key, typename Value>
-			static inline constexpr Value const &
+			static constexpr Value const &
 			json_get_value( std::pair<Key, Value> const &kv ) {
 				return kv.second;
 			}
@@ -1292,7 +1303,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename WriteableType, typename T>
-			[[nodiscard]] static inline constexpr WriteableType
+			[[nodiscard]] static constexpr WriteableType
 			member_to_string( WriteableType it, T const &value ) {
 				return to_daw_json_string<JsonMember, JsonMember::expected_type>(
 				  std::move( it ), value );
@@ -1397,9 +1408,10 @@ namespace daw::json {
 						it = member_to_string<dependent_member>(
 						  it, typename base_member_t::switcher{ }( v ) );
 					} else {
-						constexpr auto idx =
-						  find_names_in_pack_v<dependent_member, NamePack>;
-						it = member_to_string<dependent_member>( it, get<idx>( args ) );
+						using idx =
+						  daw::constant<find_names_in_pack_v<dependent_member, NamePack>>;
+						it =
+						  member_to_string<dependent_member>( it, get<idx::value>( args ) );
 					}
 					(void)it;
 				}
@@ -1408,12 +1420,13 @@ namespace daw::json {
 			template<std::size_t pos, typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename Tuple,
 			         typename Value, typename Visited>
-			static inline constexpr void to_json_str(
+			static constexpr void to_json_str(
 			  bool &is_first,
 			  serialization_policy<WriteableType, SerializationOptions> &it,
 			  Tuple const &tp, Value const &, Visited &visited_members ) {
-				constexpr auto json_member_name = daw::string_view(
-				  std::data( JsonMember::name ), std::size( JsonMember::name ) );
+				DAW_CPP23_STATIC_LOCAL constexpr auto json_member_name =
+				  daw::string_view( std::data( JsonMember::name ),
+				                    std::size( JsonMember::name ) );
 				if( daw::algorithm::contains( std::data( visited_members ),
 				                              daw::data_end( visited_members ),
 				                              json_member_name ) ) {
@@ -1481,7 +1494,8 @@ namespace daw::json {
 				  daw::jkj::dragonbox::to_chars_detail::decimal_length(
 				    dec.significand );
 
-				auto whole_dig = static_cast<std::int32_t>( digit_values ) + dec.exponent;
+				auto whole_dig =
+				  static_cast<std::int32_t>( digit_values ) + dec.exponent;
 
 				auto const br = [&] {
 					if constexpr( std::is_same_v<Real, float> ) {
@@ -1501,16 +1515,16 @@ namespace daw::json {
 				if( fp_output_format == options::FPOutputFormat::Scientific ) {
 					char buff[50]{ };
 					char *ptr = buff;
-					ptr =
-					  daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr, digit_values );
+					ptr = daw::jkj::dragonbox::to_chars_detail::to_chars(
+					  dec, ptr, digit_values );
 					out_it.copy_buffer( buff, ptr );
 					return out_it;
 				} else if( fp_output_format == options::FPOutputFormat::Auto ) {
 					if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
 						char buff[50]{ };
 						char *ptr = buff;
-						ptr = daw::jkj::dragonbox::to_chars_detail::to_chars( dec, ptr,
-						                                                      digit_values );
+						ptr = daw::jkj::dragonbox::to_chars_detail::to_chars(
+						  dec, ptr, digit_values );
 						out_it.copy_buffer( buff, ptr );
 						return out_it;
 					}

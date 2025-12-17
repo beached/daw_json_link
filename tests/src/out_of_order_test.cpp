@@ -55,8 +55,8 @@ namespace daw::json {
 		              options::number_opt( options::LiteralAsStringOpt::Always )>>;
 
 		static constexpr auto to_json_data( Foo const &foo ) {
-			return std::forward_as_tuple( foo.a, foo.b, foo.c, foo.d, foo.e, foo.f,
-			                              foo.g, foo.h );
+			return std::forward_as_tuple(
+			  foo.a, foo.b, foo.c, foo.d, foo.e, foo.f, foo.g, foo.h );
 		}
 	};
 } // namespace daw::json

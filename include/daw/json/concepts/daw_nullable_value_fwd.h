@@ -10,6 +10,10 @@
 
 #include "daw/json/impl/version.h"
 
+#include "daw/daw_callable.h"
+
+#include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_is_detected.h>
 
 #include <cstddef>
@@ -30,14 +34,13 @@ namespace daw::json {
 				    { std::declval<Args>( )... } ) );
 #endif
 				template<typename T, typename... Args>
-				inline constexpr bool is_list_constructible_v =
+				DAW_CPP20_CONCEPT is_list_constructible_v =
 				  daw::is_detected_v<is_list_constructible_test, T, Args...>;
 
 				template<typename T, typename... Args>
-				inline constexpr bool is_nullable_value_type_constructible_v =
+				DAW_CPP20_CONCEPT is_nullable_value_type_constructible_v =
 				  std::is_constructible_v<T, Args...> or
 				  is_list_constructible_v<T, Args...>;
-
 			} // namespace nullable_impl
 
 			struct construct_nullable_with_value_t {
@@ -76,23 +79,21 @@ namespace daw::json {
 				/// @brief read the value in the nullable type
 				/// @return A value_type with the current value
 				/// @pre has_value( ) == true
-				inline constexpr value_type read( T const &v ) const noexcept {
+				constexpr value_type read( T const &v ) const noexcept {
 					return v;
 				}
 				/// @brief Construct a value in nullable type and return it
-				DAW_JSON_CPP23_STATIC_CALL_OP inline constexpr nullable_type
-				operator( )( construct_nullable_with_value_t )
-				  DAW_JSON_CPP23_STATIC_CALL_OP_CONST
+				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type operator( )(
+				  construct_nullable_with_value_t ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
 				  noexcept( std::is_nothrow_default_constructible_v<value_type> ) {
 					return value_type{ };
 				}
 				/// @brief Return an empty nullable type
-				template<typename... Args DAW_JSON_ENABLEIF(
+				template<typename... Args DAW_ENABLEIF(
 				  nullable_impl::is_nullable_value_type_constructible_v<nullable_type,
 				                                                        Args...> )>
-				DAW_JSON_REQUIRES(
-				  nullable_impl::is_nullable_value_type_constructible_v<nullable_type,
-				                                                        Args...> )
+				DAW_REQUIRES( nullable_impl::is_nullable_value_type_constructible_v<
+				              nullable_type, Args...> )
 				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
 				operator( )( construct_nullable_with_empty_t,
 				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
@@ -117,7 +118,7 @@ namespace daw::json {
 
 			/// @brief Is T a nullable type
 			template<typename T>
-			inline constexpr bool is_nullable_value_v =
+			DAW_CPP20_CONCEPT is_nullable_value_v =
 			  nullable_value_traits<T>::is_nullable;
 
 			/// @brief Check if nullable value has a value
@@ -134,34 +135,35 @@ namespace daw::json {
 			}
 
 			template<typename T, typename... Args>
-			inline constexpr bool is_nullable_value_constructible_v =
+			DAW_CPP20_CONCEPT is_nullable_value_constructible_v =
 			  is_nullable_value_v<T> and
-			  std::is_invocable_v<nullable_value_traits<T>,
-			                      construct_nullable_with_value_t, Args...>;
+			  daw::is_callable_v<nullable_value_traits<T>,
+			                     construct_nullable_with_value_t, Args...>;
 
 			template<typename T, typename... Args>
-			inline constexpr bool is_nullable_pointer_constructible_v =
+			DAW_CPP20_CONCEPT is_nullable_pointer_constructible_v =
 			  is_nullable_value_v<T> and
-			  std::is_invocable_v<nullable_value_traits<T>,
-			                      construct_nullable_with_pointer_t, Args...>;
+			  daw::is_callable_v<nullable_value_traits<T>,
+			                     construct_nullable_with_pointer_t, Args...>;
 
 			template<typename T, typename... Args>
-			inline constexpr bool is_nullable_value_nothrow_constructible_v =
+			DAW_CPP20_CONCEPT is_nullable_value_nothrow_constructible_v =
 			  is_nullable_value_constructible_v<T, Args...> and
-			  std::is_nothrow_invocable_v<nullable_value_traits<T>,
-			                              construct_nullable_with_value_t, Args...>;
+			  daw::is_nothrow_callable_v<nullable_value_traits<T>,
+			                             construct_nullable_with_value_t, Args...>;
 
 			template<typename T>
-			inline constexpr bool is_nullable_empty_constructible_v =
+			DAW_CPP20_CONCEPT is_nullable_empty_constructible_v =
 			  is_nullable_value_v<T> and
-			  std::is_invocable_v<nullable_value_traits<T>,
-			                      construct_nullable_with_empty_t>;
+			  daw::is_callable_v<nullable_value_traits<T>,
+			                     construct_nullable_with_empty_t>;
 
 			template<typename T>
-			inline constexpr bool is_nullable_empty_nothrow_constructible_v =
+			DAW_CPP20_CONCEPT is_nullable_empty_nothrow_constructible_v =
 			  is_nullable_empty_constructible_v<T> and
-			  std::is_nothrow_invocable_v<nullable_value_traits<T>,
-			                              construct_nullable_with_empty_t>;
+			  daw::is_nothrow_callable_v<nullable_value_traits<T>,
+			                             construct_nullable_with_empty_t>;
+
 		} // namespace concepts
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

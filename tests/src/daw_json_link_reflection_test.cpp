@@ -19,12 +19,15 @@
 using daw::json::reflect;
 
 struct[[= reflect]] X {
-	[[= reflect.map_as<daw::json::json_number<"member1", int>>( )]] int m1;
+	[[= reflect.map_as<daw::json::json_number<"member1", int>>]] int m1;
 
-	//[[= reflect.rename( "member2" )]] int m2;
-	int member2;
+	[[= reflect.rename<"member2">]] int m2;
 };
-
+static_assert(
+  daw::json::refl_details::get_annotation<daw::json::reflect_t, ^^X>( ) );
+static_assert(
+  daw::json::refl_details::get_non_ignored_reflectible_members<X>( ).size( ) ==
+  2 );
 struct[[= reflect]] Y {
 	X m0;
 	std::string m1;
@@ -86,7 +89,41 @@ struct[[= reflect]] EnumMemberString {
 	[[= reflect.enum_string]] EFoo foo;
 };
 
-int main( ) {
+struct[[= reflect]] HasHidden {
+	int x;
+	[[= reflect.ignored( 42 )]] int y;
+	int z;
+};
+static_assert( daw::json::ReflectionEnabled<HasHidden> );
+
+struct[[= reflect]] Value {
+	int value = 21212;
+	explicit Value( ) = default;
+	explicit Value( int x )
+	  : value( x ) {}
+};
+static_assert( daw::json::ReflectionEnabled<Value> );
+struct[[= reflect]] HasHidden2 {
+	int x;
+	[[= reflect.ignored( [] {
+		return Value( 4242 );
+	} )]] Value y;
+	int z;
+};
+static_assert( daw::json::refl_details::construction_test_v<
+               HasHidden2, daw::json::refl_details::to_tuple_t<HasHidden2>> );
+static_assert( daw::json::ReflectionEnabled<HasHidden2> );
+
+struct ExternallyEnabled {
+	int member1;
+	int member2;
+};
+
+template<>
+inline constexpr bool daw::json::enable_reflection_for<ExternallyEnabled> =
+  true;
+
+int main( ) try {
 	constexpr daw::string_view json_doc0 = R"json(
 {
 	"member1": 55,
@@ -95,9 +132,15 @@ int main( ) {
 )json";
 	constexpr auto val0 = daw::json::from_json<X>( json_doc0 );
 	daw_ensure( val0.m1 == 55 );
-	daw_ensure( val0./*m2*/member2 == 123 );
+	daw_ensure( val0.m2 == 123 );
 	auto const val0_json = daw::json::to_json( val0 );
 	daw::println( "json: {}", val0_json );
+
+	constexpr auto val0b = daw::json::from_json<ExternallyEnabled>( json_doc0 );
+	daw_ensure( val0b.member1 == 55 );
+	daw_ensure( val0b.member2 == 123 );
+	auto const val0b_json = daw::json::to_json( val0b );
+	daw::println( "json: {}", val0b_json );
 
 	constexpr daw::string_view json_doc1 = R"json(
 	{
@@ -107,7 +150,7 @@ int main( ) {
 	)json";
 	auto const val1 = daw::json::from_json<Y>( json_doc1 );
 	daw_ensure( val1.m0.m1 == 55 );
-	daw_ensure( val1.m0./*m2*/member2 == 123 );
+	daw_ensure( val1.m0.m2 == 123 );
 	daw_ensure( val1.m1 == "Hello World!" );
 	daw::println( "json: {}", daw::json::to_json( val1 ) );
 
@@ -139,9 +182,9 @@ int main( ) {
 	daw_ensure( not val3.m0 );
 	daw_ensure( val3.m1.size( ) == 2 );
 	daw_ensure( val3.m1[0].m1 == 0 );
-	daw_ensure( val3.m1[0]./*m2*/member2 == 1 );
+	daw_ensure( val3.m1[0].m2 == 1 );
 	daw_ensure( val3.m1[1].m1 == 2 );
-	daw_ensure( val3.m1[1]./*m2*/member2 == 3 );
+	daw_ensure( val3.m1[1].m2 == 3 );
 	daw::println( "json: {}", daw::json::to_json( val3 ) );
 
 	using namespace daw::json::options;
@@ -152,9 +195,9 @@ int main( ) {
 	daw_ensure( not val3b.m0 );
 	daw_ensure( val3b.m1.size( ) == 2 );
 	daw_ensure( val3b.m1[0].m1 == 0 );
-	daw_ensure( val3b.m1[0]./*m2*/member2 == 1 );
+	daw_ensure( val3b.m1[0].m2 == 1 );
 	daw_ensure( val3b.m1[1].m1 == 2 );
-	daw_ensure( val3b.m1[1]./*m2*/member2 == 3 );
+	daw_ensure( val3b.m1[1].m2 == 3 );
 
 	static constexpr daw::string_view json_doc4 = R"json({"value": "42"})json";
 	daw::println( "json_doc4: {}", json_doc4 );
@@ -189,4 +232,27 @@ int main( ) {
 	auto const val9_json = daw::json::to_json( bfoo1 );
 	daw::println( "EnumMemberString{{ EFoo::BlessYou }}; as json: {}",
 	              val9_json );
+
+	static constexpr daw::string_view h0_doc = R"json({"x": 55, "z": 66 })json";
+	daw::println( "json: {}", h0_doc );
+	auto const h0 = daw::json::from_json<HasHidden>( h0_doc );
+	daw::println(
+	  "HasHidden parsed x: {}, defaulted to 42 y: {}, z: {}", h0.x, h0.y, h0.z );
+	daw_ensure( h0.x == 55 );
+	daw_ensure( h0.y == 42 );
+	daw_ensure( h0.z == 66 );
+
+	auto const h1 = daw::json::from_json<HasHidden2>( h0_doc );
+	daw::println( "HasHidden2 parsed x: {}, defaulted to 4242 y: {}, z: {}",
+	              h1.x,
+	              h1.y.value,
+	              h1.z );
+	daw_ensure( h1.x == 55 );
+	daw_ensure( h1.y.value == 4242 );
+	daw_ensure( h1.z == 66 );
+
+	return EXIT_SUCCESS;
+} catch( daw::json::json_exception const &jex ) {
+	daw::println( "unexpected JSON Exception: {}", to_formatted_string( jex ) );
+	return EXIT_FAILURE;
 }

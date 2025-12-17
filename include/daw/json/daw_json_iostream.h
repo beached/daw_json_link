@@ -8,10 +8,12 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_link.h"
+#include "daw/json/daw_json_link.h"
 
+#include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_traits.h>
 
 #include <iostream>
@@ -24,6 +26,13 @@ namespace daw::json {
 			  is_opted_into_json_iostreams_v,
 			  json_data_contract<T>::opt_into_iostreams );
 
+#if defined( DAW_HAS_CPP20_CONCEPTS )
+			template<typename Container>
+			concept is_container_opted_into_json_iostreams_v = requires {
+				typename Container::value_type;
+			}
+			and is_opted_into_json_iostreams_v<typename Container::value_type>;
+#else
 			template<typename, typename = void>
 			inline constexpr bool is_container_opted_into_json_iostreams_v = false;
 
@@ -31,25 +40,25 @@ namespace daw::json {
 			inline constexpr bool is_container_opted_into_json_iostreams_v<
 			  Container, std::void_t<typename Container::value_type>> =
 			  is_opted_into_json_iostreams_v<typename Container::value_type>;
-
+#endif
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
 
 /// @brief An opt in ostream interface for types that have JSON mappings.
-template<typename T DAW_JSON_ENABLEIF(
+template<typename T DAW_ENABLEIF(
   daw::json::json_details::is_opted_into_json_iostreams_v<T> )>
-DAW_JSON_REQUIRES( daw::json::json_details::is_opted_into_json_iostreams_v<T> )
+DAW_REQUIRES( daw::json::json_details::is_opted_into_json_iostreams_v<T> )
 std::ostream &operator<<( std::ostream &os, T const &value ) {
 	return daw::json::to_json( value, os );
 }
 
 /// @brief An opt in ostream interface for containers of types that have JSON
 /// mappings.
-template<typename Container DAW_JSON_ENABLEIF(
+template<typename Container DAW_ENABLEIF(
   daw::json::json_details::is_container_opted_into_json_iostreams_v<
     Container> )>
-DAW_JSON_REQUIRES(
+DAW_REQUIRES(
   daw::json::json_details::is_container_opted_into_json_iostreams_v<Container> )
 std::ostream &
 operator<<( std::ostream &os, Container const &c ) {

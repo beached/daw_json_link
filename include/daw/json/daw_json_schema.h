@@ -8,22 +8,26 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
+
+#include "daw/json/daw_json_link_types.h"
+#include "daw/json/daw_to_json_fwd.h"
+#include "daw/json/impl/daw_json_serialize_policy.h"
+#include "daw/json/impl/to_daw_json_string.h"
 
 #include <daw/daw_utility.h>
 
-#include "daw_json_link_types.h"
-#include "daw_to_json_fwd.h"
-#include "impl/daw_json_serialize_policy.h"
-#include "impl/to_daw_json_string.h"
+#include <cstddef>
+#include <string_view>
+#include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace utils {
 			template<typename WriteableType>
-			static inline constexpr WriteableType
-			output_kv( WriteableType it, std::string_view key,
-			           std::string_view value ) {
+			static constexpr WriteableType output_kv( WriteableType it,
+			                                          std::string_view key,
+			                                          std::string_view value ) {
 				it.write( key, ":", it.space, value );
 				return it;
 			}
@@ -513,10 +517,10 @@ namespace daw::json {
 								is_first = false;
 							}
 							out_it.next_member( );
-							constexpr std::size_t index = Idx.value;
+							using index = daw::constant<DAW_TYPEOF( Idx )::value>;
 							using pack_element = tuple_elements_pack<Tuple>;
 							using JsonMember = json_deduced_type<
-							  typename pack_element::template element_t<index>>;
+							  typename pack_element::template element_t<index::value>>;
 
 							out_it = to_json_schema<JsonMember>(
 							  ParseTag<JsonMember::expected_type>{ }, out_it );
@@ -524,7 +528,7 @@ namespace daw::json {
 
 						daw::empty_t expander[] = {
 						  ( process_member( daw::constant_v<Is> ), daw::empty_t{ } )...,
-						  daw::empty_t{} };
+						  daw::empty_t{ } };
 						(void)expander;
 						out_it.del_indent( );
 						out_it.next_member( );
@@ -773,14 +777,16 @@ namespace daw::json {
 					}
 				} else {
 					return serialization_policy<
-					  WritableType, options::output_flags_t<PolicyFlags...>::value>( it );
+					  WritableType,
+					  options::output_flags_t<PolicyFlags...>::value>( it );
 				}
 			}( );
 			out_it.put( '{' );
 			out_it.add_indent( );
 			out_it.next_member( );
 			out_it = utils::output_kv(
-			  out_it, R"("$schema")",
+			  out_it,
+			  R"("$schema")",
 			  R"("https://json-schema.org/draft/2020-12/schema",)" );
 			out_it.next_member( );
 			out_it = utils::output_kv( out_it, R"("$id")", "\"" );

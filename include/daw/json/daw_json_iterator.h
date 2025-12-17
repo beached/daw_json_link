@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "impl/daw_json_link_types_fwd.h"
-#include "impl/daw_json_parse_class.h"
-#include "impl/daw_json_parse_value_fwd.h"
+#include "daw/json/impl/daw_json_link_types_fwd.h"
+#include "daw/json/impl/daw_json_parse_class.h"
+#include "daw/json/impl/daw_json_parse_value_fwd.h"
 
 #include <daw/daw_cxmath.h>
 #include <daw/daw_move.h>
@@ -59,7 +59,6 @@ namespace daw::json {
 		 */
 		template<typename JsonElement, typename ParseState, typename = void>
 		class json_array_iterator_t {
-			using CharT = typename ParseState::CharT;
 
 			static constexpr ParseState get_range( daw::string_view data,
 			                                       daw::string_view member_path ) {
@@ -67,8 +66,8 @@ namespace daw::json {
 				  DAW_FWD( data ),
 				  { std::data( member_path ), std::size( member_path ) } );
 				daw_json_ensure( is_found, ErrorReason::JSONPathNotFound );
-				daw_json_ensure( result.front( ) == '[', ErrorReason::InvalidArrayStart,
-				                 result );
+				daw_json_ensure(
+				  result.front( ) == '[', ErrorReason::InvalidArrayStart, result );
 				return result;
 			}
 
@@ -89,7 +88,7 @@ namespace daw::json {
 			 * This lets us fastpath and just skip n characters as we have already
 			 * parsed them
 			 */
-			mutable CharT *m_can_skip = nullptr;
+			mutable char const *m_can_skip = nullptr;
 
 		public:
 			explicit json_array_iterator_t( ) = default;
@@ -99,7 +98,8 @@ namespace daw::json {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, m_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      m_state );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
@@ -111,7 +111,8 @@ namespace daw::json {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, m_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      m_state );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
@@ -132,15 +133,16 @@ namespace daw::json {
 			/// @return The parsed result of ParseElement
 			[[nodiscard]] constexpr value_type operator*( ) const {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
 
 				auto tmp = m_state;
 
 				auto const run_after_parse =
 				  json_details::assign_on_dtor{ m_can_skip, tmp.first };
 				(void)run_after_parse;
-				return json_details::parse_value<element_type, false,
-				                                 element_type::expected_type>( tmp );
+				return json_details::
+				  parse_value<element_type, false, element_type::expected_type>( tmp );
 			}
 
 			/// @brief A dereferencable value proxy holding the result of operator*
@@ -158,7 +160,8 @@ namespace daw::json {
 			 */
 			constexpr json_array_iterator_t &operator++( ) {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
 				if( m_can_skip ) {
 					m_state.first = m_can_skip;
 					m_can_skip = nullptr;
@@ -234,7 +237,6 @@ namespace daw::json {
 		class json_array_iterator_once {
 			using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
-			using CharT = typename ParseState::CharT;
 
 			static constexpr ParseState get_range( daw::string_view data,
 			                                       daw::string_view member_path ) {
@@ -242,8 +244,8 @@ namespace daw::json {
 				  DAW_FWD( data ),
 				  { std::data( member_path ), std::size( member_path ) } );
 				daw_json_ensure( is_found, ErrorReason::JSONPathNotFound );
-				daw_json_ensure( result.front( ) == '[', ErrorReason::InvalidArrayStart,
-				                 result );
+				daw_json_ensure(
+				  result.front( ) == '[', ErrorReason::InvalidArrayStart, result );
 				return result;
 			}
 
@@ -267,7 +269,8 @@ namespace daw::json {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, m_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      m_state );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
@@ -279,7 +282,8 @@ namespace daw::json {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-				                      ErrorReason::InvalidArrayStart, m_state );
+				                      ErrorReason::InvalidArrayStart,
+				                      m_state );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
@@ -290,11 +294,12 @@ namespace daw::json {
 			/// @return The parsed result of ParseElement
 			[[nodiscard]] constexpr value_type operator*( ) const {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
 
-				return json_details::parse_value<element_type, false,
-				                                 element_type::expected_type>(
-				  m_state );
+				return json_details::
+				  parse_value<element_type, false, element_type::expected_type>(
+				    m_state );
 			}
 
 			/***
@@ -303,7 +308,8 @@ namespace daw::json {
 			 */
 			constexpr json_array_iterator_once &operator++( ) {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
 				m_state.move_next_member_or_end( );
 				return *this;
 			}
@@ -367,7 +373,6 @@ namespace daw::json {
 			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using iterator = json_array_iterator<JsonElement, PolicyFlags...>;
-			using CharT = typename ParsePolicy::CharT;
 
 		private:
 			iterator m_first{ };
@@ -409,7 +414,6 @@ namespace daw::json {
 			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using iterator = json_array_iterator_once<JsonElement, PolicyFlags...>;
-			using CharT = typename ParsePolicy::CharT;
 
 		private:
 			iterator m_first{ };

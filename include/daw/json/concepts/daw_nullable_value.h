@@ -8,11 +8,12 @@
 
 #pragma once
 
-#include <daw/json/impl/version.h>
+#include "daw/json/impl/version.h"
 
-#include "daw_nullable_value_fwd.h"
+#include "daw/json/concepts/daw_nullable_value_fwd.h"
 
 #include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_enable_requires.h>
 
 #include <memory>
 #include <optional>
@@ -52,12 +53,11 @@ namespace daw::json {
 					return opt;
 				}
 
-				template<typename... Args DAW_JSON_ENABLEIF(
+				template<typename... Args DAW_ENABLEIF(
 				  nullable_impl::is_nullable_value_type_constructible_v<value_type,
 				                                                        Args...> )>
-				DAW_JSON_REQUIRES(
-				  nullable_impl::is_nullable_value_type_constructible_v<value_type,
-				                                                        Args...> )
+				DAW_REQUIRES( nullable_impl::is_nullable_value_type_constructible_v<
+				              value_type, Args...> )
 				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
 				operator( )( construct_nullable_with_value_t,
 				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
@@ -106,12 +106,11 @@ namespace daw::json {
 					return opt;
 				}
 
-				template<typename... Args DAW_JSON_ENABLEIF(
+				template<typename... Args DAW_ENABLEIF(
 				  nullable_impl::is_nullable_value_type_constructible_v<value_type,
 				                                                        Args...> )>
-				DAW_JSON_REQUIRES(
-				  nullable_impl::is_nullable_value_type_constructible_v<value_type,
-				                                                        Args...> )
+				DAW_REQUIRES( nullable_impl::is_nullable_value_type_constructible_v<
+				              value_type, Args...> )
 				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
 				operator( )( construct_nullable_with_value_t,
 				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
@@ -172,12 +171,11 @@ namespace daw::json {
 					return opt;
 				}
 
-				template<typename... Args DAW_JSON_ENABLEIF(
+				template<typename... Args DAW_ENABLEIF(
 				  nullable_impl::is_nullable_value_type_constructible_v<value_type,
 				                                                        Args...> )>
-				DAW_JSON_REQUIRES(
-				  nullable_impl::is_nullable_value_type_constructible_v<value_type,
-				                                                        Args...> )
+				DAW_REQUIRES( nullable_impl::is_nullable_value_type_constructible_v<
+				              value_type, Args...> )
 				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
 				operator( )( construct_nullable_with_value_t,
 				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST
@@ -230,12 +228,11 @@ namespace daw::json {
 					return ptr;
 				}
 
-				template<typename... Args DAW_JSON_ENABLEIF(
+				template<typename... Args DAW_ENABLEIF(
 				  nullable_impl::is_nullable_value_type_constructible_v<value_type,
 				                                                        Args...> )>
-				DAW_JSON_REQUIRES(
-				  nullable_impl::is_nullable_value_type_constructible_v<value_type,
-				                                                        Args...> )
+				DAW_REQUIRES( nullable_impl::is_nullable_value_type_constructible_v<
+				              value_type, Args...> )
 				DAW_JSON_CPP23_STATIC_CALL_OP constexpr nullable_type
 				operator( )( construct_nullable_with_value_t,
 				             Args &&...args ) DAW_JSON_CPP23_STATIC_CALL_OP_CONST

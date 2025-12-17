@@ -110,6 +110,13 @@
 
 // Allow experimental SIMD paths, if available
 // by defining DAW_ALLOW_SSE42 and using the parser policy ExecModeType simd
+#if not defined( DAW_JSON_NO_SSE42 )
+#if defined( __SSE4_2__ ) or defined( __AVX__ ) or defined( __AVX2__ )
+#if not defined( DAW_ALLOW_SSE42 )
+#define DAW_ALLOW_SSE42 1
+#endif
+#endif
+#endif
 
 // Use strtod instead of from_chars when avialable by defining
 // DAW_JSON_USE_STRTOD
@@ -239,7 +246,7 @@
 #if defined( DAW_JSON_HAS_CPP20_CX_STRING )
 #define DAW_JSON_CX_STRING constexpr
 #else
-#define DAW_JSON_CX_STRING
+#define DAW_JSON_CX_STRING inline
 #endif
 
 #if defined( DAW_JSON_HAS_CPP20_CX_STRING ) and \
@@ -267,17 +274,26 @@
 #endif
 #endif
 
-#if defined( DAW_HAS_CONCEPTS ) and not defined( DAW_JSON_NO_REQUIRES )
-#define DAW_JSON_USE_REQUIRES
-#define DAW_JSON_ENABLEIF( ... )
-#define DAW_JSON_ENABLEIF2( ... )
-#define DAW_JSON_ENABLEIF_S( ... )
-#define DAW_JSON_REQUIRES( ... ) requires( __VA_ARGS__ )
+#if defined( __cpp_lib_constexpr_exceptions )
+#if __cpp_lib_constexpr_exceptions >= 202411L
+#define DAW_JSON_HAS_CONSTEXPR_EXCEPTIONS
+#endif
+#endif
+
+#if defined( DAW_JSON_HAS_CONSTEXPR_EXCEPTIONS )
+#define DAW_JSON_CPP26_CX_EXCEPT constexpr
 #else
-#define DAW_JSON_ENABLEIF( ... ) \
-	, std::enable_if_t<( __VA_ARGS__ ), std::nullptr_t> = nullptr
-#define DAW_JSON_ENABLEIF2( ... ) \
-	, std::enable_if_t<( __VA_ARGS__ ), std::nullptr_t>
-#define DAW_JSON_ENABLEIF_S( ... ) , std::enable_if_t<( __VA_ARGS__ )>
-#define DAW_JSON_REQUIRES( ... )
+#define DAW_JSON_CPP26_CX_EXCEPT inline
+#endif
+
+#if defined( __cpp_lib_reflection )
+#if __cpp_lib_reflection >= 202506L
+#define DAW_JSON_HAS_REFLECTION 1
+#endif
+#endif
+
+#if defined( __cpp_generic_lambdas )
+#if __cpp_generic_lambdas >= 201707L
+#define DAW_JSON_CPP20_TEMPLATE_LAMBDAS
+#endif
 #endif

@@ -23,6 +23,7 @@ This folder contains examples of various JSON constructs and how to create a C++
 * [Output Options](output_options.md) - Options for serialization
 * [Parser Options](parser_policies.md) - Options for parsing
 * [Parsing Individual Members](parsing_individual_members.md)
+* [Reflection(*New*)](reflection.md)
 * [Strings](strings.md)
 * [Unknown JSON and Raw Parsing](unknown_types_and_raw_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
 * [Variant](variant.md)

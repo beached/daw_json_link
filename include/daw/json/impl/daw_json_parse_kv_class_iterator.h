@@ -111,9 +111,10 @@ namespace daw::json {
 				}
 
 				constexpr value_type operator*( ) {
-					daw_json_assert_weak(
-					  base::parse_state and base::parse_state->has_more( ),
-					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
+					daw_json_assert_weak( base::parse_state and
+					                        base::parse_state->has_more( ),
+					                      ErrorReason::UnexpectedEndOfData,
+					                      *base::parse_state );
 					auto key = parse_value<key_t, false, key_t::expected_type>(
 					  *base::parse_state );
 					name::name_parser::trim_end_of_name( *base::parse_state );

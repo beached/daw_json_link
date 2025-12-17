@@ -38,7 +38,7 @@ int main( int argc, char **argv )
 
 	int count = 1;
 	(void)count;
-	for( auto val : ve ) {
+	for( auto const val : ve ) {
 		(void)val;
 		test_assert( count++ == val, "Unexpected value" );
 	}

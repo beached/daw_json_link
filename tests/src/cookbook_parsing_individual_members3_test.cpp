@@ -26,7 +26,7 @@ int main( int argc, char **argv )
 {
 	if( argc <= 1 ) {
 		puts(
-		  "Must supply path to cookbook_parsing_individual_members1.json file\n" );
+		  "Must supply path to cookbook_parsing_individual_members3.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 

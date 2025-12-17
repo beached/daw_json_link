@@ -25,13 +25,13 @@ namespace daw::json {
 			struct writable_output_trait : std::false_type {};
 
 			template<typename T>
-			inline constexpr bool is_writable_output_type_v =
+			DAW_CPP20_CONCEPT is_writable_output_type_v =
 			  writable_output_trait<T>::value;
 		} // namespace concepts
 
 		template<typename WritableOutput, typename... StringViews>
 		constexpr WritableOutput &write_output( WritableOutput &out,
-		                              StringViews const &...svs ) {
+		                                        StringViews const &...svs ) {
 			concepts::writable_output_trait<WritableOutput>::write( out, svs... );
 			return out;
 		}

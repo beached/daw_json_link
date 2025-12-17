@@ -51,7 +51,7 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 
 template<daw::json::options::ExecModeTypes ExecMode =
            daw::json::options::ExecModeTypes::compile_time>
-inline auto get_canada_check( std::string_view f1 ) {
+auto get_canada_check( std::string_view f1 ) {
 	/*return daw::json::from_json<daw::geojson::Polygon>(
 	  f1, "features[0].geometry", daw::json::options::parse_flags<ExecMode> );
 	  */
@@ -60,7 +60,7 @@ inline auto get_canada_check( std::string_view f1 ) {
 }
 
 template<daw::json::options::ExecModeTypes ExecMode>
-inline auto get_canada_nocheck( std::string_view f1 ) {
+auto get_canada_nocheck( std::string_view f1 ) {
 	/*return daw::json::from_json<daw::geojson::Polygon>(
 	  f1, "features[0].geometry",
 	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no,
@@ -81,7 +81,8 @@ void test( std::string_view json_sv1, bool do_asserts ) {
 	// std::optional<daw::geojson::Polygon> canada_result;
 	std::optional<daw::geojson::FeatureCollection> canada_result;
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(checked)", sz,
+	  "canada bench(checked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  canada_result = get_canada_check<ExecMode>( f1 );
 		  daw::do_not_optimize( canada_result );
@@ -95,7 +96,8 @@ void test( std::string_view json_sv1, bool do_asserts ) {
 	//**************************
 	canada_result = std::nullopt;
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(unchecked)", sz,
+	  "canada bench(unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  canada_result = get_canada_nocheck<ExecMode>( f1 );
 		  daw::do_not_optimize( canada_result );
@@ -148,7 +150,8 @@ int main( int argc, char **argv )
 	{
 		str.reserve( json_data1.size( ) );
 		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "canada bench(to_json_string)", sz,
+		  "canada bench(to_json_string)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
 			  daw::json::to_json( tr, str );
@@ -165,7 +168,8 @@ int main( int argc, char **argv )
 		str.clear( );
 		str.resize( str_sz * 2 );
 		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "canada bench(to_json_string2)", sz,
+		  "canada bench(to_json_string2)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  auto *out_it = str.data( );
 			  daw::json::to_json( tr, out_it );

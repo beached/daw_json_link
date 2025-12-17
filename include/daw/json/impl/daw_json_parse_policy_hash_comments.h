@@ -8,15 +8,17 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_assert.h"
-#include "daw_json_parse_common.h"
-#include "daw_json_parse_policy_policy_details.h"
-#include "daw_not_const_ex_functions.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_common.h"
+#include "daw/json/impl/daw_json_parse_policy_policy_details.h"
+#include "daw/json/impl/daw_not_const_ex_functions.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_constant.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_not_null.h>
 #include <daw/daw_traits.h>
 
 #include <cstddef>
@@ -90,10 +92,12 @@ namespace daw::json {
 				skip_comments( parse_state );
 
 				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
 				while( not parse_policy_details::in<keys...>( parse_state.front( ) ) ) {
 					daw_json_assert_weak( parse_state.has_more( ),
-					                      ErrorReason::UnexpectedEndOfData, parse_state );
+					                      ErrorReason::UnexpectedEndOfData,
+					                      parse_state );
 					parse_state.remove_prefix( );
 					skip_comments( parse_state );
 				}
@@ -106,17 +110,17 @@ namespace daw::json {
 			template<char PrimLeft, typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
-				constexpr char PrimRight = PrimLeft == '{' ? '}' : ']';
-				constexpr char SecLeft = PrimLeft == '{' ? '[' : '{';
-				constexpr char SecRight = SecLeft == '{' ? '}' : ']';
-				using CharT = typename ParseState::CharT;
+				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
+				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;
+				using SecRight = daw::constant<SecLeft::value == '{' ? '}' : ']'>;
+
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
-				CharT *const ptr_last = parse_state.last;
+				auto ptr_first = daw::not_null<char const *>( parse_state.first );
+				auto const ptr_last = daw::not_null<char const *>( parse_state.last );
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
 				}
@@ -132,10 +136,11 @@ namespace daw::json {
 					case '"':
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input>( ParseState::exec_tag, ptr_first,
-						                                   parse_state.last );
+						  ParseState::is_unchecked_input,
+						  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
 						daw_json_ensure( ptr_first < ptr_last,
-						                 ErrorReason::UnexpectedEndOfData, parse_state );
+						                 ErrorReason::UnexpectedEndOfData,
+						                 parse_state );
 						break;
 					case ',':
 						if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
@@ -145,11 +150,12 @@ namespace daw::json {
 					case PrimLeft:
 						++prime_bracket_count;
 						break;
-					case PrimRight:
+					case PrimRight::value:
 						--prime_bracket_count;
 						if( prime_bracket_count == 0 ) {
 							daw_json_ensure( second_bracket_count == 0,
-							                 ErrorReason::InvalidBracketing, parse_state );
+							                 ErrorReason::InvalidBracketing,
+							                 parse_state );
 							++ptr_first;
 							// We include the close primary bracket in the range so that
 							// subsequent parsers have a terminator inside their range
@@ -159,10 +165,10 @@ namespace daw::json {
 							return result;
 						}
 						break;
-					case SecLeft:
+					case SecLeft::value:
 						++second_bracket_count;
 						break;
-					case SecRight:
+					case SecRight::value:
 						--second_bracket_count;
 						break;
 					case '#':
@@ -179,7 +185,8 @@ namespace daw::json {
 				}
 				daw_json_ensure( ( prime_bracket_count == 0 ) &
 				                   ( second_bracket_count == 0 ),
-				                 ErrorReason::InvalidBracketing, parse_state );
+				                 ErrorReason::InvalidBracketing,
+				                 parse_state );
 				// We include the close primary bracket in the range so that subsequent
 				// parsers have a terminator inside their range
 				result.last = ptr_first;
@@ -192,15 +199,18 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
-				constexpr char PrimRight = PrimLeft == '{' ? '}' : ']';
-				constexpr char SecLeft = PrimLeft == '{' ? '[' : '{';
-				constexpr char SecRight = SecLeft == '{' ? '}' : ']';
-				using CharT = typename ParseState::CharT;
+				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
+				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;
+				using SecRight = daw::constant<SecLeft::value == '{' ? '}' : ']'>;
+
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				CharT *ptr_first = parse_state.first;
+				auto ptr_first =
+				  daw::not_null<char const *>( daw::never_null, parse_state.first );
+				auto const ptr_last =
+				  daw::not_null<char const *>( daw::never_null, parse_state.last );
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}
@@ -212,8 +222,8 @@ namespace daw::json {
 					case '"':
 						++ptr_first;
 						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input>( ParseState::exec_tag, ptr_first,
-						                                   parse_state.last );
+						  ParseState::is_unchecked_input,
+						  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
 						break;
 					case ',':
 						if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
@@ -223,7 +233,7 @@ namespace daw::json {
 					case PrimLeft:
 						++prime_bracket_count;
 						break;
-					case PrimRight:
+					case PrimRight::value:
 						--prime_bracket_count;
 						if( prime_bracket_count == 0 ) {
 							++ptr_first;
@@ -235,10 +245,10 @@ namespace daw::json {
 							return result;
 						}
 						break;
-					case SecLeft:
+					case SecLeft::value:
 						++second_bracket_count;
 						break;
-					case SecRight:
+					case SecRight::value:
 						--second_bracket_count;
 						break;
 					case '#':

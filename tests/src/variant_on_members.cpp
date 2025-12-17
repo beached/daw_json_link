@@ -56,12 +56,11 @@ namespace daw::json {
 } // namespace daw::json
 
 struct FooConstructor {
-	inline Foo operator( )( ) const {
+	Foo operator( )( ) const {
 		return Foo{ };
 	}
 
-	inline std::variant<A, B> operator( )( char const *ptr,
-	                                       std::size_t sz ) const {
+	std::variant<A, B> operator( )( char const *ptr, std::size_t sz ) const {
 		using result_t = std::variant<A, B>;
 		auto jv = daw::json::json_value( ptr, sz );
 		assert( jv.is_class( ) );
@@ -87,7 +86,7 @@ namespace daw::json {
 		  json_nullable<member, std::optional<std::variant<A, B>>,
 		                json_raw_no_name<std::variant<A, B>, FooConstructor>>>;
 
-		static inline auto to_json_data( Foo const &foo ) {
+		static auto to_json_data( Foo const &foo ) {
 			if( not foo.member ) {
 				return std::tuple<std::optional<std::string>>{ };
 			}

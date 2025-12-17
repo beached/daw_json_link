@@ -36,7 +36,8 @@ namespace daw::json {
 					parse_state.trim_left( );
 					// TODO: should we check for end
 					daw_json_assert_weak( parse_state.front_checked( ) == ':',
-					                      ErrorReason::InvalidMemberName, parse_state );
+					                      ErrorReason::InvalidMemberName,
+					                      parse_state );
 					parse_state.remove_prefix( );
 					parse_state.trim_left( );
 				}
@@ -57,7 +58,8 @@ namespace daw::json {
 						}
 						daw_json_assert_weak( parse_state.is_quotes_checked( ) and
 						                        *std::prev( parse_state.first ) != '\\',
-						                      ErrorReason::InvalidString, parse_state );
+						                      ErrorReason::InvalidString,
+						                      parse_state );
 						auto result = daw::string_view( ptr, parse_state.first );
 						parse_state.remove_prefix( );
 						trim_end_of_name( parse_state );
@@ -147,10 +149,11 @@ namespace daw::json {
 			// Ensures that the stream is left at the position of the associated
 			// value(e.g after the colon(:) and trimmed)
 			template<typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr daw::string_view
+			[[nodiscard]] DAW_ATTRIB_FLATTEN static constexpr daw::string_view
 			parse_name( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.is_quotes_checked( ),
-				                      ErrorReason::InvalidMemberName, parse_state );
+				                      ErrorReason::InvalidMemberName,
+				                      parse_state );
 				parse_state.remove_prefix( );
 				return name::name_parser::parse_nq( parse_state );
 			}
@@ -164,7 +167,8 @@ namespace daw::json {
 					if( pop_result.found_char == ']' ) {
 						// Array Index
 						daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
-						                      ErrorReason::InvalidJSONPath, parse_state );
+						                      ErrorReason::InvalidJSONPath,
+						                      parse_state );
 						parse_state.remove_prefix( );
 						parse_state.trim_left_unchecked( );
 						auto idx = parse_unsigned_int<std::size_t>(
@@ -182,7 +186,8 @@ namespace daw::json {
 						}
 					} else {
 						daw_json_assert_weak( parse_state.is_opening_brace_checked( ),
-						                      ErrorReason::InvalidJSONPath, parse_state );
+						                      ErrorReason::InvalidJSONPath,
+						                      parse_state );
 						parse_state.remove_prefix( );
 						parse_state.trim_left_unchecked( );
 						auto name = parse_name( parse_state );

@@ -59,8 +59,7 @@ auto operator<<( std::ostream &os, std::vector<T, A> const &rhs )
 }
 
 template<typename T, typename U>
-inline constexpr void test_equal( T const &lhs, U const &rhs,
-                                  std::string_view msg ) {
+constexpr void test_equal( T const &lhs, U const &rhs, std::string_view msg ) {
 	if( lhs != rhs ) {
 		std::cerr << msg << '\n';
 		if constexpr( can_ostream_v<T> ) {
@@ -97,7 +96,9 @@ std::size_t test( std::string_view json_data ) {
 	checked_tst( json_data, values.data( ) );
 	test_equal( v2, values, "Expected them to parse the same" );
 	auto const h0 =
-	  std::accumulate( values.begin( ), values.end( ), std::size_t{ 0 },
+	  std::accumulate( values.begin( ),
+	                   values.end( ),
+	                   std::size_t{ 0 },
 	                   []( auto old, auto current ) {
 		                   return old += std::hash<std::string>{ }(
 		                            static_cast<std::string>( current ) );
@@ -115,7 +116,9 @@ std::size_t test( std::string_view json_data ) {
 	};
 	unchecked_tst( json_data, values2.data( ) );
 	auto const h1 =
-	  std::accumulate( values2.begin( ), values2.end( ), std::size_t{ 0 },
+	  std::accumulate( values2.begin( ),
+	                   values2.end( ),
+	                   std::size_t{ 0 },
 	                   []( auto old, auto current ) {
 		                   return old += std::hash<std::string>{ }(
 		                            static_cast<std::string>( current ) );

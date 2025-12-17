@@ -12,6 +12,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_enable_requires.h>
 #include <daw/daw_move.h>
 
 #include <cstddef>
@@ -25,6 +26,12 @@ namespace daw::json {
 			DAW_MAKE_REQ_TRAIT2(
 			  has_push_back_v, std::declval<T &>( ).push_back( std::declval<U>( ) ) );
 
+#if defined( DAW_HAS_CPP20_CONCEPTS )
+			template<typename Container, typename Value>
+			concept has_insert_end_v = requires( Container & c, Value v ) {
+				c.insert( std::end( c ), v );
+			};
+#else
 			template<typename, typename, typename = void>
 			inline constexpr bool has_insert_end_v = false;
 
@@ -34,6 +41,7 @@ namespace daw::json {
 			  std::void_t<decltype( std::declval<Container &>( ).insert(
 			    std::end( std::declval<Container &>( ) ),
 			    std::declval<Value>( ) ) )>> = true;
+#endif
 		} // namespace json_details
 		/***
 		 * @brief A generic output iterator that can push_back or insert depending
@@ -52,16 +60,18 @@ namespace daw::json {
 			Container *m_container;
 
 		public:
-			explicit inline constexpr basic_appender( Container &container )
+			explicit constexpr basic_appender( Container &container )
 			  : m_container( &container ) {}
 
 			template<typename Value>
-			DAW_ATTRIB_FLATINLINE inline constexpr void operator( )( Value &&value ) {
+			DAW_ATTRIB_FLATINLINE constexpr void operator( )( Value &&value ) {
 				if constexpr( json_details::has_push_back_v<
-				                Container, daw::remove_cvref_t<Value>> ) {
+				                Container,
+				                daw::remove_cvref_t<Value>> ) {
 					m_container->push_back( DAW_FWD( value ) );
 				} else if constexpr( json_details::has_insert_end_v<
-				                       Container, daw::remove_cvref_t<Value>> ) {
+				                       Container,
+				                       daw::remove_cvref_t<Value>> ) {
 					m_container->insert( std::end( *m_container ), DAW_FWD( value ) );
 				} else {
 					static_assert(
@@ -75,9 +85,9 @@ namespace daw::json {
 				}
 			}
 
-			template<typename Value DAW_JSON_ENABLEIF(
+			template<typename Value DAW_ENABLEIF(
 			  not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>> )>
-			DAW_JSON_REQUIRES(
+			DAW_REQUIRES(
 			  not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>> )
 			DAW_ATTRIB_INLINE constexpr basic_appender &
 			operator=( Value &&v ) {

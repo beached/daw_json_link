@@ -27,7 +27,7 @@ namespace daw::json {
 
 		using type = json_type_alias<std::string>;
 
-		static inline auto to_json_data(
+		static auto to_json_data(
 		  boost::multiprecision::number<Backend, ExpressionTemplates> const
 		    &value ) {
 			return value.str( );
@@ -44,7 +44,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_numbers3.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] );
+	auto const data = daw::read_file( argv[1] );
 	assert( data and not data->empty( ) );
 
 	auto numbers =

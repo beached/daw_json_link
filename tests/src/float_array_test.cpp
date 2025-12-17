@@ -17,7 +17,6 @@
 #include <daw/iterator/daw_back_inserter.h>
 
 #include <iostream>
-#include <streambuf>
 #include <string_view>
 #include <vector>
 
@@ -115,7 +114,8 @@ void test_func( ) {
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float parsing 1", json_sv.size( ),
+		  "float parsing 1",
+		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number>( sv );
 			  daw::do_not_optimize( data );
@@ -131,7 +131,8 @@ void test_func( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float parsing 2", json_sv.size( ),
+		  "float parsing 2",
+		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
 			  std::copy_n( iterator_t( sv ), NUMVALUES, daw::back_inserter( data ) );
@@ -142,12 +143,14 @@ void test_func( ) {
 
 		std::cout << "element count 2: " << count2 << '\n';
 	}
-	{ // just ints
+	{
+		// just ints
 		auto json_sv = std::string_view( json_data2 );
 		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float parsing 1", json_sv.size( ),
+		  "float parsing 1",
+		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<float>( sv );
 			  daw::do_not_optimize( data );
@@ -159,11 +162,11 @@ void test_func( ) {
 		using iterator_t =
 		  daw::json::json_array_iterator<json_number_no_name<float>>;
 
-		auto data = std::vector<float>( );
-		data.resize( NUMVALUES );
+		auto data = std::vector<float>( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "p2. float parsing 2", json_sv.size( ),
+		  "p2. float parsing 2",
+		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  std::copy_n( iterator_t( sv ), NUMVALUES, data.data( ) );
 			  daw::do_not_optimize( data );
@@ -175,12 +178,14 @@ void test_func( ) {
 	}
 
 	std::cout << "Checked\n";
-	{ // Class of ints
+	{
+		// Class of ints
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float parsing 1", json_sv.size( ),
+		  "float parsing 1",
+		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number>( sv );
 			  daw::do_not_optimize( data );
@@ -192,11 +197,11 @@ void test_func( ) {
 		using iterator_t =
 		  daw::json::json_array_iterator<json_class_no_name<Number>>;
 
-		auto data = std::vector<Number>( );
-		data.resize( NUMVALUES );
+		auto data = std::vector<Number>( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float parsing 2", json_sv.size( ),
+		  "float parsing 2",
+		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  std::copy_n( iterator_t( sv ), NUMVALUES, data.data( ) );
 			  daw::do_not_optimize( data );
@@ -206,12 +211,14 @@ void test_func( ) {
 
 		std::cout << "element count 2: " << count2 << '\n';
 	}
-	{ // just ints
+	{
+		// just ints
 		auto json_sv = std::string_view( json_data2 );
 		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float parsing 1", json_sv.size( ),
+		  "float parsing 1",
+		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<json_checked_number_no_name<float>>( sv );
@@ -224,11 +231,11 @@ void test_func( ) {
 		using iterator_t =
 		  daw::json::json_array_iterator<json_checked_number_no_name<float>>;
 
-		auto data = std::vector<float>( );
-		data.resize( NUMVALUES );
+		auto data = std::vector<float>( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "p2. float parsing 2", json_sv.size( ),
+		  "p2. float parsing 2",
+		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  std::copy_n( iterator_t( sv ), NUMVALUES, data.data( ) );
 			  daw::do_not_optimize( data );
@@ -239,9 +246,10 @@ void test_func( ) {
 		std::cout << "element count 2: " << count2 << '\n';
 
 		{
-			auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
+			auto const data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p3. float parsing 3", json_sv.size( ),
+			  "p3. float parsing 3",
+			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy_n( iterator_t( sv ), NUMVALUES, data2.get( ) );
 				  daw::do_not_optimize( data2 );
@@ -269,10 +277,11 @@ void test_func( ) {
 			return result;
 		}( );
 		auto json_sv3 = daw::string_view( json_data3.data( ), json_data3.size( ) );
-		auto data2 = std::unique_ptr<double[]>( new double[NUMVALUES] );
+		auto const data2 = std::unique_ptr<double[]>( new double[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p4. parsing", json_sv3.size( ),
+			  "p4. parsing",
+			  json_sv3.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy_n( iterator_t( sv ), NUMVALUES, data2.get( ) );
 				  daw::do_not_optimize( data2 );
@@ -292,7 +301,8 @@ void test_func( ) {
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float sse3 parsing 1", json_sv.size( ),
+		  "float sse3 parsing 1",
+		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number2, std::vector<Number2>>(
 			    sv, parse_flags<ExecModeTypes::simd> );
@@ -310,11 +320,12 @@ void test_func( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float  sse3parsing 2", json_sv.size( ),
+		  "float  sse3parsing 2",
+		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy(
+			    iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -322,12 +333,14 @@ void test_func( ) {
 
 		std::cout << "element count 2: " << count2 << '\n';
 	}
-	{ // just floats
+	{
+		// just floats
 		auto json_sv = std::string_view( json_data2 );
 		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float  sse3parsing 1", json_sv.size( ),
+		  "float  sse3parsing 1",
+		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<json_number_no_name<float>, std::vector<float>>(
@@ -346,11 +359,12 @@ void test_func( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "p2. float sse3 parsing 2", json_sv.size( ),
+		  "p2. float sse3 parsing 2",
+		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy(
+			    iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -360,12 +374,14 @@ void test_func( ) {
 	}
 
 	std::cout << "Checked\n";
-	{ // Class of floats
+	{
+		// Class of floats
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float sse3 parsing 1", json_sv.size( ),
+		  "float sse3 parsing 1",
+		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number2, std::vector<Number2>>(
 			    sv, parse_flags<ExecModeTypes::simd> );
@@ -383,11 +399,12 @@ void test_func( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float sse3 parsing 2", json_sv.size( ),
+		  "float sse3 parsing 2",
+		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy(
+			    iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -395,12 +412,14 @@ void test_func( ) {
 
 		std::cout << "element count 2: " << count2 << '\n';
 	}
-	{ // just ints
+	{
+		// just ints
 		auto json_sv = std::string_view( json_data2 );
 		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float sse3 parsing 1", json_sv.size( ),
+		  "float sse3 parsing 1",
+		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<json_checked_number_no_name<float>,
 			                                    std::vector<float>>(
@@ -419,11 +438,12 @@ void test_func( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "p2. float sse3 parsing 2", json_sv.size( ),
+		  "p2. float sse3 parsing 2",
+		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy(
+			    iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -432,9 +452,10 @@ void test_func( ) {
 		std::cout << "element count 2: " << count2 << '\n';
 
 		{
-			auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
+			auto const data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p3. float sse3 parsing 3", json_sv.size( ),
+			  "p3. float sse3 parsing 3",
+			  json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );
@@ -463,10 +484,11 @@ void test_func( ) {
 			return result;
 		}( );
 		auto json_sv3 = daw::string_view( json_data3.data( ), json_data3.size( ) );
-		auto data2 = std::unique_ptr<double[]>( new double[NUMVALUES] );
+		auto const data2 = std::unique_ptr<double[]>( new double[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-			  "p4. parsing", json_sv3.size( ),
+			  "p4. parsing",
+			  json_sv3.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );

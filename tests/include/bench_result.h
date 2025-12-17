@@ -46,8 +46,9 @@ struct JSONToNano {
 		auto rng =
 		  daw::json::BasicParsePolicy( std::data( sv ), daw::data_end( sv ) );
 		return std::chrono::nanoseconds(
-		  daw::json::json_details::parse_value_signed<
-		    daw::json::json_number_no_name<long long>, false>( rng ) );
+		  daw::json::json_details::
+		    parse_value_signed<daw::json::json_number_no_name<long long>, false>(
+		      rng ) );
 	}
 
 	std::string operator( )( std::chrono::nanoseconds t ) const {
@@ -101,13 +102,24 @@ namespace daw::json {
 
 		[[nodiscard]] static inline auto
 		to_json_data( daw::bench::bench_result const &value ) {
-			return std::tie(
-			  value.name, value.test_time, value.data_size, value.run_times,
-			  value.duration_min, value.duration_25th_percentile,
-			  value.duration_50th_percentile, value.duration_75th_percentile,
-			  value.duration_max, value.git_revision, value.processor_description,
-			  value.os_name, value.os_release, value.os_version, value.os_platform,
-			  value.build_type, value.project_name, value.project_subname );
+			return std::tie( value.name,
+			                 value.test_time,
+			                 value.data_size,
+			                 value.run_times,
+			                 value.duration_min,
+			                 value.duration_25th_percentile,
+			                 value.duration_50th_percentile,
+			                 value.duration_75th_percentile,
+			                 value.duration_max,
+			                 value.git_revision,
+			                 value.processor_description,
+			                 value.os_name,
+			                 value.os_release,
+			                 value.os_version,
+			                 value.os_platform,
+			                 value.build_type,
+			                 value.project_name,
+			                 value.project_subname );
 		}
 	};
 } // namespace daw::json

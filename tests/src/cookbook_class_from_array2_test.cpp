@@ -38,7 +38,7 @@ namespace daw::json {
 		  json_tuple_member_list<double,
 		                         json_tuple_member<5, json_link_no_name<double>>>;
 
-		static inline auto
+		static auto
 		to_json_data( daw::cookbook_class_from_array2::Point const &p ) {
 			return std::forward_as_tuple( p.x, p.y );
 		}
@@ -54,7 +54,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_class_from_array2.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 	puts( "Original\n" );
 	puts( data.data( ) );
 

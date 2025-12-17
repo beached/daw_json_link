@@ -52,7 +52,7 @@ struct FromConverter {
 using json_u16string =
   daw::json::json_custom_no_name<std::u16string, ToConverter, FromConverter>;
 
-int main( int, char ** ) {
+int main( ) {
 	std::string in_str = R"json(["testing🎉", "🙈monkey"])json";
 
 	puts( "Before" );

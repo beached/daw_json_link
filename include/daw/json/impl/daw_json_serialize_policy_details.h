@@ -8,158 +8,20 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_option_bits.h"
-#include "daw_json_parse_options_impl.h"
-#include "daw_json_serialize_options_impl.h"
+#include "daw/json/impl/daw_json_option_bits.h"
+#include "daw/json/impl/daw_json_parse_options_impl.h"
+#include "daw/json/impl/daw_json_serialize_options_impl.h"
+
+#include <daw/daw_constant.h>
 
 #include <cstddef>
-#include <iterator>
+#include <string_view>
+#include <utility>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
-			template<typename OutputIterator>
-			struct iterator_wrapper : OutputIterator {
-				inline constexpr OutputIterator get( ) const {
-					return *this;
-				}
-
-				static constexpr bool is_pointer = false;
-
-				inline constexpr void set( OutputIterator it ) {
-					*static_cast<OutputIterator *>( this ) = it;
-				}
-
-			protected:
-				inline constexpr OutputIterator &raw_it( ) {
-					return *this;
-				}
-			};
-
-			template<typename CharT>
-			struct iterator_wrapper<CharT *> {
-				using difference_type = std::ptrdiff_t;
-				using size_type = std::size_t;
-				using value_type = CharT;
-				using pointer = CharT *;
-				using reference = CharT &;
-				using iterator_category = std::random_access_iterator_tag;
-
-				CharT *ptr;
-
-				static constexpr bool is_pointer = true;
-
-			protected:
-				inline constexpr CharT *raw_it( ) {
-					return ptr;
-				}
-
-			public:
-				inline constexpr CharT *get( ) const {
-					return ptr;
-				}
-
-				inline constexpr void set( CharT *p ) {
-					ptr = p;
-				}
-
-				inline constexpr reference operator*( ) {
-					return *ptr;
-				}
-
-				inline constexpr pointer operator->( ) {
-					return ptr;
-				}
-
-				inline constexpr iterator_wrapper &operator++( ) {
-					++ptr;
-					return *this;
-				}
-
-				inline constexpr iterator_wrapper operator++( int ) & {
-					auto result = *this;
-					++ptr;
-					return result;
-				}
-
-				inline constexpr iterator_wrapper &operator--( ) {
-					--ptr;
-					return *this;
-				}
-
-				inline constexpr iterator_wrapper operator--( int ) & {
-					auto result = *this;
-					--ptr;
-					return result;
-				}
-
-				inline constexpr iterator_wrapper &operator+=( difference_type n ) {
-					ptr += n;
-					return *this;
-				}
-
-				inline constexpr iterator_wrapper &operator-=( difference_type n ) {
-					ptr -= n;
-					return *this;
-				}
-
-				inline constexpr iterator_wrapper
-				operator+( difference_type n ) const noexcept {
-					iterator_wrapper result = *this;
-					ptr += n;
-					return result;
-				}
-
-				inline constexpr iterator_wrapper
-				operator-( difference_type n ) const noexcept {
-					iterator_wrapper result = *this;
-					ptr -= n;
-					return result;
-				}
-
-				inline constexpr reference operator[]( size_type n ) noexcept {
-					return *( ptr + static_cast<difference_type>( n ) );
-				}
-
-				explicit inline constexpr operator bool( ) const {
-					return static_cast<bool>( ptr );
-				}
-
-				friend inline constexpr bool operator==( iterator_wrapper const &lhs,
-				                                         iterator_wrapper const &rhs ) {
-					return lhs.ptr == rhs.ptr;
-				}
-
-				friend inline constexpr bool operator!=( iterator_wrapper const &lhs,
-				                                         iterator_wrapper const &rhs ) {
-					return lhs.ptr != rhs.ptr;
-				}
-
-				friend inline constexpr bool operator<( iterator_wrapper const &lhs,
-				                                        iterator_wrapper const &rhs ) {
-					return lhs.ptr < rhs.ptr;
-				}
-
-				friend inline constexpr bool operator<=( iterator_wrapper const &lhs,
-				                                         iterator_wrapper const &rhs ) {
-					return lhs.ptr <= rhs.ptr;
-				}
-
-				friend inline constexpr bool operator>( iterator_wrapper const &lhs,
-				                                        iterator_wrapper const &rhs ) {
-					return lhs.ptr > rhs.ptr;
-				}
-
-				friend inline constexpr bool operator>=( iterator_wrapper const &lhs,
-				                                         iterator_wrapper const &rhs ) {
-					return lhs.ptr >= rhs.ptr;
-				}
-			};
-
-		} // namespace json_details
-
 		namespace json_details::serialization {
 			using policy_list = typename option_list_impl<
 			  options::SerializationFormat, options::IndentationType,
@@ -180,10 +42,10 @@ namespace daw::json {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				auto new_bits = static_cast<unsigned>( e );
-				constexpr unsigned mask = (1U << json_option_bits_width<Policy>)-1U;
-				new_bits &= mask;
+				using mask = daw::constant<(1U << json_option_bits_width<Policy>)-1U>;
+				new_bits &= mask::value;
 				new_bits <<= policy_bits_start<Policy>;
-				value &= ~mask;
+				value &= ~mask::value;
 				value |= new_bits;
 			}
 
@@ -194,10 +56,11 @@ namespace daw::json {
 				               "Only registered policy types are allowed" );
 
 				auto new_bits = static_cast<unsigned>( pol );
-				constexpr unsigned mask = ( (1U << json_option_bits_width<Policy>)-1U );
-				new_bits &= mask;
+				using mask =
+				  daw::constant<( (1U << json_option_bits_width<Policy>)-1U )>;
+				new_bits &= mask::value;
 				new_bits <<= policy_bits_start<Policy>;
-				value &= ~( mask << policy_bits_start<Policy> );
+				value &= ~( mask::value << policy_bits_start<Policy> );
 				value |= new_bits;
 				if constexpr( sizeof...( Policies ) > 0 ) {
 					if constexpr( sizeof...( pols ) > 0 ) {
@@ -232,17 +95,17 @@ namespace daw::json {
 			/***
 			 * The defaults for all known policies encoded as a json_options_t
 			 */
-			inline static constexpr json_options_t default_policy_flag =
+			inline constexpr json_options_t default_policy_flag =
 			  default_policy_flag_t<policy_list>::value;
 
 			template<typename Policy, typename Result = Policy>
 			static constexpr Result get_bits_for( json_options_t value ) {
 				static_assert( is_option_flag<Policy>,
 				               "Only registered policy types are allowed" );
-				constexpr unsigned mask = ( 1U << (policy_bits_start<Policy> +
-				                                   json_option_bits_width<Policy>)) -
-				                          1U;
-				value &= mask;
+				using mask = daw::constant<( 1U << (policy_bits_start<Policy> +
+				                                    json_option_bits_width<Policy>)) -
+				                           1U>;
+				value &= mask::value;
 				value >>= policy_bits_start<Policy>;
 				return static_cast<Result>( Policy{ value } );
 			}

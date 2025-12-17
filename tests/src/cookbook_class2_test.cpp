@@ -58,10 +58,9 @@ namespace daw::json {
 		  json_member_list<json_string<member0>, json_number<member1, int>,
 		                   json_bool<member2>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_class2::MyClass1 const &value ) {
-			return std::forward_as_tuple( value.member_0, value.member_1,
-			                              value.member_2 );
+		static auto to_json_data( daw::cookbook_class2::MyClass1 const &value ) {
+			return std::forward_as_tuple(
+			  value.member_0, value.member_1, value.member_2 );
 		}
 	};
 
@@ -77,8 +76,7 @@ namespace daw::json {
 		using type = json_member_list<json_class<a, daw::cookbook_class2::MyClass1>,
 		                              json_number<b, unsigned>>;
 #endif
-		static inline auto
-		to_json_data( daw::cookbook_class2::MyClass2 const &value ) {
+		static auto to_json_data( daw::cookbook_class2::MyClass2 const &value ) {
 			return std::forward_as_tuple( value.a, value.b );
 		}
 	};
@@ -93,7 +91,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_class2.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::read_file( argv[1] ).value( );
+	auto const data = daw::read_file( argv[1] ).value( );
 
 	auto const cls = daw::json::from_json<daw::cookbook_class2::MyClass2>( data );
 

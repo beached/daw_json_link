@@ -51,7 +51,8 @@ auto test( std::string_view json_data ) {
 	clear( values );
 	daw::do_not_optimize( values );
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "strings.json checked", json_data.size( ),
+	  "strings.json checked",
+	  json_data.size( ),
 	  []( auto sv, auto ptr ) {
 		  auto range = json_array_range<std::string, ExecMode>( sv );
 		  for( auto v : range ) {
@@ -59,7 +60,8 @@ auto test( std::string_view json_data ) {
 			  *ptr++ = v;
 		  }
 	  },
-	  json_data, values.data( ) );
+	  json_data,
+	  values.data( ) );
 	daw::do_not_optimize( values );
 	test_assert( v2 == values, "Expected them to parse the same" );
 	auto const h0 = std::accumulate(
@@ -74,17 +76,19 @@ auto test( std::string_view json_data ) {
 	  options::parse_flags<daw::json::options::CheckedParseMode::no, ExecMode> );
 
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "strings.json unchecked", json_data.size( ),
+	  "strings.json unchecked",
+	  json_data.size( ),
 	  []( auto sv, auto ptr ) mutable {
-		  auto range =
-		    json_array_range<std::string, daw::json::options::CheckedParseMode::no,
-		                     ExecMode>( sv );
+		  auto range = json_array_range<std::string,
+		                                daw::json::options::CheckedParseMode::no,
+		                                ExecMode>( sv );
 		  for( auto v : range ) {
 			  daw::do_not_optimize( v );
 			  *ptr++ = v;
 		  }
 	  },
-	  json_data, values2.data( ) );
+	  json_data,
+	  values2.data( ) );
 	daw::do_not_optimize( json_data );
 	daw::do_not_optimize( values2 );
 	auto const h1 = std::accumulate(

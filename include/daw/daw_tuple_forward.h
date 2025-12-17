@@ -17,11 +17,13 @@ namespace daw {
 	template<typename T>
 	using remove_rvalue_ref_t = daw::conditional_t<std::is_rvalue_reference_v<T>,
 	                                               daw::remove_cvref_t<T>, T>;
+
+	template<typename... Ts>
+	using forward_nonrvalue_as_tuple_t = std::tuple<remove_rvalue_ref_t<Ts>...>;
 	/// Forwards arguments but stores rvalues.  This allows use to prevent
 	/// dangling ref's
 	template<typename... Ts>
 	constexpr auto forward_nonrvalue_as_tuple( Ts &&...values ) {
-		using tuple_t = std::tuple<remove_rvalue_ref_t<Ts>...>;
-		return tuple_t{ DAW_FWD( values )... };
+		return forward_nonrvalue_as_tuple_t<Ts...>{ DAW_FWD( values )... };
 	}
 } // namespace daw

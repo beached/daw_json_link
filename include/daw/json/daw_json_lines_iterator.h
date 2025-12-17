@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
 
-#include "impl/daw_json_link_types_fwd.h"
-#include "impl/daw_json_parse_class.h"
-#include "impl/daw_json_value.h"
+#include "daw/json/impl/daw_json_link_types_fwd.h"
+#include "daw/json/impl/daw_json_parse_class.h"
+#include "daw/json/impl/daw_json_value.h"
 
 #include <daw/daw_cxmath.h>
 #include <daw/daw_move.h>
@@ -38,7 +38,6 @@ namespace daw::json {
 		class json_lines_iterator {
 			using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
-			using CharT = typename ParseState::CharT;
 
 		public:
 			using element_type = json_details::json_deduced_type<JsonElement>;
@@ -57,7 +56,7 @@ namespace daw::json {
 			 * This lets us fastpath and just skip n characters as we have already
 			 * parsed them
 			 */
-			mutable CharT *m_can_skip = nullptr;
+			mutable char const *m_can_skip = nullptr;
 
 		public:
 			explicit json_lines_iterator( ) = default;
@@ -73,16 +72,16 @@ namespace daw::json {
 			/// @pre good( ) returns true
 			/// @return The parsed result of ParseElement
 			[[nodiscard]] constexpr value_type operator*( ) const {
-				daw_json_assert_weak( m_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				daw_json_assert_weak(
+				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
 
 				auto tmp = m_state;
 				auto const run_after_parse = daw::on_scope_exit( [&] {
 					m_can_skip = tmp.first;
 				} );
 				(void)run_after_parse;
-				return json_details::parse_value<element_type, false,
-				                                 element_type::expected_type>( tmp );
+				return json_details::
+				  parse_value<element_type, false, element_type::expected_type>( tmp );
 			}
 
 			/// @brief A dereferencable value proxy holding the result of operator* .
@@ -97,8 +96,8 @@ namespace daw::json {
 			/// @brief Move the parse state to the next element
 			/// @return iterator after moving
 			constexpr json_lines_iterator &operator++( ) {
-				daw_json_assert_weak( m_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, m_state );
+				daw_json_assert_weak(
+				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
 				if( m_can_skip ) {
 					m_state.first = m_can_skip;
 					m_can_skip = nullptr;
@@ -168,7 +167,6 @@ namespace daw::json {
 			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
 			  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 			using iterator = json_lines_iterator<JsonElement, PolicyFlags...>;
-			using CharT = typename ParsePolicy::CharT;
 
 		private:
 			iterator m_first{ };

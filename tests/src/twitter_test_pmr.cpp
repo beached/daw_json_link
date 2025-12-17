@@ -9,7 +9,8 @@
 #include "defines.h"
 
 #include "twitter_test_pmr_json.h"
-#include <daw/json/daw_json_link.h>
+
+#include "daw/json/daw_json_link.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_benchmark.h>
@@ -63,7 +64,8 @@ void test( std::string_view json_data,
 	std::optional<daw::twitter::twitter_object_t> twitter_result;
 	// ******************************
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(checked)", sz,
+	  "twitter bench(checked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
@@ -85,7 +87,8 @@ void test( std::string_view json_data,
 
 	// options::CheckedParseMode::no
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(unchecked)", sz,
+	  "twitter bench(unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
@@ -107,7 +110,8 @@ void test( std::string_view json_data,
 
 	// Cpp Comments
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(cpp comments)", sz,
+	  "twitter bench(cpp comments)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
@@ -129,17 +133,17 @@ void test( std::string_view json_data,
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// Cpp Comments Unchecked
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(cpp comments, unchecked)", sz,
+	  "twitter bench(cpp comments, unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result =
-		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-		      f1,
-		      boost::container::pmr::polymorphic_allocator<
-		        daw::twitter::twitter_object_t>( alloc ),
-		      parse_flags<ExecMode, PolicyCommentTypes::cpp,
-		                  CheckedParseMode::no> );
+		  twitter_result = daw::json::from_json_alloc<
+		    daw::twitter::twitter_object_t>(
+		    f1,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ),
+		    parse_flags<ExecMode, PolicyCommentTypes::cpp, CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -152,7 +156,8 @@ void test( std::string_view json_data,
 #endif
 	// HashCommentSkippingPolicyChecked
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(hash comments)", sz,
+	  "twitter bench(hash comments)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
@@ -174,17 +179,17 @@ void test( std::string_view json_data,
 #if not defined( _MSC_VER ) or defined( __clang__ )
 	// HashCommentSkippingPolicyUnchecked
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(hash comments, unchecked)", sz,
+	  "twitter bench(hash comments, unchecked)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
-		  twitter_result =
-		    daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-		      f1,
-		      boost::container::pmr::polymorphic_allocator<
-		        daw::twitter::twitter_object_t>( alloc ),
-		      parse_flags<ExecMode, PolicyCommentTypes::hash,
-		                  CheckedParseMode::no> );
+		  twitter_result = daw::json::from_json_alloc<
+		    daw::twitter::twitter_object_t>(
+		    f1,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ),
+		    parse_flags<ExecMode, PolicyCommentTypes::hash, CheckedParseMode::no> );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -198,7 +203,8 @@ void test( std::string_view json_data,
 	// ******************************
 	// Escaped Names
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(checked, escaped names)", sz,
+	  "twitter bench(checked, escaped names)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
@@ -220,7 +226,8 @@ void test( std::string_view json_data,
 
 	// options::CheckedParseMode::no Escaped Names
 	(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(unchecked, escaped names)", sz,
+	  "twitter bench(unchecked, escaped names)",
+	  sz,
 	  [&]( auto f1 ) {
 		  twitter_result.reset( );
 		  alloc->release( );
@@ -293,10 +300,12 @@ int main( int argc, char **argv )
 	{
 		auto twitter_result =
 		  daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-		    json_data, boost::container::pmr::polymorphic_allocator<
-		                 daw::twitter::twitter_object_t>( alloc ) );
+		    json_data,
+		    boost::container::pmr::polymorphic_allocator<
+		      daw::twitter::twitter_object_t>( alloc ) );
 		(void)daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "twitter bench(to_json_string)", sz,
+		  "twitter bench(to_json_string)",
+		  sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
 			  daw::json::to_json( tr, str );
@@ -309,8 +318,9 @@ int main( int argc, char **argv )
 	alloc->release( );
 	auto const twitter_result2 =
 	  daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-	    str, boost::container::pmr::polymorphic_allocator<
-	           daw::twitter::twitter_object_t>( alloc ) );
+	    str,
+	    boost::container::pmr::polymorphic_allocator<
+	      daw::twitter::twitter_object_t>( alloc ) );
 	daw::do_not_optimize( twitter_result2 );
 }
 #if defined( DAW_USE_EXCEPTIONS )
