@@ -150,9 +150,9 @@ namespace daw::json {
 					}
 					first += 16;
 				}
-				__m128i val1{ };
+				auto val1 = __m128i{ };
 				auto const max_pos = last - first;
-				memcpy( &val1, first, static_cast<std::size_t>( max_pos ) );
+				std::memcpy( &val1, first, static_cast<std::size_t>( max_pos ) );
 				auto const key_positions = ( mem_find_eq_simd<keys>( val1 ) | ... );
 				if( key_positions != 0 ) {
 					auto const offset = find_lsb_set( key_positions );

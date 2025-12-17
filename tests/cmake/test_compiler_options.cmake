@@ -40,7 +40,11 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 		add_compile_options( -fprofile-instr-generate -fcoverage-mapping )
 		add_link_options( -fprofile-instr-generate -fcoverage-mapping )
 	endif()
-	message( STATUS "Clang ${CMAKE_CXX_COMPILER_VERSION} detected" )
+	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
+		message( STATUS "Apple Clang ${CMAKE_CXX_COMPILER_VERSION} detected" )
+	else()
+		message( STATUS "Clang ${CMAKE_CXX_COMPILER_VERSION} detected" )
+	endif()
 	add_compile_options(
 			-pedantic
 			-Weverything
