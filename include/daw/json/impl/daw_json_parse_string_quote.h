@@ -101,7 +101,7 @@ namespace daw::json {
 					// This is a logic error to happen.
 					// daw_json_assert_weak( first != '"', "Unexpected quote", parse_state
 					// );
-					if( json_details::use_constexpr_exec_mode<
+					if( not json_details::use_constexpr_exec_mode<
 					      typename ParseState::exec_tag_t>( ) ) {
 						first =
 						  mem_skip_until_end_of_string<true,

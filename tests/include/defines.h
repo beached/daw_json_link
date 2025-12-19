@@ -34,14 +34,14 @@
 template<typename StringView>
 [[noreturn]] DAW_ATTRIB_NOINLINE inline void
 daw_ensure_error( bool b, StringView &&msg )
-  DAW_ATTRIB_ENABLE_IF( __builtin_constant_p( b ) and b,
+  DAW_ATTRIB_ENABLE_IF( __builtin_constant_p( b ) and not b,
                         "ensure check failed" ) =
     delete( "ensure check failed" );
 #endif
 template<typename StringView>
 [[noreturn]] DAW_ATTRIB_NOINLINE inline void
 daw_ensure_error( bool b, StringView &&msg )
-  DAW_ATTRIB_ENABLE_IF( __builtin_constant_p( b ) and not b,
+  DAW_ATTRIB_ENABLE_IF( __builtin_constant_p( b ) and b,
                         "ensure check failed" ) {
 	std::cerr << msg << std::endl << std::flush;
 	std::terminate( );
@@ -65,14 +65,14 @@ daw_ensure_error( bool, StringView &&msg ) {
 
 #define ensure( Bool )                                             \
 	if( DAW_UNLIKELY( not( Bool ) ) ) {                              \
-		daw_ensure_error( not( Bool ), "Error in assertion: " #Bool ); \
+		daw_ensure_error( !!( Bool ), "Error in assertion: " #Bool ); \
 	}                                                                \
 	while( false )
 
 #define test_assert( Bool, Msg )          \
 	if( DAW_UNLIKELY( not( Bool ) ) ) {     \
 		DAW_UNLIKELY_BRANCH                   \
-		daw_ensure_error( not( Bool ), Msg ); \
+		daw_ensure_error( !!( Bool ), Msg ); \
 	}                                       \
 	while( false )
 
