@@ -189,7 +189,7 @@ namespace daw::json {
 										case 'u':
 											break;
 										default:
-											daw_json_error( ErrorReason::InvalidString, parse_state );
+											daw_json_error( true, ErrorReason::InvalidString, parse_state );
 										}
 									} else if( c == '"' ) {
 										break;
@@ -241,7 +241,7 @@ namespace daw::json {
 										case 'u':
 											break;
 										default:
-											daw_json_error( ErrorReason::InvalidString, parse_state );
+											daw_json_error( true, ErrorReason::InvalidString, parse_state );
 										}
 									} else if( c == '"' ) {
 										break;

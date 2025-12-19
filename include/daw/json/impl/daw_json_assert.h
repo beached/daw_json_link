@@ -65,45 +65,72 @@ namespace daw::json {
 
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+#if defined( DAW_ATTRIB_ENABLE_IF )
+#if defined( DAW_HAS_CPP26_DELETED_REASON )
 			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
-			handle_error( json_exception &&jex ) {
+			handle_error( bool b, json_exception &&jex )
+			  DAW_ATTRIB_ENABLE_IF( __builtin_constant_p( b ) and b,
+			                        "daw_json_ensure check failed" ) =
+			    delete( "daw_json_ensure check failed" );
+#endif
+			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
+			handle_error( bool b, json_exception &&jex )
+			  DAW_ATTRIB_ENABLE_IF( __builtin_constant_p( b ) and not b,
+			                        "daw_json_ensure check failed" ) {
 				daw_json_error_handler.get( )( std::move( jex ),
 				                               daw_json_error_handler_data );
 				DAW_UNREACHABLE( );
 			}
+
+			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
+			handle_error( bool b, json_exception &&jex )
+			  DAW_ATTRIB_ENABLE_IF( not __builtin_constant_p( b ), " " ) {
+				daw_json_error_handler.get( )( std::move( jex ),
+				                               daw_json_error_handler_data );
+				DAW_UNREACHABLE( );
+			}
+#else
+			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
+			handle_error( bool, json_exception &&jex ) {
+				daw_json_error_handler.get( )( std::move( jex ),
+				                               daw_json_error_handler_data );
+				DAW_UNREACHABLE( );
+			}
+#endif
 		} // namespace json_details
 
 		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
-		daw_json_error( ErrorReason reason ) {
-			json_details::handle_error( json_exception( reason ) );
+		daw_json_error( bool b, ErrorReason reason ) {
+			json_details::handle_error( b, json_exception( reason ) );
 		}
 
 		template<typename ParseState>
 		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
-		daw_json_error( ErrorReason reason, ParseState const &location ) {
+		daw_json_error( bool b, ErrorReason reason, ParseState const &location ) {
 			if( location.first ) {
-				json_details::handle_error( json_exception( reason, location.first ) );
+				json_details::handle_error( b,
+				                            json_exception( reason, location.first ) );
 			}
 			if( location.class_first ) {
 				json_details::handle_error(
-				  json_exception( reason, location.class_first ) );
+				  b, json_exception( reason, location.class_first ) );
 			}
-			json_details::handle_error( json_exception( reason ) );
+			json_details::handle_error( b, json_exception( reason ) );
 		}
 
 		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
-		daw_json_error( json_details::missing_member reason ) {
-			json_details::handle_error( json_exception( reason ) );
+		daw_json_error( bool b, json_details::missing_member reason ) {
+			json_details::handle_error( b, json_exception( reason ) );
 		}
 
 		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
-		daw_json_error( json_details::missing_token reason ) {
-			json_details::handle_error( json_exception( reason ) );
+		daw_json_error( bool b, json_details::missing_token reason ) {
+			json_details::handle_error( b, json_exception( reason ) );
 		}
 
 		template<typename ParseState>
 		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
-		daw_json_error( json_details::missing_member reason,
+		daw_json_error( bool b, json_details::missing_member reason,
 		                ParseState const &location ) {
 			if( location.class_first and location.first ) {
 				static constexpr std::size_t max_len = 150;
@@ -127,35 +154,38 @@ namespace daw::json {
 					}
 					return max_len;
 				}( );
-				json_details::handle_error( json_exception(
-				  reason, std::string_view( location.class_first, len ) ) );
+				json_details::handle_error(
+				  b,
+				  json_exception( reason,
+				                  std::string_view( location.class_first, len ) ) );
 			}
-			json_details::handle_error( json_exception( reason ) );
+			json_details::handle_error( b, json_exception( reason ) );
 		}
 
 		template<typename ParseState>
 		[[noreturn]] DAW_ATTRIB_NOINLINE inline void
-		daw_json_error( json_details::missing_token reason,
+		daw_json_error( bool b, json_details::missing_token reason,
 		                ParseState const &location ) {
 			if( location.first ) {
-				json_details::handle_error( json_exception( reason, location.first ) );
+				json_details::handle_error( b,
+				                            json_exception( reason, location.first ) );
 			}
 			if( location.class_first ) {
 				json_details::handle_error(
-				  json_exception( reason, location.class_first ) );
+				  b, json_exception( reason, location.class_first ) );
 			}
-			json_details::handle_error( json_exception( reason ) );
+			json_details::handle_error( b, json_exception( reason ) );
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
 
 /// @brief Ensure that Bool is true. If false pass rest of args to
 /// daw_json_error
-#define daw_json_ensure( Bool, ... )    \
-	do {                                  \
-		if( DAW_UNLIKELY( not( Bool ) ) ) { \
-			daw_json_error( __VA_ARGS__ );    \
-		}                                   \
+#define daw_json_ensure( Bool, ... )              \
+	do {                                            \
+		if( DAW_UNLIKELY( not( Bool ) ) ) {           \
+			daw_json_error( not( Bool ), __VA_ARGS__ ); \
+		}                                             \
 	} while( false )
 
 /// @brief Assert that Bool is true when in Checked Input mode If false pass
@@ -164,7 +194,7 @@ namespace daw::json {
 	do {                                                   \
 		if constexpr( not ParseState::is_unchecked_input ) { \
 			if( DAW_UNLIKELY( not( Bool ) ) ) {                \
-				daw_json_error( __VA_ARGS__ );                   \
+				daw_json_error( not( Bool ), __VA_ARGS__ );      \
 			}                                                  \
 		}                                                    \
 	} while( false )

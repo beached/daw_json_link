@@ -76,8 +76,8 @@ namespace daw::json {
 						                   true,
 						                   json_member_t::expected_type>( loc );
 					} else {
-						daw_json_error( missing_member( "ordered_class_member" ),
-						                parse_state );
+						daw_json_error(
+						  true, missing_member( "ordered_class_member" ), parse_state );
 					}
 				}
 				return parse_value<json_member_t, false, json_member_t::expected_type>(
@@ -136,10 +136,11 @@ namespace daw::json {
 					if constexpr( is_json_nullable_v<JsonMember> ) {
 						return parse_value_null<without_name<JsonMember>, true>( loc );
 					} else {
-						daw_json_error( missing_member( std::string_view(
-						                  std::data( JsonMember::name ),
-						                  std::size( JsonMember::name ) ) ),
-						                parse_state );
+						daw_json_ensure( not loc.is_null( ),
+						                 missing_member( std::string_view(
+						                   std::data( JsonMember::name ),
+						                   std::size( JsonMember::name ) ) ),
+						                 parse_state );
 					}
 				}
 

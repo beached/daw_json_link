@@ -1,4 +1,4 @@
-// Copyright( c ) Darrell Wright
+// Copyright (c) Darrell Wright
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -13,73 +13,85 @@
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_value_fwd.h"
-#include "daw_json_traits.h"
 
 #include <daw/daw_attributes.h>
-#include <daw/daw_move.h>
+#include <daw/daw_not_null.h>
+
+#include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename ParseState, bool>
-			struct json_parse_kv_array_iterator_base {
+			struct json_parse_array_sse42_iterator_base {
 				using iterator_category = std::input_iterator_tag;
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = false;
+
 				ParseState *parse_state = nullptr;
 			};
 
 			template<typename ParseState>
-			struct json_parse_kv_array_iterator_base<ParseState, true> {
-#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+			struct json_parse_array_sse42_iterator_base<ParseState, true> {
 				using iterator_category = std::input_iterator_tag;
-#else
-				// We have to lie so that std::distance uses O(1) instead of O(N)
-				using iterator_category = std::random_access_iterator_tag;
-#endif
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = true;
-				ParseState *parse_state = nullptr;
+
+				daw::not_null<ParseState *> parse_state;
 				difference_type counter = 0;
 
-				explicit json_parse_kv_array_iterator_base( ) = default;
-
-				DAW_ATTRIB_NONNULL( )
-				explicit constexpr json_parse_kv_array_iterator_base(
-				  ParseState *pd ) noexcept
+				explicit constexpr json_parse_array_sse42_iterator_base(
+				  daw::not_null<ParseState *> pd ) noexcept
 				  : parse_state( pd )
 				  , counter( static_cast<difference_type>( pd->counter ) ) {}
 
 				constexpr difference_type
-				operator-( json_parse_kv_array_iterator_base const &rhs ) const {
+				operator-( json_parse_array_sse42_iterator_base const &rhs ) const {
 					// rhs is the iterator with the parser in it.  We should know how many
 					// items are in play because we already counted them in the skip_array
 					// call.
+
 					return rhs.counter;
 				}
 			};
 
 			template<typename JsonMember, typename ParseState, bool KnownBounds>
-			struct json_parse_kv_array_iterator final
-			  : json_parse_kv_array_iterator_base<
+			struct json_parse_array_sse42_iterator
+			  : json_parse_array_sse42_iterator_base<
 			      ParseState, can_be_random_iterator_v<KnownBounds>> {
 
-				using base = json_parse_kv_array_iterator_base<
+				using base = json_parse_array_sse42_iterator_base<
 				  ParseState, can_be_random_iterator_v<KnownBounds>>;
+
 				using iterator_category = typename base::iterator_category;
-				using json_key_t = typename JsonMember::json_key_t;
-				using json_element_t = typename JsonMember::json_value_t;
-				using value_type = std::pair<json_result_t<json_key_t> const,
-				                             json_result_t<json_element_t>>;
+				using element_t = typename JsonMember::json_element_t;
+				using value_type = json_result_t<element_t>;
 				using reference = value_type;
 				using pointer = arrow_proxy<value_type>;
 				using parse_state_t = ParseState;
 				using difference_type = typename base::difference_type;
+				using size_type = std::size_t;
 
-				using json_class_type = typename JsonMember::json_class_t;
-				explicit json_parse_kv_array_iterator( ) = default;
-
-				explicit constexpr json_parse_kv_array_iterator( parse_state_t &r )
+				json_parse_array_sse42_iterator( ) = default;
+#if defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
+				// This code requires C++ 20 to be useful in a constant expression as it
+				// requires a non-trivial destructor
+				json_parse_array_sse42_iterator( json_parse_array_iterator const & ) =
+				  default;
+				json_parse_array_sse42_iterator &
+				operator=( json_parse_array_sse42_iterator const & ) = default;
+				json_parse_array_sse42_iterator( json_parse_array_iterator && ) =
+				  default;
+				json_parse_array_sse42_iterator &
+				operator=( json_parse_array_sse42_iterator && ) = default;
+				DAW_JSON_CPP20_CX_DTOR ~json_parse_array_sse42_iterator( ) {
+					if constexpr( base::has_counter ) {
+						daw_json_assert_weak( base::counter == 0,
+						                      ErrorReason::AttemptToAccessPastEndOfValue );
+					}
+				}
+#endif
+				constexpr explicit json_parse_array_sse42_iterator( parse_state_t &r )
 				  : base{ &r } {
 					if( DAW_UNLIKELY( base::parse_state->front( ) == ']' ) ) {
 						if constexpr( not KnownBounds ) {
@@ -92,13 +104,8 @@ namespace daw::json {
 					}
 				}
 
-				static constexpr value_type
-				get_pair( json_result_t<json_class_type> &&v ) {
-					return value_type( std::get<0>( std::move( v.members ) ),
-					                   std::get<1>( std::move( v.members ) ) );
-				}
-
-				DAW_ATTRIB_NOINLINE value_type operator*( ) const {
+				[[noreturn]] DAW_ATTRIB_NOINLINE value_type operator*( ) const {
+					DAW_UNLIKELY_BRANCH
 					// This is hear to satisfy indirectly_readable
 					daw_json_error( true, ErrorReason::UnexpectedEndOfData );
 				}
@@ -109,15 +116,15 @@ namespace daw::json {
 					                      ErrorReason::UnexpectedEndOfData,
 					                      *base::parse_state );
 
-					return get_pair(
-					  parse_value<json_class_type, false, JsonParseTypes::Class>(
-					    *base::parse_state ) );
+					return parse_value<element_t, false, element_t::expected_type>(
+					  *base::parse_state );
 				}
 
-				DAW_ATTRIB_INLINE constexpr json_parse_kv_array_iterator &
+				DAW_ATTRIB_INLINE constexpr json_parse_array_sse42_iterator &
 				operator++( ) {
 					daw_json_assert_weak( base::parse_state,
-					                      ErrorReason::UnexpectedEndOfData );
+					                      ErrorReason::UnexpectedEndOfData,
+					                      *base::parse_state );
 					base::parse_state->trim_left( );
 
 					daw_json_assert_weak(
@@ -128,12 +135,14 @@ namespace daw::json {
 
 					base::parse_state->move_next_member_or_end( );
 					daw_json_assert_weak( base::parse_state->has_more( ),
-					                      ErrorReason::UnexpectedEndOfData );
-					if( DAW_UNLIKELY( base::parse_state->front( ) == ']' ) ) {
+					                      ErrorReason::UnexpectedEndOfData,
+					                      *base::parse_state );
+					if( base::parse_state->front( ) == ']' ) {
 #if not defined( NDEBUG )
 						if constexpr( base::has_counter ) {
 							daw_json_assert_weak( base::counter == 0,
-							                      ErrorReason::UnexpectedEndOfData );
+							                      ErrorReason::AttemptToAccessPastEndOfValue,
+							                      *base::parse_state );
 						}
 #endif
 						if constexpr( not KnownBounds ) {
@@ -143,14 +152,16 @@ namespace daw::json {
 							// Ensure we are equal to default
 						}
 						base::parse_state = nullptr;
-					}
+					} else {
 #if not defined( NDEBUG )
-					if constexpr( base::has_counter ) {
-						daw_json_assert_weak( base::counter > 0,
-						                      ErrorReason::UnexpectedEndOfData );
-						--base::counter;
-					}
+						if constexpr( base::has_counter ) {
+							daw_json_assert_weak( base::counter > 0,
+							                      ErrorReason::AttemptToAccessPastEndOfValue,
+							                      *base::parse_state );
+							--base::counter;
+						}
 #endif
+					}
 					return *this;
 				}
 
@@ -158,16 +169,24 @@ namespace daw::json {
 					(void)operator++( );
 				}
 
-				friend constexpr bool
-				operator==( json_parse_kv_array_iterator const &lhs,
-				            json_parse_kv_array_iterator const &rhs ) {
+				friend inline constexpr bool
+				operator==( json_parse_array_sse42_iterator const &lhs,
+				            json_parse_array_sse42_iterator const &rhs ) {
 					return lhs.parse_state == rhs.parse_state;
 				}
 
-				friend constexpr bool
-				operator!=( json_parse_kv_array_iterator const &lhs,
-				            json_parse_kv_array_iterator const &rhs ) {
+				friend inline constexpr bool
+				operator!=( json_parse_array_sse42_iterator const &lhs,
+				            json_parse_array_sse42_iterator const &rhs ) {
 					return not( lhs == rhs );
+				}
+
+				constexpr json_parse_array_sse42_iterator &begin( ) {
+					return *this;
+				}
+
+				constexpr json_parse_array_sse42_iterator end( ) const {
+					return { };
 				}
 			};
 		} // namespace json_details

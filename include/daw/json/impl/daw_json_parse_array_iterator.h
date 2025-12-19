@@ -113,7 +113,7 @@ namespace daw::json {
 				[[noreturn]] DAW_ATTRIB_NOINLINE value_type operator*( ) const {
 					DAW_UNLIKELY_BRANCH
 					// This is hear to satisfy indirectly_readable
-					daw_json_error( ErrorReason::UnexpectedEndOfData );
+					daw_json_error( true, ErrorReason::UnexpectedEndOfData );
 				}
 
 				DAW_ATTRIB_INLINE constexpr value_type operator*( ) {

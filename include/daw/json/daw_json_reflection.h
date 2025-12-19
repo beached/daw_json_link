@@ -247,7 +247,9 @@ namespace daw::json::inline DAW_JSON_VER {
 						return [:enumerator:];
 					}
 				}
-				daw_json_error( ErrorReason::InvalidString );
+				daw_json_error( true,
+				                std::ranges::contains( enumerators_of( ^^E ), name ),
+				                ErrorReason::InvalidString );
 			}
 
 			template<EnumType E>

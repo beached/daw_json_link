@@ -98,7 +98,7 @@ namespace daw::json {
 						if( parse_state.starts_with_skip( "Inf" ) ) {
 							if( not( parse_state.starts_with_skip( "\"" ) or
 							         parse_state.starts_with_skip( "inity\"" ) ) ) {
-								daw_json_error( ErrorReason::InvalidString, parse_state );
+								daw_json_error( true, ErrorReason::InvalidString, parse_state );
 							}
 							if constexpr( KnownBounds ) {
 								daw_json_assert_weak( parse_state.empty( ),
@@ -400,7 +400,7 @@ namespace daw::json {
 							return construct_value<json_result_t<JsonMember>, constructor_t>(
 							  parse_state, false );
 						}
-						daw_json_error( ErrorReason::InvalidLiteral, parse_state );
+						daw_json_error( true, ErrorReason::InvalidLiteral, parse_state );
 					}
 				} else {
 					// Beginning quotes
@@ -424,7 +424,7 @@ namespace daw::json {
 						} else if( parse_state.starts_with( "false" ) ) {
 							parse_state.remove_prefix( 5 );
 						} else {
-							daw_json_error( ErrorReason::InvalidLiteral, parse_state );
+							daw_json_error( true, ErrorReason::InvalidLiteral, parse_state );
 						}
 					}
 					// Trailing quotes
@@ -769,7 +769,7 @@ namespace daw::json {
 					                   KnownBounds,
 					                   JsonMember::expected_type>( parse_state );
 				} else {
-					daw_json_error( ErrorReason::UnexpectedJSONVariantType );
+					daw_json_error( true, ErrorReason::UnexpectedJSONVariantType );
 				}
 			}
 
@@ -823,7 +823,7 @@ namespace daw::json {
 				if constexpr( ParseState::is_unchecked_input ) {
 					DAW_UNREACHABLE( );
 				} else {
-					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
+					daw_json_error( true, ErrorReason::InvalidStartOfValue, parse_state );
 				}
 			}
 
@@ -848,7 +848,7 @@ namespace daw::json {
 					if constexpr( ParseState::is_unchecked_input ) {
 						DAW_UNREACHABLE( );
 					} else {
-						daw_json_error( ErrorReason::MissingMemberNameOrEndOfClass,
+						daw_json_error( true, ErrorReason::MissingMemberNameOrEndOfClass,
 						                parse_state );
 					}
 				}

@@ -143,26 +143,26 @@ namespace daw::json {
 						} else if( value <= static_cast<T>( daw::max_value<Integer> ) ) {
 							return static_cast<Integer>( value );
 						} else {
-							daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
+							daw_json_error( true, ErrorReason::NumberOutOfRange, parse_state );
 						}
 					} else if constexpr( sizeof( T ) <= sizeof( Integer ) ) {
 						if( value >= 0 ) {
 							return value;
 						}
-						daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
+						daw_json_error( true, ErrorReason::NumberOutOfRange, parse_state );
 					} else {
 						if( value >= 0 and
 						    value <= static_cast<T>( daw::max_value<Integer> ) ) {
 							return value;
 						}
-						daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
+						daw_json_error( true, ErrorReason::NumberOutOfRange, parse_state );
 					}
 				} else if constexpr( std::is_signed_v<Integer> ) {
 					if constexpr( sizeof( T ) < sizeof( Integer ) ) {
 						return static_cast<Integer>( value );
 					} else {
 						if( value > static_cast<T>( daw::max_value<Integer> ) ) {
-							daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
+							daw_json_error( true, ErrorReason::NumberOutOfRange, parse_state );
 						}
 						return static_cast<Integer>( value );
 					}
@@ -172,7 +172,7 @@ namespace daw::json {
 					if( value <= static_cast<T>( daw::max_value<Integer> ) ) {
 						return static_cast<Integer>( value );
 					}
-					daw_json_error( ErrorReason::NumberOutOfRange, parse_state );
+					daw_json_error( true, ErrorReason::NumberOutOfRange, parse_state );
 				}
 			}
 

@@ -271,7 +271,7 @@ namespace daw::json {
 					it.write( tmp );
 					return;
 				}
-				daw_json_error( ErrorReason::InvalidUTFCodepoint );
+				daw_json_error( true, ErrorReason::InvalidUTFCodepoint );
 			}
 		} // namespace json_details
 
@@ -304,7 +304,7 @@ namespace daw::json {
 							if constexpr( WritableType::restricted_string_output ==
 							              options::RestrictedStringOutput::
 							                ErrorInvalidUTF8 ) {
-								daw_json_error( ErrorReason::InvalidStringHighASCII );
+								daw_json_error( true, ErrorReason::InvalidStringHighASCII );
 							} else {
 								first = it_t( std::next( first.base( ) ) );
 							}
@@ -581,7 +581,7 @@ namespace daw::json {
 						                options::JsonNumberErrors::None or
 						              JsonMember::allow_number_errors ==
 						                options::JsonNumberErrors::AllowInf ) {
-							daw_json_error( ErrorReason::NumberIsNaN );
+							daw_json_error( true, ErrorReason::NumberIsNaN );
 						} else {
 							it.write( "\"NaN\"" );
 							return it;
@@ -593,7 +593,7 @@ namespace daw::json {
 						                options::JsonNumberErrors::None or
 						              JsonMember::allow_number_errors ==
 						                options::JsonNumberErrors::AllowNaN ) {
-							daw_json_error( ErrorReason::NumberIsInf );
+							daw_json_error( true, ErrorReason::NumberIsInf );
 						} else {
 							if( value < 0 ) {
 								it.write( "\"-Infinity\"" );
