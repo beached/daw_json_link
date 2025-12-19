@@ -12,6 +12,9 @@
 #include "daw/json/daw_json_exception.h"
 #include "daw/json/daw_json_find_path.h"
 
+#include <daw/daw_attributes.h>
+#include <daw/daw_cpp_feature_check.h>
+
 #include <iostream>
 #include <string_view>
 
@@ -26,23 +29,51 @@
 #define DAW_CONSTEXPR constexpr
 #endif
 
+#if defined( DAW_ATTRIB_ENABLE_IF )
+#if defined( DAW_HAS_CPP26_DELETED_REASON )
 template<typename StringView>
-DAW_ATTRIB_NOINLINE void daw_ensure_error( StringView &&msg ) {
+[[noreturn]] DAW_ATTRIB_NOINLINE inline void
+daw_ensure_error( bool b, StringView &&msg )
+  DAW_ATTRIB_ENABLE_IF( __builtin_constant_p( b ) and b,
+                        "ensure check failed" ) =
+    delete( "ensure check failed" );
+#endif
+template<typename StringView>
+[[noreturn]] DAW_ATTRIB_NOINLINE inline void
+daw_ensure_error( bool b, StringView &&msg )
+  DAW_ATTRIB_ENABLE_IF( __builtin_constant_p( b ) and not b,
+                        "ensure check failed" ) {
 	std::cerr << msg << std::endl << std::flush;
 	std::terminate( );
 }
 
-#define ensure( Bool )                                \
-	if( DAW_UNLIKELY( not( Bool ) ) ) {                 \
-		daw_ensure_error( "Error in assertion: " #Bool ); \
-	}                                                   \
+template<typename StringView>
+[[noreturn]] DAW_ATTRIB_NOINLINE inline void
+daw_ensure_error( bool b, StringView &&msg )
+  DAW_ATTRIB_ENABLE_IF( not __builtin_constant_p( b ), " " ) {
+	std::cerr << msg << std::endl << std::flush;
+	std::terminate( );
+}
+#else
+template<typename StringView>
+[[noreturn]] DAW_ATTRIB_NOINLINE inline void
+daw_ensure_error( bool, StringView &&msg ) {
+	std::cerr << msg << std::endl << std::flush;
+	std::terminate( );
+}
+#endif
+
+#define ensure( Bool )                                             \
+	if( DAW_UNLIKELY( not( Bool ) ) ) {                              \
+		daw_ensure_error( not( Bool ), "Error in assertion: " #Bool ); \
+	}                                                                \
 	while( false )
 
-#define test_assert( Bool, Msg )      \
-	if( DAW_UNLIKELY( not( Bool ) ) ) { \
-		DAW_UNLIKELY_BRANCH               \
-		daw_ensure_error( Msg );          \
-	}                                   \
+#define test_assert( Bool, Msg )          \
+	if( DAW_UNLIKELY( not( Bool ) ) ) {     \
+		DAW_UNLIKELY_BRANCH                   \
+		daw_ensure_error( not( Bool ), Msg ); \
+	}                                       \
 	while( false )
 
 DAW_ATTRIB_NOINLINE inline void
