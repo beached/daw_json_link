@@ -13,6 +13,7 @@
 #include "daw/json/daw_json_exception.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_not_null.h>
 
@@ -190,6 +191,37 @@ namespace daw::json {
 
 /// @brief Assert that Bool is true when in Checked Input mode If false pass
 /// rest of args to daw_json_error
+#if defined( DAW_HAS_IF_CONSTEVAL )
+#define daw_json_assert_weak( Bool, ... )                  \
+	do {                                                     \
+		if consteval {                                         \
+			if( DAW_UNLIKELY( not( Bool ) ) ) {                  \
+				daw_json_error( not( Bool ), __VA_ARGS__ );        \
+			}                                                    \
+		} else {                                               \
+			if constexpr( not ParseState::is_unchecked_input ) { \
+				if( DAW_UNLIKELY( not( Bool ) ) ) {                \
+					daw_json_error( not( Bool ), __VA_ARGS__ );      \
+				}                                                  \
+			}                                                    \
+		}                                                      \
+	} while( false )
+#elif defined( DAW_HAS_IS_CONSTANT_EVALUATED )
+#define daw_json_assert_weak( Bool, ... )                  \
+	do {                                                     \
+		if( DAW_IS_CONSTANT_EVALUATED( ) ) {                   \
+			if( DAW_UNLIKELY( not( Bool ) ) ) {                  \
+				daw_json_error( not( Bool ), __VA_ARGS__ );        \
+			}                                                    \
+		} else {                                               \
+			if constexpr( not ParseState::is_unchecked_input ) { \
+				if( DAW_UNLIKELY( not( Bool ) ) ) {                \
+					daw_json_error( not( Bool ), __VA_ARGS__ );      \
+				}                                                  \
+			}                                                    \
+		}                                                      \
+	} while( false )
+#else
 #define daw_json_assert_weak( Bool, ... )                \
 	do {                                                   \
 		if constexpr( not ParseState::is_unchecked_input ) { \
@@ -198,3 +230,4 @@ namespace daw::json {
 			}                                                  \
 		}                                                    \
 	} while( false )
+#endif
