@@ -38,9 +38,8 @@ namespace daw::json {
 			char const m_data[N]{ };
 
 			template<std::size_t... Is>
-			DAW_ATTRIB_NONNULL( )
-			DAW_ATTRIB_INLINE DAW_CONSTEVAL
-			  json_name( char const *ptr, std::index_sequence<Is...> ) noexcept
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL json_name(
+			  daw::not_null<char const *> ptr, std::index_sequence<Is...> ) noexcept
 			  : m_data{ ptr[Is]... } {}
 
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL

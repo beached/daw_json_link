@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_arrow_proxy.h"
-#include "daw_json_assert.h"
-#include "daw_json_parse_value_fwd.h"
+#include "daw/json/impl/daw_json_arrow_proxy.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_value_fwd.h"
 
 #include <daw/daw_attributes.h>
 
@@ -45,9 +45,8 @@ namespace daw::json {
 
 				explicit json_parse_array_iterator_base( ) = default;
 
-				DAW_ATTRIB_NONNULL( )
 				explicit constexpr json_parse_array_iterator_base(
-				  ParseState *pd ) noexcept
+				  daw::not_null<ParseState *> pd ) noexcept
 				  : parse_state( pd )
 				  , counter( static_cast<difference_type>( pd->counter ) ) {}
 

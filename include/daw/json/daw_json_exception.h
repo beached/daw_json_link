@@ -202,7 +202,7 @@ namespace daw::json {
 		 * parser if available.  Using the bool flag to ensure that the exception
 		 * type matches the compiler define and has a different name
 		 */
-		class json_exception : public std::exception {
+		class json_exception final: public std::exception {
 			ErrorReason m_reason = ErrorReason::Unknown;
 
 			union data_t {

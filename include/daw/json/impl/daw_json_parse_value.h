@@ -12,6 +12,9 @@
 
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_array_iterator.h"
+#if defined( DAW_ALLOW_SSE42 )
+#include "daw/json/impl/daw_json_parse_array_sse42_iterator.h"
+#endif
 #include "daw/json/impl/daw_json_parse_kv_array_iterator.h"
 #include "daw/json/impl/daw_json_parse_kv_class_iterator.h"
 #include "daw/json/impl/daw_json_parse_name.h"
@@ -92,7 +95,7 @@ namespace daw::json {
 						element_t sign = element_t( 1.0 );
 						if( parse_state.front( ) == '-' ) {
 							sign = element_t( -1.0 );
-							parse_state.first++;
+							++parse_state.first;
 						}
 						// Looking for Inf as that will match Infinity too.
 						if( parse_state.starts_with_skip( "Inf" ) ) {
@@ -848,8 +851,8 @@ namespace daw::json {
 					if constexpr( ParseState::is_unchecked_input ) {
 						DAW_UNREACHABLE( );
 					} else {
-						daw_json_error( true, ErrorReason::MissingMemberNameOrEndOfClass,
-						                parse_state );
+						daw_json_error(
+						  true, ErrorReason::MissingMemberNameOrEndOfClass, parse_state );
 					}
 				}
 			}

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_cxmath.h>
@@ -31,8 +31,8 @@ namespace daw::json {
 			};
 
 			template<typename Predicate>
-			DAW_ATTRIB_FLATINLINE DAW_ATTRIB_NONNULL( ) constexpr std::int32_t
-			  count_4digits( daw::not_null<char const *> first, Predicate pred ) {
+			DAW_ATTRIB_FLATINLINE constexpr std::int32_t
+			count_4digits( daw::not_null<char const *> first, Predicate pred ) {
 				daw::simple_array<daw::UInt8, 4> const buff{ pred( first[3] ),
 				                                             pred( first[2] ),
 				                                             pred( first[2] ),
@@ -47,8 +47,8 @@ namespace daw::json {
 			}
 
 			template<typename Predicate>
-			DAW_ATTRIB_FLATINLINE DAW_ATTRIB_NONNULL( ) constexpr std::int32_t
-			  count_8digits( daw::not_null<char const *> first, Predicate pred ) {
+			DAW_ATTRIB_FLATINLINE constexpr std::int32_t
+			count_8digits( daw::not_null<char const *> first, Predicate pred ) {
 				daw::simple_array<daw::UInt8, 8> const buff{ pred( first[7] ),
 				                                             pred( first[6] ),
 				                                             pred( first[5] ),

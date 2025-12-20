@@ -143,7 +143,8 @@ namespace daw::json {
 						} else if( value <= static_cast<T>( daw::max_value<Integer> ) ) {
 							return static_cast<Integer>( value );
 						} else {
-							daw_json_error( true, ErrorReason::NumberOutOfRange, parse_state );
+							daw_json_error(
+							  true, ErrorReason::NumberOutOfRange, parse_state );
 						}
 					} else if constexpr( sizeof( T ) <= sizeof( Integer ) ) {
 						if( value >= 0 ) {
@@ -162,7 +163,8 @@ namespace daw::json {
 						return static_cast<Integer>( value );
 					} else {
 						if( value > static_cast<T>( daw::max_value<Integer> ) ) {
-							daw_json_error( true, ErrorReason::NumberOutOfRange, parse_state );
+							daw_json_error(
+							  true, ErrorReason::NumberOutOfRange, parse_state );
 						}
 						return static_cast<Integer>( value );
 					}
@@ -329,8 +331,7 @@ namespace daw::json {
 			//
 			//
 			https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
-			DAW_ATTRIB_NONNULL( )
-			inline UInt64 parse_eight_digits_unrolled( char const *ptr ) {
+			inline UInt64 parse_eight_digits_unrolled( daw::not_null<char const *> ptr ) {
 			  // this actually computes *16* values so we are being wasteful.
 			  static __m128i const ascii0 = _mm_set1_epi8( '0' );
 
