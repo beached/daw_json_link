@@ -105,7 +105,7 @@ namespace daw::json {
 					}
 				}
 				/// @brief Check the state of the nullable type for a value
-				static constexpr bool has_value( T const & ) noexcept {
+				static DAW_CONSTEVAL bool has_value( T const & ) noexcept {
 					return true;
 				}
 			};

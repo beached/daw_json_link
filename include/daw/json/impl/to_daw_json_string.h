@@ -860,7 +860,7 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			[[nodiscard]] static constexpr bool is_null( T const & ) {
+			[[nodiscard]] static DAW_CONSTEVAL bool is_null( T const & ) {
 				return false;
 			}
 

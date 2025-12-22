@@ -166,6 +166,7 @@ namespace daw::jkj::dragonbox {
 
 				return ( u & exponent_bits_mask ) != exponent_bits_mask;
 			}
+
 			static constexpr bool is_nonzero( carrier_uint u ) noexcept {
 				return ( u << 1 ) != 0;
 			}
@@ -569,7 +570,7 @@ namespace daw::jkj::dragonbox {
 					// Ensure no overflow
 					assert( shift_amount == 0 or
 					        integer_part <
-					          ( std::uint32_t( 1 ) << ( 32 - shift_amount ) ) );
+					          ( std::uint32_t{ 1 } << ( 32 - shift_amount ) ) );
 
 					return shift_amount == 0
 					         ? static_cast<std::int32_t>( integer_part )
@@ -785,7 +786,7 @@ namespace daw::jkj::dragonbox {
 					  info::bits_for_comparison >= 32
 					    ? daw::max_value<std::uint32_t>
 					    : std::uint32_t(
-					        ( std::uint32_t( 1 ) << info::bits_for_comparison ) - 1 );
+					        ( std::uint32_t{ 1 } << info::bits_for_comparison ) - 1 );
 
 					if( ( n & comparison_mask ) <= info::threshold ) {
 						n >>= info::shift_amount;
@@ -816,7 +817,7 @@ namespace daw::jkj::dragonbox {
 				template<int N>
 				[[nodiscard]] inline constexpr std::uint32_t
 				small_division_by_pow10( std::uint32_t n ) noexcept {
-					assert( n <= compute_power<N + 1>( std::uint32_t( 10 ) ) );
+					assert( n <= compute_power<N + 1>( std::uint32_t{ 10 } ) );
 					return ( n * small_division_by_pow10_info<N>::magic_number ) >>
 					       small_division_by_pow10_info<N>::shift_amount;
 				}
@@ -1639,7 +1640,7 @@ namespace daw::jkj::dragonbox {
 
 						template<class Float, class Fp>
 						static constexpr void handle_sign( ieee754_bits<Float>,
-						                                   Fp & ) noexcept {}
+						                                   Fp const & ) noexcept {}
 					};
 
 					struct return_sign : base {
@@ -1663,10 +1664,10 @@ namespace daw::jkj::dragonbox {
 						static constexpr bool report_trailing_zeros = false;
 
 						template<class Fp>
-						static constexpr void on_trailing_zeros( Fp & ) noexcept {}
+						static constexpr void on_trailing_zeros( Fp const & ) noexcept {}
 
 						template<class Fp>
-						static constexpr void no_trailing_zeros( Fp & ) noexcept {}
+						static constexpr void no_trailing_zeros( Fp const & ) noexcept {}
 					};
 
 					struct remove : base {
@@ -1712,6 +1713,7 @@ namespace daw::jkj::dragonbox {
 					namespace interval_type {
 						struct symmetric_boundary {
 							static constexpr bool is_symmetric = true;
+
 							bool is_closed;
 							[[nodiscard]] inline constexpr bool
 							include_left_endpoint( ) const noexcept {
@@ -1725,6 +1727,7 @@ namespace daw::jkj::dragonbox {
 						};
 						struct asymmetric_boundary {
 							static constexpr bool is_symmetric = false;
+
 							bool is_left_closed;
 							[[nodiscard]] inline constexpr bool
 							include_left_endpoint( ) const noexcept {
@@ -1736,46 +1739,55 @@ namespace daw::jkj::dragonbox {
 								return not is_left_closed;
 							}
 						};
+
 						struct closed {
 							static constexpr bool is_symmetric = true;
-							[[nodiscard]] static constexpr bool
+							[[nodiscard]] static DAW_CONSTEVAL bool
 							include_left_endpoint( ) noexcept {
 								return true;
 							}
-							[[nodiscard]] static constexpr bool
+
+							[[nodiscard]] static DAW_CONSTEVAL bool
 							include_right_endpoint( ) noexcept {
 								return true;
 							}
 						};
+
 						struct open {
 							static constexpr bool is_symmetric = true;
-							[[nodiscard]] static constexpr bool
+
+							[[nodiscard]] static DAW_CONSTEVAL bool
 							include_left_endpoint( ) noexcept {
 								return false;
 							}
-							[[nodiscard]] static constexpr bool
+
+							[[nodiscard]] static DAW_CONSTEVAL bool
 							include_right_endpoint( ) noexcept {
 								return false;
 							}
 						};
+
 						struct left_closed_right_open {
 							static constexpr bool is_symmetric = false;
-							[[nodiscard]] static constexpr bool
+							[[nodiscard]] static DAW_CONSTEVAL bool
 							include_left_endpoint( ) noexcept {
 								return true;
 							}
-							[[nodiscard]] static constexpr bool
+
+							[[nodiscard]] static DAW_CONSTEVAL bool
 							include_right_endpoint( ) noexcept {
 								return false;
 							}
 						};
+
 						struct right_closed_left_open {
 							static constexpr bool is_symmetric = false;
-							[[nodiscard]] static constexpr bool
+							[[nodiscard]] static DAW_CONSTEVAL bool
 							include_left_endpoint( ) noexcept {
 								return false;
 							}
-							[[nodiscard]] static constexpr bool
+
+							[[nodiscard]] static DAW_CONSTEVAL bool
 							include_right_endpoint( ) noexcept {
 								return true;
 							}
@@ -2472,9 +2484,9 @@ namespace daw::jkj::dragonbox {
 					//////////////////////////////////////////////////////////////////////
 
 					DAW_CPP23_STATIC_LOCAL constexpr auto big_divisor =
-					  compute_power<kappa + 1>( std::uint32_t( 10 ) );
+					  compute_power<kappa + 1>( std::uint32_t{ 10 } );
 					DAW_CPP23_STATIC_LOCAL constexpr auto small_divisor =
-					  compute_power<kappa>( std::uint32_t( 10 ) );
+					  compute_power<kappa>( std::uint32_t{ 10 } );
 
 					// Using an upper bound on zi, we might be able to optimize the
 					// division better than the compiler; we are computing zi /
@@ -2494,7 +2506,7 @@ namespace daw::jkj::dragonbox {
 						ret_value.exponent = minus_k + kappa;
 
 						DAW_CPP23_STATIC_LOCAL constexpr auto mask =
-						  ( std::uint32_t( 1 ) << kappa ) - 1;
+						  ( std::uint32_t{ 1 } << kappa ) - 1;
 
 						if constexpr( CorrectRoundingPolicy::tag ==
 						              policy_impl::correct_rounding::tag_t::do_not_care ) {
@@ -2733,7 +2745,7 @@ namespace daw::jkj::dragonbox {
 					//////////////////////////////////////////////////////////////////////
 
 					DAW_CPP23_STATIC_LOCAL constexpr auto big_divisor =
-					  compute_power<kappa + 1>( std::uint32_t( 10 ) );
+					  compute_power<kappa + 1>( std::uint32_t{ 10 } );
 
 					// Using an upper bound on xi, we might be able to optimize the
 					// division better than the compiler; we are computing xi /
@@ -2826,9 +2838,9 @@ namespace daw::jkj::dragonbox {
 					//////////////////////////////////////////////////////////////////////
 
 					DAW_CPP23_STATIC_LOCAL constexpr auto big_divisor =
-					  compute_power<kappa + 1>( std::uint32_t( 10 ) );
+					  compute_power<kappa + 1>( std::uint32_t{ 10 } );
 					DAW_CPP23_STATIC_LOCAL constexpr auto small_divisor =
-					  compute_power<kappa>( std::uint32_t( 10 ) );
+					  compute_power<kappa>( std::uint32_t{ 10 } );
 
 					// Using an upper bound on zi, we might be able to optimize the
 					// division better than the compiler; we are computing zi /
@@ -2880,7 +2892,7 @@ namespace daw::jkj::dragonbox {
 					  [] DAW_CPP23_STATIC_CALL_OP {
 						  auto max_possible_significand =
 						    daw::max_value<carrier_uint> /
-						    compute_power<kappa + 1>( std::uint32_t( 10 ) );
+						    compute_power<kappa + 1>( std::uint32_t{ 10 } );
 
 						  int k = 0;
 						  carrier_uint p = 1;
@@ -3226,10 +3238,11 @@ namespace daw::jkj::dragonbox {
 				// Check if a given policy belongs to one of the kinds specified by
 				// the library
 				template<class Policy>
-				[[nodiscard]] constexpr bool
+				[[nodiscard]] DAW_CONSTEVAL bool
 				check_policy_validity( Policy, base_default_pair_list<> ) {
 					return false;
 				}
+
 				template<class Policy, class FirstBaseDefaultPair,
 				         class... RemainingBaseDefaultPairs>
 				[[nodiscard]] constexpr bool check_policy_validity(

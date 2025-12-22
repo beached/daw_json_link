@@ -8,21 +8,36 @@
 
 #pragma once
 
-#include "version.h"
+#if not defined( DAW_ALLOW_SSE42 )
+#error "This should not be included when SSE4.2 is not enabled"
+#endif
 
-#include "daw_json_arrow_proxy.h"
-#include "daw_json_assert.h"
-#include "daw_json_parse_value_fwd.h"
+#include "daw/json/impl/version.h"
+
+#include "daw/json/impl/daw_json_arrow_proxy.h"
+#include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_value_fwd.h"
+#include "daw/json/impl/daw_not_const_ex_functions.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_not_null.h>
+
+#include <emmintrin.h>
+#include <nmmintrin.h>
+#include <smmintrin.h>
+#include <tmmintrin.h>
+#include <wmmintrin.h>
+#include <xmmintrin.h>
+#if defined( DAW_HAS_MSVC_LIKE )
+#include <intrin.h>
+#endif
 
 #include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename ParseState, bool>
+			template<typename ParseState, bool /*KnownBounds*/>
 			struct json_parse_array_sse42_iterator_base {
 				using iterator_category = std::input_iterator_tag;
 				using difference_type = std::ptrdiff_t;
@@ -76,14 +91,18 @@ namespace daw::json {
 #if defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
 				// This code requires C++ 20 to be useful in a constant expression as it
 				// requires a non-trivial destructor
-				json_parse_array_sse42_iterator( json_parse_array_iterator const & ) =
-				  default;
+				json_parse_array_sse42_iterator(
+				  json_parse_array_sse42_iterator const & ) = default;
+
 				json_parse_array_sse42_iterator &
 				operator=( json_parse_array_sse42_iterator const & ) = default;
-				json_parse_array_sse42_iterator( json_parse_array_iterator && ) =
+
+				json_parse_array_sse42_iterator( json_parse_array_sse42_iterator && ) =
 				  default;
+
 				json_parse_array_sse42_iterator &
 				operator=( json_parse_array_sse42_iterator && ) = default;
+
 				DAW_JSON_CPP20_CX_DTOR ~json_parse_array_sse42_iterator( ) {
 					if constexpr( base::has_counter ) {
 						daw_json_assert_weak( base::counter == 0,
@@ -91,7 +110,46 @@ namespace daw::json {
 					}
 				}
 #endif
-				constexpr explicit json_parse_array_sse42_iterator( parse_state_t &r )
+
+			private:
+				struct masks_t {
+					std::uint32_t array_boundaries_mask = 0;
+					std::uint32_t whitespace_mask = 0;
+				};
+
+				static auto get_masks( daw::not_null<char const *> ptr ) {
+					static constexpr std::size_t sse_array_boundaries_sz = 2;
+					static auto const sse_array_boundaries = uload16_char_data_simd(
+					  ( std::array<char, 16>{ ',', ']' } ).data( ) );
+					static constexpr std::size_t sse_whitespace_sz = 4;
+					static auto const sse_whitespace = uload16_char_data_simd(
+					  ( std::array<char, 16>{ ' ', '\t', '\n', '\r' } ).data( ) );
+
+					auto const text_chunk = uload16_char_data_simd( ptr );
+					auto const array_boundaries_mask_reg = _mm_cmpestrm(
+					  sse_array_boundaries,
+					  sse_array_boundaries_sz,
+					  text_chunk,
+					  16,
+					  _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_BIT_MASK );
+					auto const whitespace_mask_reg = _mm_cmpestrm(
+					  sse_whitespace,
+					  sse_whitespace_sz,
+					  text_chunk,
+					  16,
+					  _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_BIT_MASK );
+
+					return masks_t{ static_cast<std::uint32_t>(
+					                  _mm_extract_epi16( array_boundaries_mask_reg, 0 ) ),
+					                static_cast<std::uint32_t>(
+					                  _mm_extract_epi16( whitespace_mask_reg, 0 ) ) };
+				}
+
+				masks_t m_masks{ };
+				std::size_t m_first_offset = 0;
+
+			public:
+				explicit json_parse_array_sse42_iterator( parse_state_t &r )
 				  : base{ &r } {
 					if( DAW_UNLIKELY( base::parse_state->front( ) == ']' ) ) {
 						if constexpr( not KnownBounds ) {
@@ -102,6 +160,12 @@ namespace daw::json {
 						}
 						base::parse_state = nullptr;
 					}
+					// Do initial scan to build SIMD state
+					if( base::parse_state->size( ) < 16 ) {
+						return;
+					}
+					m_masks = get_mask( base::parse_state->first );
+					if( m_masks.array_boundaries_mask != 0 ) {}
 				}
 
 				[[noreturn]] DAW_ATTRIB_NOINLINE value_type operator*( ) const {
