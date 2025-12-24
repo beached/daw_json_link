@@ -1742,12 +1742,12 @@ namespace daw::jkj::dragonbox {
 
 						struct closed {
 							static constexpr bool is_symmetric = true;
-							[[nodiscard]] static DAW_CONSTEVAL bool
+							[[nodiscard]] static constexpr bool
 							include_left_endpoint( ) noexcept {
 								return true;
 							}
 
-							[[nodiscard]] static DAW_CONSTEVAL bool
+							[[nodiscard]] static constexpr bool
 							include_right_endpoint( ) noexcept {
 								return true;
 							}
@@ -1756,12 +1756,12 @@ namespace daw::jkj::dragonbox {
 						struct open {
 							static constexpr bool is_symmetric = true;
 
-							[[nodiscard]] static DAW_CONSTEVAL bool
+							[[nodiscard]] static constexpr bool
 							include_left_endpoint( ) noexcept {
 								return false;
 							}
 
-							[[nodiscard]] static DAW_CONSTEVAL bool
+							[[nodiscard]] static constexpr bool
 							include_right_endpoint( ) noexcept {
 								return false;
 							}
@@ -1769,12 +1769,12 @@ namespace daw::jkj::dragonbox {
 
 						struct left_closed_right_open {
 							static constexpr bool is_symmetric = false;
-							[[nodiscard]] static DAW_CONSTEVAL bool
+							[[nodiscard]] static constexpr bool
 							include_left_endpoint( ) noexcept {
 								return true;
 							}
 
-							[[nodiscard]] static DAW_CONSTEVAL bool
+							[[nodiscard]] static constexpr bool
 							include_right_endpoint( ) noexcept {
 								return false;
 							}
@@ -1782,12 +1782,12 @@ namespace daw::jkj::dragonbox {
 
 						struct right_closed_left_open {
 							static constexpr bool is_symmetric = false;
-							[[nodiscard]] static DAW_CONSTEVAL bool
+							[[nodiscard]] static constexpr bool
 							include_left_endpoint( ) noexcept {
 								return false;
 							}
 
-							[[nodiscard]] static DAW_CONSTEVAL bool
+							[[nodiscard]] static constexpr bool
 							include_right_endpoint( ) noexcept {
 								return true;
 							}
@@ -3238,7 +3238,7 @@ namespace daw::jkj::dragonbox {
 				// Check if a given policy belongs to one of the kinds specified by
 				// the library
 				template<class Policy>
-				[[nodiscard]] DAW_CONSTEVAL bool
+				[[nodiscard]] constexpr bool
 				check_policy_validity( Policy, base_default_pair_list<> ) {
 					return false;
 				}
