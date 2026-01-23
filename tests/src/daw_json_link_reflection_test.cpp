@@ -18,16 +18,15 @@
 
 using daw::json::reflect;
 
-struct[[= reflect]] X {
+struct X {
 	[[= reflect.map_as<daw::json::json_number<"member1", int>>]] int m1;
 
 	[[= reflect.rename<"member2">]] int m2;
 };
 static_assert(
-  daw::json::refl_details::get_annotation<daw::json::reflect_t, ^^X>( ) );
-static_assert(
   daw::json::refl_details::get_non_ignored_reflectible_members<X>( ).size( ) ==
   2 );
+
 struct[[= reflect]] Y {
 	X m0;
 	std::string m1;
@@ -85,11 +84,11 @@ struct[[= reflect]] EnumMember {
 	EFoo foo;
 };
 
-struct[[= reflect]] EnumMemberString {
+struct EnumMemberString {
 	[[= reflect.enum_string]] EFoo foo;
 };
 
-struct[[= reflect]] HasHidden {
+struct HasHidden {
 	int x;
 	[[= reflect.ignored( 42 )]] int y;
 	int z;
@@ -103,7 +102,7 @@ struct[[= reflect]] Value {
 	  : value( x ) {}
 };
 static_assert( daw::json::ReflectionEnabled<Value> );
-struct[[= reflect]] HasHidden2 {
+struct HasHidden2 {
 	int x;
 	[[= reflect.ignored( [] {
 		return Value( 4242 );
