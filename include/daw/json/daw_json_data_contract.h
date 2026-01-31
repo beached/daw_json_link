@@ -8,7 +8,9 @@
 
 #pragma once
 
-#include "impl/version.h"
+#include "daw/json/impl/version.h"
+
+#include <daw/daw_cpp20_concept.h>
 
 #include <type_traits>
 
@@ -42,5 +44,20 @@ namespace daw::json {
 		/// @brief This trait gets us the mapping type from the contract.
 		template<typename T>
 		using json_data_contract_trait_t = typename json_data_contract<T>::type;
+
+		namespace json_details {
+			template<typename T>
+			DAW_CPP20_CONCEPT has_json_data_contract_trait_v =
+			  not std::is_same_v<missing_json_data_contract_for_or_unknown_type<T>,
+			                     json_data_contract_trait_t<T>>;
+
+			DAW_JSON_MAKE_REQ_TRAIT(
+			  has_json_to_json_data_v,
+			  json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
+
+			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT(
+			  is_submember_tagged_variant_v,
+			  json_data_contract<T>::type::i_am_a_submember_tagged_variant );
+		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

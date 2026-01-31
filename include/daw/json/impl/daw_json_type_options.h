@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_enums.h"
-#include "daw_json_option_bits.h"
+#include "daw/json/impl/daw_json_enums.h"
+#include "daw/json/impl/daw_json_option_bits.h"
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -270,5 +270,27 @@ namespace daw::json {
 				return json_custom_opts_t::options( options... );
 			}
 		} // namespace options
+
+		namespace json_details {
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t number_opts_set =
+			  set_bits( number_opts, CurrentOptions, option, options... );
+
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t bool_opts_set =
+			  set_bits( bool_opts, CurrentOptions, option, options... );
+
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t string_opts_set =
+			  set_bits( string_opts, CurrentOptions, option, options... );
+
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t string_raw_opts_set =
+			  set_bits( string_raw_opts, CurrentOptions, option, options... );
+
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t json_custom_opts_set =
+			  set_bits( json_custom_opts, CurrentOptions, option, options... );
+		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

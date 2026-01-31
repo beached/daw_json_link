@@ -25,6 +25,7 @@
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
+#include <daw/impl/daw_make_trait.h>
 
 #include <string>
 #include <string_view>
@@ -395,6 +396,33 @@ namespace daw::json {
 
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT( is_deduced_empty_class_v,
 			                                    T::i_am_a_deduced_empty_class );
+
+			template<typename T>
+			struct ensure_mapped {
+				static_assert( is_a_json_type_v<T>,
+				               "The supplied type does not have a json_data_contract" );
+				using type = T;
+			};
+
+			template<typename T>
+			using ensure_mapped_t = typename ensure_mapped<T>::type;
+
+			DAW_MAKE_REQ_TRAIT_TYPE( is_json_member_list_v,
+			                         T::i_am_a_json_member_list );
+
+			template<typename T>
+			using ordered_member_subtype_test = typename T::json_member;
+
+			template<typename T>
+			using ordered_member_subtype_t =
+			  typename daw::detected_or_t<T, ordered_member_subtype_test, T>;
+
+			template<typename T, typename Default>
+			inline constexpr auto json_class_constructor =
+			  json_class_constructor_t<T, Default>{ };
+
+			template<typename T>
+			using json_nullable_member_type_t = typename T::member_type;
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

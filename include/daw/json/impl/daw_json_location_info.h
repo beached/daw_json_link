@@ -160,8 +160,8 @@ namespace daw::json {
 			         bool B>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr find_result<ParseState>
 			find_class_member( ParseState &parse_state,
-			                   locations_info_t<N, B> &locations,
-			                   bool is_nullable, daw::string_view member_name ) {
+			                   locations_info_t<N, B> &locations, bool is_nullable,
+			                   daw::string_view member_name ) {
 
 				// silencing gcc9 warning as these are selectively used
 				(void)is_nullable;

@@ -13,6 +13,7 @@
 #include "daw/json/daw_json_data_contract.h"
 #include "daw/json/impl/daw_json_arrow_proxy.h"
 #include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_common.h"
 #include "daw/json/impl/daw_json_parse_name.h"
 #include "daw/json/impl/daw_json_parse_policy.h"
 #include "daw/json/impl/daw_json_parse_unsigned_int.h"

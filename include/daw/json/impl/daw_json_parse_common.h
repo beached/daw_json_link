@@ -10,12 +10,18 @@
 
 #include "daw/json/impl/version.h"
 
+#include "daw/json/impl/daw_json_types_base.h"
+
+#include "daw/json/concepts/daw_container_traits.h"
+#include "daw/json/daw_json_switches.h"
 #include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_construct_value.h"
 #include "daw/json/impl/daw_json_enums.h"
 #include "daw/json/impl/daw_json_exec_modes.h"
 #include "daw/json/impl/daw_json_link_types_aggregate.h"
 #include "daw/json/impl/daw_json_name.h"
 #include "daw/json/impl/daw_json_option_bits.h"
+#include "daw/json/impl/daw_json_reflection_helpers.h"
 #include "daw/json/impl/daw_json_traits.h"
 #include "daw/json/impl/daw_json_type_options.h"
 #include "daw/json/impl/daw_json_value_fwd.h"
@@ -32,7 +38,6 @@
 #include <daw/daw_scope_guard.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
-#include <daw/json/concepts/daw_container_traits.h>
 
 #include <array>
 #include <cstddef>
@@ -44,406 +49,6 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
-			DAW_MAKE_REQ_TRAIT_TYPE( is_json_member_list_v,
-			                         T::i_am_a_json_member_list );
-
-			template<typename T>
-			using ordered_member_subtype_test = typename T::json_member;
-
-			template<typename T>
-			using ordered_member_subtype_t =
-			  typename daw::detected_or_t<T, ordered_member_subtype_test, T>;
-
-			template<typename T, typename Default>
-			inline constexpr auto json_class_constructor =
-			  json_class_constructor_t<T, Default>{ };
-
-			template<typename Value, typename Constructor, typename ParseState,
-			         typename... Args>
-			DAW_ATTRIB_INLINE static constexpr auto
-			construct_value( ParseState &parse_state, Args &&...args ) {
-				// Silence MSVC warning, used in other if constexpr case
-				(void)parse_state;
-				if constexpr( ParseState::has_allocator ) {
-					auto alloc = parse_state.template get_allocator_for<Value>( );
-					return daw::try_alloc_construct<Value, Constructor>(
-					  std::move( alloc ), DAW_FWD( args )... );
-				} else {
-					static_assert(
-					  daw::is_callable_v<Constructor, Args...>,
-					  "Unable to construct value with the supplied arguments" );
-					return Constructor{ }( DAW_FWD( args )... );
-				}
-			}
-
-#if not defined( DAW_JSON_USE_GENERIC_LAMBDAS )
-			template<typename Constructor>
-			struct construct_value_tp_invoke_t {
-				template<typename... TArgs, std::size_t... Is>
-				DAW_ATTRIB_INLINE constexpr auto
-				operator( )( fwd_pack<TArgs...> &&tp,
-				             std::index_sequence<Is...> ) const {
-					return Constructor{ }( get<Is>( std::move( tp ) )... );
-				}
-
-				template<typename... TArgs, typename Allocator, std::size_t... Is>
-				DAW_ATTRIB_INLINE constexpr auto
-				operator( )( fwd_pack<TArgs...> &&tp, Allocator &alloc,
-				             std::index_sequence<Is...> ) const {
-					return Constructor{ }( get<Is>( std::move( tp ) )...,
-					                       DAW_FWD( alloc ) );
-				}
-
-				template<typename Alloc, typename... TArgs, std::size_t... Is>
-				DAW_ATTRIB_INLINE constexpr auto
-				operator( )( std::allocator_arg_t, Alloc &&alloc,
-				             fwd_pack<TArgs...> &&tp,
-				             std::index_sequence<Is...> ) const {
-
-					return Constructor{ }( std::allocator_arg,
-					                       DAW_FWD( alloc ),
-					                       get<Is>( std::move( tp ) )... );
-				}
-			};
-			template<typename Constructor>
-			inline constexpr auto construct_value_tp_invoke =
-			  construct_value_tp_invoke_t<Constructor>{ };
-#endif
-
-			template<typename Value, typename Constructor, typename ParseState,
-			         typename... Args>
-			DAW_ATTRIB_FLATINLINE static constexpr auto
-			construct_value_tp( ParseState &parse_state,
-			                    fwd_pack<Args...> &&tp_args ) {
-
-#if defined( DAW_JSON_USE_GENERIC_LAMBDAS )
-				if constexpr( ParseState::has_allocator ) {
-					// ParseState has a user allocator, pass that if we can to the
-					// constructed value
-					using alloc_t =
-					  typename ParseState::template allocator_type_as<Value>;
-					auto alloc = parse_state.template get_allocator_for<Value>( );
-					// There are several ways that the allocator is passed on
-					if constexpr( daw::is_callable_v<Constructor, Args..., alloc_t> ) {
-						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
-							// Type( args..., alloc )
-							return Constructor{ }( get<Is>( std::move( tp_args ) )...,
-							                       std::move( alloc ) );
-						}( std::make_index_sequence<sizeof...( Args )>{ } );
-					} else if constexpr( daw::is_callable_v<Constructor,
-					                                        std::allocator_arg_t,
-					                                        alloc_t,
-					                                        Args...> ) {
-						// Type( std::allocator_arg, alloc, args... )
-						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
-							return Constructor{ }( std::allocator_arg,
-							                       std::move( alloc ),
-							                       get<Is>( std::move( tp_args ) )... );
-						}( std::make_index_sequence<sizeof...( Args )>{ } );
-					} else {
-						// This type does not take a known allocator in the constructor,
-						// fallback to normal construction
-						// Type( args... )
-						static_assert(
-						  daw::is_callable_v<Constructor, Args...>,
-						  "Unable to construct value with the supplied arguments" );
-						return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
-							return Constructor{ }( get<Is>( std::move( tp_args ) )... );
-						}( std::make_index_sequence<sizeof...( Args )>{ } );
-					}
-				} else {
-					// Type( args... )
-					// No ParseState user allocator
-					// Silence MSVC warning, used in other if constexpr case
-					(void)parse_state;
-					static_assert(
-					  daw::is_callable_v<Constructor, Args...>,
-					  "Unable to construct value with the supplied arguments" );
-					return [&]<std::size_t... Is>( std::index_sequence<Is...> ) {
-						return Constructor{ }( get<Is>( std::move( tp_args ) )... );
-					}( std::make_index_sequence<sizeof...( Args )>{ } );
-				}
-#else
-				if constexpr( ParseState::has_allocator ) {
-					// ParseState has a user allocator, pass that if we can to the
-					// constructed value
-					using alloc_t =
-					  typename ParseState::template allocator_type_as<Value>;
-					auto alloc = parse_state.template get_allocator_for<Value>( );
-					if constexpr( daw::is_callable_v<Constructor, Args..., alloc_t> ) {
-						// Type( args..., alloc )
-						return construct_value_tp_invoke<Constructor>(
-						  std::move( tp_args ),
-						  std::move( alloc ),
-						  std::index_sequence_for<Args...>{ } );
-					} else if constexpr( daw::is_callable_v<Constructor,
-					                                        std::allocator_arg_t,
-					                                        alloc_t,
-					                                        Args...> ) {
-						// Type( std::allocator_arg, alloc, args... )
-						return construct_value_tp_invoke<Constructor>(
-						  std::allocator_arg,
-						  std::move( alloc ),
-						  std::move( tp_args ),
-						  std::index_sequence_for<Args...>{ } );
-					} else {
-						// This type does not take a known allocator in the constructor,
-						// fallback to normal construction
-						// Type( args... )
-						static_assert(
-						  daw::is_callable_v<Constructor, Args...>,
-						  "Unable to construct value with the supplied arguments" );
-						return construct_value_tp_invoke<Constructor>(
-						  std::move( tp_args ), std::index_sequence_for<Args...>{ } );
-					}
-				} else {
-					// No ParseState user allocator
-					// Silence MSVC warning, used in other if constexpr case
-					// Type( args... )
-					(void)parse_state;
-					static_assert(
-					  daw::is_callable_v<Constructor, Args...>,
-					  "Unable to construct value with the supplied arguments" );
-					return construct_value_tp_invoke<Constructor>(
-					  std::move( tp_args ), std::index_sequence_for<Args...>{ } );
-				}
-#endif
-			}
-
-			template<typename T>
-			DAW_CPP20_CONCEPT has_json_data_contract_trait_v =
-			  not std::is_same_v<missing_json_data_contract_for_or_unknown_type<T>,
-			                     json_data_contract_trait_t<T>>;
-
-			DAW_JSON_MAKE_REQ_TRAIT(
-			  has_json_to_json_data_v,
-			  json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
-
-			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT(
-			  is_submember_tagged_variant_v,
-			  json_data_contract<T>::type::i_am_a_submember_tagged_variant );
-
-			template<typename T>
-			using json_nullable_member_type_t = typename T::member_type;
-
-			/***
-			 * Helpers to set options on json_ types
-			 */
-
-			template<json_options_t CurrentOptions, auto option, auto... options>
-			inline constexpr json_options_t number_opts_set =
-			  set_bits( number_opts, CurrentOptions, option, options... );
-
-			template<json_options_t CurrentOptions, auto option, auto... options>
-			inline constexpr json_options_t bool_opts_set =
-			  set_bits( bool_opts, CurrentOptions, option, options... );
-
-			template<json_options_t CurrentOptions, auto option, auto... options>
-			inline constexpr json_options_t string_opts_set =
-			  set_bits( string_opts, CurrentOptions, option, options... );
-
-			template<json_options_t CurrentOptions, auto option, auto... options>
-			inline constexpr json_options_t string_raw_opts_set =
-			  set_bits( string_raw_opts, CurrentOptions, option, options... );
-
-			template<json_options_t CurrentOptions, auto option, auto... options>
-			inline constexpr json_options_t json_custom_opts_set =
-			  set_bits( json_custom_opts, CurrentOptions, option, options... );
-
-			/*
-			template<json_options_t CurrentOptions, auto option, auto... options>
-			inline constexpr json_options_t tuple_opts_set =
-			  set_bits( tuple_opts, CurrentOptions, option, options... );
-			  */
-		} // namespace json_details
-
-		namespace json_base {
-			/// @brief Mark a member as nullable
-			/// @tparam T type of the value being mapped to(e.g. std::optional<Foo>)
-			/// @tparam JsonMember Json Type or type of value when present, deduced
-			/// from T if not specified
-			/// @tparam Constructor Specify a Constructor type or use
-			/// the default nullable_constructor<T>
-			template<typename T, typename JsonMember = use_default,
-			         JsonNullable NullableType = JsonNullable::Nullable,
-			         typename Constructor = use_default>
-			struct json_nullable;
-
-		} // namespace json_base
-		namespace json_details {
-			template<typename T>
-			inline constexpr bool is_json_nullable_v = false;
-
-			template<typename T, typename JsonMember, JsonNullable NullableType,
-			         typename Constructor>
-			inline constexpr bool is_json_nullable_v<
-			  json_base::json_nullable<T, JsonMember, NullableType, Constructor>> =
-			  true;
-
-			template<typename T>
-			struct json_empty_class {
-				static_assert( std::is_empty_v<T>, "T is expected to empty" );
-				using i_am_a_json_type = void;
-				using i_am_a_deduced_empty_class = void;
-				using wrapped_type = T;
-
-				using constructor_t = default_constructor<T>;
-				using parse_to_t = T;
-
-				static constexpr auto expected_type = JsonParseTypes::Class;
-				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
-			};
-
-			template<typename T>
-			struct json_ordered_class {
-				static_assert( can_convert_to_tuple_v<T>, "T is expected to empty" );
-				using i_am_a_json_type = void;
-				using i_am_a_deduced_ordered_class = void;
-				using wrapped_type = T;
-
-				using constructor_t = default_constructor<T>;
-				using parse_to_t = T;
-
-				static constexpr auto expected_type = JsonParseTypes::Tuple;
-
-				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
-			};
-		} // namespace json_details
-
-		namespace json_base {
-
-			template<typename T, typename Constructor = use_default>
-			struct json_class;
-
-			template<typename T, JsonNullable NullableType = JsonNullable::Nullable,
-			         typename Constructor = use_default>
-			using json_class_null =
-			  json_nullable<T, json_class<json_details::unwrapped_t<T>>, NullableType,
-			                Constructor>;
-
-			template<typename JsonElement, typename Container = use_default,
-			         typename Constructor = use_default>
-			struct json_array;
-
-			template<typename T, typename FromJsonConverter = use_default,
-			         typename ToJsonConverter = use_default,
-			         json_options_t Options = json_custom_opts_def>
-			struct json_custom;
-
-			template<typename Variant, typename JsonElements = use_default,
-			         typename Constructor = use_default>
-			struct json_variant;
-
-			template<typename T, typename TagMember, typename Switcher,
-			         typename JsonElements = use_default,
-			         typename Constructor = use_default>
-			struct json_tagged_variant;
-
-			template<typename T, json_options_t Options = string_raw_opts_def,
-			         typename Constructor = use_default>
-			struct json_string_raw;
-
-			template<typename T, json_options_t Options = string_raw_opts_def,
-			         JsonNullable NullableType = JsonNullable::Nullable,
-			         typename Constructor = use_default>
-			using json_string_raw_null =
-			  json_nullable<T, json_string_raw<json_details::unwrapped_t<T>, Options>,
-			                NullableType, Constructor>;
-
-			template<typename T, json_options_t Options = string_opts_def,
-			         typename Constructor = use_default>
-			struct json_string;
-
-			template<typename T, json_options_t Options = string_opts_def,
-			         JsonNullable NullableType = JsonNullable::Nullable,
-			         typename Constructor = use_default>
-			using json_string_null =
-			  json_nullable<T, json_string<json_details::unwrapped_t<T>, Options>,
-			                NullableType, Constructor>;
-
-			template<typename T, json_options_t Options = bool_opts_def,
-			         typename Constructor = use_default>
-			struct json_bool;
-
-			template<typename T, json_options_t Options = bool_opts_def,
-			         JsonNullable NullableType = JsonNullable::Nullable,
-			         typename Constructor = use_default>
-			using json_bool_null =
-			  json_nullable<T, json_bool<json_details::unwrapped_t<T>, Options>,
-			                NullableType, Constructor>;
-
-			template<typename T, typename Constructor = use_default>
-			struct json_date;
-
-			template<typename T, json_options_t Options = number_opts_def,
-			         typename Constructor = use_default>
-			struct json_number;
-
-			template<typename T, json_options_t Options = number_opts_def,
-			         JsonNullable NullableType = JsonNullable::Nullable,
-			         typename Constructor = use_default>
-			using json_number_null =
-			  json_nullable<T, json_number<json_details::unwrapped_t<T>, Options>,
-			                NullableType, Constructor>;
-
-			template<typename Container, typename JsonValueType = use_default,
-			         typename JsonKeyType = use_default,
-			         typename Constructor = use_default>
-			struct json_key_value;
-
-			template<typename Container, typename JsonValueType = use_default,
-			         typename JsonKeyType = use_default,
-			         typename Constructor = use_default>
-			struct json_key_value_array;
-
-			template<typename Container, typename JsonValueType, typename JsonKeyType,
-			         JsonNullable NullableType = JsonNullable::Nullable,
-			         typename Constructor = use_default>
-			using json_key_value_null =
-			  json_nullable<Container,
-			                json_key_value<json_details::unwrapped_t<Container>,
-			                               JsonValueType, JsonKeyType>,
-			                NullableType, Constructor>;
-
-			template<typename Tuple, typename JsonTupleTypesList = use_default,
-			         typename Constructor = use_default>
-			struct json_tuple;
-
-			template<typename Tuple, typename JsonTupleTypesList = use_default,
-			         JsonNullable NullableType = JsonNullable::Nullable,
-			         typename Constructor = use_default>
-			using json_tuple_null = json_nullable<
-			  Tuple, json_tuple<json_details::unwrapped_t<Tuple>, JsonTupleTypesList>,
-			  NullableType, Constructor>;
-
-			/***
-			 * json_raw allows for raw JSON access to the member data. It requires a
-			 * type that is constructable from (char const *, std::size_t) arguments
-			 * and for serialization requires that it can be passed to
-			 * std::begin/std::end and the iterator returned has a value_type of char
-			 * @tparam T type to hold raw JSON data, defaults to json_value
-			 * @tparam Constructor A callable used to construct T.
-			 */
-			template<typename T, typename Constructor = use_default>
-			struct json_raw;
-
-			/***
-			 * json_raw_null allows for raw JSON access to the nullable member data.
-			 * It requires a type that is constructable from (char const *,
-			 * std::size_t) arguments and for serialization requires that it can be
-			 * passed to std::begin/std::end and the iterator returned has a
-			 * value_type of char
-			 * @tparam T type to hold raw JSON data, defaults to json_value
-			 * @tparam Constructor A callable used to construct T.
-			 */
-			template<typename T, JsonNullable NullableType = JsonNullable::Nullable,
-			         typename Constructor = use_default>
-			using json_raw_null =
-			  json_nullable<T, json_raw<json_details::unwrapped_t<T>>, NullableType,
-			                Constructor>;
-		} // namespace json_base
-
 		namespace json_details {
 			template<typename T>
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL JsonParseTypes
@@ -770,9 +375,19 @@ namespace daw::json {
 							using v_t = typename mapped_type_t::value;
 							return json_link_quick_map_type<json_base::json_array<v_t, T>>{ };
 						}
+#if defined( DAW_JSON_HAS_REFLECTION )
+					} else if constexpr( refl_details::PotentiallyReflectable<T> ) {
+						return json_link_quick_map_type<
+						  json_base::json_reflected_class<T>>{ };
+#endif
 					} else {
 						return json_link_quick_map_type<void, false>{ };
 					}
+#if defined( DAW_JSON_HAS_REFLECTION )
+				} else if constexpr( refl_details::PotentiallyReflectable<T> ) {
+					return json_link_quick_map_type<
+					  json_base::json_reflected_class<T>>{ };
+#endif
 				} else {
 					return json_link_quick_map_type<void, false>{ };
 				}
@@ -857,7 +472,8 @@ namespace daw::json {
 					return daw::traits::identity<type>{ };
 				} else {
 					static_assert( daw::deduced_false_v<T>,
-					               "Could not deduced data contract type" );
+					               "Could not deduced data contract type and there is no "
+					               "json_data_contract_specialization" );
 				}
 			}
 

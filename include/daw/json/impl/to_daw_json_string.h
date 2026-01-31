@@ -860,7 +860,7 @@ namespace daw::json {
 			}
 
 			template<typename T>
-			[[nodiscard]] static DAW_CONSTEVAL bool is_null( T const & ) {
+			[[nodiscard]] static constexpr bool is_null( T const & ) {
 				return false;
 			}
 
@@ -957,6 +957,14 @@ namespace daw::json {
 					               "member of json_data_contract" );
 					return json_data_contract_trait_t<parse_to_t>::serialize( it, value );
 				}
+			}
+
+			template<typename JsonMember, typename WriteableType, typename parse_to_t>
+			[[nodiscard]] static constexpr WriteableType
+			to_json_string_reflected_class( WriteableType it,
+			                                parse_to_t const &value ) {
+
+				return JsonMember::serialize( it, value );
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
@@ -1295,6 +1303,10 @@ namespace daw::json {
 					return to_json_string_variant_intrusive<JsonMember>( it, value );
 				} else if constexpr( Tag == JsonParseTypes::Tuple ) {
 					return to_json_string_tuple<JsonMember>( it, value );
+#if defined( DAW_JSON_HAS_REFLECTION )
+				} else if constexpr( Tag == JsonParseTypes::ReflectedClass ) {
+					return to_json_string_reflected_class<JsonMember>( it, value );
+#endif
 				} else /*if constexpr( Tag == JsonParseTypes::Unknown )*/ {
 					static_assert( Tag == JsonParseTypes::Unknown,
 					               "Unexpected JsonParseType" );

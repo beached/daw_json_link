@@ -219,7 +219,6 @@ namespace daw::json {
 			template<typename OptionList>
 			static inline constexpr json_options_t default_option_flag =
 			  default_option_flag_t<OptionList>::value;
-
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -631,6 +631,18 @@ namespace daw::json {
 				}
 			}
 
+#if defined( DAW_JSON_HAS_REFLECTION )
+			template<typename JsonMember, bool /*KnownBounds*/, typename ParseState>
+			constexpr json_result_t<JsonMember>
+			parse_value_reflected_class( ParseState &parse_state ) {
+				daw_json_assert_weak( parse_state.has_more( ),
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
+
+				return JsonMember::parse_to_class( parse_state );
+			}
+#endif
+
 			/**
 			 * Parse a key_value pair encoded as a json object where the keys are
 			 * the member names
@@ -1272,6 +1284,11 @@ namespace daw::json {
 					return parse_value_variant_intrusive<JsonMember>( parse_state );
 				} else if constexpr( PTag == JsonParseTypes::Tuple ) {
 					return parse_value_tuple<JsonMember, KnownBounds>( parse_state );
+#if defined( DAW_JSON_HAS_REFLECTION )
+				} else if constexpr( PTag == JsonParseTypes::ReflectedClass ) {
+					return parse_value_reflected_class<JsonMember, KnownBounds>(
+					  parse_state );
+#endif
 				} else /*if constexpr( PTag == JsonParseTypes::Unknown )*/ {
 					static_assert( PTag == JsonParseTypes::Unknown,
 					               "Unexpected JsonParseType" );

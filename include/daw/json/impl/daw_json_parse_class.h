@@ -313,7 +313,49 @@ namespace daw::json {
 					}
 				}
 			}
+#if defined( DAW_JSON_HAS_REFLECTION )
+			template<typename JsonClass, typename... JsonMembers, typename ParseState,
+			         std::size_t... Is>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result_t<JsonClass>
+			parse_json_reflected_class( ParseState &parse_state,
+			                            std::index_sequence<Is...> ) {
+				static_assert( sizeof...( JsonMembers ) > 0 );
+				using T = json_result_t<JsonClass>;
+				static_assert( refl_details::PotentiallyReflectable<T> );
 
+				static constexpr auto must_exist =
+				  all_json_members_must_exist_v<T, ParseState>
+				    ? AllMembersMustExist::yes
+				    : AllMembersMustExist::no;
+
+				parse_state.trim_left( );
+
+				daw_json_assert_weak( parse_state.is_opening_brace_checked( ),
+				                      ErrorReason::InvalidClassStart,
+				                      parse_state );
+
+				auto const old_class_pos = parse_state.get_class_position( );
+				parse_state.set_class_position( );
+				parse_state.remove_prefix( );
+				parse_state.trim_left( );
+
+				static constexpr auto NeedClassPositions =
+				  ( must_be_class_member_v<typename JsonMembers::without_name> or ... );
+
+				auto known_locations =
+				  make_locations_info<ParseState, JsonMembers...>( );
+
+				auto result = T{ parse_class_member<Is,
+				                                    JsonMembers...[Is],
+				                                    must_exist,
+				                                    NeedClassPositions>(
+				  parse_state, known_locations )... };
+
+				class_cleanup_now<all_json_members_must_exist_v<T, ParseState>>(
+				  parse_state, old_class_pos );
+				return result;
+			}
+#endif
 			///
 			/// @brief Parse to a class where the members are constructed from the
 			/// values of a JSON array. Often this is used for geometric types like

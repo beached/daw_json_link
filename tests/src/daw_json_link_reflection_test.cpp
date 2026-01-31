@@ -9,7 +9,6 @@
 #include <daw/daw_ensure.h>
 #include <daw/daw_print.h>
 #include <daw/json/daw_json_link.h>
-#include <daw/json/daw_json_reflection.h>
 
 #include <map>
 #include <memory>
@@ -98,7 +97,7 @@ static_assert( daw::json::ReflectionEnabled<HasHidden> );
 struct[[= reflect]] Value {
 	int value = 21212;
 	explicit Value( ) = default;
-	explicit Value( int x )
+	Value( int x )
 	  : value( x ) {}
 };
 static_assert( daw::json::ReflectionEnabled<Value> );
@@ -249,6 +248,42 @@ int main( ) try {
 	daw_ensure( h1.x == 55 );
 	daw_ensure( h1.y.value == 4242 );
 	daw_ensure( h1.z == 66 );
+
+	class[[= reflect.unchecked]] PrivateRefl {
+		int x;
+
+	public:
+		constexpr PrivateRefl( int v )
+		  : x( v ) {}
+		int const &value( ) const noexcept {
+			return x;
+		}
+		bool operator==( PrivateRefl const & ) const = default;
+	};
+	static_assert( daw::json::ReflectionEnabled<PrivateRefl> );
+	static_assert(
+	  daw::json::refl_details::has_annotation<daw::json::reflect_base_t,
+	                                          PrivateRefl>( ) );
+	static_assert(
+	  daw::json::refl_details::
+	    has_annotation<daw::json::refl_details::reflect_all_t, PrivateRefl>( ) );
+	static_assert( not daw::json::refl_details::PublicMembersOnly<PrivateRefl> );
+
+	struct Fallback {
+		int x;
+		std::vector<int> y;
+		PrivateRefl z;
+
+		bool operator==( Fallback const & ) const = default;
+	};
+	auto const fb1 = daw::json::from_json<Fallback>(
+	  R"json({"z":{"x":42},"x":42,"y":[1,2,3]})json" );
+	daw_ensure( fb1.x == 42 );
+	daw_ensure( fb1.y == std::vector<int>{ 1, 2, 3 } );
+	daw_ensure( fb1.z.value( ) == 42 );
+	auto const fb1_json = daw::json::to_json( fb1 );
+	auto const fb2 = daw::json::from_json<Fallback>( fb1_json );
+	daw_ensure( fb1 == fb2 );
 
 	return EXIT_SUCCESS;
 } catch( daw::json::json_exception const &jex ) {

@@ -10,6 +10,7 @@
 
 #include "daw/json/impl/version.h"
 
+#include "daw/json/daw_json_switches.h"
 #include "daw/json/impl/daw_json_enums.h"
 #include "daw/json/impl/daw_json_link_types_iso8601.h"
 #include "daw/json/impl/daw_json_parse_class.h"
@@ -66,10 +67,20 @@ namespace daw::json {
 		 * daw::json::json_data_contract
 		 * @tparam Constructor A callable used to construct T.  The
 		 * default supports normal and aggregate construction
-		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T, typename Constructor = use_default>
 		struct json_class;
+
+#if defined( DAW_JSON_HAS_REFLECTION )
+		/**
+		 * Used by reflection system, not by user
+		 * Link to a reflected JSON class
+		 * @tparam Name name of JSON member to link to
+		 * @tparam T type to reflect
+		 */
+		template<JSONNAMETYPE Name, typename T>
+		struct json_reflected_class;
+#endif
 
 		/**
 		 * Link to a nullable JSON class
@@ -722,17 +733,5 @@ namespace daw::json {
 		                        JsonTupleTypesList>,
 		  NullableType, Constructor>;
 
-		namespace json_details {
-			template<typename T>
-			struct ensure_mapped {
-				static_assert( is_a_json_type_v<T>,
-				               "The supplied type does not have a json_data_contract" );
-				using type = T;
-			};
-
-			template<typename T>
-			using ensure_mapped_t = typename ensure_mapped<T>::type;
-
-		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

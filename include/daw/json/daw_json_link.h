@@ -16,6 +16,7 @@
 #include "daw/json/daw_json_link_types.h"
 #include "daw/json/daw_to_json.h"
 #include "daw/json/impl/daw_json_alternate_mapping.h"
+#include "daw/json/impl/daw_json_reflection.h"
 #include "daw/json/impl/daw_json_value.h"
 
 #include <daw/daw_consteval.h>

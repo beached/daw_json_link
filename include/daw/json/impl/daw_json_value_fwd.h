@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include "version.h"
+#include "daw/json/impl/version.h"
 
-#include "daw_json_allocator_wrapper.h"
-#include "daw_json_option_bits.h"
-#include "daw_json_parse_options_impl.h"
-#include "daw_json_parse_policy.h"
+#include "daw/json/impl/daw_json_allocator_wrapper.h"
+#include "daw/json/impl/daw_json_option_bits.h"
+#include "daw/json/impl/daw_json_parse_options_impl.h"
+#include "daw/json/impl/daw_json_parse_policy.h"
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

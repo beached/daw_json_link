@@ -11,7 +11,6 @@
 #include "daw/json/impl/version.h"
 
 #include "daw/json/impl/daw_json_enums.h"
-#include "daw/json/impl/daw_json_traits.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_enable_requires.h>
