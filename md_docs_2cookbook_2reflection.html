@@ -73,13 +73,13 @@ $(function() {
   <div class="headertitle"><div class="title">C++ 26 Reflection</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md144"></a> JSON Link has support for C++26 reflection. The API may still change, but is close to done. Until the API is finalized one must include <code>&lt;<a class="el" href="daw__json__reflection_8h.html">daw/json/daw_json_reflection.h</a>&gt;</code> in their code that uses it.</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md144"></a> JSON Link has support for C++26 reflection as a fallback when no explicit mapping has been provided for aggregate classes with all public members. One can opt-in with the following ways and change the defaults.</p>
 <p>Because reflection helps with mappings, the calls to (de)serialized are still <code><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__from__json_8h_03.html#a770a797c458a739384f8ff069c27895e" title="Construct the JSONMember from the JSON document argument.">daw::json::from_json</a>&lt;Type&gt;( json_document )</code> and <code>daw::json::to_json( value )</code>. Like explicit mappings with <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">daw::json::json_data_contract</a></code> already mapped, reflection or not, types just work.</p>
 <h1><a class="anchor" id="autotoc_md145"></a>
 Basic example</h1>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__reflection_8h.html">daw/json/daw_json_reflection.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
@@ -109,11 +109,10 @@ Basic example</h1>
 <div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
 <div class="line">}</div>
 <div class="ttc" id="adaw__json__link_8h_html"><div class="ttname"><a href="daw__json__link_8h.html">daw_json_link.h</a></div></div>
-<div class="ttc" id="adaw__json__reflection_8h_html"><div class="ttname"><a href="daw__json__reflection_8h.html">daw_json_reflection.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00078">daw_to_json.h:78</a></div></div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;name&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:0}</div>
-</div><!-- fragment --><p>Adding the <code>[[= daw::json::reflect ]]</code> annotation to a class will map any type with all public non-static data members. Another way is to specialize the variable template <code>daw::json::enable_reflection_for</code> for your type. This is useful for types that you do not control the source for.</p>
+</div><!-- fragment --><p>Adding the <code>[[= daw::json::reflect ]]</code> annotation to a class will map any type with all public non-static data members. Another way is to specialize the variable template <code>daw::json::enable_reflection_for</code> for your type. This is useful for types that you do not control the source for. If the class has private members, one can use <code>[[= daw::json::reflect.unchecked ]]</code> to enable reflection of all members.</p>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="keyword">template</span>&lt;&gt;</div>
 <div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> daw::json::enable_reflection_for&lt;Foo&gt; = <span class="keyword">true</span>;</div>
@@ -122,7 +121,7 @@ Renaming members</h1>
 <p>Let's take the previous example and rename a member with member annotations.</p>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__reflection_8h.html">daw/json/daw_json_reflection.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
@@ -160,7 +159,7 @@ Explicitly setting the member mapping</h1>
 <p>Continuing the previous example and allow the age to sometimes be quoted.</p>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__reflection_8h.html">daw/json/daw_json_reflection.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
@@ -195,7 +194,7 @@ Explicitly setting the member mapping</h1>
 <div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
 <div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
 <div class="line">}</div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00495">daw_json_link_types.h:495</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00497">daw_json_link_types.h:497</a></div></div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;}</div>
 </div><!-- fragment --><p>This allows full control of individual member mappings as if it was a <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">daw::json::json_data_contract</a></code>.</p>
@@ -208,7 +207,7 @@ Enumerations as strings</h1>
 <p>With the previous example</p>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__reflection_8h.html">daw/json/daw_json_reflection.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
@@ -255,7 +254,7 @@ Ignoring members</h1>
 <p>With the previous example, lets add an ingnored member</p>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__reflection_8h.html">daw/json/daw_json_reflection.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
@@ -305,7 +304,7 @@ Ignored with default value</h2>
 <p>Let's add a default value to <code>code</code> so that it does not default to <code>std::size_t{}</code>/<code>0</code>.</p>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__reflection_8h.html">daw/json/daw_json_reflection.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
@@ -354,7 +353,7 @@ Ignored with a default callable</h2>
 <p>Lets change the default for <code>code</code> to use a lambda to set the value.</p>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__reflection_8h.html">daw/json/daw_json_reflection.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>

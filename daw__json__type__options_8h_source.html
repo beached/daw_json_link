@@ -92,10 +92,10 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">version.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">daw/json/impl/version.h</a>&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="daw__json__enums_8h.html">daw_json_enums.h</a>&quot;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="daw__json__option__bits_8h.html">daw_json_option_bits.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="daw__json__enums_8h.html">daw/json/impl/daw_json_enums.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="daw__json__option__bits_8h.html">daw/json/impl/daw_json_option_bits.h</a>&quot;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
 <div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
@@ -330,9 +330,31 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>      }</div>
 </div>
 <div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    } <span class="comment">// namespace options</span></div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="keyword">namespace </span>json_details {</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>      <span class="keyword">template</span>&lt;<a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> CurrentOptions, <span class="keyword">auto</span> option, <span class="keyword">auto</span>... options&gt;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> number_opts_set =</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        set_bits( number_opts, CurrentOptions, option, options... );</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>      <span class="keyword">template</span>&lt;<a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> CurrentOptions, <span class="keyword">auto</span> option, <span class="keyword">auto</span>... options&gt;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> bool_opts_set =</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        set_bits( bool_opts, CurrentOptions, option, options... );</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>      <span class="keyword">template</span>&lt;<a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> CurrentOptions, <span class="keyword">auto</span> option, <span class="keyword">auto</span>... options&gt;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> string_opts_set =</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        set_bits( string_opts, CurrentOptions, option, options... );</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>      <span class="keyword">template</span>&lt;<a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> CurrentOptions, <span class="keyword">auto</span> option, <span class="keyword">auto</span>... options&gt;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> string_raw_opts_set =</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        set_bits( string_raw_opts, CurrentOptions, option, options... );</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span> </div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>      <span class="keyword">template</span>&lt;<a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> CurrentOptions, <span class="keyword">auto</span> option, <span class="keyword">auto</span>... options&gt;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> json_custom_opts_set =</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        set_bits( json_custom_opts, CurrentOptions, option, options... );</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 </div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__enums_8h_html"><div class="ttname"><a href="daw__json__enums_8h.html">daw_json_enums.h</a></div></div>
 <div class="ttc" id="adaw__json__option__bits_8h_html"><div class="ttname"><a href="daw__json__option__bits_8h.html">daw_json_option_bits.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03_html_a6bf32487f7fc0134e4894a3ae7126884"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">daw::json::anonymous_namespace{daw_json_option_bits.h}::json_options_t</a></div><div class="ttdeci">std::uint32_t json_options_t</div><div class="ttdef"><b>Definition</b> <a href="daw__json__option__bits_8h_source.html#l00027">daw_json_option_bits.h:27</a></div></div>

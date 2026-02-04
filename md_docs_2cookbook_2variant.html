@@ -175,8 +175,8 @@ Tagged Variants</h1>
 <div class="line">    <span class="keywordflow">return</span> std::forward_as_tuple( v.name, v.value );</div>
 <div class="line">  }</div>
 <div class="line">};</div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html">daw::json::json_data_contract</a></div><div class="ttdoc">Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00038">daw_json_data_contract.h:38</a></div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00039">daw_json_data_contract.h:39</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html">daw::json::json_data_contract</a></div><div class="ttdoc">Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00040">daw_json_data_contract.h:40</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00041">daw_json_data_contract.h:41</a></div></div>
 </div><!-- fragment --><p>In the above example, two members are mapped to construct MyClass, <code>"name"</code> and <code>"value"</code>. The variant uses the JSON <code>"type"</code> member to determine the index of the parser to use for the variant value.</p>
 <p>Extending the previous example, it auto detected the <code>std::string</code>, <code>int</code>, and <code>bool</code> types and supplied the parser descriptions for them. Lets do it manually.</p>
 <p>Below is a JSON array, containing a variant element where the <code>"type"</code> member determines the type of the <code>"value"</code> member. In many JSON documents, the discriminator will be a string.</p>
@@ -237,7 +237,7 @@ Tagged Variants</h1>
 <div class="line">    <span class="keywordflow">return</span> std::forward_as_tuple( v.name, v.value );</div>
 <div class="line">  }</div>
 <div class="line">};</div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_ab0b8c50bc5e45461dee4c39824e23a07"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ab0b8c50bc5e45461dee4c39824e23a07">daw::json::anonymous_namespace{daw_json_link_types.h}::json_tagged_variant_type_list</a></div><div class="ttdeci">json_variant_type_list&lt; JsonElements... &gt; json_tagged_variant_type_list</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00915">daw_json_link_types.h:917</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_ab0b8c50bc5e45461dee4c39824e23a07"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ab0b8c50bc5e45461dee4c39824e23a07">daw::json::anonymous_namespace{daw_json_link_types.h}::json_tagged_variant_type_list</a></div><div class="ttdeci">json_variant_type_list&lt; JsonElements... &gt; json_tagged_variant_type_list</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00978">daw_json_link_types.h:980</a></div></div>
 </div><!-- fragment --><p>As you can see, the json_variant_type_list can use terse type names for some, or the full names.</p>
 <h1><a class="anchor" id="autotoc_md163"></a>
 Submember as tag for tagged_variant</h1>
@@ -332,7 +332,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line">      &gt;;  </div>
 <div class="line">  };</div>
 <div class="line">}</div>
-<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__value_8h_source.html#l00089">daw_json_value.h:89</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__value_8h_source.html#l00090">daw_json_value.h:90</a></div></div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
