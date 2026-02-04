@@ -40,9 +40,8 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input>
-			DAW_ATTRIB_NONNULL( )
 			[[nodiscard]] static constexpr UInt16
-			  byte_from_nibbles( daw::not_null<char const *> &first ) {
+			byte_from_nibbles( daw::not_null<char const *> &first ) {
 				auto const n0 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				auto const n1 = to_nibble( static_cast<unsigned char>( *first++ ) );
 				if constexpr( is_unchecked_input ) {

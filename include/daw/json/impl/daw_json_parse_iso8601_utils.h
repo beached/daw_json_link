@@ -245,6 +245,7 @@ namespace daw::json {
 				auto const date_str = ts.pop_front_until( t_str );
 				if( ts.empty( ) ) {
 					daw_json_error(
+					  true,
 					  ErrorReason::InvalidTimestamp ); // Invalid timestamp,
 					                                   // missing T separator
 				}
@@ -270,7 +271,7 @@ namespace daw::json {
 					case '-':
 						break;
 					default:
-						daw_json_error( daw::json::ErrorReason::InvalidTimestamp );
+						daw_json_error( true, daw::json::ErrorReason::InvalidTimestamp );
 					}
 					ts.remove_prefix( );
 					auto hr_offset = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
@@ -387,7 +388,8 @@ namespace daw::json {
 					return { "Dec" };
 				default:
 					DAW_UNLIKELY_BRANCH
-					daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid month
+					daw_json_error( true,
+					                ErrorReason::InvalidTimestamp ); // Invalid month
 				}
 			}
 
@@ -417,7 +419,8 @@ namespace daw::json {
 					return { "Sat" };
 				default:
 					DAW_UNLIKELY_BRANCH
-					daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid month
+					daw_json_error( true,
+					                ErrorReason::InvalidTimestamp ); // Invalid month
 				}
 			}
 
@@ -464,7 +467,8 @@ namespace daw::json {
 					return 12;
 				default:
 					DAW_UNLIKELY_BRANCH
-					daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid month
+					daw_json_error( true,
+					                ErrorReason::InvalidTimestamp ); // Invalid month
 				}
 			}
 		} // namespace datetime

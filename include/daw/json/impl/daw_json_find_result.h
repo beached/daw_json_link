@@ -18,6 +18,9 @@ namespace daw::json {
 				ParseState location;
 				bool known;
 			};
+
+			template<typename ParseState>
+			find_result( ParseState, bool ) -> find_result<ParseState>;
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

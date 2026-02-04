@@ -12,6 +12,9 @@
 
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_array_iterator.h"
+#if defined( DAW_ALLOW_SSE42 )
+#include "daw/json/impl/daw_json_parse_array_sse42_iterator.h"
+#endif
 #include "daw/json/impl/daw_json_parse_kv_array_iterator.h"
 #include "daw/json/impl/daw_json_parse_kv_class_iterator.h"
 #include "daw/json/impl/daw_json_parse_name.h"
@@ -92,13 +95,13 @@ namespace daw::json {
 						element_t sign = element_t( 1.0 );
 						if( parse_state.front( ) == '-' ) {
 							sign = element_t( -1.0 );
-							parse_state.first++;
+							++parse_state.first;
 						}
 						// Looking for Inf as that will match Infinity too.
 						if( parse_state.starts_with_skip( "Inf" ) ) {
 							if( not( parse_state.starts_with_skip( "\"" ) or
 							         parse_state.starts_with_skip( "inity\"" ) ) ) {
-								daw_json_error( ErrorReason::InvalidString, parse_state );
+								daw_json_error( true, ErrorReason::InvalidString, parse_state );
 							}
 							if constexpr( KnownBounds ) {
 								daw_json_assert_weak( parse_state.empty( ),
@@ -400,7 +403,7 @@ namespace daw::json {
 							return construct_value<json_result_t<JsonMember>, constructor_t>(
 							  parse_state, false );
 						}
-						daw_json_error( ErrorReason::InvalidLiteral, parse_state );
+						daw_json_error( true, ErrorReason::InvalidLiteral, parse_state );
 					}
 				} else {
 					// Beginning quotes
@@ -424,7 +427,7 @@ namespace daw::json {
 						} else if( parse_state.starts_with( "false" ) ) {
 							parse_state.remove_prefix( 5 );
 						} else {
-							daw_json_error( ErrorReason::InvalidLiteral, parse_state );
+							daw_json_error( true, ErrorReason::InvalidLiteral, parse_state );
 						}
 					}
 					// Trailing quotes
@@ -628,6 +631,18 @@ namespace daw::json {
 				}
 			}
 
+#if defined( DAW_JSON_HAS_REFLECTION )
+			template<typename JsonMember, bool /*KnownBounds*/, typename ParseState>
+			constexpr json_result_t<JsonMember>
+			parse_value_reflected_class( ParseState &parse_state ) {
+				daw_json_assert_weak( parse_state.has_more( ),
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
+
+				return JsonMember::parse_to_class( parse_state );
+			}
+#endif
+
 			/**
 			 * Parse a key_value pair encoded as a json object where the keys are
 			 * the member names
@@ -769,7 +784,7 @@ namespace daw::json {
 					                   KnownBounds,
 					                   JsonMember::expected_type>( parse_state );
 				} else {
-					daw_json_error( ErrorReason::UnexpectedJSONVariantType );
+					daw_json_error( true, ErrorReason::UnexpectedJSONVariantType );
 				}
 			}
 
@@ -823,7 +838,7 @@ namespace daw::json {
 				if constexpr( ParseState::is_unchecked_input ) {
 					DAW_UNREACHABLE( );
 				} else {
-					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
+					daw_json_error( true, ErrorReason::InvalidStartOfValue, parse_state );
 				}
 			}
 
@@ -848,8 +863,8 @@ namespace daw::json {
 					if constexpr( ParseState::is_unchecked_input ) {
 						DAW_UNREACHABLE( );
 					} else {
-						daw_json_error( ErrorReason::MissingMemberNameOrEndOfClass,
-						                parse_state );
+						daw_json_error(
+						  true, ErrorReason::MissingMemberNameOrEndOfClass, parse_state );
 					}
 				}
 			}
@@ -1269,6 +1284,11 @@ namespace daw::json {
 					return parse_value_variant_intrusive<JsonMember>( parse_state );
 				} else if constexpr( PTag == JsonParseTypes::Tuple ) {
 					return parse_value_tuple<JsonMember, KnownBounds>( parse_state );
+#if defined( DAW_JSON_HAS_REFLECTION )
+				} else if constexpr( PTag == JsonParseTypes::ReflectedClass ) {
+					return parse_value_reflected_class<JsonMember, KnownBounds>(
+					  parse_state );
+#endif
 				} else /*if constexpr( PTag == JsonParseTypes::Unknown )*/ {
 					static_assert( PTag == JsonParseTypes::Unknown,
 					               "Unexpected JsonParseType" );

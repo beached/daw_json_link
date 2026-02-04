@@ -13,6 +13,7 @@
 #include "daw/json/daw_json_data_contract.h"
 #include "daw/json/impl/daw_json_arrow_proxy.h"
 #include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_parse_common.h"
 #include "daw/json/impl/daw_json_parse_name.h"
 #include "daw/json/impl/daw_json_parse_policy.h"
 #include "daw/json/impl/daw_json_parse_unsigned_int.h"
@@ -271,7 +272,7 @@ namespace daw::json {
 					return false;
 				default:
 					DAW_UNLIKELY_BRANCH
-					daw_json_error( ErrorReason::ExpectedTokenNotFound, m_state );
+					daw_json_error( true, ErrorReason::ExpectedTokenNotFound, m_state );
 				}
 			}
 

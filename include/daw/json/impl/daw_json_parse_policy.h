@@ -306,7 +306,6 @@ namespace daw::json {
 			}
 
 			template<std::size_t N>
-			DAW_ATTRIB_NONNULL( )
 			constexpr bool starts_with( char const ( &rhs )[N] ) const {
 				static_assert( N > 0 );
 				if( size( ) < ( N - 1 ) ) {

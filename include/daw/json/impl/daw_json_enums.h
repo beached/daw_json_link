@@ -46,6 +46,10 @@ namespace daw::json {
 			Tuple,   /// Array - An array type where each element is mapped to the
 			         /// member of a C++ class
 			Unknown, /// Unknown type to parse.  This is used in raw processing
+#if defined( DAW_JSON_HAS_REFLECTION )
+			ReflectedClass, /// A class that has no backing and falls back to C++26
+			                /// reflection
+#endif
 		};
 
 		/// The fundamental JSON types

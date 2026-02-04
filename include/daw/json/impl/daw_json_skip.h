@@ -246,7 +246,7 @@ namespace daw::json {
 						++first;
 						break;
 					case '+':
-						daw_json_error( ErrorReason::InvalidNumberStart, parse_state );
+						daw_json_error( true, ErrorReason::InvalidNumberStart, parse_state );
 					case '0':
 						if( last - first > 1 ) {
 							daw_json_ensure(
@@ -365,11 +365,11 @@ namespace daw::json {
 				DAW_UNLIKELY_BRANCH
 				if constexpr( ParseState::is_unchecked_input ) {
 					if( DAW_UNLIKELY( parse_state.front( ) == '\0' ) ) {
-						daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
+						daw_json_error( true, ErrorReason::InvalidStartOfValue, parse_state );
 					}
 					DAW_UNREACHABLE( );
 				} else {
-					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
+					daw_json_error( true, ErrorReason::InvalidStartOfValue, parse_state );
 				}
 			}
 
@@ -448,12 +448,12 @@ namespace daw::json {
 				case '9':
 					return skip_number( parse_state );
 				case '\0':
-					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
+					daw_json_error( true, ErrorReason::InvalidStartOfValue, parse_state );
 				}
 				if constexpr( ParseState::is_unchecked_input ) {
 					DAW_UNREACHABLE( );
 				} else {
-					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
+					daw_json_error( true, ErrorReason::InvalidStartOfValue, parse_state );
 				}
 			}
 		} // namespace json_details

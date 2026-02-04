@@ -271,7 +271,7 @@ namespace daw::json {
 					it.write( tmp );
 					return;
 				}
-				daw_json_error( ErrorReason::InvalidUTFCodepoint );
+				daw_json_error( true, ErrorReason::InvalidUTFCodepoint );
 			}
 		} // namespace json_details
 
@@ -304,7 +304,7 @@ namespace daw::json {
 							if constexpr( WritableType::restricted_string_output ==
 							              options::RestrictedStringOutput::
 							                ErrorInvalidUTF8 ) {
-								daw_json_error( ErrorReason::InvalidStringHighASCII );
+								daw_json_error( true, ErrorReason::InvalidStringHighASCII );
 							} else {
 								first = it_t( std::next( first.base( ) ) );
 							}
@@ -581,7 +581,7 @@ namespace daw::json {
 						                options::JsonNumberErrors::None or
 						              JsonMember::allow_number_errors ==
 						                options::JsonNumberErrors::AllowInf ) {
-							daw_json_error( ErrorReason::NumberIsNaN );
+							daw_json_error( true, ErrorReason::NumberIsNaN );
 						} else {
 							it.write( "\"NaN\"" );
 							return it;
@@ -593,7 +593,7 @@ namespace daw::json {
 						                options::JsonNumberErrors::None or
 						              JsonMember::allow_number_errors ==
 						                options::JsonNumberErrors::AllowNaN ) {
-							daw_json_error( ErrorReason::NumberIsInf );
+							daw_json_error( true, ErrorReason::NumberIsInf );
 						} else {
 							if( value < 0 ) {
 								it.write( "\"-Infinity\"" );
@@ -961,6 +961,14 @@ namespace daw::json {
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
 			[[nodiscard]] static constexpr WriteableType
+			to_json_string_reflected_class( WriteableType it,
+			                                parse_to_t const &value ) {
+
+				return JsonMember::serialize( it, value );
+			}
+
+			template<typename JsonMember, typename WriteableType, typename parse_to_t>
+			[[nodiscard]] static constexpr WriteableType
 			to_json_string_custom( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
@@ -1295,6 +1303,10 @@ namespace daw::json {
 					return to_json_string_variant_intrusive<JsonMember>( it, value );
 				} else if constexpr( Tag == JsonParseTypes::Tuple ) {
 					return to_json_string_tuple<JsonMember>( it, value );
+#if defined( DAW_JSON_HAS_REFLECTION )
+				} else if constexpr( Tag == JsonParseTypes::ReflectedClass ) {
+					return to_json_string_reflected_class<JsonMember>( it, value );
+#endif
 				} else /*if constexpr( Tag == JsonParseTypes::Unknown )*/ {
 					static_assert( Tag == JsonParseTypes::Unknown,
 					               "Unexpected JsonParseType" );

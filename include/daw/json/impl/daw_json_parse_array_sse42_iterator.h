@@ -8,21 +8,37 @@
 
 #pragma once
 
+#if not defined( DAW_ALLOW_SSE42 )
+#error "This should not be included when SSE4.2 is not enabled"
+#endif
+
 #include "daw/json/impl/version.h"
 
 #include "daw/json/impl/daw_json_arrow_proxy.h"
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_value_fwd.h"
+#include "daw/json/impl/daw_not_const_ex_functions.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_not_null.h>
+
+#include <emmintrin.h>
+#include <nmmintrin.h>
+#include <smmintrin.h>
+#include <tmmintrin.h>
+#include <wmmintrin.h>
+#include <xmmintrin.h>
+#if defined( DAW_HAS_MSVC_LIKE )
+#include <intrin.h>
+#endif
 
 #include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename ParseState, bool>
-			struct json_parse_array_iterator_base {
+			template<typename ParseState, bool /*KnownBounds*/>
+			struct json_parse_array_sse42_iterator_base {
 				using iterator_category = std::input_iterator_tag;
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = false;
@@ -31,27 +47,21 @@ namespace daw::json {
 			};
 
 			template<typename ParseState>
-			struct json_parse_array_iterator_base<ParseState, true> {
-#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+			struct json_parse_array_sse42_iterator_base<ParseState, true> {
 				using iterator_category = std::input_iterator_tag;
-#else
-				using iterator_category = std::random_access_iterator_tag;
-#endif
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = true;
 
-				ParseState *parse_state = nullptr;
+				daw::not_null<ParseState *> parse_state;
 				difference_type counter = 0;
 
-				explicit json_parse_array_iterator_base( ) = default;
-
-				explicit constexpr json_parse_array_iterator_base(
+				explicit constexpr json_parse_array_sse42_iterator_base(
 				  daw::not_null<ParseState *> pd ) noexcept
 				  : parse_state( pd )
 				  , counter( static_cast<difference_type>( pd->counter ) ) {}
 
 				constexpr difference_type
-				operator-( json_parse_array_iterator_base const &rhs ) const {
+				operator-( json_parse_array_sse42_iterator_base const &rhs ) const {
 					// rhs is the iterator with the parser in it.  We should know how many
 					// items are in play because we already counted them in the skip_array
 					// call.
@@ -61,13 +71,12 @@ namespace daw::json {
 			};
 
 			template<typename JsonMember, typename ParseState, bool KnownBounds>
-			struct json_parse_array_iterator
-			  : json_parse_array_iterator_base<
+			struct json_parse_array_sse42_iterator
+			  : json_parse_array_sse42_iterator_base<
 			      ParseState, can_be_random_iterator_v<KnownBounds>> {
 
-				using base =
-				  json_parse_array_iterator_base<ParseState,
-				                                 can_be_random_iterator_v<KnownBounds>>;
+				using base = json_parse_array_sse42_iterator_base<
+				  ParseState, can_be_random_iterator_v<KnownBounds>>;
 
 				using iterator_category = typename base::iterator_category;
 				using element_t = typename JsonMember::json_element_t;
@@ -78,25 +87,69 @@ namespace daw::json {
 				using difference_type = typename base::difference_type;
 				using size_type = std::size_t;
 
-				json_parse_array_iterator( ) = default;
+				json_parse_array_sse42_iterator( ) = default;
 #if defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
 				// This code requires C++ 20 to be useful in a constant expression as it
 				// requires a non-trivial destructor
-				json_parse_array_iterator( json_parse_array_iterator const & ) =
+				json_parse_array_sse42_iterator(
+				  json_parse_array_sse42_iterator const & ) = default;
+
+				json_parse_array_sse42_iterator &
+				operator=( json_parse_array_sse42_iterator const & ) = default;
+
+				json_parse_array_sse42_iterator( json_parse_array_sse42_iterator && ) =
 				  default;
-				json_parse_array_iterator &
-				operator=( json_parse_array_iterator const & ) = default;
-				json_parse_array_iterator( json_parse_array_iterator && ) = default;
-				json_parse_array_iterator &
-				operator=( json_parse_array_iterator && ) = default;
-				DAW_JSON_CPP20_CX_DTOR ~json_parse_array_iterator( ) {
+
+				json_parse_array_sse42_iterator &
+				operator=( json_parse_array_sse42_iterator && ) = default;
+
+				DAW_JSON_CPP20_CX_DTOR ~json_parse_array_sse42_iterator( ) {
 					if constexpr( base::has_counter ) {
 						daw_json_assert_weak( base::counter == 0,
 						                      ErrorReason::AttemptToAccessPastEndOfValue );
 					}
 				}
 #endif
-				constexpr explicit json_parse_array_iterator( parse_state_t &r )
+
+			private:
+				struct masks_t {
+					std::uint32_t array_boundaries_mask = 0;
+					std::uint32_t whitespace_mask = 0;
+				};
+
+				static auto get_masks( daw::not_null<char const *> ptr ) {
+					static constexpr std::size_t sse_array_boundaries_sz = 2;
+					static auto const sse_array_boundaries = uload16_char_data_simd(
+					  ( std::array<char, 16>{ ',', ']' } ).data( ) );
+					static constexpr std::size_t sse_whitespace_sz = 4;
+					static auto const sse_whitespace = uload16_char_data_simd(
+					  ( std::array<char, 16>{ ' ', '\t', '\n', '\r' } ).data( ) );
+
+					auto const text_chunk = uload16_char_data_simd( ptr );
+					auto const array_boundaries_mask_reg = _mm_cmpestrm(
+					  sse_array_boundaries,
+					  sse_array_boundaries_sz,
+					  text_chunk,
+					  16,
+					  _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_BIT_MASK );
+					auto const whitespace_mask_reg = _mm_cmpestrm(
+					  sse_whitespace,
+					  sse_whitespace_sz,
+					  text_chunk,
+					  16,
+					  _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_BIT_MASK );
+
+					return masks_t{ static_cast<std::uint32_t>(
+					                  _mm_extract_epi16( array_boundaries_mask_reg, 0 ) ),
+					                static_cast<std::uint32_t>(
+					                  _mm_extract_epi16( whitespace_mask_reg, 0 ) ) };
+				}
+
+				masks_t m_masks{ };
+				std::size_t m_first_offset = 0;
+
+			public:
+				explicit json_parse_array_sse42_iterator( parse_state_t &r )
 				  : base{ &r } {
 					if( DAW_UNLIKELY( base::parse_state->front( ) == ']' ) ) {
 						if constexpr( not KnownBounds ) {
@@ -107,6 +160,12 @@ namespace daw::json {
 						}
 						base::parse_state = nullptr;
 					}
+					// Do initial scan to build SIMD state
+					if( base::parse_state->size( ) < 16 ) {
+						return;
+					}
+					m_masks = get_mask( base::parse_state->first );
+					if( m_masks.array_boundaries_mask != 0 ) {}
 				}
 
 				[[noreturn]] DAW_ATTRIB_NOINLINE value_type operator*( ) const {
@@ -125,7 +184,8 @@ namespace daw::json {
 					  *base::parse_state );
 				}
 
-				DAW_ATTRIB_INLINE constexpr json_parse_array_iterator &operator++( ) {
+				DAW_ATTRIB_INLINE constexpr json_parse_array_sse42_iterator &
+				operator++( ) {
 					daw_json_assert_weak( base::parse_state,
 					                      ErrorReason::UnexpectedEndOfData,
 					                      *base::parse_state );
@@ -174,22 +234,22 @@ namespace daw::json {
 				}
 
 				friend inline constexpr bool
-				operator==( json_parse_array_iterator const &lhs,
-				            json_parse_array_iterator const &rhs ) {
+				operator==( json_parse_array_sse42_iterator const &lhs,
+				            json_parse_array_sse42_iterator const &rhs ) {
 					return lhs.parse_state == rhs.parse_state;
 				}
 
 				friend inline constexpr bool
-				operator!=( json_parse_array_iterator const &lhs,
-				            json_parse_array_iterator const &rhs ) {
+				operator!=( json_parse_array_sse42_iterator const &lhs,
+				            json_parse_array_sse42_iterator const &rhs ) {
 					return not( lhs == rhs );
 				}
 
-				constexpr json_parse_array_iterator &begin( ) {
+				constexpr json_parse_array_sse42_iterator &begin( ) {
 					return *this;
 				}
 
-				constexpr json_parse_array_iterator end( ) const {
+				constexpr json_parse_array_sse42_iterator end( ) const {
 					return { };
 				}
 			};

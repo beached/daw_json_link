@@ -63,7 +63,7 @@ namespace daw::json {
 						}
 						return;
 					default:
-						daw_json_error( ErrorReason::InvalidNumberStart, parse_state );
+						daw_json_error( true, ErrorReason::InvalidNumberStart, parse_state );
 					}
 				}
 			}
@@ -104,7 +104,7 @@ namespace daw::json {
 						return 1;
 					}
 				}
-				daw_json_error( ErrorReason::InvalidNumberStart, parse_state );
+				daw_json_error( true, ErrorReason::InvalidNumberStart, parse_state );
 			}
 
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr bool

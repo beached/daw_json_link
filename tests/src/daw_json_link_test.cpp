@@ -89,7 +89,7 @@ DAW_CONSTEXPR bool parse_unsigned_test( char const ( &str )[N],
 	return daw::json::json_details::unsigned_parser<
 	         Unsigned,
 	         daw::json::options::JsonRangeCheck::CheckForNarrowing,
-	         false>( daw::json::constexpr_exec_tag{ }, tmp ) == expected;
+	         false>( tmp ) == expected;
 }
 
 struct test_001_t {
@@ -255,7 +255,7 @@ DAW_CONSTEXPR bool test_004( ) {
 	if( result == 55 ) {
 		return true;
 	}
-	throw false;// result == 55;
+	throw false; // result == 55;
 }
 
 DAW_CONSTEXPR bool test_005( ) {
@@ -579,7 +579,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 
 		std::cout.precision( old_precision );
 		std::cout << std::dec << "unsigned diff: " << diff << '\n';
-		daw::json::daw_json_error( daw::json::ErrorReason::NumberOutOfRange );
+		daw::json::daw_json_error( true, daw::json::ErrorReason::NumberOutOfRange );
 	}
 #else
 	(void)orig;
@@ -1159,7 +1159,7 @@ int main( ) {
 		test_vector_of_bool( );
 		static_assert( from_json<bool>( "true" ) );
 		static_assert( not from_json<bool>( "false" ) );
-		static_assert( not*from_json<std::optional<bool>>( "false" ) );
+		static_assert( not *from_json<std::optional<bool>>( "false" ) );
 		static_assert( not from_json<std::optional<bool>>( "null" ) );
 		static_assert( from_json<signed char>( "-1" ) ==
 		               static_cast<signed char>( -1 ) );
@@ -1382,11 +1382,12 @@ int main( ) {
 			  from_json<json_checked_number_no_name<signed char>>( "4200" );
 			(void)chkint_err;
 			daw_ensure_error(
+			  true,
 			  "Failed to narrow check number that cannot fit into signed char" );
 		} catch( json_exception const &jex ) {
 			ensure( jex.reason_type( ) == ErrorReason::NumberOutOfRange );
 		} catch( ... ) {
-			daw_ensure_error( "Unexpected error when doing narrow check" );
+			daw_ensure_error( true, "Unexpected error when doing narrow check" );
 		}
 #if defined( __cpp_lib_char8_t )
 #if __cpp_lib_char8_t >= 201907L

@@ -10,7 +10,9 @@
 
 #include "daw/json/impl/version.h"
 
+#include "daw/json/daw_json_switches.h"
 #include "daw/json/impl/daw_json_link_types_fwd.h"
+#include "daw/json/impl/daw_json_reflection_impl.h"
 #include "daw/json/impl/daw_json_serialize_impl.h"
 #include "daw/json/impl/daw_json_traits.h"
 
@@ -905,6 +907,67 @@ namespace daw::json {
 		using json_class_null_no_name = json_base::json_nullable<
 		  T, json_base::json_class<json_details::unwrapped_t<T>>, NullableType,
 		  Constructor>;
+
+#if defined( DAW_JSON_HAS_REFLECTION )
+		/**
+		 * Link to a JSON class
+		 * @tparam Name name of JSON member to link to
+		 * @tparam T type that has specialization of
+		 * daw::json::json_data_contract
+		 * @tparam Constructor A callable used to construct T.  The
+		 * default supports normal and aggregate construction
+		 */
+		template<JSONNAMETYPE Name, typename T>
+		struct json_reflected_class : json_base::json_reflected_class<T> {
+
+			static constexpr daw::string_view name = Name;
+
+			using without_name = json_base::json_reflected_class<T>;
+		};
+		template<typename T>
+		using json_reflected_class_no_name = json_base::json_reflected_class<T>;
+
+		namespace json_base {
+			template<typename T>
+			struct json_reflected_class {
+				using i_am_a_json_type = void;
+				using wrapped_type = T;
+
+				using parse_to_t = T;
+
+				static constexpr auto expected_type = JsonParseTypes::ReflectedClass;
+				using constructor_t = use_default;
+
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
+
+				template<JSONNAMETYPE NewName>
+				using with_name = daw::json::json_reflected_class<NewName, T>;
+
+				[[nodiscard]] static constexpr T parse_to_class( auto &parse_state ) {
+					static constexpr auto member_count =
+					  refl_details::get_non_ignored_reflectible_members<T>( ).size( );
+					return [&]<std::size_t... Idx>( std::index_sequence<Idx...> seq ) {
+						return json_details::parse_json_reflected_class<
+						  json_reflected_class,
+						  refl_details::get_member_link_t<T, Idx>...>( parse_state, seq );
+					}( std::make_index_sequence<member_count>{ } );
+				}
+
+				template<typename OutputIterator, typename Value>
+				[[nodiscard]] static constexpr OutputIterator
+				serialize( OutputIterator it, Value const &v ) {
+					static constexpr auto member_count =
+					  refl_details::get_non_ignored_reflectible_members<T>( ).size( );
+
+					return [&]<std::size_t... Idx>( std::index_sequence<Idx...> seq ) {
+						return json_details::serialize_json_class<
+						  refl_details::get_member_link_t<T, Idx>...>(
+						  it, refl_details::to_tuple( v ), v, seq );
+					}( std::make_index_sequence<member_count>{ } );
+				}
+			};
+		} // namespace json_base
+#endif
 
 		/***
 		 * A type to hold the types for parsing variants.

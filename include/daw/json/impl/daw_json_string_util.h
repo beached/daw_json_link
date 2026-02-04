@@ -188,8 +188,7 @@ namespace daw::json {
 				daw_json_ensure( first <= last, ErrorReason::Unknown );
 #endif
 				if( not json_details::use_constexpr_exec_mode<ExecTag>( ) ) {
-					return mem_move_to_next_of<false, chars...>(
-					  ExecTag{ }, first, last );
+					return mem_move_to_next_of<false, ExecTag, chars...>( first, last );
 				}
 				while( DAW_LIKELY( first < last ) and
 				       not parse_policy_details::in<chars...>( *first ) ) {

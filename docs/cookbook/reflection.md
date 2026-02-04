@@ -1,6 +1,6 @@
 # C++ 26 Reflection
 
-JSON Link has support for C++26 reflection. The API may still change, but is close to done. Until the API is finalized one must include `<daw/json/daw_json_reflection.h>` in their code that uses it.
+JSON Link has support for C++26 reflection as a fallback when no explicit mapping has been provided for aggregate classes with all public members. One can opt-in with the following ways and change the defaults.
 
 Because reflection helps with mappings, the calls to (de)serialized are still `daw::json::from_json<Type>( json_document )` and `daw::json::to_json( value )`. Like explicit mappings with `daw::json::json_data_contract` already mapped, reflection or not, types just work.
 
@@ -45,7 +45,8 @@ The program will output
 {"age":42,"name":"Jane Smith","eyeColour":0}
 ```
 
-Adding the `[[= daw::json::reflect ]]` annotation to a class will map any type with all public non-static data members. Another way is to specialize the variable template `daw::json::enable_reflection_for` for your type. This is useful for types that you do not control the source for.
+Adding the `[[= daw::json::reflect ]]` annotation to a class will map any type with all public non-static data members. Another way is to specialize the variable template
+`daw::json::enable_reflection_for` for your type. This is useful for types that you do not control the source for. If the class has private members, one can use `[[= daw::json::reflect.unchecked ]]` to enable reflection of all members.
 
 ```c++
 template<>
