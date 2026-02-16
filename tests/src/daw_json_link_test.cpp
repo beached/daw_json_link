@@ -1518,4 +1518,9 @@ int main( ) {
 		throw;
 	}
 #endif
+
+	static_assert( std::tuple_size_v<daw::json::json_pair> == 2 );
+	static_assert( std::tuple_size_v<daw::json::json_pair const> == 2 );
+	static_assert( std::tuple_size_v<daw::json::basic_json_pair<>> == 2 );
+	static_assert( std::tuple_size_v<daw::json::basic_json_pair<> const> == 2 );
 }
