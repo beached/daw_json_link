@@ -56,43 +56,119 @@ namespace daw::json {
 				v = value;
 			}
 
-			template<bool skip_end_check, typename Unsigned>
+			template<typename Unsigned>
+			constexpr std::size_t count_digits( Unsigned value ) {
+				if( DAW_LIKELY( value == 0 ) ) {
+					DAW_LIKELY_BRANCH
+					return 0;
+				}
+				if constexpr( sizeof( Unsigned ) <= sizeof( std::uint64_t ) ) {
+					if( value >= 10000000000000000000ULL ) {
+						return 20;
+					}
+					if( value >= 1000000000000000000ULL ) {
+						return 19;
+					}
+					if( value >= 100000000000000000ULL ) {
+						return 18;
+					}
+					if( value >= 10000000000000000ULL ) {
+						return 17;
+					}
+					if( value >= 1000000000000000ULL ) {
+						return 16;
+					}
+					if( value >= 100000000000000ULL ) {
+						return 15;
+					}
+					if( value >= 10000000000000ULL ) {
+						return 14;
+					}
+					if( value >= 1000000000000ULL ) {
+						return 13;
+					}
+					if( value >= 100000000000ULL ) {
+						return 12;
+					}
+					if( value >= 10000000000ULL ) {
+						return 11;
+					}
+					if( value >= 1000000000ULL ) {
+						return 10;
+					}
+					if( value >= 100000000ULL ) {
+						return 9;
+					}
+					if( value >= 10000000ULL ) {
+						return 8;
+					}
+					if( value >= 1000000ULL ) {
+						return 7;
+					}
+					if( value >= 100000ULL ) {
+						return 6;
+					}
+					if( value >= 10000ULL ) {
+						return 5;
+					}
+					if( value >= 1000ULL ) {
+						return 4;
+					}
+					if( value >= 100ULL ) {
+						return 3;
+					}
+					if( value >= 10ULL ) {
+						return 2;
+					}
+					return 1;
+				} else {
+					std::size_t count = 1;
+					value /= Unsigned{ 10U };
+					while( value > 0 ) {
+						++count;
+						value /= Unsigned{ 10U };
+					}
+					return count;
+				}
+			}
+
+			template<bool, typename Unsigned>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr daw::not_null<char const *>
 			parse_digits_while_number( daw::not_null<char const *> first,
 			                           daw::not_null<char const *> const last,
 			                           Unsigned &DAW_RESTRICT v ) {
 
-				// silencing gcc9 unused warning.  last is used inside if constexpr
-				// blocks
-				(void)last;
+				if( DAW_UNLIKELY( first >= last ) ) {
+					DAW_UNLIKELY_BRANCH
+					return first;
+				}
+				auto const sig_dig_in_use = count_digits( v );
+
+				auto const last_pos =
+				  (std::min)( { std::distance( first, last ),
+				                static_cast<std::ptrdiff_t>( daw::digits10<Unsigned> -
+				                                             sig_dig_in_use ) } );
+				daw::not_null const new_last = std::next( first.get( ), last_pos ) ;
 
 				auto value = v;
-				if constexpr( skip_end_check ) {
-					for( auto dig = parse_digit( *first ); dig < 10U;
-					     ++first, dig = parse_digit( *first ) ) {
-						value *= 10U;
-						value += dig;
-					}
-				} else {
-					if( first < last ) {
-						auto dig = parse_digit( *first );
-						while( dig < 10U ) {
-							++first;
-							value *= 10U;
-							value += dig;
-							if( DAW_UNLIKELY( first == last ) ) {
-								break;
-							}
-							dig = parse_digit( *first );
-						}
-					}
+
+				auto dig = parse_digit( *first );
+				while( first < new_last and dig < 10U ) {
+					++first;
+					value *= 10U;
+					value += dig;
+					dig = parse_digit( *first );
+				}
+				while( first < last and dig <= 10U ) {
+					++first;
+					dig = parse_digit( *first );
 				}
 				v = value;
 				return first;
 			}
 
-			/// @brief Check if we have more significant digits that can be stored in
-			/// the type, usually uint64_t
+			/// @brief Check if we have more significant digits that can be stored
+			/// in the type, usually uint64_t
 			template<typename ParseState, typename Result,
 			         typename max_storage_digits>
 			[[nodiscard]] constexpr bool
@@ -288,8 +364,8 @@ namespace daw::json {
 				daw::not_null<char const *> const orig_first = parse_state.first;
 				daw::not_null<char const *> const orig_last = parse_state.last;
 
-				// silencing gcc9 warning as these are only used when precise ieee is in
-				// play.
+				// silencing gcc9 warning as these are only used when precise ieee is
+				// in play.
 				(void)orig_first;
 				(void)orig_last;
 
@@ -313,8 +389,8 @@ namespace daw::json {
 				daw::not_null<char const *> const last = parse_state.last;
 				daw::not_null<char const *> const whole_last =
 				  parse_state.first +
-				  (std::min)( parse_state.last - parse_state.first,
-				              static_cast<std::ptrdiff_t>( max_exponent::value ) );
+				  (std::min)( { parse_state.last - parse_state.first,
+				                static_cast<std::ptrdiff_t>( max_exponent::value ) } );
 
 				unsigned_t significant_digits = 0;
 				daw::not_null<char const *> last_char =
@@ -471,8 +547,8 @@ namespace daw::json {
 						using json_details::parse_with_strtod;
 						auto result = parse_with_strtod<Result>( orig_first, orig_last );
 						/*auto x =
-						  fallback_fp<Result>( result, sign, significant_digits, exponent );
-						(void)x;*/
+						  fallback_fp<Result>( result, sign, significant_digits, exponent
+						); (void)x;*/
 						return result;
 					}
 				}
