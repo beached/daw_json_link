@@ -92,6 +92,11 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 					-Wno-c++2c-extensions
 					)
 		endif()
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 21 )
+			add_compile_options(
+					-Wno-nrvo
+					)
+		endif()
 		add_compile_options( -Wno-poison-system-directories )
 		if( DAW_WERROR )
 			add_compile_options( -Werror -pedantic-errors )
@@ -133,7 +138,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 					-Wno-c++26-extensions
 					)
 		endif()
-		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 21 )
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 20 )
 			add_compile_options(
 					-Wno-nrvo
 					)
@@ -164,7 +169,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 		add_compile_options( -march=native )
 	endif()
 	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
-			AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9 )
+	    AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9 )
 
 		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
 			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -D_FORTIFY_SOURCE=2" )
@@ -199,19 +204,19 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 	endif()
 	message( STATUS "g++ ${CMAKE_CXX_COMPILER_VERSION} detected" )
 	add_compile_options( --param max-gcse-memory=260000000
-											 -Wall
-											 -Wextra
-											 -pedantic
-											 -Wpedantic
-											 -Wconversion
-											 -Wduplicated-cond
-											 -Wlogical-op
-											 -Wold-style-cast
-											 -Wshadow
-											 -Wzero-as-null-pointer-constant
-											 -Wnull-dereference
-											 -ftemplate-backtrace-limit=0
-											 )
+	                     -Wall
+	                     -Wextra
+	                     -pedantic
+	                     -Wpedantic
+	                     -Wconversion
+	                     -Wduplicated-cond
+	                     -Wlogical-op
+	                     -Wold-style-cast
+	                     -Wshadow
+	                     -Wzero-as-null-pointer-constant
+	                     -Wnull-dereference
+	                     -ftemplate-backtrace-limit=0
+	                     )
 	if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
 		add_compile_options(
 				-ffold-simple-inlines
