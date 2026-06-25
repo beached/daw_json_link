@@ -148,20 +148,29 @@ namespace daw::json {
 				  (std::min)( { std::distance( first, last ),
 				                static_cast<std::ptrdiff_t>( daw::digits10<Unsigned> -
 				                                             sig_dig_in_use ) } );
-				daw::not_null const new_last = std::next( first.get( ), last_pos ) ;
+				daw::not_null const new_last = std::next( first.get( ), last_pos );
 
 				auto value = v;
 
-				auto dig = parse_digit( *first );
-				while( first < new_last and dig < 10U ) {
-					++first;
+				unsigned dig = 10U;
+				do {
+					dig = parse_digit( *first );
+					if( dig >= 10U ) {
+						break;
+					}
 					value *= 10U;
 					value += dig;
-					dig = parse_digit( *first );
-				}
-				while( first < last and dig <= 10U ) {
 					++first;
+				} while( first < new_last );
+				if( first < last and dig < 10U ) {
+					++first;
+				}
+				while( first < last ) {
 					dig = parse_digit( *first );
+					if( dig >= 10U ) {
+						break;
+					}
+					++first;
 				}
 				v = value;
 				return first;
