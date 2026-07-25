@@ -6,10 +6,33 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "daw/json/daw_json_switches.h"
+
 #include <daw/json/daw_json_writer.h>
 
 #include <iostream>
 #include <string>
+
+struct Foo {
+	int a = 0;
+	std::string b = "";
+	std::vector<int> c = { };
+};
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<Foo> {
+		static constexpr char const a[] = "a";
+		static constexpr char const b[] = "b";
+		static constexpr char const c[] = "c";
+		using type =
+		  json_member_list<json_number<a, int>, json_string<b>, json_array<c, int>>;
+
+		static DAW_JSON_CX_STRVEC auto to_json_data( Foo const &f ) {
+			return std::forward_as_tuple( f.a, f.b, f.c );
+		}
+	};
+} // namespace daw::json
 
 int main( ) {
 	{
@@ -152,5 +175,22 @@ int main( ) {
 			w.close_object( );
 		}
 		daw_ensure( out == R"json({"a":[1,2,"3",4,"5",6,7]})json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.write_value( Foo{ } );
+		}
+		daw_ensure( out == R"json({"a":0,"b":"","c":[]})json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.open_object( );
+			w.write_key_value( "a", Foo{ 42, "Hello", { 1, 2, 3 } } );
+		}
+		daw_ensure( out == R"json({"a":{"a":42,"b":"Hello","c":[1,2,3]}})json" );
 	}
 }
