@@ -17,6 +17,7 @@
     * [Inserting and Extracting Raw JSON](docs/cookbook/inserting_extracting_raw_json.md)
     * [JSON Lines/NDJSON](docs/cookbook/json_lines.md)
     * [JSON Schema Output](docs/cookbook/json_schema.md)
+    * [Incremental JSON Writer](docs/cookbook/json_writer.md)
     * [Key Values](docs/cookbook/key_values.md) - Map and Dictionary like things
     * [Mapping Deduction](docs/cookbook/mapping_deduction.md)
     * [Member Options](docs/cookbook/member_options.md) - Options for the parse mappings

@@ -765,22 +765,8 @@ namespace daw::json {
 		  WritableType &it, std::string_view id, std::string_view title,
 		  options::output_flags_t<PolicyFlags...> = options::output_flags<> ) {
 
-			auto out_it = [&it] {
-				if constexpr( is_serialization_policy_v<WritableType> ) {
-					if constexpr( sizeof...( PolicyFlags ) == 0 ) {
-						return it;
-					} else {
-						return serialization_policy<typename WritableType::iterator_type,
-						                            json_details::serialization::set_bits(
-						                              WritableType::policy_flags( ),
-						                              PolicyFlags... )>( it.get( ) );
-					}
-				} else {
-					return serialization_policy<
-					  WritableType,
-					  options::output_flags_t<PolicyFlags...>::value>( it );
-				}
-			}( );
+			auto out_it = json_details::make_output_iterator<PolicyFlags...>( it );
+
 			out_it.put( '{' );
 			out_it.add_indent( );
 			out_it.next_member( );

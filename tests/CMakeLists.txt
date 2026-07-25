@@ -1121,6 +1121,12 @@ add_test( NAME issue_439_test COMMAND issue_439_test WORKING_DIRECTORY "${CMAKE_
 add_dependencies( ci_tests issue_439_test )
 add_dependencies( full issue_439_test )
 
+add_executable( issue_474_test src/issue_474_test.cpp )
+target_link_libraries( issue_474_test PRIVATE json_test )
+add_test( NAME issue_474_test COMMAND issue_474_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests issue_474_test )
+add_dependencies( full issue_474_test )
+
 add_executable( multi_tu_test src/multi_tu_p0_test.cpp src/multi_tu_p1_test.cpp )
 target_link_libraries( multi_tu_test json_test )
 add_test( NAME multi_tu_test_test COMMAND multi_tu_test )
@@ -1160,6 +1166,14 @@ if( DAW_JSON_USE_REFLECTION )
 	add_dependencies( ci_tests daw_json_link_reflection_test )
 	add_dependencies( full daw_json_link_reflection_test )
 endif()
+
+add_executable( daw_json_writer_test src/daw_json_writer_test.cpp )
+target_link_libraries( daw_json_writer_test json_test )
+add_test( NAME daw_json_writer_test_test COMMAND daw_json_writer_test )
+add_dependencies( ci_tests daw_json_writer_test )
+add_dependencies( full daw_json_writer_test )
+
+
 
 # **************************************************
 # JSON Benchmark
