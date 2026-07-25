@@ -165,9 +165,10 @@ HTML_EXTRA_FILES       =	"docs/cookbook/aliases.md" \
 													"docs/cookbook/enums.md" \
 													"docs/cookbook/graphs.md" \
 													"docs/cookbook/inserting_extracting_raw_json.md" \
-													"docs/cookbook/json_lines.md" \
-													"docs/cookbook/json_schema.md" \
-													"docs/cookbook/key_values.md" \
+											"docs/cookbook/json_lines.md" \
+											"docs/cookbook/json_schema.md" \
+											"docs/cookbook/json_writer.md" \
+											"docs/cookbook/key_values.md" \
 													"docs/cookbook/mapping_deduction.md" \
 													"docs/cookbook/member_options.md" \
 													"docs/cookbook/numbers.md" \
