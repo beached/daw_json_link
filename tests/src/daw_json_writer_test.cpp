@@ -27,6 +27,43 @@ int main( ) {
 	{
 		auto out = std::string{ };
 		{
+			auto w = daw::json::json_writer( out );
+			w.open_object( );
+			w.close_object( );
+		}
+		daw_ensure( out == R"json({})json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>( out );
+			w.open_object( );
+			w.close_object( );
+		}
+		daw_ensure( out == R"json({})json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>( out );
+			w.open_array( );
+			w.close_array( );
+		}
+		daw_ensure( out == R"json([])json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.open_array( );
+			w.close_array( );
+		}
+		daw_ensure( out == R"json([])json" );
+	}
+
+	{
+		auto out = std::string{ };
+		{
 			auto w =
 				daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>(
 					out );
@@ -72,5 +109,13 @@ int main( ) {
   "c": null,
   "d": null
 })json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.write_value( 42 );
+		}
+		daw_ensure( out == "42" );
 	}
 }
