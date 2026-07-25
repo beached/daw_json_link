@@ -193,4 +193,52 @@ int main( ) {
 		}
 		daw_ensure( out == R"json({"a":{"a":42,"b":"Hello","c":[1,2,3]}})json" );
 	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.write_boolean( false );
+		}
+		daw_ensure( out == R"json(false)json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.write_number( 42 );
+		}
+		daw_ensure( out == R"json(42)json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.write_number( true );
+		}
+		daw_ensure( out == R"json(1)json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.write_string( false );
+		}
+		daw_ensure( out == R"json("false")json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.write_string( 42 );
+		}
+		daw_ensure( out == R"json("42")json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.write_string( "Hello" );
+		}
+		daw_ensure( out == R"json("Hello")json" );
+	}
 }

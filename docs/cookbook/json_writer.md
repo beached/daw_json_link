@@ -162,7 +162,60 @@ auto result = std::string{ };
 }
 ```
 
-Only one root value, object, or array can be written by a writer.
+Only one root value, object, or array can be written before the writer is
+reset.
+
+## Writing Values with an Explicit JSON Type
+
+`write_value` normally deduces the JSON representation from the C++ value.
+The writer also provides functions for selecting a scalar JSON representation
+explicitly:
+
+```cpp
+auto result = std::string{ };
+{
+  auto writer = daw::json::json_writer( result );
+  writer.open_array( );
+  writer.write_boolean( false );
+  writer.write_null( );
+  writer.write_number( 42 );
+  writer.write_string( 42 );
+  writer.write_string( true );
+  writer.close_array( );
+}
+```
+
+The result is:
+
+```json
+[false,null,42,"42","true"]
+```
+
+The scalar functions are:
+
+* `write_boolean(bool)` writes a JSON Boolean.
+* `write_null()` writes JSON `null`.
+* `write_number(value)` writes a value using a number or Boolean mapping. A
+  Boolean mapping is converted to the JSON number `0` or `1`.
+* `write_string(value)` writes a string mapping normally, and writes a number
+  or Boolean mapping as its quoted JSON representation.
+
+Like `write_value`, these functions write an array element when the writer is
+inside an array, or the value for a preceding `add_key` when it is inside an
+object.
+
+`write_number` and `write_string` accept an optional JSON mapping type as
+their first template argument. This is useful when the desired mapping cannot
+be deduced from the value:
+
+```cpp
+writer.write_number<daw::json::json_number_no_name<int>>( value );
+writer.write_string<daw::json::json_bool_no_name<>>( flag );
+```
+
+The mapping supplied to `write_number` must have a number or Boolean
+underlying JSON type. The mapping supplied to `write_string` must have a
+number, Boolean, or string underlying JSON type.
 
 ## Pretty Output
 
@@ -234,12 +287,50 @@ The result is:
 {"missing":null}
 ```
 
+Call `finalize()` to perform the same completion explicitly before the writer
+is destroyed. It writes `null` for a pending object key and closes all open
+objects and arrays:
+
+```cpp
+auto result = std::string{ };
+auto writer = daw::json::json_writer( result );
+writer.open_object( );
+writer.write_key_value( "answer", 42 );
+writer.finalize( );
+```
+
+## Reusing a Writer
+
+Call `reset()` to finish the current document and reset the writer state so
+another root JSON value can be appended to the same output. `reset()` calls
+`finalize()`, so it writes `null` for a pending object key and closes every
+open object and array. It does not clear or otherwise modify output that has
+already been written.
+
+```cpp
+auto result = std::string{ };
+auto writer = daw::json::json_writer( result );
+
+writer.open_object( );
+writer.write_key_value( "answer", 42 );
+writer.reset( ); // Completes the first document.
+
+writer.write_value( true );
+writer.finalize( );
+```
+
+Here, `result` is `{"answer":42}true`. Add any separator required by the
+surrounding output format before writing the next root value.
+
 ## Operation Rules
 
 * `add_key` and `write_key_value` are valid only inside an object.
 * An object value written separately must follow `add_key`.
-* `write_value` writes an array element when inside an array.
+* The scalar write functions write an array element when inside an array.
 * `write_values` is valid only inside an array.
 * `close_object` and `close_array` must match the currently open container.
-* A writer produces exactly one root JSON value.
+* A writer produces one root JSON value between construction or `reset()` and
+  the next `reset()`.
+* `finalize()` completes the current document, and `reset()` finalizes it
+  before resetting the writer state.
 * The writer is neither copyable nor movable and must not outlive its output.

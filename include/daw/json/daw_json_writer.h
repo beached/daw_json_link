@@ -21,6 +21,15 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_writer_details {
+			template<typename JsonClass, typename Value>
+			using json_write_value_class_t = typename daw::conditional_t<
+			  std::is_same_v<use_default, JsonClass>,
+			  json_details::ident_trait<json_details::json_deduced_type, Value>,
+			  json_details::ident_trait<json_details::json_deduced_type,
+			                            JsonClass>>::type;
+		} // namespace json_writer_details
+
 		enum class json_writer_states : std::uint8_t {
 			/**
 			 * Not writing a member or value
@@ -121,6 +130,7 @@ namespace daw::json {
 			}
 
 			constexpr void reset( ) {
+				finalize( );
 				m_current_state = json_writer_states::json_writer_nothing;
 				m_is_first = true;
 				m_is_key_written = false;
@@ -190,6 +200,64 @@ namespace daw::json {
 				do_write_value( value );
 			}
 
+			constexpr void write_boolean( bool b ) {
+				write_value( b );
+			}
+
+			constexpr void write_null( ) {
+				daw_json_ensure( m_current_state !=
+				                     json_writer_states::json_writer_nothing or
+				                   m_is_first,
+				                 ErrorReason::OutputError );
+				prepare_value( );
+				m_writer.write( "null" );
+				m_is_first = false;
+			}
+
+			template<typename JsonClass = use_default, typename T>
+			constexpr void write_number( T const &value ) {
+				using JsonMember =
+				  json_writer_details::json_write_value_class_t<JsonClass, T>;
+				constexpr JsonBaseParseTypes json_base_type =
+				  JsonMember::underlying_json_type;
+				static_assert(
+				  json_base_type == JsonBaseParseTypes::Number or
+				    json_base_type == JsonBaseParseTypes::Bool,
+				  "The underlying mapping must be a number or boolean type" );
+				if constexpr( json_base_type == JsonBaseParseTypes::Bool ) {
+					write_value( static_cast<bool>( value ) ? 1 : 0 );
+					return;
+				}
+				write_value( value );
+			}
+
+			template<typename JsonClass = use_default, typename T>
+			constexpr void write_string( T const &value ) {
+				using JsonMember =
+				  json_writer_details::json_write_value_class_t<JsonClass, T>;
+				constexpr JsonBaseParseTypes json_base_type =
+				  JsonMember::underlying_json_type;
+				static_assert(
+				  json_base_type == JsonBaseParseTypes::Number or
+				    json_base_type == JsonBaseParseTypes::Bool or
+				    json_base_type == JsonBaseParseTypes::String,
+				  "The underlying mapping must be a number, boolean, or string type" );
+				if constexpr( json_base_type == JsonBaseParseTypes::String ) {
+					write_value( value );
+					return;
+				}
+				prepare_value( );
+				m_writer.put( '"' );
+				to_json( value, m_writer.get( ) );
+				m_writer.put( '"' );
+				m_is_first = false;
+			}
+
+			template<std::size_t N>
+			constexpr void write_string( char const ( &str )[N] ) {
+				write_value( daw::string_view( str, N - 1 ) );
+			}
+
 			template<std::size_t N>
 			constexpr void write_value( char const ( &str )[N] ) {
 				daw_json_ensure( m_current_state !=
@@ -204,13 +272,7 @@ namespace daw::json {
 			}
 
 			constexpr void write_value( std::nullptr_t ) {
-				daw_json_ensure( m_current_state !=
-				                     json_writer_states::json_writer_nothing or
-				                   m_is_first,
-				                 ErrorReason::OutputError );
-				prepare_value( );
-				m_writer.write( "null" );
-				m_is_first = false;
+				write_null( );
 			}
 
 			// Must be in array state
