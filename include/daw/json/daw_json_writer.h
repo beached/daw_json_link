@@ -16,9 +16,7 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_move.h>
-#include <daw/daw_pipelines.h>
 
-#include <optional>
 #include <vector>
 
 namespace daw::json {
@@ -208,9 +206,11 @@ namespace daw::json {
 			}
 
 			constexpr void add_key( daw::string_view name ) {
+				if( m_is_key_written ) {
+					write_value( nullptr );
+				}
 				daw_json_ensure( m_current_state ==
-				                     json_writer_states::json_writer_object and
-				                   not m_is_key_written,
+				                   json_writer_states::json_writer_object,
 				                 ErrorReason::OutputError );
 
 				do_next_member( );
@@ -220,46 +220,30 @@ namespace daw::json {
 
 			template<typename T>
 			constexpr void write_key_value( daw::string_view name, T const &value ) {
-				do_next_member( );
-				m_writer.write( "\"", name, "\":", m_writer.space );
-				to_json( value, m_writer.get( ) );
+				add_key( name );
+				write_value( value );
 			}
 
 			constexpr void write_key_value( daw::string_view name, std::nullptr_t ) {
-				do_next_member( );
-				m_writer.write( "\"", name, "\":", m_writer.space, "null" );
+				add_key( name );
+				write_value( nullptr );
 			}
 
 			template<typename T>
 			constexpr void write_key_value( daw::string_view name,
 			                                std::initializer_list<T> const &values ) {
-				do_next_member( );
-				m_writer.write( "\"", name, "\":", m_writer.space );
-				push_state( json_writer_states::json_writer_array );
-				m_is_first = true;
-				m_writer.put( '[' );
-				m_writer.add_indent( );
-				for( auto const &value : values ) {
-					if( not m_is_first ) {
-						m_writer.write( "," );
-					} else {
-						m_is_first = false;
-					}
-					m_writer.next_member( );
-					to_json( value, m_writer.get( ) );
-				}
-				m_writer.del_indent( );
-				m_writer.next_member( );
-				m_writer.put( ']' );
-				pop_state( );
-				m_is_first = false;
+				add_key( name );
+				open_array( );
+				write_values( values );
+				close_array( );
 			}
 
 			template<std::size_t N>
 			constexpr void write_key_value( daw::string_view name,
 			                                char const ( &str )[N] ) {
 				static_assert( N > 0 );
-				write_key_value( name, daw::string_view( str, N - 1 ) );
+				add_key( name );
+				write_value( daw::string_view( str, N - 1 ) );
 			}
 		};
 

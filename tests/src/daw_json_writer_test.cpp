@@ -59,7 +59,8 @@ int main( ) {
 			w.write_value( 2 );
 			w.write_value( 3 );
 			w.close_array( );
-			w.write_key_value( "c", "Hello" );
+			w.add_key( "c" );
+			w.add_key( "d" );
 		}
 		daw_ensure( out == R"json({
   "a": 42,
@@ -68,7 +69,8 @@ int main( ) {
     2,
     3
   ],
-  "c": "Hello"
+  "c": null,
+  "d": null
 })json" );
 	}
 }
