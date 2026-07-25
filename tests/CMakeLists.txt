@@ -1167,6 +1167,14 @@ if( DAW_JSON_USE_REFLECTION )
 	add_dependencies( full daw_json_link_reflection_test )
 endif()
 
+add_executable( daw_json_writer_test src/daw_json_writer_test.cpp )
+target_link_libraries( daw_json_writer_test json_test )
+add_test( NAME daw_json_writer_test_test COMMAND daw_json_writer_test )
+add_dependencies( ci_tests daw_json_writer_test )
+add_dependencies( full daw_json_writer_test )
+
+
+
 # **************************************************
 # JSON Benchmark
 # **************************************************

@@ -84,24 +84,14 @@ namespace daw::json {
 			return result;
 		}
 
-		template<
-		  typename JsonElement, typename Container, typename WritableType,
-		  auto... PolicyFlags DAW_ENABLEIF2( concepts::is_writable_output_type_v<
-		                                     daw::remove_cvref_t<WritableType>> )>
-		DAW_REQUIRES(
-		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
-		constexpr daw::rvalue_to_value_t<WritableType> to_json_array(
-		  Container const &c, WritableType &&it,
-		  options::output_flags_t<PolicyFlags...> ) {
-			static_assert(
-			  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
-			  "Supplied container must support begin( )/end( )" );
-			using output_t = daw::rvalue_to_value_t<WritableType>;
+		namespace json_details {
+			template<auto... PolicyFlags, typename WritableType>
+			constexpr auto make_output_iterator( WritableType &&it ) {
+				using output_t = daw::rvalue_to_value_t<WritableType>;
 
-			if constexpr( std::is_pointer_v<daw::remove_cvref_t<output_t>> ) {
-				daw_json_ensure( it != nullptr, ErrorReason::InvalidNull );
-			}
-			auto out_it = [&] {
+				if constexpr( std::is_pointer_v<daw::remove_cvref_t<output_t>> ) {
+					daw_json_ensure( it != nullptr, ErrorReason::InvalidNull );
+				}
 				if constexpr( is_serialization_policy_v<
 				                daw::remove_cvref_t<WritableType>> ) {
 					if constexpr( sizeof...( PolicyFlags ) == 0 ) {
@@ -117,7 +107,24 @@ namespace daw::json {
 					  daw::remove_cvref_t<WritableType>,
 					  options::output_flags_t<PolicyFlags...>::value>( it );
 				}
-			}( );
+			}
+		} // namespace json_details
+
+		template<
+		  typename JsonElement, typename Container, typename WritableType,
+		  auto... PolicyFlags DAW_ENABLEIF2( concepts::is_writable_output_type_v<
+		                                     daw::remove_cvref_t<WritableType>> )>
+		DAW_REQUIRES(
+		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
+		constexpr daw::rvalue_to_value_t<WritableType> to_json_array(
+		  Container const &c, WritableType &&it,
+		  options::output_flags_t<PolicyFlags...> ) {
+			static_assert(
+			  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
+			  "Supplied container must support begin( )/end( )" );
+
+			auto out_it =
+			  json_details::make_output_iterator<PolicyFlags...>( DAW_FWD( it ) );
 			out_it.put( '[' );
 			out_it.add_indent( );
 			// Not const & as some types(vector<bool>::const_reference are not ref
