@@ -101,8 +101,7 @@ namespace daw::json {
 			json_writer_t( json_writer_t &&other ) = delete;
 			json_writer_t &operator=( json_writer_t && ) = delete;
 
-			DAW_CPP20_CX_DTOR ~json_writer_t( ) noexcept(
-			  noexcept( m_writer.put( ' ' ) ) ) {
+			constexpr void finalize( ) {
 				if( m_is_key_written ) {
 					write_value( nullptr );
 				}
@@ -119,6 +118,17 @@ namespace daw::json {
 						break;
 					}
 				}
+			}
+
+			constexpr void reset( ) {
+				m_current_state = json_writer_states::json_writer_nothing;
+				m_is_first = true;
+				m_is_key_written = false;
+			}
+
+			DAW_CPP20_CX_DTOR ~json_writer_t( ) noexcept(
+			  noexcept( m_writer.put( ' ' ) ) ) {
+				finalize( );
 			}
 
 			constexpr void open_object( ) {
