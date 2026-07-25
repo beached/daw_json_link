@@ -113,6 +113,7 @@ namespace daw::json {
 					case json_writer_states::json_writer_array:
 						close_array( );
 						break;
+					case json_writer_states::json_writer_nothing:
 					default:
 						break;
 					}
