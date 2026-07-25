@@ -24,7 +24,27 @@ int main( ) {
 		}
 		daw_ensure( out == R"json({"a":42,"b":[1,2,3],"c":null})json" );
 	}
-
+	{
+		auto out = std::string{ };
+		{
+			auto w =
+				daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>(
+					out );
+			w.open_object( );
+			w.write_key_value( "a", 42 );
+			w.write_key_value( "b", { 1, 2, 3 } );
+			w.write_key_value( "c", "Hello" );
+		}
+		daw_ensure( out == R"json({
+  "a": 42,
+  "b": [
+    1,
+    2,
+    3
+  ],
+  "c": "Hello"
+})json" );
+	}
 	{
 		auto out = std::string{ };
 		{
@@ -33,7 +53,12 @@ int main( ) {
 			    out );
 			w.open_object( );
 			w.write_key_value( "a", 42 );
-			w.write_key_value( "b", { 1, 2, 3 } );
+			w.add_key( "b" );
+			w.open_array( );
+			w.write_value( 1 );
+			w.write_value( 2 );
+			w.write_value( 3 );
+			w.close_array( );
 			w.write_key_value( "c", "Hello" );
 		}
 		daw_ensure( out == R"json({
