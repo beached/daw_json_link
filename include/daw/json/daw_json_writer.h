@@ -180,6 +180,19 @@ namespace daw::json {
 				do_write_value( value );
 			}
 
+			template<std::size_t N>
+			constexpr void write_value( char const ( &str )[N] ) {
+				daw_json_ensure( m_current_state !=
+				                     json_writer_states::json_writer_object or
+				                   m_is_key_written,
+				                 ErrorReason::OutputError );
+				daw_json_ensure( m_current_state !=
+				                     json_writer_states::json_writer_nothing or
+				                   m_is_first,
+				                 ErrorReason::OutputError );
+				do_write_value( daw::string_view( str, N - 1 ) );
+			}
+
 			constexpr void write_value( std::nullptr_t ) {
 				daw_json_ensure( m_current_state !=
 				                     json_writer_states::json_writer_nothing or
@@ -191,7 +204,9 @@ namespace daw::json {
 			}
 
 			// Must be in array state
-			template<typename Range>
+			template<
+			  typename Range DAW_ENABLEIF( daw::traits::is_container_like_v<Range> )>
+			DAW_REQUIRES( daw::traits::is_container_like_v<Range> )
 			constexpr void write_values( Range const &values ) {
 				daw_json_ensure( m_current_state ==
 				                   json_writer_states::json_writer_array,
@@ -207,8 +222,16 @@ namespace daw::json {
 				                   json_writer_states::json_writer_array,
 				                 ErrorReason::OutputError );
 				for( auto const &value : values ) {
-					do_write_value( value );
+					write_value( value );
 				}
+			}
+
+			template<typename... Ts>
+			constexpr void write_values( Ts const &...values ) {
+				daw_json_ensure( m_current_state ==
+				                   json_writer_states::json_writer_array,
+				                 ErrorReason::OutputError );
+				(void)( ( write_value( values ), true ) and ... );
 			}
 
 			constexpr void add_key( daw::string_view name ) {
@@ -247,7 +270,6 @@ namespace daw::json {
 			template<std::size_t N>
 			constexpr void write_key_value( daw::string_view name,
 			                                char const ( &str )[N] ) {
-				static_assert( N > 0 );
 				add_key( name );
 				write_value( daw::string_view( str, N - 1 ) );
 			}

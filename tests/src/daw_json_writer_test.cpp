@@ -36,7 +36,9 @@ int main( ) {
 	{
 		auto out = std::string{ };
 		{
-			auto w = daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>( out );
+			auto w =
+			  daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>(
+			    out );
 			w.open_object( );
 			w.close_object( );
 		}
@@ -45,7 +47,9 @@ int main( ) {
 	{
 		auto out = std::string{ };
 		{
-			auto w = daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>( out );
+			auto w =
+			  daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>(
+			    out );
 			w.open_array( );
 			w.close_array( );
 		}
@@ -65,8 +69,8 @@ int main( ) {
 		auto out = std::string{ };
 		{
 			auto w =
-				daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>(
-					out );
+			  daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>(
+			    out );
 			w.open_object( );
 			w.write_key_value( "a", 42 );
 			w.write_key_value( "b", { 1, 2, 3 } );
@@ -117,5 +121,36 @@ int main( ) {
 			w.write_value( 42 );
 		}
 		daw_ensure( out == "42" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.open_object( );
+			w.add_key( "a" );
+			w.open_array( );
+			for( int n = 1; n <= 3; ++n ) {
+				w.write_value( n * 2 );
+			}
+			w.write_values( { 1, 2, 3 } );
+			w.close_array( );
+			w.close_object( );
+		}
+		daw_ensure( out == R"json({"a":[2,4,6,1,2,3]})json" );
+	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer( out );
+			w.open_object( );
+			w.add_key( "a" );
+			w.open_array( );
+			w.write_values( 1, 2, "3", 4 );
+			w.write_value( "5" );
+			w.write_values( { 6, 7 } );
+			w.close_array( );
+			w.close_object( );
+		}
+		daw_ensure( out == R"json({"a":[1,2,"3",4,"5",6,7]})json" );
 	}
 }
