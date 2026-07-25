@@ -832,59 +832,45 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>      WritableType &amp;it, std::string_view <span class="keywordtype">id</span>, std::string_view title,</div>
 <div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span>      options::output_flags_t&lt;PolicyFlags...&gt; = options::output_flags&lt;&gt; ) {</div>
 <div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span> </div>
-<div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span>      <span class="keyword">auto</span> out_it = [&amp;it] {</div>
-<div class="line"><a id="l00769" name="l00769"></a><span class="lineno">  769</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( is_serialization_policy_v&lt;WritableType&gt; ) {</div>
-<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( <span class="keyword">sizeof</span>...( PolicyFlags ) == 0 ) {</div>
-<div class="line"><a id="l00771" name="l00771"></a><span class="lineno">  771</span>            <span class="keywordflow">return</span> it;</div>
-<div class="line"><a id="l00772" name="l00772"></a><span class="lineno">  772</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00773" name="l00773"></a><span class="lineno">  773</span>            <span class="keywordflow">return</span> <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a>&lt;<span class="keyword">typename</span> WritableType::iterator_type,</div>
-<div class="line"><a id="l00774" name="l00774"></a><span class="lineno">  774</span>                                        json_details::serialization::set_bits(</div>
-<div class="line"><a id="l00775" name="l00775"></a><span class="lineno">  775</span>                                          WritableType::policy_flags( ),</div>
-<div class="line"><a id="l00776" name="l00776"></a><span class="lineno">  776</span>                                          PolicyFlags... )&gt;( it.get( ) );</div>
-<div class="line"><a id="l00777" name="l00777"></a><span class="lineno">  777</span>          }</div>
-<div class="line"><a id="l00778" name="l00778"></a><span class="lineno">  778</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00779" name="l00779"></a><span class="lineno">  779</span>          <span class="keywordflow">return</span> <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a>&lt;</div>
-<div class="line"><a id="l00780" name="l00780"></a><span class="lineno">  780</span>            WritableType,</div>
-<div class="line"><a id="l00781" name="l00781"></a><span class="lineno">  781</span>            options::output_flags_t&lt;PolicyFlags...&gt;::value&gt;( it );</div>
-<div class="line"><a id="l00782" name="l00782"></a><span class="lineno">  782</span>        }</div>
-<div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span>      }( );</div>
-<div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span>      out_it.<a class="code hl_function" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#ae976bad043b0ac99fcc6dc719e15d6f1">put</a>( <span class="charliteral">&#39;{&#39;</span> );</div>
-<div class="line"><a id="l00785" name="l00785"></a><span class="lineno">  785</span>      out_it.add_indent( );</div>
-<div class="line"><a id="l00786" name="l00786"></a><span class="lineno">  786</span>      out_it.next_member( );</div>
-<div class="line"><a id="l00787" name="l00787"></a><span class="lineno">  787</span>      out_it = utils::output_kv(</div>
-<div class="line"><a id="l00788" name="l00788"></a><span class="lineno">  788</span>        out_it,</div>
-<div class="line"><a id="l00789" name="l00789"></a><span class="lineno">  789</span>        R<span class="stringliteral">&quot;(&quot;$schema&quot;)&quot;,</span></div>
-<div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span><span class="stringliteral">        R</span><span class="stringliteral">&quot;(&quot;https://json-schema.org/draft/2020-12/schema&quot;,)&quot; );</span></div>
-<div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span><span class="stringliteral">      out_it.next_member( );</span></div>
-<div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span><span class="stringliteral">      out_it = utils::output_kv( out_it, R</span><span class="stringliteral">&quot;(&quot;$id&quot;)&quot;, </span><span class="stringliteral">&quot;\&quot;&quot;</span> );</div>
-<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>      out_it = utils::copy_to_iterator( out_it, <span class="keywordtype">id</span> );</div>
-<div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span>      out_it = utils::copy_to_iterator( out_it, R<span class="stringliteral">&quot;(&quot;,)&quot; );</span></div>
-<div class="line"><a id="l00795" name="l00795"></a><span class="lineno">  795</span><span class="stringliteral">      out_it.next_member( );</span></div>
-<div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span><span class="stringliteral">      out_it = utils::output_kv( out_it, R</span><span class="stringliteral">&quot;(&quot;title&quot;)&quot;, </span><span class="stringliteral">&quot;\&quot;&quot;</span> );</div>
-<div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span>      out_it = utils::copy_to_iterator( out_it, title );</div>
-<div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span>      out_it = utils::copy_to_iterator( out_it, R<span class="stringliteral">&quot;(&quot;,)&quot; );</span></div>
-<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span><span class="stringliteral">      </span><span class="keyword">using </span>json_type = <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a3503524d54413dbb7016a065b881ea8b">json_link_no_name&lt;T&gt;</a>;</div>
-<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>      out_it = json_details::to_json_schema&lt;json_type, true&gt;(</div>
-<div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span>        <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a90ac904856c64d7aa4d8b2327e56c680">ParseTag&lt;json_type::expected_type&gt;</a>{ }, out_it );</div>
-<div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span>      out_it.del_indent( );</div>
-<div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span>      out_it.next_member( );</div>
-<div class="line"><a id="l00804" name="l00804"></a><span class="lineno">  804</span>      out_it.put( <span class="charliteral">&#39;}&#39;</span> );</div>
-<div class="line"><a id="l00805" name="l00805"></a><span class="lineno">  805</span>      <span class="keywordflow">return</span> out_it.get( );</div>
-<div class="line"><a id="l00806" name="l00806"></a><span class="lineno">  806</span>    }</div>
-<div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span> </div>
-<div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Result = std::string, <span class="keyword">auto</span>... PolicyFlags&gt;</div>
-<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>    <span class="keyword">constexpr</span> Result</div>
-<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>    to_json_schema( std::string_view <span class="keywordtype">id</span>, std::string_view title,</div>
-<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>                    options::output_flags_t&lt;PolicyFlags...&gt; flags =</div>
-<div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>                      options::output_flags&lt;&gt; ) {</div>
-<div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span>      <span class="keyword">auto</span> result = Result( );</div>
-<div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span> </div>
-<div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span>      (void)to_json_schema&lt;T&gt;( result, <span class="keywordtype">id</span>, title, flags );</div>
-<div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span>      <span class="keywordflow">return</span> result;</div>
-<div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span>    }</div>
-<div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span>      <span class="keyword">auto</span> out_it = json_details::make_output_iterator&lt;PolicyFlags...&gt;( it );</div>
+<div class="line"><a id="l00769" name="l00769"></a><span class="lineno">  769</span> </div>
+<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span>      out_it.put( <span class="charliteral">&#39;{&#39;</span> );</div>
+<div class="line"><a id="l00771" name="l00771"></a><span class="lineno">  771</span>      out_it.add_indent( );</div>
+<div class="line"><a id="l00772" name="l00772"></a><span class="lineno">  772</span>      out_it.next_member( );</div>
+<div class="line"><a id="l00773" name="l00773"></a><span class="lineno">  773</span>      out_it = utils::output_kv(</div>
+<div class="line"><a id="l00774" name="l00774"></a><span class="lineno">  774</span>        out_it,</div>
+<div class="line"><a id="l00775" name="l00775"></a><span class="lineno">  775</span>        R<span class="stringliteral">&quot;(&quot;$schema&quot;)&quot;,</span></div>
+<div class="line"><a id="l00776" name="l00776"></a><span class="lineno">  776</span><span class="stringliteral">        R</span><span class="stringliteral">&quot;(&quot;https://json-schema.org/draft/2020-12/schema&quot;,)&quot; );</span></div>
+<div class="line"><a id="l00777" name="l00777"></a><span class="lineno">  777</span><span class="stringliteral">      out_it.next_member( );</span></div>
+<div class="line"><a id="l00778" name="l00778"></a><span class="lineno">  778</span><span class="stringliteral">      out_it = utils::output_kv( out_it, R</span><span class="stringliteral">&quot;(&quot;$id&quot;)&quot;, </span><span class="stringliteral">&quot;\&quot;&quot;</span> );</div>
+<div class="line"><a id="l00779" name="l00779"></a><span class="lineno">  779</span>      out_it = utils::copy_to_iterator( out_it, <span class="keywordtype">id</span> );</div>
+<div class="line"><a id="l00780" name="l00780"></a><span class="lineno">  780</span>      out_it = utils::copy_to_iterator( out_it, R<span class="stringliteral">&quot;(&quot;,)&quot; );</span></div>
+<div class="line"><a id="l00781" name="l00781"></a><span class="lineno">  781</span><span class="stringliteral">      out_it.next_member( );</span></div>
+<div class="line"><a id="l00782" name="l00782"></a><span class="lineno">  782</span><span class="stringliteral">      out_it = utils::output_kv( out_it, R</span><span class="stringliteral">&quot;(&quot;title&quot;)&quot;, </span><span class="stringliteral">&quot;\&quot;&quot;</span> );</div>
+<div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span>      out_it = utils::copy_to_iterator( out_it, title );</div>
+<div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span>      out_it = utils::copy_to_iterator( out_it, R<span class="stringliteral">&quot;(&quot;,)&quot; );</span></div>
+<div class="line"><a id="l00785" name="l00785"></a><span class="lineno">  785</span><span class="stringliteral">      </span><span class="keyword">using </span>json_type = <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a3503524d54413dbb7016a065b881ea8b">json_link_no_name&lt;T&gt;</a>;</div>
+<div class="line"><a id="l00786" name="l00786"></a><span class="lineno">  786</span>      out_it = json_details::to_json_schema&lt;json_type, true&gt;(</div>
+<div class="line"><a id="l00787" name="l00787"></a><span class="lineno">  787</span>        <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a90ac904856c64d7aa4d8b2327e56c680">ParseTag&lt;json_type::expected_type&gt;</a>{ }, out_it );</div>
+<div class="line"><a id="l00788" name="l00788"></a><span class="lineno">  788</span>      out_it.del_indent( );</div>
+<div class="line"><a id="l00789" name="l00789"></a><span class="lineno">  789</span>      out_it.next_member( );</div>
+<div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span>      out_it.put( <span class="charliteral">&#39;}&#39;</span> );</div>
+<div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span>      <span class="keywordflow">return</span> out_it.get( );</div>
+<div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span>    }</div>
+<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span> </div>
+<div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Result = std::string, <span class="keyword">auto</span>... PolicyFlags&gt;</div>
+<div class="line"><a id="l00804" name="l00804"></a><span class="lineno">  804</span>    <span class="keyword">constexpr</span> Result</div>
+<div class="line"><a id="l00805" name="l00805"></a><span class="lineno">  805</span>    to_json_schema( std::string_view <span class="keywordtype">id</span>, std::string_view title,</div>
+<div class="line"><a id="l00806" name="l00806"></a><span class="lineno">  806</span>                    options::output_flags_t&lt;PolicyFlags...&gt; flags =</div>
+<div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span>                      options::output_flags&lt;&gt; ) {</div>
+<div class="line"><a id="l00808" name="l00808"></a><span class="lineno">  808</span>      <span class="keyword">auto</span> result = Result( );</div>
+<div class="line"><a id="l00809" name="l00809"></a><span class="lineno">  809</span> </div>
+<div class="line"><a id="l00810" name="l00810"></a><span class="lineno">  810</span>      (void)to_json_schema&lt;T&gt;( result, <span class="keywordtype">id</span>, title, flags );</div>
+<div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>      <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>    }</div>
+<div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 </div>
-<div class="line"><a id="l00828" name="l00828"></a><span class="lineno">  828</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__link__types_8h_html"><div class="ttname"><a href="daw__json__link__types_8h.html">daw_json_link_types.h</a></div></div>
 <div class="ttc" id="adaw__json__serialize__policy_8h_html"><div class="ttname"><a href="daw__json__serialize__policy_8h.html">daw_json_serialize_policy.h</a></div></div>
 <div class="ttc" id="adaw__to__json__fwd_8h_html"><div class="ttname"><a href="daw__to__json__fwd_8h.html">daw_to_json_fwd.h</a></div></div>
@@ -894,8 +880,6 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__schema_8h_03_1_1utils_html_a6cd964b331431b9219d2e68ce7515e05"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__schema_8h_03_1_1utils.html#a6cd964b331431b9219d2e68ce7515e05">daw::json::anonymous_namespace{daw_json_schema.h}::utils::output_kv</a></div><div class="ttdeci">static constexpr WriteableType output_kv(WriteableType it, std::string_view key, std::string_view value)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__schema_8h_source.html#l00028">daw_json_schema.h:28</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03_html_a7294cb628c910adbb4111c41d1600615"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03.html#a7294cb628c910adbb4111c41d1600615">daw::json::anonymous_namespace{daw_json_traits.h}::is_empty_pack_v</a></div><div class="ttdeci">DAW_CPP20_CONCEPT is_empty_pack_v</div><div class="ttdef"><b>Definition</b> <a href="daw__json__traits_8h_source.html#l00164">daw_json_traits.h:164</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">daw::json::serialization_policy</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__serialize__policy_8h_source.html#l00058">daw_json_serialize_policy.h:58</a></div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy_html_ae976bad043b0ac99fcc6dc719e15d6f1"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#ae976bad043b0ac99fcc6dc719e15d6f1">daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serialization_policy::put</a></div><div class="ttdeci">constexpr void put(char c)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__serialize__policy_8h_source.html#l00167">daw_json_serialize_policy.h:167</a></div></div>
 <div class="ttc" id="ato__daw__json__string_8h_html"><div class="ttname"><a href="to__daw__json__string_8h.html">to_daw_json_string.h</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition</b> <a href="version_8h_source.html#l00020">version.h:20</a></div></div>
