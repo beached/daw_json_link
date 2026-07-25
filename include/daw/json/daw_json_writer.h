@@ -60,7 +60,7 @@ namespace daw::json {
 				m_stack.pop_back( );
 			}
 
-			constexpr void do_next_member( ) {
+			constexpr void write_item_prefix( ) {
 				daw_json_ensure( not m_is_key_written, ErrorReason::OutputError );
 				if( not m_is_first ) {
 					m_writer.put( ',' );
@@ -81,7 +81,7 @@ namespace daw::json {
 					return;
 				}
 				if( m_current_state != json_writer_states::json_writer_nothing ) {
-					do_next_member( );
+					write_item_prefix( );
 				}
 			}
 
@@ -124,8 +124,6 @@ namespace daw::json {
 			constexpr void open_object( ) {
 				prepare_value( );
 				push_state( json_writer_states::json_writer_object );
-				// do_next_member( );
-				m_is_first = true;
 				m_writer.put( '{' );
 				m_writer.add_indent( );
 				m_is_first = true;
@@ -221,7 +219,7 @@ namespace daw::json {
 				                   json_writer_states::json_writer_object,
 				                 ErrorReason::OutputError );
 
-				do_next_member( );
+				write_item_prefix( );
 				m_writer.write( "\"", name, "\":", m_writer.space );
 				m_is_key_written = true;
 			}
