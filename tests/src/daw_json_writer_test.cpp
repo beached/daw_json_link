@@ -10,6 +10,7 @@
 
 #include <daw/json/daw_json_writer.h>
 
+#include <cstdio>
 #include <iostream>
 #include <string>
 
@@ -155,7 +156,7 @@ int main( ) {
 			for( int n = 1; n <= 3; ++n ) {
 				w.write_value( n * 2 );
 			}
-			w.write_values( { 1, 2, 3 } );
+			w.write_array_values( { 1, 2, 3 } );
 			w.close_array( );
 			w.close_object( );
 		}
@@ -168,9 +169,9 @@ int main( ) {
 			w.open_object( );
 			w.add_key( "a" );
 			w.open_array( );
-			w.write_values( 1, 2, "3", 4 );
+			w.write_array_values( 1, 2, "3", 4 );
 			w.write_value( "5" );
-			w.write_values( { 6, 7 } );
+			w.write_array_values( { 6, 7 } );
 			w.close_array( );
 			w.close_object( );
 		}
@@ -240,5 +241,21 @@ int main( ) {
 			w.write_string( "Hello" );
 		}
 		daw_ensure( out == R"json("Hello")json" );
+	}
+	{
+		auto w = daw::json::json_writer( stdout );
+		w.open_object( );
+		w.write_key_value( "a", 42 );
+		w.write_key_value( "b", 42, "Hello", 44 );
+		w.close_object( );
+		std::puts( "" );
+	}
+	{
+		auto w = daw::json::json_writer( std::cout );
+		w.open_object( );
+		w.write_key_value( "a", 42 );
+		w.write_key_value( "b", 42, "Hello", 44 );
+		w.close_object( );
+		std::cout << '\n';
 	}
 }

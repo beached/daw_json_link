@@ -26,22 +26,22 @@ namespace daw::json {
 			  json_details::ident_trait<json_details::json_deduced_type, Value>,
 			  json_details::ident_trait<json_details::json_deduced_type,
 			                            JsonClass>>::type;
-		} // namespace json_writer_details
 
-		enum class json_writer_states : std::uint8_t {
-			/**
-			 * Not writing a member or value
-			 */
-			json_writer_nothing,
-			/**
-			 * Indicates we are inside a class
-			 */
-			json_writer_object,
-			/**
-			 * Indicates we are inside an array
-			 */
-			json_writer_array
-		};
+			enum class json_writer_states : std::uint8_t {
+				/**
+				 * Not writing a member or value
+				 */
+				json_writer_nothing,
+				/**
+				 * Indicates we are inside a class
+				 */
+				json_writer_object,
+				/**
+				 * Indicates we are inside an array
+				 */
+				json_writer_array
+			};
+		} // namespace json_writer_details
 
 		template<typename WriterType, typename StackType, auto... PolicyFlags>
 		class json_writer_t {
@@ -50,13 +50,14 @@ namespace daw::json {
 			    std::declval<WriterType>( ) ) );
 
 			StackType m_stack{ };
-			json_writer_states m_current_state =
-			  json_writer_states::json_writer_nothing;
+			json_writer_details::json_writer_states m_current_state =
+			  json_writer_details::json_writer_states::json_writer_nothing;
 			bool m_is_first = true;
 			bool m_is_key_written = false;
 			iterator_t m_writer;
 
-			constexpr void push_state( json_writer_states new_state ) {
+			constexpr void
+			push_state( json_writer_details::json_writer_states new_state ) {
 				m_stack.push_back( m_current_state );
 				m_current_state = new_state;
 			}
@@ -78,16 +79,19 @@ namespace daw::json {
 			}
 
 			constexpr void prepare_value( ) {
-				if( m_current_state == json_writer_states::json_writer_nothing ) {
+				if( m_current_state ==
+				    json_writer_details::json_writer_states::json_writer_nothing ) {
 					daw_json_ensure( m_is_first, ErrorReason::OutputError );
 					return;
 				}
-				if( m_current_state == json_writer_states::json_writer_object ) {
+				if( m_current_state ==
+				    json_writer_details::json_writer_states::json_writer_object ) {
 					daw_json_ensure( m_is_key_written, ErrorReason::OutputError );
 					m_is_key_written = false;
 					return;
 				}
-				if( m_current_state != json_writer_states::json_writer_nothing ) {
+				if( m_current_state !=
+				    json_writer_details::json_writer_states::json_writer_nothing ) {
 					write_item_prefix( );
 				}
 			}
@@ -112,15 +116,16 @@ namespace daw::json {
 				if( m_is_key_written ) {
 					write_value( nullptr );
 				}
-				while( m_current_state != json_writer_states::json_writer_nothing ) {
+				while( m_current_state !=
+				       json_writer_details::json_writer_states::json_writer_nothing ) {
 					switch( m_current_state ) {
-					case json_writer_states::json_writer_object:
+					case json_writer_details::json_writer_states::json_writer_object:
 						close_object( );
 						break;
-					case json_writer_states::json_writer_array:
+					case json_writer_details::json_writer_states::json_writer_array:
 						close_array( );
 						break;
-					case json_writer_states::json_writer_nothing:
+					case json_writer_details::json_writer_states::json_writer_nothing:
 					default:
 						break;
 					}
@@ -129,7 +134,8 @@ namespace daw::json {
 
 			constexpr void reset( ) {
 				finalize( );
-				m_current_state = json_writer_states::json_writer_nothing;
+				m_current_state =
+				  json_writer_details::json_writer_states::json_writer_nothing;
 				m_is_first = true;
 				m_is_key_written = false;
 			}
@@ -141,16 +147,18 @@ namespace daw::json {
 
 			constexpr void open_object( ) {
 				prepare_value( );
-				push_state( json_writer_states::json_writer_object );
+				push_state(
+				  json_writer_details::json_writer_states::json_writer_object );
 				m_writer.put( '{' );
 				m_writer.add_indent( );
 				m_is_first = true;
 			}
 
 			constexpr void close_object( ) {
-				daw_json_ensure( m_current_state ==
-				                   json_writer_states::json_writer_object,
-				                 ErrorReason::OutputError );
+				daw_json_ensure(
+				  m_current_state ==
+				    json_writer_details::json_writer_states::json_writer_object,
+				  ErrorReason::OutputError );
 				if( m_is_key_written ) {
 					write_value( nullptr );
 				}
@@ -165,16 +173,18 @@ namespace daw::json {
 
 			constexpr void open_array( ) {
 				prepare_value( );
-				push_state( json_writer_states::json_writer_array );
+				push_state(
+				  json_writer_details::json_writer_states::json_writer_array );
 				m_is_first = true;
 				m_writer.add_indent( );
 				m_writer.put( '[' );
 			}
 
 			constexpr void close_array( ) {
-				daw_json_ensure( m_current_state ==
-				                   json_writer_states::json_writer_array,
-				                 ErrorReason::OutputError );
+				daw_json_ensure(
+				  m_current_state ==
+				    json_writer_details::json_writer_states::json_writer_array,
+				  ErrorReason::OutputError );
 				m_writer.del_indent( );
 				if( not m_is_first ) {
 					m_writer.next_member( );
@@ -184,18 +194,145 @@ namespace daw::json {
 				m_is_first = false;
 			}
 
-			// Write a value similar to to_json.
+			constexpr void write_value( std::nullptr_t ) {
+				write_null( );
+			}
+
+			template<typename T, typename... Ts>
+			constexpr void write_value( T const &value, Ts const &...values ) {
+				daw_json_ensure(
+				  m_current_state !=
+				      json_writer_details::json_writer_states::json_writer_object or
+				    m_is_key_written,
+				  ErrorReason::OutputError );
+				daw_json_ensure(
+				  m_current_state !=
+				      json_writer_details::json_writer_states::json_writer_nothing or
+				    m_is_first,
+				  ErrorReason::OutputError );
+				if constexpr( sizeof...( Ts ) == 0 ) {
+					do_write_value( value );
+				} else {
+					open_array( );
+					write_array_values( value, values... );
+					close_array( );
+				}
+			}
+
 			template<typename T>
-			constexpr void write_value( T const &value ) {
-				daw_json_ensure( m_current_state !=
-				                     json_writer_states::json_writer_object or
-				                   m_is_key_written,
-				                 ErrorReason::OutputError );
-				daw_json_ensure( m_current_state !=
-				                     json_writer_states::json_writer_nothing or
-				                   m_is_first,
-				                 ErrorReason::OutputError );
-				do_write_value( value );
+			constexpr void write_value( std::initializer_list<T> const &values ) {
+				daw_json_ensure(
+				  m_current_state !=
+				      json_writer_details::json_writer_states::json_writer_object or
+				    m_is_key_written,
+				  ErrorReason::OutputError );
+				daw_json_ensure(
+				  m_current_state !=
+				      json_writer_details::json_writer_states::json_writer_nothing or
+				    m_is_first,
+				  ErrorReason::OutputError );
+				open_array( );
+				write_array_values( values );
+				close_array( );
+			}
+
+			template<std::size_t N>
+			constexpr void write_value( char const ( &str )[N] ) {
+				daw_json_ensure(
+				  m_current_state !=
+				      json_writer_details::json_writer_states::json_writer_object or
+				    m_is_key_written,
+				  ErrorReason::OutputError );
+				daw_json_ensure(
+				  m_current_state !=
+				      json_writer_details::json_writer_states::json_writer_nothing or
+				    m_is_first,
+				  ErrorReason::OutputError );
+				do_write_value( daw::string_view( str, N - 1 ) );
+			}
+
+			constexpr void add_key( daw::string_view name ) {
+				if( m_is_key_written ) {
+					write_value( nullptr );
+				}
+				daw_json_ensure(
+				  m_current_state ==
+				    json_writer_details::json_writer_states::json_writer_object,
+				  ErrorReason::OutputError );
+
+				write_item_prefix( );
+				m_writer.write( "\"", name, "\":", m_writer.space );
+				m_is_key_written = true;
+			}
+
+			constexpr void write_key_value( daw::string_view name, std::nullptr_t ) {
+				add_key( name );
+				write_null( );
+			}
+
+			template<typename T>
+			constexpr void write_key_value( daw::string_view name,
+			                                std::initializer_list<T> const &values ) {
+				add_key( name );
+				open_array( );
+				write_array_values( values );
+				close_array( );
+			}
+
+			template<typename T, typename... Ts>
+			constexpr void write_key_value( daw::string_view name, T const &value,
+			                                Ts const &...values ) {
+				add_key( name );
+				if( sizeof...( Ts ) == 0 ) {
+					write_value( value );
+				} else {
+					open_array( );
+					write_array_values( value, values... );
+					close_array( );
+				}
+			}
+
+			template<std::size_t N>
+			constexpr void write_key_value( daw::string_view name,
+			                                char const ( &str )[N] ) {
+				add_key( name );
+				write_value( daw::string_view( str, N - 1 ) );
+			}
+
+			// Must be in array state
+			template<
+			  typename Range DAW_ENABLEIF( daw::traits::is_container_like_v<Range> )>
+			DAW_REQUIRES( daw::traits::is_container_like_v<Range> )
+			constexpr void write_array_values( Range const &values ) {
+				daw_json_ensure(
+				  m_current_state ==
+				    json_writer_details::json_writer_states::json_writer_array,
+				  ErrorReason::OutputError );
+				for( auto const &value : values ) {
+					do_write_value( value );
+				}
+			}
+
+			template<typename T>
+			constexpr void
+			write_array_values( std::initializer_list<T> const &values ) {
+				daw_json_ensure(
+				  m_current_state ==
+				    json_writer_details::json_writer_states::json_writer_array,
+				  ErrorReason::OutputError );
+				for( auto const &value : values ) {
+					write_value( value );
+				}
+			}
+
+			template<typename T, typename... Ts>
+			constexpr void write_array_values( T const &value, Ts const &...values ) {
+				daw_json_ensure(
+				  m_current_state ==
+				    json_writer_details::json_writer_states::json_writer_array,
+				  ErrorReason::OutputError );
+				write_value( value );
+				(void)( ( write_value( values ), true ) and ... );
 			}
 
 			constexpr void write_boolean( bool b ) {
@@ -203,10 +340,11 @@ namespace daw::json {
 			}
 
 			constexpr void write_null( ) {
-				daw_json_ensure( m_current_state !=
-				                     json_writer_states::json_writer_nothing or
-				                   m_is_first,
-				                 ErrorReason::OutputError );
+				daw_json_ensure(
+				  m_current_state !=
+				      json_writer_details::json_writer_states::json_writer_nothing or
+				    m_is_first,
+				  ErrorReason::OutputError );
 				prepare_value( );
 				m_writer.write( "null" );
 				m_is_first = false;
@@ -257,100 +395,12 @@ namespace daw::json {
 			constexpr void write_string( char const ( &str )[N] ) {
 				write_value( daw::string_view( str, N - 1 ) );
 			}
-
-			template<std::size_t N>
-			constexpr void write_value( char const ( &str )[N] ) {
-				daw_json_ensure( m_current_state !=
-				                     json_writer_states::json_writer_object or
-				                   m_is_key_written,
-				                 ErrorReason::OutputError );
-				daw_json_ensure( m_current_state !=
-				                     json_writer_states::json_writer_nothing or
-				                   m_is_first,
-				                 ErrorReason::OutputError );
-				do_write_value( daw::string_view( str, N - 1 ) );
-			}
-
-			constexpr void write_value( std::nullptr_t ) {
-				write_null( );
-			}
-
-			// Must be in array state
-			template<
-			  typename Range DAW_ENABLEIF( daw::traits::is_container_like_v<Range> )>
-			DAW_REQUIRES( daw::traits::is_container_like_v<Range> )
-			constexpr void write_values( Range const &values ) {
-				daw_json_ensure( m_current_state ==
-				                   json_writer_states::json_writer_array,
-				                 ErrorReason::OutputError );
-				for( auto const &value : values ) {
-					do_write_value( value );
-				}
-			}
-
-			template<typename T>
-			constexpr void write_values( std::initializer_list<T> const &values ) {
-				daw_json_ensure( m_current_state ==
-				                   json_writer_states::json_writer_array,
-				                 ErrorReason::OutputError );
-				for( auto const &value : values ) {
-					write_value( value );
-				}
-			}
-
-			template<typename... Ts>
-			constexpr void write_values( Ts const &...values ) {
-				daw_json_ensure( m_current_state ==
-				                   json_writer_states::json_writer_array,
-				                 ErrorReason::OutputError );
-				(void)( ( write_value( values ), true ) and ... );
-			}
-
-			constexpr void add_key( daw::string_view name ) {
-				if( m_is_key_written ) {
-					write_value( nullptr );
-				}
-				daw_json_ensure( m_current_state ==
-				                   json_writer_states::json_writer_object,
-				                 ErrorReason::OutputError );
-
-				write_item_prefix( );
-				m_writer.write( "\"", name, "\":", m_writer.space );
-				m_is_key_written = true;
-			}
-
-			template<typename T>
-			constexpr void write_key_value( daw::string_view name, T const &value ) {
-				add_key( name );
-				write_value( value );
-			}
-
-			constexpr void write_key_value( daw::string_view name, std::nullptr_t ) {
-				add_key( name );
-				write_value( nullptr );
-			}
-
-			template<typename T>
-			constexpr void write_key_value( daw::string_view name,
-			                                std::initializer_list<T> const &values ) {
-				add_key( name );
-				open_array( );
-				write_values( values );
-				close_array( );
-			}
-
-			template<std::size_t N>
-			constexpr void write_key_value( daw::string_view name,
-			                                char const ( &str )[N] ) {
-				add_key( name );
-				write_value( daw::string_view( str, N - 1 ) );
-			}
 		};
 
 		template<auto... PolicyFlags, typename WriterType>
 		constexpr auto json_writer( WriterType &writer ) {
 			return json_writer_t<WriterType,
-			                     std::vector<json_writer_states>,
+			                     std::vector<json_writer_details::json_writer_states>,
 			                     PolicyFlags...>( writer );
 		}
 	} // namespace DAW_JSON_VER
