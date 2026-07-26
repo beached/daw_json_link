@@ -5,7 +5,8 @@ when the document structure is known while writing, but constructing an
 intermediate C++ object or container would be inconvenient.
 
 Include the incremental writer header and create a writer over any supported
-writable output:
+writable output. This includes string-like containers, C++ output streams, and
+C `FILE *` outputs:
 
 ```cpp
 #include <daw/json/daw_json_writer.h>
@@ -14,6 +15,13 @@ writable output:
 
 auto result = std::string{ };
 auto writer = daw::json::json_writer( result );
+```
+
+For example, a writer can write directly to standard output:
+
+```cpp
+auto stream_writer = daw::json::json_writer( std::cout );
+auto file_writer = daw::json::json_writer( stdout );
 ```
 
 Values passed to `write_value` and `write_key_value` use the same serialization
@@ -92,8 +100,8 @@ The result is:
 [1,"two",true]
 ```
 
-`write_values` can append an initializer list, a container-like range, or a
-heterogeneous argument list:
+`write_array_values` appends an initializer list, a container-like range, or a
+heterogeneous argument list to an open array:
 
 ```cpp
 #include <vector>
@@ -103,9 +111,9 @@ auto result = std::string{ };
 {
   auto writer = daw::json::json_writer( result );
   writer.open_array( );
-  writer.write_values( values );
-  writer.write_values( { 4, 5 } );
-  writer.write_values( 6, "seven", false );
+  writer.write_array_values( values );
+  writer.write_array_values( { 4, 5 } );
+  writer.write_array_values( 6, "seven", false );
   writer.close_array( );
 }
 ```
@@ -114,6 +122,34 @@ The result is:
 
 ```json
 [1,2,3,4,5,6,"seven",false]
+```
+
+`write_value` also accepts an initializer list or multiple values and writes
+them as a complete JSON array. This is useful at the root or after `add_key`:
+
+```cpp
+auto result = std::string{ };
+{
+  auto writer = daw::json::json_writer( result );
+  writer.open_object( );
+  writer.add_key( "values" );
+  writer.write_value( 1, "two", false );
+  writer.close_object( );
+}
+```
+
+The result is:
+
+```json
+{"values":[1,"two",false]}
+```
+
+Likewise, passing an initializer list or multiple values to
+`write_key_value` writes the member value as an array:
+
+```cpp
+writer.write_key_value( "numbers", { 1, 2, 3 } );
+writer.write_key_value( "mixed", 42, "Hello", 44 );
 ```
 
 ## Nesting Objects and Arrays
@@ -232,7 +268,7 @@ auto result = std::string{ };
   writer.write_key_value( "answer", 42 );
   writer.add_key( "values" );
   writer.open_array( );
-  writer.write_values( { 1, 2, 3 } );
+  writer.write_array_values( { 1, 2, 3 } );
   writer.close_array( );
   writer.close_object( );
 }
@@ -327,7 +363,9 @@ surrounding output format before writing the next root value.
 * `add_key` and `write_key_value` are valid only inside an object.
 * An object value written separately must follow `add_key`.
 * The scalar write functions write an array element when inside an array.
-* `write_values` is valid only inside an array.
+* `write_array_values` is valid only inside an array.
+* Passing multiple values or an initializer list to `write_value` or
+  `write_key_value` writes those values as an array.
 * `close_object` and `close_array` must match the currently open container.
 * A writer produces one root JSON value between construction or `reset()` and
   the next `reset()`.

@@ -6,10 +6,9 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#include "daw/json/daw_json_switches.h"
+#include "daw/json/daw_json_writer.h"
 
-#include <daw/json/daw_json_writer.h>
-
+#include <cstdio>
 #include <iostream>
 #include <string>
 
@@ -33,6 +32,23 @@ namespace daw::json {
 		}
 	};
 } // namespace daw::json
+
+#if defined( DAW_JSON_HAS_CPP20_CX_STRING )
+consteval bool constexpr_test( ) {
+	auto out = std::string{ };
+	{
+		auto w = daw::json::json_writer( out );
+		w.open_object( );
+		w.write_key_value( "a", 42 );
+		w.write_key_value( "b", { 1, 2, 3 } );
+		w.write_key_value( "c", nullptr );
+		daw_ensure( out == R"json({"a":42,"b":[1,2,3],"c":null)json" );
+	}
+	daw_ensure( out == R"json({"a":42,"b":[1,2,3],"c":null})json" );
+	return true;
+}
+static_assert( constexpr_test( ) );
+#endif
 
 int main( ) {
 	{
@@ -155,7 +171,7 @@ int main( ) {
 			for( int n = 1; n <= 3; ++n ) {
 				w.write_value( n * 2 );
 			}
-			w.write_values( { 1, 2, 3 } );
+			w.write_array_values( { 1, 2, 3 } );
 			w.close_array( );
 			w.close_object( );
 		}
@@ -168,9 +184,9 @@ int main( ) {
 			w.open_object( );
 			w.add_key( "a" );
 			w.open_array( );
-			w.write_values( 1, 2, "3", 4 );
+			w.write_array_values( 1, 2, "3", 4 );
 			w.write_value( "5" );
-			w.write_values( { 6, 7 } );
+			w.write_array_values( { 6, 7 } );
 			w.close_array( );
 			w.close_object( );
 		}
@@ -241,4 +257,22 @@ int main( ) {
 		}
 		daw_ensure( out == R"json("Hello")json" );
 	}
+#if not defined( _WIN32 )
+	{
+		auto w = daw::json::json_writer( stdout );
+		w.open_object( );
+		w.write_key_value( "a", 42 );
+		w.write_key_value( "b", 42, "Hello", 44 );
+		w.close_object( );
+		std::puts( "" );
+	}
+	{
+		auto w = daw::json::json_writer( std::cout );
+		w.open_object( );
+		w.write_key_value( "a", 42 );
+		w.write_key_value( "b", 42, "Hello", 44 );
+		w.close_object( );
+		std::cout << '\n';
+	}
+#endif
 }
