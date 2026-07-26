@@ -1170,9 +1170,6 @@ endif()
 add_executable( daw_json_writer_test src/daw_json_writer_test.cpp )
 target_link_libraries( daw_json_writer_test json_test )
 add_test( NAME daw_json_writer_test_test COMMAND daw_json_writer_test )
-target_compile_options( daw_json_writer_test PRIVATE
-                        $<$<CXX_COMPILER_ID:MSVC>:/wd4702>
-)
 add_dependencies( ci_tests daw_json_writer_test )
 add_dependencies( full daw_json_writer_test )
 
