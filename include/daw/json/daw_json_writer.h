@@ -49,7 +49,7 @@ namespace daw::json {
 			  decltype( json_details::make_output_iterator<PolicyFlags...>(
 			    std::declval<WriterType>( ) ) );
 
-			/*std::vector<json_writer_states>*/ StackType m_stack{ };
+			StackType m_stack{ };
 			json_writer_states m_current_state =
 			  json_writer_states::json_writer_nothing;
 			bool m_is_first = true;
