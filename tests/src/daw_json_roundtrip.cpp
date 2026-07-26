@@ -9,6 +9,7 @@
 
 #include "daw/json/daw_json_event_parser.h"
 #include "daw/json/daw_json_link.h"
+#include "daw/json/daw_json_writer.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_parse_args.h>
@@ -19,77 +20,42 @@
 #include <iomanip>
 #include <iostream>
 
-template<typename OutputIterator>
+template<typename Writable>
 class JSONMinifyHandler {
-	struct stack_value {
-		bool is_class;
-		bool is_first = true;
-
-		constexpr stack_value( bool isClass )
-		  : is_class( isClass ) {}
-	};
-	std::vector<stack_value> member_count_stack{ };
-	OutputIterator out_it;
-
-	void write_chr( char c ) {
-		*out_it++ = c;
-	}
-
-	void write_str( std::string_view s ) {
-		out_it = std::copy_n( s.data( ), s.size( ), out_it );
-	}
-
-	template<std::size_t N>
-	void write_str( char const ( &str )[N] ) {
-		out_it = std::copy_n( str, N - 1, out_it );
-	}
+	using writer_t =
+	  decltype( daw::json::json_writer( std::declval<Writable &>( ) ) );
+	writer_t m_out;
 
 public:
-	explicit JSONMinifyHandler( OutputIterator it )
-	  : out_it( std::move( it ) ) {}
+	explicit constexpr JSONMinifyHandler( Writable &w )
+	  : m_out( daw::json::json_writer( w ) ) {}
 
-	bool handle_on_number( double d ) {
-		out_it = daw::json::to_json( d, out_it );
+	constexpr bool handle_on_number( double d ) {
+		m_out.write_number( d );
 		return true;
 	}
 
 	template<daw::json::json_options_t PolicyFlags, typename Allocator>
 	bool
 	handle_on_string( daw::json::basic_json_value<PolicyFlags, Allocator> jv ) {
-		auto const r = daw::json::from_json<std::string>( jv );
-		out_it = daw::json::to_json( r, out_it );
+		m_out.write_string( daw::json::from_json<daw::string_view>( jv ) );
 		return true;
 	}
 
 	bool handle_on_null( ) {
-		write_str( "null" );
+		m_out.write_null( );
 		return true;
 	}
 
 	bool handle_on_bool( bool b ) {
-		if( b ) {
-			write_str( "true" );
-		} else {
-			write_str( "false" );
-		}
+		m_out.write_boolean( b );
 		return true;
 	}
 
 	template<daw::json::json_options_t PolicyFlags, typename Allocator>
 	bool handle_on_value( daw::json::basic_json_pair<PolicyFlags, Allocator> p ) {
-		if( member_count_stack.empty( ) ) {
-			member_count_stack.emplace_back( p.value.is_class( ) );
-		}
-		auto &parent = member_count_stack.back( );
-		if( parent.is_first ) {
-			parent.is_first = false;
-		} else {
-			write_chr( ',' );
-		}
-		if( parent.is_class and p.name ) {
-			write_chr( '"' );
-			write_str( *p.name );
-			write_str( "\":" );
+		if( p.name ) {
+			m_out.add_key( *p.name );
 		}
 		return true;
 	}
@@ -97,44 +63,36 @@ public:
 	template<daw::json::json_options_t PolicyFlags, typename Allocator>
 	bool
 	handle_on_array_start( daw::json::basic_json_value<PolicyFlags, Allocator> ) {
-		member_count_stack.emplace_back( false );
-		write_chr( '[' );
+		m_out.open_array( );
 		return true;
 	}
 
 	bool handle_on_array_end( ) {
-		member_count_stack.pop_back( );
-		write_chr( ']' );
+		m_out.close_array( );
 		return true;
 	}
 
 	template<daw::json::json_options_t PolicyFlags, typename Allocator>
 	bool
 	handle_on_class_start( daw::json::basic_json_value<PolicyFlags, Allocator> ) {
-		member_count_stack.emplace_back( true );
-		write_chr( '{' );
+		m_out.open_object( );
 		return true;
 	}
 
 	bool handle_on_class_end( ) {
-		member_count_stack.pop_back( );
-		write_chr( '}' );
+		m_out.close_object( );
 		return true;
 	}
-
-	OutputIterator get_iterator( ) {
-		return out_it;
-	}
 };
-template<typename OutputIterator>
-JSONMinifyHandler( OutputIterator ) -> JSONMinifyHandler<OutputIterator>;
+template<typename Writable>
+JSONMinifyHandler( Writable ) -> JSONMinifyHandler<Writable>;
 
-template<typename Iterator>
+template<typename Writable>
 void roundtrip( daw::Arguments const &args, std::string_view data,
-                Iterator out_it ) {
+                Writable &out ) {
 
 	bool const has_out_file = args.size( ) > 1 and args[1].name.empty( );
-	auto handler = JSONMinifyHandler( out_it );
+	auto handler = JSONMinifyHandler( out );
 
 	if( auto pos = args.find_argument_position( "verbose" ); pos ) {
 		auto const time = daw::benchmark( [&] {
@@ -187,9 +145,11 @@ int main( int argc, char **argv )
 				std::cerr << "Failed to open outputfile '" << args[1].value << "'\n";
 				exit( 1 );
 			}
-			roundtrip( args, data, std::ostreambuf_iterator<char>( ofile ) );
+			roundtrip( args, data, ofile );
 		} else {
-			roundtrip( args, data, std::ostreambuf_iterator<char>( std::cout ) );
+			auto result = std::string{ };
+			roundtrip( args, data, result );
+			std::cout << result << '\n';
 		}
 #if defined( DAW_USE_EXCEPTIONS )
 	} catch( daw::json::json_exception const &jex ) {

@@ -59,18 +59,18 @@ namespace daw::json {
 				  has_on_value_handler_impl,
 				  std::declval<T>( ).handle_on_value( std::declval<U>( ) ) );
 
-				template<typename Handler, json_options_t, typename JPair>
+				template<typename Handler, json_options_t P, typename A>
 				DAW_CPP20_CONCEPT has_on_value_handler_v =
-				  has_on_value_handler_impl<Handler, JPair>;
+				  has_on_value_handler_impl<Handler, basic_json_pair<P, A>>;
 
 				// On Array Start
 				DAW_JSON_MAKE_REQ_TRAIT2(
 				  has_on_array_start_handler_impl,
 				  std::declval<T>( ).handle_on_array_start( std::declval<U>( ) ) );
 
-				template<typename Handler, json_options_t /*O*/, typename JValue>
+				template<typename Handler, json_options_t P, typename A>
 				DAW_CPP20_CONCEPT has_on_array_start_handler_v =
-				  has_on_array_start_handler_impl<Handler, JValue>;
+				  has_on_array_start_handler_impl<Handler, basic_json_value<P, A>>;
 
 				// On Array End
 				DAW_JSON_MAKE_REQ_TRAIT( has_on_array_end_handler_v,
@@ -81,9 +81,9 @@ namespace daw::json {
 				  has_on_class_start_handler_impl,
 				  std::declval<T>( ).handle_on_class_start( std::declval<U>( ) ) );
 
-				template<typename Handler, json_options_t /*Opt*/, typename JValue>
+				template<typename Handler, json_options_t P, typename A>
 				DAW_CPP20_CONCEPT has_on_class_start_handler_v =
-				  has_on_class_start_handler_impl<Handler, JValue>;
+				  has_on_class_start_handler_impl<Handler, basic_json_value<P, A>>;
 
 				// On Class End
 				DAW_JSON_MAKE_REQ_TRAIT( has_on_class_end_handler_v,

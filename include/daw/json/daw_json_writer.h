@@ -49,7 +49,7 @@ namespace daw::json {
 			  decltype( json_details::make_output_iterator<PolicyFlags...>(
 			    std::declval<WriterType>( ) ) );
 
-			/*std::vector<json_writer_states>*/ StackType m_stack{ };
+			StackType m_stack{ };
 			json_writer_states m_current_state =
 			  json_writer_states::json_writer_nothing;
 			bool m_is_first = true;
@@ -225,8 +225,9 @@ namespace daw::json {
 				if constexpr( json_base_type == JsonBaseParseTypes::Bool ) {
 					write_value( static_cast<bool>( value ) ? 1 : 0 );
 					return;
+				} else {
+					write_value( value );
 				}
-				write_value( value );
 			}
 
 			template<typename JsonClass = use_default, typename T>
@@ -243,12 +244,13 @@ namespace daw::json {
 				if constexpr( json_base_type == JsonBaseParseTypes::String ) {
 					write_value( value );
 					return;
+				} else {
+					prepare_value( );
+					m_writer.put( '"' );
+					to_json( value, m_writer.get( ) );
+					m_writer.put( '"' );
+					m_is_first = false;
 				}
-				prepare_value( );
-				m_writer.put( '"' );
-				to_json( value, m_writer.get( ) );
-				m_writer.put( '"' );
-				m_is_first = false;
 			}
 
 			template<std::size_t N>
