@@ -15,6 +15,10 @@
 #include "daw/json/concepts/daw_writable_output.h"
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_move.h>
+#include <daw/traits/daw_traits_remove_cvref.h>
+
+#include <type_traits>
 #include <vector>
 
 namespace daw::json {
@@ -43,11 +47,11 @@ namespace daw::json {
 			};
 		} // namespace json_writer_details
 
-		template<typename WriterType, typename StackType, auto... PolicyFlags>
+		template<typename WritableType, typename StackType, auto... PolicyFlags>
 		class json_writer_t {
 			using iterator_t =
 			  decltype( json_details::make_output_iterator<PolicyFlags...>(
-			    std::declval<WriterType>( ) ) );
+			    std::declval<WritableType>( ) ) );
 
 			StackType m_stack{ };
 			json_writer_details::json_writer_states m_current_state =
@@ -104,9 +108,10 @@ namespace daw::json {
 			}
 
 		public:
-			explicit constexpr json_writer_t( WriterType &writer )
-			  : m_writer(
-			      json_details::make_output_iterator<PolicyFlags...>( writer ) ) {}
+			template<typename W>
+			explicit constexpr json_writer_t( W &&writer )
+			  : m_writer( json_details::make_output_iterator<PolicyFlags...>(
+			      DAW_FWD( writer ) ) ) {}
 			json_writer_t( json_writer_t const & ) = delete;
 			json_writer_t &operator=( json_writer_t const & ) = delete;
 			json_writer_t( json_writer_t &&other ) = delete;
@@ -398,8 +403,8 @@ namespace daw::json {
 		};
 
 		template<auto... PolicyFlags, typename WriterType>
-		constexpr auto json_writer( WriterType &writer ) {
-			return json_writer_t<WriterType,
+		constexpr auto json_writer( WriterType &&writer ) {
+			return json_writer_t<daw::remove_cvref_t<WriterType>,
 			                     std::vector<json_writer_details::json_writer_states>,
 			                     PolicyFlags...>( writer );
 		}
