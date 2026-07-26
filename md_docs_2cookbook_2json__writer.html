@@ -82,7 +82,7 @@ $(function() {
 <div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line"><span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
 <div class="ttc" id="adaw__json__writer_8h_html"><div class="ttname"><a href="daw__json__writer_8h.html">daw_json_writer.h</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_html_a078abb26cb25a62918de93e423988050"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::anonymous_namespace{daw_json_writer.h}::json_writer</a></div><div class="ttdeci">constexpr auto json_writer(WriterType &amp;writer)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__writer_8h_source.html#l00279">daw_json_writer.h:279</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_html_a078abb26cb25a62918de93e423988050"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::anonymous_namespace{daw_json_writer.h}::json_writer</a></div><div class="ttdeci">constexpr auto json_writer(WriterType &amp;writer)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__writer_8h_source.html#l00349">daw_json_writer.h:349</a></div></div>
 </div><!-- fragment --><p>Values passed to <code>write_value</code> and <code>write_key_value</code> use the same serialization support as <code><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a></code>, including JSON data contracts.</p>
 <h1><a class="anchor" id="autotoc_md40"></a>
 Writing an Object</h1>
@@ -178,8 +178,38 @@ Writing a Single Root Value</h1>
 <div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
 <div class="line">  writer.write_value( 42 );</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>Only one root value, object, or array can be written by a writer.</p>
+</div><!-- fragment --><p>Only one root value, object, or array can be written before the writer is reset.</p>
 <h1><a class="anchor" id="autotoc_md44"></a>
+Writing Values with an Explicit JSON Type</h1>
+<p><code>write_value</code> normally deduces the JSON representation from the C++ value. The writer also provides functions for selecting a scalar JSON representation explicitly:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">  writer.open_array( );</div>
+<div class="line">  writer.write_boolean( <span class="keyword">false</span> );</div>
+<div class="line">  writer.write_null( );</div>
+<div class="line">  writer.write_number( 42 );</div>
+<div class="line">  writer.write_string( 42 );</div>
+<div class="line">  writer.write_string( <span class="keyword">true</span> );</div>
+<div class="line">  writer.close_array( );</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>The result is:</p>
+<div class="fragment"><div class="line">[false,null,42,&quot;42&quot;,&quot;true&quot;]</div>
+</div><!-- fragment --><p>The scalar functions are:</p>
+<ul>
+<li><code>write_boolean(bool)</code> writes a JSON Boolean.</li>
+<li><code>write_null()</code> writes JSON <code>null</code>.</li>
+<li><code>write_number(value)</code> writes a value using a number or Boolean mapping. A Boolean mapping is converted to the JSON number <code>0</code> or <code>1</code>.</li>
+<li><code>write_string(value)</code> writes a string mapping normally, and writes a number or Boolean mapping as its quoted JSON representation.</li>
+</ul>
+<p>Like <code>write_value</code>, these functions write an array element when the writer is inside an array, or the value for a preceding <code>add_key</code> when it is inside an object.</p>
+<p><code>write_number</code> and <code>write_string</code> accept an optional JSON mapping type as their first template argument. This is useful when the desired mapping cannot be deduced from the value:</p>
+<div class="fragment"><div class="line">writer.write_number&lt;<a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a9ed27157013275c28ec4e704ad4a77fd">daw::json::json_number_no_name&lt;int&gt;</a>&gt;( value );</div>
+<div class="line">writer.write_string&lt;<a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a57e1991cf62788a9ba3cbc7e3c4633bc">daw::json::json_bool_no_name&lt;&gt;</a>&gt;( flag );</div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_a57e1991cf62788a9ba3cbc7e3c4633bc"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a57e1991cf62788a9ba3cbc7e3c4633bc">daw::json::anonymous_namespace{daw_json_link_types.h}::json_bool_no_name</a></div><div class="ttdeci">json_base::json_bool&lt; T, Options, Constructor &gt; json_bool_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00599">daw_json_link_types.h:599</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_a9ed27157013275c28ec4e704ad4a77fd"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a9ed27157013275c28ec4e704ad4a77fd">daw::json::anonymous_namespace{daw_json_link_types.h}::json_number_no_name</a></div><div class="ttdeci">json_base::json_number&lt; T, Options, Constructor &gt; json_number_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00506">daw_json_link_types.h:506</a></div></div>
+</div><!-- fragment --><p>The mapping supplied to <code>write_number</code> must have a number or Boolean underlying JSON type. The mapping supplied to <code>write_string</code> must have a number, Boolean, or string underlying JSON type.</p>
+<h1><a class="anchor" id="autotoc_md45"></a>
 Pretty Output</h1>
 <p>Serialization policy flags are template arguments to <code>json_writer</code>. For example, enable pretty output as follows:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
@@ -205,7 +235,7 @@ Pretty Output</h1>
 <div class="line">  ]</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>See <a class="el" href="md_docs_2cookbook_2output__options.html">Output Options</a> for the available serialization policy flags.</p>
-<h1><a class="anchor" id="autotoc_md45"></a>
+<h1><a class="anchor" id="autotoc_md46"></a>
 Automatic Completion and Missing Values</h1>
 <p>Explicitly closing every object and array makes the intended structure clear, but the writer also closes open containers when it is destroyed:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
@@ -224,15 +254,35 @@ Automatic Completion and Missing Values</h1>
 <div class="line">}</div>
 </div><!-- fragment --><p>The result is:</p>
 <div class="fragment"><div class="line">{&quot;missing&quot;:null}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md46"></a>
+</div><!-- fragment --><p>Call <code>finalize()</code> to perform the same completion explicitly before the writer is destroyed. It writes <code>null</code> for a pending object key and closes all open objects and arrays:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
+<div class="line"><span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">writer.open_object( );</div>
+<div class="line">writer.write_key_value( <span class="stringliteral">&quot;answer&quot;</span>, 42 );</div>
+<div class="line">writer.finalize( );</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md47"></a>
+Reusing a Writer</h1>
+<p>Call <code>reset()</code> to finish the current document and reset the writer state so another root JSON value can be appended to the same output. <code>reset()</code> calls <code>finalize()</code>, so it writes <code>null</code> for a pending object key and closes every open object and array. It does not clear or otherwise modify output that has already been written.</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
+<div class="line"><span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line"> </div>
+<div class="line">writer.open_object( );</div>
+<div class="line">writer.write_key_value( <span class="stringliteral">&quot;answer&quot;</span>, 42 );</div>
+<div class="line">writer.reset( ); <span class="comment">// Completes the first document.</span></div>
+<div class="line"> </div>
+<div class="line">writer.write_value( <span class="keyword">true</span> );</div>
+<div class="line">writer.finalize( );</div>
+</div><!-- fragment --><p>Here, <code>result</code> is <code>{"answer":42}true</code>. Add any separator required by the surrounding output format before writing the next root value.</p>
+<h1><a class="anchor" id="autotoc_md48"></a>
 Operation Rules</h1>
 <ul>
 <li><code>add_key</code> and <code>write_key_value</code> are valid only inside an object.</li>
 <li>An object value written separately must follow <code>add_key</code>.</li>
-<li><code>write_value</code> writes an array element when inside an array.</li>
+<li>The scalar write functions write an array element when inside an array.</li>
 <li><code>write_values</code> is valid only inside an array.</li>
 <li><code>close_object</code> and <code>close_array</code> must match the currently open container.</li>
-<li>A writer produces exactly one root JSON value.</li>
+<li>A writer produces one root JSON value between construction or <code>reset()</code> and the next <code>reset()</code>.</li>
+<li><code>finalize()</code> completes the current document, and <code>reset()</code> finalizes it before resetting the writer state.</li>
 <li>The writer is neither copyable nor movable and must not outlive its output. </li>
 </ul>
 </div></div><!-- contents -->
