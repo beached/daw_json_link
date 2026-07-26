@@ -73,23 +73,26 @@ $(function() {
   <div class="headertitle"><div class="title">Incremental JSON Writer</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md39"></a> <code><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a></code> builds one JSON document incrementally. It is useful when the document structure is known while writing, but constructing an intermediate C++ object or container would be inconvenient.</p>
-<p>Include the incremental writer header and create a writer over any supported writable output:</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md39"></a> <code><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a></code> builds one JSON document incrementally. It is useful when the document structure is known while writing, but constructing an intermediate C++ object or container would be inconvenient.</p>
+<p>Include the incremental writer header and create a writer over any supported writable output. This includes string-like containers, C++ output streams, and C <code>FILE *</code> outputs:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__writer_8h.html">daw/json/daw_json_writer.h</a>&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
-<div class="line"><span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line"><span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="ttc" id="adaw__json__writer_8h_html"><div class="ttname"><a href="daw__json__writer_8h.html">daw_json_writer.h</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_html_a078abb26cb25a62918de93e423988050"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::anonymous_namespace{daw_json_writer.h}::json_writer</a></div><div class="ttdeci">constexpr auto json_writer(WriterType &amp;writer)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__writer_8h_source.html#l00351">daw_json_writer.h:351</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_html_aab91cb30e2621f0d0b5101b39b8b8652"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::anonymous_namespace{daw_json_writer.h}::json_writer</a></div><div class="ttdeci">constexpr auto json_writer(WriterType &amp;&amp;writer)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__writer_8h_source.html#l00406">daw_json_writer.h:406</a></div></div>
+</div><!-- fragment --><p>For example, a writer can write directly to standard output:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> stream_writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( std::cout );</div>
+<div class="line"><span class="keyword">auto</span> file_writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( stdout );</div>
 </div><!-- fragment --><p>Values passed to <code>write_value</code> and <code>write_key_value</code> use the same serialization support as <code><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a></code>, including JSON data contracts.</p>
 <h1><a class="anchor" id="autotoc_md40"></a>
 Writing an Object</h1>
 <p>Use <code>write_key_value</code> when a member's value is immediately available:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line">  writer.open_object( );</div>
 <div class="line">  writer.write_key_value( <span class="stringliteral">&quot;name&quot;</span>, <span class="stringliteral">&quot;Ada&quot;</span> );</div>
 <div class="line">  writer.write_key_value( <span class="stringliteral">&quot;active&quot;</span>, <span class="keyword">true</span> );</div>
@@ -101,7 +104,7 @@ Writing an Object</h1>
 </div><!-- fragment --><p>Use <code>add_key</code> when the value will be written separately. This is particularly useful when the value is an array or object:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line">  writer.open_object( );</div>
 <div class="line"> </div>
 <div class="line">  writer.add_key( <span class="stringliteral">&quot;values&quot;</span> );</div>
@@ -121,7 +124,7 @@ Writing an Array</h1>
 <p>An array can be the root document:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line">  writer.open_array( );</div>
 <div class="line">  writer.write_value( 1 );</div>
 <div class="line">  writer.write_value( <span class="stringliteral">&quot;two&quot;</span> );</div>
@@ -130,27 +133,41 @@ Writing an Array</h1>
 <div class="line">}</div>
 </div><!-- fragment --><p>The result is:</p>
 <div class="fragment"><div class="line">[1,&quot;two&quot;,true]</div>
-</div><!-- fragment --><p><code>write_values</code> can append an initializer list, a container-like range, or a heterogeneous argument list:</p>
+</div><!-- fragment --><p><code>write_array_values</code> appends an initializer list, a container-like range, or a heterogeneous argument list to an open array:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">auto</span> values = std::vector&lt;int&gt;{ 1, 2, 3 };</div>
 <div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line">  writer.open_array( );</div>
-<div class="line">  writer.write_values( values );</div>
-<div class="line">  writer.write_values( { 4, 5 } );</div>
-<div class="line">  writer.write_values( 6, <span class="stringliteral">&quot;seven&quot;</span>, <span class="keyword">false</span> );</div>
+<div class="line">  writer.write_array_values( values );</div>
+<div class="line">  writer.write_array_values( { 4, 5 } );</div>
+<div class="line">  writer.write_array_values( 6, <span class="stringliteral">&quot;seven&quot;</span>, <span class="keyword">false</span> );</div>
 <div class="line">  writer.close_array( );</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The result is:</p>
 <div class="fragment"><div class="line">[1,2,3,4,5,6,&quot;seven&quot;,false]</div>
+</div><!-- fragment --><p><code>write_value</code> also accepts an initializer list or multiple values and writes them as a complete JSON array. This is useful at the root or after <code>add_key</code>:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
+<div class="line">  writer.open_object( );</div>
+<div class="line">  writer.add_key( <span class="stringliteral">&quot;values&quot;</span> );</div>
+<div class="line">  writer.write_value( 1, <span class="stringliteral">&quot;two&quot;</span>, <span class="keyword">false</span> );</div>
+<div class="line">  writer.close_object( );</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>The result is:</p>
+<div class="fragment"><div class="line">{&quot;values&quot;:[1,&quot;two&quot;,false]}</div>
+</div><!-- fragment --><p>Likewise, passing an initializer list or multiple values to <code>write_key_value</code> writes the member value as an array:</p>
+<div class="fragment"><div class="line">writer.write_key_value( <span class="stringliteral">&quot;numbers&quot;</span>, { 1, 2, 3 } );</div>
+<div class="line">writer.write_key_value( <span class="stringliteral">&quot;mixed&quot;</span>, 42, <span class="stringliteral">&quot;Hello&quot;</span>, 44 );</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md42"></a>
 Nesting Objects and Arrays</h1>
 <p>Objects and arrays can be nested to any depth supported by the writer's state stack:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line">  writer.open_object( );</div>
 <div class="line">  writer.write_key_value( <span class="stringliteral">&quot;kind&quot;</span>, <span class="stringliteral">&quot;example&quot;</span> );</div>
 <div class="line"> </div>
@@ -175,7 +192,7 @@ Writing a Single Root Value</h1>
 <p>A scalar can be written as the complete document without opening a container:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line">  writer.write_value( 42 );</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>Only one root value, object, or array can be written before the writer is reset.</p>
@@ -184,7 +201,7 @@ Writing Values with an Explicit JSON Type</h1>
 <p><code>write_value</code> normally deduces the JSON representation from the C++ value. The writer also provides functions for selecting a scalar JSON representation explicitly:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line">  writer.open_array( );</div>
 <div class="line">  writer.write_boolean( <span class="keyword">false</span> );</div>
 <div class="line">  writer.write_null( );</div>
@@ -214,14 +231,14 @@ Pretty Output</h1>
 <p>Serialization policy flags are template arguments to <code>json_writer</code>. For example, enable pretty output as follows:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>&lt;</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>&lt;</div>
 <div class="line">    daw::json::options::SerializationFormat::Pretty&gt;( result );</div>
 <div class="line"> </div>
 <div class="line">  writer.open_object( );</div>
 <div class="line">  writer.write_key_value( <span class="stringliteral">&quot;answer&quot;</span>, 42 );</div>
 <div class="line">  writer.add_key( <span class="stringliteral">&quot;values&quot;</span> );</div>
 <div class="line">  writer.open_array( );</div>
-<div class="line">  writer.write_values( { 1, 2, 3 } );</div>
+<div class="line">  writer.write_array_values( { 1, 2, 3 } );</div>
 <div class="line">  writer.close_array( );</div>
 <div class="line">  writer.close_object( );</div>
 <div class="line">}</div>
@@ -240,14 +257,14 @@ Automatic Completion and Missing Values</h1>
 <p>Explicitly closing every object and array makes the intended structure clear, but the writer also closes open containers when it is destroyed:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line">  writer.open_object( );</div>
 <div class="line">  writer.write_key_value( <span class="stringliteral">&quot;answer&quot;</span>, 42 );</div>
 <div class="line">} <span class="comment">// Completes the object.</span></div>
 </div><!-- fragment --><p>If an object key has no value when another key is added, the object is closed, or the writer is destroyed, its value is written as <code>null</code>:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
-<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line">  writer.open_object( );</div>
 <div class="line">  writer.add_key( <span class="stringliteral">&quot;missing&quot;</span> );</div>
 <div class="line">  writer.close_object( );</div>
@@ -256,7 +273,7 @@ Automatic Completion and Missing Values</h1>
 <div class="fragment"><div class="line">{&quot;missing&quot;:null}</div>
 </div><!-- fragment --><p>Call <code>finalize()</code> to perform the same completion explicitly before the writer is destroyed. It writes <code>null</code> for a pending object key and closes all open objects and arrays:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
-<div class="line"><span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line"><span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line">writer.open_object( );</div>
 <div class="line">writer.write_key_value( <span class="stringliteral">&quot;answer&quot;</span>, 42 );</div>
 <div class="line">writer.finalize( );</div>
@@ -264,7 +281,7 @@ Automatic Completion and Missing Values</h1>
 Reusing a Writer</h1>
 <p>Call <code>reset()</code> to finish the current document and reset the writer state so another root JSON value can be appended to the same output. <code>reset()</code> calls <code>finalize()</code>, so it writes <code>null</code> for a pending object key and closes every open object and array. It does not clear or otherwise modify output that has already been written.</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
-<div class="line"><span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#a078abb26cb25a62918de93e423988050">daw::json::json_writer</a>( result );</div>
+<div class="line"><span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="line"> </div>
 <div class="line">writer.open_object( );</div>
 <div class="line">writer.write_key_value( <span class="stringliteral">&quot;answer&quot;</span>, 42 );</div>
@@ -279,7 +296,8 @@ Operation Rules</h1>
 <li><code>add_key</code> and <code>write_key_value</code> are valid only inside an object.</li>
 <li>An object value written separately must follow <code>add_key</code>.</li>
 <li>The scalar write functions write an array element when inside an array.</li>
-<li><code>write_values</code> is valid only inside an array.</li>
+<li><code>write_array_values</code> is valid only inside an array.</li>
+<li>Passing multiple values or an initializer list to <code>write_value</code> or <code>write_key_value</code> writes those values as an array.</li>
 <li><code>close_object</code> and <code>close_array</code> must match the currently open container.</li>
 <li>A writer produces one root JSON value between construction or <code>reset()</code> and the next <code>reset()</code>.</li>
 <li><code>finalize()</code> completes the current document, and <code>reset()</code> finalizes it before resetting the writer state.</li>

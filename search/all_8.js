@@ -6,7 +6,7 @@ var searchData=
   ['a_20single_20root_20value_3',['Writing a Single Root Value',['../md_docs_2cookbook_2json__writer.html#autotoc_md43',1,'']]],
   ['a_20writer_4',['Reusing a Writer',['../md_docs_2cookbook_2json__writer.html#autotoc_md47',1,'']]],
   ['add_5findent_5',['add_indent',['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#af582125ffee33c38c02c2102cbd8971b',1,'daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serialization_policy']]],
-  ['add_5fkey_6',['add_key',['../classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ad3c6ec7759b2e066e4ed5694e50ce0e2',1,'daw::json::anonymous_namespace{daw_json_writer.h}::json_writer_t']]],
+  ['add_5fkey_6',['add_key',['../classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#af8436b20f0e075c7b0aa8fd98b2c1e28',1,'daw::json::anonymous_namespace{daw_json_writer.h}::json_writer_t']]],
   ['air_208gb_20ram_20intel_20r_20core_20tm_20i5_205350u_20cpu_201_2080ghz_7',['2017 Macbook Air. 8GB Ram Intel(R) Core(TM) i5-5350U CPU @ 1.80GHz',['../md_docs_2kostya__benchmark__results.html#autotoc_md174',1,'']]],
   ['ajax_20datetime_8',['Microsoft AJAX DateTime.',['../md_docs_2cookbook_2dates.html#autotoc_md23',1,'']]],
   ['aliases_2emd_9',['aliases.md',['../aliases_8md.html',1,'']]],
