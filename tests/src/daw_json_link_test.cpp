@@ -688,7 +688,7 @@ bool test_key_value( ) {
 bool test_vector_of_bool( ) {
 	std::string const json_data = "[true,false,true]";
 	auto const rv0 = daw::json::from_json_array<bool>( json_data );
-	assert( rv0.size( ) == 3 and rv0.at( 0 ) and not rv0.at( 1 ) and
+	daw_ensure( rv0.size( ) == 3 and rv0.at( 0 ) and not rv0.at( 1 ) and
 	        rv0.at( 2 ) );
 	auto const str0 = daw::json::to_json_array( rv0 );
 	auto const rv1 = daw::json::from_json<std::vector<bool>>( str0 );
@@ -816,8 +816,7 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 			state = json_details::skip_number( state );
 		}
 
-		auto const result =
-		  json_details::parse_real<float, KnownBounds>( state );
+		auto const result = json_details::parse_real<float, KnownBounds>( state );
 
 		auto const result_bits = DAW_BIT_CAST( std::uint32_t, result );
 		daw_ensure( result_bits == test.expected_bits );
@@ -834,6 +833,7 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 	  { "796335516962425095e4", 0x447AFB1C0D71BFC1ULL },
 	  { "7483033532945566197e-20", 0x3FB32814B2FD1D1DULL },
 	  { "0.28956690281759414737", 0x3FD288439E66C1C7ULL },
+	  { "5e-34", 0x3904C4E977BA1f5CULL },
 	};
 	daw::do_not_optimize( double_cases );
 
@@ -844,10 +844,9 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 			state = json_details::skip_number( state );
 		}
 
-		auto const result =
-		  json_details::parse_real<double, KnownBounds>( state );
+		auto const result = json_details::parse_real<double, KnownBounds>( state );
 
-		assert( DAW_BIT_CAST( std::uint64_t, result ) == test.expected_bits );
+		daw_ensure( DAW_BIT_CAST( std::uint64_t, result ) == test.expected_bits );
 	}
 }
 
@@ -862,7 +861,7 @@ int main( ) {
 #if not defined( DAW_JSON_NO_CONST_EXPR )
 		static_assert( std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1> );
 #else
-	assert( (std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1>));
+	daw_ensure( (std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1>));
 #endif
 		test_parse_real_hard_rounding_cases<false>( );
 		test_parse_real_hard_rounding_cases<true>( );
@@ -1236,15 +1235,15 @@ int main( ) {
 		static_assert( from_json<unsigned int>( "1" ) == 1 );
 		static_assert( from_json<unsigned long>( "1" ) == 1 );
 		static_assert( from_json<unsigned long long>( "1" ) == 1 );
-		assert( from_json<std::string>( R"("hello world")" ) == "hello world" );
-		assert( from_json<std::deque<int>>( "[1,2,3]"s ).at( 1 ) == 2 );
-		assert( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
-		assert( ( from_json<json_array_no_name<char, std::string>>(
+		daw_ensure( from_json<std::string>( R"("hello world")" ) == "hello world" );
+		daw_ensure( from_json<std::deque<int>>( "[1,2,3]"s ).at( 1 ) == 2 );
+		daw_ensure( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
+		daw_ensure( ( from_json<json_array_no_name<char, std::string>>(
 		            "[97,98,99]"s ) == "abc" ) );
 #if not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
 		static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 #else
-	assert( ( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 ) );
+	daw_ensure( ( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 ) );
 #endif
 
 		auto const test_bad_float = []( ) -> bool {
