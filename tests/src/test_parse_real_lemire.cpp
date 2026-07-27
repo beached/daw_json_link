@@ -16,6 +16,19 @@
 
 namespace {
 	using daw::json::json_details::parse_real_lemire;
+	using daw::json::json_details::lemire_details::try_append_digit;
+
+	constexpr bool append_digit_check( ) {
+		std::uint64_t value = 1844674407370955161ULL;
+		if( not try_append_digit( value, 5U ) or
+		    value != std::numeric_limits<std::uint64_t>::max( ) ) {
+			return false;
+		}
+		return not try_append_digit( value, 0U ) and
+		       value == std::numeric_limits<std::uint64_t>::max( );
+	}
+
+	static_assert( append_digit_check( ) );
 
 	constexpr auto multiplication_check =
 	  daw::json::json_details::lemire_details::full_multiplication_generic(

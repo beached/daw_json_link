@@ -346,7 +346,7 @@ namespace daw::json {
 					              false,
 					              base_member_type::expected_type>( parse_state ) );
 				} else {
-					if( not parse_state.has_more( ) or
+					if( parse_state.is_null( ) or not parse_state.has_more( ) or
 					    parse_state.is_at_token_after_value( ) ) {
 						return construct_empty( );
 					}

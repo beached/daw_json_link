@@ -35,6 +35,17 @@ namespace daw::json {
 					std::uint64_t high;
 				};
 
+				[[nodiscard]] constexpr bool
+				try_append_digit( std::uint64_t &value, unsigned digit ) noexcept {
+					constexpr auto max_value =
+					  std::numeric_limits<std::uint64_t>::max( );
+					if( digit > 9U or value > ( max_value - digit ) / 10U ) {
+						return false;
+					}
+					value = value * 10U + digit;
+					return true;
+				}
+
 				template<typename Real>
 				struct binary_format;
 
