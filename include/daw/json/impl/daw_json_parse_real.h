@@ -211,8 +211,8 @@ namespace daw::json {
 				}
 				while( first < last ) {
 					auto const digit = parse_digit( *first );
-					if( digit >= 10U or
-					    not lemire_details::try_append_digit( significant_digits, digit ) ) {
+					if( digit >= 10U or not lemire_details::try_append_digit(
+					                      significant_digits, digit ) ) {
 						break;
 					}
 					++first;
@@ -388,12 +388,13 @@ namespace daw::json {
 							if( whole_complete and all_fract_first != nullptr ) {
 								auto const *discarded_fract_first =
 								  fract_first == nullptr ? all_fract_first : fract_last;
-								(void)fill_discarded_digits(
-								  discarded_fract_first, all_fract_last,
-								  significant_digits, exponent );
+								(void)fill_discarded_digits( discarded_fract_first,
+								                             all_fract_last,
+								                             significant_digits,
+								                             exponent );
 							}
 							return json_details::parse_real_lemire<Result>(
-							  sign < 0.0, exponent, significant_digits );
+							  sign < Result{ 0 }, exponent, significant_digits );
 						} else {
 							return json_details::parse_with_strtod<Result>(
 							  parse_state.first, parse_state.last );
@@ -617,16 +618,19 @@ namespace daw::json {
 						using json_details::parse_with_strtod;
 						if constexpr( std::is_same_v<Result, float> or
 						              std::is_same_v<Result, double> ) {
-							auto const whole_complete = fill_discarded_digits(
-							  discarded_whole_first, discarded_whole_last,
-							  significant_digits, exponent );
+							auto const whole_complete =
+							  fill_discarded_digits( discarded_whole_first,
+							                         discarded_whole_last,
+							                         significant_digits,
+							                         exponent );
 							if( whole_complete ) {
-								(void)fill_discarded_digits(
-								  discarded_fract_first, discarded_fract_last,
-								  significant_digits, exponent );
+								(void)fill_discarded_digits( discarded_fract_first,
+								                             discarded_fract_last,
+								                             significant_digits,
+								                             exponent );
 							}
 							return json_details::parse_real_lemire<Result>(
-							  sign < 0.0, exponent, significant_digits );
+							  sign < Result{ 0 }, exponent, significant_digits );
 						} else {
 							return parse_with_strtod<Result>( orig_first, orig_last );
 						}
