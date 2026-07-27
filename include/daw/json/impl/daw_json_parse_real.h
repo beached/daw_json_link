@@ -13,6 +13,7 @@
 #include "daw/json/impl/daw_fp_fallback.h"
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_policy_policy_details.h"
+#include "daw/json/impl/daw_json_parse_real_lemire.h"
 #include "daw/json/impl/daw_json_parse_real_power10.h"
 #include "daw/json/impl/daw_json_parse_unsigned_int.h"
 #include "daw/json/impl/daw_json_skip.h"
@@ -350,8 +351,14 @@ namespace daw::json {
 					use_strtod |= significant_digits > 9007199254740992ULL;
 					if( std::is_same_v<Result, long double> or
 					    DAW_UNLIKELY( use_strtod ) ) {
-						return json_details::parse_with_strtod<Result>( parse_state.first,
-						                                                parse_state.last );
+						if constexpr( std::is_same_v<Result, float> or
+						              std::is_same_v<Result, double> ) {
+							return json_details::parse_real_lemire<Result>(
+							  sign < 0.0, exponent, significant_digits );
+						} else {
+							return json_details::parse_with_strtod<Result>(
+							  parse_state.first, parse_state.last );
+						}
 					}
 				}
 				return sign *
@@ -554,11 +561,13 @@ namespace daw::json {
 					  DAW_UNLIKELY( significant_digits > 9007199254740992ULL );
 					if( DAW_UNLIKELY( use_strtod ) ) {
 						using json_details::parse_with_strtod;
-						auto result = parse_with_strtod<Result>( orig_first, orig_last );
-						/*auto x =
-						  fallback_fp<Result>( result, sign, significant_digits, exponent
-						); (void)x;*/
-						return result;
+						if constexpr( std::is_same_v<Result, float> or
+						              std::is_same_v<Result, double> ) {
+							return json_details::parse_real_lemire<Result>(
+							  sign < 0.0, exponent, significant_digits );
+						} else {
+							return parse_with_strtod<Result>( orig_first, orig_last );
+						}
 					}
 				}
 				return sign *

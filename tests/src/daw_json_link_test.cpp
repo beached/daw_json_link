@@ -789,6 +789,57 @@ struct Unmapped9 {
 	}
 };
 
+DAW_ATTRIB_NOINLINE void test_parse_real_known_hard_rounding_cases( ) {
+	using namespace daw::json;
+	using policy_t =
+	  BasicParsePolicy<parse_options( options::IEEE754Precise::yes )>;
+
+	struct float_case_t {
+		std::string_view input;
+		std::uint32_t expected_bits;
+	};
+
+	float_case_t float_cases[] = {
+	  { "4836034951e-7", 0x43F1CD3FU },
+	  { "98358875e-9", 0x3DC97061U },
+	  { "9096840731e9", 0x5EFC7CF1U },
+	};
+	daw::do_not_optimize( float_cases );
+
+	for( auto const &test : float_cases ) {
+		auto state =
+		  policy_t( test.input.data( ), test.input.data( ) + test.input.size( ) );
+		state = json_details::skip_number( state );
+
+		auto const result = json_details::parse_real_known<float>( state );
+
+		auto const result_bits = DAW_BIT_CAST( std::uint32_t, result );
+		daw_ensure( result_bits == test.expected_bits );
+	}
+
+	struct double_case_t {
+		std::string_view input;
+		std::uint64_t expected_bits;
+	};
+
+	double_case_t double_cases[] = {
+	  { "951398326886398061e-3", 0x430B0A557A82FFF0ULL },
+	  { "723129352390467621e-11", 0x415B95CF6187A77BULL },
+	  { "796335516962425095e4", 0x447AFB1C0D71BFC1ULL },
+	};
+	daw::do_not_optimize( double_cases );
+
+	for( auto const &test : double_cases ) {
+		auto state =
+		  policy_t( test.input.data( ), test.input.data( ) + test.input.size( ) );
+		state = json_details::skip_number( state );
+
+		auto const result = json_details::parse_real_known<double>( state );
+
+		assert( DAW_BIT_CAST( std::uint64_t, result ) == test.expected_bits );
+	}
+}
+
 int main( ) {
 #if defined( DAW_USE_EXCEPTIONS )
 	try {
@@ -802,6 +853,7 @@ int main( ) {
 #else
 	assert( (std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1>));
 #endif
+		test_parse_real_known_hard_rounding_cases( );
 
 		auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
 		ensure( foo2_val.m1 );

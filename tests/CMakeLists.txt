@@ -705,6 +705,12 @@ add_test( test_details_parse_real_test test_details_parse_real )
 add_dependencies( ci_tests test_details_parse_real )
 add_dependencies( full test_details_parse_real )
 
+add_executable( test_parse_real_lemire src/test_parse_real_lemire.cpp )
+target_link_libraries( test_parse_real_lemire PRIVATE json_test )
+add_test( test_parse_real_lemire_test test_parse_real_lemire )
+add_dependencies( ci_tests test_parse_real_lemire )
+add_dependencies( full test_parse_real_lemire )
+
 if( DAW_USE_EXCEPTIONS )
 	add_executable( test_details_skip_string src/test_details_skip_string.cpp )
 	target_link_libraries( test_details_skip_string PRIVATE json_test )
