@@ -257,19 +257,6 @@ int main( ) {
 		}
 		daw_ensure( out == R"json("Hello")json" );
 	}
-	/*
-	{
-		auto out = std::string{ };
-		auto w = daw::json::json_writer( out );
-		using json_fp_t = daw::json::json_number_no_name<
-		  double,
-		  daw::json::options::number_opt(
-		    daw::json::options::FPOutputFormat::Decimal )>;
-		w.write_number<json_fp_t>( 10.0 );
-		w.finalize( );
-		daw_ensure( out == "10.0" );
-	}
-	*/
 #if not defined( _WIN32 )
 	{
 		auto w = daw::json::json_writer( stdout );

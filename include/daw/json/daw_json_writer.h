@@ -100,10 +100,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename T>
+			template<typename JsonClass = use_default, typename T>
 			constexpr void do_write_value( T const &value ) {
 				prepare_value( );
-				to_json( value, m_writer.get( ) );
+				to_json<JsonClass>( value, m_writer.get( ) );
 				m_is_first = false;
 			}
 
@@ -203,8 +203,8 @@ namespace daw::json {
 				write_null( );
 			}
 
-			template<typename T, typename... Ts>
-			constexpr void write_value( T const &value, Ts const &...values ) {
+			template<typename JsonClass = use_default, typename T>
+			constexpr void write_value( T const &value ) {
 				daw_json_ensure(
 				  m_current_state !=
 				      json_writer_details::json_writer_states::json_writer_object or
@@ -215,16 +215,28 @@ namespace daw::json {
 				      json_writer_details::json_writer_states::json_writer_nothing or
 				    m_is_first,
 				  ErrorReason::OutputError );
-				if constexpr( sizeof...( Ts ) == 0 ) {
-					do_write_value( value );
-				} else {
-					open_array( );
-					write_array_values( value, values... );
-					close_array( );
-				}
+				do_write_value<JsonClass>( value );
 			}
 
-			template<typename T>
+			template<typename T, typename T2, typename... Ts>
+			constexpr void write_value( T const &value, T2 const &value2,
+			                            Ts const &...values ) {
+				daw_json_ensure(
+				  m_current_state !=
+				      json_writer_details::json_writer_states::json_writer_object or
+				    m_is_key_written,
+				  ErrorReason::OutputError );
+				daw_json_ensure(
+				  m_current_state !=
+				      json_writer_details::json_writer_states::json_writer_nothing or
+				    m_is_first,
+				  ErrorReason::OutputError );
+				open_array( );
+				write_array_values( value, value2, values... );
+				close_array( );
+			}
+
+			template<typename JsonClass = use_default, typename T>
 			constexpr void write_value( std::initializer_list<T> const &values ) {
 				daw_json_ensure(
 				  m_current_state !=
@@ -237,11 +249,11 @@ namespace daw::json {
 				    m_is_first,
 				  ErrorReason::OutputError );
 				open_array( );
-				write_array_values( values );
+				write_array_values<JsonClass>( values );
 				close_array( );
 			}
 
-			template<std::size_t N>
+			template<typename JsonClass = use_default, std::size_t N>
 			constexpr void write_value( char const ( &str )[N] ) {
 				daw_json_ensure(
 				  m_current_state !=
@@ -253,7 +265,7 @@ namespace daw::json {
 				      json_writer_details::json_writer_states::json_writer_nothing or
 				    m_is_first,
 				  ErrorReason::OutputError );
-				do_write_value( daw::string_view( str, N - 1 ) );
+				do_write_value<JsonClass>( daw::string_view( str, N - 1 ) );
 			}
 
 			constexpr void add_key( daw::string_view name ) {
@@ -275,37 +287,40 @@ namespace daw::json {
 				write_null( );
 			}
 
-			template<typename T>
+			template<typename JsonClass = use_default, typename T>
 			constexpr void write_key_value( daw::string_view name,
 			                                std::initializer_list<T> const &values ) {
 				add_key( name );
 				open_array( );
-				write_array_values( values );
+				write_array_values<JsonClass>( values );
 				close_array( );
 			}
 
-			template<typename T, typename... Ts>
-			constexpr void write_key_value( daw::string_view name, T const &value,
-			                                Ts const &...values ) {
+			template<typename JsonClass = use_default, typename T>
+			constexpr void write_key_value( daw::string_view name, T const &value ) {
 				add_key( name );
-				if( sizeof...( Ts ) == 0 ) {
-					write_value( value );
-				} else {
-					open_array( );
-					write_array_values( value, values... );
-					close_array( );
-				}
+				write_value<JsonClass>( value );
 			}
 
-			template<std::size_t N>
+			template<typename T, typename T2, typename... Ts>
+			constexpr void write_key_value( daw::string_view name, T const &value,
+			                                T2 const &value2, Ts const &...values ) {
+				add_key( name );
+				open_array( );
+				write_array_values( value, values... );
+				close_array( );
+			}
+
+			template<typename JsonClass = use_default, std::size_t N>
 			constexpr void write_key_value( daw::string_view name,
 			                                char const ( &str )[N] ) {
 				add_key( name );
-				write_value( daw::string_view( str, N - 1 ) );
+				write_value<JsonClass>( daw::string_view( str, N - 1 ) );
 			}
 
 			// Must be in array state
 			template<
+			  typename JsonClass = use_default,
 			  typename Range DAW_ENABLEIF( daw::traits::is_container_like_v<Range> )>
 			DAW_REQUIRES( daw::traits::is_container_like_v<Range> )
 			constexpr void write_array_values( Range const &values ) {
@@ -314,11 +329,11 @@ namespace daw::json {
 				    json_writer_details::json_writer_states::json_writer_array,
 				  ErrorReason::OutputError );
 				for( auto const &value : values ) {
-					do_write_value( value );
+					do_write_value<JsonClass>( value );
 				}
 			}
 
-			template<typename T>
+			template<typename JsonClass = use_default, typename T>
 			constexpr void
 			write_array_values( std::initializer_list<T> const &values ) {
 				daw_json_ensure(
@@ -326,7 +341,7 @@ namespace daw::json {
 				    json_writer_details::json_writer_states::json_writer_array,
 				  ErrorReason::OutputError );
 				for( auto const &value : values ) {
-					write_value( value );
+					write_value<JsonClass>( value );
 				}
 			}
 
@@ -366,10 +381,10 @@ namespace daw::json {
 				    json_base_type == JsonBaseParseTypes::Bool,
 				  "The underlying mapping must be a number or boolean type" );
 				if constexpr( json_base_type == JsonBaseParseTypes::Bool ) {
-					write_value( static_cast<bool>( value ) ? 1 : 0 );
+					write_value<JsonClass>( static_cast<bool>( value ) ? 1 : 0 );
 					return;
 				} else {
-					write_value( value );
+					write_value<JsonClass>( value );
 				}
 			}
 
@@ -385,20 +400,20 @@ namespace daw::json {
 				    json_base_type == JsonBaseParseTypes::String,
 				  "The underlying mapping must be a number, boolean, or string type" );
 				if constexpr( json_base_type == JsonBaseParseTypes::String ) {
-					write_value( value );
+					write_value<JsonClass>( value );
 					return;
 				} else {
 					prepare_value( );
 					m_writer.put( '"' );
-					to_json( value, m_writer.get( ) );
+					to_json<JsonClass>( value, m_writer.get( ) );
 					m_writer.put( '"' );
 					m_is_first = false;
 				}
 			}
 
-			template<std::size_t N>
+			template<typename JsonClass = use_default, std::size_t N>
 			constexpr void write_string( char const ( &str )[N] ) {
-				write_value( daw::string_view( str, N - 1 ) );
+				write_value<JsonClass>( daw::string_view( str, N - 1 ) );
 			}
 		};
 
