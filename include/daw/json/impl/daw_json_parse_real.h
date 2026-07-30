@@ -13,7 +13,8 @@
 #include "daw/json/impl/daw_fp_fallback.h"
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_policy_policy_details.h"
-#include "daw/json/impl/daw_json_parse_real_lemire.h"
+#include "daw/json/impl/daw_json_parse_real_decimal.h"
+#include "daw/json/impl/daw_json_parse_real_eisellemire.h"
 #include "daw/json/impl/daw_json_parse_real_power10.h"
 #include "daw/json/impl/daw_json_parse_unsigned_int.h"
 #include "daw/json/impl/daw_json_skip.h"
@@ -182,9 +183,9 @@ namespace daw::json {
 			template<typename ParseState, typename Result,
 			         typename max_storage_digits>
 			[[nodiscard]] constexpr bool
-			should_use_strtod( daw::not_null<char const *> whole_first,
-			                   daw::not_null<char const *> const whole_last,
-			                   char const *fract_first, char const *fract_last ) {
+			should_use_fallback( daw::not_null<char const *> whole_first,
+			                     daw::not_null<char const *> const whole_last,
+			                     char const *fract_first, char const *fract_last ) {
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754 ) {
 					return DAW_UNLIKELY(
@@ -201,26 +202,63 @@ namespace daw::json {
 				}
 			}
 
+			inline constexpr std::size_t eisellemire_max_digits = 19;
+
 			template<typename Signed>
 			[[nodiscard]] constexpr bool
-			fill_discarded_digits( char const *first, char const *last,
-			                       std::uint64_t &significant_digits,
-			                       Signed &exponent ) {
+			append_discarded_digits( char const *first, char const *last,
+			                         std::uint64_t &significant_digits,
+			                         Signed &exponent ) {
 				if( first == nullptr ) {
-					return true;
+					return false;
 				}
+
+				auto retained_digits = count_digits( significant_digits );
+				bool discarded_nonzero = false;
 				while( first < last ) {
 					auto const digit = parse_digit( *first );
-					if( digit >= 10U or not lemire_details::try_append_digit(
-					                      significant_digits, digit ) ) {
+					if( digit >= 10U ) {
 						break;
 					}
 					++first;
-					if( exponent > std::numeric_limits<Signed>::lowest( ) ) {
-						--exponent;
+					if( retained_digits < eisellemire_max_digits ) {
+						significant_digits =
+						  significant_digits * std::uint64_t{ 10 } + digit;
+						// Leading zeroes do not consume significant-digit capacity.
+						if( significant_digits != 0 ) {
+							++retained_digits;
+						}
+						if( exponent > std::numeric_limits<Signed>::lowest( ) ) {
+							--exponent;
+						}
+					} else {
+						discarded_nonzero |= digit != 0;
 					}
 				}
-				return first == last;
+				return discarded_nonzero;
+			}
+
+			template<typename Result, typename Signed>
+			[[nodiscard]] constexpr Result parse_truncated_lemire(
+			  bool negative, Signed exponent, std::uint64_t significant_digits,
+			  bool discarded_nonzero, daw::not_null<char const *> number_first,
+			  daw::not_null<char const *> number_last ) {
+				auto const lower = json_details::parse_real_eisellemire<Result>(
+				  negative, exponent, significant_digits );
+				if( not discarded_nonzero ) {
+					return lower;
+				}
+
+				// significant_digits contains at most 19 decimal digits, so adding
+				// one cannot overflow a uint64_t.
+				auto const upper = json_details::parse_real_eisellemire<Result>(
+				  negative, exponent, significant_digits + std::uint64_t{ 1 } );
+				if( lower == upper ) {
+					return lower;
+				}
+
+				return json_details::parse_json_real_exact<Result>(
+				  negative, number_first, number_last );
 			}
 
 			template<typename Result, typename ParseState>
@@ -260,8 +298,8 @@ namespace daw::json {
 				using max_storage_digits = daw::constant<static_cast<std::ptrdiff_t>(
 				  daw::digits10<std::uint64_t> )>;
 
-				bool use_strtod =
-				  should_use_strtod<ParseState, Result, max_storage_digits>(
+				bool use_fallback =
+				  should_use_fallback<ParseState, Result, max_storage_digits>(
 				    whole_first, whole_last, fract_first, fract_last );
 
 				Result const sign = [&] {
@@ -297,8 +335,8 @@ namespace daw::json {
 					whole_exponent_available =
 					  max_exponent::value - whole_exponent_available;
 					if constexpr( ParseState::precise_ieee754 ) {
-						use_strtod |= DAW_UNLIKELY( fract_exponent_available >
-						                            whole_exponent_available );
+						use_fallback |= DAW_UNLIKELY( fract_exponent_available >
+						                              whole_exponent_available );
 					}
 					if( whole_exponent_available < fract_exponent_available ) {
 						fract_exponent_available = whole_exponent_available;
@@ -371,30 +409,35 @@ namespace daw::json {
 					// On std floating point types, check for conditions that cannot be
 					// precisely calculated using the normal method and use the fallback
 					// method(usually strtod/from_chars)
-					use_strtod |= exponent > 22;
-					use_strtod |= exponent < -22;
+					use_fallback |= exponent > 22;
+					use_fallback |= exponent < -22;
 					if constexpr( std::is_same_v<Result, float> or
 					              std::is_same_v<Result, double> ) {
-						use_strtod |=
+						use_fallback |=
 						  significant_digits >
 						  ( std::uint64_t{ 1 } << std::numeric_limits<Result>::digits );
 					}
 					if( std::is_same_v<Result, long double> or
-					    DAW_UNLIKELY( use_strtod ) ) {
+					    DAW_UNLIKELY( use_fallback ) ) {
 						if constexpr( std::is_same_v<Result, float> or
 						              std::is_same_v<Result, double> ) {
-							auto const whole_complete = fill_discarded_digits(
+							bool discarded_nonzero = append_discarded_digits(
 							  whole_last, all_whole_last, significant_digits, exponent );
-							if( whole_complete and all_fract_first != nullptr ) {
+							if( all_fract_first != nullptr ) {
 								auto const *discarded_fract_first =
 								  fract_first == nullptr ? all_fract_first : fract_last;
-								(void)fill_discarded_digits( discarded_fract_first,
-								                             all_fract_last,
-								                             significant_digits,
-								                             exponent );
+								discarded_nonzero |=
+								  append_discarded_digits( discarded_fract_first,
+								                           all_fract_last,
+								                           significant_digits,
+								                           exponent );
 							}
-							return json_details::parse_real_lemire<Result>(
-							  sign < Result{ 0 }, exponent, significant_digits );
+							return parse_truncated_lemire<Result>( sign < Result{ 0 },
+							                                       exponent,
+							                                       significant_digits,
+							                                       discarded_nonzero,
+							                                       parse_state.first,
+							                                       parse_state.last );
 						} else {
 							return json_details::parse_with_strtod<Result>(
 							  parse_state.first, parse_state.last );
@@ -618,19 +661,22 @@ namespace daw::json {
 						using json_details::parse_with_strtod;
 						if constexpr( std::is_same_v<Result, float> or
 						              std::is_same_v<Result, double> ) {
-							auto const whole_complete =
-							  fill_discarded_digits( discarded_whole_first,
-							                         discarded_whole_last,
-							                         significant_digits,
-							                         exponent );
-							if( whole_complete ) {
-								(void)fill_discarded_digits( discarded_fract_first,
-								                             discarded_fract_last,
-								                             significant_digits,
-								                             exponent );
-							}
-							return json_details::parse_real_lemire<Result>(
-							  sign < Result{ 0 }, exponent, significant_digits );
+							bool discarded_nonzero =
+							  append_discarded_digits( discarded_whole_first,
+							                           discarded_whole_last,
+							                           significant_digits,
+							                           exponent );
+							discarded_nonzero |=
+							  append_discarded_digits( discarded_fract_first,
+							                           discarded_fract_last,
+							                           significant_digits,
+							                           exponent );
+							return parse_truncated_lemire<Result>( sign < Result{ 0 },
+							                                       exponent,
+							                                       significant_digits,
+							                                       discarded_nonzero,
+							                                       orig_first,
+							                                       first );
 						} else {
 							return parse_with_strtod<Result>( orig_first, orig_last );
 						}

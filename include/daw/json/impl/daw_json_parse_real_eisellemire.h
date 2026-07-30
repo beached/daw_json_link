@@ -29,7 +29,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			namespace lemire_details {
+			namespace eisellemire_details {
 				struct uint128 {
 					std::uint64_t low;
 					std::uint64_t high;
@@ -37,8 +37,7 @@ namespace daw::json {
 
 				[[nodiscard]] constexpr bool
 				try_append_digit( std::uint64_t &value, unsigned digit ) noexcept {
-					constexpr auto max_value =
-					  std::numeric_limits<std::uint64_t>::max( );
+					constexpr auto max_value = std::numeric_limits<std::uint64_t>::max( );
 					if( digit > 9U or value > ( max_value - digit ) / 10U ) {
 						return false;
 					}
@@ -88,9 +87,10 @@ namespace daw::json {
 					auto const middle = lhs_hi_rhs_lo + lhs_lo * rhs_hi;
 					auto const middle_carry = middle < lhs_hi_rhs_lo;
 					auto const low = lhs_lo_rhs_lo + ( middle << 32U );
-					auto const high = lhs_hi * rhs_hi + ( middle >> 32U ) +
-					                  ( static_cast<std::uint64_t>( middle_carry ) << 32U ) +
-					                  static_cast<std::uint64_t>( low < lhs_lo_rhs_lo );
+					auto const high =
+					  lhs_hi * rhs_hi + ( middle >> 32U ) +
+					  ( static_cast<std::uint64_t>( middle_carry ) << 32U ) +
+					  static_cast<std::uint64_t>( low < lhs_lo_rhs_lo );
 					return { low, high };
 				}
 
@@ -138,7 +138,8 @@ namespace daw::json {
 						auto const second =
 						  full_multiplication( significant_digits, pow5_tbl[index + 1] );
 						product.low += second.high;
-						product.high += static_cast<std::uint64_t>( second.high > product.low );
+						product.high +=
+						  static_cast<std::uint64_t>( second.high > product.low );
 					}
 					return product;
 				}
@@ -148,24 +149,27 @@ namespace daw::json {
 					// floor(log2(10^exponent)) plus the cached-power normalization.
 					return ( ( 217706 * exponent ) >> 16 ) + 63;
 				}
-			} // namespace lemire_details
+			} // namespace eisellemire_details
 
 			/// Convert the exact decimal value
 			///   (-1 if negative else 1) * significant_digits * 10^exponent
 			/// to the correctly rounded IEEE-754 binary32 or binary64 value.
 			///
-			/// significant_digits must contain all parsed significant digits.  If the
-			/// scanner discarded digits, it must resolve truncation before calling this
-			/// function.
+			/// significant_digits represents an exact uint64_t coefficient.
+			///
+			/// If it is a prefix of a longer decimal significand, the caller must
+			/// compare the conversions of significant_digits and
+			/// significant_digits + 1. If those conversions differ, the caller must
+			/// resolve the result using the original decimal digits.
 			template<typename Real = double>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr Real
-			parse_real_lemire( bool negative, std::int64_t exponent,
-			                   std::uint64_t significant_digits ) noexcept {
+			parse_real_eisellemire( bool negative, std::int64_t exponent,
+			                        std::uint64_t significant_digits ) noexcept {
 				static_assert( std::is_same_v<Real, float> or
 				                 std::is_same_v<Real, double>,
 				               "parse_real_lemire supports float and double" );
 				static_assert( std::numeric_limits<Real>::is_iec559 );
-				using format = lemire_details::binary_format<Real>;
+				using format = eisellemire_details::binary_format<Real>;
 				using uint_type = typename format::uint_type;
 
 				std::uint64_t mantissa = 0;
@@ -179,14 +183,14 @@ namespace daw::json {
 					auto const leading_zeroes = static_cast<std::int32_t>(
 					  daw::cxmath::count_leading_zeroes( significant_digits ) );
 					auto const normalized_digits = significant_digits << leading_zeroes;
-					auto const product =
-					  lemire_details::compute_product<Real>( exponent, normalized_digits );
-					auto const upper_bit = static_cast<std::int32_t>( product.high >> 63U );
-					auto const shift =
-					  upper_bit + 64 - format::mantissa_bits - 3;
+					auto const product = eisellemire_details::compute_product<Real>(
+					  exponent, normalized_digits );
+					auto const upper_bit =
+					  static_cast<std::int32_t>( product.high >> 63U );
+					auto const shift = upper_bit + 64 - format::mantissa_bits - 3;
 
 					mantissa = product.high >> shift;
-					power2 = lemire_details::binary_power(
+					power2 = eisellemire_details::binary_power(
 					           static_cast<std::int32_t>( exponent ) ) +
 					         upper_bit - leading_zeroes + format::exponent_bias;
 
@@ -199,9 +203,8 @@ namespace daw::json {
 							mantissa += mantissa & 1U;
 							mantissa >>= 1U;
 							power2 =
-							  mantissa < ( std::uint64_t{ 1 } << format::mantissa_bits )
-							    ? 0
-							    : 1;
+							  mantissa < ( std::uint64_t{ 1 } << format::mantissa_bits ) ? 0
+							                                                             : 1;
 						}
 					} else {
 						// Correct exact halfway cases to round-to-even before the usual
@@ -214,13 +217,11 @@ namespace daw::json {
 						}
 						mantissa += mantissa & 1U;
 						mantissa >>= 1U;
-						if( mantissa >=
-						    ( std::uint64_t{ 2 } << format::mantissa_bits ) ) {
+						if( mantissa >= ( std::uint64_t{ 2 } << format::mantissa_bits ) ) {
 							mantissa = std::uint64_t{ 1 } << format::mantissa_bits;
 							++power2;
 						}
-						mantissa &=
-						  ~( std::uint64_t{ 1 } << format::mantissa_bits );
+						mantissa &= ~( std::uint64_t{ 1 } << format::mantissa_bits );
 						if( power2 >= format::infinite_power ) {
 							mantissa = 0;
 							power2 = format::infinite_power;
