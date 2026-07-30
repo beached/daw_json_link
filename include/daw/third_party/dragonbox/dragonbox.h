@@ -158,7 +158,7 @@ namespace daw::jkj::dragonbox {
 			}
 
 			template<class Float>
-			inline char *to_chars_impl( unsigned_fp_t<Float> v, char *buffer,
+			constexpr char *to_chars_impl( unsigned_fp_t<Float> v, char *buffer,
 			                            std::uint32_t olength ) {
 				auto output = v.significand;
 				if( olength == 0 ) {

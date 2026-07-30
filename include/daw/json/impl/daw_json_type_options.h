@@ -95,12 +95,14 @@ namespace daw::json {
 		namespace options {
 			/// @brief Control the floating point output format
 			enum class FPOutputFormat : unsigned {
-				/// Automatically choose between decimal and scientific output formats
+				/// Automatically choose between minimal and scientific output formats
 				Auto,
 				/// Always format in terms of an exponent <whole>[.fraction]e<exponent>
 				Scientific,
 				/// Always format in <whole>.<fraction>
-				Decimal
+				Decimal,
+				// Output the smallest number <whole>[.fraction]
+				Minimum
 			};
 		} // namespace options
 

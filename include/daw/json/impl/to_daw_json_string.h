@@ -49,10 +49,10 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename WriteableType, typename Real>
-			static constexpr WriteableType
-			to_chars( options::FPOutputFormat fp_output_format, Real const &value,
-			          WriteableType out_it );
+			template<options::FPOutputFormat fp_output_format, typename Real,
+			         typename WriteableType>
+			constexpr WriteableType to_chars( Real const &value,
+			                                  WriteableType out_it );
 		} // namespace json_details
 
 		namespace json_details::to_strings {
@@ -611,7 +611,7 @@ namespace daw::json {
 				}
 				if constexpr( daw::is_floating_point_v<parse_to_t> ) {
 					static_assert( sizeof( parse_to_t ) <= sizeof( double ) );
-					it = to_chars( JsonMember::fp_output_format, value, it );
+					it = to_chars<JsonMember::fp_output_format>( value, it );
 				} else {
 					using std::to_string;
 					using to_strings::to_string;
@@ -1494,10 +1494,43 @@ namespace daw::json {
 				}
 			}
 
-			template<typename WriteableType, typename Real>
-			static constexpr WriteableType
-			to_chars( options::FPOutputFormat fp_output_format, Real const &value,
-			          WriteableType out_it ) {
+			/// Convert a finite floating-point value to JSON number text.
+			///
+			/// Dragonbox first produces an unsigned decimal representation where
+			///
+			///   value = significand * 10^exponent
+			///
+			/// and `digit_values` is the number of digits in the significand.
+			/// Consequently, `whole_dig = digit_values + exponent` describes the
+			/// decimal-point position.  For example:
+			///
+			///   123.45  -> significand=12345, exponent=-2, whole_dig=3
+			///   0.00123 -> significand=123,   exponent=-5, whole_dig=-2
+			///   12000   -> significand=12,    exponent=3
+			///
+			/// The sign is ignored by `to_decimal` and emitted separately from the
+			/// original IEEE-754 bits.  Zero is handled first, so negative zero is
+			/// serialized without a minus sign ("0.0" in Decimal mode and "0" in
+			/// the other modes).
+			///
+			/// Scientific mode delegates the digits and exponent formatting to
+			/// Dragonbox.  Auto mode does the same when the decimal-point position
+			/// is below -4 or above 6.  Otherwise fixed notation is assembled by:
+			///
+			///  * prefixing "0." and any required zeroes when |value| < 1;
+			///  * splitting the significand into whole and fractional portions
+			///    when the exponent is negative, preserving leading fractional
+			///    zeroes; or
+			///  * appending zeroes when the exponent is nonnegative, followed by
+			///    ".0" in Decimal mode.
+			///
+			/// NaN and infinity are rejected or serialized by the caller before
+			/// this function is invoked.
+
+			template<options::FPOutputFormat fp_output_format, typename Real,
+			         typename WriteableType>
+			constexpr WriteableType to_chars( Real const &value,
+			                                  WriteableType out_it ) {
 				daw::jkj::dragonbox::unsigned_fp_t<Real> dec =
 				  daw::jkj::dragonbox::to_decimal(
 				    value, daw::jkj::dragonbox::policy::sign::ignore );
@@ -1518,7 +1551,11 @@ namespace daw::json {
 					}
 				}( );
 				if( dec.significand == 0 ) {
-					out_it.put( '0' );
+					if( fp_output_format == options::FPOutputFormat::Decimal ) {
+						out_it.write( "0.0" );
+					} else {
+						out_it.put( '0' );
+					}
 					return out_it;
 				}
 				if( br.is_negative( ) ) {
@@ -1580,6 +1617,9 @@ namespace daw::json {
 				while( dec.exponent > 0 ) {
 					out_it.put( '0' );
 					--dec.exponent;
+				}
+				if( fp_output_format == options::FPOutputFormat::Decimal ) {
+					out_it.write( ".0" );
 				}
 				return out_it;
 			}
