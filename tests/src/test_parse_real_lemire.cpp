@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <daw/json/impl/daw_json_parse_real_lemire.h>
+#include <daw/json/impl/daw_json_parse_real_eisellemire.h>
 
 #include <daw/daw_bit_cast.h>
 
@@ -15,8 +15,8 @@
 #include <type_traits>
 
 namespace {
-	using daw::json::json_details::parse_real_lemire;
-	using daw::json::json_details::lemire_details::try_append_digit;
+	using daw::json::json_details::parse_real_eisellemire;
+	using daw::json::json_details::eisellemire_details::try_append_digit;
 
 	constexpr bool append_digit_check( ) {
 		std::uint64_t value = 1844674407370955161ULL;
@@ -31,26 +31,26 @@ namespace {
 	static_assert( append_digit_check( ) );
 
 	constexpr auto multiplication_check =
-	  daw::json::json_details::lemire_details::full_multiplication_generic(
+	  daw::json::json_details::eisellemire_details::full_multiplication_generic(
 	    std::numeric_limits<std::uint64_t>::max( ),
 	    std::numeric_limits<std::uint64_t>::max( ) );
 	static_assert( multiplication_check.low == 1 );
 	static_assert( multiplication_check.high ==
 	               std::numeric_limits<std::uint64_t>::max( ) - 1 );
-	static_assert( parse_real_lemire( false, 0, 1 ) == 1.0 );
-	static_assert( parse_real_lemire( true, 0, 1 ) == -1.0 );
-	static_assert( parse_real_lemire( false, -2, 12345 ) == 123.45 );
-	static_assert( parse_real_lemire( false, -324, 5 ) ==
+	static_assert( parse_real_eisellemire( false, 0, 1 ) == 1.0 );
+	static_assert( parse_real_eisellemire( true, 0, 1 ) == -1.0 );
+	static_assert( parse_real_eisellemire( false, -2, 12345 ) == 123.45 );
+	static_assert( parse_real_eisellemire( false, -324, 5 ) ==
 	               std::numeric_limits<double>::denorm_min( ) );
 	static_assert( DAW_BIT_CAST( std::uint64_t,
-	                             parse_real_lemire( true, 0, 0 ) ) ==
+	                             parse_real_eisellemire( true, 0, 0 ) ) ==
 	               ( std::uint64_t{ 1 } << 63U ) );
-	static_assert( parse_real_lemire<float>( false, 0, 1 ) == 1.0F );
-	static_assert( parse_real_lemire<float>( false, -2, 12345 ) == 123.45F );
-	static_assert( parse_real_lemire<float>( false, -45, 1 ) ==
+	static_assert( parse_real_eisellemire<float>( false, 0, 1 ) == 1.0F );
+	static_assert( parse_real_eisellemire<float>( false, -2, 12345 ) == 123.45F );
+	static_assert( parse_real_eisellemire<float>( false, -45, 1 ) ==
 	               std::numeric_limits<float>::denorm_min( ) );
 	static_assert( DAW_BIT_CAST( std::uint32_t,
-	                             parse_real_lemire<float>( true, 0, 0 ) ) ==
+	                             parse_real_eisellemire<float>( true, 0, 0 ) ) ==
 	               ( std::uint32_t{ 1 } << 31U ) );
 
 	template<typename Real>
@@ -104,7 +104,7 @@ int main( ) {
 	};
 
 	for( auto const &test : cases ) {
-		auto const actual = parse_real_lemire(
+		auto const actual = parse_real_eisellemire(
 		  test.negative, test.exponent, test.significant_digits );
 		auto const expected = reference_value<double>(
 		  test.negative, test.exponent, test.significant_digits );
@@ -120,7 +120,7 @@ int main( ) {
 		auto const exponent = exponent_dist( rng );
 		auto const negative = ( rng( ) & 1U ) != 0;
 		auto const actual =
-		  parse_real_lemire( negative, exponent, significant_digits );
+		  parse_real_eisellemire( negative, exponent, significant_digits );
 		auto const expected =
 		  reference_value<double>( negative, exponent, significant_digits );
 		if( not same_bits( actual, expected ) ) {
@@ -139,7 +139,7 @@ int main( ) {
 	  { std::numeric_limits<std::uint64_t>::max( ), -64, false },
 	};
 	for( auto const &test : float_cases ) {
-		auto const actual = parse_real_lemire<float>(
+		auto const actual = parse_real_eisellemire<float>(
 		  test.negative, test.exponent, test.significant_digits );
 		auto const expected = reference_value<float>(
 		  test.negative, test.exponent, test.significant_digits );
@@ -154,7 +154,7 @@ int main( ) {
 		auto const exponent = float_exponent_dist( rng );
 		auto const negative = ( rng( ) & 1U ) != 0;
 		auto const actual =
-		  parse_real_lemire<float>( negative, exponent, significant_digits );
+		  parse_real_eisellemire<float>( negative, exponent, significant_digits );
 		auto const expected =
 		  reference_value<float>( negative, exponent, significant_digits );
 		if( not same_bits( actual, expected ) ) {

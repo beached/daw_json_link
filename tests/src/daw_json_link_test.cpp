@@ -708,6 +708,28 @@ namespace daw::json {
 } // namespace daw::json
 
 #if defined( DAW_CX_BIT_CAST )
+template<bool KnownBounds>
+constexpr std::uint64_t
+cx_parse_precise_double_bits( std::string_view input ) {
+	using namespace daw::json;
+	using policy_t =
+	  BasicParsePolicy<parse_options( options::IEEE754Precise::yes )>;
+	auto state =
+	  policy_t( input.data( ), input.data( ) + input.size( ) );
+	if constexpr( KnownBounds ) {
+		state = json_details::skip_number( state );
+	}
+	auto const result = json_details::parse_real<double, KnownBounds>( state );
+	return DAW_BIT_CAST( std::uint64_t, result );
+}
+
+static_assert(
+  cx_parse_precise_double_bits<false>(
+    "0.131712340520409851296776577102" ) == 0x3FC0DBF33181E42EULL );
+static_assert(
+  cx_parse_precise_double_bits<true>(
+    "0.131712340520409851296776577102" ) == 0x3FC0DBF33181E42EULL );
+
 constexpr bool cxdbl_tostr1( ) {
 	using namespace daw::json;
 	constexpr auto dbl_half = from_json<double>( "0.5" );
@@ -820,6 +842,12 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 
 		auto const result_bits = DAW_BIT_CAST( std::uint32_t, result );
 		daw_ensure( result_bits == test.expected_bits );
+		auto const exact = json_details::parse_json_real_exact<float>(
+		  not test.input.empty( ) and test.input.front( ) == '-',
+		  daw::not_null( test.input.data( ) ),
+		  daw::not_null( test.input.data( ) + test.input.size( ) ) );
+		daw_ensure(
+		  DAW_BIT_CAST( std::uint32_t, exact ) == test.expected_bits );
 	}
 
 	struct double_case_t {
@@ -834,6 +862,15 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 	  { "7483033532945566197e-20", 0x3FB32814B2FD1D1DULL },
 	  { "0.28956690281759414737", 0x3FD288439E66C1C7ULL },
 	  { "5e-34", 0x3904C4E977BA1f5CULL },
+	  // The retained prefix rounds down, but the complete decimal rounds up.
+	  { "0.131712340520409851296776577102",
+	    0x3FC0DBF33181E42EULL },
+	  // A decimal where prematurely rounding the retained prefix can cause a
+	  // second, incorrect binary rounding.
+	  { "0.1381727048223282267055702520452",
+	    0x3FC1AFA4A834B498ULL },
+	  { "-0.131712340520409851296776577102",
+	    0xBFC0DBF33181E42EULL },
 	};
 	daw::do_not_optimize( double_cases );
 
@@ -847,6 +884,12 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 		auto const result = json_details::parse_real<double, KnownBounds>( state );
 
 		daw_ensure( DAW_BIT_CAST( std::uint64_t, result ) == test.expected_bits );
+		auto const exact = json_details::parse_json_real_exact<double>(
+		  not test.input.empty( ) and test.input.front( ) == '-',
+		  daw::not_null( test.input.data( ) ),
+		  daw::not_null( test.input.data( ) + test.input.size( ) ) );
+		daw_ensure(
+		  DAW_BIT_CAST( std::uint64_t, exact ) == test.expected_bits );
 	}
 }
 
