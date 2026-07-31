@@ -203,55 +203,93 @@ reset.
 
 ## Writing Values with an Explicit JSON Type
 
-`write_value` normally deduces the JSON representation from the C++ value.
-The writer also provides functions for selecting a scalar JSON representation
-explicitly:
+Writer functions normally deduce the JSON representation from the C++ value.
+The following functions accept an optional JSON mapping type as their first
+template argument:
+
+* `write_value<JsonClass>(value)`
+* `write_number<JsonClass>(value)`
+* `write_string<JsonClass>(value)`
+* `write_key_value<JsonClass>(key, value)`
+* `write_array_values<JsonClass>(range)`
+* `write_array_values<JsonClass>({ values... })`
+
+The initializer-list overloads of `write_value` and `write_key_value` also
+accept an explicit mapping and apply it to every array element.
+
+For example, `FPOutputFormat::Decimal` can be used to preserve the decimal
+form of a floating-point value:
+
+```cpp
+using decimal_number = daw::json::json_number_no_name<
+  double,
+  daw::json::options::number_opt(
+    daw::json::options::FPOutputFormat::Decimal )>;
+```
+
+The mapping can be supplied to `write_number`:
 
 ```cpp
 auto result = std::string{ };
 {
   auto writer = daw::json::json_writer( result );
-  writer.open_array( );
-  writer.write_boolean( false );
-  writer.write_null( );
-  writer.write_number( 42 );
-  writer.write_string( 42 );
-  writer.write_string( true );
-  writer.close_array( );
+  writer.write_number<decimal_number>( 10.0 );
+}
+```
+
+or to the more general `write_value`:
+
+```cpp
+auto result = std::string{ };
+{
+  auto writer = daw::json::json_writer( result );
+  writer.write_value<decimal_number>( 10.0 );
+}
+```
+
+Both examples produce:
+
+```json
+10.0
+```
+
+The same mapping can be used when writing an object member:
+
+```cpp
+auto result = std::string{ };
+{
+  auto writer = daw::json::json_writer( result );
+  writer.open_object( );
+  writer.write_key_value<decimal_number>( "value", 10.0 );
+  writer.close_object( );
 }
 ```
 
 The result is:
 
 ```json
-[false,null,42,"42","true"]
+{"value":10.0}
 ```
 
-The scalar functions are:
-
-* `write_boolean(bool)` writes a JSON Boolean.
-* `write_null()` writes JSON `null`.
-* `write_number(value)` writes a value using a number or Boolean mapping. A
-  Boolean mapping is converted to the JSON number `0` or `1`.
-* `write_string(value)` writes a string mapping normally, and writes a number
-  or Boolean mapping as its quoted JSON representation.
-
-Like `write_value`, these functions write an array element when the writer is
-inside an array, or the value for a preceding `add_key` when it is inside an
-object.
-
-`write_number` and `write_string` accept an optional JSON mapping type as
-their first template argument. This is useful when the desired mapping cannot
-be deduced from the value:
+It can also be applied to a range or initializer list:
 
 ```cpp
-writer.write_number<daw::json::json_number_no_name<int>>( value );
-writer.write_string<daw::json::json_bool_no_name<>>( flag );
+auto values = std::array{ 10.0, 20.0 };
+
+writer.write_array_values<decimal_number>( values );
+writer.write_array_values<decimal_number>( { 30.0, 40.0 } );
 ```
+
+An explicit mapping cannot be supplied to the variadic
+`write_array_values(value, values...)` overload. Its potentially heterogeneous
+values are mapped individually using their deduced types. The variadic
+`write_value` and `write_key_value` forms use this behavior when producing
+their arrays.
 
 The mapping supplied to `write_number` must have a number or Boolean
 underlying JSON type. The mapping supplied to `write_string` must have a
-number, Boolean, or string underlying JSON type.
+number, Boolean, or string underlying JSON type. `write_boolean` and
+`write_null` have fixed representations and do not take a mapping type.
 
 ## Pretty Output
 

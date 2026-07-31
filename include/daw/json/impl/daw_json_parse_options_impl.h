@@ -103,7 +103,7 @@ namespace daw::json {
 
 			template<>
 			inline constexpr auto default_json_option_value<options::IEEE754Precise> =
-			  options::IEEE754Precise::no;
+			  options::IEEE754Precise::yes;
 
 			template<>
 			inline constexpr unsigned

@@ -688,8 +688,8 @@ bool test_key_value( ) {
 bool test_vector_of_bool( ) {
 	std::string const json_data = "[true,false,true]";
 	auto const rv0 = daw::json::from_json_array<bool>( json_data );
-	assert( rv0.size( ) == 3 and rv0.at( 0 ) and not rv0.at( 1 ) and
-	        rv0.at( 2 ) );
+	daw_ensure( rv0.size( ) == 3 and rv0.at( 0 ) and not rv0.at( 1 ) and
+	            rv0.at( 2 ) );
 	auto const str0 = daw::json::to_json_array( rv0 );
 	auto const rv1 = daw::json::from_json<std::vector<bool>>( str0 );
 	return rv0 == rv1;
@@ -708,6 +708,26 @@ namespace daw::json {
 } // namespace daw::json
 
 #if defined( DAW_CX_BIT_CAST )
+template<bool KnownBounds>
+constexpr std::uint64_t cx_parse_precise_double_bits( std::string_view input ) {
+	using namespace daw::json;
+	using policy_t =
+	  BasicParsePolicy<parse_options( options::IEEE754Precise::yes )>;
+	auto state = policy_t( input.data( ), input.data( ) + input.size( ) );
+	if constexpr( KnownBounds ) {
+		state = json_details::skip_number( state );
+	}
+	auto const result = json_details::parse_real<double, KnownBounds>( state );
+	return DAW_BIT_CAST( std::uint64_t, result );
+}
+
+static_assert(
+  cx_parse_precise_double_bits<false>( "0.131712340520409851296776577102" ) ==
+  0x3FC0DBF33181E42EULL );
+static_assert(
+  cx_parse_precise_double_bits<true>( "0.131712340520409851296776577102" ) ==
+  0x3FC0DBF33181E42EULL );
+
 constexpr bool cxdbl_tostr1( ) {
 	using namespace daw::json;
 	constexpr auto dbl_half = from_json<double>( "0.5" );
@@ -789,6 +809,83 @@ struct Unmapped9 {
 	}
 };
 
+template<bool KnownBounds>
+DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
+	using namespace daw::json;
+	using policy_t =
+	  BasicParsePolicy<parse_options( options::IEEE754Precise::yes )>;
+
+	struct float_case_t {
+		std::string_view input;
+		std::uint32_t expected_bits;
+	};
+
+	float_case_t float_cases[] = {
+	  { "4836034951e-7", 0x43F1CD3FU },
+	  { "98358875e-9", 0x3DC97061U },
+	  { "9096840731e9", 0x5EFC7CF1U },
+	  { "13784099768e-30", 0x1E822FE9U },
+	  { "0.1172802939590", 0x3DF030A7U },
+	};
+	daw::do_not_optimize( float_cases );
+
+	for( auto const &test : float_cases ) {
+		auto state =
+		  policy_t( test.input.data( ), test.input.data( ) + test.input.size( ) );
+		if constexpr( KnownBounds ) {
+			state = json_details::skip_number( state );
+		}
+
+		auto const result = json_details::parse_real<float, KnownBounds>( state );
+
+		auto const result_bits = DAW_BIT_CAST( std::uint32_t, result );
+		daw_ensure( result_bits == test.expected_bits );
+		auto const exact = json_details::parse_json_real_exact<float>(
+		  not test.input.empty( ) and test.input.front( ) == '-',
+		  daw::not_null( test.input.data( ) ),
+		  daw::not_null( test.input.data( ) + test.input.size( ) ) );
+		daw_ensure( DAW_BIT_CAST( std::uint32_t, exact ) == test.expected_bits );
+	}
+
+	struct double_case_t {
+		std::string_view input;
+		std::uint64_t expected_bits;
+	};
+
+	double_case_t double_cases[] = {
+	  { "951398326886398061e-3", 0x430B0A557A82FFF0ULL },
+	  { "723129352390467621e-11", 0x415B95CF6187A77BULL },
+	  { "796335516962425095e4", 0x447AFB1C0D71BFC1ULL },
+	  { "7483033532945566197e-20", 0x3FB32814B2FD1D1DULL },
+	  { "0.28956690281759414737", 0x3FD288439E66C1C7ULL },
+	  { "5e-34", 0x3904C4E977BA1f5CULL },
+	  // The retained prefix rounds down, but the complete decimal rounds up.
+	  { "0.131712340520409851296776577102", 0x3FC0DBF33181E42EULL },
+	  // A decimal where prematurely rounding the retained prefix can cause a
+	  // second, incorrect binary rounding.
+	  { "0.1381727048223282267055702520452", 0x3FC1AFA4A834B498ULL },
+	  { "-0.131712340520409851296776577102", 0xBFC0DBF33181E42EULL },
+	};
+	daw::do_not_optimize( double_cases );
+
+	for( auto const &test : double_cases ) {
+		auto state =
+		  policy_t( test.input.data( ), test.input.data( ) + test.input.size( ) );
+		if constexpr( KnownBounds ) {
+			state = json_details::skip_number( state );
+		}
+
+		auto const result = json_details::parse_real<double, KnownBounds>( state );
+
+		daw_ensure( DAW_BIT_CAST( std::uint64_t, result ) == test.expected_bits );
+		auto const exact = json_details::parse_json_real_exact<double>(
+		  not test.input.empty( ) and test.input.front( ) == '-',
+		  daw::not_null( test.input.data( ) ),
+		  daw::not_null( test.input.data( ) + test.input.size( ) ) );
+		daw_ensure( DAW_BIT_CAST( std::uint64_t, exact ) == test.expected_bits );
+	}
+}
+
 int main( ) {
 #if defined( DAW_USE_EXCEPTIONS )
 	try {
@@ -800,8 +897,10 @@ int main( ) {
 #if not defined( DAW_JSON_NO_CONST_EXPR )
 		static_assert( std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1> );
 #else
-	assert( (std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1>));
+	daw_ensure( (std::is_same_v<DAW_TYPEOF( foo1_val ), Foo1>));
 #endif
+		test_parse_real_hard_rounding_cases<false>( );
+		test_parse_real_hard_rounding_cases<true>( );
 
 		auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
 		ensure( foo2_val.m1 );
@@ -1172,15 +1271,15 @@ int main( ) {
 		static_assert( from_json<unsigned int>( "1" ) == 1 );
 		static_assert( from_json<unsigned long>( "1" ) == 1 );
 		static_assert( from_json<unsigned long long>( "1" ) == 1 );
-		assert( from_json<std::string>( R"("hello world")" ) == "hello world" );
-		assert( from_json<std::deque<int>>( "[1,2,3]"s ).at( 1 ) == 2 );
-		assert( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
-		assert( ( from_json<json_array_no_name<char, std::string>>(
-		            "[97,98,99]"s ) == "abc" ) );
+		daw_ensure( from_json<std::string>( R"("hello world")" ) == "hello world" );
+		daw_ensure( from_json<std::deque<int>>( "[1,2,3]"s ).at( 1 ) == 2 );
+		daw_ensure( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
+		daw_ensure( ( from_json<json_array_no_name<char, std::string>>(
+		                "[97,98,99]"s ) == "abc" ) );
 #if not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
 		static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 #else
-	assert( ( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 ) );
+	daw_ensure( ( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 ) );
 #endif
 
 		auto const test_bad_float = []( ) -> bool {
@@ -1349,7 +1448,7 @@ int main( ) {
 		std::cout << "Large negative double " << dbl_007 << '\n';
 		auto dbl_007_str = to_json<json_base::json_number<
 		  double,
-		  options::number_opt( options::FPOutputFormat::Decimal )>>( dbl_007 );
+		  options::number_opt( options::FPOutputFormat::Minimum )>>( dbl_007 );
 		ensure( dbl_007_str ==
 		        "-17000000000000000000000000000000000000000000000000000000000000000"
 		        "000000000000000000000000000000000000" );
@@ -1493,6 +1592,61 @@ int main( ) {
 				                         return s.size( );
 			                         } );
 			ensure( x == 5 );
+		}
+		{
+			struct DoubleTest {
+				std::string_view str;
+				double expected;
+			};
+			static constexpr DoubleTest double_test_values[] = {
+			  { "0.0", 0x0.0p+0 },
+			  { "-0.0", -0x0.0p+0 },
+			  { "0.1", 0x1.999999999999ap-4 },
+			  { "1.00000000000000011102230246251565404236316680908203125",
+			    0x1.0000000000000p+0 },
+			  { "1.00000000000000011102230246251565404236316680908203126",
+			    0x1.0000000000001p+0 },
+			  { "9007199254740991.0", 0x1.fffffffffffffp+52 },
+			  { "9007199254740992.0", 0x1.0000000000000p+53 },
+			  { "9007199254740993.0", 0x1.0000000000000p+53 },
+			  { "9007199254740994.0", 0x1.0000000000001p+53 },
+			  { "1.7976931348623157e308", 0x1.fffffffffffffp+1023 },
+			  { "1.7976931348623158e308", 0x1.fffffffffffffp+1023 },
+			  { "1.7976931348623159e308", std::numeric_limits<double>::infinity( ) },
+			  { "2.2250738585072014e-308", 0x1.0000000000000p-1022 },
+			  { "2.2250738585072013e-308", 0x1.0000000000000p-1022 },
+			  { "2.2250738585072012e-308", 0x1.0000000000000p-1022 },
+			  { "2.2250738585072011e-308", 0x0.fffffffffffffp-1022 },
+			  { "4.9406564584124654e-324", 0x0.0000000000001p-1022 },
+			  { "5e-324", 0x0.0000000000001p-1022 },
+			  { "2.4703282292062327e-324", 0x0.0p+0 },
+			  { "2.4703282292062328e-324", 0x0.0000000000001p-1022 },
+			  { "1e-324", 0x0.0p+0 },
+			  { "-1e-324", -0x0.0p+0 },
+			  { "1e309", std::numeric_limits<double>::infinity( ) },
+			  { "-1e309", -std::numeric_limits<double>::infinity( ) },
+			  { "1e-325", 0x0.0p+0 },
+			  { "-1e-325", -0x0.0p+0 },
+			  { "1.00000000000000011102230246251565404236316680908203124",
+			    0x1.0000000000000p+0 },
+			  { "1.00000000000000011102230246251565404236316680908203125",
+			    0x1.0000000000000p+0 },
+			  { "1.00000000000000011102230246251565404236316680908203126",
+			    0x1.0000000000001p+0 },
+			  { "1.0000000000000002220446049250313080847263336181640625",
+			    0x1.0000000000001p+0 },
+			  { "4.9406564584124654e-324", 0x0.0000000000001p-1022 },
+			  { "9.8813129168249309e-324", 0x0.0000000000002p-1022 },
+			  { "1.4821969375237396e-323", 0x0.0000000000003p-1022 },
+			  { "1.9762625833649862e-323", 0x0.0000000000004p-1022 },
+			  { "2.2250738585072011e-308", 0x0.fffffffffffffp-1022 },
+			  { "2.2250738585072012e-308", 0x1.0000000000000p-1022 },
+			  { "2.2250738585072014e-308", 0x1.0000000000000p-1022 },
+			};
+			for( DoubleTest const &tvalue : double_test_values ) {
+				auto const r = from_json<double>( tvalue.str );
+				daw_ensure( r == tvalue.expected );
+			}
 		}
 #if defined( LLONG_MIN )
 		{
