@@ -431,7 +431,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>                        <span class="keyword">false</span>,</div>
 <div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>                        base_member_type::expected_type&gt;( parse_state ) );</div>
 <div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>          <span class="keywordflow">if</span>( not parse_state.has_more( ) or</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>          <span class="keywordflow">if</span>( parse_state.is_null( ) or not parse_state.has_more( ) or</div>
 <div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>              parse_state.is_at_token_after_value( ) ) {</div>
 <div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>            <span class="keywordflow">return</span> construct_empty( );</div>
 <div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>          }</div>

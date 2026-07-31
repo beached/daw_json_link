@@ -82,7 +82,7 @@ $(function() {
 <div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line"><span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
 <div class="ttc" id="adaw__json__writer_8h_html"><div class="ttname"><a href="daw__json__writer_8h.html">daw_json_writer.h</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_html_aab91cb30e2621f0d0b5101b39b8b8652"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::anonymous_namespace{daw_json_writer.h}::json_writer</a></div><div class="ttdeci">constexpr auto json_writer(WriterType &amp;&amp;writer)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__writer_8h_source.html#l00406">daw_json_writer.h:406</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_html_aab91cb30e2621f0d0b5101b39b8b8652"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::anonymous_namespace{daw_json_writer.h}::json_writer</a></div><div class="ttdeci">constexpr auto json_writer(WriterType &amp;&amp;writer)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__writer_8h_source.html#l00421">daw_json_writer.h:421</a></div></div>
 </div><!-- fragment --><p>For example, a writer can write directly to standard output:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> stream_writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( std::cout );</div>
 <div class="line"><span class="keyword">auto</span> file_writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( stdout );</div>
@@ -198,34 +198,53 @@ Writing a Single Root Value</h1>
 </div><!-- fragment --><p>Only one root value, object, or array can be written before the writer is reset.</p>
 <h1><a class="anchor" id="autotoc_md44"></a>
 Writing Values with an Explicit JSON Type</h1>
-<p><code>write_value</code> normally deduces the JSON representation from the C++ value. The writer also provides functions for selecting a scalar JSON representation explicitly:</p>
+<p>Writer functions normally deduce the JSON representation from the C++ value. The following functions accept an optional JSON mapping type as their first template argument:</p>
+<ul>
+<li><code>write_value&lt;JsonClass&gt;(value)</code></li>
+<li><code>write_number&lt;JsonClass&gt;(value)</code></li>
+<li><code>write_string&lt;JsonClass&gt;(value)</code></li>
+<li><code>write_key_value&lt;JsonClass&gt;(key, value)</code></li>
+<li><code>write_array_values&lt;JsonClass&gt;(range)</code></li>
+<li><code>write_array_values&lt;JsonClass&gt;({ values... })</code></li>
+</ul>
+<p>The initializer-list overloads of <code>write_value</code> and <code>write_key_value</code> also accept an explicit mapping and apply it to every array element.</p>
+<p>For example, <code>FPOutputFormat::Decimal</code> can be used to preserve the decimal form of a floating-point value:</p>
+<div class="fragment"><div class="line"><span class="keyword">using </span>decimal_number = <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a9ed27157013275c28ec4e704ad4a77fd">daw::json::json_number_no_name</a>&lt;</div>
+<div class="line">  double,</div>
+<div class="line">  daw::json::options::number_opt(</div>
+<div class="line">    daw::json::options::FPOutputFormat::Decimal )&gt;;</div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_a9ed27157013275c28ec4e704ad4a77fd"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a9ed27157013275c28ec4e704ad4a77fd">daw::json::anonymous_namespace{daw_json_link_types.h}::json_number_no_name</a></div><div class="ttdeci">json_base::json_number&lt; T, Options, Constructor &gt; json_number_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00506">daw_json_link_types.h:506</a></div></div>
+</div><!-- fragment --><p>The mapping can be supplied to <code>write_number</code>:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
 <div class="line">{</div>
 <div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
-<div class="line">  writer.open_array( );</div>
-<div class="line">  writer.write_boolean( <span class="keyword">false</span> );</div>
-<div class="line">  writer.write_null( );</div>
-<div class="line">  writer.write_number( 42 );</div>
-<div class="line">  writer.write_string( 42 );</div>
-<div class="line">  writer.write_string( <span class="keyword">true</span> );</div>
-<div class="line">  writer.close_array( );</div>
+<div class="line">  writer.write_number&lt;decimal_number&gt;( 10.0 );</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>or to the more general <code>write_value</code>:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
+<div class="line">  writer.write_value&lt;decimal_number&gt;( 10.0 );</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Both examples produce:</p>
+<div class="fragment"><div class="line">10.0</div>
+</div><!-- fragment --><p>The same mapping can be used when writing an object member:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> result = std::string{ };</div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">auto</span> writer = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03.html#aab91cb30e2621f0d0b5101b39b8b8652">daw::json::json_writer</a>( result );</div>
+<div class="line">  writer.open_object( );</div>
+<div class="line">  writer.write_key_value&lt;decimal_number&gt;( <span class="stringliteral">&quot;value&quot;</span>, 10.0 );</div>
+<div class="line">  writer.close_object( );</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The result is:</p>
-<div class="fragment"><div class="line">[false,null,42,&quot;42&quot;,&quot;true&quot;]</div>
-</div><!-- fragment --><p>The scalar functions are:</p>
-<ul>
-<li><code>write_boolean(bool)</code> writes a JSON Boolean.</li>
-<li><code>write_null()</code> writes JSON <code>null</code>.</li>
-<li><code>write_number(value)</code> writes a value using a number or Boolean mapping. A Boolean mapping is converted to the JSON number <code>0</code> or <code>1</code>.</li>
-<li><code>write_string(value)</code> writes a string mapping normally, and writes a number or Boolean mapping as its quoted JSON representation.</li>
-</ul>
-<p>Like <code>write_value</code>, these functions write an array element when the writer is inside an array, or the value for a preceding <code>add_key</code> when it is inside an object.</p>
-<p><code>write_number</code> and <code>write_string</code> accept an optional JSON mapping type as their first template argument. This is useful when the desired mapping cannot be deduced from the value:</p>
-<div class="fragment"><div class="line">writer.write_number&lt;<a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a9ed27157013275c28ec4e704ad4a77fd">daw::json::json_number_no_name&lt;int&gt;</a>&gt;( value );</div>
-<div class="line">writer.write_string&lt;<a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a57e1991cf62788a9ba3cbc7e3c4633bc">daw::json::json_bool_no_name&lt;&gt;</a>&gt;( flag );</div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_a57e1991cf62788a9ba3cbc7e3c4633bc"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a57e1991cf62788a9ba3cbc7e3c4633bc">daw::json::anonymous_namespace{daw_json_link_types.h}::json_bool_no_name</a></div><div class="ttdeci">json_base::json_bool&lt; T, Options, Constructor &gt; json_bool_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00599">daw_json_link_types.h:599</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_a9ed27157013275c28ec4e704ad4a77fd"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a9ed27157013275c28ec4e704ad4a77fd">daw::json::anonymous_namespace{daw_json_link_types.h}::json_number_no_name</a></div><div class="ttdeci">json_base::json_number&lt; T, Options, Constructor &gt; json_number_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00506">daw_json_link_types.h:506</a></div></div>
-</div><!-- fragment --><p>The mapping supplied to <code>write_number</code> must have a number or Boolean underlying JSON type. The mapping supplied to <code>write_string</code> must have a number, Boolean, or string underlying JSON type.</p>
+<div class="fragment"><div class="line">{&quot;value&quot;:10.0}</div>
+</div><!-- fragment --><p>It can also be applied to a range or initializer list:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> values = std::array{ 10.0, 20.0 };</div>
+<div class="line"> </div>
+<div class="line">writer.write_array_values&lt;decimal_number&gt;( values );</div>
+<div class="line">writer.write_array_values&lt;decimal_number&gt;( { 30.0, 40.0 } );</div>
+</div><!-- fragment --><p>An explicit mapping cannot be supplied to the variadic <code>write_array_values(value, values...)</code> overload. Its potentially heterogeneous values are mapped individually using their deduced types. The variadic <code>write_value</code> and <code>write_key_value</code> forms use this behavior when producing their arrays.</p>
+<p>The mapping supplied to <code>write_number</code> must have a number or Boolean underlying JSON type. The mapping supplied to <code>write_string</code> must have a number, Boolean, or string underlying JSON type. <code>write_boolean</code> and <code>write_null</code> have fixed representations and do not take a mapping type.</p>
 <h1><a class="anchor" id="autotoc_md45"></a>
 Pretty Output</h1>
 <p>Serialization policy flags are template arguments to <code>json_writer</code>. For example, enable pretty output as follows:</p>
