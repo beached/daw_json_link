@@ -689,7 +689,7 @@ bool test_vector_of_bool( ) {
 	std::string const json_data = "[true,false,true]";
 	auto const rv0 = daw::json::from_json_array<bool>( json_data );
 	daw_ensure( rv0.size( ) == 3 and rv0.at( 0 ) and not rv0.at( 1 ) and
-	        rv0.at( 2 ) );
+	            rv0.at( 2 ) );
 	auto const str0 = daw::json::to_json_array( rv0 );
 	auto const rv1 = daw::json::from_json<std::vector<bool>>( str0 );
 	return rv0 == rv1;
@@ -709,13 +709,11 @@ namespace daw::json {
 
 #if defined( DAW_CX_BIT_CAST )
 template<bool KnownBounds>
-constexpr std::uint64_t
-cx_parse_precise_double_bits( std::string_view input ) {
+constexpr std::uint64_t cx_parse_precise_double_bits( std::string_view input ) {
 	using namespace daw::json;
 	using policy_t =
 	  BasicParsePolicy<parse_options( options::IEEE754Precise::yes )>;
-	auto state =
-	  policy_t( input.data( ), input.data( ) + input.size( ) );
+	auto state = policy_t( input.data( ), input.data( ) + input.size( ) );
 	if constexpr( KnownBounds ) {
 		state = json_details::skip_number( state );
 	}
@@ -724,11 +722,11 @@ cx_parse_precise_double_bits( std::string_view input ) {
 }
 
 static_assert(
-  cx_parse_precise_double_bits<false>(
-    "0.131712340520409851296776577102" ) == 0x3FC0DBF33181E42EULL );
+  cx_parse_precise_double_bits<false>( "0.131712340520409851296776577102" ) ==
+  0x3FC0DBF33181E42EULL );
 static_assert(
-  cx_parse_precise_double_bits<true>(
-    "0.131712340520409851296776577102" ) == 0x3FC0DBF33181E42EULL );
+  cx_parse_precise_double_bits<true>( "0.131712340520409851296776577102" ) ==
+  0x3FC0DBF33181E42EULL );
 
 constexpr bool cxdbl_tostr1( ) {
 	using namespace daw::json;
@@ -846,8 +844,7 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 		  not test.input.empty( ) and test.input.front( ) == '-',
 		  daw::not_null( test.input.data( ) ),
 		  daw::not_null( test.input.data( ) + test.input.size( ) ) );
-		daw_ensure(
-		  DAW_BIT_CAST( std::uint32_t, exact ) == test.expected_bits );
+		daw_ensure( DAW_BIT_CAST( std::uint32_t, exact ) == test.expected_bits );
 	}
 
 	struct double_case_t {
@@ -863,14 +860,11 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 	  { "0.28956690281759414737", 0x3FD288439E66C1C7ULL },
 	  { "5e-34", 0x3904C4E977BA1f5CULL },
 	  // The retained prefix rounds down, but the complete decimal rounds up.
-	  { "0.131712340520409851296776577102",
-	    0x3FC0DBF33181E42EULL },
+	  { "0.131712340520409851296776577102", 0x3FC0DBF33181E42EULL },
 	  // A decimal where prematurely rounding the retained prefix can cause a
 	  // second, incorrect binary rounding.
-	  { "0.1381727048223282267055702520452",
-	    0x3FC1AFA4A834B498ULL },
-	  { "-0.131712340520409851296776577102",
-	    0xBFC0DBF33181E42EULL },
+	  { "0.1381727048223282267055702520452", 0x3FC1AFA4A834B498ULL },
+	  { "-0.131712340520409851296776577102", 0xBFC0DBF33181E42EULL },
 	};
 	daw::do_not_optimize( double_cases );
 
@@ -888,8 +882,7 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 		  not test.input.empty( ) and test.input.front( ) == '-',
 		  daw::not_null( test.input.data( ) ),
 		  daw::not_null( test.input.data( ) + test.input.size( ) ) );
-		daw_ensure(
-		  DAW_BIT_CAST( std::uint64_t, exact ) == test.expected_bits );
+		daw_ensure( DAW_BIT_CAST( std::uint64_t, exact ) == test.expected_bits );
 	}
 }
 
@@ -1282,7 +1275,7 @@ int main( ) {
 		daw_ensure( from_json<std::deque<int>>( "[1,2,3]"s ).at( 1 ) == 2 );
 		daw_ensure( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
 		daw_ensure( ( from_json<json_array_no_name<char, std::string>>(
-		            "[97,98,99]"s ) == "abc" ) );
+		                "[97,98,99]"s ) == "abc" ) );
 #if not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
 		static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 #else
@@ -1455,7 +1448,7 @@ int main( ) {
 		std::cout << "Large negative double " << dbl_007 << '\n';
 		auto dbl_007_str = to_json<json_base::json_number<
 		  double,
-		  options::number_opt( options::FPOutputFormat::Decimal )>>( dbl_007 );
+		  options::number_opt( options::FPOutputFormat::Minimum )>>( dbl_007 );
 		ensure( dbl_007_str ==
 		        "-17000000000000000000000000000000000000000000000000000000000000000"
 		        "000000000000000000000000000000000000" );
@@ -1599,6 +1592,45 @@ int main( ) {
 				                         return s.size( );
 			                         } );
 			ensure( x == 5 );
+		}
+		{
+			struct DoubleTest {
+				std::string_view str;
+				double expected;
+			};
+			static constexpr DoubleTest double_test_values[] = {
+			  { "0.0", 0x0.0p+0 },
+			  { "-0.0", -0x0.0p+0 },
+			  { "0.1", 0x1.999999999999ap-4 },
+			  { "1.00000000000000011102230246251565404236316680908203125",
+			    0x1.0000000000000p+0 },
+			  { "1.00000000000000011102230246251565404236316680908203126",
+			    0x1.0000000000001p+0 },
+			  { "9007199254740991.0", 0x1.fffffffffffffp+52 },
+			  { "9007199254740992.0", 0x1.0000000000000p+53 },
+			  { "9007199254740993.0", 0x1.0000000000000p+53 },
+			  { "9007199254740994.0", 0x1.0000000000001p+53 },
+			  { "1.7976931348623157e308", 0x1.fffffffffffffp+1023 },
+			  { "1.7976931348623158e308", 0x1.fffffffffffffp+1023 },
+			  { "1.7976931348623159e308", std::numeric_limits<double>::infinity( ) },
+			  { "2.2250738585072014e-308", 0x1.0000000000000p-1022 },
+			  { "2.2250738585072013e-308", 0x1.0000000000000p-1022 },
+			  { "2.2250738585072012e-308", 0x1.0000000000000p-1022 },
+			  { "2.2250738585072011e-308", 0x0.fffffffffffffp-1022 },
+			  { "4.9406564584124654e-324", 0x0.0000000000001p-1022 },
+			  { "5e-324", 0x0.0000000000001p-1022 },
+			  { "2.4703282292062327e-324", 0x0.0p+0 },
+			  { "2.4703282292062328e-324", 0x0.0000000000001p-1022 },
+			  { "1e-324", 0x0.0p+0 },
+			  { "-1e-324", -0x0.0p+0 },
+			  { "1e309", std::numeric_limits<double>::infinity( ) },
+			  { "-1e309", -std::numeric_limits<double>::infinity( ) },
+			  { "1e-325", 0x0.0p+0 },
+			  { "-1e-325", -0x0.0p+0 } };
+			for( DoubleTest const &tvalue : double_test_values ) {
+				auto const r = from_json<double>( tvalue.str );
+				daw_ensure( r == tvalue.expected );
+			}
 		}
 #if defined( LLONG_MIN )
 		{
