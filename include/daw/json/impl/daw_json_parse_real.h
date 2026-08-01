@@ -182,10 +182,11 @@ namespace daw::json {
 			/// in the type, usually uint64_t
 			template<typename ParseState, typename Result,
 			         typename max_storage_digits>
-			[[nodiscard]] constexpr bool
-			should_use_fallback( daw::not_null<char const *> whole_first,
-			                     daw::not_null<char const *> const whole_last,
-			                     char const *fract_first, char const *fract_last ) {
+			[[nodiscard]] constexpr bool should_use_fallback(
+			  [[maybe_unused]] daw::not_null<char const *> whole_first,
+			  [[maybe_unused]] daw::not_null<char const *> const whole_last,
+			  [[maybe_unused]] char const *fract_first,
+			  [[maybe_unused]] char const *fract_last ) {
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754 ) {
 					return DAW_UNLIKELY(
@@ -193,11 +194,6 @@ namespace daw::json {
 					    ( fract_first ? fract_last - fract_first : 0 ) ) >
 					  max_storage_digits::value );
 				} else {
-					// avoid -Wunused-but-set-parameter in gcc warnings
-					(void)whole_first;
-					(void)whole_last;
-					(void)fract_first;
-					(void)fract_last;
 					return false;
 				}
 			}
@@ -440,6 +436,7 @@ namespace daw::json {
 							                                       parse_state.first,
 							                                       parse_state.last );
 						} else {
+							static_assert( std::is_same_v<Result, long double> );
 							return json_details::parse_with_strtod<Result>(
 							  parse_state.first, parse_state.last );
 						}
@@ -461,13 +458,10 @@ namespace daw::json {
 				  ErrorReason::InvalidNumberStart,
 				  parse_state );
 
-				daw::not_null<char const *> const orig_first = parse_state.first;
-				daw::not_null<char const *> const orig_last = parse_state.last;
-
-				// silencing gcc9 warning as these are only used when precise ieee is
-				// in play.
-				(void)orig_first;
-				(void)orig_last;
+				[[maybe_unused]] daw::not_null<char const *> const orig_first =
+				  parse_state.first;
+				[[maybe_unused]] daw::not_null<char const *> const orig_last =
+				  parse_state.last;
 
 				auto const sign = static_cast<Result>(
 				  parse_policy_details::validate_signed_first( parse_state ) );
@@ -552,7 +546,6 @@ namespace daw::json {
 
 						last_char = parse_digits_while_number(
 						  first.get( ), fract_last.get( ), significant_digits );
-						// sig_digit_count += last_char - first;
 						exponent_p1 -= static_cast<signed_t>( last_char - first );
 						first = last_char;
 						if( daw::nsc_and( first >= fract_last, first < last ) ) {
@@ -652,7 +645,6 @@ namespace daw::json {
 						  ( std::uint64_t{ 1 } << std::numeric_limits<Result>::digits ) );
 					}
 					if( DAW_UNLIKELY( use_strtod ) ) {
-						using json_details::parse_with_strtod;
 						if constexpr( std::is_same_v<Result, float> or
 						              std::is_same_v<Result, double> ) {
 							bool discarded_nonzero =
@@ -672,7 +664,9 @@ namespace daw::json {
 							                                       orig_first,
 							                                       first );
 						} else {
-							return parse_with_strtod<Result>( orig_first, orig_last );
+							static_assert( std::is_same_v<Result, long double> );
+							return json_details::parse_with_strtod<Result>( orig_first,
+							                                                orig_last );
 						}
 					}
 				}
