@@ -275,4 +275,18 @@ int main( ) {
 		std::cout << '\n';
 	}
 #endif
+#if defined( DAW_JSON_HAS_REFLECTION )
+	{
+		auto out = std::string{ };
+		auto w = daw::json::json_writer( out );
+		enum FooEnum { a, b, c };
+		w.open_array( );
+		w.write_enum_string( FooEnum::a );
+		w.write_enum_string( FooEnum::b );
+		w.write_enum_string( FooEnum::c );
+		w.finalize( );
+		daw_ensure( out == R"json(["a","b","c"])json" );
+		std::cout << out << '\n';
+	}
+#endif
 }

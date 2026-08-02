@@ -15,6 +15,10 @@
 #include "daw/json/concepts/daw_writable_output.h"
 #include "daw/json/daw_json_link.h"
 
+#if defined( DAW_JSON_HAS_REFLECTION )
+#include <daw/daw_concepts.h>
+#endif
+
 #include <daw/daw_move.h>
 #include <daw/traits/daw_traits_remove_cvref.h>
 
@@ -415,6 +419,12 @@ namespace daw::json {
 			constexpr void write_string( char const ( &str )[N] ) {
 				write_value<JsonClass>( daw::string_view( str, N - 1 ) );
 			}
+
+#if defined( DAW_JSON_HAS_REFLECTION )
+			constexpr void write_enum_string( daw::EnumType auto e ) {
+				write_string( refl_details::enum_to_string( e ) );
+			}
+#endif
 		};
 
 		template<auto... PolicyFlags, typename WriterType>

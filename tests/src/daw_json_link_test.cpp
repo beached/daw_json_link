@@ -13,10 +13,6 @@
 #include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_json_exec_modes.h>
 
-#if defined( DAW_JSON_USE_REFLECTION )
-#include <daw/json/daw_json_reflection.h>
-#endif
-
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_vector.h>
@@ -1277,6 +1273,7 @@ int main( ) {
 		daw_ensure( ( from_json<json_array_no_name<char, std::string>>(
 		                "[97,98,99]"s ) == "abc" ) );
 #if not defined( DAW_JSON_USE_FULL_DEBUG_ITERATORS )
+		// DAW
 		static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 #else
 	daw_ensure( ( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 ) );
@@ -1502,21 +1499,27 @@ int main( ) {
 		          << '\n';
 #endif
 #endif
+
+#if defined( DAW_JSON_HAS_REFLECTION )
 		struct Unmapped0 {};
 		constexpr auto um0 = daw::json::from_json<Unmapped0>( "{}" );
 		auto um0_str = daw::json::to_json( um0 );
 		ensure( um0_str == "{}" );
 
-		constexpr auto um1 = daw::json::from_json<Unmapped1>( "[5]" );
+		constexpr auto um1 =
+		  daw::json::from_json<Unmapped1>( R"json({"x":5})json" );
+		ensure( um1.x == 5 );
 		auto um1_str = daw::json::to_json( um1 );
-		ensure( um1_str == "[5]" );
+		ensure( um1_str == R"json({"x":5})json" );
 
-		constexpr auto um9 =
-		  daw::json::from_json<Unmapped9>( "[0,1,2,3,4,5,6,7,8]" );
+		constexpr auto um9 = daw::json::from_json<Unmapped9>(
+		  R"json({"a0":0,"a1":1,"a2":2,"a3":3,"a4":4,"a5":5,"a6":6,"a7":7,"a8":8,})json" );
 
 		auto um9_str = daw::json::to_json( um9 );
-		ensure( um9_str == "[0,1,2,3,4,5,6,7,8]" );
-
+		ensure(
+		  um9_str ==
+		  R"json({"a0":0,"a1":1,"a2":2,"a3":3,"a4":4,"a5":5,"a6":6,"a7":7,"a8":8,})json" );
+#endif
 		std::cout << "\n\nJSON Link Version: " << json_link_version( ) << '\n';
 		std::cout << "done\n\n";
 
