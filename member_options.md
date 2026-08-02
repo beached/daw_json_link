@@ -53,9 +53,10 @@ Control the floating point output format
 
 ### Values
 
-* `Auto` - Automatically choose between decimal and scientific output formats.
+* `Auto` - Automatically choose between Minimum and Scientific output formats.
 * `Scientific` - Always format in terms of an exponent `<whole>[.fraction]e<exponent>`.
-* `Decimal` - Always format in terms of an exponent `<whole>[.fraction]e<exponent>`.
+* `Decimal` - Always format in terms of `<whole>.<fraction>`.
+* `Minimum` - Always format in terms of `<whole>[.fraction]`.
 
 ### Default
 
