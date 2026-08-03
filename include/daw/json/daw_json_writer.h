@@ -392,6 +392,7 @@ namespace daw::json {
 				}
 			}
 
+			/// When outputting a class, uses default to_json
 			template<typename JsonClass = use_default, typename T>
 			constexpr void write_string( T const &value ) {
 				using JsonMember =
