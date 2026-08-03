@@ -357,15 +357,19 @@ namespace daw::json {
 						switch( *exp_first ) {
 						case '-':
 							++exp_first;
-							daw_json_assert_weak( exp_first < exp_last,
-							                      ErrorReason::InvalidNumber );
+							daw_json_assert_weak(
+							  exp_first < exp_last and parse_digit( *exp_first ) < 10U,
+							  ErrorReason::InvalidNumber );
 							return -1;
 						case '+':
-							daw_json_assert_weak( exp_first < exp_last,
-							                      ErrorReason::InvalidNumber );
 							++exp_first;
+							daw_json_assert_weak(
+							  exp_first < exp_last and parse_digit( *exp_first ) < 10U,
+							  ErrorReason::InvalidNumber );
 							return 1;
 						default:
+							daw_json_assert_weak( parse_digit( *exp_first ) < 10U,
+							                      ErrorReason::InvalidNumber );
 							return 1;
 						}
 					}( );
@@ -460,8 +464,6 @@ namespace daw::json {
 
 				[[maybe_unused]] daw::not_null<char const *> const orig_first =
 				  parse_state.first;
-				[[maybe_unused]] daw::not_null<char const *> const orig_last =
-				  parse_state.last;
 
 				auto const sign = static_cast<Result>(
 				  parse_policy_details::validate_signed_first( parse_state ) );
@@ -666,7 +668,7 @@ namespace daw::json {
 						} else {
 							static_assert( std::is_same_v<Result, long double> );
 							return json_details::parse_with_strtod<Result>( orig_first,
-							                                                orig_last );
+							                                                first );
 						}
 					}
 				}
