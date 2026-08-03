@@ -398,20 +398,18 @@ namespace daw::json {
 				  json_writer_details::json_write_value_class_t<JsonClass, T>;
 				constexpr JsonBaseParseTypes json_base_type =
 				  JsonMember::underlying_json_type;
-				static_assert(
-				  json_base_type == JsonBaseParseTypes::Number or
-				    json_base_type == JsonBaseParseTypes::Bool or
-				    json_base_type == JsonBaseParseTypes::String,
-				  "The underlying mapping must be a number, boolean, or string type" );
 				if constexpr( json_base_type == JsonBaseParseTypes::String ) {
 					write_value<JsonClass>( value );
-					return;
-				} else {
+				} else if constexpr( json_base_type == JsonBaseParseTypes::Bool or
+				                     json_base_type == JsonBaseParseTypes::Number ) {
 					prepare_value( );
 					m_writer.put( '"' );
 					to_json<JsonClass>( value, m_writer.get( ) );
 					m_writer.put( '"' );
 					m_is_first = false;
+				} else {
+					auto const tmp = to_json( value );
+					do_write_value<json_string_no_name<>>( tmp );
 				}
 			}
 

@@ -289,4 +289,13 @@ int main( ) {
 		std::cout << out << '\n';
 	}
 #endif
+	{
+		auto const foo = Foo{ 42, "Hello", {1,2} };
+		auto out = std::string{};
+		auto w = daw::json::json_writer( out );
+		w.write_string( foo );
+		w.finalize( );
+		daw_ensure( out == R"json("{\"a\":42,\"b\":\"Hello\",\"c\":[1,2]}")json" );
+	}
 }
+
