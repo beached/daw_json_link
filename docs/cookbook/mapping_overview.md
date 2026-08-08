@@ -15,7 +15,7 @@ Maps JSON arrays to C++ container types.
 
 Maps JSON arrays/size member to C++ container types. This allows easier mapping to types like `unique_ptr`. Precautions should be taken that the input is trusted or validated in the Constructor type to prevent resource exhaustion.
 
-### `json_boolean`
+### `json_bool`
 
 Maps JSON boolean values to C++ boolean/integral types.
 
@@ -87,13 +87,74 @@ Maps JSON values that may be one of serveral types to C++ type(s). A switcher ty
 
 Maps JSON values that may be one of serveral types to C++ type(s). A switcher type that inspects a sub member to determine which alternative is required.
 
+## Mapping Template Parameters
+
+Named mappings use the JSON member name as their first template parameter.
+The remaining parameters are summarized below; parameters shown with `= ...`
+have defaults. `use_default` asks the library to deduce the mapping or use its
+standard constructor.
+
+| Mapping | Template parameters after `Name` |
+| --- | --- |
+| `json_class` | `T, Constructor = use_default` |
+| `json_number` | `T = double, Options = number_opts_def, Constructor = use_default` |
+| `json_checked_number` | `T = double, Options = number_opts_def, Constructor = use_default` |
+| `json_bool` | `T = bool, Options = bool_opts_def, Constructor = use_default` |
+| `json_string` | `String = std::string, Options = string_opts_def, Constructor = use_default` |
+| `json_string_raw` | `String = std::string, Options = string_raw_opts_def, Constructor = use_default` |
+| `json_date` | `T = system_clock time_point, Constructor = use_default` |
+| `json_array` | `JsonElement, Container = use_default, Constructor = use_default` |
+| `json_sized_array` | `JsonElement, SizeMember, Container = use_default, Constructor = use_default` |
+| `json_key_value` | `Container, JsonValueType = use_default, JsonKeyType = use_default, Constructor = use_default` |
+| `json_key_value_array` | `Container, JsonValueType = use_default, JsonKeyType = use_default, Constructor = use_default` |
+| `json_tuple` | `Tuple, JsonTupleTypesList = use_default, Constructor = use_default` |
+| `json_variant` | `Variant, JsonElements = use_default, Constructor = use_default` |
+| `json_tagged_variant` | `T, TagMember, Switcher, JsonElements = use_default, Constructor = use_default` |
+| `json_intrusive_variant` | `Variant, TagMember, Switcher, JsonElements = use_default, Constructor = use_default` |
+| `json_custom` | `T, FromJsonConverter = use_default, ToJsonConverter = use_default, Options = json_custom_opts_def` |
+| `json_raw` | `T = json_value, Constructor = use_default` |
+| `json_nullable` | `T, JsonMember = use_default, NullableType = JsonNullable::Nullable, Constructor = use_default` |
+
+`Options` is an encoded `json_options_t` value. Build it with the setter for
+the mapping family: `options::number_opt`, `bool_opt`, `string_opt`,
+`string_raw_opt`, or `json_custom_opt`. The available flags and defaults are
+listed in [Member Options/Type Options](member_options.md).
+
+`JsonElement`, `JsonValueType`, `JsonKeyType`, `JsonTupleTypesList`, and
+`JsonElements` accept explicit mappings when deduction is not appropriate.
+Array elements and object keys/values use unnamed mappings such as
+`json_number_no_name<int>`.
+
+`Constructor` is a callable used in place of the standard construction step.
+For scalar mappings it accepts the parsed scalar. Container and class mappings
+use the arguments described by that mapping's declaration. Nullable mappings
+use it to construct the outer nullable result.
+
+### Nullable convenience mappings
+
+Named aliases ending in `_null` add this parameter before `Constructor`:
+
+```cpp
+JsonNullable NullableType = JsonNullable::Nullable
+```
+
+Their value type is the wrapped/nullable type, such as `std::optional<int>`.
+`JsonNullable::Nullable` permits an empty class member to be omitted;
+`JsonNullable::NullVisible` emits that member as `null`. See
+[Nullable JSON Values](json_nullable.md).
+
+Unnamed nullable aliases ending in `_null_no_name` always preserve an empty
+value as the JSON literal `null`, because an array element or root value cannot
+be omitted. They therefore do not expose a `JsonNullable` parameter.
+
 ## Understanding _null and _no_name Variants
 
 ### Nullable mappings end in `_null`
 
 The `_null` variant allows the mapped value to be nullable.
 Useful when the JSON field may or may not be present.
-Maps to std::optional in C++, effectively allowing an absence of the value.
+The wrapped C++ type is supplied explicitly and may be `std::optional`, a smart
+pointer, or another type satisfying the nullable-value requirements.
 
 ### Unnamed mappings end in `_no_name`
 
@@ -103,4 +164,5 @@ These mappings provide robust and flexible ways to handle different JSON structu
 
 ### Unnamed nullable mappings `_null_no_name`
 
-The `_null_no_name` variants combine a nullable type without a name.
+The `_null_no_name` variants combine a nullable type without a name. Empty
+values serialize as `null`.

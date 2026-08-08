@@ -2,6 +2,13 @@
 
 nullable types are supported by using the `json_nullable` mapping type or appending the type name with `_null` to use the convenience wrapper. The requirement of the underlying type is that it will be default constructable for null values or support the [Nullable Concept](nullable_value_concept.md).
 
+Named `_null` mappings accept a `JsonNullable` template argument that controls
+how an empty value is serialized when it is a class member:
+
+- `JsonNullable::Nullable` (the default) permits the entire member to be omitted.
+- `JsonNullable::NullVisible` always emits the member, using `null` for an empty
+  value.
+
 Take the following JSON
 
 ```json
@@ -37,7 +44,8 @@ namespace daw::json {
       json_bool_null<
         "member2", 
         std::unique_ptr<bool>, 
-        LiteralAsStringOpt::NoEscapedDblQuote, 
+        options::bool_opt( options::LiteralAsStringOpt::Never ),
+        JsonNullable::Nullable,
         UniquePtrConstructor<bool>
       >
     >;
