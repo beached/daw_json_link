@@ -1421,8 +1421,7 @@ namespace daw::json {
 		                              Constructor>;
 
 		template<typename JsonElement, typename SizeMember,
-		         typename WrappedContainer,
-		         typename Constructor = use_default>
+		         typename WrappedContainer, typename Constructor = use_default>
 		using json_sized_array_null_no_name = json_base::json_nullable<
 		  WrappedContainer,
 		  json_base::json_sized_array<JsonElement, SizeMember,
@@ -1678,15 +1677,27 @@ namespace daw::json {
 			  json_base::json_tuple<Tuple, JsonTupleTypesList, Constructor>;
 		};
 
-		template<typename Tuple, typename Constructor = use_default,
-		         typename JsonTupleTypesList = use_default>
+		/// @brief Map an unnamed tuple-like value to a JSON heterogeneous array
+		/// @tparam Tuple Tuple-like C++ type to parse to
+		/// @tparam JsonTupleTypesList Explicit element mappings, or use_default to
+		/// deduce them from Tuple
+		/// @tparam Constructor Callable used to construct Tuple
+		template<typename Tuple, typename JsonTupleTypesList = use_default,
+		         typename Constructor = use_default>
 		using json_tuple_no_name =
-		  json_base::json_tuple<Tuple, Constructor, JsonTupleTypesList>;
+		  json_base::json_tuple<Tuple, JsonTupleTypesList, Constructor>;
 
+		/// @brief Map an unnamed nullable tuple-like value
+		/// @tparam WrappedTuple Nullable tuple-like C++ type to parse to
+		/// @tparam JsonTupleTypesList Explicit element mappings, or use_default to
+		/// deduce them from WrappedTuple
+		/// @tparam Constructor Callable used to construct WrappedTuple
 		template<typename WrappedTuple, typename JsonTupleTypesList = use_default,
 		         typename Constructor = use_default>
 		using json_tuple_null_no_name = json_base::json_nullable<
-		  WrappedTuple, JsonTupleTypesList,
+		  WrappedTuple,
+		  json_base::json_tuple<json_details::unwrapped_t<WrappedTuple>,
+		                        JsonTupleTypesList>,
 		  JsonNullable::NullVisible, Constructor>;
 
 		namespace json_base {
@@ -1845,6 +1856,8 @@ namespace daw::json {
 				static constexpr auto expected_type = JsonParseTypes::Unknown;
 				static constexpr auto base_expected_type = JsonParseTypes::Unknown;
 				static constexpr auto underlying_json_type = JsonBaseParseTypes::None;
+				static constexpr options::EightBitModes eight_bit_mode =
+				  options::EightBitModes::AllowFull;
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_raw<NewName, T, Constructor>;
@@ -1860,6 +1873,8 @@ namespace daw::json {
 		 * allows for delaying the parsing of this member until later
 		 * @tparam Name json member name
 		 * @tparam T type to hold raw JSON data, defaults to json_value
+		 * @tparam NullableType Whether an empty class member may be omitted or must
+		 * be emitted as null
 		 * @tparam Constructor A callable used to construct T.
 		 */
 		template<JSONNAMETYPE Name, typename T, typename Constructor>
@@ -1928,8 +1943,8 @@ namespace daw::json {
 		template<typename T = std::optional<json_value>,
 		         typename Constructor = use_default>
 		using json_raw_null_no_name = json_base::json_nullable<
-		  T, json_base::json_raw<json_details::unwrapped_t<T>>, JsonNullable::NullVisible,
-		  Constructor>;
+		  T, json_base::json_raw<json_details::unwrapped_t<T>>,
+		  JsonNullable::NullVisible, Constructor>;
 
 		template<json_options_t PolicyFlags, typename Allocator>
 		struct json_data_contract<basic_json_value<PolicyFlags, Allocator>> {

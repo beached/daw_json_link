@@ -882,6 +882,121 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 	}
 }
 
+struct OptInt {
+	std::optional<int> m;
+};
+
+namespace mapping_parameter_tests {
+	struct increment_int {
+		constexpr int operator( )( int value ) const {
+			return value + 1;
+		}
+	};
+
+	struct bool_to_int {
+		constexpr int operator( )( bool value ) const {
+			return value ? 1 : 0;
+		}
+	};
+
+	struct construct_string {
+		std::string operator( )( std::string value ) const {
+			return value;
+		}
+
+		std::string operator( )( char const *first, char const *last ) const {
+			return std::string( first, last );
+		}
+	};
+
+	struct copy_json_text {
+		std::string operator( )( std::string_view value ) const {
+			return std::string( value );
+		}
+	};
+
+	struct emit_json_text {
+		std::string operator( )( std::string const &value ) const {
+			return value;
+		}
+	};
+
+	using number = daw::json::json_number_no_name<
+	  int,
+	  daw::json::options::number_opt(
+	    daw::json::options::LiteralAsStringOpt::Always,
+	    daw::json::options::JsonRangeCheck::CheckForNarrowing,
+	    daw::json::options::FPOutputFormat::Scientific ),
+	  increment_int>;
+	static_assert( number::literal_as_string ==
+	               daw::json::options::LiteralAsStringOpt::Always );
+	static_assert( number::range_check ==
+	               daw::json::options::JsonRangeCheck::CheckForNarrowing );
+	static_assert( number::fp_output_format ==
+	               daw::json::options::FPOutputFormat::Scientific );
+	static_assert( std::is_same_v<number::constructor_t, increment_int> );
+
+	using boolean = daw::json::json_bool_no_name<
+	  bool,
+	  daw::json::options::bool_opt(
+	    daw::json::options::LiteralAsStringOpt::Always ),
+	  bool_to_int>;
+	static_assert( boolean::literal_as_string ==
+	               daw::json::options::LiteralAsStringOpt::Always );
+	static_assert( std::is_same_v<boolean::constructor_t, bool_to_int> );
+
+	using string = daw::json::json_string_no_name<
+	  std::string,
+	  daw::json::options::string_opt(
+	    daw::json::options::EightBitModes::DisallowHigh ),
+	  construct_string>;
+	static_assert( string::eight_bit_mode ==
+	               daw::json::options::EightBitModes::DisallowHigh );
+	static_assert( std::is_same_v<string::constructor_t, construct_string> );
+
+	using raw_string = daw::json::json_string_raw_no_name<
+	  std::string_view,
+	  daw::json::options::string_raw_opt(
+	    daw::json::options::EightBitModes::AllowFull,
+	    daw::json::options::AllowEscapeCharacter::NoEscapedDblQuote )>;
+	static_assert( raw_string::eight_bit_mode ==
+	               daw::json::options::EightBitModes::AllowFull );
+	static_assert(
+	  raw_string::allow_escape_character ==
+	  daw::json::options::AllowEscapeCharacter::NoEscapedDblQuote );
+
+	using custom_any = daw::json::json_custom_no_name<
+	  std::string, copy_json_text, emit_json_text,
+	  daw::json::options::json_custom_opt(
+	    daw::json::options::JsonCustomTypes::Any )>;
+	static_assert( custom_any::custom_json_type ==
+	               daw::json::options::JsonCustomTypes::Any );
+
+	using tuple_elements = daw::json::json_tuple_member_list<
+	  daw::json::json_number_no_name<int>, daw::json::json_bool_no_name<bool>>;
+	using tuple =
+	  daw::json::json_tuple_no_name<std::tuple<int, bool>, tuple_elements>;
+	using nullable_tuple = daw::json::json_tuple_null_no_name<
+	  std::optional<std::tuple<int, bool>>, tuple_elements>;
+	static_assert( std::is_same_v<daw::json::json_details::json_result_t<tuple>,
+	                              std::tuple<int, bool>> );
+	static_assert(
+	  std::is_same_v<daw::json::json_details::json_result_t<nullable_tuple>,
+	                 std::optional<std::tuple<int, bool>>> );
+} // namespace mapping_parameter_tests
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<OptInt> {
+		static constexpr char m[] = "m";
+		using type = json_member_list<json_number_null<m, std::optional<int>>>;
+
+		static constexpr auto to_json_data( OptInt const &v ) {
+			return std::forward_as_tuple( v.m );
+		}
+	};
+} // namespace daw::json
+
 int main( ) {
 #if defined( DAW_USE_EXCEPTIONS )
 	try {
@@ -1122,28 +1237,38 @@ int main( ) {
 		                5792711765526609591.9963073925412025509e-82 );
 		test_dblparse( "4891559871276714924261e222", true );
 		test_dblparse(
-		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "1111111111111111111111111111111111111111111111111111111111111111111111"
 		  "11"
-		  "111111111111111111111111111111111111111111111111111111111111111111111111"
 		  "11"
-		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "1111111111111111111111111111111111111111111111111111111111111111111111"
 		  "11"
-		  "111111111111111111111111111111111111111111111111111111111111111111111111"
 		  "11"
-		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "1111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "11"
+		  "1111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "11"
+		  "1111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
 		  "11"
 		  "111111111111111111111111111111.0e-100",
 		  true );
 		test_dblparse(
-		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "1111111111111111111111111111111111111111111111111111111111111111111111"
 		  "11"
-		  "111111111111111111111111111111111111111111111111111111111111111111111111"
 		  "11"
-		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "1111111111111111111111111111111111111111111111111111111111111111111111"
 		  "11"
-		  "111111111111111111111111111111111111111111111111111111111111111111111111"
 		  "11"
-		  "111111111111111111111111111111111111111111111111111111111111111111111111"
+		  "1111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "11"
+		  "1111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
+		  "11"
+		  "1111111111111111111111111111111111111111111111111111111111111111111111"
+		  "11"
 		  "11"
 		  "111111111111111111111111111111.0e+100",
 		  true );
@@ -1178,25 +1303,35 @@ int main( ) {
 		test_dblparse( "10070988951557009.8178168006534510403e-302", true );
 		test_dblparse(
 		  "2."
-		  "225073858507201136057409796709131975934819546351645648023426109724822222"
-		  "02"
-		  "107694551652952390813508791414915891303962110687008643869459464552765720"
-		  "74"
-		  "078206217433799881410632673292535522868813721490129811224514518898490572"
+		  "2250738585072011360574097967091319759348195463516456480234261097248222"
 		  "22"
-		  "307285255133155755015914397476397983411801999323962548289017107081850690"
+		  "02"
+		  "1076945516529523908135087914149158913039621106870086438694594645527657"
+		  "20"
+		  "74"
+		  "0782062174337998814106326732925355228688137214901298112245145188984905"
+		  "72"
+		  "22"
+		  "3072852551331557550159143974763979834118019993239625482890171070818506"
+		  "90"
 		  "63"
-		  "066665599493827577257201576306269066333264756530000924588831643303777979"
+		  "0666655994938275772572015763062690663332647565300009245888316433037779"
+		  "79"
 		  "18"
-		  "696120494973903778297049050510806099407302629371289589500035837999672072"
+		  "6961204949739037782970490505108060994073026293712895895000358379996720"
+		  "72"
 		  "54"
-		  "304360284078895771796150945516748243471030702609144621572289880258182545"
-		  "18"
-		  "032570701886087211312807951223342628836862232150377566662250398253433597"
+		  "3043602840788957717961509455167482434710307026091446215722898802581825"
 		  "45"
-		  "688844239002654981983854879482922068947216898310996983658468140228542433"
+		  "18"
+		  "0325707018860872113128079512233426288368622321503775666622503982534335"
+		  "97"
+		  "45"
+		  "6888442390026549819838548794829220689472168983109969836584681402285424"
+		  "33"
 		  "30"
-		  "660339850886445804001034933970427567186443383770486037861622771738545623"
+		  "6603398508864458040010349339704275671864433837704860378616227717385456"
+		  "23"
 		  "06"
 		  "5874679014086723327636718751234567890123456789012345678901e-308",
 		  true );
@@ -1518,7 +1653,7 @@ int main( ) {
 		auto um9_str = daw::json::to_json( um9 );
 		ensure(
 		  um9_str ==
-		  R"json({"a0":0,"a1":1,"a2":2,"a3":3,"a4":4,"a5":5,"a6":6,"a7":7,"a8":8,})json" );
+		  R"json({"a0":0,"a1":1,"a2":2,"a3":3,"a4":4,"a5":5,"a6":6,"a7":7,"a8":8})json" );
 #endif
 		std::cout << "\n\nJSON Link Version: " << json_link_version( ) << '\n';
 		std::cout << "done\n\n";
@@ -1661,6 +1796,133 @@ int main( ) {
 			ensure( most_min == most_min_parsed );
 		}
 #endif
+		{
+			using namespace daw::json;
+			using maybe_number = json_number_no_name<
+			  int, options::number_opt( options::LiteralAsStringOpt::Maybe )>;
+			using always_number = json_number_no_name<
+			  int, options::number_opt( options::LiteralAsStringOpt::Always )>;
+			daw_ensure( from_json<maybe_number>( "42" ) == 42 );
+			daw_ensure( from_json<maybe_number>( R"("42")" ) == 42 );
+			daw_ensure( from_json<always_number>( R"("42")" ) == 42 );
+			daw_ensure( to_json<always_number>( 42 ) == R"("42")" );
+			daw_ensure(
+			  from_json<mapping_parameter_tests::number>( R"("41")" ) == 42 );
+		}
+		{
+			using namespace daw::json;
+			using maybe_bool = json_bool_no_name<
+			  bool, options::bool_opt( options::LiteralAsStringOpt::Maybe )>;
+			daw_ensure( from_json<maybe_bool>( "true" ) );
+			daw_ensure( from_json<maybe_bool>( R"("true")" ) );
+			daw_ensure(
+			  from_json<mapping_parameter_tests::boolean>( R"("true")" ) == 1 );
+			daw_ensure( to_json<json_bool_no_name<
+			              bool, options::bool_opt(
+			                      options::LiteralAsStringOpt::Always )>>( true ) ==
+			            R"("true")" );
+		}
+		{
+			using namespace daw::json;
+			daw_ensure( from_json<mapping_parameter_tests::string>(
+			              R"("four")" ) == "four" );
+			daw_ensure( from_json<mapping_parameter_tests::raw_string>(
+			              R"("raw text")" ) == "raw text" );
+		}
+		{
+			using namespace daw::json;
+			using custom_string = json_custom_no_name<
+			  std::string, mapping_parameter_tests::copy_json_text,
+			  mapping_parameter_tests::emit_json_text>;
+			using custom_literal = json_custom_lit_no_name<
+			  std::string, mapping_parameter_tests::copy_json_text,
+			  mapping_parameter_tests::emit_json_text>;
+			daw_ensure( from_json<custom_string>( R"("text")" ) == "text" );
+			daw_ensure( to_json<custom_string>( std::string( "text" ) ) ==
+			            R"("text")" );
+			daw_ensure( from_json<custom_literal>( "42" ) == "42" );
+			daw_ensure( to_json<custom_literal>( std::string( "42" ) ) == "42" );
+		}
+		{
+			using namespace daw::json;
+			auto const tuple =
+			  from_json<mapping_parameter_tests::tuple>( "[42,true]" );
+			daw_ensure( tuple == std::tuple<int, bool>( 42, true ) );
+			auto const nullable_tuple =
+			  from_json<mapping_parameter_tests::nullable_tuple>( "[42,true]" );
+			daw_ensure( nullable_tuple ==
+			            std::optional<std::tuple<int, bool>>( { 42, true } ) );
+			daw_ensure( to_json<mapping_parameter_tests::nullable_tuple>(
+			              std::optional<std::tuple<int, bool>>{ } ) == "null" );
+		}
+		{
+			using nullable_number =
+			  daw::json::json_number_null_no_name<std::optional<int>>;
+			auto const opt_int_str =
+			  daw::json::to_json<nullable_number>( std::optional<int>{ } );
+			daw_ensure( opt_int_str == "null" );
+		}
+		{
+			using namespace daw::json;
+			using maybe_number =
+			  json_number_no_name<double,
+			                      options::number_opt(
+			                        options::LiteralAsStringOpt::Maybe,
+			                        options::JsonNumberErrors::AllowNanInf )>;
+			daw_ensure( to_json<maybe_number>( 1.5 ) == "1.5" );
+			daw_ensure( to_json<maybe_number>(
+			              std::numeric_limits<double>::quiet_NaN( ) ) == R"("NaN")" );
+			daw_ensure(
+			  to_json<maybe_number>( std::numeric_limits<double>::infinity( ) ) ==
+			  R"("Infinity")" );
+			daw_ensure(
+			  to_json<maybe_number>( -std::numeric_limits<double>::infinity( ) ) ==
+			  R"("-Infinity")" );
+
+			using nan_number =
+			  json_number_no_name<double,
+			                      options::number_opt(
+			                        options::LiteralAsStringOpt::Maybe,
+			                        options::JsonNumberErrors::AllowNaN )>;
+			using inf_number =
+			  json_number_no_name<double,
+			                      options::number_opt(
+			                        options::LiteralAsStringOpt::Maybe,
+			                        options::JsonNumberErrors::AllowInf )>;
+			daw_ensure( to_json<nan_number>(
+			              std::numeric_limits<double>::quiet_NaN( ) ) == R"("NaN")" );
+			daw_ensure(
+			  to_json<inf_number>( std::numeric_limits<double>::infinity( ) ) ==
+			  R"("Infinity")" );
+#if defined( DAW_USE_EXCEPTIONS )
+			try {
+				(void)to_json<nan_number>( std::numeric_limits<double>::infinity( ) );
+				daw_ensure_error( true, "AllowNaN unexpectedly allowed Infinity" );
+			} catch( json_exception const &jex ) {
+				daw_ensure( jex.reason_type( ) == ErrorReason::NumberIsInf );
+			}
+			try {
+				(void)to_json<inf_number>( std::numeric_limits<double>::quiet_NaN( ) );
+				daw_ensure_error( true, "AllowInf unexpectedly allowed NaN" );
+			} catch( json_exception const &jex ) {
+				daw_ensure( jex.reason_type( ) == ErrorReason::NumberIsNaN );
+			}
+#endif
+		}
+		{
+			using escaped_ascii_string = daw::json::json_string_no_name<
+			  std::string,
+			  daw::json::options::string_opt(
+			    daw::json::options::EightBitModes::DisallowHigh )>;
+			std::string_view const ebh_in = "\xC3\xA9";
+			auto const ebh_out = daw::json::to_json<escaped_ascii_string>( ebh_in );
+			std::string_view const ebh_expected = R"("\u00E9")";
+			daw_ensure( ebh_out == ebh_expected );
+		}
+		{
+			auto const opt_int_str = daw::json::to_json( OptInt{ } );
+			daw_ensure( opt_int_str == "{}" );
+		}
 	}
 #if defined( DAW_USE_EXCEPTIONS )
 	catch( daw::json::json_exception const &jex ) {

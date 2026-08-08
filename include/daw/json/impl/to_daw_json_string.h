@@ -921,7 +921,8 @@ namespace daw::json {
 			[[nodiscard]] static constexpr WriteableType
 			to_json_string_unknown( WriteableType it, parse_to_t const &value ) {
 
-				return utils::copy_to_iterator( it, value );
+				return utils::copy_to_iterator<false, JsonMember::eight_bit_mode>(
+				  it, value );
 			}
 
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
@@ -1447,8 +1448,10 @@ namespace daw::json {
 				visited_members.push_back( json_member_name );
 				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
 				if constexpr( is_json_nullable_v<JsonMember> ) {
-					if( not concepts::nullable_value_has_value( get<pos>( tp ) ) ) {
-						return;
+					if constexpr( JsonMember::nullable == JsonNullable::Nullable ) {
+						if( not concepts::nullable_value_has_value( get<pos>( tp ) ) ) {
+							return;
+						}
 					}
 				}
 				if( not is_first ) {

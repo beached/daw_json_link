@@ -77,8 +77,9 @@ bool operator==( MyClass2 const &lhs, MyClass2 const &rhs ) {
 		return false;
 	}
 	using namespace daw::json;
-	return from_json<MyDelayedClass>( lhs.member_later ) ==
-	       from_json<MyDelayedClass>( rhs.member_later );
+	auto const l_mem_later = from_json<MyDelayedClass>( lhs.member_later );
+	auto const r_mem_later = from_json<MyDelayedClass>( rhs.member_later );
+	return l_mem_later == r_mem_later;
 }
 
 int main( int argc, char **argv )

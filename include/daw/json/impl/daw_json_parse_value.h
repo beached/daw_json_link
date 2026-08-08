@@ -52,10 +52,12 @@ namespace daw::json {
 			 * In checked input, ensures State has more data.
 			 * @tparam literal_as_string Is the literal being parsed enclosed in
 			 * quotes.
+			 * @tparam AtEnd Whether this call is consuming an optional closing quote
+			 * after the literal has been parsed
 			 * @tparam ParseState ParseState idiom
 			 * @param parse_state Current parsing state
 			 */
-			template<options::LiteralAsStringOpt literal_as_string,
+			template<options::LiteralAsStringOpt literal_as_string, bool AtEnd = false,
 			         typename ParseState>
 			DAW_ATTRIB_INLINE constexpr void
 			skip_quote_when_literal_as_string( ParseState &parse_state ) {
@@ -67,10 +69,12 @@ namespace daw::json {
 					parse_state.remove_prefix( );
 				} else if constexpr( literal_as_string ==
 				                     options::LiteralAsStringOpt::Maybe ) {
-					daw_json_assert_weak( parse_state.has_more( ),
-					                      ErrorReason::UnexpectedEndOfData,
-					                      parse_state );
-					if( parse_state.front( ) == '"' ) {
+					if constexpr( not AtEnd ) {
+						daw_json_assert_weak( parse_state.has_more( ),
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
+					}
+					if( parse_state.has_more( ) and parse_state.front( ) == '"' ) {
 						parse_state.remove_prefix( );
 					}
 				}
@@ -166,7 +170,8 @@ namespace daw::json {
 					} else {
 						if constexpr( JsonMember::literal_as_string !=
 						              options::LiteralAsStringOpt::Never ) {
-							skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
+							skip_quote_when_literal_as_string<JsonMember::literal_as_string,
+							                                  true>(
 							  parse_state );
 						}
 						daw_json_assert_weak(
@@ -226,7 +231,8 @@ namespace daw::json {
 					    parse_state, static_cast<element_t>( parsed_val ) );
 					if constexpr( JsonMember::literal_as_string !=
 					              options::LiteralAsStringOpt::Never ) {
-						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
+						skip_quote_when_literal_as_string<JsonMember::literal_as_string,
+						                                  true>(
 						  parse_state );
 					}
 					parse_state.trim_left( );
@@ -282,13 +288,9 @@ namespace daw::json {
 					      parse_state ) );
 					if constexpr( JsonMember::literal_as_string !=
 					              options::LiteralAsStringOpt::Never ) {
-						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
+						skip_quote_when_literal_as_string<JsonMember::literal_as_string,
+						                                  true>(
 						  parse_state );
-						if constexpr( not ParseState::is_zero_terminated_string ) {
-							daw_json_assert_weak( parse_state.has_more( ),
-							                      ErrorReason::UnexpectedEndOfData,
-							                      parse_state );
-						}
 					}
 					daw_json_assert_weak(
 					  not parse_state.has_more( ) or
@@ -433,7 +435,8 @@ namespace daw::json {
 					// Trailing quotes
 					if constexpr( JsonMember::literal_as_string !=
 					              options::LiteralAsStringOpt::Never ) {
-						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
+						skip_quote_when_literal_as_string<JsonMember::literal_as_string,
+						                                  true>(
 						  parse_state );
 					}
 					parse_state.trim_left( );

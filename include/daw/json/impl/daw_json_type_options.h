@@ -24,9 +24,7 @@ namespace daw::json {
 				/// if
 				/// this member is encoded as a string
 				Never,
-				/// Never allow parsing this member as a string.  It is a parser error
-				/// if
-				/// this member is encoded as a string.
+				/// Allow parsing this member as either a JSON literal or a string.
 				Maybe,
 				/// Only allow parsing this member as a string.  It is an error for this
 				/// member to not be encoded as a string.
