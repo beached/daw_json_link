@@ -79,8 +79,18 @@ $(function() {
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, typename JsonElement, typename SizeMember, typename Container = use_default, typename Constructor = use_default&gt;<br />
-struct daw::json::anonymous_namespace{daw_json_link_types_fwd.h}::json_sized_array&lt; Name, JsonElement, SizeMember, Container, Constructor &gt;</div>
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00682">682</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+struct daw::json::anonymous_namespace{daw_json_link_types_fwd.h}::json_sized_array&lt; Name, JsonElement, SizeMember, Container, Constructor &gt;</div><p>Link a JSON array to a container whose size is provided by another member </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Name</td><td>name of JSON member to link to </td></tr>
+    <tr><td class="paramname">JsonElement</td><td>JSON element type being parsed </td></tr>
+    <tr><td class="paramname">SizeMember</td><td>JSON member mapping that provides the array size </td></tr>
+    <tr><td class="paramname">Container</td><td>C++ container being constructed </td></tr>
+    <tr><td class="paramname">Constructor</td><td>Callable used to construct Container </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00704">704</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a></li>
 </ul>

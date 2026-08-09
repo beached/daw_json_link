@@ -365,7 +365,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno"><a class="line" href="daw__json__switches_8h.html#ad83550a65bc3fcd1ea9830470d8c1199">  286</a></span><span class="preprocessor">#define DAW_JSON_CPP26_CX_EXCEPT inline</span></div>
 <div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="preprocessor">#if defined( __cpp_lib_reflection )</span></div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="preprocessor">#if defined( __cpp_lib_reflection ) and not defined( DAW_JSON_NO_RELFECTION )</span></div>
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span><span class="preprocessor">#if __cpp_lib_reflection &gt;= 202506L</span></div>
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span><span class="preprocessor">#define DAW_JSON_HAS_REFLECTION 1</span></div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span><span class="preprocessor">#endif</span></div>

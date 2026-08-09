@@ -151,15 +151,21 @@ $(function() {
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;GraphNode&gt; {</div>
 <div class="line">    <span class="keyword">using </span><a class="code hl_typedef" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;</div>
-<div class="line">      json_number&lt;<span class="stringliteral">&quot;id&quot;</span>, size_t, LiteralAsStringOpt::Always&gt;,</div>
+<div class="line">      json_number&lt;</div>
+<div class="line">        <span class="stringliteral">&quot;id&quot;</span>, size_t,</div>
+<div class="line">        options::number_opt( options::LiteralAsStringOpt::Always )&gt;,</div>
 <div class="line">      json_class&lt;<span class="stringliteral">&quot;metadata&quot;</span>, Metadata&gt;&gt;;</div>
 <div class="line">  };</div>
 <div class="line"> </div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;GraphEdge&gt; {</div>
 <div class="line">    <span class="keyword">using </span><a class="code hl_typedef" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;</div>
-<div class="line">      json_number&lt;<span class="stringliteral">&quot;source&quot;</span>, size_t, LiteralAsStringOpt::Always&gt;,</div>
-<div class="line">      json_number&lt;<span class="stringliteral">&quot;target&quot;</span>, size_t, LiteralAsStringOpt::Always&gt;&gt;;</div>
+<div class="line">      json_number&lt;</div>
+<div class="line">        <span class="stringliteral">&quot;source&quot;</span>, size_t,</div>
+<div class="line">        options::number_opt( options::LiteralAsStringOpt::Always )&gt;,</div>
+<div class="line">      json_number&lt;</div>
+<div class="line">        <span class="stringliteral">&quot;target&quot;</span>, size_t,</div>
+<div class="line">        options::number_opt( options::LiteralAsStringOpt::Always )&gt;&gt;;</div>
 <div class="line">  };</div>
 <div class="line">} </div>
 <div class="line"> </div>

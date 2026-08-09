@@ -84,7 +84,7 @@ $(function() {
 &lt;tt&gt;json_sized_array&lt;/tt&gt;</h2>
 <p>Maps JSON arrays/size member to C++ container types. This allows easier mapping to types like <code>unique_ptr</code>. Precautions should be taken that the input is trusted or validated in the Constructor type to prevent resource exhaustion.</p>
 <h2><a class="anchor" id="autotoc_md57"></a>
-&lt;tt&gt;json_boolean&lt;/tt&gt;</h2>
+&lt;tt&gt;json_bool&lt;/tt&gt;</h2>
 <p>Maps JSON boolean values to C++ boolean/integral types.</p>
 <h2><a class="anchor" id="autotoc_md58"></a>
 &lt;tt&gt;json_class&lt;/tt&gt;</h2>
@@ -138,16 +138,68 @@ $(function() {
 &lt;tt&gt;json_intrusive_variant&lt;/tt&gt;</h2>
 <p>Maps JSON values that may be one of serveral types to C++ type(s). A switcher type that inspects a sub member to determine which alternative is required.</p>
 <h1><a class="anchor" id="autotoc_md75"></a>
-Understanding _null and _no_name Variants</h1>
+Mapping Template Parameters</h1>
+<p>Named mappings use the JSON member name as their first template parameter. The remaining parameters are summarized below; parameters shown with <code>= ...</code> have defaults. <code>use_default</code> asks the library to deduce the mapping or use its standard constructor.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Mapping   </th><th class="markdownTableHeadNone">Template parameters after <code>Name</code>    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>json_class</code>   </td><td class="markdownTableBodyNone"><code>T, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>json_number</code>   </td><td class="markdownTableBodyNone"><code>T = double, Options = number_opts_def, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>json_checked_number</code>   </td><td class="markdownTableBodyNone"><code>T = double, Options = number_opts_def, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>json_bool</code>   </td><td class="markdownTableBodyNone"><code>T = bool, Options = bool_opts_def, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>json_string</code>   </td><td class="markdownTableBodyNone"><code>String = std::string, Options = string_opts_def, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>json_string_raw</code>   </td><td class="markdownTableBodyNone"><code>String = std::string, Options = string_raw_opts_def, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>json_date</code>   </td><td class="markdownTableBodyNone"><code>T = system_clock time_point, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>json_array</code>   </td><td class="markdownTableBodyNone"><code>JsonElement, Container = use_default, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>json_sized_array</code>   </td><td class="markdownTableBodyNone"><code>JsonElement, SizeMember, Container = use_default, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>json_key_value</code>   </td><td class="markdownTableBodyNone"><code>Container, JsonValueType = use_default, JsonKeyType = use_default, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>json_key_value_array</code>   </td><td class="markdownTableBodyNone"><code>Container, JsonValueType = use_default, JsonKeyType = use_default, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>json_tuple</code>   </td><td class="markdownTableBodyNone"><code>Tuple, JsonTupleTypesList = use_default, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>json_variant</code>   </td><td class="markdownTableBodyNone"><code>Variant, JsonElements = use_default, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>json_tagged_variant</code>   </td><td class="markdownTableBodyNone"><code>T, TagMember, Switcher, JsonElements = use_default, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>json_intrusive_variant</code>   </td><td class="markdownTableBodyNone"><code>Variant, TagMember, Switcher, JsonElements = use_default, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>json_custom</code>   </td><td class="markdownTableBodyNone"><code>T, FromJsonConverter = use_default, ToJsonConverter = use_default, Options = json_custom_opts_def</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>json_raw</code>   </td><td class="markdownTableBodyNone"><code>T = json_value, Constructor = use_default</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>json_nullable</code>   </td><td class="markdownTableBodyNone"><code>T, JsonMember = use_default, NullableType = JsonNullable::Nullable, Constructor = use_default</code>   </td></tr>
+</table>
+<p><code>Options</code> is an encoded <code>json_options_t</code> value. Build it with the setter for the mapping family: <code>options::number_opt</code>, <code>bool_opt</code>, <code>string_opt</code>, <code>string_raw_opt</code>, or <code>json_custom_opt</code>. The available flags and defaults are listed in <a class="el" href="md_docs_2cookbook_2member__options.html">Member Options/Type Options</a>.</p>
+<p><code>JsonElement</code>, <code>JsonValueType</code>, <code>JsonKeyType</code>, <code>JsonTupleTypesList</code>, and <code>JsonElements</code> accept explicit mappings when deduction is not appropriate. Array elements and object keys/values use unnamed mappings such as <code>json_number_no_name&lt;int&gt;</code>.</p>
+<p><code>Constructor</code> is a callable used in place of the standard construction step. For scalar mappings it accepts the parsed scalar. Container and class mappings use the arguments described by that mapping's declaration. Nullable mappings use it to construct the outer nullable result.</p>
 <h2><a class="anchor" id="autotoc_md76"></a>
+Nullable convenience mappings</h2>
+<p>Named aliases ending in <code>_null</code> add this parameter before <code>Constructor</code>:</p>
+<div class="fragment"><div class="line">JsonNullable NullableType = JsonNullable::Nullable</div>
+</div><!-- fragment --><p>Their value type is the wrapped/nullable type, such as <code>std::optional&lt;int&gt;</code>. <code>JsonNullable::Nullable</code> permits an empty class member to be omitted; <code>JsonNullable::NullVisible</code> emits that member as <code>null</code>. See <a class="el" href="md_docs_2cookbook_2json__nullable.html">Nullable JSON Values</a>.</p>
+<p>Unnamed nullable aliases ending in <code>_null_no_name</code> always preserve an empty value as the JSON literal <code>null</code>, because an array element or root value cannot be omitted. They therefore do not expose a <code>JsonNullable</code> parameter.</p>
+<h1><a class="anchor" id="autotoc_md77"></a>
+Understanding _null and _no_name Variants</h1>
+<h2><a class="anchor" id="autotoc_md78"></a>
 Nullable mappings end in &lt;tt&gt;_null&lt;/tt&gt;</h2>
-<p>The <code>_null</code> variant allows the mapped value to be nullable. Useful when the JSON field may or may not be present. Maps to std::optional in C++, effectively allowing an absence of the value.</p>
-<h2><a class="anchor" id="autotoc_md77"></a>
+<p>The <code>_null</code> variant allows the mapped value to be nullable. Useful when the JSON field may or may not be present. The wrapped C++ type is supplied explicitly and may be <code>std::optional</code>, a smart pointer, or another type satisfying the nullable-value requirements.</p>
+<h2><a class="anchor" id="autotoc_md79"></a>
 Unnamed mappings end in &lt;tt&gt;_no_name&lt;/tt&gt;</h2>
 <p>The <code>_no_name</code> variant implies the JSON field does not have a named key in the serialized output. Typically used for JSON arrays or when the field names are not necessary. These mappings provide robust and flexible ways to handle different JSON structures and types seamlessly within C++ using daw_json_link.</p>
-<h2><a class="anchor" id="autotoc_md78"></a>
+<h2><a class="anchor" id="autotoc_md80"></a>
 Unnamed nullable mappings &lt;tt&gt;_null_no_name&lt;/tt&gt;</h2>
-<p>The <code>_null_no_name</code> variants combine a nullable type without a name. </p>
+<p>The <code>_null_no_name</code> variants combine a nullable type without a name. Empty values serialize as <code>null</code>. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

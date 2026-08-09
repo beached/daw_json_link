@@ -191,7 +191,9 @@ Unix time encoding</h2>
 <div class="line">    <span class="keyword">using </span><a class="code hl_typedef" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;</div>
 <div class="line">      json_string&lt;<span class="stringliteral">&quot;title&quot;</span>&gt;, </div>
 <div class="line">      json_number&lt;<span class="stringliteral">&quot;id&quot;</span>, <span class="keywordtype">unsigned</span>&gt;,</div>
-<div class="line">    json_number&lt;<span class="stringliteral">&quot;dateAdded&quot;</span>, int64_t, LiteralAsStringOpt::Always&gt;,</div>
+<div class="line">      json_number&lt;</div>
+<div class="line">        <span class="stringliteral">&quot;dateAdded&quot;</span>, int64_t,</div>
+<div class="line">        options::number_opt( options::LiteralAsStringOpt::Always )&gt;,</div>
 <div class="line">    json_number&lt;<span class="stringliteral">&quot;lastModified&quot;</span>, int64_t&gt;&gt;;</div>
 <div class="line"> </div>
 <div class="line">  <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">auto</span> to_json_data( daw::cookbook_dates3::MyClass3 <span class="keyword">const</span> &amp;v ) {</div>

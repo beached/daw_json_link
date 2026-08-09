@@ -116,6 +116,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map a tuple like type to a a JSON tuple/heterogeneous array.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__tuple.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__tuple__types__list.html">json_tuple_types_list</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A list of JSON element mappings for a tuple-like type.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__tuple__types__list.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__variant.html">json_variant</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,6 +172,7 @@ Typedefs</h2></td></tr>
 <tr class="separator:a8246e0c7b7d9d27661f3f6cd50133661"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44af398af4b2f73f630d79e429d01c3a" id="r_a44af398af4b2f73f630d79e429d01c3a"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, typename WrappedTuple , typename JsonTupleTypesList  = use_default, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a76c935c7d7920b0b78037e1968ad56bb">JsonNullable</a> NullableType = JsonNullable::Nullable, typename Constructor  = use_default&gt; </td></tr>
 <tr class="memitem:a44af398af4b2f73f630d79e429d01c3a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03.html#a44af398af4b2f73f630d79e429d01c3a">json_tuple_null</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__nullable.html">json_nullable</a>&lt; Name, WrappedTuple, json_base::json_tuple&lt; json_details::unwrapped_t&lt; WrappedTuple &gt;, JsonTupleTypesList &gt;, NullableType, Constructor &gt;</td></tr>
+<tr class="memdesc:a44af398af4b2f73f630d79e429d01c3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map a nullable tuple-like type to a JSON heterogeneous array.  <br /></td></tr>
 <tr class="separator:a44af398af4b2f73f630d79e429d01c3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea77a16ab21a91830b6f18e1aa6cb649" id="r_aea77a16ab21a91830b6f18e1aa6cb649"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, typename WrappedVariant , typename JsonElements  = use_default, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a76c935c7d7920b0b78037e1968ad56bb">JsonNullable</a> NullableType = JsonNullable::Nullable, typename Constructor  = use_default&gt; </td></tr>
 <tr class="memitem:aea77a16ab21a91830b6f18e1aa6cb649"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03.html#aea77a16ab21a91830b6f18e1aa6cb649">json_variant_null</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__nullable.html">json_nullable</a>&lt; Name, WrappedVariant, json_base::json_variant&lt; json_details::unwrapped_t&lt; WrappedVariant &gt;, JsonElements &gt;, NullableType, Constructor &gt;</td></tr>
@@ -193,14 +195,15 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
 <p>Link to a nullable JSON array </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Name</td><td>name of JSON member to link to </td></tr>
-    <tr><td class="paramname">Container</td><td>type of C++ container being constructed(e.g. vector&lt;int&gt;) </td></tr>
+    <tr><td class="paramname">WrappedContainer</td><td>nullable C++ container type being constructed(e.g. vector&lt;int&gt;) </td></tr>
     <tr><td class="paramname">JsonElement</td><td>Json type being parsed e.g. <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__number.html">json_number</a>, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__string.html">json_string</a>... </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
     <tr><td class="paramname">Constructor</td><td>A callable used to make Container, default will use the Containers constructor. Both normal and aggregate are supported </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00389">389</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00390">390</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -221,13 +224,14 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   <table class="tparams">
     <tr><td class="paramname">Name</td><td>name of json member </td></tr>
     <tr><td class="paramname">T</td><td>result type to pass to Constructor </td></tr>
-    <tr><td class="paramname">LiteralAsString</td><td>Could this number be embedded in a string </td></tr>
+    <tr><td class="paramname">Options</td><td>Options created with options::bool_opt </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
     <tr><td class="paramname">Constructor</td><td>Callable used to construct result </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00175">175</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00179">179</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -248,14 +252,13 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   <table class="tparams">
     <tr><td class="paramname">Name</td><td>name of json member </td></tr>
     <tr><td class="paramname">T</td><td>type of number(e.g. double, int, unsigned...) to pass to Constructor </td></tr>
-    <tr><td class="paramname">LiteralAsString</td><td>Could this number be embedded in a string </td></tr>
+    <tr><td class="paramname">Options</td><td>Options created with options::number_opt; narrowing checks are enabled by this alias </td></tr>
     <tr><td class="paramname">Constructor</td><td>Callable used to construct result </td></tr>
-    <tr><td class="paramname">Nullable</td><td>Can the member be missing or have a null value </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00145">145</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00148">148</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -276,13 +279,14 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   <table class="tparams">
     <tr><td class="paramname">Name</td><td>name of json member </td></tr>
     <tr><td class="paramname">T</td><td>type of number(e.g. optional&lt;double&gt;, optional&lt;int&gt;, optional&lt;unsigned&gt;...) to pass to Constructor </td></tr>
-    <tr><td class="paramname">LiteralAsString</td><td>Could this number be embedded in a string </td></tr>
+    <tr><td class="paramname">Options</td><td>Options created with options::number_opt; narrowing checks are enabled by this alias </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
     <tr><td class="paramname">Constructor</td><td>Callable used to construct result </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00261">261</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00259">259</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -303,12 +307,13 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   <table class="tparams">
     <tr><td class="paramname">Name</td><td>name of JSON member to link to </td></tr>
     <tr><td class="paramname">T</td><td>type that has specialization of <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">daw::json::json_data_contract</a> </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
     <tr><td class="paramname">Constructor</td><td>A callable used to construct T. The default supports normal and aggregate construction </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00096">96</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00100">100</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -326,7 +331,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00489">489</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00499">499</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -349,12 +354,14 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
     <tr><td class="paramname">WrappedT</td><td>type of value being constructed </td></tr>
     <tr><td class="paramname">FromJsonConverter</td><td>Callable that accepts a std::string_view of the range to parse </td></tr>
     <tr><td class="paramname">ToJsonConverter</td><td>Returns a string from the value </td></tr>
-    <tr><td class="paramname">JsonRawType</td><td>JSON type value is encoded as literal/string </td></tr>
+    <tr><td class="paramname">Options</td><td>Options created with options::json_custom_opt; the literal custom type is enabled by this alias </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
+    <tr><td class="paramname">Constructor</td><td>Callable used to construct the nullable result </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00509">509</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00523">523</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -377,12 +384,14 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
     <tr><td class="paramname">WrappedT</td><td>type of value being constructed </td></tr>
     <tr><td class="paramname">FromJsonConverter</td><td>Callable that accepts a std::string_view of the range to parse </td></tr>
     <tr><td class="paramname">ToJsonConverter</td><td>Returns a string from the value </td></tr>
-    <tr><td class="paramname">JsonRawType</td><td>JSON type value is encoded as literal/string </td></tr>
+    <tr><td class="paramname">Options</td><td>Options created with options::json_custom_opt </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
+    <tr><td class="paramname">Constructor</td><td>Callable used to construct the nullable result </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00476">476</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00480">480</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -403,6 +412,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   <table class="tparams">
     <tr><td class="paramname">Name</td><td>name of JSON member to link to </td></tr>
     <tr><td class="paramname">T</td><td>C++ type to construct, by default is a time_point </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
     <tr><td class="paramname">Constructor</td><td>A Callable used to construct a T. Must accept a char pointer and size as argument to the date/time string. </td></tr>
   </table>
   </dd>
@@ -431,12 +441,13 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
     <tr><td class="paramname">Container</td><td>type to put values in </td></tr>
     <tr><td class="paramname">JsonValueType</td><td>Json type of value in kv pair( e.g. <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__number.html">json_number</a>, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__string.html">json_string</a>, ... ). If specific json member type isn't specified, the member name defaults to "value" </td></tr>
     <tr><td class="paramname">JsonKeyType</td><td>type of key in kv pair. If specific json member type isn't specified, the key name defaults to "key" </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
     <tr><td class="paramname">Constructor</td><td>A callable used to make Container, default will use the Containers constructor. Both normal and aggregate are supported </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00435">435</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00437">437</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -459,12 +470,13 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
     <tr><td class="paramname">Container</td><td>type to put values in </td></tr>
     <tr><td class="paramname">JsonValueType</td><td>Json type of value in kv pair( e.g. <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__number.html">json_number</a>, <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__string.html">json_string</a>, ... ). It also supports basic types like numbers, bool, and mapped classes and enums(mapped to numbers) </td></tr>
     <tr><td class="paramname">JsonKeyType</td><td>type of key in kv pair. As with value it supports basic types too </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
     <tr><td class="paramname">Constructor</td><td>A callable used to make Container, default will use the Containers constructor. Both normal and aggregate are supported </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00306">306</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00305">305</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -485,14 +497,14 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   <table class="tparams">
     <tr><td class="paramname">Name</td><td>name of json member </td></tr>
     <tr><td class="paramname">T</td><td>type of number(e.g. double, int, unsigned...) to pass to Constructor </td></tr>
-    <tr><td class="paramname">LiteralAsString</td><td>Could this number be embedded in a string </td></tr>
+    <tr><td class="paramname">Options</td><td>Options created with options::number_opt </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
     <tr><td class="paramname">Constructor</td><td>Callable used to construct result </td></tr>
-    <tr><td class="paramname">RangeCheck</td><td>Check if the value will fit in the result </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00130">130</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00133">133</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -513,13 +525,14 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   <table class="tparams">
     <tr><td class="paramname">Name</td><td>of json member </td></tr>
     <tr><td class="paramname">String</td><td>result type constructed by Constructor </td></tr>
-    <tr><td class="paramname">Constructor</td><td>a callable taking as arguments ( InputIterator, InputIterator ). If others are needed use the Constructor callable convert </td></tr>
-    <tr><td class="paramname">EightBitMode</td><td>Allow filtering of characters with the MSB set </td></tr>
+    <tr><td class="paramname">Options</td><td>Options created with options::string_opt </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
+    <tr><td class="paramname">Constructor</td><td>Callable used to construct the result string </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00208">208</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00210">210</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -540,14 +553,14 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   <table class="tparams">
     <tr><td class="paramname">Name</td><td>of json member </td></tr>
     <tr><td class="paramname">T</td><td>result type constructed by Constructor </td></tr>
-    <tr><td class="paramname">Constructor</td><td>a callable taking as arguments ( char const *, std::size_t ) </td></tr>
-    <tr><td class="paramname">EightBitMode</td><td>Allow filtering of characters with the MSB set arguments </td></tr>
-    <tr><td class="paramname">AllowEscape</td><td>Tell parser if we know a \ or escape will be in the data </td></tr>
+    <tr><td class="paramname">Options</td><td>Options created with options::string_raw_opt </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
+    <tr><td class="paramname">Constructor</td><td>Callable used to construct the result string </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00245">245</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00240">240</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -565,7 +578,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00701">701</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00726">726</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -583,7 +596,19 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00730">730</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p>Map a nullable tuple-like type to a JSON heterogeneous array. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Name</td><td>JSON member name to map to </td></tr>
+    <tr><td class="paramname">WrappedTuple</td><td>nullable tuple-like type to parse to </td></tr>
+    <tr><td class="paramname">JsonTupleTypesList</td><td>either deduced or a json_tuple_type_list </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
+    <tr><td class="paramname">Constructor</td><td>A callable used to construct WrappedTuple </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00763">763</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -601,7 +626,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00633">633</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00648">648</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>

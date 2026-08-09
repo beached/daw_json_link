@@ -86,15 +86,21 @@ namespace daw::json {
   template<>
   struct json_data_contract<GraphNode> {
     using type = json_member_list<
-      json_number<"id", size_t, LiteralAsStringOpt::Always>,
+      json_number<
+        "id", size_t,
+        options::number_opt( options::LiteralAsStringOpt::Always )>,
       json_class<"metadata", Metadata>>;
   };
 
   template<>
   struct json_data_contract<GraphEdge> {
     using type = json_member_list<
-      json_number<"source", size_t, LiteralAsStringOpt::Always>,
-      json_number<"target", size_t, LiteralAsStringOpt::Always>>;
+      json_number<
+        "source", size_t,
+        options::number_opt( options::LiteralAsStringOpt::Always )>,
+      json_number<
+        "target", size_t,
+        options::number_opt( options::LiteralAsStringOpt::Always )>>;
   };
 } 
 
