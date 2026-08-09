@@ -15,6 +15,10 @@
 #include "daw/json/concepts/daw_writable_output.h"
 #include "daw/json/daw_json_link.h"
 
+#if defined( DAW_JSON_HAS_REFLECTION )
+#include <daw/daw_concepts.h>
+#endif
+
 #include <daw/daw_move.h>
 #include <daw/traits/daw_traits_remove_cvref.h>
 
@@ -388,26 +392,25 @@ namespace daw::json {
 				}
 			}
 
+			/// When outputting a class, uses default to_json
 			template<typename JsonClass = use_default, typename T>
 			constexpr void write_string( T const &value ) {
 				using JsonMember =
 				  json_writer_details::json_write_value_class_t<JsonClass, T>;
 				constexpr JsonBaseParseTypes json_base_type =
 				  JsonMember::underlying_json_type;
-				static_assert(
-				  json_base_type == JsonBaseParseTypes::Number or
-				    json_base_type == JsonBaseParseTypes::Bool or
-				    json_base_type == JsonBaseParseTypes::String,
-				  "The underlying mapping must be a number, boolean, or string type" );
 				if constexpr( json_base_type == JsonBaseParseTypes::String ) {
 					write_value<JsonClass>( value );
-					return;
-				} else {
+				} else if constexpr( json_base_type == JsonBaseParseTypes::Bool or
+				                     json_base_type == JsonBaseParseTypes::Number ) {
 					prepare_value( );
 					m_writer.put( '"' );
 					to_json<JsonClass>( value, m_writer.get( ) );
 					m_writer.put( '"' );
 					m_is_first = false;
+				} else {
+					auto const tmp = to_json( value );
+					do_write_value<json_string_no_name<>>( tmp );
 				}
 			}
 
@@ -415,6 +418,12 @@ namespace daw::json {
 			constexpr void write_string( char const ( &str )[N] ) {
 				write_value<JsonClass>( daw::string_view( str, N - 1 ) );
 			}
+
+#if defined( DAW_JSON_HAS_REFLECTION )
+			constexpr void write_enum_string( daw::EnumType auto e ) {
+				write_string( refl_details::enum_to_string( e ) );
+			}
+#endif
 		};
 
 		template<auto... PolicyFlags, typename WriterType>

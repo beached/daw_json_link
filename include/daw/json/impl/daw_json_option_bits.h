@@ -91,6 +91,11 @@ namespace daw::json {
 			static constexpr json_options_t
 			set_bits_for( JsonOptionList<OptionList...>, Option e );
 
+			template<typename... OptionList, typename Option, typename... Options>
+			constexpr json_options_t set_bits( JsonOptionList<OptionList...>,
+			                                   json_options_t value, Option pol,
+			                                   Options... pols );
+
 			template<typename... JsonOptions>
 			struct JsonOptionList {
 				using OptionList = typename option_list_impl<JsonOptions...>::type;
@@ -123,11 +128,12 @@ namespace daw::json {
 				static constexpr json_options_t options( Options... options ) {
 					static_assert( json_details::are_option_flags<Options...>,
 					               "Only registered option types are allowed" );
-					auto result = default_option_flag;
 					if constexpr( sizeof...( Options ) > 0 ) {
-						result |= ( set_bits_for( options ) | ... );
+						return set_bits( JsonOptionList{ }, default_option_flag,
+						                 options... );
+					} else {
+						return default_option_flag;
 					}
-					return result;
 				}
 			};
 

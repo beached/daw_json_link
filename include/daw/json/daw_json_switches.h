@@ -286,7 +286,7 @@
 #define DAW_JSON_CPP26_CX_EXCEPT inline
 #endif
 
-#if defined( __cpp_lib_reflection )
+#if defined( __cpp_lib_reflection ) and not defined( DAW_JSON_NO_RELFECTION )
 #if __cpp_lib_reflection >= 202506L
 #define DAW_JSON_HAS_REFLECTION 1
 #endif

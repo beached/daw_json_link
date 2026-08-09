@@ -217,7 +217,7 @@ namespace daw::json {
 			} // namespace container_detect
 
 			template<typename String>
-			DAW_CPP20_CONCEPT is_string_v = std::is_convertible_v<
+			DAW_CPP20_CONCEPT is_string_v = std::is_same_v<
 			  char, daw::detected_t<container_detect::is_string_test, String>>;
 
 			DAW_JSON_MAKE_REQ_TRAIT(
@@ -467,9 +467,11 @@ namespace daw::json {
 					// Allow empty/default constructible types to work without mapping
 					using type = json_details::json_empty_class<T>;
 					return daw::traits::identity<type>{ };
+#if not defined( DAW_JSON_HAS_REFLECTION )
 				} else if constexpr( can_convert_to_tuple_v<T> ) {
 					using type = json_base::json_tuple<T>;
 					return daw::traits::identity<type>{ };
+#endif
 				} else {
 					static_assert( daw::deduced_false_v<T>,
 					               "Could not deduced data contract type and there is no "

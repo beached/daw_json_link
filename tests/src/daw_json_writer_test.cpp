@@ -10,12 +10,18 @@
 
 #include <cstdio>
 #include <iostream>
+#include <optional>
 #include <string>
 
 struct Foo {
 	int a = 0;
 	std::string b = "";
 	std::vector<int> c = { };
+};
+
+struct NullableMembers {
+	std::optional<int> elided;
+	std::optional<int> visible;
 };
 
 namespace daw::json {
@@ -29,6 +35,20 @@ namespace daw::json {
 
 		static DAW_JSON_CX_STRVEC auto to_json_data( Foo const &f ) {
 			return std::forward_as_tuple( f.a, f.b, f.c );
+		}
+	};
+
+	template<>
+	struct json_data_contract<NullableMembers> {
+		static constexpr char elided[] = "elided";
+		static constexpr char visible[] = "visible";
+		using type = json_member_list<
+		  json_number_null<elided, std::optional<int>>,
+		  json_number_null<visible, std::optional<int>, number_opts_def,
+		                   JsonNullable::NullVisible>>;
+
+		static auto to_json_data( NullableMembers const &value ) {
+			return std::forward_as_tuple( value.elided, value.visible );
 		}
 	};
 } // namespace daw::json
@@ -275,4 +295,56 @@ int main( ) {
 		std::cout << '\n';
 	}
 #endif
+#if defined( DAW_JSON_HAS_REFLECTION )
+	{
+		auto out = std::string{ };
+		auto w = daw::json::json_writer( out );
+		enum FooEnum { a, b, c };
+		w.open_array( );
+		w.write_enum_string( FooEnum::a );
+		w.write_enum_string( FooEnum::b );
+		w.write_enum_string( FooEnum::c );
+		w.finalize( );
+		daw_ensure( out == R"json(["a","b","c"])json" );
+		std::cout << out << '\n';
+	}
+#endif
+	{
+		auto const foo = Foo{ 42, "Hello", { 1, 2 } };
+		auto out = std::string{ };
+		auto w = daw::json::json_writer( out );
+		w.write_string( foo );
+		w.finalize( );
+		daw_ensure( out == R"json("{\"a\":42,\"b\":\"Hello\",\"c\":[1,2]}")json" );
+	}
+	{
+		auto out = std::string{ };
+		auto w = daw::json::json_writer( out );
+		w.write_value<daw::json::json_number_null_no_name<std::optional<int>>>(
+		  std::optional<int>{ } );
+		w.finalize( );
+		daw_ensure( out == "null" );
+	}
+	{
+		auto out = std::string{ };
+		auto w = daw::json::json_writer( out );
+		w.write_value<daw::json::json_number_null_no_name<std::optional<int>>>(
+		  { std::optional<int>{ } } );
+		w.finalize( );
+		daw_ensure( out == "[null]" );
+	}
+	{
+		auto out = std::string{ };
+		auto w = daw::json::json_writer( out );
+		w.write_value( NullableMembers{ } );
+		w.finalize( );
+		daw_ensure( out == R"json({"visible":null})json" );
+	}
+	{
+		auto out = std::string{ };
+		auto w = daw::json::json_writer( out );
+		w.write_value( NullableMembers{ 1, 2 } );
+		w.finalize( );
+		daw_ensure( out == R"json({"elided":1,"visible":2})json" );
+	}
 }

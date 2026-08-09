@@ -20,6 +20,10 @@ Controls the ability to parse numbers that are encoded as strings.
 * `Maybe` - Allow parsing this member as a string or number.
 * `Always` - Only allow parsing this member as a string. It is an error for this member to not be encoded as a string.
 
+### Default
+
+* `Never`
+
 ## `JsonRangeCheck`
 
 ### Values
@@ -75,7 +79,7 @@ Controls the ability to parse booleans that are encoded as strings.
 ### Values
 
 * `Never` - Never allow parsing this member as a string. It is a parser error if this member is encoded as a string
-* `Maybe` - Allow parsing this member as a string or number.
+* `Maybe` - Allow parsing this member as a string or boolean literal.
 * `Always` - Only allow parsing this member as a string. It is an error for this member to not be encoded as a string.
 
 ### Default
@@ -152,9 +156,9 @@ Custom JSON types can be Strings(default), unquoted Literals, or a mix.
 
 * `String` - Parser always expects a JSON string. Will surround serialized value with double quotes
 * `Literal` - Parser will expect a valid JSON literal number, bool, null
-* `Any` (Experimental) Parser will return any valid JSON value excluding leading whitespace. strings will be quoted.
+* `Any` (Experimental) - Parser will return any valid JSON value excluding leading whitespace. Strings remain quoted.
   `Any` is suitable for constructing a `json_value` to allow adhoc parsing if `json_raw` is not suitable
 
 ### Default
 
-* String 
+* `String`
