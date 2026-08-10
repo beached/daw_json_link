@@ -119,10 +119,10 @@ namespace daw::json {
 	struct json_data_contract<SizedObject> {
 		static constexpr char size[] = "size";
 		static constexpr char values[] = "values";
-		using size_t = json_number<size, std::size_t>;
+		using size_type = json_number<size, std::size_t>;
 		using type = json_member_list<
-		  size_t, json_sized_array<values, int, size_t, std::vector<int>,
-		                           SizedVectorConstructor>>;
+		  size_type, json_sized_array<values, int, size_type, std::vector<int>,
+		                              SizedVectorConstructor>>;
 
 		static auto to_json_data( SizedObject const &object ) {
 			return std::forward_as_tuple( object.size, object.values );
@@ -133,10 +133,10 @@ namespace daw::json {
 	struct json_data_contract<IntrusiveA> {
 		static constexpr char kind[] = "kind";
 		static constexpr char value[] = "value";
-		using type = json_member_list<json_number<kind, int>,
-		                              json_number<value, int>>;
+		using type =
+		  json_member_list<json_number<kind, int>, json_number<value, int>>;
 
-		static auto to_json_data( IntrusiveA const &object ) {
+		static constexpr auto to_json_data( IntrusiveA const &object ) {
 			return std::forward_as_tuple( object.kind, object.value );
 		}
 	};
@@ -147,7 +147,7 @@ namespace daw::json {
 		static constexpr char value[] = "value";
 		using type = json_member_list<json_number<kind, int>, json_string<value>>;
 
-		static auto to_json_data( IntrusiveB const &object ) {
+		static constexpr auto to_json_data( IntrusiveB const &object ) {
 			return std::forward_as_tuple( object.kind, object.value );
 		}
 	};
@@ -168,29 +168,28 @@ int main( ) {
 	  std::string{ R"(line\nbreak)" }, R"("line\nbreak")" );
 
 	using timestamp_t = std::chrono::time_point<std::chrono::system_clock,
-	                                           std::chrono::milliseconds>;
+	                                            std::chrono::milliseconds>;
 	auto const timestamp =
 	  datetime::civil_to_time_point( 2024, 9, 2, 1, 14, 54, 0 );
 	ensure_write_value<json_date_no_name<timestamp_t>>(
 	  timestamp, R"("2024-09-02T01:14:54Z")" );
 
-	ensure_write_value<
-	  json_custom_no_name<int, CustomFromJson, CustomToJson>>( 42, R"("42")" );
+	ensure_write_value<json_custom_no_name<int, CustomFromJson, CustomToJson>>(
+	  42, R"("42")" );
 	ensure_write_value<
 	  json_custom_lit_no_name<int, CustomFromJson, CustomToJson>>( 42, "42" );
 
 	ensure_write_value<json_tuple_no_name<std::tuple<int, bool, std::string>>>(
 	  std::tuple{ 1, true, std::string{ "two" } }, R"([1,true,"two"])" );
 	ensure_write_value<json_key_value_no_name<std::map<std::string, int>>>(
-	  std::map<std::string, int>{ { "a", 1 }, { "b", 2 } },
-	  R"({"a":1,"b":2})" );
+	  std::map<std::string, int>{ { "a", 1 }, { "b", 2 } }, R"({"a":1,"b":2})" );
 	ensure_write_value<json_key_value_array_no_name<std::map<std::string, int>>>(
 	  std::map<std::string, int>{ { "a", 1 }, { "b", 2 } },
 	  R"([{"key":"a","value":1},{"key":"b","value":2}])" );
 
 	using Variant = std::variant<int, std::string, bool, std::vector<int>>;
-	ensure_write_value<json_variant_no_name<Variant>>( Variant{ std::string{ "x" } },
-	                                                 R"("x")" );
+	ensure_write_value<json_variant_no_name<Variant>>(
+	  Variant{ std::string{ "x" } }, R"("x")" );
 	ensure_write_value<json_variant_no_name<Variant>>(
 	  Variant{ std::vector<int>{ 1, 2 } }, "[1,2]" );
 
@@ -198,12 +197,12 @@ int main( ) {
 	  std::string{ R"({"raw":[1,2]})" }, R"({"raw":[1,2]})" );
 
 	ensure_write_value<json_class_no_name<TaggedObject>>(
-	  TaggedObject{ "tagged", 42 },
-	  R"({"type":1,"name":"tagged","value":42})" );
+	  TaggedObject{ "tagged", 42 }, R"({"type":1,"name":"tagged","value":42})" );
 	ensure_write_value<json_class_no_name<SizedObject>>(
 	  SizedObject{ 3, { 1, 2, 3 } }, R"({"size":3,"values":[1,2,3]})" );
 	ensure_write_value<json_intrusive_variant_no_name<
-	  IntrusiveValue, json_number<json_data_contract<IntrusiveValue>::kind, int>,
+	  IntrusiveValue,
+	  json_number<json_data_contract<IntrusiveValue>::kind, int>,
 	  IntrusiveSwitcher>>( IntrusiveValue{ IntrusiveB{ 1, "intrusive" } },
 	                       R"({"kind":1,"value":"intrusive"})" );
 
@@ -212,9 +211,10 @@ int main( ) {
 	  ReflectedObject{ 7, true }, R"({"number":7,"flag":true})" );
 #endif
 
-	using decimal_number = json_number_no_name<
-	  double,
-	  options::number_opt( options::FPOutputFormat::Decimal )>;
+	using decimal_number =
+	  json_number_no_name<double,
+	                      options::number_opt(
+	                        options::FPOutputFormat::Decimal )>;
 	{
 		auto out = std::string{ };
 		auto writer = json_writer( out );
@@ -234,8 +234,7 @@ int main( ) {
 		auto out = std::string{ };
 		auto writer = json_writer( out );
 		writer.open_array( );
-		writer.write_array_values<decimal_number>(
-		  std::array{ 10.0, 20.0 } );
+		writer.write_array_values<decimal_number>( std::array{ 10.0, 20.0 } );
 		writer.write_array_values<decimal_number>( { 30.0, 40.0 } );
 		writer.close_array( );
 		daw_ensure( out == "[10.0,20.0,30.0,40.0]" );
