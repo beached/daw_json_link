@@ -18,7 +18,7 @@
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_callable.h>
-#include <daw/daw_fwd_pack_apply.h>
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_visit.h>
@@ -26,10 +26,7 @@
 #include <daw/traits/daw_traits_first_type.h>
 #include <daw/traits/daw_traits_identity.h>
 
-#include <daw/daw_cpp_feature_check.h>
-
 #include <cstddef>
-#include <daw/stdinc/integer_sequence.h>
 #include <optional>
 #include <string>
 #include <tuple>
@@ -88,7 +85,7 @@ namespace daw::json {
 			 *
 			 * Parse JSON data and construct a C++ class.  This is used by parse_value
 			 * to get back into a mode with a JsonMembers...
-			 * @tparam T The result of parsing json_class
+			 * @tparam JsonClass The result of parsing json_class
 			 * @tparam ParseState Input range type
 			 * @param parse_state JSON data to parse
 			 * @return A T object
@@ -321,7 +318,7 @@ namespace daw::json {
 			 *
 			 * Parse JSON data and construct a C++ class.  This is used by parse_value
 			 * to get back into a mode with a JsonMembers...
-			 * @tparam T The result of parsing json_class
+			 * @tparam JsonClass The result of parsing json_class
 			 * @tparam ParseState Input range type
 			 * @param parse_state JSON data to parse
 			 * @return A T object
@@ -394,7 +391,7 @@ namespace daw::json {
 			 *
 			 * Parse JSON data and construct a C++ class.  This is used by parse_value
 			 * to get back into a mode with a JsonMembers...
-			 * @tparam T The result of parsing json_class
+			 * @tparam JsonClass The result of parsing json_class
 			 * @tparam ParseState Input range type
 			 * @param parse_state JSON data to parse
 			 * @return A T object
@@ -1873,8 +1870,6 @@ namespace daw::json {
 		 * allows for delaying the parsing of this member until later
 		 * @tparam Name json member name
 		 * @tparam T type to hold raw JSON data, defaults to json_value
-		 * @tparam NullableType Whether an empty class member may be omitted or must
-		 * be emitted as null
 		 * @tparam Constructor A callable used to construct T.
 		 */
 		template<JSONNAMETYPE Name, typename T, typename Constructor>
