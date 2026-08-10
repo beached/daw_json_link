@@ -1185,7 +1185,13 @@ add_test( NAME daw_json_writer_test_test COMMAND daw_json_writer_test )
 add_dependencies( ci_tests daw_json_writer_test )
 add_dependencies( full daw_json_writer_test )
 
-
+add_executable( daw_json_writer_mapping_test
+                src/daw_json_writer_mapping_test.cpp )
+target_link_libraries( daw_json_writer_mapping_test json_test )
+add_test( NAME daw_json_writer_mapping_test_test
+          COMMAND daw_json_writer_mapping_test )
+add_dependencies( ci_tests daw_json_writer_mapping_test )
+add_dependencies( full daw_json_writer_mapping_test )
 
 # **************************************************
 # JSON Benchmark
