@@ -641,6 +641,12 @@ add_test( NAME cookbook_aliases1_test COMMAND cookbook_aliases1_test ./cookbook_
 add_dependencies( ci_tests cookbook_aliases1_test )
 add_dependencies( full cookbook_aliases1_test )
 
+add_executable( cookbook_aliases2_test src/cookbook_aliases2_test.cpp )
+target_link_libraries( cookbook_aliases2_test PRIVATE json_test )
+add_test( NAME cookbook_aliases2_test COMMAND cookbook_aliases2_test )
+add_dependencies( ci_tests cookbook_aliases2_test )
+add_dependencies( full cookbook_aliases2_test )
+
 add_executable( cookbook_class_alternate_test src/cookbook_class_alternate1_test.cpp )
 target_link_libraries( cookbook_class_alternate_test PRIVATE json_test )
 add_test( NAME cookbook_class_alternate_test COMMAND cookbook_class_alternate_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
