@@ -113,7 +113,7 @@ namespace daw::json {
 
 		public:
 			template<typename W>
-			explicit constexpr json_writer_t( W &&writer )
+			explicit constexpr json_writer_t( W &&writer DAW_LIFETIME_BOUND )
 			  : m_writer( json_details::make_output_iterator<PolicyFlags...>(
 			      DAW_FWD( writer ) ) ) {}
 			json_writer_t( json_writer_t const & ) = delete;
@@ -427,7 +427,7 @@ namespace daw::json {
 		};
 
 		template<auto... PolicyFlags, typename WriterType>
-		constexpr auto json_writer( WriterType &&writer ) {
+		constexpr auto json_writer( WriterType && writer DAW_LIFETIME_BOUND) {
 			return json_writer_t<daw::remove_cvref_t<WriterType>,
 			                     std::vector<json_writer_details::json_writer_states>,
 			                     PolicyFlags...>( writer );

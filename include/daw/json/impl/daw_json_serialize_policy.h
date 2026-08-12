@@ -77,7 +77,7 @@ namespace daw::json {
 			}
 
 			DAW_ATTRIB_INLINE explicit constexpr serialization_policy(
-			  WritableType &writable )
+			  WritableType & writable DAW_LIFETIME_BOUND )
 			  : m_writable( std::addressof( writable ) ) {}
 
 			static constexpr options::SerializationFormat serialization_format =
