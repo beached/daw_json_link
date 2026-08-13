@@ -1055,6 +1055,18 @@ add_test( NAME variant_on_members_test COMMAND variant_on_members )
 add_dependencies( ci_tests variant_on_members )
 add_dependencies( full variant_on_members )
 
+add_executable( nullable_variant1 src/nullable_variant1.cpp )
+target_link_libraries( nullable_variant1 json_test )
+add_test( NAME nullable_variant1_test COMMAND nullable_variant1 )
+add_dependencies( ci_tests nullable_variant1 )
+add_dependencies( full nullable_variant1 )
+
+add_executable( nullable_variant2 src/nullable_variant2.cpp )
+target_link_libraries( nullable_variant2 json_test )
+add_test( NAME nullable_variant2_test COMMAND nullable_variant2 )
+add_dependencies( ci_tests nullable_variant2 )
+add_dependencies( full nullable_variant2 )
+
 add_executable( json_lines_test src/json_lines_test.cpp )
 target_link_libraries( json_lines_test json_test )
 add_test( NAME json_lines_test_test COMMAND json_lines_test )

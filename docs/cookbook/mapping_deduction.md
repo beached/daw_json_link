@@ -1,8 +1,12 @@
-Many types can be deduced and not explicitly mapped to a JSON type(string, number, bool, object, array)
-This allows one to use them directly in places that don't require a member name(e.g. json_array's element type) or with
-the `json_link<Name, Type>` mapping type. The order of deduction is as follows
+Many types can be deduced without being explicitly mapped to a JSON type
+(string, number, bool, object, or array). This allows one to use them directly
+in places that don't require a member name (e.g. a `json_array` element type) or
+with the `json_link<Name, Type>` mapping type. The first matching mapping is
+used, in the following order:
 
-* types with existing json_data_contract's specialized for them
+* Types with an explicit `json_data_contract` specialization. An explicit
+  mapping always takes precedence over any deduced mapping, including the
+  default mapping for empty types.
 * Well known types
 
   | Type                  | Mapped To        | Notes                     |
@@ -16,6 +20,7 @@ the `json_link<Name, Type>` mapping type. The order of deduction is as follows
   | Associative Container |json_key_value_map| Has begin()/end()/key_type/mapped_type and constructable with two iterators|
   | readable values       |                  | The value_type in the readable mapping of T with a json_null wrapped around T's deduced mapping. See the readable value cookbook item |
   | Containers            |json_array        | Excluding associative containers. Uses value_type as the type for each element|
+  | Empty default-constructible types | Empty JSON object | Used only when no explicit mapping exists; serializes as `{}` |
 
 * Containers - map to json_array with the element type as the detected type of the value_type. Must have the methods
   begin(), end(), type alias value_type, and can be constructed with two iterators. Same Iterator requirements as std::

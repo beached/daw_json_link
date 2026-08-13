@@ -42,16 +42,6 @@ namespace daw::cookbook_variant1 {
 
 namespace daw::json {
 	template<>
-	struct json_data_contract<daw::cookbook_variant1::SomeClass> {
-		using type = json_member_list<>;
-
-		static constexpr std::tuple<>
-		to_json_data( daw::cookbook_variant1::SomeClass ) {
-			return { };
-		}
-	};
-
-	template<>
 	struct json_data_contract<daw::cookbook_variant1::MyVariantStuff1> {
 #if defined( DAW_JSON_CNTTP_JSON_NAME )
 		using type = json_member_list<
@@ -105,6 +95,11 @@ int main( int argc, char **argv )
 	test_assert( stuff.front( ).member1.index( ) == 0, "Unexpected value" );
 	test_assert( ( std::get<0>( stuff.front( ).member1 ) == "hello" ),
 	             "Unexpected value" );
+	test_assert( stuff[2].member0.index( ) == 3,
+	             "Empty aggregate was not selected" );
+	test_assert(
+	  daw::json::to_json( daw::cookbook_variant1::SomeClass{ } ) == "{}",
+	  "Empty aggregate did not serialize as an empty mapping" );
 
 	auto const str = daw::json::to_json_array( stuff );
 	puts( "After" );

@@ -835,6 +835,30 @@ namespace daw::json {
 				using type = json_details::json_result_t<member_type>;
 			};
 		} // namespace json_details
+
+		/// @brief Mark a member as nullable
+		/// @tparam T type of the value being mapped to(e.g. std::optional<Foo>)
+		/// @tparam JsonMember Json Type or type of value when present, deduced from
+		/// T if not specified
+		/// @tparam NullableType Whether an empty class member may be omitted or
+		/// must be emitted as null
+		/// @tparam Constructor Specify a Constructor type or use
+		/// the default nullable_constructor<T>
+		template<typename T, typename JsonMember = use_default,
+		         typename Constructor = use_default>
+		using json_nullable_no_name =
+		  json_base::json_nullable<T, JsonMember, JsonNullable::NullVisible,
+		                           Constructor>;
+
+		/// @brief Mark a member as nullable
+		/// @tparam Name name of JSON member
+		/// @tparam T type of the value being mapped to(e.g. std::optional<Foo>)
+		/// @tparam JsonMember Json Type or type of value when present, deduced from
+		/// T if not specified
+		/// @tparam NullableType Whether an empty class member may be omitted or
+		/// must be emitted as null
+		/// @tparam Constructor Specify a Constructor type or use
+		/// the default nullable_constructor<T>
 		template<JSONNAMETYPE Name, typename T, typename JsonMember,
 		         JsonNullable NullableType, typename Constructor>
 		struct json_nullable
