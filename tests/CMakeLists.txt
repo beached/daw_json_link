@@ -641,6 +641,12 @@ add_test( NAME cookbook_aliases1_test COMMAND cookbook_aliases1_test ./cookbook_
 add_dependencies( ci_tests cookbook_aliases1_test )
 add_dependencies( full cookbook_aliases1_test )
 
+add_executable( cookbook_aliases2_test src/cookbook_aliases2_test.cpp )
+target_link_libraries( cookbook_aliases2_test PRIVATE json_test )
+add_test( NAME cookbook_aliases2_test COMMAND cookbook_aliases2_test )
+add_dependencies( ci_tests cookbook_aliases2_test )
+add_dependencies( full cookbook_aliases2_test )
+
 add_executable( cookbook_class_alternate_test src/cookbook_class_alternate1_test.cpp )
 target_link_libraries( cookbook_class_alternate_test PRIVATE json_test )
 add_test( NAME cookbook_class_alternate_test COMMAND cookbook_class_alternate_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
@@ -1049,6 +1055,18 @@ add_test( NAME variant_on_members_test COMMAND variant_on_members )
 add_dependencies( ci_tests variant_on_members )
 add_dependencies( full variant_on_members )
 
+add_executable( nullable_variant1 src/nullable_variant1.cpp )
+target_link_libraries( nullable_variant1 json_test )
+add_test( NAME nullable_variant1_test COMMAND nullable_variant1 )
+add_dependencies( ci_tests nullable_variant1 )
+add_dependencies( full nullable_variant1 )
+
+add_executable( nullable_variant2 src/nullable_variant2.cpp )
+target_link_libraries( nullable_variant2 json_test )
+add_test( NAME nullable_variant2_test COMMAND nullable_variant2 )
+add_dependencies( ci_tests nullable_variant2 )
+add_dependencies( full nullable_variant2 )
+
 add_executable( json_lines_test src/json_lines_test.cpp )
 target_link_libraries( json_lines_test json_test )
 add_test( NAME json_lines_test_test COMMAND json_lines_test )
@@ -1185,7 +1203,13 @@ add_test( NAME daw_json_writer_test_test COMMAND daw_json_writer_test )
 add_dependencies( ci_tests daw_json_writer_test )
 add_dependencies( full daw_json_writer_test )
 
-
+add_executable( daw_json_writer_mapping_test
+                src/daw_json_writer_mapping_test.cpp )
+target_link_libraries( daw_json_writer_mapping_test json_test )
+add_test( NAME daw_json_writer_mapping_test_test
+          COMMAND daw_json_writer_mapping_test )
+add_dependencies( ci_tests daw_json_writer_mapping_test )
+add_dependencies( full daw_json_writer_mapping_test )
 
 # **************************************************
 # JSON Benchmark

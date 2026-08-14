@@ -45,6 +45,9 @@ namespace daw::json {
 			template<typename T>
 			struct json_empty_class {
 				static_assert( std::is_empty_v<T>, "T is expected to empty" );
+				static_assert( std::is_default_constructible_v<T>,
+				               "T is expected to be default constructible" );
+
 				using i_am_a_json_type = void;
 				using i_am_a_deduced_empty_class = void;
 				using wrapped_type = T;

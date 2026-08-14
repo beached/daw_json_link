@@ -57,8 +57,8 @@ namespace daw::json {
 			 * @tparam ParseState ParseState idiom
 			 * @param parse_state Current parsing state
 			 */
-			template<options::LiteralAsStringOpt literal_as_string, bool AtEnd = false,
-			         typename ParseState>
+			template<options::LiteralAsStringOpt literal_as_string,
+			         bool AtEnd = false, typename ParseState>
 			DAW_ATTRIB_INLINE constexpr void
 			skip_quote_when_literal_as_string( ParseState &parse_state ) {
 				if constexpr( literal_as_string ==
@@ -171,8 +171,7 @@ namespace daw::json {
 						if constexpr( JsonMember::literal_as_string !=
 						              options::LiteralAsStringOpt::Never ) {
 							skip_quote_when_literal_as_string<JsonMember::literal_as_string,
-							                                  true>(
-							  parse_state );
+							                                  true>( parse_state );
 						}
 						daw_json_assert_weak(
 						  parse_state.empty( ) or
@@ -232,8 +231,7 @@ namespace daw::json {
 					if constexpr( JsonMember::literal_as_string !=
 					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string,
-						                                  true>(
-						  parse_state );
+						                                  true>( parse_state );
 					}
 					parse_state.trim_left( );
 					daw_json_assert_weak(
@@ -289,8 +287,7 @@ namespace daw::json {
 					if constexpr( JsonMember::literal_as_string !=
 					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string,
-						                                  true>(
-						  parse_state );
+						                                  true>( parse_state );
 					}
 					daw_json_assert_weak(
 					  not parse_state.has_more( ) or
@@ -436,8 +433,7 @@ namespace daw::json {
 					if constexpr( JsonMember::literal_as_string !=
 					              options::LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string,
-						                                  true>(
-						  parse_state );
+						                                  true>( parse_state );
 					}
 					parse_state.trim_left( );
 					daw_json_assert_weak(
@@ -613,7 +609,21 @@ namespace daw::json {
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
 
-				if constexpr( KnownBounds ) {
+				if constexpr( is_deduced_empty_class_v<JsonMember> ) {
+					if constexpr( not KnownBounds ) {
+						auto const old_class_pos = parse_state.get_class_position( );
+						parse_state.set_class_position( );
+						parse_state.remove_prefix( );
+						parse_state.trim_left( );
+						parse_state.trim_left_checked( );
+						parse_state.move_next_member_or_end( );
+						parse_state.move_to_next_class_member( );
+						(void)parse_state.skip_class( );
+						parse_state.trim_left_checked( );
+						parse_state.set_class_position( old_class_pos );
+					}
+					return json_result_t<JsonMember>{ };
+				} else if constexpr( KnownBounds ) {
 					return json_data_contract_trait_t<element_t>::
 					  template parse_to_class<JsonMember, KnownBounds>( parse_state );
 				} else if constexpr( is_pinned_type_v<element_t> ) {
@@ -623,9 +633,6 @@ namespace daw::json {
 					(void)run_after_parse;
 					return json_data_contract_trait_t<element_t>::
 					  template parse_to_class<JsonMember, KnownBounds>( parse_state );
-				} else if constexpr( is_deduced_empty_class_v<JsonMember> ) {
-					parse_state.trim_left_checked( );
-					return json_result_t<JsonMember>{ };
 				} else {
 					auto result = json_data_contract_trait_t<element_t>::
 					  template parse_to_class<JsonMember, KnownBounds>( parse_state );

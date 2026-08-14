@@ -49,4 +49,16 @@ The data for this mapping could look like "12345/56789"
 The
 file [cookbook_aliases1_test.cpp](../../tests/src/cookbook_aliases1_test.cpp)
 shows an example share a type `MyClass` has a single member of type `std::string` that is serialized and deserialized as
-a string.
+a string using the deduced mapping `json_type_alias<std::string>`.
+
+The aliased type can also be a full, unnamed JSON mapping. For example, the
+equivalent explicit string mapping is:
+
+```cpp
+using type = json_type_alias<json_string_no_name<std::string>>;
+```
+
+The file
+[cookbook_aliases2_test.cpp](../../tests/src/cookbook_aliases2_test.cpp)
+shows this full-mapping form and verifies both deserialization and a serialized
+round trip.

@@ -23,6 +23,7 @@
 #include "daw/json/impl/daw_json_value_fwd.h"
 
 #include <daw/daw_algorithm.h>
+#include <daw/daw_attributes.h>
 #include <daw/daw_move.h>
 #include <daw/daw_utility.h>
 
@@ -386,13 +387,15 @@ namespace daw::json {
 			}
 
 			/// @brief Construct from char const *, std::size_t
-			explicit constexpr basic_json_value( char const *first, std::size_t sz )
+			explicit constexpr basic_json_value( char const *first DAW_LIFETIME_BOUND,
+			                                     std::size_t sz )
 			  : m_parse_state( first, first + static_cast<std::ptrdiff_t>( sz ) ) {
 				m_parse_state.trim_left( );
 			}
 
 			/// @brief Construct from char const *, char const *
-			explicit constexpr basic_json_value( char const *first, char const *last )
+			explicit constexpr basic_json_value( char const *first DAW_LIFETIME_BOUND,
+			                                     char const *last )
 			  : m_parse_state( first, last ) {
 				m_parse_state.trim_left( );
 			}
