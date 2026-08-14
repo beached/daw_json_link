@@ -21,7 +21,7 @@
 #include <optional>
 #include <string>
 
-namespace daw::cookbook_variant1 {
+namespace cookbook_variant1 {
 	struct SomeClass {};
 	constexpr bool operator==( SomeClass, SomeClass ) {
 		return true;
@@ -38,37 +38,27 @@ namespace daw::cookbook_variant1 {
 	bool operator==( MyVariantStuff1 const &lhs, MyVariantStuff1 const &rhs ) {
 		return lhs.member0 == rhs.member0 and lhs.member1 == rhs.member1;
 	}
-} // namespace daw::cookbook_variant1
+
+	bool operator!=( MyVariantStuff1 const &lhs, MyVariantStuff1 const &rhs ) {
+		return not( lhs == rhs );
+	}
+} // namespace cookbook_variant1
 
 namespace daw::json {
 	template<>
-	struct json_data_contract<daw::cookbook_variant1::MyVariantStuff1> {
-#if defined( DAW_JSON_CNTTP_JSON_NAME )
-		using type = json_member_list<
-		  json_variant<
-		    "member0",
-		    std::variant<int, std::string, bool, daw::cookbook_variant1::SomeClass,
-		                 std::vector<int>>,
-		    json_variant_type_list<int, std::string, bool,
-		                           daw::cookbook_variant1::SomeClass,
-		                           std::vector<int>>,
-		    std::vector<int>>,
-		  json_variant<"member1", std::variant<std::string, bool>>>;
-#else
-		static constexpr char const member0[] = "member0";
-		static constexpr char const member1[] = "member1";
+	struct json_data_contract<cookbook_variant1::MyVariantStuff1> {
+		static constexpr char member0[] = "member0";
+		static constexpr char member1[] = "member1";
 		using type = json_member_list<
 		  json_variant<
 		    member0,
-		    std::variant<int, std::string, bool, daw::cookbook_variant1::SomeClass,
+		    std::variant<int, std::string, bool, cookbook_variant1::SomeClass,
 		                 std::vector<int>>,
 		    json_variant_type_list<int, std::string, bool,
-		                           daw::cookbook_variant1::SomeClass,
-		                           std::vector<int>>>,
+		                           cookbook_variant1::SomeClass, std::vector<int>>>,
 		  json_variant<member1, std::variant<std::string, bool>>>;
-#endif
 		static auto
-		to_json_data( daw::cookbook_variant1::MyVariantStuff1 const &value ) {
+		to_json_data( cookbook_variant1::MyVariantStuff1 const &value ) {
 			return std::forward_as_tuple( value.member0, value.member1 );
 		}
 	};
@@ -87,7 +77,7 @@ int main( int argc, char **argv )
 	puts( "Original" );
 	puts( data.c_str( ) );
 	auto stuff =
-	  daw::json::from_json_array<daw::cookbook_variant1::MyVariantStuff1>( data );
+	  daw::json::from_json_array<cookbook_variant1::MyVariantStuff1>( data );
 	test_assert( stuff.size( ) == 4, "Unexpected size" );
 	test_assert( stuff.front( ).member0.index( ) == 0, "Unexpected value" );
 	test_assert( ( std::get<0>( stuff.front( ).member0 ) == 5 ),
@@ -97,15 +87,14 @@ int main( int argc, char **argv )
 	             "Unexpected value" );
 	test_assert( stuff[2].member0.index( ) == 3,
 	             "Empty aggregate was not selected" );
-	test_assert(
-	  daw::json::to_json( daw::cookbook_variant1::SomeClass{ } ) == "{}",
-	  "Empty aggregate did not serialize as an empty mapping" );
+	test_assert( daw::json::to_json( cookbook_variant1::SomeClass{ } ) == "{}",
+	             "Empty aggregate did not serialize as an empty mapping" );
 
 	auto const str = daw::json::to_json_array( stuff );
 	puts( "After" );
 	puts( str.c_str( ) );
 	auto stuff2 =
-	  daw::json::from_json_array<daw::cookbook_variant1::MyVariantStuff1>( str );
+	  daw::json::from_json_array<cookbook_variant1::MyVariantStuff1>( str );
 
 	test_assert( stuff == stuff2, "Unexpected round trip error" );
 	return 0;

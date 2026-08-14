@@ -398,6 +398,35 @@ namespace daw::json {
 static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
 #endif
 
+struct DeducedEmptyClassTest {};
+
+static_assert( std::is_same_v<
+               daw::json::json_details::json_deduced_type<DeducedEmptyClassTest>,
+               daw::json::json_details::json_empty_class<
+                 DeducedEmptyClassTest>> );
+
+void test_deduced_empty_class( ) {
+	using daw::json::from_json;
+
+	(void)from_json<DeducedEmptyClassTest>( "{}" );
+	(void)from_json<DeducedEmptyClassTest, true>( "{}" );
+	(void)from_json<DeducedEmptyClassTest>( R"({"ignored":42})" );
+	(void)from_json<DeducedEmptyClassTest, true>( R"({"ignored":42})" );
+
+	auto const values = daw::json::from_json_array<DeducedEmptyClassTest>(
+	  R"([{}, {"ignored":42}])" );
+	daw_json_ensure( values.size( ) == 2, daw::json::ErrorReason::Unknown );
+
+	using nullable_empty_t = daw::json::json_nullable_no_name<
+	  std::optional<DeducedEmptyClassTest>,
+	  daw::json::json_details::json_empty_class<DeducedEmptyClassTest>>;
+	auto const value = from_json<nullable_empty_t>( "{}" );
+	daw_json_ensure( value.has_value( ), daw::json::ErrorReason::Unknown );
+	auto const null_value = from_json<nullable_empty_t>( "null" );
+	daw_json_ensure( not null_value.has_value( ),
+	                 daw::json::ErrorReason::Unknown );
+}
+
 struct OptionalOrdered {
 	int a = 0;
 	std::optional<int> b{ };
@@ -1001,6 +1030,7 @@ int main( ) {
 #if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif
+		test_deduced_empty_class( );
 		constexpr daw::string_view foo2_json =
 		  R"json( { "m1": {}, "m2": 42  } )json";
 		DAW_CONSTEXPR auto foo1_val = daw::json::from_json<Foo1>( foo2_json, "m1" );
