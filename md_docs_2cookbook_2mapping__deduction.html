@@ -73,9 +73,9 @@ $(function() {
   <div class="headertitle"><div class="title">mapping_deduction</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Many types can be deduced and not explicitly mapped to a JSON type(string, number, bool, object, array) This allows one to use them directly in places that don't require a member name(e.g. json_array's element type) or with the <code>json_link&lt;Name, Type&gt;</code> mapping type. The order of deduction is as follows</p>
+<div class="textblock"><p>Many types can be deduced without being explicitly mapped to a JSON type (string, number, bool, object, or array). This allows one to use them directly in places that don't require a member name (e.g. a <code>json_array</code> element type) or with the <code>json_link&lt;Name, Type&gt;</code> mapping type. The first matching mapping is used, in the following order:</p>
 <ul>
-<li>types with existing json_data_contract's specialized for them</li>
+<li>Types with an explicit <code>json_data_contract</code> specialization. An explicit mapping always takes precedence over any deduced mapping, including the default mapping for empty types.</li>
 <li>Well known types</li>
 </ul>
 <table class="markdownTable">
@@ -98,7 +98,9 @@ $(function() {
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">readable values   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">The value_type in the readable mapping of T with a json_null wrapped around T's deduced mapping. See the readable value cookbook item    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">Containers   </td><td class="markdownTableBodyNone">json_array   </td><td class="markdownTableBodyNone">Excluding associative containers. Uses value_type as the type for each element   </td></tr>
+<td class="markdownTableBodyNone">Containers   </td><td class="markdownTableBodyNone">json_array   </td><td class="markdownTableBodyNone">Excluding associative containers. Uses value_type as the type for each element    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Empty default-constructible types   </td><td class="markdownTableBodyNone">Empty JSON object   </td><td class="markdownTableBodyNone">Used only when no explicit mapping exists; serializes as <code>{}</code>   </td></tr>
 </table>
 <ul>
 <li>Containers - map to json_array with the element type as the detected type of the value_type. Must have the methods begin(), end(), type alias value_type, and can be constructed with two iterators. Same Iterator requirements as std:: vector's two iterator constructor. </li>

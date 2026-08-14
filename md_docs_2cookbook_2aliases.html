@@ -110,7 +110,10 @@ $(function() {
 <div class="line">  };</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The data for this mapping could look like "12345/56789"</p>
-<p>The file <a href="../../tests/src/cookbook_aliases1_test.cpp">cookbook_aliases1_test.cpp</a> shows an example share a type <code>MyClass</code> has a single member of type <code>std::string</code> that is serialized and deserialized as a string. </p>
+<p>The file <a href="../../tests/src/cookbook_aliases1_test.cpp">cookbook_aliases1_test.cpp</a> shows an example share a type <code>MyClass</code> has a single member of type <code>std::string</code> that is serialized and deserialized as a string using the deduced mapping <code>json_type_alias&lt;std::string&gt;</code>.</p>
+<p>The aliased type can also be a full, unnamed JSON mapping. For example, the equivalent explicit string mapping is:</p>
+<div class="fragment"><div class="line"><span class="keyword">using </span>type = json_type_alias&lt;json_string_no_name&lt;std::string&gt;&gt;;</div>
+</div><!-- fragment --><p>The file <a href="../../tests/src/cookbook_aliases2_test.cpp">cookbook_aliases2_test.cpp</a> shows this full-mapping form and verifies both deserialization and a serialized round trip. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

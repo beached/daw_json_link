@@ -111,6 +111,17 @@ Basic class mapping</h1>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
 </div><!-- fragment --><p>The above <code>json_data_contract</code> trait maps the JSON members to the constructor of <code>MyClass1</code> in the order specified. The arguments of type <code>std::string, int, bool</code> will be passed.</p>
 <h1><a class="anchor" id="autotoc_md12"></a>
+Empty classes</h1>
+<p>An empty, default-constructible class without an explicit <code>json_data_contract</code> is automatically treated as an empty JSON object mapping.</p>
+<div class="fragment"><div class="line"> ++</div>
+<div class="line"><span class="keyword">struct </span>EmptyClass {};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">auto</span> value = daw::json::from_json&lt;EmptyClass&gt;( <span class="stringliteral">&quot;{}&quot;</span> );</div>
+<div class="line"><span class="keyword">auto</span> json = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( value );</div>
+<div class="line"><span class="comment">// json == &quot;{}&quot;</span></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00078">daw_to_json.h:78</a></div></div>
+</div><!-- fragment --><p>If an empty class has an explicit <code>json_data_contract</code>, that mapping is used instead. The automatic empty-object mapping is only a fallback. This allows an empty class to be used wherever an unnamed mapping can be deduced, such as an array element or variant alternative.</p>
+<h1><a class="anchor" id="autotoc_md13"></a>
 Class as a member</h1>
 <p>The serializing and deserializing is recursive. So if a class contains another class, the requirement is that that class has been mapped already. Assuming we already have the mapping above, lets embed that into another class</p>
 <div class="fragment"><div class="line">{</div>
@@ -144,7 +155,7 @@ Class as a member</h1>
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">} <span class="comment">// namespace daw::json</span></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md13"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md14"></a>
 Selective mapping</h1>
 <p>Not all the JSON objects members need to be mapped. Below is the same JSON object as in the <code>MyClass2</code> example above. To see a working example using this code, refer to <a href="../../tests/src/cookbook_class3_test.cpp">cookbook_class3_test.cpp</a></p>
 <div class="fragment"><div class="line">{</div>
@@ -174,7 +185,7 @@ Selective mapping</h1>
 <div class="line">  };</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>Only the <code>"a"</code> member is mapped, the <code>"b"</code> member of the JSON object is ignored.</p>
-<h1><a class="anchor" id="autotoc_md14"></a>
+<h1><a class="anchor" id="autotoc_md15"></a>
 Alternate Class Mappings</h1>
 <p>If a type is already mapped or has many possible JSON mappings you can provide an alternate mapping. This is accomplished by mapping to the <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__alternate__mapping_8h_03_1_1json__alt.html" title="Allows for alternate/multiple mappings of types that already have mappings.">daw::json::json_alt</a>&lt;Type, Index&gt;</code> type. The optional index allows for any number of mappings that fit into a <code>std::size_t</code>.</p>
 <p>To see a working example using this code, refer to <a href="../../tests/src/cookbook_class_alternate1_test.cpp">cookbook_class_alternate1_test.cpp</a></p>
@@ -196,10 +207,10 @@ Alternate Class Mappings</h1>
 <div class="line">Thing a = daw::json::from_json&lt;Thing&gt;( json_string_a );</div>
 <div class="line">Thing b = daw::json::from_json&lt;daw::json::json_alt&lt;Thing&gt;&gt;( json_string_b );</div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00041">daw_json_data_contract.h:41</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md15"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md16"></a>
 Class construction</h1>
 <p>If constructing the class requires extra steps than passing the parsed members to it's constructor one can provide a custom Constructor callable as the default for that type or for a specific <code>json_class</code> mapping.</p>
-<h2><a class="anchor" id="autotoc_md16"></a>
+<h2><a class="anchor" id="autotoc_md17"></a>
 Specifying the classes default</h2>
 <p>If one wants to change the default Constructor type of a specific type they can add a type alias in that classes <code>json_data_contract</code>. For instance, if a member needs extra checking that the types constructor does not provide:</p>
 <div class="fragment"><div class="line"><span class="keyword">struct </span>FooConstructor {</div>
@@ -215,7 +226,7 @@ Specifying the classes default</h2>
 <div class="line">  <span class="keyword">using </span>type = json_member_list&lt;json_string&lt;<span class="stringliteral">&quot;name&quot;</span>&gt;,...&gt;;</div>
 <div class="line">};</div>
 </div><!-- fragment --><p>Here the type <code>Foo</code> will use a callable of type <code>FooConstructor</code> to create all <code>Foo</code>'s in the library unless overridden by a mapping.</p>
-<h2><a class="anchor" id="autotoc_md17"></a>
+<h2><a class="anchor" id="autotoc_md18"></a>
 Per mapping</h2>
 <p>The <code>json_class</code> mapping's second parameter is that of a Constructor type to call to construct that class and override the default. It can be specified like</p>
 <div class="fragment"><div class="line">json_class&lt;<span class="stringliteral">&quot;name&quot;</span>, FooConstructor&gt;</div>

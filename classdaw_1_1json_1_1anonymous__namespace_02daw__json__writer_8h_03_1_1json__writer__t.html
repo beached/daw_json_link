@@ -92,9 +92,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3d370adaebe2312d9abc44e3e29eb41e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa00f70ba71343fa38ca87fa1e0540e88" id="r_aa00f70ba71343fa38ca87fa1e0540e88"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#aa00f70ba71343fa38ca87fa1e0540e88">json_writer_t</a> (<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html">json_writer_t</a> const &amp;)=delete</td></tr>
 <tr class="separator:aa00f70ba71343fa38ca87fa1e0540e88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f78ef6f85d171271f3817cc21f0d876" id="r_a1f78ef6f85d171271f3817cc21f0d876"><td class="memTemplParams" colspan="2">template&lt;typename W &gt; </td></tr>
-<tr class="memitem:a1f78ef6f85d171271f3817cc21f0d876"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">json_writer_t</a> (W &amp;&amp;writer)</td></tr>
-<tr class="separator:a1f78ef6f85d171271f3817cc21f0d876"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada22cde579218d100722613e9c410a65" id="r_ada22cde579218d100722613e9c410a65"><td class="memTemplParams" colspan="2">template&lt;typename W &gt; </td></tr>
+<tr class="memitem:ada22cde579218d100722613e9c410a65"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">json_writer_t</a> (W &amp;&amp;writer DAW_LIFETIME_BOUND)</td></tr>
+<tr class="separator:ada22cde579218d100722613e9c410a65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d84c9f781691a3ad595acadf981c541" id="r_a2d84c9f781691a3ad595acadf981c541"><td class="memItemLeft" align="right" valign="top">DAW_CPP20_CX_DTOR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a2d84c9f781691a3ad595acadf981c541">~json_writer_t</a> () noexcept(noexcept(m_writer.put(' ')))</td></tr>
 <tr class="separator:a2d84c9f781691a3ad595acadf981c541"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8436b20f0e075c7b0aa8fd98b2c1e28" id="r_af8436b20f0e075c7b0aa8fd98b2c1e28"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#af8436b20f0e075c7b0aa8fd98b2c1e28">add_key</a> (daw::string_view name)</td></tr>
@@ -216,7 +216,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::iterator_t =  decltype( json_details::make_output_iterator&lt;PolicyFlags...&gt;( std::declval&lt;WritableType&gt;( ) ) )</td>
+          <td class="memname">using daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::iterator_t =  decltype( json_details::make_output_iterator&lt;PolicyFlags...&gt;( std::declval&lt;WritableType&gt;( ) ) )</td>
         </tr>
       </table>
   </td>
@@ -231,8 +231,8 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a1f78ef6f85d171271f3817cc21f0d876" name="a1f78ef6f85d171271f3817cc21f0d876"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1f78ef6f85d171271f3817cc21f0d876">&#9670;&#160;</a></span>json_writer_t() <span class="overload">[1/3]</span></h2>
+<a id="ada22cde579218d100722613e9c410a65" name="ada22cde579218d100722613e9c410a65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada22cde579218d100722613e9c410a65">&#9670;&#160;</a></span>json_writer_t() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -247,8 +247,8 @@ template&lt;typename W &gt; </div>
         <tr>
           <td class="memname">constexpr daw::json::anonymous_namespace{daw_json_writer.h}::json_writer_t&lt; WritableType, StackType, PolicyFlags &gt;::json_writer_t </td>
           <td>(</td>
-          <td class="paramtype">W &amp;&amp;&#160;</td>
-          <td class="paramname"><em>writer</em></td><td>)</td>
+          <td class="paramtype">W &amp;&amp;writer&#160;</td>
+          <td class="paramname"><em>DAW_LIFETIME_BOUND</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -331,7 +331,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_CPP20_CX_DTOR daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::~<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html">json_writer_t</a> </td>
+          <td class="memname">DAW_CPP20_CX_DTOR daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::~<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html">json_writer_t</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -361,7 +361,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::add_key </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::add_key </td>
           <td>(</td>
           <td class="paramtype">daw::string_view&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
@@ -391,7 +391,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::close_array </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::close_array </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -420,7 +420,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::close_object </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::close_object </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -451,7 +451,7 @@ template&lt;typename JsonClass  = use_default, typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::do_write_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::do_write_value </td>
           <td>(</td>
           <td class="paramtype">T const &amp;&#160;</td>
           <td class="paramname"><em>value</em></td><td>)</td>
@@ -481,7 +481,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::finalize </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::finalize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -510,7 +510,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::open_array </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::open_array </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -539,7 +539,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::open_object </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::open_object </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -568,7 +568,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html">json_writer_t</a> &amp; daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::operator= </td>
+          <td class="memname"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html">json_writer_t</a> &amp; daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::operator= </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html">json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt; &amp;&amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -596,7 +596,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html">json_writer_t</a> &amp; daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::operator= </td>
+          <td class="memname"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html">json_writer_t</a> &amp; daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::operator= </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html">json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt; const &amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -624,7 +624,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::pop_state </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::pop_state </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -653,7 +653,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::prepare_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::prepare_value </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -682,7 +682,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::push_state </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::push_state </td>
           <td>(</td>
           <td class="paramtype">json_writer_details::json_writer_states&#160;</td>
           <td class="paramname"><em>new_state</em></td><td>)</td>
@@ -712,7 +712,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::reset </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::reset </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -743,7 +743,7 @@ template&lt;typename JsonClass  = use_default, typename Range  DAW_ENABLEIF&gt; 
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_array_values </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_array_values </td>
           <td>(</td>
           <td class="paramtype">Range const &amp;&#160;</td>
           <td class="paramname"><em>values</em></td><td>)</td>
@@ -775,7 +775,7 @@ template&lt;typename JsonClass  = use_default, typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_array_values </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_array_values </td>
           <td>(</td>
           <td class="paramtype">std::initializer_list&lt; T &gt; const &amp;&#160;</td>
           <td class="paramname"><em>values</em></td><td>)</td>
@@ -807,7 +807,7 @@ template&lt;typename T , typename... Ts&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_array_values </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_array_values </td>
           <td>(</td>
           <td class="paramtype">T const &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
@@ -847,7 +847,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_boolean </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_boolean </td>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>b</em></td><td>)</td>
@@ -877,7 +877,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_item_prefix </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_item_prefix </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -908,7 +908,7 @@ template&lt;typename JsonClass  = use_default, std::size_t N&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_key_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_key_value </td>
           <td>(</td>
           <td class="paramtype">daw::string_view&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -950,7 +950,7 @@ template&lt;typename JsonClass  = use_default, typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_key_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_key_value </td>
           <td>(</td>
           <td class="paramtype">daw::string_view&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -990,7 +990,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_key_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_key_value </td>
           <td>(</td>
           <td class="paramtype">daw::string_view&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -1032,7 +1032,7 @@ template&lt;typename JsonClass  = use_default, typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_key_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_key_value </td>
           <td>(</td>
           <td class="paramtype">daw::string_view&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -1074,7 +1074,7 @@ template&lt;typename T , typename T2 , typename... Ts&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_key_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_key_value </td>
           <td>(</td>
           <td class="paramtype">daw::string_view&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -1126,7 +1126,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_null </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_null </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1157,7 +1157,7 @@ template&lt;typename JsonClass  = use_default, typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_number </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_number </td>
           <td>(</td>
           <td class="paramtype">T const &amp;&#160;</td>
           <td class="paramname"><em>value</em></td><td>)</td>
@@ -1189,7 +1189,7 @@ template&lt;typename JsonClass  = use_default, std::size_t N&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_string </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_string </td>
           <td>(</td>
           <td class="paramtype">char const (&amp;)&#160;</td>
           <td class="paramname"><em>str</em>[N]</td><td>)</td>
@@ -1221,7 +1221,7 @@ template&lt;typename JsonClass  = use_default, typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_string </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_string </td>
           <td>(</td>
           <td class="paramtype">T const &amp;&#160;</td>
           <td class="paramname"><em>value</em></td><td>)</td>
@@ -1255,7 +1255,7 @@ template&lt;typename JsonClass  = use_default, std::size_t N&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_value </td>
           <td>(</td>
           <td class="paramtype">char const (&amp;)&#160;</td>
           <td class="paramname"><em>str</em>[N]</td><td>)</td>
@@ -1287,7 +1287,7 @@ template&lt;typename JsonClass  = use_default, typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_value </td>
           <td>(</td>
           <td class="paramtype">std::initializer_list&lt; T &gt; const &amp;&#160;</td>
           <td class="paramname"><em>values</em></td><td>)</td>
@@ -1317,7 +1317,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_value </td>
           <td>(</td>
           <td class="paramtype">std::nullptr_t&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -1349,7 +1349,7 @@ template&lt;typename JsonClass  = use_default, typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_value </td>
           <td>(</td>
           <td class="paramtype">T const &amp;&#160;</td>
           <td class="paramname"><em>value</em></td><td>)</td>
@@ -1381,7 +1381,7 @@ template&lt;typename T , typename T2 , typename... Ts&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_value </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::write_value </td>
           <td>(</td>
           <td class="paramtype">T const &amp;&#160;</td>
           <td class="paramname"><em>value</em>, </td>
@@ -1428,7 +1428,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">json_writer_details::json_writer_states daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::m_current_state</td>
+          <td class="memname">json_writer_details::json_writer_states daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::m_current_state</td>
         </tr>
       </table>
   </td>
@@ -1456,7 +1456,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::m_is_first = true</td>
+          <td class="memname">bool daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::m_is_first = true</td>
         </tr>
       </table>
   </td>
@@ -1482,7 +1482,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::m_is_key_written = false</td>
+          <td class="memname">bool daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::m_is_key_written = false</td>
         </tr>
       </table>
   </td>
@@ -1508,7 +1508,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">StackType daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::m_stack { }</td>
+          <td class="memname">StackType daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::m_stack { }</td>
         </tr>
       </table>
   </td>
@@ -1534,7 +1534,7 @@ template&lt;typename WritableType , typename StackType , auto... PolicyFlags&gt;
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#abd5df30133e58c818ff13df59ed39df0">iterator_t</a> daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#a1f78ef6f85d171271f3817cc21f0d876">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::m_writer</td>
+          <td class="memname"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#abd5df30133e58c818ff13df59ed39df0">iterator_t</a> daw::json::anonymous_namespace{daw_json_writer.h}<a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__json__writer_8h_03_1_1json__writer__t.html#ada22cde579218d100722613e9c410a65">::json_writer_t</a>&lt; WritableType, StackType, PolicyFlags &gt;::m_writer</td>
         </tr>
       </table>
   </td>

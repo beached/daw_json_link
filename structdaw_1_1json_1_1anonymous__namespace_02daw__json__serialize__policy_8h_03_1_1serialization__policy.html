@@ -94,8 +94,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6609cf7ef6ec9a69919e01482438a08e" id="r_a6609cf7ef6ec9a69919e01482438a08e"><td class="memItemLeft" align="right" valign="top">DAW_ATTRIB_INLINE constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">serialization_policy</a> (WritableType &amp;writable)</td></tr>
-<tr class="separator:a6609cf7ef6ec9a69919e01482438a08e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12d3d85ba7d1ad2ecc97631ad918e5b7" id="r_a12d3d85ba7d1ad2ecc97631ad918e5b7"><td class="memItemLeft" align="right" valign="top">DAW_ATTRIB_INLINE constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">serialization_policy</a> (WritableType &amp;writable DAW_LIFETIME_BOUND)</td></tr>
+<tr class="separator:a12d3d85ba7d1ad2ecc97631ad918e5b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af582125ffee33c38c02c2102cbd8971b" id="r_af582125ffee33c38c02c2102cbd8971b"><td class="memItemLeft" align="right" valign="top">DAW_ATTRIB_INLINE constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#af582125ffee33c38c02c2102cbd8971b">add_indent</a> ()</td></tr>
 <tr class="separator:af582125ffee33c38c02c2102cbd8971b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad10dcaa5f943eb8eaaf4a320e56a817f" id="r_ad10dcaa5f943eb8eaaf4a320e56a817f"><td class="memItemLeft" align="right" valign="top">DAW_ATTRIB_INLINE constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#ad10dcaa5f943eb8eaaf4a320e56a817f">copy_buffer</a> (char const *first, char const *last)</td></tr>
@@ -169,7 +169,7 @@ struct daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serializatio
 template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> PolicyFlags = json_details::serialization::default_policy_flag&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::i_am_a_serialization_policy =  void</td>
+          <td class="memname">using daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::i_am_a_serialization_policy =  void</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -179,8 +179,8 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a6609cf7ef6ec9a69919e01482438a08e" name="a6609cf7ef6ec9a69919e01482438a08e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6609cf7ef6ec9a69919e01482438a08e">&#9670;&#160;</a></span>serialization_policy()</h2>
+<a id="a12d3d85ba7d1ad2ecc97631ad918e5b7" name="a12d3d85ba7d1ad2ecc97631ad918e5b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12d3d85ba7d1ad2ecc97631ad918e5b7">&#9670;&#160;</a></span>serialization_policy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -193,8 +193,8 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
         <tr>
           <td class="memname">DAW_ATTRIB_INLINE constexpr daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serialization_policy&lt; WritableType, PolicyFlags &gt;::serialization_policy </td>
           <td>(</td>
-          <td class="paramtype">WritableType &amp;&#160;</td>
-          <td class="paramname"><em>writable</em></td><td>)</td>
+          <td class="paramtype">WritableType &amp;writable&#160;</td>
+          <td class="paramname"><em>DAW_LIFETIME_BOUND</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -222,7 +222,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::add_indent </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::add_indent </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -251,7 +251,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::copy_buffer </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::copy_buffer </td>
           <td>(</td>
           <td class="paramtype">char const *&#160;</td>
           <td class="paramname"><em>first</em>, </td>
@@ -291,7 +291,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::del_indent </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::del_indent </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -320,7 +320,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr WritableType &amp; daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::get </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr WritableType &amp; daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::get </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -349,7 +349,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr WritableType const  &amp; daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::get </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr WritableType const  &amp; daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::get </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -378,7 +378,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::next_member </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::next_member </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -407,7 +407,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a> &amp; daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::operator* </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a> &amp; daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::operator* </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -436,7 +436,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a> &amp; daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::operator++ </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a> &amp; daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::operator++ </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -465,7 +465,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a> daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::operator++ </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a> daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::operator++ </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -495,7 +495,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a> &amp; daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::operator= </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a> &amp; daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::operator= </td>
           <td>(</td>
           <td class="paramtype">char&#160;</td>
           <td class="paramname"><em>c</em></td><td>)</td>
@@ -525,7 +525,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::output_indent </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::output_indent </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -554,7 +554,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::output_newline </td>
+          <td class="memname">DAW_ATTRIB_INLINE constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::output_newline </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -583,7 +583,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static DAW_ATTRIB_INLINE DAW_CONSTEVAL <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::policy_flags </td>
+          <td class="memname">static DAW_ATTRIB_INLINE DAW_CONSTEVAL <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::policy_flags </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -612,7 +612,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::put </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::put </td>
           <td>(</td>
           <td class="paramtype">char&#160;</td>
           <td class="paramname"><em>c</em></td><td>)</td>
@@ -644,7 +644,7 @@ template&lt;typename ContiguousCharRange , typename... ContiguousCharRanges&gt; 
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::write </td>
+          <td class="memname">constexpr void daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::write </td>
           <td>(</td>
           <td class="paramtype">ContiguousCharRange const &amp;&#160;</td>
           <td class="paramname"><em>chr</em>, </td>
@@ -682,7 +682,7 @@ template&lt;typename ContiguousCharRange , typename... ContiguousCharRanges&gt; 
 template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> PolicyFlags = json_details::serialization::default_policy_flag&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::size_t daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::indentation_level = 0</td>
+          <td class="memname">std::size_t daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::indentation_level = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -703,7 +703,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr options::IndentationType daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::indentation_type</td>
+          <td class="memname">constexpr options::IndentationType daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::indentation_type</td>
         </tr>
       </table>
   </td>
@@ -729,7 +729,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
 template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> PolicyFlags = json_details::serialization::default_policy_flag&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">WritableType* daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::m_writable</td>
+          <td class="memname">WritableType* daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::m_writable</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -750,7 +750,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr std::string_view daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::newline</td>
+          <td class="memname">constexpr std::string_view daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::newline</td>
         </tr>
       </table>
   </td>
@@ -779,7 +779,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr options::NewLineDelimiter daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::newline_delimiter</td>
+          <td class="memname">constexpr options::NewLineDelimiter daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::newline_delimiter</td>
         </tr>
       </table>
   </td>
@@ -808,7 +808,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr options::OutputTrailingComma daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::output_trailing_comma</td>
+          <td class="memname">constexpr options::OutputTrailingComma daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::output_trailing_comma</td>
         </tr>
       </table>
   </td>
@@ -837,7 +837,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr options::RestrictedStringOutput daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::restricted_string_output</td>
+          <td class="memname">constexpr options::RestrictedStringOutput daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::restricted_string_output</td>
         </tr>
       </table>
   </td>
@@ -865,7 +865,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr options::SerializationFormat daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::serialization_format</td>
+          <td class="memname">constexpr options::SerializationFormat daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::serialization_format</td>
         </tr>
       </table>
   </td>
@@ -894,7 +894,7 @@ template&lt;typename WritableType , <a class="el" href="namespacedaw_1_1json_1_1
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr daw::string_view daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a6609cf7ef6ec9a69919e01482438a08e">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::space</td>
+          <td class="memname">constexpr daw::string_view daw::json::anonymous_namespace{daw_json_serialize_policy.h}<a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a12d3d85ba7d1ad2ecc97631ad918e5b7">::serialization_policy</a>&lt; WritableType, PolicyFlags &gt;::space</td>
         </tr>
       </table>
   </td>

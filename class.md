@@ -47,6 +47,24 @@ namespace daw::json {
 
 The above `json_data_contract` trait maps the JSON members to the constructor of `MyClass1` in the order specified. The arguments of type `std::string, int, bool` will be passed.
 
+## Empty classes
+
+An empty, default-constructible class without an explicit
+`json_data_contract` is automatically treated as an empty JSON object mapping.
+
+```c++
+struct EmptyClass {};
+
+auto value = daw::json::from_json<EmptyClass>( "{}" );
+auto json = daw::json::to_json( value );
+// json == "{}"
+```
+
+If an empty class has an explicit `json_data_contract`, that mapping is used
+instead. The automatic empty-object mapping is only a fallback. This allows an
+empty class to be used wherever an unnamed mapping can be deduced, such as an
+array element or variant alternative.
+
 ## Class as a member
 
 The serializing and deserializing is recursive. So if a class contains another class, the requirement is that that class has been mapped already. Assuming we already have the mapping above, lets embed that into another class

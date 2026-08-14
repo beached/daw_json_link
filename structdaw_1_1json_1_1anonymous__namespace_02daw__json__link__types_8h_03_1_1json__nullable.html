@@ -82,6 +82,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Mark a member as nullable.  
+ <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__nullable.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for daw::json::anonymous_namespace{daw_json_link_types.h}::json_nullable&lt; Name, T, JsonMember, NullableType, Constructor &gt;:</div>
@@ -132,8 +135,19 @@ Static Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, typename T, typename JsonMember, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a76c935c7d7920b0b78037e1968ad56bb">JsonNullable</a> NullableType, typename Constructor&gt;<br />
-struct daw::json::anonymous_namespace{daw_json_link_types.h}::json_nullable&lt; Name, T, JsonMember, NullableType, Constructor &gt;</div>
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00843">843</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+struct daw::json::anonymous_namespace{daw_json_link_types.h}::json_nullable&lt; Name, T, JsonMember, NullableType, Constructor &gt;</div><p>Mark a member as nullable. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Name</td><td>name of JSON member </td></tr>
+    <tr><td class="paramname">T</td><td>type of the value being mapped to(e.g. std::optional&lt;Foo&gt;) </td></tr>
+    <tr><td class="paramname">JsonMember</td><td>Json Type or type of value when present, deduced from T if not specified </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
+    <tr><td class="paramname">Constructor</td><td>Specify a Constructor type or use the default nullable_constructor&lt;T&gt; </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00864">864</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="acb256e2decb19a1f88288d830009fa17" name="acb256e2decb19a1f88288d830009fa17"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acb256e2decb19a1f88288d830009fa17">&#9670;&#160;</a></span>without_name</h2>
@@ -149,7 +163,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00848">848</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00869">869</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>
@@ -176,7 +190,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00846">846</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types_8h_source.html#l00867">867</a> of file <a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>.</p>
 
 </div>
 </div>

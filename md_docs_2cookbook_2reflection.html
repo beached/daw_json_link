@@ -73,9 +73,9 @@ $(function() {
   <div class="headertitle"><div class="title">C++ 26 Reflection</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md157"></a> JSON Link has support for C++26 reflection as a fallback when no explicit mapping has been provided for aggregate classes with all public members. One can opt-in with the following ways and change the defaults.</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md158"></a> JSON Link has support for C++26 reflection as a fallback when no explicit mapping has been provided for aggregate classes with all public members. One can opt-in with the following ways and change the defaults.</p>
 <p>Because reflection helps with mappings, the calls to (de)serialized are still <code><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__from__json_8h_03.html#a770a797c458a739384f8ff069c27895e" title="Construct the JSONMember from the JSON document argument.">daw::json::from_json</a>&lt;Type&gt;( json_document )</code> and <code>daw::json::to_json( value )</code>. Like explicit mappings with <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">daw::json::json_data_contract</a></code> already mapped, reflection or not, types just work.</p>
-<h1><a class="anchor" id="autotoc_md158"></a>
+<h1><a class="anchor" id="autotoc_md159"></a>
 Basic example</h1>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
@@ -116,7 +116,7 @@ Basic example</h1>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="keyword">template</span>&lt;&gt;</div>
 <div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> daw::json::enable_reflection_for&lt;Foo&gt; = <span class="keyword">true</span>;</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md159"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md160"></a>
 Renaming members</h1>
 <p>Let's take the previous example and rename a member with member annotations.</p>
 <div class="fragment"><div class="line"> ++</div>
@@ -154,7 +154,7 @@ Renaming members</h1>
 <div class="line">}</div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:0}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md160"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md161"></a>
 Explicitly setting the member mapping</h1>
 <p>Continuing the previous example and allow the age to sometimes be quoted.</p>
 <div class="fragment"><div class="line"> ++</div>
@@ -194,14 +194,14 @@ Explicitly setting the member mapping</h1>
 <div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
 <div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
 <div class="line">}</div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00497">daw_json_link_types.h:497</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00494">daw_json_link_types.h:494</a></div></div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;}</div>
 </div><!-- fragment --><p>This allows full control of individual member mappings as if it was a <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">daw::json::json_data_contract</a></code>.</p>
-<h2><a class="anchor" id="autotoc_md161"></a>
+<h2><a class="anchor" id="autotoc_md162"></a>
 Note</h2>
 <p>One cannot use <code>rename</code> and <code>map_as</code> on the same member.</p>
-<h1><a class="anchor" id="autotoc_md162"></a>
+<h1><a class="anchor" id="autotoc_md163"></a>
 Enumerations as strings</h1>
 <p>By default, enum members are mapped as numbers. If one wants to map them as strings they can with the <code>daw::json::reflect.enum_string</code> annotion. This uses the default options for a <code>json_custom</code> mapping. If one needs to pass options they can use <code>daw::json::reflect.enum_string_with_opt</code>.</p>
 <p>With the previous example</p>
@@ -248,7 +248,7 @@ Enumerations as strings</h1>
 <div class="line">}</div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md163"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md164"></a>
 Ignoring members</h1>
 <p>We can ignore specific members individually and they will use the default constructed value based on it's type(e.g. <code>T{}</code>) or a supplied value. Currently, member initialializers are not used as C++26 reflection does not expose them.</p>
 <p>With the previous example, lets add an ingnored member</p>
@@ -299,7 +299,7 @@ Ignoring members</h1>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
 </div><!-- fragment --><p><code>daw::json::reflect.ignored</code> will only work for default constructible members without a default value or callable specified.</p>
-<h2><a class="anchor" id="autotoc_md164"></a>
+<h2><a class="anchor" id="autotoc_md165"></a>
 Ignored with default value</h2>
 <p>Let's add a default value to <code>code</code> so that it does not default to <code>std::size_t{}</code>/<code>0</code>.</p>
 <div class="fragment"><div class="line"> ++</div>
@@ -348,7 +348,7 @@ Ignored with default value</h2>
 <div class="line">}</div>
 </div><!-- fragment --><p>The program will output</p>
 <div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md165"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md166"></a>
 Ignored with a default callable</h2>
 <p>Lets change the default for <code>code</code> to use a lambda to set the value.</p>
 <div class="fragment"><div class="line"> ++</div>

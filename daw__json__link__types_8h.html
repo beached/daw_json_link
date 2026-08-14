@@ -89,16 +89,14 @@ $(function() {
 <code>#include &quot;<a class="el" href="daw__json__traits_8h_source.html">daw/json/impl/daw_json_traits.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_attributes.h&gt;</code><br />
 <code>#include &lt;daw/daw_callable.h&gt;</code><br />
-<code>#include &lt;daw/daw_fwd_pack_apply.h&gt;</code><br />
+<code>#include &lt;daw/daw_cpp_feature_check.h&gt;</code><br />
 <code>#include &lt;daw/daw_string_view.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;daw/daw_visit.h&gt;</code><br />
 <code>#include &lt;daw/traits/daw_traits_conditional.h&gt;</code><br />
 <code>#include &lt;daw/traits/daw_traits_first_type.h&gt;</code><br />
 <code>#include &lt;daw/traits/daw_traits_identity.h&gt;</code><br />
-<code>#include &lt;daw/daw_cpp_feature_check.h&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
-<code>#include &lt;daw/stdinc/integer_sequence.h&gt;</code><br />
 <code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
@@ -152,6 +150,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark a member as nullable.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__nullable.html">daw::json::anonymous_namespace{daw_json_link_types.h}::json_nullable&lt; Name, T, JsonMember, NullableType, Constructor &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark a member as nullable.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__nullable.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::anonymous_namespace{daw_json_link_types.h}::json_number&lt; Name, T, Options, Constructor &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -289,6 +288,10 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a3503524d54413dbb7016a065b881ea8b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a3503524d54413dbb7016a065b881ea8b">daw::json::anonymous_namespace{daw_json_link_types.h}::json_link_no_name</a> = json_details::ensure_mapped_t&lt; json_details::json_deduced_type&lt; T &gt; &gt;</td></tr>
 <tr class="memdesc:a3503524d54413dbb7016a065b881ea8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deduce the json type mapping based on common types and types already mapped. This version is for when a name is unneeded, such as array element types.  <br /></td></tr>
 <tr class="separator:a3503524d54413dbb7016a065b881ea8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3cac9d0d570b47209e12f686c0f9935" id="r_ac3cac9d0d570b47209e12f686c0f9935"><td class="memTemplParams" colspan="2">template&lt;typename T , typename JsonMember  = use_default, typename Constructor  = use_default&gt; </td></tr>
+<tr class="memitem:ac3cac9d0d570b47209e12f686c0f9935"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ac3cac9d0d570b47209e12f686c0f9935">daw::json::anonymous_namespace{daw_json_link_types.h}::json_nullable_no_name</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__nullable.html">json_base::json_nullable</a>&lt; T, JsonMember, JsonNullable::NullVisible, Constructor &gt;</td></tr>
+<tr class="memdesc:ac3cac9d0d570b47209e12f686c0f9935"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark a member as nullable.  <br /></td></tr>
+<tr class="separator:ac3cac9d0d570b47209e12f686c0f9935"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ed27157013275c28ec4e704ad4a77fd" id="r_a9ed27157013275c28ec4e704ad4a77fd"><td class="memTemplParams" colspan="2">template&lt;typename T  = double, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> Options = number_opts_def, typename Constructor  = use_default&gt; </td></tr>
 <tr class="memitem:a9ed27157013275c28ec4e704ad4a77fd"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a9ed27157013275c28ec4e704ad4a77fd">daw::json::anonymous_namespace{daw_json_link_types.h}::json_number_no_name</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__base_1_1json__number.html">json_base::json_number</a>&lt; T, Options, Constructor &gt;</td></tr>
 <tr class="separator:a9ed27157013275c28ec4e704ad4a77fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
