@@ -159,6 +159,10 @@ if( NOT DEFINED MSVC )
 	target_link_libraries( kostya_bench3 PRIVATE json_test )
 	#add_test( NAME kostya_bench3 COMMAND kostya_bench3)
 	add_dependencies( full kostya_bench3 )
+
+	add_executable( kostya_simd_bench src/kostya_simd_bench.cpp )
+	target_link_libraries( kostya_simd_bench PRIVATE json_test )
+	add_dependencies( full kostya_simd_bench )
 endif()
 
 add_executable( coords_test2 src/coords_test2.cpp )
@@ -1210,6 +1214,14 @@ add_test( NAME daw_json_writer_mapping_test_test
           COMMAND daw_json_writer_mapping_test )
 add_dependencies( ci_tests daw_json_writer_mapping_test )
 add_dependencies( full daw_json_writer_mapping_test )
+
+add_executable( json_simd_block_iterator_test
+                src/json_simd_block_iterator_test.cpp )
+target_link_libraries( json_simd_block_iterator_test json_test )
+add_test( NAME json_simd_block_iterator_test
+          COMMAND json_simd_block_iterator_test )
+add_dependencies( ci_tests json_simd_block_iterator_test )
+add_dependencies( full json_simd_block_iterator_test )
 
 # **************************************************
 # JSON Benchmark
