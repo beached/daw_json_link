@@ -159,10 +159,6 @@ if( NOT DEFINED MSVC )
 	target_link_libraries( kostya_bench3 PRIVATE json_test )
 	#add_test( NAME kostya_bench3 COMMAND kostya_bench3)
 	add_dependencies( full kostya_bench3 )
-
-	add_executable( kostya_simd_bench src/kostya_simd_bench.cpp )
-	target_link_libraries( kostya_simd_bench PRIVATE json_test )
-	add_dependencies( full kostya_simd_bench )
 endif()
 
 add_executable( coords_test2 src/coords_test2.cpp )
