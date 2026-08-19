@@ -46,7 +46,7 @@ namespace {
 	};
 
 	struct parsed_number_constructor {
-		[[nodiscard]] parsed_number operator( )( double value ) const {
+		[[nodiscard]] constexpr parsed_number operator( )( double value ) const {
 			return { value };
 		}
 	};
@@ -61,7 +61,7 @@ namespace {
 	};
 
 	struct parsed_bool_constructor {
-		[[nodiscard]] parsed_bool operator( )( bool value ) const {
+		[[nodiscard]] constexpr parsed_bool operator( )( bool value ) const {
 			return { value };
 		}
 	};
@@ -70,6 +70,93 @@ namespace {
 	  bool, daw::json::bool_opts_def, parsed_bool_constructor>;
 	using constructed_bool_iterator =
 	  daw::json::experimental::json_simd_block_iterator<constructed_bool>;
+
+	[[nodiscard]] constexpr bool test_constexpr_number_iterator( ) {
+		auto empty = iterator{ };
+		if( empty or empty.begin( ) != empty.end( ) ) {
+			return false;
+		}
+
+		auto values = iterator( "[1.25, -2.5e1, 3]" );
+		auto first = values.begin( );
+		auto copy = first;
+		if( not first or first != copy or *first != 1.25 ) {
+			return false;
+		}
+		first++;
+		if( *first != -25.0 ) {
+			return false;
+		}
+		++first;
+		if( *first != 3.0 ) {
+			return false;
+		}
+		++first;
+		return first == values.end( );
+	}
+
+	[[nodiscard]] constexpr bool test_constexpr_bool_iterator( ) {
+		auto values = bool_iterator( "[true, false]" );
+		if( not *values ) {
+			return false;
+		}
+		values++;
+		if( *values ) {
+			return false;
+		}
+		++values;
+		return values == values.end( );
+	}
+
+	[[nodiscard]] constexpr bool test_constexpr_string_iterator( ) {
+		auto values = string_iterator( R"json(["alpha", "beta"])json" );
+		if( *values != "alpha" ) {
+			return false;
+		}
+		values++;
+		if( *values != "beta" ) {
+			return false;
+		}
+		++values;
+		return values == values.end( );
+	}
+
+	[[nodiscard]] constexpr bool test_constexpr_custom_constructors( ) {
+		auto numbers = constructed_iterator( "[4.5]" );
+		auto booleans = constructed_bool_iterator( "[true]" );
+		return ( *numbers ).value == 4.5 and ( *booleans ).value;
+	}
+
+	[[nodiscard]] constexpr bool test_constexpr_classifiers( ) {
+		using number_classifier = daw::json::json_details::simd_json_classifier<
+		  daw::json::JsonBaseParseTypes::Number>;
+		using bool_classifier = daw::json::json_details::simd_json_classifier<
+		  daw::json::JsonBaseParseTypes::Bool>;
+		using string_classifier = daw::json::json_details::simd_json_classifier<
+		  daw::json::JsonBaseParseTypes::String>;
+
+		constexpr auto document = std::string_view{ R"json([1.5e2, true, "x"])json" };
+		auto number_state = number_classifier::state_type{ };
+		auto bool_state = bool_classifier::state_type{ };
+		auto string_state = string_classifier::state_type{ };
+		auto const number_block = number_classifier::classify(
+		  document.data( ), document.size( ), number_state );
+		auto const boolean_block = bool_classifier::classify(
+		  document.data( ), document.size( ), bool_state );
+		auto const text_block = string_classifier::classify(
+		  document.data( ), document.size( ), string_state );
+
+		return not number_block.is_full( ) and number_block.number_start != 0 and
+		       number_block.decimal_points != 0 and
+		       number_block.exponent_markers != 0 and
+		       boolean_block.true_start != 0 and text_block.string_start != 0;
+	}
+
+	static_assert( test_constexpr_number_iterator( ) );
+	static_assert( test_constexpr_bool_iterator( ) );
+	static_assert( test_constexpr_string_iterator( ) );
+	static_assert( test_constexpr_custom_constructors( ) );
+	static_assert( test_constexpr_classifiers( ) );
 
 	void test_iterator_semantics( ) {
 		auto empty = iterator( std::string_view{ } );
@@ -99,6 +186,20 @@ namespace {
 		++first;
 		daw_ensure( not first );
 		daw_ensure( first == range.end( ) );
+	}
+
+	void test_classified_number_parts_across_blocks( ) {
+		auto document = std::string{ "[" };
+		document.append( block::block_size - 2U, ' ' );
+		document += "-1.25e+3, 6.02e2]";
+
+		auto values = iterator( document );
+		auto first = values.begin( );
+		daw_ensure( *first == -1250.0 );
+		++first;
+		daw_ensure( *first == 602.0 );
+		++first;
+		daw_ensure( first == values.end( ) );
 	}
 
 	void test_json_member_result_type( ) {
@@ -178,6 +279,7 @@ int main( ) {
 	static_assert( not has_boolean_start<string_block> );
 
 	test_iterator_semantics( );
+	test_classified_number_parts_across_blocks( );
 	test_json_member_result_type( );
 	test_separate_base_type_paths( );
 }

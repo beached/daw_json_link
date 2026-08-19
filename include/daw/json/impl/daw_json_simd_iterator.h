@@ -44,7 +44,11 @@ namespace daw::json {
 
 			template<typename Byte>
 			struct simd_json_block_base {
-				using simd_type = std::simd::vec<Byte>;
+				// Process a full stage-1 word at a time. On machines whose native SIMD
+				// width is smaller than 64 bytes the fixed-size ABI is lowered to
+				// several native vectors, while the scalar bitset/state work is still
+				// paid once.
+				using simd_type = std::simd::vec<Byte, 64>;
 				using mask_type = typename simd_type::mask_type;
 
 				static constexpr std::size_t block_size =
@@ -54,7 +58,7 @@ namespace daw::json {
 				std::size_t offset = 0;
 				std::size_t size = 0;
 
-				mask_type scalar_start{ false };
+				std::uint64_t scalar_start = 0;
 				simd_json_classifier_state state_after{ };
 
 				[[nodiscard]] constexpr bool is_full( ) const noexcept {
@@ -68,23 +72,23 @@ namespace daw::json {
 			template<typename Byte>
 			struct simd_json_block<JsonBaseParseTypes::Number, Byte>
 			  : simd_json_block_base<Byte> {
-				using mask_type = typename simd_json_block_base<Byte>::mask_type;
-				mask_type number_start{ false };
+				std::uint64_t number_start = 0;
+				std::uint64_t number_characters = 0;
+				std::uint64_t decimal_points = 0;
+				std::uint64_t exponent_markers = 0;
 			};
 
 			template<typename Byte>
 			struct simd_json_block<JsonBaseParseTypes::Bool, Byte>
 			  : simd_json_block_base<Byte> {
-				using mask_type = typename simd_json_block_base<Byte>::mask_type;
-				mask_type boolean_start{ false };
-				mask_type true_start{ false };
+				std::uint64_t boolean_start = 0;
+				std::uint64_t true_start = 0;
 			};
 
 			template<typename Byte>
 			struct simd_json_block<JsonBaseParseTypes::String, Byte>
 			  : simd_json_block_base<Byte> {
-				using mask_type = typename simd_json_block_base<Byte>::mask_type;
-				mask_type string_start{ false };
+				std::uint64_t string_start = 0;
 			};
 
 			template<JsonBaseParseTypes ExpectedType, typename Byte = std::uint8_t>
@@ -107,15 +111,14 @@ namespace daw::json {
 					return simd_type( static_cast<simd_value_type>( value ) );
 				}
 
-				[[nodiscard]] static simd_type load( char const *first,
-				                                     std::size_t count ) {
-					auto const bytes = reinterpret_cast<std::uint8_t const *>( first );
+				[[nodiscard]] static constexpr simd_type load( char const *first,
+				                                               std::size_t count ) {
 					if( count == block_size ) {
 						return std::simd::unchecked_load<simd_type>(
-						  std::span( bytes, block_size ) );
+						  std::span( first, block_size ), std::simd::flag_convert );
 					}
-					return std::simd::partial_load<simd_type>(
-					  std::span( bytes, count ) );
+					return std::simd::partial_load<simd_type>( std::span( first, count ),
+					                                           std::simd::flag_convert );
 				}
 
 				[[nodiscard]] static constexpr std::uint64_t
@@ -144,32 +147,56 @@ namespace daw::json {
 			public:
 				using state_type = simd_json_classifier_state;
 
-				[[nodiscard]] static block_type classify_number( char const *first,
-				                                                 std::size_t count,
-				                                                 state_type &state )
+				template<bool ValidateStart>
+				[[nodiscard]] static constexpr block_type
+				classify_number( char const *first, std::size_t count,
+				                 state_type &state )
 				  requires( ExpectedType == JsonBaseParseTypes::Number ) {
 					count = count < block_size ? count : block_size;
 					auto const input = load( first, count );
 
-					auto const whitespace =
-					  ( input == splat( ' ' ) ) | ( input == splat( '\t' ) ) |
-					  ( input == splat( '\n' ) ) | ( input == splat( '\r' ) );
-					auto const operators = ( input == splat( '[' ) ) |
-					                       ( input == splat( ']' ) ) |
-					                       ( input == splat( ',' ) );
-					auto const scalar = not( whitespace | operators );
-					auto const number_start =
-					  ( input == splat( '-' ) ) |
-					  ( ( input >= splat( '0' ) ) & ( input <= splat( '9' ) ) );
+					auto const scalar = [&] {
+						if constexpr( ValidateStart ) {
+							auto const whitespace =
+							  ( input == splat( ' ' ) ) | ( input == splat( '\t' ) ) |
+							  ( input == splat( '\n' ) ) | ( input == splat( '\r' ) );
+							auto const operators = ( input == splat( '[' ) ) |
+							                       ( input == splat( ']' ) ) |
+							                       ( input == splat( ',' ) );
+							return not( whitespace | operators );
+						} else {
+							// Unchecked parsing assumes valid JSON. All JSON whitespace is at
+							// or below space, so the four whitespace comparisons collapse to
+							// one while retaining array separators.
+							auto const separators =
+							  ( input <= splat( ' ' ) ) | ( input == splat( '[' ) ) |
+							  ( input == splat( ']' ) ) | ( input == splat( ',' ) );
+							return not separators;
+						}
+					}( );
 					auto const valid_bits = low_bits( count );
 					auto const scalar_bits = scalar.to_ullong( ) & valid_bits;
+					auto const decimal_point_bits =
+					  ( input == splat( '.' ) ).to_ullong( ) & scalar_bits;
+					auto const exponent_marker_bits =
+					  ( ( input == splat( 'e' ) ) | ( input == splat( 'E' ) ) )
+					    .to_ullong( ) &
+					  scalar_bits;
 					auto const follows_scalar_bits =
 					  ( scalar_bits << 1U ) |
 					  ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );
 					state.previous_scalar = last_bit( scalar_bits, count );
 					auto const scalar_start_bits = scalar_bits & ~follows_scalar_bits;
-					auto const number_start_bits =
-					  number_start.to_ullong( ) & scalar_start_bits & valid_bits;
+					auto const number_start_bits = [&] {
+						if constexpr( ValidateStart ) {
+							auto const number_start =
+							  ( input == splat( '-' ) ) |
+							  ( ( input >= splat( '0' ) ) & ( input <= splat( '9' ) ) );
+							return number_start.to_ullong( ) & scalar_start_bits & valid_bits;
+						} else {
+							return scalar_start_bits;
+						}
+					}( );
 
 					auto const offset = state.offset;
 					state.offset += count;
@@ -177,13 +204,16 @@ namespace daw::json {
 					result.data = first;
 					result.offset = offset;
 					result.size = count;
-					result.scalar_start = mask_type( scalar_start_bits );
-					result.number_start = mask_type( number_start_bits );
+					result.scalar_start = scalar_start_bits;
+					result.number_start = number_start_bits;
+					result.number_characters = scalar_bits;
+					result.decimal_points = decimal_point_bits;
+					result.exponent_markers = exponent_marker_bits;
 					result.state_after = state;
 					return result;
 				}
 
-				[[nodiscard]] static block_type
+				[[nodiscard]] static constexpr block_type
 				classify_bool( char const *first, std::size_t count, state_type &state )
 				  requires( ExpectedType == JsonBaseParseTypes::Bool ) {
 					count = count < block_size ? count : block_size;
@@ -214,18 +244,17 @@ namespace daw::json {
 					result.data = first;
 					result.offset = offset;
 					result.size = count;
-					result.scalar_start = mask_type( scalar_start_bits );
-					result.boolean_start = mask_type( boolean_start_bits );
-					result.true_start =
-					  mask_type( true_start.to_ullong( ) & boolean_start_bits );
+					result.scalar_start = scalar_start_bits;
+					result.boolean_start = boolean_start_bits;
+					result.true_start = true_start.to_ullong( ) & boolean_start_bits;
 					result.state_after = state;
 					return result;
 				}
 
 			private:
-				[[nodiscard]] static block_type classify_string( char const *first,
-				                                                 std::size_t count,
-				                                                 state_type &state ) {
+				[[nodiscard]] static constexpr block_type
+				classify_string( char const *first, std::size_t count,
+				                 state_type &state ) {
 					count = count < block_size ? count : block_size;
 					auto const input = load( first, count );
 
@@ -283,17 +312,18 @@ namespace daw::json {
 					result.data = first;
 					result.offset = offset;
 					result.size = count;
-					result.scalar_start = mask_type( value_start_bits );
-					result.string_start = mask_type( string_start_bits );
+					result.scalar_start = value_start_bits;
+					result.string_start = string_start_bits;
 					result.state_after = state;
 					return result;
 				}
 
 			public:
-				[[nodiscard]] static block_type
+				template<bool ValidateStart = true>
+				[[nodiscard]] static constexpr block_type
 				classify( char const *first, std::size_t count, state_type &state ) {
 					if constexpr( ExpectedType == JsonBaseParseTypes::Number ) {
-						return classify_number( first, count, state );
+						return classify_number<ValidateStart>( first, count, state );
 					} else if constexpr( ExpectedType == JsonBaseParseTypes::Bool ) {
 						return classify_bool( first, count, state );
 					} else {
@@ -343,17 +373,19 @@ namespace daw::json {
 				  "json_simd_block_iterator currently supports number, boolean, and "
 				  "string JsonMember types" );
 
-				[[nodiscard]] static std::uint64_t
+				struct raw_number_json_member : JsonMember {
+					using parse_to_t = typename JsonMember::wrapped_type;
+					using constructor_t = default_constructor<parse_to_t>;
+				};
+
+				[[nodiscard]] static constexpr std::uint64_t
 				value_starts( block_type const &block ) noexcept {
 					if constexpr( is_number ) {
-						return static_cast<std::uint64_t>(
-						  block.number_start.to_ullong( ) );
+						return block.number_start;
 					} else if constexpr( is_boolean ) {
-						return static_cast<std::uint64_t>(
-						  block.boolean_start.to_ullong( ) );
+						return block.boolean_start;
 					} else {
-						return static_cast<std::uint64_t>(
-						  block.string_start.to_ullong( ) );
+						return block.string_start;
 					}
 				}
 
@@ -371,29 +403,124 @@ namespace daw::json {
 				char const *m_block_data = nullptr;
 				std::uint64_t m_value_starts = 0;
 				std::uint64_t m_true_starts = 0;
+				std::uint64_t m_number_characters = 0;
+				std::uint64_t m_decimal_points = 0;
+				std::uint64_t m_exponent_markers = 0;
+				std::size_t m_block_size = 0;
 				bool m_current_boolean = false;
 				json_details::simd_json_classifier_state m_state{ };
 
-				void move_to_next_value( ) {
+				[[nodiscard]] static constexpr std::uint64_t
+				low_bits( std::size_t count ) noexcept {
+					return count == 64 ? ~std::uint64_t{ 0 }
+					                   : ( std::uint64_t{ 1 } << count ) - 1;
+				}
+
+				[[nodiscard]] constexpr ParseState number_parse_state( ) const
+				  requires( is_number ) {
+					char const *number_last = nullptr;
+					char const *decimal_point = nullptr;
+					char const *exponent_marker = nullptr;
+
+					auto collect_number_parts = [&]( char const *block_data,
+					                                 std::size_t block_size,
+					                                 std::uint64_t number_characters,
+					                                 std::uint64_t decimal_points,
+					                                 std::uint64_t exponent_markers,
+					                                 std::size_t first_lane ) {
+						auto const remaining = block_size - first_lane;
+						auto const remaining_mask = low_bits( remaining );
+						auto const characters =
+						  ( number_characters >> first_lane ) & remaining_mask;
+						auto const non_number_characters = ( ~characters ) & remaining_mask;
+						auto const length = non_number_characters == 0
+						                      ? remaining
+						                      : static_cast<std::size_t>( std::countr_zero(
+						                          non_number_characters ) );
+						auto const number_mask = low_bits( length ) << first_lane;
+
+						if( decimal_point == nullptr ) {
+							auto const points = decimal_points & number_mask;
+							if( points != 0 ) {
+								decimal_point = block_data + std::countr_zero( points );
+							}
+						}
+						if( exponent_marker == nullptr ) {
+							auto const markers = exponent_markers & number_mask;
+							if( markers != 0 ) {
+								exponent_marker = block_data + std::countr_zero( markers );
+							}
+						}
+
+						if( length != remaining or block_size < block_type::block_size ) {
+							number_last = block_data + first_lane + length;
+							return true;
+						}
+						return false;
+					};
+
+					auto const first_lane =
+					  static_cast<std::size_t>( m_current - m_block_data );
+					if( collect_number_parts( m_block_data,
+					                          m_block_size,
+					                          m_number_characters,
+					                          m_decimal_points,
+					                          m_exponent_markers,
+					                          first_lane ) ) {
+						return ParseState(
+						  m_current, number_last, decimal_point, exponent_marker );
+					}
+
+					auto lookahead_first = m_first;
+					auto lookahead_state = m_state;
+					while( lookahead_first != m_last ) {
+						auto const remaining =
+						  static_cast<std::size_t>( m_last - lookahead_first );
+						auto const block = classifier_type::template classify<
+						  not ParseState::is_unchecked_input>(
+						  lookahead_first, remaining, lookahead_state );
+						if( collect_number_parts( block.data,
+						                          block.size,
+						                          block.number_characters,
+						                          block.decimal_points,
+						                          block.exponent_markers,
+						                          0 ) ) {
+							return ParseState(
+							  m_current, number_last, decimal_point, exponent_marker );
+						}
+						lookahead_first += static_cast<std::ptrdiff_t>( block.size );
+					}
+
+					return ParseState(
+					  m_current, m_last, decimal_point, exponent_marker );
+				}
+
+				constexpr void move_to_next_value( ) {
 					while( m_value_starts == 0 and m_first != nullptr and
 					       m_first != m_last ) {
 						auto const remaining = static_cast<std::size_t>( m_last - m_first );
-						auto const block =
-						  classifier_type::classify( m_first, remaining, m_state );
+						auto const block = classifier_type::template classify<
+						  not ParseState::is_unchecked_input>(
+						  m_first, remaining, m_state );
 						m_block_data = block.data;
+						m_block_size = block.size;
 						m_value_starts = value_starts( block );
-						if constexpr( is_boolean ) {
-							m_true_starts =
-							  static_cast<std::uint64_t>( block.true_start.to_ullong( ) );
+						if constexpr( is_number ) {
+							m_number_characters = block.number_characters;
+							m_decimal_points = block.decimal_points;
+							m_exponent_markers = block.exponent_markers;
+						} else if constexpr( is_boolean ) {
+							m_true_starts = block.true_start;
 						}
-						auto const scalar_starts =
-						  static_cast<std::uint64_t>( block.scalar_start.to_ullong( ) );
-						auto const unexpected_starts = scalar_starts & ~m_value_starts;
-						if( unexpected_starts != 0 ) {
-							auto const lane = static_cast<std::size_t>(
-							  std::countr_zero( unexpected_starts ) );
-							auto error_state = ParseState( block.data + lane, m_last );
-							daw_json_error( true, invalid_start_reason, error_state );
+						if constexpr( not ParseState::is_unchecked_input ) {
+							auto const unexpected_starts =
+							  block.scalar_start & ~m_value_starts;
+							if( unexpected_starts != 0 ) {
+								auto const lane = static_cast<std::size_t>(
+								  std::countr_zero( unexpected_starts ) );
+								auto error_state = ParseState( block.data + lane, m_last );
+								daw_json_error( true, invalid_start_reason, error_state );
+							}
 						}
 						m_first += static_cast<std::ptrdiff_t>( block.size );
 					}
@@ -414,17 +541,27 @@ namespace daw::json {
 				}
 
 			public:
-				json_simd_block_iterator( ) = default;
+				constexpr json_simd_block_iterator( ) = default;
 
-				explicit json_simd_block_iterator( std::string_view document )
+				explicit constexpr json_simd_block_iterator( std::string_view document )
 				  : m_first( document.data( ) )
 				  , m_last( document.data( ) + document.size( ) ) {
 					move_to_next_value( );
 				}
 
-				[[nodiscard]] reference operator*( ) const {
-					auto parse_state = ParseState( m_current, m_last );
-					if constexpr( is_boolean ) {
+				[[nodiscard]] constexpr reference operator*( ) const {
+					if constexpr( is_number ) {
+						auto parse_state = number_parse_state( );
+						auto parsed_value =
+						  json_details::parse_value<raw_number_json_member,
+						                            true,
+						                            raw_number_json_member::expected_type>(
+						    parse_state );
+						using constructor_t = json_details::json_constructor_t<json_member>;
+						return json_details::construct_value<value_type, constructor_t>(
+						  parse_state, std::move( parsed_value ) );
+					} else if constexpr( is_boolean ) {
+						auto parse_state = ParseState( m_current, m_last );
 						static_assert(
 						  json_member::literal_as_string ==
 						    options::LiteralAsStringOpt::Never,
@@ -445,7 +582,7 @@ namespace daw::json {
 							parse_state.trim_left( );
 							daw_json_assert_weak(
 							  not parse_state.has_more( ) or
-							    ParseState::at_end_of_item( parse_state.front( ) ),
+							    parse_policy_details::at_end_of_item( parse_state.front( ) ),
 							  ErrorReason::InvalidEndOfValue,
 							  parse_state );
 						}
@@ -453,35 +590,37 @@ namespace daw::json {
 						return json_details::construct_value<value_type, constructor_t>(
 						  parse_state, m_current_boolean );
 					} else {
+						auto parse_state = ParseState( m_current, m_last );
 						return json_details::
 						  parse_value<json_member, false, json_member::expected_type>(
 						    parse_state );
 					}
 				}
 
-				json_simd_block_iterator &operator++( ) {
+				constexpr json_simd_block_iterator &operator++( ) {
 					move_to_next_value( );
 					return *this;
 				}
 
-				void operator++( int ) {
+				constexpr void operator++( int ) {
 					(void)operator++( );
 				}
 
-				[[nodiscard]] explicit operator bool( ) const noexcept {
+				[[nodiscard]] constexpr explicit operator bool( ) const noexcept {
 					return m_current != nullptr;
 				}
 
-				[[nodiscard]] json_simd_block_iterator begin( ) const {
+				[[nodiscard]] constexpr json_simd_block_iterator begin( ) const {
 					return *this;
 				}
 
-				[[nodiscard]] json_simd_block_iterator end( ) const noexcept {
+				[[nodiscard]] constexpr json_simd_block_iterator end( ) const noexcept {
 					return { };
 				}
 
-				friend bool operator==( json_simd_block_iterator const &lhs,
-				                        json_simd_block_iterator const &rhs ) noexcept {
+				friend constexpr bool
+				operator==( json_simd_block_iterator const &lhs,
+				            json_simd_block_iterator const &rhs ) noexcept {
 					auto const lhs_at_end = lhs.m_current == nullptr;
 					auto const rhs_at_end = rhs.m_current == nullptr;
 
@@ -491,8 +630,9 @@ namespace daw::json {
 					return lhs.m_current == rhs.m_current;
 				}
 
-				friend bool operator!=( json_simd_block_iterator const &lhs,
-				                        json_simd_block_iterator const &rhs ) noexcept {
+				friend constexpr bool
+				operator!=( json_simd_block_iterator const &lhs,
+				            json_simd_block_iterator const &rhs ) noexcept {
 					return not( lhs == rhs );
 				}
 			};

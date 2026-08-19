@@ -85,7 +85,7 @@ namespace {
 } // namespace
 
 int main( int argc, char **argv ) {
-	auto element_count = std::size_t{ 100'000 };
+	auto element_count = std::size_t{ 60'000UL };
 	if( argc > 1 ) {
 		element_count =
 		  static_cast<std::size_t>( std::strtoull( argv[1], nullptr, 10 ) );

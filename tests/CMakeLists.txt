@@ -1204,28 +1204,28 @@ add_dependencies( ci_tests daw_json_writer_test )
 add_dependencies( full daw_json_writer_test )
 
 add_executable( daw_json_writer_mapping_test
-                src/daw_json_writer_mapping_test.cpp )
+								src/daw_json_writer_mapping_test.cpp )
 target_link_libraries( daw_json_writer_mapping_test json_test )
 add_test( NAME daw_json_writer_mapping_test_test
-          COMMAND daw_json_writer_mapping_test )
+					COMMAND daw_json_writer_mapping_test )
 add_dependencies( ci_tests daw_json_writer_mapping_test )
 add_dependencies( full daw_json_writer_mapping_test )
 
-add_executable( json_simd_block_iterator_test
-                src/json_simd_block_iterator_test.cpp )
-target_link_libraries( json_simd_block_iterator_test json_test )
-add_test( NAME json_simd_block_iterator_test
-          COMMAND json_simd_block_iterator_test )
-add_dependencies( ci_tests json_simd_block_iterator_test )
-add_dependencies( full json_simd_block_iterator_test )
+add_executable( daw_json_simd_block_iterator_test
+								src/daw_json_simd_block_iterator_test.cpp )
+target_link_libraries( daw_json_simd_block_iterator_test json_test )
+add_test( NAME daw_json_simd_block_iterator_test
+					COMMAND daw_json_simd_block_iterator_test )
+add_dependencies( ci_tests daw_json_simd_block_iterator_test )
+add_dependencies( full daw_json_simd_block_iterator_test )
 
 add_executable( double_array_iterator_benchmark EXCLUDE_FROM_ALL
-                src/double_array_iterator_benchmark.cpp )
+								src/double_array_iterator_benchmark.cpp )
 target_link_libraries( double_array_iterator_benchmark PRIVATE json_test )
 add_dependencies( full double_array_iterator_benchmark )
 
 add_executable( bool_array_iterator_benchmark EXCLUDE_FROM_ALL
-                src/bool_array_iterator_benchmark.cpp )
+								src/bool_array_iterator_benchmark.cpp )
 target_link_libraries( bool_array_iterator_benchmark PRIVATE json_test )
 add_dependencies( full bool_array_iterator_benchmark )
 
