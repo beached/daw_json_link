@@ -13,7 +13,6 @@
 #include "daw/json/impl/daw_json_arrow_proxy.h"
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_value_fwd.h"
-#include "daw/json/impl/daw_json_simd_iterator.h"
 
 #include <daw/daw_attributes.h>
 
