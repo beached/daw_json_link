@@ -6,8 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#include <daw/json/impl/daw_json_simd_iterator.h>
 #include <daw/json/daw_json_link_types.h>
+#include <daw/json/impl/daw_json_simd_iterator.h>
 
 #include <daw/daw_ensure.h>
 
@@ -20,20 +20,28 @@
 
 namespace {
 	using block = daw::json::json_details::simd_json_block<
-	  daw::json::JsonBaseParseTypes::Number>;
+	  daw::json::JsonBaseParseTypes::Number, char>;
 	using bool_block = daw::json::json_details::simd_json_block<
-	  daw::json::JsonBaseParseTypes::Bool>;
+	  daw::json::JsonBaseParseTypes::Bool, char>;
 	using string_block = daw::json::json_details::simd_json_block<
-	  daw::json::JsonBaseParseTypes::String>;
+	  daw::json::JsonBaseParseTypes::String, char>;
 
 	template<typename T>
-	concept has_number_start = requires( T value ) { value.number_start; };
+	concept has_number_start = requires( T value ) {
+		value.number_start;
+	};
 	template<typename T>
-	concept has_boolean_start = requires( T value ) { value.boolean_start; };
+	concept has_boolean_start = requires( T value ) {
+		value.boolean_start;
+	};
 	template<typename T>
-	concept has_string_start = requires( T value ) { value.string_start; };
+	concept has_string_start = requires( T value ) {
+		value.string_start;
+	};
 	template<typename T>
-	concept has_true_start = requires( T value ) { value.true_start; };
+	concept has_true_start = requires( T value ) {
+		value.true_start;
+	};
 	using iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_number_no_name<double>>;
 	using bool_iterator = daw::json::experimental::json_simd_block_iterator<
@@ -51,8 +59,9 @@ namespace {
 		}
 	};
 
-	using constructed_number = daw::json::json_number_no_name<
-	  double, daw::json::number_opts_def, parsed_number_constructor>;
+	using constructed_number =
+	  daw::json::json_number_no_name<double, daw::json::number_opts_def,
+	                                 parsed_number_constructor>;
 	using constructed_iterator =
 	  daw::json::experimental::json_simd_block_iterator<constructed_number>;
 
@@ -66,8 +75,9 @@ namespace {
 		}
 	};
 
-	using constructed_bool = daw::json::json_bool_no_name<
-	  bool, daw::json::bool_opts_def, parsed_bool_constructor>;
+	using constructed_bool =
+	  daw::json::json_bool_no_name<bool, daw::json::bool_opts_def,
+	                               parsed_bool_constructor>;
 	using constructed_bool_iterator =
 	  daw::json::experimental::json_simd_block_iterator<constructed_bool>;
 
@@ -128,14 +138,15 @@ namespace {
 	}
 
 	[[nodiscard]] constexpr bool test_constexpr_classifiers( ) {
-		using number_classifier = daw::json::json_details::simd_json_classifier<
-		  daw::json::JsonBaseParseTypes::Number>;
-		using bool_classifier = daw::json::json_details::simd_json_classifier<
-		  daw::json::JsonBaseParseTypes::Bool>;
-		using string_classifier = daw::json::json_details::simd_json_classifier<
-		  daw::json::JsonBaseParseTypes::String>;
+		using number_classifier = daw::json::json_details::
+		  simd_json_classifier<daw::json::JsonBaseParseTypes::Number, char>;
+		using bool_classifier = daw::json::json_details::
+		  simd_json_classifier<daw::json::JsonBaseParseTypes::Bool, char>;
+		using string_classifier = daw::json::json_details::
+		  simd_json_classifier<daw::json::JsonBaseParseTypes::String, char>;
 
-		constexpr auto document = std::string_view{ R"json([1.5e2, true, "x"])json" };
+		constexpr auto document =
+		  std::string_view{ R"json([1.5e2, true, "x"])json" };
 		auto number_state = number_classifier::state_type{ };
 		auto bool_state = bool_classifier::state_type{ };
 		auto string_state = string_classifier::state_type{ };
@@ -239,9 +250,7 @@ namespace {
 		auto rejected_wrong_type = false;
 		try {
 			(void)iterator( "[1.0, true, 2.0]" );
-		} catch( daw::json::json_exception const & ) {
-			rejected_wrong_type = true;
-		}
+		} catch( daw::json::json_exception const & ) { rejected_wrong_type = true; }
 		daw_ensure( rejected_wrong_type );
 
 		auto rejected_bad_literal = false;

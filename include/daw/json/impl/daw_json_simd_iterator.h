@@ -42,14 +42,14 @@ namespace daw::json {
 				bool previous_scalar = false;
 			};
 
-			template<typename Byte>
+			template<typename CharT>
 			struct simd_json_block_base {
 				// Process a full stage-1 word at a time. On machines whose native SIMD
 				// width is smaller than 64 bytes the fixed-size ABI is lowered to
 				// several native vectors, while the scalar bitset/state work is still
 				// paid once.
-				using simd_type = std::simd::vec<Byte, 64>;
-				using mask_type = typename simd_type::mask_type;
+				using simd_type = std::simd::vec<CharT, 64>;
+				using mask_type = simd_type::mask_type;
 
 				static constexpr std::size_t block_size =
 				  static_cast<std::size_t>( simd_type::size( ) );
@@ -66,42 +66,42 @@ namespace daw::json {
 				}
 			};
 
-			template<JsonBaseParseTypes ExpectedType, typename Byte = std::uint8_t>
+			template<JsonBaseParseTypes ExpectedType, typename CharT>
 			struct simd_json_block;
 
-			template<typename Byte>
-			struct simd_json_block<JsonBaseParseTypes::Number, Byte>
-			  : simd_json_block_base<Byte> {
+			template<typename CharT>
+			struct simd_json_block<JsonBaseParseTypes::Number, CharT>
+			  : simd_json_block_base<CharT> {
 				std::uint64_t number_start = 0;
 				std::uint64_t number_characters = 0;
 				std::uint64_t decimal_points = 0;
 				std::uint64_t exponent_markers = 0;
 			};
 
-			template<typename Byte>
-			struct simd_json_block<JsonBaseParseTypes::Bool, Byte>
-			  : simd_json_block_base<Byte> {
+			template<typename CharT>
+			struct simd_json_block<JsonBaseParseTypes::Bool, CharT>
+			  : simd_json_block_base<CharT> {
 				std::uint64_t boolean_start = 0;
 				std::uint64_t true_start = 0;
 			};
 
-			template<typename Byte>
-			struct simd_json_block<JsonBaseParseTypes::String, Byte>
-			  : simd_json_block_base<Byte> {
+			template<typename CharT>
+			struct simd_json_block<JsonBaseParseTypes::String, CharT>
+			  : simd_json_block_base<CharT> {
 				std::uint64_t string_start = 0;
 			};
 
-			template<JsonBaseParseTypes ExpectedType, typename Byte = std::uint8_t>
+			template<JsonBaseParseTypes ExpectedType, typename CharT>
 			class simd_json_classifier {
 				static_assert(
 				  ExpectedType == JsonBaseParseTypes::Number or
 				    ExpectedType == JsonBaseParseTypes::Bool or
 				    ExpectedType == JsonBaseParseTypes::String,
 				  "simd_json_classifier supports only Number, Bool, and String" );
-				using block_type = simd_json_block<ExpectedType, Byte>;
-				using simd_type = typename block_type::simd_type;
-				using mask_type = typename block_type::mask_type;
-				using simd_value_type = typename simd_type::value_type;
+				using block_type = simd_json_block<ExpectedType, CharT>;
+				using simd_type = block_type::simd_type;
+				using mask_type = block_type::mask_type;
+				using simd_value_type = simd_type::value_type;
 
 				static constexpr std::size_t block_size = block_type::block_size;
 				static_assert( block_size <= 64,
@@ -111,14 +111,22 @@ namespace daw::json {
 					return simd_type( static_cast<simd_value_type>( value ) );
 				}
 
-				[[nodiscard]] static constexpr simd_type load( char const *first,
+				template<typename Chr>
+				[[nodiscard]] static constexpr simd_type load( Chr const *first,
 				                                               std::size_t count ) {
+					static constexpr auto flags = [] {
+						if constexpr( std::same_as<CharT, Chr> ) {
+							return std::simd::flag_default;
+						} else {
+							return std::simd::flag_convert;
+						}
+					}( );
 					if( count == block_size ) {
 						return std::simd::unchecked_load<simd_type>(
-						  std::span( first, block_size ), std::simd::flag_convert );
+						  std::span( first, block_size ), flags );
 					}
 					return std::simd::partial_load<simd_type>( std::span( first, count ),
-					                                           std::simd::flag_convert );
+					                                           flags );
 				}
 
 				[[nodiscard]] static constexpr std::uint64_t
@@ -347,16 +355,16 @@ namespace daw::json {
 			 * std::simd-sized classified blocks.
 			 * @tparam JsonMember The JSON Link mapping used to parse each value.
 			 */
-			template<typename JsonMember, typename Byte = std::uint8_t,
-			         auto... PolicyFlags>
+			template<typename JsonMember, typename CharT = char, auto... PolicyFlags>
 			class json_simd_block_iterator {
 				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 				using classifier_type =
 				  json_details::simd_json_classifier<JsonMember::underlying_json_type,
-				                                     Byte>;
+				                                     CharT>;
 				using block_type =
-				  json_details::simd_json_block<JsonMember::underlying_json_type, Byte>;
+				  json_details::simd_json_block<JsonMember::underlying_json_type,
+				                                CharT>;
 
 				static constexpr auto json_base_type = JsonMember::underlying_json_type;
 				static constexpr bool is_number =
@@ -365,6 +373,12 @@ namespace daw::json {
 				  json_base_type == JsonBaseParseTypes::Bool;
 				static constexpr bool is_string =
 				  json_base_type == JsonBaseParseTypes::String;
+
+				static_assert(
+				  is_number or is_boolean or is_string,
+				  "json_simd_block_iterator currently supports number, boolean, and "
+				  "string JsonMember types" );
+
 				static constexpr ErrorReason invalid_start_reason = [] {
 					if constexpr( is_number ) {
 						return ErrorReason::InvalidNumberStart;
@@ -375,13 +389,8 @@ namespace daw::json {
 					}
 				}( );
 
-				static_assert(
-				  is_number or is_boolean or is_string,
-				  "json_simd_block_iterator currently supports number, boolean, and "
-				  "string JsonMember types" );
-
 				struct raw_number_json_member : JsonMember {
-					using parse_to_t = typename JsonMember::wrapped_type;
+					using parse_to_t = JsonMember::wrapped_type;
 					using constructor_t = default_constructor<parse_to_t>;
 				};
 
@@ -398,7 +407,7 @@ namespace daw::json {
 
 			public:
 				using json_member = JsonMember;
-				using value_type = typename json_member::parse_to_t;
+				using value_type = json_member::parse_to_t;
 				using reference = value_type;
 				using difference_type = std::ptrdiff_t;
 				using iterator_category = std::input_iterator_tag;
@@ -552,57 +561,64 @@ namespace daw::json {
 
 				explicit constexpr json_simd_block_iterator( std::string_view document )
 				  : m_first( document.data( ) )
-				  , m_last( document.data( ) + document.size( ) ) {
+				  , m_last( std::next( document.data( ), document.size( ) ) ) {
 					move_to_next_value( );
 				}
 
-				[[nodiscard]] constexpr reference operator*( ) const {
-					if constexpr( is_number ) {
-						auto parse_state = number_parse_state( );
-						auto parsed_value =
-						  json_details::parse_value<raw_number_json_member,
-						                            true,
-						                            raw_number_json_member::expected_type>(
-						    parse_state );
-						using constructor_t = json_details::json_constructor_t<json_member>;
-						return json_details::construct_value<value_type, constructor_t>(
-						  parse_state, std::move( parsed_value ) );
-					} else if constexpr( is_boolean ) {
-						auto parse_state = ParseState( m_current, m_last );
-						static_assert(
-						  json_member::literal_as_string ==
-						    options::LiteralAsStringOpt::Never,
-						  "SIMD boolean iteration does not support literals encoded as "
-						  "strings" );
-						if constexpr( not ParseState::is_unchecked_input ) {
-							if( m_current_boolean ) {
-								daw_json_assert_weak( parse_state.starts_with( "true" ),
-								                      ErrorReason::InvalidLiteral,
-								                      parse_state );
-								parse_state.remove_prefix( 4 );
-							} else {
-								daw_json_assert_weak( parse_state.starts_with( "false" ),
-								                      ErrorReason::InvalidLiteral,
-								                      parse_state );
-								parse_state.remove_prefix( 5 );
-							}
-							parse_state.trim_left( );
-							daw_json_assert_weak(
-							  not parse_state.has_more( ) or
-							    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-							  ErrorReason::InvalidEndOfValue,
-							  parse_state );
-						}
-						using constructor_t = json_details::json_constructor_t<json_member>;
-						return json_details::construct_value<value_type, constructor_t>(
-						  parse_state, m_current_boolean );
-					} else {
-						auto parse_state = ParseState( m_current, m_last );
-						return json_details::
-						  parse_value<json_member, false, json_member::expected_type>(
-						    parse_state );
-					}
+				[[nodiscard]] constexpr reference operator*( ) const
+				  requires( is_number ) {
+					auto parse_state = number_parse_state( );
+					auto parsed_value =
+					  json_details::parse_value<raw_number_json_member,
+					                            true,
+					                            raw_number_json_member::expected_type>(
+					    parse_state );
+					using constructor_t = json_details::json_constructor_t<json_member>;
+					return json_details::construct_value<value_type, constructor_t>(
+					  parse_state, std::move( parsed_value ) );
 				}
+
+				[[nodiscard]] constexpr reference operator*( ) const
+				  requires( is_boolean ) {
+					auto parse_state = ParseState( m_current, m_last );
+					static_assert(
+					  json_member::literal_as_string ==
+					    options::LiteralAsStringOpt::Never,
+					  "SIMD boolean iteration does not support literals encoded as "
+					  "strings" );
+					if constexpr( not ParseState::is_unchecked_input ) {
+						if( m_current_boolean ) {
+							daw_json_assert_weak( parse_state.starts_with( "true" ),
+							                      ErrorReason::InvalidLiteral,
+							                      parse_state );
+							parse_state.remove_prefix( 4 );
+						} else {
+							daw_json_assert_weak( parse_state.starts_with( "false" ),
+							                      ErrorReason::InvalidLiteral,
+							                      parse_state );
+							parse_state.remove_prefix( 5 );
+						}
+						parse_state.trim_left( );
+						daw_json_assert_weak(
+						  not parse_state.has_more( ) or
+						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
+						  ErrorReason::InvalidEndOfValue,
+						  parse_state );
+					}
+					using constructor_t = json_details::json_constructor_t<json_member>;
+					return json_details::construct_value<value_type, constructor_t>(
+					  parse_state, m_current_boolean );
+				}
+
+				[[nodiscard]] constexpr reference operator*( ) const
+				  requires( is_string ) {
+					auto parse_state = ParseState( m_current, m_last );
+					return json_details::
+					  parse_value<json_member, false, json_member::expected_type>(
+					    parse_state );
+				}
+
+				[[nodiscard]] constexpr reference operator*( ) const = delete;
 
 				constexpr json_simd_block_iterator &operator++( ) {
 					move_to_next_value( );
