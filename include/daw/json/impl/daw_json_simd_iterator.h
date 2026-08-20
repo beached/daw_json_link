@@ -213,30 +213,37 @@ namespace daw::json {
 					return result;
 				}
 
+				template<bool ValidateStart>
 				[[nodiscard]] static constexpr block_type
 				classify_bool( char const *first, std::size_t count, state_type &state )
 				  requires( ExpectedType == JsonBaseParseTypes::Bool ) {
 					count = count < block_size ? count : block_size;
 					auto const input = load( first, count );
 
-					auto const whitespace =
-					  ( input == splat( ' ' ) ) | ( input == splat( '\t' ) ) |
-					  ( input == splat( '\n' ) ) | ( input == splat( '\r' ) );
-					auto const operators = ( input == splat( '[' ) ) |
-					                       ( input == splat( ']' ) ) |
-					                       ( input == splat( ',' ) );
-					auto const scalar = not( whitespace | operators );
 					auto const true_start = input == splat( 't' );
 					auto const boolean_start = true_start | ( input == splat( 'f' ) );
 					auto const valid_bits = low_bits( count );
-					auto const scalar_bits = scalar.to_ullong( ) & valid_bits;
-					auto const follows_scalar_bits =
-					  ( scalar_bits << 1U ) |
-					  ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );
-					state.previous_scalar = last_bit( scalar_bits, count );
-					auto const scalar_start_bits = scalar_bits & ~follows_scalar_bits;
-					auto const boolean_start_bits =
-					  boolean_start.to_ullong( ) & scalar_start_bits & valid_bits;
+					auto const boolean_bits = boolean_start.to_ullong( ) & valid_bits;
+					auto const scalar_start_bits = [&] {
+						if constexpr( ValidateStart ) {
+							auto const whitespace =
+							  ( input == splat( ' ' ) ) | ( input == splat( '\t' ) ) |
+							  ( input == splat( '\n' ) ) | ( input == splat( '\r' ) );
+							auto const operators = ( input == splat( '[' ) ) |
+							                       ( input == splat( ']' ) ) |
+							                       ( input == splat( ',' ) );
+							auto const scalar_bits =
+							  ( not( whitespace | operators ) ).to_ullong( ) & valid_bits;
+							auto const follows_scalar_bits =
+							  ( scalar_bits << 1U ) |
+							  ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );
+							state.previous_scalar = last_bit( scalar_bits, count );
+							return scalar_bits & ~follows_scalar_bits;
+						} else {
+							return boolean_bits;
+						}
+					}( );
+					auto const boolean_start_bits = boolean_bits & scalar_start_bits;
 
 					auto const offset = state.offset;
 					state.offset += count;
@@ -325,7 +332,7 @@ namespace daw::json {
 					if constexpr( ExpectedType == JsonBaseParseTypes::Number ) {
 						return classify_number<ValidateStart>( first, count, state );
 					} else if constexpr( ExpectedType == JsonBaseParseTypes::Bool ) {
-						return classify_bool( first, count, state );
+						return classify_bool<ValidateStart>( first, count, state );
 					} else {
 						static_assert( ExpectedType == JsonBaseParseTypes::String );
 						return classify_string( first, count, state );
