@@ -30,6 +30,41 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+			namespace simd_details {
+				[[nodiscard]] constexpr std::uint64_t
+				prefix_xor( std::uint64_t bits ) noexcept {
+					bits ^= bits << 1U;
+					bits ^= bits << 2U;
+					bits ^= bits << 4U;
+					bits ^= bits << 8U;
+					bits ^= bits << 16U;
+					bits ^= bits << 32U;
+					return bits;
+				}
+
+				[[nodiscard]] constexpr std::uint64_t
+				low_bits( std::size_t count ) noexcept {
+					return count == 64 ? ~std::uint64_t{ 0 }
+					                   : ( std::uint64_t{ 1 } << count ) - 1;
+				}
+
+				[[nodiscard]] constexpr bool last_bit( std::uint64_t bits,
+				                                       std::size_t count ) noexcept {
+					return count != 0 and
+					       ( ( bits >> ( count - 1U ) ) & std::uint64_t{ 1 } ) != 0;
+				}
+
+				template<typename simd_type>
+				[[nodiscard]] consteval simd_type splat( char value ) noexcept {
+					return simd_type( static_cast<simd_type::value_type>( value ) );
+				}
+
+				template<auto... values, typename simd_type>
+				[[nodiscard]] constexpr auto one_of( simd_type value ) {
+					return ( ( value == splat<simd_type>( values ) ) | ... );
+				}
+			} // namespace simd_details
+
 			/**
 			 * State carried from one SIMD block to the next.  The three booleans
 			 * correspond to the cross-register dependencies in simdjson's stage 1:
@@ -107,10 +142,6 @@ namespace daw::json {
 				static_assert( block_size <= 64,
 				               "The classifier bit set stores at most 64 SIMD lanes" );
 
-				[[nodiscard]] static constexpr simd_type splat( char value ) noexcept {
-					return simd_type( static_cast<simd_value_type>( value ) );
-				}
-
 				template<typename Chr>
 				[[nodiscard]] static constexpr simd_type load( Chr const *first,
 				                                               std::size_t count ) {
@@ -129,29 +160,6 @@ namespace daw::json {
 					                                           flags );
 				}
 
-				[[nodiscard]] static constexpr std::uint64_t
-				low_bits( std::size_t count ) noexcept {
-					return count == 64 ? ~std::uint64_t{ 0 }
-					                   : ( std::uint64_t{ 1 } << count ) - 1;
-				}
-
-				[[nodiscard]] static constexpr std::uint64_t
-				prefix_xor( std::uint64_t bits ) noexcept {
-					bits ^= bits << 1U;
-					bits ^= bits << 2U;
-					bits ^= bits << 4U;
-					bits ^= bits << 8U;
-					bits ^= bits << 16U;
-					bits ^= bits << 32U;
-					return bits;
-				}
-
-				[[nodiscard]] static constexpr bool
-				last_bit( std::uint64_t bits, std::size_t count ) noexcept {
-					return count != 0 and
-					       ( ( bits >> ( count - 1U ) ) & std::uint64_t{ 1 } ) != 0;
-				}
-
 			public:
 				using state_type = simd_json_classifier_state;
 
@@ -166,40 +174,37 @@ namespace daw::json {
 					auto const scalar = [&] {
 						if constexpr( ValidateStart ) {
 							auto const whitespace =
-							  ( input == splat( ' ' ) ) | ( input == splat( '\t' ) ) |
-							  ( input == splat( '\n' ) ) | ( input == splat( '\r' ) );
-							auto const operators = ( input == splat( '[' ) ) |
-							                       ( input == splat( ']' ) ) |
-							                       ( input == splat( ',' ) );
+							  simd_details::one_of<' ', '\t', '\n', '\r'>( input );
+							auto const operators =
+							  simd_details::one_of<'[', ']', ','>( input );
 							return not( whitespace | operators );
 						} else {
 							// Unchecked parsing assumes valid JSON. All JSON whitespace is at
 							// or below space, so the four whitespace comparisons collapse to
 							// one while retaining array separators.
 							auto const separators =
-							  ( input <= splat( ' ' ) ) | ( input == splat( '[' ) ) |
-							  ( input == splat( ']' ) ) | ( input == splat( ',' ) );
+							  simd_details::one_of<' ', '[', ']', ','>( input );
 							return not separators;
 						}
 					}( );
-					auto const valid_bits = low_bits( count );
+					auto const valid_bits = simd_details::low_bits( count );
 					auto const scalar_bits = scalar.to_ullong( ) & valid_bits;
 					auto const decimal_point_bits =
-					  ( input == splat( '.' ) ).to_ullong( ) & scalar_bits;
-					auto const exponent_marker_bits =
-					  ( ( input == splat( 'e' ) ) | ( input == splat( 'E' ) ) )
-					    .to_ullong( ) &
+					  ( input == simd_details::splat<simd_type>( '.' ) ).to_ullong( ) &
 					  scalar_bits;
+					auto const exponent_marker_bits =
+					  simd_details::one_of<'e', 'E'>( input ).to_ullong( ) & scalar_bits;
 					auto const follows_scalar_bits =
 					  ( scalar_bits << 1U ) |
 					  ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );
-					state.previous_scalar = last_bit( scalar_bits, count );
+					state.previous_scalar = simd_details::last_bit( scalar_bits, count );
 					auto const scalar_start_bits = scalar_bits & ~follows_scalar_bits;
 					auto const number_start_bits = [&] {
 						if constexpr( ValidateStart ) {
 							auto const number_start =
-							  ( input == splat( '-' ) ) |
-							  ( ( input >= splat( '0' ) ) & ( input <= splat( '9' ) ) );
+							  ( input == simd_details::splat<simd_type>( '-' ) ) |
+							  ( ( input >= simd_details::splat<simd_type>( '0' ) ) &
+							    ( input <= simd_details::splat<simd_type>( '9' ) ) );
 							return number_start.to_ullong( ) & scalar_start_bits & valid_bits;
 						} else {
 							return scalar_start_bits;
@@ -228,24 +233,25 @@ namespace daw::json {
 					count = count < block_size ? count : block_size;
 					auto const input = load( first, count );
 
-					auto const true_start = input == splat( 't' );
-					auto const boolean_start = true_start | ( input == splat( 'f' ) );
-					auto const valid_bits = low_bits( count );
+					auto const true_start =
+					  input == simd_details::splat<simd_type>( 't' );
+					auto const boolean_start =
+					  true_start | ( input == simd_details::splat<simd_type>( 'f' ) );
+					auto const valid_bits = simd_details::low_bits( count );
 					auto const boolean_bits = boolean_start.to_ullong( ) & valid_bits;
 					auto const scalar_start_bits = [&] {
 						if constexpr( ValidateStart ) {
 							auto const whitespace =
-							  ( input == splat( ' ' ) ) | ( input == splat( '\t' ) ) |
-							  ( input == splat( '\n' ) ) | ( input == splat( '\r' ) );
-							auto const operators = ( input == splat( '[' ) ) |
-							                       ( input == splat( ']' ) ) |
-							                       ( input == splat( ',' ) );
+							  simd_details::one_of<' ', '\t', '\n', '\r'>( input );
+							auto const operators =
+							  simd_details::one_of<'[', ']', ','>( input );
 							auto const scalar_bits =
 							  ( not( whitespace | operators ) ).to_ullong( ) & valid_bits;
 							auto const follows_scalar_bits =
 							  ( scalar_bits << 1U ) |
 							  ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );
-							state.previous_scalar = last_bit( scalar_bits, count );
+							state.previous_scalar =
+							  simd_details::last_bit( scalar_bits, count );
 							return scalar_bits & ~follows_scalar_bits;
 						} else {
 							return boolean_bits;
@@ -274,16 +280,14 @@ namespace daw::json {
 					auto const input = load( first, count );
 
 					auto const whitespace =
-					  ( input == splat( ' ' ) ) | ( input == splat( '\t' ) ) |
-					  ( input == splat( '\n' ) ) | ( input == splat( '\r' ) );
-					auto const operators = ( input == splat( '[' ) ) |
-					                       ( input == splat( ']' ) ) |
-					                       ( input == splat( ',' ) );
+					  simd_details::one_of<' ', '\t', '\n', '\r'>( input );
+					auto const operators = simd_details::one_of<'[', ']', ','>( input );
 					auto const scalar = not( whitespace | operators );
-					auto const quote = input == splat( '"' );
-					auto const backslash = input == splat( '\\' );
+					auto const quote = input == simd_details::splat<simd_type>( '"' );
+					auto const backslash =
+					  input == simd_details::splat<simd_type>( '\\' );
 
-					auto const valid_bits = low_bits( count );
+					auto const valid_bits = simd_details::low_bits( count );
 					auto const operator_bits = operators.to_ullong( ) & valid_bits;
 					auto const scalar_bits = scalar.to_ullong( ) & valid_bits;
 					auto const backslash_bits = backslash.to_ullong( ) & valid_bits;
@@ -298,21 +302,22 @@ namespace daw::json {
 					  ( escape_and_terminal ^ ( backslash_bits | previous_escaped ) ) &
 					  valid_bits;
 					auto const escape_bits = escape_and_terminal & backslash_bits;
-					state.escaped = last_bit( escape_bits, count );
+					state.escaped = simd_details::last_bit( escape_bits, count );
 
 					auto const quote_bits =
 					  quote.to_ullong( ) & ~escaped_bits & valid_bits;
 					auto const in_string_bits =
-					  ( prefix_xor( quote_bits ) ^
+					  ( simd_details::prefix_xor( quote_bits ) ^
 					    ( state.in_string ? valid_bits : std::uint64_t{ 0 } ) ) &
 					  valid_bits;
-					state.in_string = last_bit( in_string_bits, count );
+					state.in_string = simd_details::last_bit( in_string_bits, count );
 					auto const string_tail_bits = in_string_bits ^ quote_bits;
 					auto const nonquote_scalar_bits = scalar_bits & ~quote_bits;
 					auto const follows_scalar_bits =
 					  ( nonquote_scalar_bits << 1U ) |
 					  ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );
-					state.previous_scalar = last_bit( nonquote_scalar_bits, count );
+					state.previous_scalar =
+					  simd_details::last_bit( nonquote_scalar_bits, count );
 					auto const scalar_start_bits = scalar_bits & ~follows_scalar_bits;
 					auto const value_start_bits =
 					  scalar_start_bits & ~string_tail_bits & valid_bits;
@@ -426,12 +431,6 @@ namespace daw::json {
 				bool m_current_boolean = false;
 				json_details::simd_json_classifier_state m_state{ };
 
-				[[nodiscard]] static constexpr std::uint64_t
-				low_bits( std::size_t count ) noexcept {
-					return count == 64 ? ~std::uint64_t{ 0 }
-					                   : ( std::uint64_t{ 1 } << count ) - 1;
-				}
-
 				[[nodiscard]] constexpr ParseState number_parse_state( ) const
 				  requires( is_number ) {
 					char const *number_last = nullptr;
@@ -445,7 +444,8 @@ namespace daw::json {
 					                                 std::uint64_t exponent_markers,
 					                                 std::size_t first_lane ) {
 						auto const remaining = block_size - first_lane;
-						auto const remaining_mask = low_bits( remaining );
+						auto const remaining_mask =
+						  json_details::simd_details::low_bits( remaining );
 						auto const characters =
 						  ( number_characters >> first_lane ) & remaining_mask;
 						auto const non_number_characters = ( ~characters ) & remaining_mask;
@@ -453,7 +453,8 @@ namespace daw::json {
 						                      ? remaining
 						                      : static_cast<std::size_t>( std::countr_zero(
 						                          non_number_characters ) );
-						auto const number_mask = low_bits( length ) << first_lane;
+						auto const number_mask =
+						  json_details::simd_details::low_bits( length ) << first_lane;
 
 						if( decimal_point == nullptr ) {
 							auto const points = decimal_points & number_mask;
