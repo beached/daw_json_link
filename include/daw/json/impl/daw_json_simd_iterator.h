@@ -161,7 +161,7 @@ namespace daw::json {
 			public:
 				using state_type = simd_json_classifier_state;
 
-				template<bool ValidateStart>
+				template<bool ValidateStart = true>
 				[[nodiscard]] static constexpr block_type
 				classify_number( char const *first, std::size_t count,
 				                 state_type &state )
@@ -224,7 +224,7 @@ namespace daw::json {
 					return result;
 				}
 
-				template<bool ValidateStart>
+				template<bool ValidateStart = true>
 				[[nodiscard]] static constexpr block_type
 				classify_bool( char const *first, std::size_t count, state_type &state )
 				  requires( ExpectedType == JsonBaseParseTypes::Bool ) {
@@ -270,7 +270,6 @@ namespace daw::json {
 					return result;
 				}
 
-			private:
 				[[nodiscard]] static constexpr block_type
 				classify_string( char const *first, std::size_t count,
 				                 state_type &state ) {
@@ -335,20 +334,6 @@ namespace daw::json {
 					result.state_after = state;
 					return result;
 				}
-
-			public:
-				template<bool ValidateStart = true>
-				[[nodiscard]] static constexpr block_type
-				classify( char const *first, std::size_t count, state_type &state ) {
-					if constexpr( ExpectedType == JsonBaseParseTypes::Number ) {
-						return classify_number<ValidateStart>( first, count, state );
-					} else if constexpr( ExpectedType == JsonBaseParseTypes::Bool ) {
-						return classify_bool<ValidateStart>( first, count, state );
-					} else {
-						static_assert( ExpectedType == JsonBaseParseTypes::String );
-						return classify_string( first, count, state );
-					}
-				}
 			};
 		} // namespace json_details
 
@@ -369,7 +354,7 @@ namespace daw::json {
 			};
 
 			template<typename JsonMember, typename CharT, auto... PolicyFlags>
-				requires( JsonMember::underlying_json_type ==
+			requires( JsonMember::underlying_json_type ==
 				          JsonBaseParseTypes::Number )
 			class json_simd_block_iterator<JsonMember, CharT, PolicyFlags...> {
 				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
@@ -464,7 +449,7 @@ namespace daw::json {
 					while( lookahead_first != m_last ) {
 						auto const remaining =
 						  static_cast<std::size_t>( m_last - lookahead_first );
-						auto const block = classifier_type::template classify<
+						auto const block = classifier_type::template classify_number<
 						  not ParseState::is_unchecked_input>(
 						  lookahead_first, remaining, lookahead_state );
 						if( collect_number_parts( block.data,
@@ -487,7 +472,7 @@ namespace daw::json {
 					while( m_value_starts == 0 and m_first != nullptr and
 					       m_first != m_last ) {
 						auto const remaining = static_cast<std::size_t>( m_last - m_first );
-						auto const block = classifier_type::template classify<
+						auto const block = classifier_type::template classify_number<
 						  not ParseState::is_unchecked_input>(
 						  m_first, remaining, m_state );
 						m_block_data = block.data;
@@ -608,8 +593,7 @@ namespace daw::json {
 				std::size_t m_value_count = 0;
 				json_details::simd_json_classifier_state m_state{ };
 
-				constexpr void validate_boolean( char const *first,
-				                                 bool value ) const {
+				constexpr void validate_boolean( char const *first, bool value ) const {
 					if constexpr( not ParseState::is_unchecked_input ) {
 						auto parse_state = ParseState( first, m_last );
 						if( value ) {
@@ -637,8 +621,8 @@ namespace daw::json {
 						++m_value_index;
 						m_value_starts &= m_value_starts - 1U;
 						if( m_value_index < m_value_count ) {
-							auto const lane = static_cast<std::size_t>(
-							  std::countr_zero( m_value_starts ) );
+							auto const lane =
+							  static_cast<std::size_t>( std::countr_zero( m_value_starts ) );
 							m_current = m_block_data + lane;
 							return;
 						}
@@ -652,8 +636,9 @@ namespace daw::json {
 					while( m_value_starts == 0 and m_first != nullptr and
 					       m_first != m_last ) {
 						auto const remaining = static_cast<std::size_t>( m_last - m_first );
-						auto const block = classifier_type::template classify<
-						  not ParseState::is_unchecked_input>( m_first, remaining, m_state );
+						auto const block = classifier_type::template classify_bool<
+						  not ParseState::is_unchecked_input>(
+						  m_first, remaining, m_state );
 						m_block_data = block.data;
 						m_value_starts = block.boolean_start;
 						if constexpr( not ParseState::is_unchecked_input ) {
@@ -675,8 +660,8 @@ namespace daw::json {
 							auto const value =
 							  ( block.true_start & ( std::uint64_t{ 1 } << lane ) ) != 0;
 							validate_boolean( block.data + lane, value );
-							m_boolean_values |=
-							  static_cast<std::uint64_t>( value ) << m_value_count;
+							m_boolean_values |= static_cast<std::uint64_t>( value )
+							                    << m_value_count;
 							++m_value_count;
 							starts &= starts - 1U;
 						}
@@ -756,7 +741,7 @@ namespace daw::json {
 			};
 
 			template<typename JsonMember, typename CharT, auto... PolicyFlags>
-				requires( JsonMember::underlying_json_type ==
+			requires( JsonMember::underlying_json_type ==
 				          JsonBaseParseTypes::String )
 			class json_simd_block_iterator<JsonMember, CharT, PolicyFlags...> {
 				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
@@ -783,8 +768,8 @@ namespace daw::json {
 					while( m_value_starts == 0 and m_first != nullptr and
 					       m_first != m_last ) {
 						auto const remaining = static_cast<std::size_t>( m_last - m_first );
-						auto const block = classifier_type::template classify<
-						  not ParseState::is_unchecked_input>( m_first, remaining, m_state );
+						auto const block =
+						  classifier_type::classify_string( m_first, remaining, m_state );
 						m_block_data = block.data;
 						m_value_starts = block.string_start;
 						if constexpr( not ParseState::is_unchecked_input ) {
@@ -794,8 +779,7 @@ namespace daw::json {
 								auto const lane = static_cast<std::size_t>(
 								  std::countr_zero( unexpected_starts ) );
 								auto error_state = ParseState( block.data + lane, m_last );
-								daw_json_error(
-								  true, ErrorReason::InvalidString, error_state );
+								daw_json_error( true, ErrorReason::InvalidString, error_state );
 							}
 						}
 						m_first += static_cast<std::ptrdiff_t>( block.size );

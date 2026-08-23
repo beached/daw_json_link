@@ -165,24 +165,18 @@ namespace {
 		auto number_state = number_classifier::state_type{ };
 		auto bool_state = bool_classifier::state_type{ };
 		auto string_state = string_classifier::state_type{ };
-		auto const number_block = number_classifier::classify(
+		auto const number_block = number_classifier::classify_number(
 		  document.data( ), document.size( ), number_state );
-		auto const boolean_block = bool_classifier::classify(
+		auto const boolean_block = bool_classifier::classify_bool(
 		  document.data( ), document.size( ), bool_state );
-		auto const text_block = string_classifier::classify(
+		auto const text_block = string_classifier::classify_string(
 		  document.data( ), document.size( ), string_state );
 
-		return not number_block.is_full( ) and number_block.number_start != 0 and
+		return number_block.number_start != 0 and
 		       number_block.decimal_points != 0 and
 		       number_block.exponent_markers != 0 and
 		       boolean_block.true_start != 0 and text_block.string_start != 0;
 	}
-
-	static_assert( test_constexpr_number_iterator( ) );
-	static_assert( test_constexpr_bool_iterator( ) );
-	static_assert( test_constexpr_string_iterator( ) );
-	static_assert( test_constexpr_custom_constructors( ) );
-	static_assert( test_constexpr_classifiers( ) );
 
 	void test_iterator_semantics( ) {
 		auto empty = iterator( std::string_view{ } );
@@ -245,10 +239,9 @@ namespace {
 		auto string_document = std::string{ "[" };
 		// Place the escape character in the final lane of a block.
 		constexpr std::size_t prefix_through_string_text = 10U;
-		string_document.append(
-		  padding_to_last_lane( prefix_through_string_text,
-		                        string_block::block_size ),
-		  ' ' );
+		string_document.append( padding_to_last_lane( prefix_through_string_text,
+		                                              string_block::block_size ),
+		                        ' ' );
 		string_document += R"json("escaped \" quote", "tail"])json";
 		auto string_values = string_iterator( string_document );
 		daw_ensure( *string_values == R"json(escaped " quote)json" );
@@ -311,6 +304,12 @@ namespace {
 } // namespace
 
 int main( ) {
+	static_assert( test_constexpr_number_iterator( ) );
+	static_assert( test_constexpr_bool_iterator( ) );
+	static_assert( test_constexpr_string_iterator( ) );
+	static_assert( test_constexpr_custom_constructors( ) );
+	static_assert( test_constexpr_classifiers( ) );
+
 	static_assert( std::is_same_v<iterator::reference, iterator::value_type> );
 	static_assert( std::is_same_v<iterator::value_type, double> );
 	static_assert(
