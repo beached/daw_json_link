@@ -79,11 +79,9 @@ namespace daw::json {
 
 			template<typename CharT>
 			struct simd_json_block_base {
-				// Process a full stage-1 word at a time. On machines whose native SIMD
-				// width is smaller than 64 bytes the fixed-size ABI is lowered to
-				// several native vectors, while the scalar bitset/state work is still
-				// paid once.
-				using simd_type = std::simd::vec<CharT, 64>;
+				// Use the implementation's native SIMD width for CharT. Forcing a
+				// 64-lane ABI can require multiple native registers (or scalar chunks).
+				using simd_type = std::simd::vec<CharT>;
 				using mask_type = simd_type::mask_type;
 
 				static constexpr std::size_t block_size =

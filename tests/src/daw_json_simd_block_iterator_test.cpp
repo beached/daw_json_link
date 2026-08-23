@@ -81,6 +81,13 @@ namespace {
 	using constructed_bool_iterator =
 	  daw::json::experimental::json_simd_block_iterator<constructed_bool>;
 
+	[[nodiscard]] constexpr std::size_t
+	padding_to_last_lane( std::size_t prefix_size,
+	                      std::size_t block_size ) noexcept {
+		return ( block_size - 1U - prefix_size % block_size + block_size ) %
+		       block_size;
+	}
+
 	[[nodiscard]] constexpr bool test_constexpr_number_iterator( ) {
 		auto empty = iterator{ };
 		if( empty or empty.begin( ) != empty.end( ) ) {
@@ -201,7 +208,8 @@ namespace {
 
 	void test_classified_number_parts_across_blocks( ) {
 		auto document = std::string{ "[" };
-		document.append( block::block_size - 2U, ' ' );
+		document.append(
+		  padding_to_last_lane( document.size( ), block::block_size ), ' ' );
 		document += "-1.25e+3, 6.02e2]";
 
 		auto values = iterator( document );
@@ -211,6 +219,35 @@ namespace {
 		daw_ensure( *first == 602.0 );
 		++first;
 		daw_ensure( first == values.end( ) );
+	}
+
+	void test_values_across_native_blocks( ) {
+		auto bool_document = std::string{ "[" };
+		bool_document.append(
+		  padding_to_last_lane( bool_document.size( ), bool_block::block_size ),
+		  ' ' );
+		bool_document += "true, false]";
+		auto bool_values = bool_iterator( bool_document );
+		daw_ensure( *bool_values );
+		++bool_values;
+		daw_ensure( not *bool_values );
+		++bool_values;
+		daw_ensure( bool_values == bool_values.end( ) );
+
+		auto string_document = std::string{ "[" };
+		// Place the escape character in the final lane of a block.
+		constexpr std::size_t prefix_through_string_text = 10U;
+		string_document.append(
+		  padding_to_last_lane( prefix_through_string_text,
+		                        string_block::block_size ),
+		  ' ' );
+		string_document += R"json("escaped \" quote", "tail"])json";
+		auto string_values = string_iterator( string_document );
+		daw_ensure( *string_values == R"json(escaped " quote)json" );
+		++string_values;
+		daw_ensure( *string_values == "tail" );
+		++string_values;
+		daw_ensure( string_values == string_values.end( ) );
 	}
 
 	void test_json_member_result_type( ) {
@@ -273,7 +310,7 @@ int main( ) {
 	static_assert( std::is_same_v<iterator::value_type, double> );
 	static_assert(
 	  std::is_same_v<constructed_iterator::value_type, parsed_number> );
-	static_assert( block::block_size > 1U );
+	static_assert( block::block_size > 0U );
 	static_assert( block::block_size <= 64U );
 	static_assert( has_number_start<block> );
 	static_assert( not has_boolean_start<block> );
@@ -289,6 +326,7 @@ int main( ) {
 
 	test_iterator_semantics( );
 	test_classified_number_parts_across_blocks( );
+	test_values_across_native_blocks( );
 	test_json_member_result_type( );
 	test_separate_base_type_paths( );
 }
