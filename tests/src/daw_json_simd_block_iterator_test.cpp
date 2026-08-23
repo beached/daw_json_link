@@ -113,11 +113,19 @@ namespace {
 	}
 
 	[[nodiscard]] constexpr bool test_constexpr_bool_iterator( ) {
-		auto values = bool_iterator( "[true, false]" );
+		auto values = bool_iterator( "[true, false, true, false]" );
 		if( not *values ) {
 			return false;
 		}
 		values++;
+		if( *values ) {
+			return false;
+		}
+		++values;
+		if( not *values ) {
+			return false;
+		}
+		++values;
 		if( *values ) {
 			return false;
 		}
@@ -292,10 +300,7 @@ namespace {
 
 		auto rejected_bad_literal = false;
 		try {
-			auto bad_values = bool_iterator( "[true, falsx]" );
-			auto bad_first = bad_values.begin( );
-			++bad_first;
-			(void)*bad_first;
+			(void)bool_iterator( "[true, falsx]" );
 		} catch( daw::json::json_exception const & ) {
 			rejected_bad_literal = true;
 		}

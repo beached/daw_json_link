@@ -360,53 +360,29 @@ namespace daw::json {
 			 */
 			template<typename JsonMember, typename CharT = char, auto... PolicyFlags>
 			class json_simd_block_iterator {
+				static_assert(
+				  JsonMember::underlying_json_type == JsonBaseParseTypes::Number or
+				    JsonMember::underlying_json_type == JsonBaseParseTypes::Bool or
+				    JsonMember::underlying_json_type == JsonBaseParseTypes::String,
+				  "json_simd_block_iterator currently supports number, boolean, and "
+				  "string JsonMember types" );
+			};
+
+			template<typename JsonMember, typename CharT, auto... PolicyFlags>
+				requires( JsonMember::underlying_json_type ==
+				          JsonBaseParseTypes::Number )
+			class json_simd_block_iterator<JsonMember, CharT, PolicyFlags...> {
 				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 				using classifier_type =
-				  json_details::simd_json_classifier<JsonMember::underlying_json_type,
-				                                     CharT>;
+				  json_details::simd_json_classifier<JsonBaseParseTypes::Number, CharT>;
 				using block_type =
-				  json_details::simd_json_block<JsonMember::underlying_json_type,
-				                                CharT>;
-
-				static constexpr auto json_base_type = JsonMember::underlying_json_type;
-				static constexpr bool is_number =
-				  json_base_type == JsonBaseParseTypes::Number;
-				static constexpr bool is_boolean =
-				  json_base_type == JsonBaseParseTypes::Bool;
-				static constexpr bool is_string =
-				  json_base_type == JsonBaseParseTypes::String;
-
-				static_assert(
-				  is_number or is_boolean or is_string,
-				  "json_simd_block_iterator currently supports number, boolean, and "
-				  "string JsonMember types" );
-
-				static constexpr ErrorReason invalid_start_reason = [] {
-					if constexpr( is_number ) {
-						return ErrorReason::InvalidNumberStart;
-					} else if constexpr( is_boolean ) {
-						return ErrorReason::InvalidLiteral;
-					} else {
-						return ErrorReason::InvalidString;
-					}
-				}( );
+				  json_details::simd_json_block<JsonBaseParseTypes::Number, CharT>;
 
 				struct raw_number_json_member : JsonMember {
 					using parse_to_t = JsonMember::wrapped_type;
 					using constructor_t = default_constructor<parse_to_t>;
 				};
-
-				[[nodiscard]] static constexpr std::uint64_t
-				value_starts( block_type const &block ) noexcept {
-					if constexpr( is_number ) {
-						return block.number_start;
-					} else if constexpr( is_boolean ) {
-						return block.boolean_start;
-					} else {
-						return block.string_start;
-					}
-				}
 
 			public:
 				using json_member = JsonMember;
@@ -421,16 +397,13 @@ namespace daw::json {
 				char const *m_current = nullptr;
 				char const *m_block_data = nullptr;
 				std::uint64_t m_value_starts = 0;
-				std::uint64_t m_true_starts = 0;
 				std::uint64_t m_number_characters = 0;
 				std::uint64_t m_decimal_points = 0;
 				std::uint64_t m_exponent_markers = 0;
 				std::size_t m_block_size = 0;
-				bool m_current_boolean = false;
 				json_details::simd_json_classifier_state m_state{ };
 
-				[[nodiscard]] constexpr ParseState number_parse_state( ) const
-				  requires( is_number ) {
+				[[nodiscard]] constexpr ParseState number_parse_state( ) const {
 					char const *number_last = nullptr;
 					char const *decimal_point = nullptr;
 					char const *exponent_marker = nullptr;
@@ -519,14 +492,10 @@ namespace daw::json {
 						  m_first, remaining, m_state );
 						m_block_data = block.data;
 						m_block_size = block.size;
-						m_value_starts = value_starts( block );
-						if constexpr( is_number ) {
-							m_number_characters = block.number_characters;
-							m_decimal_points = block.decimal_points;
-							m_exponent_markers = block.exponent_markers;
-						} else if constexpr( is_boolean ) {
-							m_true_starts = block.true_start;
-						}
+						m_value_starts = block.number_start;
+						m_number_characters = block.number_characters;
+						m_decimal_points = block.decimal_points;
+						m_exponent_markers = block.exponent_markers;
 						if constexpr( not ParseState::is_unchecked_input ) {
 							auto const unexpected_starts =
 							  block.scalar_start & ~m_value_starts;
@@ -534,7 +503,8 @@ namespace daw::json {
 								auto const lane = static_cast<std::size_t>(
 								  std::countr_zero( unexpected_starts ) );
 								auto error_state = ParseState( block.data + lane, m_last );
-								daw_json_error( true, invalid_start_reason, error_state );
+								daw_json_error(
+								  true, ErrorReason::InvalidNumberStart, error_state );
 							}
 						}
 						m_first += static_cast<std::ptrdiff_t>( block.size );
@@ -547,10 +517,6 @@ namespace daw::json {
 
 					auto const lane =
 					  static_cast<std::size_t>( std::countr_zero( m_value_starts ) );
-					if constexpr( is_boolean ) {
-						m_current_boolean =
-						  ( m_true_starts & ( std::uint64_t{ 1 } << lane ) ) != 0;
-					}
 					m_value_starts &= m_value_starts - 1U;
 					m_current = m_block_data + lane;
 				}
@@ -564,8 +530,7 @@ namespace daw::json {
 					move_to_next_value( );
 				}
 
-				[[nodiscard]] constexpr reference operator*( ) const
-				  requires( is_number ) {
+				[[nodiscard]] constexpr reference operator*( ) const {
 					auto parse_state = number_parse_state( );
 					auto parsed_value =
 					  json_details::parse_value<raw_number_json_member,
@@ -576,48 +541,6 @@ namespace daw::json {
 					return json_details::construct_value<value_type, constructor_t>(
 					  parse_state, std::move( parsed_value ) );
 				}
-
-				[[nodiscard]] constexpr reference operator*( ) const
-				  requires( is_boolean ) {
-					auto parse_state = ParseState( m_current, m_last );
-					static_assert(
-					  json_member::literal_as_string ==
-					    options::LiteralAsStringOpt::Never,
-					  "SIMD boolean iteration does not support literals encoded as "
-					  "strings" );
-					if constexpr( not ParseState::is_unchecked_input ) {
-						if( m_current_boolean ) {
-							daw_json_assert_weak( parse_state.starts_with( "true" ),
-							                      ErrorReason::InvalidLiteral,
-							                      parse_state );
-							parse_state.remove_prefix( 4 );
-						} else {
-							daw_json_assert_weak( parse_state.starts_with( "false" ),
-							                      ErrorReason::InvalidLiteral,
-							                      parse_state );
-							parse_state.remove_prefix( 5 );
-						}
-						parse_state.trim_left( );
-						daw_json_assert_weak(
-						  not parse_state.has_more( ) or
-						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
-						  ErrorReason::InvalidEndOfValue,
-						  parse_state );
-					}
-					using constructor_t = json_details::json_constructor_t<json_member>;
-					return json_details::construct_value<value_type, constructor_t>(
-					  parse_state, m_current_boolean );
-				}
-
-				[[nodiscard]] constexpr reference operator*( ) const
-				  requires( is_string ) {
-					auto parse_state = ParseState( m_current, m_last );
-					return json_details::
-					  parse_value<json_member, false, json_member::expected_type>(
-					    parse_state );
-				}
-
-				[[nodiscard]] constexpr reference operator*( ) const = delete;
 
 				constexpr json_simd_block_iterator &operator++( ) {
 					move_to_next_value( );
@@ -646,6 +569,291 @@ namespace daw::json {
 					auto const lhs_at_end = lhs.m_current == nullptr;
 					auto const rhs_at_end = rhs.m_current == nullptr;
 
+					if( lhs_at_end or rhs_at_end ) {
+						return lhs_at_end == rhs_at_end;
+					}
+					return lhs.m_current == rhs.m_current;
+				}
+
+				friend constexpr bool
+				operator!=( json_simd_block_iterator const &lhs,
+				            json_simd_block_iterator const &rhs ) noexcept {
+					return not( lhs == rhs );
+				}
+			};
+
+			template<typename JsonMember, typename CharT, auto... PolicyFlags>
+				requires( JsonMember::underlying_json_type == JsonBaseParseTypes::Bool )
+			class json_simd_block_iterator<JsonMember, CharT, PolicyFlags...> {
+				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
+				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
+				using classifier_type =
+				  json_details::simd_json_classifier<JsonBaseParseTypes::Bool, CharT>;
+
+			public:
+				using json_member = JsonMember;
+				using value_type = json_member::parse_to_t;
+				using reference = value_type;
+				using difference_type = std::ptrdiff_t;
+				using iterator_category = std::input_iterator_tag;
+
+			private:
+				char const *m_first = nullptr;
+				char const *m_last = nullptr;
+				char const *m_current = nullptr;
+				char const *m_block_data = nullptr;
+				std::uint64_t m_value_starts = 0;
+				std::uint64_t m_boolean_values = 0;
+				std::size_t m_value_index = 0;
+				std::size_t m_value_count = 0;
+				json_details::simd_json_classifier_state m_state{ };
+
+				constexpr void validate_boolean( char const *first,
+				                                 bool value ) const {
+					if constexpr( not ParseState::is_unchecked_input ) {
+						auto parse_state = ParseState( first, m_last );
+						if( value ) {
+							daw_json_assert_weak( parse_state.starts_with( "true" ),
+							                      ErrorReason::InvalidLiteral,
+							                      parse_state );
+							parse_state.remove_prefix( 4 );
+						} else {
+							daw_json_assert_weak( parse_state.starts_with( "false" ),
+							                      ErrorReason::InvalidLiteral,
+							                      parse_state );
+							parse_state.remove_prefix( 5 );
+						}
+						parse_state.trim_left( );
+						daw_json_assert_weak(
+						  not parse_state.has_more( ) or
+						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
+						  ErrorReason::InvalidEndOfValue,
+						  parse_state );
+					}
+				}
+
+				constexpr void move_to_next_value( ) {
+					if( m_current != nullptr ) {
+						++m_value_index;
+						m_value_starts &= m_value_starts - 1U;
+						if( m_value_index < m_value_count ) {
+							auto const lane = static_cast<std::size_t>(
+							  std::countr_zero( m_value_starts ) );
+							m_current = m_block_data + lane;
+							return;
+						}
+					}
+
+					m_boolean_values = 0;
+					m_value_index = 0;
+					m_value_count = 0;
+					m_value_starts = 0;
+
+					while( m_value_starts == 0 and m_first != nullptr and
+					       m_first != m_last ) {
+						auto const remaining = static_cast<std::size_t>( m_last - m_first );
+						auto const block = classifier_type::template classify<
+						  not ParseState::is_unchecked_input>( m_first, remaining, m_state );
+						m_block_data = block.data;
+						m_value_starts = block.boolean_start;
+						if constexpr( not ParseState::is_unchecked_input ) {
+							auto const unexpected_starts =
+							  block.scalar_start & ~m_value_starts;
+							if( unexpected_starts != 0 ) {
+								auto const lane = static_cast<std::size_t>(
+								  std::countr_zero( unexpected_starts ) );
+								auto error_state = ParseState( block.data + lane, m_last );
+								daw_json_error(
+								  true, ErrorReason::InvalidLiteral, error_state );
+							}
+						}
+
+						auto starts = m_value_starts;
+						while( starts != 0 ) {
+							auto const lane =
+							  static_cast<std::size_t>( std::countr_zero( starts ) );
+							auto const value =
+							  ( block.true_start & ( std::uint64_t{ 1 } << lane ) ) != 0;
+							validate_boolean( block.data + lane, value );
+							m_boolean_values |=
+							  static_cast<std::uint64_t>( value ) << m_value_count;
+							++m_value_count;
+							starts &= starts - 1U;
+						}
+						m_first += static_cast<std::ptrdiff_t>( block.size );
+					}
+
+					if( m_value_starts == 0 ) {
+						m_current = nullptr;
+						return;
+					}
+
+					auto const lane =
+					  static_cast<std::size_t>( std::countr_zero( m_value_starts ) );
+					m_current = m_block_data + lane;
+				}
+
+			public:
+				constexpr json_simd_block_iterator( ) = default;
+
+				explicit constexpr json_simd_block_iterator( std::string_view document )
+				  : m_first( document.data( ) )
+				  , m_last( std::next( document.data( ), document.size( ) ) ) {
+					move_to_next_value( );
+				}
+
+				[[nodiscard]] constexpr reference operator*( ) const {
+					auto parse_state = ParseState( m_current, m_last );
+					static_assert(
+					  json_member::literal_as_string ==
+					    options::LiteralAsStringOpt::Never,
+					  "SIMD boolean iteration does not support literals encoded as "
+					  "strings" );
+					auto const value =
+					  ( m_boolean_values & ( std::uint64_t{ 1 } << m_value_index ) ) != 0;
+					using constructor_t = json_details::json_constructor_t<json_member>;
+					return json_details::construct_value<value_type, constructor_t>(
+					  parse_state, value );
+				}
+
+				constexpr json_simd_block_iterator &operator++( ) {
+					move_to_next_value( );
+					return *this;
+				}
+
+				constexpr void operator++( int ) {
+					(void)operator++( );
+				}
+
+				[[nodiscard]] constexpr explicit operator bool( ) const noexcept {
+					return m_current != nullptr;
+				}
+
+				[[nodiscard]] constexpr json_simd_block_iterator begin( ) const {
+					return *this;
+				}
+
+				[[nodiscard]] constexpr json_simd_block_iterator end( ) const noexcept {
+					return { };
+				}
+
+				friend constexpr bool
+				operator==( json_simd_block_iterator const &lhs,
+				            json_simd_block_iterator const &rhs ) noexcept {
+					auto const lhs_at_end = lhs.m_current == nullptr;
+					auto const rhs_at_end = rhs.m_current == nullptr;
+					if( lhs_at_end or rhs_at_end ) {
+						return lhs_at_end == rhs_at_end;
+					}
+					return lhs.m_current == rhs.m_current;
+				}
+
+				friend constexpr bool
+				operator!=( json_simd_block_iterator const &lhs,
+				            json_simd_block_iterator const &rhs ) noexcept {
+					return not( lhs == rhs );
+				}
+			};
+
+			template<typename JsonMember, typename CharT, auto... PolicyFlags>
+				requires( JsonMember::underlying_json_type ==
+				          JsonBaseParseTypes::String )
+			class json_simd_block_iterator<JsonMember, CharT, PolicyFlags...> {
+				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
+				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
+				using classifier_type =
+				  json_details::simd_json_classifier<JsonBaseParseTypes::String, CharT>;
+
+			public:
+				using json_member = JsonMember;
+				using value_type = json_member::parse_to_t;
+				using reference = value_type;
+				using difference_type = std::ptrdiff_t;
+				using iterator_category = std::input_iterator_tag;
+
+			private:
+				char const *m_first = nullptr;
+				char const *m_last = nullptr;
+				char const *m_current = nullptr;
+				char const *m_block_data = nullptr;
+				std::uint64_t m_value_starts = 0;
+				json_details::simd_json_classifier_state m_state{ };
+
+				constexpr void move_to_next_value( ) {
+					while( m_value_starts == 0 and m_first != nullptr and
+					       m_first != m_last ) {
+						auto const remaining = static_cast<std::size_t>( m_last - m_first );
+						auto const block = classifier_type::template classify<
+						  not ParseState::is_unchecked_input>( m_first, remaining, m_state );
+						m_block_data = block.data;
+						m_value_starts = block.string_start;
+						if constexpr( not ParseState::is_unchecked_input ) {
+							auto const unexpected_starts =
+							  block.scalar_start & ~m_value_starts;
+							if( unexpected_starts != 0 ) {
+								auto const lane = static_cast<std::size_t>(
+								  std::countr_zero( unexpected_starts ) );
+								auto error_state = ParseState( block.data + lane, m_last );
+								daw_json_error(
+								  true, ErrorReason::InvalidString, error_state );
+							}
+						}
+						m_first += static_cast<std::ptrdiff_t>( block.size );
+					}
+
+					if( m_value_starts == 0 ) {
+						m_current = nullptr;
+						return;
+					}
+
+					auto const lane =
+					  static_cast<std::size_t>( std::countr_zero( m_value_starts ) );
+					m_value_starts &= m_value_starts - 1U;
+					m_current = m_block_data + lane;
+				}
+
+			public:
+				constexpr json_simd_block_iterator( ) = default;
+
+				explicit constexpr json_simd_block_iterator( std::string_view document )
+				  : m_first( document.data( ) )
+				  , m_last( std::next( document.data( ), document.size( ) ) ) {
+					move_to_next_value( );
+				}
+
+				[[nodiscard]] constexpr reference operator*( ) const {
+					auto parse_state = ParseState( m_current, m_last );
+					return json_details::
+					  parse_value<json_member, false, json_member::expected_type>(
+					    parse_state );
+				}
+
+				constexpr json_simd_block_iterator &operator++( ) {
+					move_to_next_value( );
+					return *this;
+				}
+
+				constexpr void operator++( int ) {
+					(void)operator++( );
+				}
+
+				[[nodiscard]] constexpr explicit operator bool( ) const noexcept {
+					return m_current != nullptr;
+				}
+
+				[[nodiscard]] constexpr json_simd_block_iterator begin( ) const {
+					return *this;
+				}
+
+				[[nodiscard]] constexpr json_simd_block_iterator end( ) const noexcept {
+					return { };
+				}
+
+				friend constexpr bool
+				operator==( json_simd_block_iterator const &lhs,
+				            json_simd_block_iterator const &rhs ) noexcept {
+					auto const lhs_at_end = lhs.m_current == nullptr;
+					auto const rhs_at_end = rhs.m_current == nullptr;
 					if( lhs_at_end or rhs_at_end ) {
 						return lhs_at_end == rhs_at_end;
 					}
