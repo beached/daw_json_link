@@ -39,7 +39,7 @@ namespace {
 	                      options::ExecModeTypes::compile_time>;
 	using simd_iterator =
 	  experimental::json_simd_block_iterator<
-	    json_bool_no_name<bool>, std::uint8_t, options::CheckedParseMode::no,
+	    json_bool_no_name<bool>, char, options::CheckedParseMode::no,
 	    options::ExecModeTypes::compile_time>;
 
 	[[nodiscard]] std::string make_bool_array( std::size_t element_count ) {

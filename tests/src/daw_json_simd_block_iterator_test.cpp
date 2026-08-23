@@ -47,7 +47,7 @@ namespace {
 	using bool_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_bool_no_name<bool>>;
 	using string_iterator = daw::json::experimental::json_simd_block_iterator<
-	  daw::json::json_string_raw_no_name<std::string>>;
+	  daw::json::json_string_no_name<std::string>>;
 
 	struct parsed_number {
 		double value;
