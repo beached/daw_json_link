@@ -28,7 +28,8 @@ namespace daw::json {
 			/// the default nullable_constructor<T>
 			template<typename T, typename JsonMember = use_default,
 			         JsonNullable NullableType = JsonNullable::Nullable,
-			         typename Constructor = use_default>
+			         typename Constructor = use_default,
+			         typename IsNull = use_default>
 			struct json_nullable;
 
 		} // namespace json_base

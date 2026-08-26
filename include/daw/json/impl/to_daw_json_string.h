@@ -534,11 +534,26 @@ namespace daw::json {
 				return it;
 			}
 
+			template<typename /*JsonMember*/, typename = void>
+			inline constexpr bool has_null_checker_v = false;
+
+			template<typename JsonMember>
+			inline constexpr bool has_null_checker_v<
+			  JsonMember, std::void_t<typename JsonMember::is_null_checker>> =
+			  not std::is_same_v<use_default, typename JsonMember::is_null_checker>;
+
 			template<typename JsonMember, typename WriteableType, typename Optional>
 			[[nodiscard]] static constexpr WriteableType
 			to_json_string_null( WriteableType it, Optional const &value ) {
 
-				if constexpr( has_op_bool_v<Optional> ) {
+				if constexpr( has_null_checker_v<JsonMember> ) {
+					// Null checker specified
+					using is_null_checker_t = typename JsonMember::is_null_checker;
+					if( is_null_checker_t{ }( value ) ) {
+						it.write( "null" );
+						return it;
+					}
+				} else if constexpr( has_op_bool_v<Optional> ) {
 					if( not static_cast<bool>( value ) ) {
 						it.write( "null" );
 						return it;

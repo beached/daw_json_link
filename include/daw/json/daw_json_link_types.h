@@ -776,7 +776,7 @@ namespace daw::json {
 			/// @tparam Constructor Specify a Constructor type or use
 			/// the default nullable_constructor<T>
 			template<typename T, typename JsonMember, JsonNullable NullableType,
-			         typename Constructor>
+			         typename Constructor, typename IsNull>
 			struct json_nullable {
 				using i_am_a_json_type = void;
 				using i_am_a_json_nullable = void;
@@ -796,7 +796,7 @@ namespace daw::json {
 				  daw::traits::identity<raw_member_type>,
 				  json_details::ident_trait<json_details::json_deduced_type,
 				                            raw_member_type>>::type;
-
+				using is_null_checker = IsNull;
 				static_assert( json_details::is_no_name_v<member_type>,
 				               "JsonMember template paramater must be noname type" );
 				using parse_to_t = T;
@@ -812,8 +812,9 @@ namespace daw::json {
 				  member_type::underlying_json_type;
 
 				template<JSONNAMETYPE NewName>
-				using with_name = daw::json::json_nullable<NewName, T, JsonMember,
-				                                           NullableType, Constructor>;
+				using with_name =
+				  daw::json::json_nullable<NewName, T, JsonMember, NullableType,
+				                           Constructor, IsNull>;
 			};
 		} // namespace json_base
 
@@ -844,8 +845,9 @@ namespace daw::json {
 		/// must be emitted as null
 		/// @tparam Constructor Specify a Constructor type or use
 		/// the default nullable_constructor<T>
+		/// @tparam IsNull Specify a callable that returns true if the T is null.
 		template<typename T, typename JsonMember = use_default,
-		         typename Constructor = use_default>
+		         typename Constructor = use_default, typename IsNull = use_default>
 		using json_nullable_no_name =
 		  json_base::json_nullable<T, JsonMember, JsonNullable::NullVisible,
 		                           Constructor>;
@@ -859,15 +861,16 @@ namespace daw::json {
 		/// must be emitted as null
 		/// @tparam Constructor Specify a Constructor type or use
 		/// the default nullable_constructor<T>
+		/// @tparam IsNull Specify a callable that returns true if the T is null.
 		template<JSONNAMETYPE Name, typename T, typename JsonMember,
-		         JsonNullable NullableType, typename Constructor>
-		struct json_nullable
-		  : json_base::json_nullable<T, JsonMember, NullableType, Constructor> {
+		         JsonNullable NullableType, typename Constructor, typename IsNull>
+		struct json_nullable : json_base::json_nullable<T, JsonMember, NullableType,
+		                                                Constructor, IsNull> {
 
 			static constexpr daw::string_view name = Name;
 
-			using without_name =
-			  json_base::json_nullable<T, JsonMember, NullableType, Constructor>;
+			using without_name = json_base::json_nullable<T, JsonMember, NullableType,
+			                                              Constructor, IsNull>;
 		};
 
 		namespace json_base {

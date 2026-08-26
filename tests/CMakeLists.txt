@@ -1229,6 +1229,11 @@ add_executable( bool_array_iterator_benchmark EXCLUDE_FROM_ALL
 target_link_libraries( bool_array_iterator_benchmark PRIVATE json_test )
 add_dependencies( full bool_array_iterator_benchmark )
 
+add_executable( json_nullable_is_null_test EXCLUDE_FROM_ALL
+								src/json_nullable_is_null_test.cpp )
+target_link_libraries( json_nullable_is_null_test PRIVATE json_test )
+add_dependencies( full json_nullable_is_null_test )
+
 # **************************************************
 # JSON Benchmark
 # **************************************************

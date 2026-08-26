@@ -46,13 +46,13 @@ namespace daw::json {
 		/// @tparam T type of the value being mapped to(e.g. std::optional<Foo>)
 		/// @tparam JsonMember Json Type or type of value when present, deduced from
 		/// T if not specified
-		/// @tparam NullableType Whether an empty class member may be omitted or must
-		/// be emitted as null
+		/// @tparam NullableType Whether an empty class member may be omitted or
+		/// must be emitted as null
 		/// @tparam Constructor Specify a Constructor type or use
 		/// the default nullable_constructor<T>
 		template<JSONNAMETYPE Name, typename T, typename JsonMember = use_default,
 		         JsonNullable NullableType = JsonNullable::Nullable,
-		         typename Constructor = use_default>
+		         typename Constructor = use_default, typename IsNull = use_default>
 		struct json_nullable;
 
 		namespace json_details {
@@ -138,8 +138,8 @@ namespace daw::json {
 		 * @tparam Name name of json member
 		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
 		 * Constructor
-		 * @tparam Options Options created with options::number_opt; narrowing checks
-		 * are enabled by this alias
+		 * @tparam Options Options created with options::number_opt; narrowing
+		 * checks are enabled by this alias
 		 * @tparam Constructor Callable used to construct result
 		 */
 		template<JSONNAMETYPE Name, typename T = double,
@@ -246,8 +246,8 @@ namespace daw::json {
 		 * @tparam Name name of json member
 		 * @tparam T type of number(e.g. optional<double>, optional<int>,
 		 * optional<unsigned>...) to pass to Constructor
-		 * @tparam Options Options created with options::number_opt; narrowing checks
-		 * are enabled by this alias
+		 * @tparam Options Options created with options::number_opt; narrowing
+		 * checks are enabled by this alias
 		 * @tparam NullableType Whether an empty class member may be omitted or must
 		 * be emitted as null
 		 * @tparam Constructor Callable used to construct result
@@ -292,8 +292,8 @@ namespace daw::json {
 		 * mapped classes and enums(mapped to numbers)
 		 *  @tparam JsonKeyType type of key in kv pair.  As with value it supports
 		 * basic types too
-		 *  @tparam NullableType Whether an empty class member may be omitted or must
-		 * be emitted as null
+		 *  @tparam NullableType Whether an empty class member may be omitted or
+		 * must be emitted as null
 		 *  @tparam Constructor A callable used to make Container, default will use
 		 * the Containers constructor.  Both normal and aggregate are supported
 		 */
@@ -372,8 +372,8 @@ namespace daw::json {
 
 		/** Link to a nullable JSON array
 		 * @tparam Name name of JSON member to link to
-		 * @tparam WrappedContainer nullable C++ container type being constructed(e.g.
-		 * vector<int>)
+		 * @tparam WrappedContainer nullable C++ container type being
+		 * constructed(e.g. vector<int>)
 		 * @tparam JsonElement Json type being parsed e.g. json_number,
 		 * json_string...
 		 * @tparam NullableType Whether an empty class member may be omitted or must
@@ -424,8 +424,8 @@ namespace daw::json {
 		 * member name defaults to "value"
 		 *  @tparam JsonKeyType type of key in kv pair.  If specific json member
 		 * type isn't specified, the key name defaults to "key"
-		 *  @tparam NullableType Whether an empty class member may be omitted or must
-		 * be emitted as null
+		 *  @tparam NullableType Whether an empty class member may be omitted or
+		 * must be emitted as null
 		 *  @tparam Constructor A callable used to make Container, default will use
 		 * the Containers constructor.  Both normal and aggregate are supported
 		 */
@@ -489,8 +489,8 @@ namespace daw::json {
 		 * @tparam T type of value being constructed
 		 * @tparam FromJsonConverter Callable that converts the JSON text to T
 		 * @tparam ToJsonConverter Callable that converts T to JSON text
-		 * @tparam Options Options created with options::json_custom_opt; the literal
-		 * custom type is enabled by this alias
+		 * @tparam Options Options created with options::json_custom_opt; the
+		 * literal custom type is enabled by this alias
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = use_default,
@@ -508,8 +508,8 @@ namespace daw::json {
 		 * @tparam FromJsonConverter Callable that accepts a std::string_view of the
 		 * range to parse
 		 * @tparam ToJsonConverter Returns a string from the value
-		 * @tparam Options Options created with options::json_custom_opt; the literal
-		 * custom type is enabled by this alias
+		 * @tparam Options Options created with options::json_custom_opt; the
+		 * literal custom type is enabled by this alias
 		 * @tparam NullableType Whether an empty class member may be omitted or must
 		 * be emitted as null
 		 * @tparam Constructor Callable used to construct the nullable result
@@ -691,7 +691,8 @@ namespace daw::json {
 		         typename Constructor = use_default>
 		struct json_intrusive_variant;
 
-		/** Link a JSON array to a container whose size is provided by another member
+		/** Link a JSON array to a container whose size is provided by another
+		 * member
 		 * @tparam Name name of JSON member to link to
 		 * @tparam JsonElement JSON element type being parsed
 		 * @tparam SizeMember JSON member mapping that provides the array size
@@ -712,8 +713,8 @@ namespace daw::json {
 		 * @tparam Switcher A callable that returns an index into JsonElements when
 		 * passed the TagMember object in parent member list
 		 * @tparam JsonElements a json_tagged_variant_type_list, defaults to type
-		 * elements of WrappedVariant when it is a std::variant and they are all auto
-		 * mappable
+		 * elements of WrappedVariant when it is a std::variant and they are all
+		 * auto mappable
 		 * @tparam NullableType Whether an empty class member may be omitted or must
 		 * be emitted as null
 		 * @tparam Constructor A callable used to construct WrappedVariant.  The
@@ -753,8 +754,8 @@ namespace daw::json {
 		/// @tparam Name JSON member name to map to
 		/// @tparam WrappedTuple nullable tuple-like type to parse to
 		/// @tparam JsonTupleTypesList either deduced or a json_tuple_type_list
-		/// @tparam NullableType Whether an empty class member may be omitted or must
-		/// be emitted as null
+		/// @tparam NullableType Whether an empty class member may be omitted or
+		/// must be emitted as null
 		/// @tparam Constructor A callable used to construct WrappedTuple
 		template<JSONNAMETYPE Name, typename WrappedTuple,
 		         typename JsonTupleTypesList = use_default,
