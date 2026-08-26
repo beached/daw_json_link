@@ -850,7 +850,7 @@ namespace daw::json {
 		         typename Constructor = use_default, typename IsNull = use_default>
 		using json_nullable_no_name =
 		  json_base::json_nullable<T, JsonMember, JsonNullable::NullVisible,
-		                           Constructor>;
+		                           Constructor, IsNull>;
 
 		/// @brief Mark a member as nullable
 		/// @tparam Name name of JSON member

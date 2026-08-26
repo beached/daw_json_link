@@ -25,6 +25,10 @@ struct Foo {
 	std::variant<std::monostate, int, std::string> member;
 };
 
+struct Bar {
+	std::variant<std::monostate, int, std::string> member;
+};
+
 struct CheckVariantNull {
 	template<typename... Ts>
 	constexpr bool
@@ -46,6 +50,18 @@ namespace daw::json {
 			return std::forward_as_tuple( f.member );
 		}
 	};
+
+	template<>
+	struct json_data_contract<Bar> {
+		using type = json_type_alias<json_nullable_no_name<
+		  std::variant<std::monostate, int, std::string>,
+		  json_variant_no_name<std::variant<std::monostate, int, std::string>>,
+		  daw::use_default, CheckVariantNull>>;
+
+		static constexpr auto to_json_data( Bar const & b ) {
+			return b.member;
+		}
+	};
 } // namespace daw::json
 
 int main( )
@@ -63,6 +79,12 @@ int main( )
 	daw_ensure( foo1.member.index( ) == 2 );
 	auto const s1 = daw::json::to_json( foo1 );
 	daw_ensure( s1 == R"json({"member":"Hello"})json" );
+
+	auto const bar0 = daw::json::from_json_array<Bar>( R"json([null])json" );
+	daw_ensure( bar0.size( ) == 1 );
+	daw_ensure( bar0[0].member.index( ) == 0 );
+	auto const bs0 = daw::json::to_json( bar0 );
+	daw_ensure( bs0 == "[null]" );
 }
 #if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {
