@@ -492,6 +492,13 @@ namespace daw::json {
 		} // namespace json_details
 
 		inline namespace experimental {
+			template<
+			  typename JsonMember,
+			  std::size_t NumberSpanCacheBlocks =
+			    ( JsonMember::expected_type == JsonParseTypes::Real ? 8U : 4U ),
+			  typename CharT = char, auto... PolicyFlags>
+			class json_simd_number_block_iterator;
+
 			/**
 			 * Input iterator over JSON scalar values located using native
 			 * SIMD-sized classified blocks.
@@ -507,11 +514,13 @@ namespace daw::json {
 				  "string JsonMember types" );
 			};
 
-			template<typename JsonMember, typename CharT, auto... PolicyFlags>
+			template<typename JsonMember, std::size_t NumberSpanCacheBlocks,
+			         typename CharT, auto... PolicyFlags>
 			requires( JsonMember::underlying_json_type ==
 			          JsonBaseParseTypes::
-			            Number ) class json_simd_block_iterator<JsonMember, CharT,
-			                                                    PolicyFlags...> {
+			            Number ) class json_simd_number_block_iterator<
+			  JsonMember, NumberSpanCacheBlocks, CharT, PolicyFlags...> {
+				static_assert( NumberSpanCacheBlocks > 0 );
 				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 				using classifier_type =
@@ -526,7 +535,7 @@ namespace daw::json {
 				using span_type = span_types::span;
 				using pending_span_type = span_types::pending_span;
 				static constexpr std::size_t number_span_capacity =
-				  block_type::number_span_capacity * 2U;
+				  block_type::number_span_capacity * NumberSpanCacheBlocks;
 
 				struct raw_number_json_member : JsonMember {
 					using parse_to_t = JsonMember::wrapped_type;
@@ -588,9 +597,10 @@ namespace daw::json {
 				}
 
 			public:
-				constexpr json_simd_block_iterator( ) = default;
+				constexpr json_simd_number_block_iterator( ) = default;
 
-				explicit constexpr json_simd_block_iterator( std::string_view document )
+				explicit constexpr json_simd_number_block_iterator(
+				  std::string_view document )
 				  : m_first( document.data( ) )
 				  , m_last( std::next( document.data( ),
 				                       static_cast<std::ptrdiff_t>( document.size( ) ) ) ) {
@@ -628,7 +638,7 @@ namespace daw::json {
 					  parse_state, std::move( parsed_value ) );
 				}
 
-				constexpr json_simd_block_iterator &operator++( ) {
+				constexpr json_simd_number_block_iterator &operator++( ) {
 					if( m_value_index < m_value_count ) {
 						++m_value_index;
 					}
@@ -646,17 +656,17 @@ namespace daw::json {
 					return m_value_index < m_value_count;
 				}
 
-				[[nodiscard]] constexpr json_simd_block_iterator begin( ) const {
+				[[nodiscard]] constexpr json_simd_number_block_iterator begin( ) const {
 					return *this;
 				}
 
-				[[nodiscard]] constexpr json_simd_block_iterator end( ) const noexcept {
+				[[nodiscard]] constexpr json_simd_number_block_iterator end( ) const noexcept {
 					return { };
 				}
 
 				friend constexpr bool
-				operator==( json_simd_block_iterator const &lhs,
-				            json_simd_block_iterator const &rhs ) noexcept {
+				operator==( json_simd_number_block_iterator const &lhs,
+				            json_simd_number_block_iterator const &rhs ) noexcept {
 					auto const lhs_at_end = not lhs;
 					auto const rhs_at_end = not rhs;
 
@@ -668,10 +678,27 @@ namespace daw::json {
 				}
 
 				friend constexpr bool
-				operator!=( json_simd_block_iterator const &lhs,
-				            json_simd_block_iterator const &rhs ) noexcept {
+				operator!=( json_simd_number_block_iterator const &lhs,
+				            json_simd_number_block_iterator const &rhs ) noexcept {
 					return not( lhs == rhs );
 				}
+			};
+
+			template<typename JsonMember, typename CharT, auto... PolicyFlags>
+			requires( JsonMember::underlying_json_type ==
+			          JsonBaseParseTypes::Number )
+			class json_simd_block_iterator<JsonMember, CharT, PolicyFlags...>
+			  : public json_simd_number_block_iterator<
+			      JsonMember,
+			      ( JsonMember::expected_type == JsonParseTypes::Real ? 8U : 4U ),
+			      CharT, PolicyFlags...> {
+				using base = json_simd_number_block_iterator<
+				  JsonMember,
+				  ( JsonMember::expected_type == JsonParseTypes::Real ? 8U : 4U ), CharT,
+				  PolicyFlags...>;
+
+			public:
+				using base::base;
 			};
 
 			template<typename JsonMember, typename CharT, auto... PolicyFlags>

@@ -20,6 +20,7 @@
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
@@ -37,17 +38,17 @@ namespace {
 	using signed_scalar_iterator =
 	  json_array_iterator<std::int64_t, options::CheckedParseMode::no,
 	                      options::ExecModeTypes::compile_time>;
-	using signed_simd_iterator =
-	  experimental::json_simd_block_iterator<
-	    json_number_no_name<std::int64_t>, char,
-	    options::CheckedParseMode::no, options::ExecModeTypes::compile_time>;
+	template<std::size_t CacheBlocks>
+	using signed_simd_iterator = experimental::json_simd_number_block_iterator<
+	  json_number_no_name<std::int64_t>, CacheBlocks, char,
+	  options::CheckedParseMode::no, options::ExecModeTypes::compile_time>;
 	using unsigned_scalar_iterator =
 	  json_array_iterator<std::uint64_t, options::CheckedParseMode::no,
 	                      options::ExecModeTypes::compile_time>;
-	using unsigned_simd_iterator =
-	  experimental::json_simd_block_iterator<
-	    json_number_no_name<std::uint64_t>, char,
-	    options::CheckedParseMode::no, options::ExecModeTypes::compile_time>;
+	template<std::size_t CacheBlocks>
+	using unsigned_simd_iterator = experimental::json_simd_number_block_iterator<
+	  json_number_no_name<std::uint64_t>, CacheBlocks, char,
+	  options::CheckedParseMode::no, options::ExecModeTypes::compile_time>;
 
 	template<bool Signed>
 	[[nodiscard]] std::string make_integer_array( std::size_t element_count ) {
@@ -81,10 +82,11 @@ namespace {
 		return result;
 	}
 
+	template<std::size_t CacheBlocks>
 	[[nodiscard]] std::int64_t
 	sum_signed_simd_blocks( std::string_view document ) {
 		auto result = std::int64_t{ 0 };
-		for( auto const value : signed_simd_iterator( document ) ) {
+		for( auto const value : signed_simd_iterator<CacheBlocks>( document ) ) {
 			result += value;
 		}
 		daw::do_not_optimize( result );
@@ -101,14 +103,31 @@ namespace {
 		return result;
 	}
 
+	template<std::size_t CacheBlocks>
 	[[nodiscard]] std::uint64_t
 	sum_unsigned_simd_blocks( std::string_view document ) {
 		auto result = std::uint64_t{ 0 };
-		for( auto const value : unsigned_simd_iterator( document ) ) {
+		for( auto const value : unsigned_simd_iterator<CacheBlocks>( document ) ) {
 			result += value;
 		}
 		daw::do_not_optimize( result );
 		return result;
+	}
+
+	template<std::size_t CacheBlocks, typename Sum>
+	void benchmark_simd_cache( std::string_view document, Sum expected,
+	                           daw::string_view label ) {
+		auto result = daw::json::benchmark::benchmark(
+		  DAW_NUM_RUNS, document.size( ), label,
+		  []( std::string_view input ) -> Sum {
+			  if constexpr( std::is_signed_v<Sum> ) {
+				  return sum_signed_simd_blocks<CacheBlocks>( input );
+			  } else {
+				  return sum_unsigned_simd_blocks<CacheBlocks>( input );
+			  }
+		  },
+		  document );
+		daw_ensure( result.get( ) == expected );
 	}
 } // namespace
 
@@ -124,7 +143,7 @@ int main( int argc, char **argv ) {
 	std::cout << "Computing expected signed sum: ";
 	auto const expected_signed = sum_signed_scalar( signed_document );
 	std::cout << expected_signed << "\nComputing SIMD signed sum: ";
-	auto const simd_signed = sum_signed_simd_blocks( signed_document );
+	auto const simd_signed = sum_signed_simd_blocks<2U>( signed_document );
 	std::cout << simd_signed << '\n' << std::flush;
 	daw_ensure( simd_signed == expected_signed );
 
@@ -134,18 +153,21 @@ int main( int argc, char **argv ) {
 	  signed_document );
 	daw_ensure( signed_scalar_result.get( ) == expected_signed );
 
-	auto signed_simd_result = daw::json::benchmark::benchmark(
-	  DAW_NUM_RUNS, signed_document.size( ),
-	  "signed integer array sum (SIMD block iterator)",
-	  sum_signed_simd_blocks, signed_document );
-	daw_ensure( signed_simd_result.get( ) == expected_signed );
+	benchmark_simd_cache<1U>( signed_document, expected_signed,
+	                         "signed integer array sum (SIMD, 1-block span cache)" );
+	benchmark_simd_cache<2U>( signed_document, expected_signed,
+	                         "signed integer array sum (SIMD, 2-block span cache)" );
+	benchmark_simd_cache<4U>( signed_document, expected_signed,
+	                         "signed integer array sum (SIMD, 4-block span cache)" );
+	benchmark_simd_cache<8U>( signed_document, expected_signed,
+	                         "signed integer array sum (SIMD, 8-block span cache)" );
 
 	auto const unsigned_json_data = make_integer_array<false>( element_count );
 	auto const unsigned_document = std::string_view( unsigned_json_data );
 	std::cout << "Computing expected unsigned sum: ";
 	auto const expected_unsigned = sum_unsigned_scalar( unsigned_document );
 	std::cout << expected_unsigned << "\nComputing SIMD unsigned sum: ";
-	auto const simd_unsigned = sum_unsigned_simd_blocks( unsigned_document );
+	auto const simd_unsigned = sum_unsigned_simd_blocks<2U>( unsigned_document );
 	std::cout << simd_unsigned << '\n' << std::flush;
 	daw_ensure( simd_unsigned == expected_unsigned );
 
@@ -155,11 +177,14 @@ int main( int argc, char **argv ) {
 	  sum_unsigned_scalar, unsigned_document );
 	daw_ensure( unsigned_scalar_result.get( ) == expected_unsigned );
 
-	auto unsigned_simd_result = daw::json::benchmark::benchmark(
-	  DAW_NUM_RUNS, unsigned_document.size( ),
-	  "unsigned integer array sum (SIMD block iterator)",
-	  sum_unsigned_simd_blocks, unsigned_document );
-	daw_ensure( unsigned_simd_result.get( ) == expected_unsigned );
+	benchmark_simd_cache<1U>( unsigned_document, expected_unsigned,
+	                         "unsigned integer array sum (SIMD, 1-block span cache)" );
+	benchmark_simd_cache<2U>( unsigned_document, expected_unsigned,
+	                         "unsigned integer array sum (SIMD, 2-block span cache)" );
+	benchmark_simd_cache<4U>( unsigned_document, expected_unsigned,
+	                         "unsigned integer array sum (SIMD, 4-block span cache)" );
+	benchmark_simd_cache<8U>( unsigned_document, expected_unsigned,
+	                         "unsigned integer array sum (SIMD, 8-block span cache)" );
 }
 
 #else
