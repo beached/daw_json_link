@@ -12,6 +12,7 @@
 
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_policy_policy_details.h"
+#include "daw/json/impl/daw_json_simd.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_is_constant_evaluated.h>
@@ -20,11 +21,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#if __has_include( <simd> )
-#include <simd>
-#endif
-
-#if defined( __cpp_lib_simd ) or defined( __glibcxx_simd )
+#if defined( DAW_JSON_HAS_SIMD )
 #include <bit>
 #include <span>
 
@@ -32,7 +29,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			namespace skip_bracketed_item_simd_details {
-				using simd_type = std::simd::vec<char, 64>;
+				using simd_type = daw::simd::vec<char, 64>;
 				static constexpr std::size_t block_size =
 				  static_cast<std::size_t>( simd_type::size( ) );
 				static_assert( block_size <= 64 );
@@ -60,22 +57,30 @@ namespace daw::json {
 					       ( ( bits >> ( count - 1U ) ) & std::uint64_t{ 1 } ) != 0;
 				}
 
-				[[nodiscard]] consteval simd_type splat( char value ) noexcept {
+				[[nodiscard]]
+#if defined( DAW_JSON_HAS_STD_SIMD )
+				consteval
+#else
+				DAW_ATTRIB_INLINE
+#endif
+				  simd_type
+				  splat( char value ) noexcept {
 					return simd_type( value );
 				}
 
 				template<char... Values>
-				[[nodiscard]] constexpr auto one_of( simd_type value ) {
+				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR auto
+				one_of( simd_type value ) {
 					return ( ( value == splat( Values ) ) | ... );
 				}
 
-				[[nodiscard]] constexpr simd_type load( char const *first,
-				                                        std::size_t count ) {
+				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR simd_type
+				load( char const *first, std::size_t count ) {
 					if( count == block_size ) {
-						return std::simd::unchecked_load<simd_type>(
+						return daw::simd::unchecked_load<simd_type>(
 						  std::span( first, block_size ) );
 					}
-					return std::simd::partial_load<simd_type>(
+					return daw::simd::partial_load<simd_type>(
 					  std::span( first, count ) );
 				}
 			} // namespace skip_bracketed_item_simd_details
@@ -83,7 +88,7 @@ namespace daw::json {
 			/// Skip the JSON class or array at parse_state.first using SIMD to
 			/// classify each block.
 			template<SkipBracketedType BracketedType, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATTEN DAW_JSON_SIMD_CONSTEXPR ParseState
 			skip_bracketed_item_simd( ParseState &parse_state ) {
 				constexpr char primary_left =
 				  BracketedType == SkipBracketedType::Class ? '{' : '[';

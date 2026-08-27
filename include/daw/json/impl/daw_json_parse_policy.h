@@ -513,11 +513,18 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy skip_class( ) {
-#if defined( __cpp_lib_simd ) or defined( __glibcxx_simd )
+#if defined( DAW_JSON_HAS_STD_SIMD )
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
 					return json_details::skip_bracketed_item_simd<
 					  json_details::SkipBracketedType::Class>( *this );
 				} else
+#elif defined( DAW_JSON_HAS_SIMD )
+				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
+					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+						return json_details::skip_bracketed_item_simd<
+						  json_details::SkipBracketedType::Class>( *this );
+					}
+				}
 #elif defined( DAW_ALLOW_NEON )
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
 					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
@@ -543,11 +550,18 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy skip_array( ) {
-#if defined( __cpp_lib_simd ) or defined( __glibcxx_simd )
+#if defined( DAW_JSON_HAS_STD_SIMD )
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
 					return json_details::skip_bracketed_item_simd<
 					  json_details::SkipBracketedType::Array>( *this );
 				} else
+#elif defined( DAW_JSON_HAS_SIMD )
+				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
+					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+						return json_details::skip_bracketed_item_simd<
+						  json_details::SkipBracketedType::Array>( *this );
+					}
+				}
 #elif defined( DAW_ALLOW_NEON )
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
 					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {

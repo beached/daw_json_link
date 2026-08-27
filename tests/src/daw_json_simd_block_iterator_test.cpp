@@ -11,7 +11,7 @@
 
 #include <daw/daw_ensure.h>
 
-#if defined( __cpp_lib_simd ) or defined( __glibcxx_simd )
+#if defined( DAW_JSON_HAS_SIMD )
 
 #include <cstddef>
 #include <string>
@@ -305,11 +305,19 @@ namespace {
 } // namespace
 
 int main( ) {
+#if defined( DAW_JSON_HAS_STD_SIMD )
 	static_assert( test_constexpr_number_iterator( ) );
 	static_assert( test_constexpr_bool_iterator( ) );
 	static_assert( test_constexpr_string_iterator( ) );
 	static_assert( test_constexpr_custom_constructors( ) );
 	static_assert( test_constexpr_classifiers( ) );
+#else
+	daw_ensure( test_constexpr_number_iterator( ) );
+	daw_ensure( test_constexpr_bool_iterator( ) );
+	daw_ensure( test_constexpr_string_iterator( ) );
+	daw_ensure( test_constexpr_custom_constructors( ) );
+	daw_ensure( test_constexpr_classifiers( ) );
+#endif
 
 	static_assert( std::is_same_v<iterator::reference, iterator::value_type> );
 	static_assert( std::is_same_v<iterator::value_type, double> );

@@ -8,15 +8,10 @@
 
 #pragma once
 
+#include "daw/json/impl/daw_json_simd.h"
 #include "daw/json/impl/version.h"
 
-#include <daw/daw_cpp_feature_check.h>
-
-#if __has_include( <simd> )
-
-#include <simd>
-
-#if defined( __cpp_lib_simd ) or defined( __glibcxx_simd )
+#if defined( DAW_JSON_HAS_SIMD )
 
 #include "daw/json/impl/daw_json_parse_value.h"
 
@@ -55,31 +50,39 @@ namespace daw::json {
 				}
 
 				template<typename simd_type>
-				[[nodiscard]] consteval simd_type splat( char value ) noexcept {
+				[[nodiscard]]
+#if defined( DAW_JSON_HAS_STD_SIMD )
+				consteval
+#else
+				DAW_ATTRIB_INLINE
+#endif
+				  simd_type
+				  splat( char value ) noexcept {
 					return simd_type( static_cast<simd_type::value_type>( value ) );
 				}
 
 				template<auto... values, typename simd_type>
-				[[nodiscard]] constexpr auto one_of( simd_type value ) {
+				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR auto
+				one_of( simd_type value ) {
 					return ( ( value == splat<simd_type>( values ) ) | ... );
 				}
 
 				template<typename simd_type, std::size_t block_size, typename CharT,
 				         typename Chr>
-				[[nodiscard]] constexpr simd_type load( Chr const *first,
-				                                        std::size_t count ) {
+				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR simd_type
+				load( Chr const *first, std::size_t count ) {
 					static constexpr auto flags = [] {
 						if constexpr( std::same_as<CharT, Chr> ) {
-							return std::simd::flag_default;
+							return daw::simd::flag_default;
 						} else {
-							return std::simd::flag_convert;
+							return daw::simd::flag_convert;
 						}
 					}( );
 					if( count == block_size ) {
-						return std::simd::unchecked_load<simd_type>(
+						return daw::simd::unchecked_load<simd_type>(
 						  std::span( first, block_size ), flags );
 					}
-					return std::simd::partial_load<simd_type>( std::span( first, count ),
+					return daw::simd::partial_load<simd_type>( std::span( first, count ),
 					                                           flags );
 				}
 
@@ -101,7 +104,7 @@ namespace daw::json {
 			struct simd_json_block_base {
 				// Use the implementation's native SIMD width for CharT. Forcing a
 				// 64-lane ABI can require multiple native registers (or scalar chunks).
-				using simd_type = std::simd::vec<CharT, 64>;
+				using simd_type = daw::simd::vec<CharT, 64>;
 				using mask_type = simd_type::mask_type;
 
 				static constexpr std::size_t block_size =
@@ -163,12 +166,13 @@ namespace daw::json {
 			public:
 				using state_type = simd_json_classifier_state;
 
-				static constexpr auto is_whitespace( simd_type input ) {
+				static DAW_JSON_SIMD_CONSTEXPR auto
+				is_whitespace( simd_type input ) {
 					return simd_details::one_of<' ', '\t', '\n', '\r'>( input );
 				}
 
 				template<bool ValidateStart = true>
-				[[nodiscard]] static constexpr block_type
+				[[nodiscard]] static DAW_JSON_SIMD_CONSTEXPR block_type
 				classify_number( char const *first, std::size_t count,
 				                 state_type &state )
 				  requires( ExpectedType == JsonBaseParseTypes::Number ) {
@@ -230,7 +234,7 @@ namespace daw::json {
 				}
 
 				template<bool ValidateStart = true>
-				[[nodiscard]] static constexpr block_type
+				[[nodiscard]] static DAW_JSON_SIMD_CONSTEXPR block_type
 				classify_bool( char const *first, std::size_t count,
 				               state_type &state ) {
 					static_assert( ExpectedType == JsonBaseParseTypes::Bool );
@@ -275,7 +279,7 @@ namespace daw::json {
 					return result;
 				}
 
-				[[nodiscard]] static constexpr block_type
+				[[nodiscard]] static DAW_JSON_SIMD_CONSTEXPR block_type
 				classify_string( char const *first, std::size_t count,
 				                 state_type &state ) {
 					count = count < block_size ? count : block_size;
@@ -345,7 +349,7 @@ namespace daw::json {
 		inline namespace experimental {
 			/**
 			 * Input iterator over JSON scalar values located using native
-			 * std::simd-sized classified blocks.
+			 * SIMD-sized classified blocks.
 			 * @tparam JsonMember The JSON Link mapping used to parse each value.
 			 */
 			template<typename JsonMember, typename CharT = char, auto... PolicyFlags>
@@ -517,7 +521,8 @@ namespace daw::json {
 
 				explicit constexpr json_simd_block_iterator( std::string_view document )
 				  : m_first( document.data( ) )
-				  , m_last( std::next( document.data( ), document.size( ) ) ) {
+				  , m_last( std::next( document.data( ),
+				                       static_cast<std::ptrdiff_t>( document.size( ) ) ) ) {
 					if( m_first != m_last ) {
 						auto parse_state = ParseState( m_first, m_last );
 						parse_state.trim_left( );
@@ -700,7 +705,8 @@ namespace daw::json {
 
 				explicit constexpr json_simd_block_iterator( std::string_view document )
 				  : m_first( document.data( ) )
-				  , m_last( std::next( document.data( ), document.size( ) ) ) {
+				  , m_last( std::next( document.data( ),
+				                       static_cast<std::ptrdiff_t>( document.size( ) ) ) ) {
 					if( m_first != m_last ) {
 						auto parse_state = ParseState( m_first, m_last );
 						parse_state.trim_left( );
@@ -828,7 +834,8 @@ namespace daw::json {
 
 				explicit constexpr json_simd_block_iterator( std::string_view document )
 				  : m_first( document.data( ) )
-				  , m_last( std::next( document.data( ), document.size( ) ) ) {
+				  , m_last( std::next( document.data( ),
+				                       static_cast<std::ptrdiff_t>( document.size( ) ) ) ) {
 					if( m_first != m_last ) {
 						auto parse_state = ParseState( m_first, m_last );
 						parse_state.trim_left( );
@@ -889,5 +896,4 @@ namespace daw::json {
 		} // namespace experimental
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
-#endif
 #endif
