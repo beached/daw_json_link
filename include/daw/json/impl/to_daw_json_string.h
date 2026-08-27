@@ -921,12 +921,20 @@ namespace daw::json {
 					it.put( '0' );
 				}
 				it = utils::integer_to_string( it, civil.second );
-				if( civil.nanosecond > 0 ) {
-					while( civil.nanosecond != 0 and civil.nanosecond % 10 == 0 ) {
-						civil.nanosecond /= 10;
+				if( civil.attosecond > 0 ) {
+					auto fractional_digits = std::size_t{ 18 };
+					while( civil.attosecond % 10 == 0 ) {
+						civil.attosecond /= 10;
+						--fractional_digits;
 					}
 					it.put( '.' );
-					it = utils::integer_to_string( it, civil.nanosecond );
+					auto const digit_count = static_cast<std::size_t>(
+					  daw::cxmath::count_digits( civil.attosecond ) );
+					while( digit_count < fractional_digits ) {
+						it.put( '0' );
+						--fractional_digits;
+					}
+					it = utils::integer_to_string( it, civil.attosecond );
 				}
 				it.write( "Z\"" );
 				return it;
