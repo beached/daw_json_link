@@ -28,7 +28,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			namespace skip_bracketed_item_simd_details {
-				using simd_type = daw::simd::vec<char, 64>;
+				using simd_type = daw::simd::vec<char>;
 				static constexpr std::size_t block_size =
 				  static_cast<std::size_t>( simd_type::size( ) );
 				static_assert( block_size <= 64 );

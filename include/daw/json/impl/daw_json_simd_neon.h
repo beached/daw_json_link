@@ -72,7 +72,7 @@ namespace daw::simd_impl::neon {
 		}
 	};
 
-	template<typename T, std::size_t /*MaximumSize*/>
+	template<typename T, std::size_t /*MaximumSize*/ = 16U>
 	class vec {
 		static_assert( sizeof( T ) == 1,
 		               "The NEON JSON SIMD implementation supports byte types" );

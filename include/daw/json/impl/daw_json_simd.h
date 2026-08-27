@@ -34,7 +34,9 @@
 #include "daw/json/impl/daw_json_simd_neon.h"
 #endif
 
-#if defined( __SSE4_2__ ) or defined( __AVX__ ) or defined( __AVX2__ )
+#if defined( __AVX2__ )
+#include "daw/json/impl/daw_json_simd_avx2.h"
+#elif defined( __SSE4_2__ ) or defined( __AVX__ )
 #include "daw/json/impl/daw_json_simd_sse42.h"
 #endif
 
@@ -54,6 +56,15 @@ namespace daw {
 
 namespace daw {
 	namespace simd = simd_impl::neon;
+}
+
+#elif defined( DAW_JSON_HAS_AVX2_SIMD )
+
+#define DAW_JSON_HAS_SIMD 1
+#define DAW_JSON_SIMD_CONSTEXPR inline
+
+namespace daw {
+	namespace simd = simd_impl::avx2;
 }
 
 #elif defined( DAW_JSON_HAS_SSE42_SIMD )

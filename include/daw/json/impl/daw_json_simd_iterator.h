@@ -99,10 +99,9 @@ namespace daw::json {
 
 			template<typename CharT>
 			struct simd_json_block_base {
-				// Use the implementation's native SIMD width for CharT. Forcing a
-				// 64-lane ABI can require multiple native registers (or scalar
-				// chunks).
-				using simd_type = daw::simd::vec<CharT, 64>;
+				// Classify one native SIMD register at a time. The iterators aggregate
+				// results from as many blocks as are needed to fill their caches.
+				using simd_type = daw::simd::vec<CharT>;
 
 				static constexpr std::size_t block_size =
 				  static_cast<std::size_t>( simd_type::size( ) );
@@ -674,6 +673,8 @@ namespace daw::json {
 				using iterator_category = std::input_iterator_tag;
 
 			private:
+				static constexpr std::uint8_t boolean_cache_capacity = 64U;
+
 				char const *m_first = nullptr;
 				char const *m_last = nullptr;
 				std::uint64_t m_boolean_values = 0;
@@ -729,8 +730,8 @@ namespace daw::json {
 						auto starts = block.boolean_start;
 						auto const block_value_count =
 						  static_cast<std::uint8_t>( daw::cxmath::popcount( starts ) );
-						auto const available =
-						  static_cast<std::uint8_t>( 64U - m_value_count );
+						auto const available = static_cast<std::uint8_t>(
+						  boolean_cache_capacity - m_value_count );
 						auto const consumed =
 						  block_value_count < available ? block_value_count : available;
 
@@ -753,7 +754,7 @@ namespace daw::json {
 						  static_cast<std::uint8_t>( m_value_count + consumed );
 						if( consumed == block_value_count ) {
 							m_first += static_cast<std::ptrdiff_t>( block.size );
-							if( m_value_count == 64U ) {
+							if( m_value_count == boolean_cache_capacity ) {
 								return;
 							}
 							continue;

@@ -584,6 +584,9 @@ int main( ) {
 	static_assert( sizeof( unsigned_iterator ) == sizeof( signed_iterator ) );
 	static_assert( block::block_size > 0U );
 	static_assert( block::block_size <= 64U );
+#if defined( DAW_JSON_HAS_AVX2_SIMD ) and not defined( DAW_JSON_HAS_STD_SIMD )
+	static_assert( block::block_size == 32U );
+#endif
 	static_assert( sizeof( daw::json::json_details::integer_span ) * 2U ==
 	               sizeof( daw::json::json_details::number_span ) );
 	static_assert( has_number_start<block> );
