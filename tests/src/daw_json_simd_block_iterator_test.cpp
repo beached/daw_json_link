@@ -27,22 +27,11 @@ namespace {
 	using string_block = daw::json::json_details::simd_details::simd_json_block<
 	  daw::json::JsonBaseParseTypes::String, char>;
 
-	template<typename T>
-	concept has_number_start = requires( T value ) {
-		value.number_start;
-	};
-	template<typename T>
-	concept has_boolean_start = requires( T value ) {
-		value.boolean_start;
-	};
-	template<typename T>
-	concept has_string_start = requires( T value ) {
-		value.string_start;
-	};
-	template<typename T>
-	concept has_true_start = requires( T value ) {
-		value.true_start;
-	};
+	DAW_MAKE_REQ_TRAIT( has_number_start, std::declval<T>( ).number_start );
+	DAW_MAKE_REQ_TRAIT( has_boolean_start, std::declval<T>( ).boolean_start );
+	DAW_MAKE_REQ_TRAIT( has_string_start, std::declval<T>( ).string_start );
+	DAW_MAKE_REQ_TRAIT( has_true_start, std::declval<T>( ).true_start );
+
 	using iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_number_no_name<double>>;
 	using signed_iterator = daw::json::experimental::json_simd_block_iterator<
@@ -177,7 +166,7 @@ namespace {
 		return values == values.end( );
 	}
 
-	[[nodiscard]] constexpr bool test_constexpr_string_iterator( ) {
+	[[nodiscard]] DAW_CPP20_CX_ALLOC bool test_constexpr_string_iterator( ) {
 		auto values = string_iterator( R"json(["alpha", "beta"])json" );
 		if( *values != "alpha" ) {
 			return false;
