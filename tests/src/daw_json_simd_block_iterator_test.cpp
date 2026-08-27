@@ -252,6 +252,30 @@ namespace {
 		daw_ensure( string_values == string_values.end( ) );
 	}
 
+	void test_bool_buffer_refill( ) {
+		auto document = std::string{ "[" };
+		for( std::size_t n = 0; n < 130U; ++n ) {
+			if( n != 0 ) {
+				document += ',';
+			}
+			document += n % 3U == 0 ? "true" : "false";
+		}
+		document += ']';
+
+		auto values = bool_iterator( document );
+		for( std::size_t n = 0; n < 130U; ++n ) {
+			auto const expected = n % 3U == 0;
+			daw_ensure( static_cast<bool>( values ) );
+			daw_ensure( *values == expected );
+			daw_ensure( *values == expected );
+			auto const copy = values;
+			daw_ensure( copy == values );
+			++values;
+			daw_ensure( copy != values );
+		}
+		daw_ensure( values == values.end( ) );
+	}
+
 	void test_json_member_result_type( ) {
 		auto values = constructed_iterator( "[4.5, -1.25]" );
 		auto first = values.begin( );
@@ -340,6 +364,7 @@ int main( ) {
 	test_iterator_semantics( );
 	test_classified_number_parts_across_blocks( );
 	test_values_across_native_blocks( );
+	test_bool_buffer_refill( );
 	test_json_member_result_type( );
 	test_separate_base_type_paths( );
 }

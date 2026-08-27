@@ -607,12 +607,9 @@ namespace daw::json {
 			private:
 				char const *m_first = nullptr;
 				char const *m_last = nullptr;
-				char const *m_current = nullptr;
-				char const *m_block_data = nullptr;
-				std::uint64_t m_value_starts = 0;
 				std::uint64_t m_boolean_values = 0;
-				std::size_t m_value_index = 0;
-				std::size_t m_value_count = 0;
+				std::uint8_t m_value_index = 0;
+				std::uint8_t m_value_count = 0;
 				json_details::simd_json_classifier_state m_state{ };
 
 				constexpr void validate_boolean( char const *first, bool value ) const {
@@ -638,34 +635,19 @@ namespace daw::json {
 					}
 				}
 
-				constexpr void move_to_next_value( ) {
-					if( m_current != nullptr ) {
-						++m_value_index;
-						m_value_starts &= m_value_starts - 1U;
-						if( m_value_index < m_value_count ) {
-							auto const lane =
-							  static_cast<std::size_t>( std::countr_zero( m_value_starts ) );
-							m_current = m_block_data + lane;
-							return;
-						}
-					}
-
+				constexpr void fill_buffer( ) {
 					m_boolean_values = 0;
 					m_value_index = 0;
 					m_value_count = 0;
-					m_value_starts = 0;
 
-					while( m_value_starts == 0 and m_first != nullptr and
-					       m_first != m_last ) {
+					while( m_first != nullptr and m_first != m_last ) {
 						auto const remaining = static_cast<std::size_t>( m_last - m_first );
 						auto const block = classifier_type::template classify_bool<
 						  not ParseState::is_unchecked_input>(
 						  m_first, remaining, m_state );
-						m_block_data = block.data;
-						m_value_starts = block.boolean_start;
 						if constexpr( not ParseState::is_unchecked_input ) {
 							auto const unexpected_starts =
-							  block.scalar_start & ~m_value_starts;
+							  block.scalar_start & ~block.boolean_start;
 							if( unexpected_starts != 0 ) {
 								auto const lane = static_cast<std::size_t>(
 								  std::countr_zero( unexpected_starts ) );
@@ -675,7 +657,7 @@ namespace daw::json {
 							}
 						}
 
-						auto starts = m_value_starts;
+						auto starts = block.boolean_start;
 						while( starts != 0 ) {
 							auto const lane =
 							  static_cast<std::size_t>( std::countr_zero( starts ) );
@@ -686,18 +668,20 @@ namespace daw::json {
 							                    << m_value_count;
 							++m_value_count;
 							starts &= starts - 1U;
+							if( m_value_count == 64 ) {
+								if( starts == 0 ) {
+									m_first += static_cast<std::ptrdiff_t>( block.size );
+								} else {
+									auto const next_lane = static_cast<std::size_t>(
+									  std::countr_zero( starts ) );
+									m_first = block.data + next_lane;
+									m_state = { };
+								}
+								return;
+							}
 						}
 						m_first += static_cast<std::ptrdiff_t>( block.size );
 					}
-
-					if( m_value_starts == 0 ) {
-						m_current = nullptr;
-						return;
-					}
-
-					auto const lane =
-					  static_cast<std::size_t>( std::countr_zero( m_value_starts ) );
-					m_current = m_block_data + lane;
 				}
 
 			public:
@@ -716,25 +700,30 @@ namespace daw::json {
 						parse_state.remove_prefix( );
 						m_first = parse_state.data( );
 					}
-					move_to_next_value( );
+					fill_buffer( );
 				}
 
 				[[nodiscard]] constexpr reference operator*( ) const {
-					auto parse_state = ParseState( m_current, m_last );
+					auto parse_state = ParseState( m_first, m_last );
 					static_assert(
 					  json_member::literal_as_string ==
 					    options::LiteralAsStringOpt::Never,
 					  "SIMD boolean iteration does not support literals encoded as "
 					  "strings" );
 					auto const value =
-					  ( m_boolean_values & ( std::uint64_t{ 1 } << m_value_index ) ) != 0;
+					  ( ( m_boolean_values >> m_value_index ) & std::uint64_t{ 1 } ) != 0;
 					using constructor_t = json_details::json_constructor_t<json_member>;
 					return json_details::construct_value<value_type, constructor_t>(
 					  parse_state, value );
 				}
 
 				constexpr json_simd_block_iterator &operator++( ) {
-					move_to_next_value( );
+					if( m_value_index < m_value_count ) {
+						++m_value_index;
+					}
+					if( m_value_index == m_value_count ) {
+						fill_buffer( );
+					}
 					return *this;
 				}
 
@@ -743,7 +732,7 @@ namespace daw::json {
 				}
 
 				[[nodiscard]] constexpr explicit operator bool( ) const noexcept {
-					return m_current != nullptr;
+					return m_value_index < m_value_count;
 				}
 
 				[[nodiscard]] constexpr json_simd_block_iterator begin( ) const {
@@ -757,12 +746,14 @@ namespace daw::json {
 				friend constexpr bool
 				operator==( json_simd_block_iterator const &lhs,
 				            json_simd_block_iterator const &rhs ) noexcept {
-					auto const lhs_at_end = lhs.m_current == nullptr;
-					auto const rhs_at_end = rhs.m_current == nullptr;
+					auto const lhs_at_end = not lhs;
+					auto const rhs_at_end = not rhs;
 					if( lhs_at_end or rhs_at_end ) {
 						return lhs_at_end == rhs_at_end;
 					}
-					return lhs.m_current == rhs.m_current;
+					return lhs.m_first == rhs.m_first and
+					       lhs.m_value_index == rhs.m_value_index and
+					       lhs.m_value_count == rhs.m_value_count;
 				}
 
 				friend constexpr bool
