@@ -155,7 +155,7 @@ namespace daw::json {
 			struct simd_json_block<JsonBaseParseTypes::Bool, CharT>
 			  : simd_json_block_base<CharT> {
 				std::uint64_t boolean_start = 0;
-				std::uint64_t true_start = 0;
+				std::uint64_t boolean_values = 0;
 			};
 
 			template<typename CharT>
@@ -397,7 +397,8 @@ namespace daw::json {
 					result.size = count;
 					result.scalar_start = scalar_start_bits;
 					result.boolean_start = boolean_start_bits;
-					result.true_start = true_start.to_ullong( ) & boolean_start_bits;
+					result.boolean_values =
+					  daw::simd_impl::compress_bits( true_start, boolean_start_bits );
 					return result;
 				}
 
@@ -726,29 +727,46 @@ namespace daw::json {
 						}
 
 						auto starts = block.boolean_start;
-						while( starts != 0 ) {
-							auto const lane = static_cast<std::size_t>(
-							  daw::cxmath::count_trailing_zeros( starts ) );
-							auto const value =
-							  ( block.true_start & ( std::uint64_t{ 1 } << lane ) ) != 0;
-							validate_boolean( block.data + lane, value );
-							m_boolean_values |= static_cast<std::uint64_t>( value )
-							                    << m_value_count;
-							++m_value_count;
-							starts &= starts - 1U;
-							if( m_value_count == 64 ) {
-								if( starts == 0 ) {
-									m_first += static_cast<std::ptrdiff_t>( block.size );
-								} else {
-									auto const next_lane = static_cast<std::size_t>(
-									  daw::cxmath::count_trailing_zeros( starts ) );
-									m_first = block.data + next_lane;
-									m_state = { };
-								}
-								return;
+						auto const block_value_count =
+						  static_cast<std::uint8_t>( daw::cxmath::popcount( starts ) );
+						auto const available =
+						  static_cast<std::uint8_t>( 64U - m_value_count );
+						auto const consumed =
+						  block_value_count < available ? block_value_count : available;
+
+						if constexpr( not ParseState::is_unchecked_input ) {
+							auto validation_starts = starts;
+							auto values = block.boolean_values;
+							for( std::uint8_t n = 0; n < consumed; ++n ) {
+								auto const lane = static_cast<std::size_t>(
+								  daw::cxmath::count_trailing_zeros( validation_starts ) );
+								validate_boolean( block.data + lane,
+								                  ( values & std::uint64_t{ 1 } ) != 0 );
+								validation_starts &= validation_starts - 1U;
+								values >>= 1U;
 							}
 						}
-						m_first += static_cast<std::ptrdiff_t>( block.size );
+
+						m_boolean_values |= block.boolean_values
+						                    << static_cast<unsigned>( m_value_count );
+						m_value_count =
+						  static_cast<std::uint8_t>( m_value_count + consumed );
+						if( consumed == block_value_count ) {
+							m_first += static_cast<std::ptrdiff_t>( block.size );
+							if( m_value_count == 64U ) {
+								return;
+							}
+							continue;
+						}
+
+						for( std::uint8_t n = 0; n < consumed; ++n ) {
+							starts &= starts - 1U;
+						}
+						auto const next_lane = static_cast<std::size_t>(
+						  daw::cxmath::count_trailing_zeros( starts ) );
+						m_first = block.data + next_lane;
+						m_state = { };
+						return;
 					}
 				}
 

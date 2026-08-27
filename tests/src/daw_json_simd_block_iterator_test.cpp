@@ -33,7 +33,7 @@ namespace {
 	DAW_MAKE_REQ_TRAIT( has_string_end, std::declval<T>( ).string_end );
 	DAW_MAKE_REQ_TRAIT( has_escape_characters,
 	                    std::declval<T>( ).escape_characters );
-	DAW_MAKE_REQ_TRAIT( has_true_start, std::declval<T>( ).true_start );
+	DAW_MAKE_REQ_TRAIT( has_boolean_values, std::declval<T>( ).boolean_values );
 
 	using iterator =
 	  daw::json::json_simd_block_iterator<daw::json::json_number_no_name<double>>;
@@ -154,6 +154,10 @@ namespace {
 	}
 
 	[[nodiscard]] constexpr bool test_constexpr_bool_iterator( ) {
+		if( daw::simd_impl::compress_bits( 0b10010010U, 0b10010010U ) != 0b111U or
+		    daw::simd_impl::compress_bits( 0b10000010U, 0b10010010U ) != 0b101U ) {
+			return false;
+		}
 		auto values = bool_iterator( "[true, false, true, false]" );
 		if( not *values ) {
 			return false;
@@ -245,8 +249,9 @@ namespace {
 		       number.last == array_contents.data( ) + 5 and
 		       number.decimal_point == array_contents.data( ) + 1 and
 		       number.exponent_marker == array_contents.data( ) + 3 and
-		       boolean_block.true_start != 0 and text_block.string_start != 0 and
-		       text_block.string_end != 0 and text_block.escape_characters == 0;
+		       boolean_block.boolean_values != 0 and
+		       text_block.string_start != 0 and text_block.string_end != 0 and
+		       text_block.escape_characters == 0;
 	}
 
 	void test_iterator_semantics( ) {
@@ -585,13 +590,13 @@ int main( ) {
 	static_assert( not has_boolean_start<block> );
 	static_assert( not has_string_start<block> );
 	static_assert( has_boolean_start<bool_block> );
-	static_assert( has_true_start<bool_block> );
+	static_assert( has_boolean_values<bool_block> );
 	static_assert( not has_number_start<bool_block> );
 	static_assert( not has_string_start<bool_block> );
 	static_assert( has_string_start<string_block> );
 	static_assert( has_string_end<string_block> );
 	static_assert( has_escape_characters<string_block> );
-	static_assert( not has_true_start<string_block> );
+	static_assert( not has_boolean_values<string_block> );
 	static_assert( not has_number_start<string_block> );
 	static_assert( not has_boolean_start<string_block> );
 
