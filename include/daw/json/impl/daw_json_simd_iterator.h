@@ -310,7 +310,7 @@ namespace daw::json {
 						  non_number_characters == 0
 						    ? remaining
 						    : static_cast<std::size_t>( daw::cxmath::count_trailing_zeros(
-						        non_number_characters ) );
+						        static_cast<std::uint64_t>( non_number_characters ) ) );
 						auto const number_mask = simd_details::low_bits( length )
 						                         << first_lane;
 
@@ -319,14 +319,16 @@ namespace daw::json {
 								auto const points = decimal_point_bits & number_mask;
 								if( points != 0 ) {
 									pending.decimal_point =
-									  first + daw::cxmath::count_trailing_zeros( points );
+									  first + daw::cxmath::count_trailing_zeros(
+									            static_cast<std::uint64_t>( points ) );
 								}
 							}
 							if( pending.exponent_marker == nullptr ) {
 								auto const markers = exponent_marker_bits & number_mask;
 								if( markers != 0 ) {
 									pending.exponent_marker =
-									  first + daw::cxmath::count_trailing_zeros( markers );
+									  first + daw::cxmath::count_trailing_zeros(
+									            static_cast<std::uint64_t>( markers ) );
 								}
 							}
 						}
@@ -354,8 +356,9 @@ namespace daw::json {
 
 					auto starts = number_start_bits;
 					while( starts != 0 ) {
-						auto const lane = static_cast<std::size_t>(
-						  daw::cxmath::count_trailing_zeros( starts ) );
+						auto const lane =
+						  static_cast<std::size_t>( daw::cxmath::count_trailing_zeros(
+						    static_cast<std::uint64_t>( starts ) ) );
 						if constexpr( NumberType == JsonParseTypes::Real ) {
 							append_number_span(
 							  pending_number_span{ first + lane, nullptr, nullptr }, lane );

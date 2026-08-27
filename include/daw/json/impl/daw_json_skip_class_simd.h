@@ -150,7 +150,7 @@ namespace daw::json {
 					while( events != 0 ) {
 						auto const lane =
 						  static_cast<std::size_t>(
-						    daw::cxmath::count_trailing_zeros( events ) );
+						    daw::cxmath::count_trailing_zeros( static_cast<std::uint64_t>( events ) ) );
 						switch( ptr_first[lane] ) {
 						case ',':
 							if( ( primary_depth == 1 ) & ( secondary_depth == 0 ) ) {
