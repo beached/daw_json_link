@@ -32,20 +32,20 @@ namespace {
 	DAW_MAKE_REQ_TRAIT( has_string_start, std::declval<T>( ).string_start );
 	DAW_MAKE_REQ_TRAIT( has_true_start, std::declval<T>( ).true_start );
 
-	using iterator = daw::json::experimental::json_simd_block_iterator<
+	using iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_number_no_name<double>>;
-	using signed_iterator = daw::json::experimental::json_simd_block_iterator<
+	using signed_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_number_no_name<std::int64_t>>;
-	using unsigned_iterator = daw::json::experimental::json_simd_block_iterator<
+	using unsigned_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_number_no_name<std::uint64_t>>;
 	using unchecked_signed_iterator =
-	  daw::json::experimental::json_simd_block_iterator<
+	  daw::json::json_simd_block_iterator<
 	    daw::json::json_number_no_name<std::int64_t>, char,
 	    daw::json::options::CheckedParseMode::no,
 	    daw::json::options::ExecModeTypes::compile_time>;
-	using bool_iterator = daw::json::experimental::json_simd_block_iterator<
+	using bool_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_bool_no_name<bool>>;
-	using string_iterator = daw::json::experimental::json_simd_block_iterator<
+	using string_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_string_no_name<std::string>>;
 
 	struct parsed_number {
@@ -62,7 +62,7 @@ namespace {
 	  daw::json::json_number_no_name<double, daw::json::number_opts_def,
 	                                 parsed_number_constructor>;
 	using constructed_iterator =
-	  daw::json::experimental::json_simd_block_iterator<constructed_number>;
+	  daw::json::json_simd_block_iterator<constructed_number>;
 
 	struct parsed_bool {
 		bool value;
@@ -78,7 +78,7 @@ namespace {
 	  daw::json::json_bool_no_name<bool, daw::json::bool_opts_def,
 	                               parsed_bool_constructor>;
 	using constructed_bool_iterator =
-	  daw::json::experimental::json_simd_block_iterator<constructed_bool>;
+	  daw::json::json_simd_block_iterator<constructed_bool>;
 
 	[[nodiscard]] constexpr std::size_t
 	padding_to_last_lane( std::size_t prefix_size,

@@ -37,13 +37,13 @@ namespace {
 	using signed_scalar_iterator =
 	  json_array_iterator<std::int64_t, options::CheckedParseMode::no,
 	                      options::ExecModeTypes::compile_time>;
-	using signed_simd_iterator = experimental::json_simd_block_iterator<
+	using signed_simd_iterator = json_simd_block_iterator<
 	  json_number_no_name<std::int64_t>, char, options::CheckedParseMode::no,
 	  options::ExecModeTypes::compile_time>;
 	using unsigned_scalar_iterator =
 	  json_array_iterator<std::uint64_t, options::CheckedParseMode::no,
 	                      options::ExecModeTypes::compile_time>;
-	using unsigned_simd_iterator = experimental::json_simd_block_iterator<
+	using unsigned_simd_iterator = json_simd_block_iterator<
 	  json_number_no_name<std::uint64_t>, char, options::CheckedParseMode::no,
 	  options::ExecModeTypes::compile_time>;
 

@@ -37,7 +37,7 @@ namespace {
 	using scalar_iterator =
 	  json_array_iterator<double, options::CheckedParseMode::no,
 	                      options::ExecModeTypes::compile_time>;
-	using simd_iterator = experimental::json_simd_block_iterator<
+	using simd_iterator = json_simd_block_iterator<
 	  json_number_no_name<double>, char,
 	  options::CheckedParseMode::no, options::ExecModeTypes::compile_time>;
 
