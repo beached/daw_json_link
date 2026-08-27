@@ -27,16 +27,6 @@ constexpr bool test_empty_quoted( ) {
 
 static_assert( test_empty_quoted( ) );
 
-#if defined( DAW_ALLOW_NEON )
-bool test_neon_block_boundaries( ) {
-	DAW_CONSTEXPR std::string_view sv =
-	  R"(["0123456789abc", "escaped \\\" bracket ]", [{},{}]])";
-	auto rng = daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = skip_bracketed_item_neon<SkipBracketedType::Array>( rng );
-	return std::string_view( v.first, v.size( ) ) == sv and rng.first == sv.end( );
-}
-#endif
-
 bool test_extra_slash( ) {
 	DAW_CONSTEXPR std::string_view sv = "[\\]";
 	auto rng = daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
@@ -138,9 +128,6 @@ int main( )
 #endif
 {
 	do_test( test_empty_quoted( ) );
-#if defined( DAW_ALLOW_NEON )
-	do_test( test_neon_block_boundaries( ) );
-#endif
 	do_fail_test( test_end_of_stream( ) );
 	do_fail_test( test_extra_slash( ) );
 	do_test( test_trailing_comma( ) );

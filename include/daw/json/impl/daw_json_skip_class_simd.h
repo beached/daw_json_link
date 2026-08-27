@@ -16,6 +16,7 @@
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_is_constant_evaluated.h>
+#include <daw/daw_span.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -23,7 +24,6 @@
 
 #if defined( DAW_JSON_HAS_SIMD )
 #include <bit>
-#include <span>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -63,14 +63,12 @@ namespace daw::json {
 #else
 				DAW_ATTRIB_INLINE
 #endif
-				  simd_type
-				  splat( char value ) noexcept {
+				  simd_type splat( char value ) noexcept {
 					return simd_type( value );
 				}
 
 				template<char... Values>
-				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR auto
-				one_of( simd_type value ) {
+				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR auto one_of( simd_type value ) {
 					return ( ( value == splat( Values ) ) | ... );
 				}
 
@@ -78,10 +76,10 @@ namespace daw::json {
 				load( char const *first, std::size_t count ) {
 					if( count == block_size ) {
 						return daw::simd::unchecked_load<simd_type>(
-						  std::span( first, block_size ) );
+						  daw::span( first, block_size ) );
 					}
 					return daw::simd::partial_load<simd_type>(
-					  std::span( first, count ) );
+					  daw::span( first, count ) );
 				}
 			} // namespace skip_bracketed_item_simd_details
 

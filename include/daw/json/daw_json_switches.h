@@ -118,15 +118,6 @@
 #endif
 #endif
 
-// Allow the ARM NEON SIMD path.  NEON is always available on Apple Silicon.
-#if not defined( DAW_JSON_NO_NEON )
-#if defined( __ARM_NEON ) or defined( __ARM_NEON__ )
-#if not defined( DAW_ALLOW_NEON )
-#define DAW_ALLOW_NEON 1
-#endif
-#endif
-#endif
-
 // Use strtod instead of from_chars when avialable by defining
 // DAW_JSON_USE_STRTOD
 #if not defined( DAW_JSON_USE_STRTOD ) and not defined( __cpp_lib_to_chars )
