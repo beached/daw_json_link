@@ -30,23 +30,27 @@ namespace {
 	DAW_MAKE_REQ_TRAIT( has_number_start, std::declval<T>( ).number_start );
 	DAW_MAKE_REQ_TRAIT( has_boolean_start, std::declval<T>( ).boolean_start );
 	DAW_MAKE_REQ_TRAIT( has_string_start, std::declval<T>( ).string_start );
+	DAW_MAKE_REQ_TRAIT( has_string_end, std::declval<T>( ).string_end );
+	DAW_MAKE_REQ_TRAIT( has_escape_characters,
+	                    std::declval<T>( ).escape_characters );
 	DAW_MAKE_REQ_TRAIT( has_true_start, std::declval<T>( ).true_start );
 
-	using iterator = daw::json::json_simd_block_iterator<
-	  daw::json::json_number_no_name<double>>;
+	using iterator =
+	  daw::json::json_simd_block_iterator<daw::json::json_number_no_name<double>>;
 	using signed_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_number_no_name<std::int64_t>>;
 	using unsigned_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_number_no_name<std::uint64_t>>;
-	using unchecked_signed_iterator =
-	  daw::json::json_simd_block_iterator<
-	    daw::json::json_number_no_name<std::int64_t>, char,
-	    daw::json::options::CheckedParseMode::no,
-	    daw::json::options::ExecModeTypes::compile_time>;
-	using bool_iterator = daw::json::json_simd_block_iterator<
-	  daw::json::json_bool_no_name<bool>>;
+	using unchecked_signed_iterator = daw::json::json_simd_block_iterator<
+	  daw::json::json_number_no_name<std::int64_t>, char,
+	  daw::json::options::CheckedParseMode::no,
+	  daw::json::options::ExecModeTypes::compile_time>;
+	using bool_iterator =
+	  daw::json::json_simd_block_iterator<daw::json::json_bool_no_name<bool>>;
 	using string_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_string_no_name<std::string>>;
+	using raw_string_iterator = daw::json::json_simd_block_iterator<
+	  daw::json::json_string_raw_no_name<std::string>>;
 
 	struct parsed_number {
 		double value;
@@ -223,7 +227,8 @@ namespace {
 		       number.last == array_contents.data( ) + 5 and
 		       number.decimal_point == array_contents.data( ) + 1 and
 		       number.exponent_marker == array_contents.data( ) + 3 and
-		       boolean_block.true_start != 0 and text_block.string_start != 0;
+		       boolean_block.true_start != 0 and text_block.string_start != 0 and
+		       text_block.string_end != 0 and text_block.escape_characters == 0;
 	}
 
 	void test_iterator_semantics( ) {
@@ -317,6 +322,50 @@ namespace {
 			daw_ensure( *values == expected );
 			auto const copy = values;
 			daw_ensure( copy == values );
+			++values;
+			daw_ensure( copy != values );
+		}
+		daw_ensure( values == values.end( ) );
+	}
+
+	void test_many_string_values( ) {
+		auto document = std::string{ "[" };
+		for( std::size_t n = 0; n < 130U; ++n ) {
+			if( n != 0 ) {
+				document += ',';
+			}
+			switch( n % 3U ) {
+			case 0:
+				document += R"json("x")json";
+				break;
+			case 1:
+				document += R"json("escaped \" quote")json";
+				break;
+			default:
+				document += '"';
+				document.append( 80U, 'a' );
+				document += '"';
+				break;
+			}
+		}
+		document += ']';
+
+		auto values = string_iterator( document );
+		for( std::size_t n = 0; n < 130U; ++n ) {
+			daw_ensure( static_cast<bool>( values ) );
+			auto const expected = [n] {
+				switch( n % 3U ) {
+				case 0:
+					return std::string{ "x" };
+				case 1:
+					return std::string{ R"json(escaped " quote)json" };
+				default:
+					return std::string( 80U, 'a' );
+				}
+			}( );
+			daw_ensure( *values == expected );
+			daw_ensure( *values == expected );
+			auto const copy = values;
 			++values;
 			daw_ensure( copy != values );
 		}
@@ -433,6 +482,15 @@ namespace {
 		++string_first;
 		daw_ensure( string_first == string_values.end( ) );
 
+		auto raw_string_values =
+		  raw_string_iterator( R"json(["plain", "escaped \" quote"])json" );
+		auto raw_string_first = raw_string_values.begin( );
+		daw_ensure( *raw_string_first == "plain" );
+		++raw_string_first;
+		daw_ensure( *raw_string_first == R"json(escaped \" quote)json" );
+		++raw_string_first;
+		daw_ensure( raw_string_first == raw_string_values.end( ) );
+
 #if defined( DAW_USE_EXCEPTIONS )
 		auto rejected_wrong_type = false;
 		try {
@@ -513,6 +571,8 @@ int main( ) {
 	static_assert( not has_number_start<bool_block> );
 	static_assert( not has_string_start<bool_block> );
 	static_assert( has_string_start<string_block> );
+	static_assert( has_string_end<string_block> );
+	static_assert( has_escape_characters<string_block> );
 	static_assert( not has_true_start<string_block> );
 	static_assert( not has_number_start<string_block> );
 	static_assert( not has_boolean_start<string_block> );
@@ -521,6 +581,7 @@ int main( ) {
 	test_classified_number_parts_across_blocks( );
 	test_values_across_native_blocks( );
 	test_bool_buffer_refill( );
+	test_many_string_values( );
 	test_number_span_buffer_refill( );
 	test_integer_span_buffer_refill( );
 	test_integer_values_across_native_blocks( );

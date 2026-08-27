@@ -42,22 +42,46 @@ namespace {
 
 	[[nodiscard]] std::string make_string_array( std::size_t element_count ) {
 		auto result = std::string{ "[" };
-		result.reserve( element_count * 24U + 1U );
+		result.reserve( element_count * 192U + 1U );
 		for( std::size_t n = 0; n < element_count; ++n ) {
-			result += "\"value-";
-			result += std::to_string( n );
-			switch( ( n * 17U + n / 7U ) % 4U ) {
+			auto const append_numbered_prefix = [&] {
+				result += "\"value-";
+				result += std::to_string( n );
+			};
+			switch( ( n * 17U + n / 7U ) % 16U ) {
 			case 0:
-				result += R"json(-short")json";
+				result += R"json("")json";
 				break;
 			case 1:
-				result += R"json(-escaped-\"-quote")json";
+				result += R"json("x")json";
 				break;
 			case 2:
+				append_numbered_prefix( );
+				result += R"json(-escaped-\"-quote")json";
+				break;
+			case 3:
+				append_numbered_prefix( );
 				result += R"json(-escaped-\\-slash")json";
 				break;
-			default:
+			case 4:
+				append_numbered_prefix( );
 				result += R"json(-a-somewhat-longer-string-value")json";
+				break;
+			case 5:
+				append_numbered_prefix( );
+				result += "-long-";
+				result.append( 256U, 'a' );
+				result += '"';
+				break;
+			case 6:
+				append_numbered_prefix( );
+				result += "-very-long-";
+				result.append( 2048U, 'b' );
+				result += R"json(-escaped-\"-tail")json";
+				break;
+			default:
+				append_numbered_prefix( );
+				result += R"json(-short")json";
 				break;
 			}
 			result += ',';

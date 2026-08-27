@@ -170,6 +170,8 @@ namespace daw::json {
 			struct simd_json_block<JsonBaseParseTypes::String, CharT>
 			  : simd_json_block_base<CharT> {
 				std::uint64_t string_start = 0;
+				std::uint64_t string_end = 0;
+				std::uint64_t escape_characters = 0;
 			};
 
 			template<JsonBaseParseTypes ExpectedType, typename CharT>
@@ -429,7 +431,7 @@ namespace daw::json {
 					auto const backslash =
 					  input == simd_details::splat<simd_type>( '\\' );
 
-					auto const valid_bits = simd_details::low_bits( count );
+					auto const valid_bits = low_bits( count );
 					auto const operator_bits = operators.to_ullong( ) & valid_bits;
 					auto const scalar_bits = scalar.to_ullong( ) & valid_bits;
 					auto const backslash_bits = backslash.to_ullong( ) & valid_bits;
@@ -467,6 +469,7 @@ namespace daw::json {
 					                             ~string_tail_bits & valid_bits;
 					auto const string_start_bits =
 					  quote_bits & in_string_bits & structural_bits;
+					auto const string_end_bits = quote_bits & ~in_string_bits;
 
 					auto const offset = state.offset;
 					state.offset += count;
@@ -476,6 +479,8 @@ namespace daw::json {
 					result.size = count;
 					result.scalar_start = value_start_bits;
 					result.string_start = string_start_bits;
+					result.string_end = string_end_bits;
+					result.escape_characters = backslash_bits;
 					result.state_after = state;
 					return result;
 				}
@@ -864,40 +869,84 @@ namespace daw::json {
 				char const *m_first = nullptr;
 				char const *m_last = nullptr;
 				char const *m_current = nullptr;
+				char const *m_current_end = nullptr;
+				char const *m_current_escape = nullptr;
 				char const *m_block_data = nullptr;
 				std::uint64_t m_value_starts = 0;
+				std::uint64_t m_string_ends = 0;
+				std::uint64_t m_escape_characters = 0;
 				simd_json_classifier_state m_state{ };
 
-				constexpr void move_to_next_value( ) {
-					while( m_value_starts == 0 and m_first != nullptr and
-					       m_first != m_last ) {
-						auto const remaining = static_cast<std::size_t>( m_last - m_first );
-						auto const block =
-						  classifier_type::classify_string( m_first, remaining, m_state );
-						m_block_data = block.data;
-						m_value_starts = block.string_start;
-						if constexpr( not ParseState::is_unchecked_input ) {
-							auto const unexpected_starts =
-							  block.scalar_start & ~m_value_starts;
-							if( unexpected_starts != 0 ) {
-								auto const lane = static_cast<std::size_t>(
-								  daw::cxmath::count_trailing_zeros( unexpected_starts ) );
-								auto error_state = ParseState( block.data + lane, m_last );
-								daw_json_error( true, ErrorReason::InvalidString, error_state );
-							}
-						}
-						m_first += static_cast<std::ptrdiff_t>( block.size );
+				[[nodiscard]] constexpr bool classify_next_block( ) {
+					if( m_first == nullptr or m_first == m_last ) {
+						return false;
 					}
 
-					if( m_value_starts == 0 ) {
-						m_current = nullptr;
-						return;
+					auto const remaining = static_cast<std::size_t>( m_last - m_first );
+					auto const block =
+					  classifier_type::classify_string( m_first, remaining, m_state );
+					m_block_data = block.data;
+					m_value_starts = block.string_start;
+					m_string_ends = block.string_end;
+					m_escape_characters = block.escape_characters;
+					if constexpr( not ParseState::is_unchecked_input ) {
+						auto const unexpected_starts = block.scalar_start & ~m_value_starts;
+						if( unexpected_starts != 0 ) {
+							auto const lane = static_cast<std::size_t>(
+							  daw::cxmath::count_trailing_zeros( unexpected_starts ) );
+							auto error_state = ParseState( block.data + lane, m_last );
+							daw_json_error( true, ErrorReason::InvalidString, error_state );
+						}
+					}
+					m_first += static_cast<std::ptrdiff_t>( block.size );
+					return true;
+				}
+
+				constexpr void move_to_next_value( ) {
+					while( m_value_starts == 0 ) {
+						if( not classify_next_block( ) ) {
+							m_current = nullptr;
+							m_current_end = nullptr;
+							m_current_escape = nullptr;
+							return;
+						}
 					}
 
 					auto const lane = static_cast<std::size_t>(
 					  daw::cxmath::count_trailing_zeros( m_value_starts ) );
 					m_value_starts &= m_value_starts - 1U;
 					m_current = m_block_data + lane;
+					m_current_escape = nullptr;
+
+					auto first_lane = lane + 1U;
+					while( true ) {
+						if( m_string_ends != 0 ) {
+							auto const end_lane = static_cast<std::size_t>(
+							  daw::cxmath::count_trailing_zeros( m_string_ends ) );
+							auto const escapes = m_escape_characters &
+							                     simd_details::low_bits( end_lane ) &
+							                     ~simd_details::low_bits( first_lane );
+							if( m_current_escape == nullptr and escapes != 0 ) {
+								m_current_escape =
+								  m_block_data + daw::cxmath::count_trailing_zeros( escapes );
+							}
+							m_string_ends &= m_string_ends - 1U;
+							m_current_end = m_block_data + end_lane;
+							return;
+						}
+
+						auto const escapes =
+						  m_escape_characters & ~simd_details::low_bits( first_lane );
+						if( m_current_escape == nullptr and escapes != 0 ) {
+							m_current_escape =
+							  m_block_data + daw::cxmath::count_trailing_zeros( escapes );
+						}
+						if( not classify_next_block( ) ) {
+							auto error_state = ParseState( m_current, m_last );
+							daw_json_error( true, ErrorReason::InvalidString, error_state );
+						}
+						first_lane = 0;
+					}
 				}
 
 			public:
@@ -921,9 +970,13 @@ namespace daw::json {
 				}
 
 				[[nodiscard]] constexpr reference operator*( ) const {
-					auto parse_state = ParseState( m_current, m_last );
+					auto parse_state = ParseState( m_current + 1, m_current_end );
+					parse_state.counter = m_current_escape == nullptr
+					                        ? static_cast<std::size_t>( -1 )
+					                        : static_cast<std::size_t>(
+					                            m_current_escape - ( m_current + 1 ) );
 					return json_details::
-					  parse_value<json_member, false, json_member::expected_type>(
+					  parse_value<json_member, true, json_member::expected_type>(
 					    parse_state );
 				}
 
