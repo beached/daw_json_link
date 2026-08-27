@@ -143,6 +143,17 @@ int main( ) {
 		daw_ensure( success );
 	}
 	{
+		using nanosecond_timestamp_t = std::chrono::time_point<
+		  std::chrono::system_clock, std::chrono::nanoseconds>;
+		auto const parsed = daw::json::from_json<
+		  daw::json::json_date_no_name<nanosecond_timestamp_t>>(
+		  R"json("2024-12-02T05:42:04.1234567890Z")json" );
+		daw_ensure(
+		  parsed ==
+		  daw::json::datetime::civil_to_time_point<nanosecond_timestamp_t>(
+		    2024, 12, 2, 5, 42, 4, 123456789 ) );
+	}
+	{
 		bool success = false;
 		try {
 			// Invalid second

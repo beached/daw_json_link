@@ -228,14 +228,21 @@ namespace daw::json {
 				if( timestamp_str.empty( ) ) {
 					return result;
 				}
-				if( not parse_utils::is_number( timestamp_str.front( ) ) ) {
-					timestamp_str.remove_prefix( );
+				daw_json_ensure( timestamp_str.front( ) == '.',
+				                 ErrorReason::InvalidTimestamp );
+				timestamp_str.remove_prefix( );
+				daw_json_ensure( not timestamp_str.empty( ),
+				                 ErrorReason::InvalidTimestamp );
+				for( char const c : timestamp_str ) {
+					daw_json_ensure( parse_utils::is_number( c ),
+					                 ErrorReason::InvalidTimestamp );
 				}
-				auto const nanosecond_str = timestamp_str.substr(
-				  0, std::min( timestamp_str.size( ), std::size_t{ 9 } ) );
+				auto const precision =
+				  std::min( timestamp_str.size( ), std::size_t{ 9 } );
+				auto const nanosecond_str = timestamp_str.substr( 0, precision );
 				result.nanosecond =
 				  datetime_details::parse_number<std::uint64_t>( nanosecond_str );
-				result.nanosecond *= daw::cxmath::pow10( 9 - timestamp_str.size( ) );
+				result.nanosecond *= daw::cxmath::pow10( 9 - precision );
 				return result;
 			}
 
