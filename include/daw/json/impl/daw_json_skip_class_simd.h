@@ -15,6 +15,7 @@
 #include "daw/json/impl/daw_json_simd.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_cxmath.h>
 #include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_span.h>
 
@@ -23,8 +24,6 @@
 #include <type_traits>
 
 #if defined( DAW_JSON_HAS_SIMD )
-#include <bit>
-
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
@@ -150,7 +149,8 @@ namespace daw::json {
 					              valid_bits;
 					while( events != 0 ) {
 						auto const lane =
-						  static_cast<std::size_t>( std::countr_zero( events ) );
+						  static_cast<std::size_t>(
+						    daw::cxmath::count_trailing_zeros( events ) );
 						switch( ptr_first[lane] ) {
 						case ',':
 							if( ( primary_depth == 1 ) & ( secondary_depth == 0 ) ) {
