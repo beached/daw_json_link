@@ -10,6 +10,8 @@
 
 #include <daw/daw_cpp_feature_check.h>
 
+#include "daw/json/impl/version.h"
+
 #if __has_include( <simd> )
 #include <simd>
 #endif
@@ -54,5 +56,28 @@ namespace daw {
 namespace daw {
 	namespace simd = simd_impl::sse42;
 }
+
+#endif
+
+#if defined( DAW_JSON_HAS_SIMD )
+
+namespace daw::json {
+	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			struct number_span {
+				char const *first = nullptr;
+				char const *last = nullptr;
+				char const *decimal_point = nullptr;
+				char const *exponent_marker = nullptr;
+			};
+
+			struct pending_number_span {
+				char const *first = nullptr;
+				char const *decimal_point = nullptr;
+				char const *exponent_marker = nullptr;
+			};
+		} // namespace json_details
+	} // namespace DAW_JSON_VER
+} // namespace daw::json
 
 #endif

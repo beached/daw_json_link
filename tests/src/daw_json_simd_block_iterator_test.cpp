@@ -166,16 +166,27 @@ namespace {
 		auto number_state = number_classifier::state_type{ };
 		auto bool_state = bool_classifier::state_type{ };
 		auto string_state = string_classifier::state_type{ };
+		auto number_spans =
+		  std::array<daw::json::json_details::number_span,
+		             block::number_span_capacity>{ };
+		auto pending_number = daw::json::json_details::pending_number_span{ };
 		auto const number_block = number_classifier::classify_number(
-		  array_contents.data( ), array_contents.size( ), number_state );
+		  array_contents.data( ), array_contents.size( ), number_state,
+		  number_spans, pending_number );
 		auto const boolean_block = bool_classifier::classify_bool(
 		  array_contents.data( ), array_contents.size( ), bool_state );
 		auto const text_block = string_classifier::classify_string(
 		  array_contents.data( ), array_contents.size( ), string_state );
 
+		auto const &number = number_spans[0];
 		return number_block.number_start != 0 and
 		       number_block.decimal_points != 0 and
 		       number_block.exponent_markers != 0 and
+		       number_block.number_span_count == 1 and
+		       number.first == array_contents.data( ) and
+		       number.last == array_contents.data( ) + 5 and
+		       number.decimal_point == array_contents.data( ) + 1 and
+		       number.exponent_marker == array_contents.data( ) + 3 and
 		       boolean_block.true_start != 0 and text_block.string_start != 0;
 	}
 
@@ -276,6 +287,26 @@ namespace {
 		daw_ensure( values == values.end( ) );
 	}
 
+	void test_number_span_buffer_refill( ) {
+		auto document = std::string{ "[" };
+		for( std::size_t n = 0; n < 100U; ++n ) {
+			if( n != 0 ) {
+				document += ',';
+			}
+			document += std::to_string( n );
+		}
+		document += ']';
+
+		auto values = iterator( document );
+		for( std::size_t n = 0; n < 100U; ++n ) {
+			daw_ensure( static_cast<bool>( values ) );
+			daw_ensure( *values == static_cast<double>( n ) );
+			daw_ensure( *values == static_cast<double>( n ) );
+			++values;
+		}
+		daw_ensure( values == values.end( ) );
+	}
+
 	void test_json_member_result_type( ) {
 		auto values = constructed_iterator( "[4.5, -1.25]" );
 		auto first = values.begin( );
@@ -365,6 +396,7 @@ int main( ) {
 	test_classified_number_parts_across_blocks( );
 	test_values_across_native_blocks( );
 	test_bool_buffer_refill( );
+	test_number_span_buffer_refill( );
 	test_json_member_result_type( );
 	test_separate_base_type_paths( );
 }
