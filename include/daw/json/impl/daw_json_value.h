@@ -102,10 +102,6 @@ namespace std {
 	};
 
 	template<daw::json::json_options_t PolicyFlags, typename Allocator>
-	inline constexpr std::size_t
-	  tuple_size_v<daw::json::basic_json_pair<PolicyFlags, Allocator>> = 2;
-
-	template<daw::json::json_options_t PolicyFlags, typename Allocator>
 	class tuple_size<daw::json::basic_json_pair<PolicyFlags, Allocator>> {
 	public:
 		static constexpr std::size_t value = 2;
