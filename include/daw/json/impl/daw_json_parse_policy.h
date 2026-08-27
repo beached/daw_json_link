@@ -18,6 +18,7 @@
 #include "daw/json/impl/daw_json_parse_policy_hash_comments.h"
 #include "daw/json/impl/daw_json_parse_policy_no_comments.h"
 #include "daw/json/impl/daw_json_parse_policy_policy_details.h"
+#include "daw/json/impl/daw_json_skip_class_neon.h"
 #include "daw/json/impl/daw_json_skip_class_simd.h"
 #include "daw/json/impl/daw_json_skip_class_sse42.h"
 #include "daw/json/impl/daw_json_string_util.h"
@@ -517,6 +518,13 @@ namespace daw::json {
 					return json_details::skip_bracketed_item_simd<
 					  json_details::SkipBracketedType::Class>( *this );
 				} else
+#elif defined( DAW_ALLOW_NEON )
+				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
+					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+						return json_details::skip_bracketed_item_neon<
+						  json_details::SkipBracketedType::Class>( *this );
+					}
+				}
 #elif defined( DAW_ALLOW_SSE42 )
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
 					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
@@ -540,6 +548,13 @@ namespace daw::json {
 					return json_details::skip_bracketed_item_simd<
 					  json_details::SkipBracketedType::Array>( *this );
 				} else
+#elif defined( DAW_ALLOW_NEON )
+				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
+					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+						return json_details::skip_bracketed_item_neon<
+						  json_details::SkipBracketedType::Array>( *this );
+					}
+				}
 #elif defined( DAW_ALLOW_SSE42 )
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
 					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
