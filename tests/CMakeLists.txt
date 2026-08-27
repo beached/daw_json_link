@@ -1226,6 +1226,12 @@ target_link_libraries( double_array_iterator_benchmark PRIVATE json_test )
 target_compile_features( double_array_iterator_benchmark PRIVATE cxx_std_20 )
 add_dependencies( full double_array_iterator_benchmark )
 
+add_executable( integer_array_iterator_benchmark EXCLUDE_FROM_ALL
+								src/integer_array_iterator_benchmark.cpp )
+target_link_libraries( integer_array_iterator_benchmark PRIVATE json_test )
+target_compile_features( integer_array_iterator_benchmark PRIVATE cxx_std_20 )
+add_dependencies( full integer_array_iterator_benchmark )
+
 add_executable( bool_array_iterator_benchmark EXCLUDE_FROM_ALL
 								src/bool_array_iterator_benchmark.cpp )
 target_link_libraries( bool_array_iterator_benchmark PRIVATE json_test )

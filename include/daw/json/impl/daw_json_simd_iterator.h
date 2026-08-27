@@ -136,7 +136,29 @@ namespace daw::json {
 				std::uint64_t number_characters = 0;
 				std::uint64_t decimal_points = 0;
 				std::uint64_t exponent_markers = 0;
+				std::uint64_t invalid_number_characters = 0;
 				std::size_t number_span_count = 0;
+			};
+
+			template<JsonParseTypes NumberType>
+			struct simd_number_span_types;
+
+			template<>
+			struct simd_number_span_types<JsonParseTypes::Real> {
+				using span = number_span;
+				using pending_span = pending_number_span;
+			};
+
+			template<>
+			struct simd_number_span_types<JsonParseTypes::Signed> {
+				using span = integer_span;
+				using pending_span = pending_integer_span;
+			};
+
+			template<>
+			struct simd_number_span_types<JsonParseTypes::Unsigned> {
+				using span = integer_span;
+				using pending_span = pending_integer_span;
 			};
 
 			template<typename CharT>
@@ -178,14 +200,21 @@ namespace daw::json {
 					return simd_details::one_of<' ', '\t', '\n', '\r'>( input );
 				}
 
-				template<bool ValidateStart = true>
+				template<JsonParseTypes NumberType, bool ValidateStart = true,
+				         std::size_t NumberSpanCapacity>
 				[[nodiscard]] static DAW_JSON_SIMD_CONSTEXPR block_type
 				classify_number( char const *first, std::size_t count,
 				                 state_type &state,
-				                 std::array<number_span,
-				                            number_span_capacity> &number_spans,
-				                 pending_number_span &pending_number )
+				                 std::array<typename simd_number_span_types<NumberType>::span,
+				                            NumberSpanCapacity> &number_spans,
+				                 typename simd_number_span_types<
+				                   NumberType>::pending_span &pending_number,
+				                 std::size_t number_span_offset = 0 )
 				  requires( ExpectedType == JsonBaseParseTypes::Number ) {
+					static_assert( NumberType == JsonParseTypes::Real or
+					               NumberType == JsonParseTypes::Signed or
+					               NumberType == JsonParseTypes::Unsigned );
+					static_assert( NumberSpanCapacity >= number_span_capacity );
 					count = count < block_size ? count : block_size;
 					auto const input =
 					  simd_details::load<simd_type, block_size, CharT>( first, count );
@@ -206,11 +235,33 @@ namespace daw::json {
 					}( );
 					auto const valid_bits = simd_details::low_bits( count );
 					auto const scalar_bits = scalar.to_ullong( ) & valid_bits;
-					auto const decimal_point_bits =
-					  ( input == simd_details::splat<simd_type>( '.' ) ).to_ullong( ) &
-					  scalar_bits;
-					auto const exponent_marker_bits =
-					  simd_details::one_of<'e', 'E'>( input ).to_ullong( ) & scalar_bits;
+					auto const digit_bits = [&] {
+						if constexpr( ValidateStart ) {
+							return ( ( input >= simd_details::splat<simd_type>( '0' ) ) &
+							         ( input <= simd_details::splat<simd_type>( '9' ) ) )
+							         .to_ullong( ) &
+							       scalar_bits;
+						} else {
+							return std::uint64_t{ 0 };
+						}
+					}( );
+					auto const decimal_point_bits = [&] {
+						if constexpr( NumberType == JsonParseTypes::Real ) {
+							return ( input == simd_details::splat<simd_type>( '.' ) )
+							         .to_ullong( ) &
+							       scalar_bits;
+						} else {
+							return std::uint64_t{ 0 };
+						}
+					}( );
+					auto const exponent_marker_bits = [&] {
+						if constexpr( NumberType == JsonParseTypes::Real ) {
+							return simd_details::one_of<'e', 'E'>( input ).to_ullong( ) &
+							       scalar_bits;
+						} else {
+							return std::uint64_t{ 0 };
+						}
+					}( );
 					auto const follows_scalar_bits =
 					  ( scalar_bits << 1U ) |
 					  ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );
@@ -218,11 +269,13 @@ namespace daw::json {
 					auto const scalar_start_bits = scalar_bits & ~follows_scalar_bits;
 					auto const number_start_bits = [&] {
 						if constexpr( ValidateStart ) {
-							auto const number_start =
-							  ( input == simd_details::splat<simd_type>( '-' ) ) |
-							  ( ( input >= simd_details::splat<simd_type>( '0' ) ) &
-							    ( input <= simd_details::splat<simd_type>( '9' ) ) );
-							return number_start.to_ullong( ) & scalar_start_bits & valid_bits;
+							auto start_bits = digit_bits;
+							if constexpr( NumberType != JsonParseTypes::Unsigned ) {
+								start_bits |=
+								  ( input == simd_details::splat<simd_type>( '-' ) )
+								    .to_ullong( );
+							}
+							return start_bits & scalar_start_bits & valid_bits;
 						} else {
 							return scalar_start_bits;
 						}
@@ -239,8 +292,20 @@ namespace daw::json {
 					result.number_characters = scalar_bits;
 					result.decimal_points = decimal_point_bits;
 					result.exponent_markers = exponent_marker_bits;
+					if constexpr( ValidateStart and
+					              NumberType != JsonParseTypes::Real ) {
+						auto valid_integer_characters = digit_bits;
+						if constexpr( NumberType == JsonParseTypes::Signed ) {
+							auto const minus_bits =
+							  ( input == simd_details::splat<simd_type>( '-' ) )
+							    .to_ullong( );
+							valid_integer_characters |= minus_bits & number_start_bits;
+						}
+						result.invalid_number_characters =
+						  scalar_bits & ~valid_integer_characters;
+					}
 
-					auto append_number_span = [&]( pending_number_span pending,
+					auto append_number_span = [&]( auto pending,
 					                               std::size_t first_lane ) {
 						auto const remaining = count - first_lane;
 						auto const remaining_mask =
@@ -257,25 +322,36 @@ namespace daw::json {
 						auto const number_mask =
 						  simd_details::low_bits( length ) << first_lane;
 
-						if( pending.decimal_point == nullptr ) {
-							auto const points = decimal_point_bits & number_mask;
-							if( points != 0 ) {
-								pending.decimal_point = first + std::countr_zero( points );
+						if constexpr( NumberType == JsonParseTypes::Real ) {
+							if( pending.decimal_point == nullptr ) {
+								auto const points = decimal_point_bits & number_mask;
+								if( points != 0 ) {
+									pending.decimal_point =
+									  first + std::countr_zero( points );
+								}
 							}
-						}
-						if( pending.exponent_marker == nullptr ) {
-							auto const markers = exponent_marker_bits & number_mask;
-							if( markers != 0 ) {
-								pending.exponent_marker = first + std::countr_zero( markers );
+							if( pending.exponent_marker == nullptr ) {
+								auto const markers = exponent_marker_bits & number_mask;
+								if( markers != 0 ) {
+									pending.exponent_marker =
+									  first + std::countr_zero( markers );
+								}
 							}
 						}
 
 						if( length != remaining or count < block_size ) {
-							number_spans[result.number_span_count++] = number_span{
-							  pending.first,
-							  first + first_lane + length,
-							  pending.decimal_point,
-							  pending.exponent_marker };
+							if constexpr( NumberType == JsonParseTypes::Real ) {
+								number_spans[number_span_offset +
+								             result.number_span_count++] = number_span{
+								  pending.first,
+								  first + first_lane + length,
+								  pending.decimal_point,
+								  pending.exponent_marker };
+							} else {
+								number_spans[number_span_offset +
+								             result.number_span_count++] = integer_span{
+								  pending.first, first + first_lane + length };
+							}
 							pending_number = { };
 						} else {
 							pending_number = pending;
@@ -290,8 +366,12 @@ namespace daw::json {
 					while( starts != 0 ) {
 						auto const lane =
 						  static_cast<std::size_t>( std::countr_zero( starts ) );
-						append_number_span(
-						  pending_number_span{ first + lane, nullptr, nullptr }, lane );
+						if constexpr( NumberType == JsonParseTypes::Real ) {
+							append_number_span(
+							  pending_number_span{ first + lane, nullptr, nullptr }, lane );
+						} else {
+							append_number_span( pending_integer_span{ first + lane }, lane );
+						}
 						starts &= starts - 1U;
 					}
 					result.state_after = state;
@@ -438,6 +518,15 @@ namespace daw::json {
 				  json_details::simd_json_classifier<JsonBaseParseTypes::Number, CharT>;
 				using block_type =
 				  json_details::simd_json_block<JsonBaseParseTypes::Number, CharT>;
+				static constexpr auto number_type = JsonMember::expected_type;
+				static_assert( number_type == JsonParseTypes::Real or
+				               number_type == JsonParseTypes::Signed or
+				               number_type == JsonParseTypes::Unsigned );
+				using span_types = json_details::simd_number_span_types<number_type>;
+				using span_type = span_types::span;
+				using pending_span_type = span_types::pending_span;
+				static constexpr std::size_t number_span_capacity =
+				  block_type::number_span_capacity * 2U;
 
 				struct raw_number_json_member : JsonMember {
 					using parse_to_t = JsonMember::wrapped_type;
@@ -454,23 +543,27 @@ namespace daw::json {
 			private:
 				char const *m_first = nullptr;
 				char const *m_last = nullptr;
-				std::array<json_details::number_span,
-				           block_type::number_span_capacity>
-				  m_number_spans{ };
+				std::array<span_type, number_span_capacity> m_number_spans{ };
 				std::size_t m_value_index = 0;
 				std::size_t m_value_count = 0;
 				json_details::simd_json_classifier_state m_state{ };
-				json_details::pending_number_span m_pending_number{ };
+				pending_span_type m_pending_number{ };
 
 				constexpr void fill_buffer( ) {
 					m_value_index = 0;
 					m_value_count = 0;
-					while( m_value_count == 0 and m_first != nullptr and
-					       m_first != m_last ) {
+					while( m_first != nullptr and m_first != m_last and
+					       m_value_count + block_type::number_span_capacity <=
+					         m_number_spans.size( ) ) {
 						auto const remaining = static_cast<std::size_t>( m_last - m_first );
 						auto const block = classifier_type::template classify_number<
-						  not ParseState::is_unchecked_input>(
-						  m_first, remaining, m_state, m_number_spans, m_pending_number );
+						  number_type, not ParseState::is_unchecked_input>(
+						  m_first,
+						  remaining,
+						  m_state,
+						  m_number_spans,
+						  m_pending_number,
+						  m_value_count );
 						if constexpr( not ParseState::is_unchecked_input ) {
 							auto const unexpected_starts =
 							  block.scalar_start & ~block.number_start;
@@ -481,8 +574,15 @@ namespace daw::json {
 								daw_json_error(
 								  true, ErrorReason::InvalidNumberStart, error_state );
 							}
+							if( block.invalid_number_characters != 0 ) {
+								auto const lane = static_cast<std::size_t>( std::countr_zero(
+								  block.invalid_number_characters ) );
+								auto error_state = ParseState( block.data + lane, m_last );
+								daw_json_error(
+								  true, ErrorReason::InvalidNumber, error_state );
+							}
 						}
-						m_value_count = block.number_span_count;
+						m_value_count += block.number_span_count;
 						m_first += static_cast<std::ptrdiff_t>( block.size );
 					}
 				}
@@ -508,10 +608,16 @@ namespace daw::json {
 
 				[[nodiscard]] constexpr reference operator*( ) const {
 					auto const &span = m_number_spans[m_value_index];
-					auto parse_state = ParseState( span.first,
-					                               span.last,
-					                               span.decimal_point,
-					                               span.exponent_marker );
+					auto parse_state = [&] {
+						if constexpr( number_type == JsonParseTypes::Real ) {
+							return ParseState( span.first,
+							                   span.last,
+							                   span.decimal_point,
+							                   span.exponent_marker );
+						} else {
+							return ParseState( span.first, span.last );
+						}
+					}( );
 					auto parsed_value =
 					  json_details::parse_value<raw_number_json_member,
 					                            true,

@@ -76,6 +76,15 @@ namespace daw::json {
 				char const *decimal_point = nullptr;
 				char const *exponent_marker = nullptr;
 			};
+
+			struct integer_span {
+				char const *first = nullptr;
+				char const *last = nullptr;
+			};
+
+			struct pending_integer_span {
+				char const *first = nullptr;
+			};
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

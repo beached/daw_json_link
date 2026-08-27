@@ -14,6 +14,7 @@
 #if defined( DAW_JSON_HAS_SIMD )
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -44,6 +45,16 @@ namespace {
 	};
 	using iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_number_no_name<double>>;
+	using signed_iterator = daw::json::experimental::json_simd_block_iterator<
+	  daw::json::json_number_no_name<std::int64_t>>;
+	using unsigned_iterator = daw::json::experimental::json_simd_block_iterator<
+	  daw::json::json_number_no_name<std::uint64_t>>;
+	using unchecked_signed_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_number_no_name<std::int64_t>,
+	    char,
+	    daw::json::options::CheckedParseMode::no,
+	    daw::json::options::ExecModeTypes::compile_time>;
 	using bool_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_bool_no_name<bool>>;
 	using string_iterator = daw::json::experimental::json_simd_block_iterator<
@@ -112,6 +123,40 @@ namespace {
 		return first == values.end( );
 	}
 
+	[[nodiscard]] constexpr bool test_constexpr_integer_iterators( ) {
+		auto signed_values = signed_iterator( "[-42, 0, 123456]" );
+		if( *signed_values != -42 ) {
+			return false;
+		}
+		++signed_values;
+		if( *signed_values != 0 ) {
+			return false;
+		}
+		++signed_values;
+		if( *signed_values != 123456 ) {
+			return false;
+		}
+		++signed_values;
+		if( signed_values != signed_values.end( ) ) {
+			return false;
+		}
+
+		auto unsigned_values = unsigned_iterator( "[0, 42, 123456]" );
+		if( *unsigned_values != 0 ) {
+			return false;
+		}
+		++unsigned_values;
+		if( *unsigned_values != 42 ) {
+			return false;
+		}
+		++unsigned_values;
+		if( *unsigned_values != 123456 ) {
+			return false;
+		}
+		++unsigned_values;
+		return unsigned_values == unsigned_values.end( );
+	}
+
 	[[nodiscard]] constexpr bool test_constexpr_bool_iterator( ) {
 		auto values = bool_iterator( "[true, false, true, false]" );
 		if( not *values ) {
@@ -170,7 +215,8 @@ namespace {
 		  std::array<daw::json::json_details::number_span,
 		             block::number_span_capacity>{ };
 		auto pending_number = daw::json::json_details::pending_number_span{ };
-		auto const number_block = number_classifier::classify_number(
+		auto const number_block =
+		  number_classifier::classify_number<daw::json::JsonParseTypes::Real>(
 		  array_contents.data( ), array_contents.size( ), number_state,
 		  number_spans, pending_number );
 		auto const boolean_block = bool_classifier::classify_bool(
@@ -307,6 +353,64 @@ namespace {
 		daw_ensure( values == values.end( ) );
 	}
 
+	void test_integer_span_buffer_refill( ) {
+		auto signed_document = std::string{ "[" };
+		auto unsigned_document = std::string{ "[" };
+		for( std::size_t n = 0; n < 100U; ++n ) {
+			if( n != 0 ) {
+				signed_document += ',';
+				unsigned_document += ',';
+			}
+			auto const signed_value = static_cast<std::int64_t>( n ) - 50;
+			signed_document += std::to_string( signed_value );
+			unsigned_document += std::to_string( n );
+		}
+		signed_document += ']';
+		unsigned_document += ']';
+
+		auto signed_values = signed_iterator( signed_document );
+		auto unchecked_signed_values =
+		  unchecked_signed_iterator( signed_document );
+		auto unsigned_values = unsigned_iterator( unsigned_document );
+		for( std::size_t n = 0; n < 100U; ++n ) {
+			auto const signed_expected = static_cast<std::int64_t>( n ) - 50;
+			daw_ensure( *signed_values == signed_expected );
+			daw_ensure( *unchecked_signed_values == signed_expected );
+			daw_ensure( *unsigned_values == n );
+			++signed_values;
+			++unchecked_signed_values;
+			++unsigned_values;
+		}
+		daw_ensure( signed_values == signed_values.end( ) );
+		daw_ensure( unchecked_signed_values == unchecked_signed_values.end( ) );
+		daw_ensure( unsigned_values == unsigned_values.end( ) );
+	}
+
+	void test_integer_values_across_native_blocks( ) {
+		auto signed_document = std::string{ "[" };
+		signed_document.append(
+		  padding_to_last_lane( signed_document.size( ), block::block_size ), ' ' );
+		signed_document += "-123456789012345, 42]";
+		auto signed_values = signed_iterator( signed_document );
+		daw_ensure( *signed_values == -123456789012345LL );
+		++signed_values;
+		daw_ensure( *signed_values == 42 );
+		++signed_values;
+		daw_ensure( signed_values == signed_values.end( ) );
+
+		auto unsigned_document = std::string{ "[" };
+		unsigned_document.append(
+		  padding_to_last_lane( unsigned_document.size( ), block::block_size ),
+		  ' ' );
+		unsigned_document += "123456789012345, 42]";
+		auto unsigned_values = unsigned_iterator( unsigned_document );
+		daw_ensure( *unsigned_values == 123456789012345ULL );
+		++unsigned_values;
+		daw_ensure( *unsigned_values == 42U );
+		++unsigned_values;
+		daw_ensure( unsigned_values == unsigned_values.end( ) );
+	}
+
 	void test_json_member_result_type( ) {
 		auto values = constructed_iterator( "[4.5, -1.25]" );
 		auto first = values.begin( );
@@ -354,6 +458,30 @@ namespace {
 			rejected_bad_literal = true;
 		}
 		daw_ensure( rejected_bad_literal );
+
+		auto rejected_signed_fraction = false;
+		try {
+			(void)signed_iterator( "[1.5]" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_signed_fraction = true;
+		}
+		daw_ensure( rejected_signed_fraction );
+
+		auto rejected_signed_exponent = false;
+		try {
+			(void)signed_iterator( "[1e2]" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_signed_exponent = true;
+		}
+		daw_ensure( rejected_signed_exponent );
+
+		auto rejected_negative_unsigned = false;
+		try {
+			(void)unsigned_iterator( "[-1]" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_negative_unsigned = true;
+		}
+		daw_ensure( rejected_negative_unsigned );
 #endif
 	}
 
@@ -362,12 +490,14 @@ namespace {
 int main( ) {
 #if defined( DAW_JSON_HAS_STD_SIMD )
 	static_assert( test_constexpr_number_iterator( ) );
+	static_assert( test_constexpr_integer_iterators( ) );
 	static_assert( test_constexpr_bool_iterator( ) );
 	static_assert( test_constexpr_string_iterator( ) );
 	static_assert( test_constexpr_custom_constructors( ) );
 	static_assert( test_constexpr_classifiers( ) );
 #else
 	daw_ensure( test_constexpr_number_iterator( ) );
+	daw_ensure( test_constexpr_integer_iterators( ) );
 	daw_ensure( test_constexpr_bool_iterator( ) );
 	daw_ensure( test_constexpr_string_iterator( ) );
 	daw_ensure( test_constexpr_custom_constructors( ) );
@@ -376,10 +506,16 @@ int main( ) {
 
 	static_assert( std::is_same_v<iterator::reference, iterator::value_type> );
 	static_assert( std::is_same_v<iterator::value_type, double> );
+	static_assert( std::is_same_v<signed_iterator::value_type, std::int64_t> );
+	static_assert( std::is_same_v<unsigned_iterator::value_type, std::uint64_t> );
 	static_assert(
 	  std::is_same_v<constructed_iterator::value_type, parsed_number> );
+	static_assert( sizeof( signed_iterator ) < sizeof( iterator ) );
+	static_assert( sizeof( unsigned_iterator ) == sizeof( signed_iterator ) );
 	static_assert( block::block_size > 0U );
 	static_assert( block::block_size <= 64U );
+	static_assert( sizeof( daw::json::json_details::integer_span ) * 2U ==
+	               sizeof( daw::json::json_details::number_span ) );
 	static_assert( has_number_start<block> );
 	static_assert( not has_boolean_start<block> );
 	static_assert( not has_string_start<block> );
@@ -397,6 +533,8 @@ int main( ) {
 	test_values_across_native_blocks( );
 	test_bool_buffer_refill( );
 	test_number_span_buffer_refill( );
+	test_integer_span_buffer_refill( );
+	test_integer_values_across_native_blocks( );
 	test_json_member_result_type( );
 	test_separate_base_type_paths( );
 }
