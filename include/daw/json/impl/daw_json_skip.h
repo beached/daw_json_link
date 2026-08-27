@@ -172,61 +172,7 @@ namespace daw::json {
 			 * Skip a number and store the position of it's components in the returned
 			 * ParseState
 			 */
-
-			// DAW TODO: This branch has a bug that shows up in twitter_test2
-#if false and defined( DAW_CX_BIT_CAST )
-			template<typename ParseState DAW_ENABLEIF(
-			  ParseState::is_unchecked_input or
-			  ParseState::is_zero_terminated_string )>
-			DAW_REQUIRES( ParseState::is_unchecked_input or
-			                     ParseState::is_zero_terminated_string )
-			[[nodiscard]] static constexpr ParseState
-			  skip_number( ParseState &parse_state ) {
-
-				auto result = parse_state;
-				char const *first = parse_state.first;
-				char const *const last = parse_state.last;
-
-				if( *first == '-' ) {
-					++first;
-				}
-
-				first = count_digits( first, last );
-
-				char const *decimal = nullptr;
-				if( *first == '.' ) {
-					decimal = first++;
-					first = count_digits( first, last );
-				}
-
-				char const *exp = nullptr;
-				char const maybe_e = *first;
-				if( ( maybe_e == 'e' ) | ( maybe_e == 'E' ) ) {
-					exp = ++first;
-					char const maybe_sign = *first;
-					if( ( maybe_sign == '+' ) | ( maybe_sign == '-' ) ) {
-						++first;
-					}
-					first = count_digits( first, last );
-				}
-
-				daw_json_assert_weak( first <= last, ErrorReason::UnexpectedEndOfData );
-
-				parse_state.first = first;
-				result.last = first;
-				result.class_first = decimal;
-				result.class_last = exp;
-				return result;
-			}
-
-			template<typename ParseState DAW_ENABLEIF(
-			  not( ParseState::is_unchecked_input or
-			       ParseState::is_zero_terminated_string ) )>
-			DAW_REQUIRES( not( ParseState::is_unchecked_input or
-			                          ParseState::is_zero_terminated_string ) )
-#else
 			template<typename ParseState>
-#endif
 			[[nodiscard]] static constexpr ParseState
 			skip_number( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
@@ -246,7 +192,8 @@ namespace daw::json {
 						++first;
 						break;
 					case '+':
-						daw_json_error( true, ErrorReason::InvalidNumberStart, parse_state );
+						daw_json_error(
+						  true, ErrorReason::InvalidNumberStart, parse_state );
 					case '0':
 						if( last - first > 1 ) {
 							daw_json_ensure(
@@ -365,7 +312,8 @@ namespace daw::json {
 				DAW_UNLIKELY_BRANCH
 				if constexpr( ParseState::is_unchecked_input ) {
 					if( DAW_UNLIKELY( parse_state.front( ) == '\0' ) ) {
-						daw_json_error( true, ErrorReason::InvalidStartOfValue, parse_state );
+						daw_json_error(
+						  true, ErrorReason::InvalidStartOfValue, parse_state );
 					}
 					DAW_UNREACHABLE( );
 				} else {
