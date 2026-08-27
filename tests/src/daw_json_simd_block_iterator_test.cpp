@@ -20,11 +20,11 @@
 #include <type_traits>
 
 namespace {
-	using block = daw::json::json_details::simd_json_block<
+	using block = daw::json::json_details::simd_details::simd_json_block<
 	  daw::json::JsonBaseParseTypes::Number, char>;
-	using bool_block = daw::json::json_details::simd_json_block<
+	using bool_block = daw::json::json_details::simd_details::simd_json_block<
 	  daw::json::JsonBaseParseTypes::Bool, char>;
-	using string_block = daw::json::json_details::simd_json_block<
+	using string_block = daw::json::json_details::simd_details::simd_json_block<
 	  daw::json::JsonBaseParseTypes::String, char>;
 
 	template<typename T>
@@ -51,8 +51,7 @@ namespace {
 	  daw::json::json_number_no_name<std::uint64_t>>;
 	using unchecked_signed_iterator =
 	  daw::json::experimental::json_simd_block_iterator<
-	    daw::json::json_number_no_name<std::int64_t>,
-	    char,
+	    daw::json::json_number_no_name<std::int64_t>, char,
 	    daw::json::options::CheckedParseMode::no,
 	    daw::json::options::ExecModeTypes::compile_time>;
 	using bool_iterator = daw::json::experimental::json_simd_block_iterator<
@@ -198,11 +197,11 @@ namespace {
 	}
 
 	[[nodiscard]] constexpr bool test_constexpr_classifiers( ) {
-		using number_classifier = daw::json::json_details::
+		using number_classifier = daw::json::json_details::simd_details::
 		  simd_json_classifier<daw::json::JsonBaseParseTypes::Number, char>;
-		using bool_classifier = daw::json::json_details::
+		using bool_classifier = daw::json::json_details::simd_details::
 		  simd_json_classifier<daw::json::JsonBaseParseTypes::Bool, char>;
-		using string_classifier = daw::json::json_details::
+		using string_classifier = daw::json::json_details::simd_details::
 		  simd_json_classifier<daw::json::JsonBaseParseTypes::String, char>;
 
 		constexpr auto document =
@@ -211,14 +210,16 @@ namespace {
 		auto number_state = number_classifier::state_type{ };
 		auto bool_state = bool_classifier::state_type{ };
 		auto string_state = string_classifier::state_type{ };
-		auto number_spans =
-		  std::array<daw::json::json_details::number_span,
-		             block::number_span_capacity>{ };
+		auto number_spans = std::array<daw::json::json_details::number_span,
+		                               block::number_span_capacity>{ };
 		auto pending_number = daw::json::json_details::pending_number_span{ };
 		auto const number_block =
 		  number_classifier::classify_number<daw::json::JsonParseTypes::Real>(
-		  array_contents.data( ), array_contents.size( ), number_state,
-		  number_spans, pending_number );
+		    array_contents.data( ),
+		    array_contents.size( ),
+		    number_state,
+		    number_spans,
+		    pending_number );
 		auto const boolean_block = bool_classifier::classify_bool(
 		  array_contents.data( ), array_contents.size( ), bool_state );
 		auto const text_block = string_classifier::classify_string(
@@ -369,8 +370,7 @@ namespace {
 		unsigned_document += ']';
 
 		auto signed_values = signed_iterator( signed_document );
-		auto unchecked_signed_values =
-		  unchecked_signed_iterator( signed_document );
+		auto unchecked_signed_values = unchecked_signed_iterator( signed_document );
 		auto unsigned_values = unsigned_iterator( unsigned_document );
 		for( std::size_t n = 0; n < 100U; ++n ) {
 			auto const signed_expected = static_cast<std::int64_t>( n ) - 50;

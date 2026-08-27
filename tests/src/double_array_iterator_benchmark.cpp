@@ -37,9 +37,8 @@ namespace {
 	using scalar_iterator =
 	  json_array_iterator<double, options::CheckedParseMode::no,
 	                      options::ExecModeTypes::compile_time>;
-	template<std::size_t CacheBlocks>
-	using simd_iterator = experimental::json_simd_number_block_iterator<
-	  json_number_no_name<double>, CacheBlocks, char,
+	using simd_iterator = experimental::json_simd_block_iterator<
+	  json_number_no_name<double>, char,
 	  options::CheckedParseMode::no, options::ExecModeTypes::compile_time>;
 
 	[[nodiscard]] std::string make_double_array( std::size_t element_count ) {
@@ -74,23 +73,13 @@ namespace {
 		return result;
 	}
 
-	template<std::size_t CacheBlocks>
 	[[nodiscard]] double sum_simd_blocks( std::string_view document ) {
 		auto result = 0.0;
-		for( auto const value : simd_iterator<CacheBlocks>( document ) ) {
+		for( auto const value : simd_iterator( document ) ) {
 			result += value;
 		}
 		daw::do_not_optimize( result );
 		return result;
-	}
-
-	template<std::size_t CacheBlocks>
-	void benchmark_simd_cache( std::string_view document, double expected,
-	                           daw::string_view label ) {
-		auto result = daw::json::benchmark::benchmark(
-		  DAW_NUM_RUNS, document.size( ), label,
-		  sum_simd_blocks<CacheBlocks>, document );
-		daw_ensure( result.get( ) == expected );
 	}
 } // namespace
 
@@ -106,7 +95,7 @@ int main( int argc, char **argv ) {
 	std::cout << "Computing expected sum: ";
 	auto const expected = sum_scalar( json_document );
 	std::cout << expected << "\nComputing SIMD sum: ";
-	auto const simd_sum = sum_simd_blocks<2U>( json_document );
+	auto const simd_sum = sum_simd_blocks( json_document );
 	std::cout << simd_sum << '\n' << std::flush;
 	daw_ensure( simd_sum == expected );
 
@@ -118,14 +107,11 @@ int main( int argc, char **argv ) {
 	  json_document );
 	daw_ensure( scalar_result.get( ) == expected );
 
-	benchmark_simd_cache<1U>( json_document, expected,
-	                         "double array sum (SIMD, 1-block span cache)" );
-	benchmark_simd_cache<2U>( json_document, expected,
-	                         "double array sum (SIMD, 2-block span cache)" );
-	benchmark_simd_cache<4U>( json_document, expected,
-	                         "double array sum (SIMD, 4-block span cache)" );
-	benchmark_simd_cache<8U>( json_document, expected,
-	                         "double array sum (SIMD, 8-block span cache)" );
+	auto simd_result = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS, json_document.size( ),
+	  "double array sum (SIMD block iterator)", sum_simd_blocks,
+	  json_document );
+	daw_ensure( simd_result.get( ) == expected );
 }
 
 #else

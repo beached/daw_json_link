@@ -25,67 +25,71 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
-			namespace simd_details {
-				[[nodiscard]] constexpr std::uint64_t
-				prefix_xor( std::uint64_t bits ) noexcept {
-					bits ^= bits << 1U;
-					bits ^= bits << 2U;
-					bits ^= bits << 4U;
-					bits ^= bits << 8U;
-					bits ^= bits << 16U;
-					bits ^= bits << 32U;
-					return bits;
-				}
+		namespace json_details::simd_details {
+			[[nodiscard]] constexpr std::uint64_t
+			prefix_xor( std::uint64_t bits ) noexcept {
+				bits ^= bits << 1U;
+				bits ^= bits << 2U;
+				bits ^= bits << 4U;
+				bits ^= bits << 8U;
+				bits ^= bits << 16U;
+				bits ^= bits << 32U;
+				return bits;
+			}
 
-				[[nodiscard]] constexpr std::uint64_t
-				low_bits( std::size_t count ) noexcept {
-					return count == 64 ? ~std::uint64_t{ 0 }
-					                   : ( std::uint64_t{ 1 } << count ) - 1;
-				}
+			[[nodiscard]] constexpr std::uint64_t
+			low_bits( std::size_t count ) noexcept {
+				return count == 64 ? ~std::uint64_t{ 0 }
+				                   : ( std::uint64_t{ 1 } << count ) - 1;
+			}
 
-				[[nodiscard]] constexpr bool last_bit( std::uint64_t bits,
-				                                       std::size_t count ) noexcept {
-					return count != 0 and
-					       ( ( bits >> ( count - 1U ) ) & std::uint64_t{ 1 } ) != 0;
-				}
+			[[nodiscard]] constexpr bool last_bit( std::uint64_t bits,
+			                                       std::size_t count ) noexcept {
+				return count != 0 and
+				       ( ( bits >> ( count - 1U ) ) & std::uint64_t{ 1 } ) != 0;
+			}
 
-				template<typename simd_type>
-				[[nodiscard]]
+			template<typename simd_type>
+			[[nodiscard]]
 #if defined( DAW_JSON_HAS_STD_SIMD )
-				consteval
+			consteval
 #else
-				DAW_ATTRIB_INLINE
+			DAW_ATTRIB_INLINE
 #endif
-				  simd_type splat( char value ) noexcept {
-					return simd_type( static_cast<simd_type::value_type>( value ) );
-				}
+			  simd_type splat( char value ) noexcept {
+				return simd_type( static_cast<simd_type::value_type>( value ) );
+			}
 
-				template<auto... values, typename simd_type>
-				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR auto one_of( simd_type value ) {
-					return ( ( value == splat<simd_type>( values ) ) | ... );
-				}
+			template<auto... values, typename simd_type>
+			[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR auto one_of( simd_type value ) {
+				return ( ( value == splat<simd_type>( values ) ) | ... );
+			}
 
-				template<typename simd_type, std::size_t block_size, typename CharT,
-				         typename Chr>
-				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR simd_type
-				load( Chr const *first, std::size_t count ) {
-					static constexpr auto flags = [] {
-						if constexpr( std::same_as<CharT, Chr> ) {
-							return daw::simd::flag_default;
-						} else {
-							return daw::simd::flag_convert;
-						}
-					}( );
-					if( count == block_size ) {
-						return daw::simd::unchecked_load<simd_type>(
-						  std::span( first, block_size ), flags );
+			template<typename JsonMember,
+			         std::size_t NumberSpanCacheBlocks =
+			           ( JsonMember::expected_type == JsonParseTypes::Real ? 8U
+			                                                               : 4U ),
+			         typename CharT = char, auto... PolicyFlags>
+			class json_simd_number_block_iterator;
+
+			template<typename simd_type, std::size_t block_size, typename CharT,
+			         typename Chr>
+			[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR simd_type
+			load( Chr const *first, std::size_t count ) {
+				static constexpr auto flags = [] {
+					if constexpr( std::same_as<CharT, Chr> ) {
+						return daw::simd::flag_default;
+					} else {
+						return daw::simd::flag_convert;
 					}
-					return daw::simd::partial_load<simd_type>( std::span( first, count ),
-					                                           flags );
+				}( );
+				if( count == block_size ) {
+					return daw::simd::unchecked_load<simd_type>(
+					  std::span( first, block_size ), flags );
 				}
-
-			} // namespace simd_details
+				return daw::simd::partial_load<simd_type>( std::span( first, count ),
+				                                           flags );
+			}
 
 			/**
 			 * State carried from one SIMD block to the next. The three booleans
@@ -102,7 +106,8 @@ namespace daw::json {
 			template<typename CharT>
 			struct simd_json_block_base {
 				// Use the implementation's native SIMD width for CharT. Forcing a
-				// 64-lane ABI can require multiple native registers (or scalar chunks).
+				// 64-lane ABI can require multiple native registers (or scalar
+				// chunks).
 				using simd_type = daw::simd::vec<CharT, 64>;
 				using mask_type = simd_type::mask_type;
 
@@ -221,9 +226,9 @@ namespace daw::json {
 							auto const operators = simd_details::one_of<']', ','>( input );
 							return not( whitespace | operators );
 						} else {
-							// Unchecked parsing assumes valid JSON. All JSON whitespace is at
-							// or below space, so the four whitespace comparisons collapse to
-							// one while retaining array separators.
+							// Unchecked parsing assumes valid JSON. All JSON whitespace is
+							// at or below space, so the four whitespace comparisons
+							// collapse to one while retaining array separators.
 							auto const separators =
 							  simd_details::one_of<' ', ']', ','>( input );
 							return not separators;
@@ -473,30 +478,6 @@ namespace daw::json {
 					return result;
 				}
 			};
-		} // namespace json_details
-
-		inline namespace experimental {
-			template<typename JsonMember,
-			         std::size_t NumberSpanCacheBlocks =
-			           ( JsonMember::expected_type == JsonParseTypes::Real ? 8U
-			                                                               : 4U ),
-			         typename CharT = char, auto... PolicyFlags>
-			class json_simd_number_block_iterator;
-
-			/**
-			 * Input iterator over JSON scalar values located using native
-			 * SIMD-sized classified blocks.
-			 * @tparam JsonMember The JSON Link mapping used to parse each value.
-			 */
-			template<typename JsonMember, typename CharT = char, auto... PolicyFlags>
-			class json_simd_block_iterator {
-				static_assert(
-				  JsonMember::underlying_json_type == JsonBaseParseTypes::Number or
-				    JsonMember::underlying_json_type == JsonBaseParseTypes::Bool or
-				    JsonMember::underlying_json_type == JsonBaseParseTypes::String,
-				  "json_simd_block_iterator currently supports number, boolean, and "
-				  "string JsonMember types" );
-			};
 
 			template<typename JsonMember, std::size_t NumberSpanCacheBlocks,
 			         typename CharT, auto... PolicyFlags>
@@ -508,14 +489,13 @@ namespace daw::json {
 				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 				using classifier_type =
-				  json_details::simd_json_classifier<JsonBaseParseTypes::Number, CharT>;
-				using block_type =
-				  json_details::simd_json_block<JsonBaseParseTypes::Number, CharT>;
+				  simd_json_classifier<JsonBaseParseTypes::Number, CharT>;
+				using block_type = simd_json_block<JsonBaseParseTypes::Number, CharT>;
 				static constexpr auto number_type = JsonMember::expected_type;
 				static_assert( number_type == JsonParseTypes::Real or
 				               number_type == JsonParseTypes::Signed or
 				               number_type == JsonParseTypes::Unsigned );
-				using span_types = json_details::simd_number_span_types<number_type>;
+				using span_types = simd_number_span_types<number_type>;
 				using span_type = span_types::span;
 				using pending_span_type = span_types::pending_span;
 				static constexpr std::size_t number_span_capacity =
@@ -539,7 +519,7 @@ namespace daw::json {
 				std::array<span_type, number_span_capacity> m_number_spans{ };
 				std::size_t m_value_index = 0;
 				std::size_t m_value_count = 0;
-				json_details::simd_json_classifier_state m_state{ };
+				simd_json_classifier_state m_state{ };
 				pending_span_type m_pending_number{ };
 
 				constexpr void fill_buffer( ) {
@@ -667,19 +647,37 @@ namespace daw::json {
 					return not( lhs == rhs );
 				}
 			};
+		} // namespace json_details::simd_details
+
+		inline namespace experimental {
+			/**
+			 * Input iterator over JSON scalar values located using native
+			 * SIMD-sized classified blocks.
+			 * @tparam JsonMember The JSON Link mapping used to parse each value.
+			 */
+			template<typename JsonMember, typename CharT = char, auto... PolicyFlags>
+			class json_simd_block_iterator {
+				static_assert(
+				  JsonMember::underlying_json_type == JsonBaseParseTypes::Number or
+				    JsonMember::underlying_json_type == JsonBaseParseTypes::Bool or
+				    JsonMember::underlying_json_type == JsonBaseParseTypes::String,
+				  "json_simd_block_iterator currently supports number, boolean, and "
+				  "string JsonMember types" );
+			};
 
 			template<typename JsonMember, typename CharT, auto... PolicyFlags>
 			requires( JsonMember::underlying_json_type ==
 			          JsonBaseParseTypes::Number ) //
 			  class json_simd_block_iterator<JsonMember, CharT, PolicyFlags...>
-			  : public json_simd_number_block_iterator<
+			  : public json_details::simd_details::json_simd_number_block_iterator<
 			      JsonMember,
 			      ( JsonMember::expected_type == JsonParseTypes::Real ? 8U : 4U ),
 			      CharT, PolicyFlags...> {
-				using base = json_simd_number_block_iterator<
-				  JsonMember,
-				  ( JsonMember::expected_type == JsonParseTypes::Real ? 8U : 4U ),
-				  CharT, PolicyFlags...>;
+				using base =
+				  json_details::simd_details::json_simd_number_block_iterator<
+				    JsonMember,
+				    ( JsonMember::expected_type == JsonParseTypes::Real ? 8U : 4U ),
+				    CharT, PolicyFlags...>;
 
 			public:
 				using base::base;
@@ -692,7 +690,8 @@ namespace daw::json {
 				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 				using classifier_type =
-				  json_details::simd_json_classifier<JsonBaseParseTypes::Bool, CharT>;
+				  json_details::simd_details::simd_json_classifier<
+				    JsonBaseParseTypes::Bool, CharT>;
 
 			public:
 				using json_member = JsonMember;
@@ -707,7 +706,7 @@ namespace daw::json {
 				std::uint64_t m_boolean_values = 0;
 				std::uint8_t m_value_index = 0;
 				std::uint8_t m_value_count = 0;
-				json_details::simd_json_classifier_state m_state{ };
+				json_details::simd_details::simd_json_classifier_state m_state{ };
 
 				constexpr void validate_boolean( char const *first, bool value ) const {
 					if constexpr( not ParseState::is_unchecked_input ) {
@@ -867,7 +866,7 @@ namespace daw::json {
 				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 				using classifier_type =
-				  json_details::simd_json_classifier<JsonBaseParseTypes::String, CharT>;
+				  json_details::simd_details::simd_json_classifier<JsonBaseParseTypes::String, CharT>;
 
 			public:
 				using json_member = JsonMember;
@@ -882,7 +881,7 @@ namespace daw::json {
 				char const *m_current = nullptr;
 				char const *m_block_data = nullptr;
 				std::uint64_t m_value_starts = 0;
-				json_details::simd_json_classifier_state m_state{ };
+				json_details::simd_details::simd_json_classifier_state m_state{ };
 
 				constexpr void move_to_next_value( ) {
 					while( m_value_starts == 0 and m_first != nullptr and
