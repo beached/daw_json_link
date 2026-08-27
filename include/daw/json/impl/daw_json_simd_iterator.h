@@ -92,7 +92,6 @@ namespace daw::json {
 			 * string continuation, escape continuation, and scalar continuation.
 			 */
 			struct simd_json_classifier_state {
-				std::size_t offset = 0;
 				bool in_string = false;
 				bool escaped = false;
 				bool previous_scalar = false;
@@ -104,21 +103,14 @@ namespace daw::json {
 				// 64-lane ABI can require multiple native registers (or scalar
 				// chunks).
 				using simd_type = daw::simd::vec<CharT, 64>;
-				using mask_type = typename simd_type::mask_type;
 
 				static constexpr std::size_t block_size =
 				  static_cast<std::size_t>( simd_type::size( ) );
 
 				char const *data = nullptr;
-				std::size_t offset = 0;
 				std::size_t size = 0;
 
 				std::uint64_t scalar_start = 0;
-				simd_json_classifier_state state_after{ };
-
-				[[nodiscard]] constexpr bool is_full( ) const noexcept {
-					return size == block_size;
-				}
 			};
 
 			template<JsonBaseParseTypes ExpectedType, typename CharT>
@@ -183,7 +175,6 @@ namespace daw::json {
 				  "simd_json_classifier supports only Number, Bool, and String" );
 				using block_type = simd_json_block<ExpectedType, CharT>;
 				using simd_type = typename block_type::simd_type;
-				using mask_type = typename block_type::mask_type;
 				using simd_value_type = typename simd_type::value_type;
 
 				static constexpr std::size_t block_size = block_type::block_size;
@@ -279,11 +270,8 @@ namespace daw::json {
 						}
 					}( );
 
-					auto const offset = state.offset;
-					state.offset += count;
 					block_type result{ };
 					result.data = first;
-					result.offset = offset;
 					result.size = count;
 					result.scalar_start = scalar_start_bits;
 					result.number_start = number_start_bits;
@@ -369,7 +357,6 @@ namespace daw::json {
 						}
 						starts &= starts - 1U;
 					}
-					result.state_after = state;
 					return result;
 				}
 
@@ -405,35 +392,27 @@ namespace daw::json {
 					}( );
 					auto const boolean_start_bits = boolean_bits & scalar_start_bits;
 
-					auto const offset = state.offset;
-					state.offset += count;
 					block_type result{ };
 					result.data = first;
-					result.offset = offset;
 					result.size = count;
 					result.scalar_start = scalar_start_bits;
 					result.boolean_start = boolean_start_bits;
 					result.true_start = true_start.to_ullong( ) & boolean_start_bits;
-					result.state_after = state;
 					return result;
 				}
 
+				template<bool ValidateStart = true>
 				[[nodiscard]] static DAW_JSON_SIMD_CONSTEXPR block_type classify_string(
 				  char const *first, std::size_t count, state_type &state ) {
 					count = count < block_size ? count : block_size;
 					auto const input =
 					  simd_details::load<simd_type, block_size, CharT>( first, count );
 
-					auto const whitespace = is_whitespace( input );
-					auto const operators = simd_details::one_of<']', ','>( input );
-					auto const scalar = not( whitespace | operators );
 					auto const quote = input == simd_details::splat<simd_type>( '"' );
 					auto const backslash =
 					  input == simd_details::splat<simd_type>( '\\' );
 
 					auto const valid_bits = low_bits( count );
-					auto const operator_bits = operators.to_ullong( ) & valid_bits;
-					auto const scalar_bits = scalar.to_ullong( ) & valid_bits;
 					auto const backslash_bits = backslash.to_ullong( ) & valid_bits;
 
 					constexpr std::uint64_t odd_bits = 0xAAAAAAAAAAAAAAAAULL;
@@ -455,33 +434,37 @@ namespace daw::json {
 					    ( state.in_string ? valid_bits : std::uint64_t{ 0 } ) ) &
 					  valid_bits;
 					state.in_string = simd_details::last_bit( in_string_bits, count );
-					auto const string_tail_bits = in_string_bits ^ quote_bits;
-					auto const nonquote_scalar_bits = scalar_bits & ~quote_bits;
-					auto const follows_scalar_bits =
-					  ( nonquote_scalar_bits << 1U ) |
-					  ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );
-					state.previous_scalar =
-					  simd_details::last_bit( nonquote_scalar_bits, count );
-					auto const scalar_start_bits = scalar_bits & ~follows_scalar_bits;
-					auto const value_start_bits =
-					  scalar_start_bits & ~string_tail_bits & valid_bits;
-					auto const structural_bits = ( operator_bits | scalar_start_bits ) &
-					                             ~string_tail_bits & valid_bits;
-					auto const string_start_bits =
-					  quote_bits & in_string_bits & structural_bits;
+					auto value_start_bits = std::uint64_t{ 0 };
+					auto string_start_bits = quote_bits & in_string_bits;
+					if constexpr( ValidateStart ) {
+						auto const whitespace = is_whitespace( input );
+						auto const operators = simd_details::one_of<']', ','>( input );
+						auto const scalar = not( whitespace | operators );
+						auto const operator_bits = operators.to_ullong( ) & valid_bits;
+						auto const scalar_bits = scalar.to_ullong( ) & valid_bits;
+						auto const string_tail_bits = in_string_bits ^ quote_bits;
+						auto const nonquote_scalar_bits = scalar_bits & ~quote_bits;
+						auto const follows_scalar_bits =
+						  ( nonquote_scalar_bits << 1U ) |
+						  ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );
+						state.previous_scalar =
+						  simd_details::last_bit( nonquote_scalar_bits, count );
+						auto const scalar_start_bits = scalar_bits & ~follows_scalar_bits;
+						value_start_bits =
+						  scalar_start_bits & ~string_tail_bits & valid_bits;
+						auto const structural_bits = ( operator_bits | scalar_start_bits ) &
+						                             ~string_tail_bits & valid_bits;
+						string_start_bits &= structural_bits;
+					}
 					auto const string_end_bits = quote_bits & ~in_string_bits;
 
-					auto const offset = state.offset;
-					state.offset += count;
 					block_type result{ };
 					result.data = first;
-					result.offset = offset;
 					result.size = count;
 					result.scalar_start = value_start_bits;
 					result.string_start = string_start_bits;
 					result.string_end = string_end_bits;
 					result.escape_characters = backslash_bits;
-					result.state_after = state;
 					return result;
 				}
 			};
@@ -883,8 +866,8 @@ namespace daw::json {
 					}
 
 					auto const remaining = static_cast<std::size_t>( m_last - m_first );
-					auto const block =
-					  classifier_type::classify_string( m_first, remaining, m_state );
+					auto const block = classifier_type::template classify_string<
+					  not ParseState::is_unchecked_input>( m_first, remaining, m_state );
 					m_block_data = block.data;
 					m_value_starts = block.string_start;
 					m_string_ends = block.string_end;

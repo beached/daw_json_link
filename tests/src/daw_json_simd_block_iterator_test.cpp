@@ -49,6 +49,10 @@ namespace {
 	  daw::json::json_simd_block_iterator<daw::json::json_bool_no_name<bool>>;
 	using string_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_string_no_name<std::string>>;
+	using unchecked_string_iterator = daw::json::json_simd_block_iterator<
+	  daw::json::json_string_no_name<std::string>, char,
+	  daw::json::options::CheckedParseMode::no,
+	  daw::json::options::ExecModeTypes::compile_time>;
 	using raw_string_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_string_raw_no_name<std::string>>;
 
@@ -180,7 +184,21 @@ namespace {
 			return false;
 		}
 		++values;
-		return values == values.end( );
+		if( values != values.end( ) ) {
+			return false;
+		}
+
+		auto unchecked_values =
+		  unchecked_string_iterator( R"json(["alpha", "beta"])json" );
+		if( *unchecked_values != "alpha" ) {
+			return false;
+		}
+		++unchecked_values;
+		if( *unchecked_values != "beta" ) {
+			return false;
+		}
+		++unchecked_values;
+		return unchecked_values == unchecked_values.end( );
 	}
 
 	[[nodiscard]] constexpr bool test_constexpr_custom_constructors( ) {
