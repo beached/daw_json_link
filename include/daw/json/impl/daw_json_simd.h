@@ -156,7 +156,7 @@ namespace daw {
 #elif defined( DAW_JSON_HAS_NEON_SIMD )
 
 #define DAW_JSON_HAS_SIMD 1
-#define DAW_JSON_SIMD_CONSTEXPR
+#define DAW_JSON_SIMD_CONSTEXPR inline
 
 namespace daw {
 	namespace simd = simd_impl::neon;
