@@ -34,9 +34,10 @@
 #include "daw/json/impl/daw_json_simd_neon.h"
 #endif
 
-#if defined( __AVX2__ )
+#if defined( __AVX2__ ) or defined( _M_AVX2 )
 #include "daw/json/impl/daw_json_simd_avx2.h"
-#elif defined( __SSE4_2__ ) or defined( __AVX__ )
+#elif defined( __SSE4_2__ ) or defined( __AVX__ ) or defined( _M_X64 ) or \
+  ( defined( _M_IX86_FP ) and _M_IX86_FP >= 2 )
 #include "daw/json/impl/daw_json_simd_sse42.h"
 #endif
 
