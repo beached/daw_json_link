@@ -107,9 +107,12 @@ namespace daw::json {
 				return c == '\0' or c == ',' or c == ']' or c == '}' or c == '#';
 			}
 
-			template<char PrimLeft, typename ParseState>
+			template<json_details::SkipBracketedType BracketedType,
+			         typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
+				constexpr char PrimLeft =
+				  BracketedType == json_details::SkipBracketedType::Class ? '{' : '[';
 				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
 				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;
 				using SecRight = daw::constant<SecLeft::value == '{' ? '}' : ']'>;
@@ -195,9 +198,12 @@ namespace daw::json {
 				return result;
 			}
 
-			template<char PrimLeft, typename ParseState>
+			template<json_details::SkipBracketedType BracketedType,
+			         typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
+				constexpr char PrimLeft =
+				  BracketedType == json_details::SkipBracketedType::Class ? '{' : '[';
 				// Not checking for Left as it is required to be skipped already
 				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
 				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;

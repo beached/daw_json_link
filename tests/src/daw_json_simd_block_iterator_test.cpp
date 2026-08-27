@@ -162,15 +162,16 @@ namespace {
 
 		constexpr auto document =
 		  std::string_view{ R"json([1.5e2, true, "x"])json" };
+		auto const array_contents = document.substr( 1 );
 		auto number_state = number_classifier::state_type{ };
 		auto bool_state = bool_classifier::state_type{ };
 		auto string_state = string_classifier::state_type{ };
 		auto const number_block = number_classifier::classify_number(
-		  document.data( ), document.size( ), number_state );
+		  array_contents.data( ), array_contents.size( ), number_state );
 		auto const boolean_block = bool_classifier::classify_bool(
-		  document.data( ), document.size( ), bool_state );
+		  array_contents.data( ), array_contents.size( ), bool_state );
 		auto const text_block = string_classifier::classify_string(
-		  document.data( ), document.size( ), string_state );
+		  array_contents.data( ), array_contents.size( ), string_state );
 
 		return number_block.number_start != 0 and
 		       number_block.decimal_points != 0 and

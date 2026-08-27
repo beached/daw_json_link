@@ -18,6 +18,8 @@
 #include "daw/json/impl/daw_json_parse_policy_hash_comments.h"
 #include "daw/json/impl/daw_json_parse_policy_no_comments.h"
 #include "daw/json/impl/daw_json_parse_policy_policy_details.h"
+#include "daw/json/impl/daw_json_skip_class_simd.h"
+#include "daw/json/impl/daw_json_skip_class_sse42.h"
 #include "daw/json/impl/daw_json_string_util.h"
 
 #include <daw/cpp_17.h>
@@ -495,33 +497,63 @@ namespace daw::json {
 				return parse_policy_details::in<',', '}', ']'>( *first );
 			}
 
-			template<char PrimLeft>
+			template<json_details::SkipBracketedType BracketedType>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy
 			skip_bracketed_item_checked( ) {
-				return CommentPolicy::template skip_bracketed_item_checked<PrimLeft>(
-				  *this );
+				return CommentPolicy::template skip_bracketed_item_checked<
+				  BracketedType>( *this );
 			}
 
-			template<char PrimLeft>
+			template<json_details::SkipBracketedType BracketedType>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy
 			skip_bracketed_item_unchecked( ) {
-				return CommentPolicy::template skip_bracketed_item_unchecked<PrimLeft>(
-				  *this );
+				return CommentPolicy::template skip_bracketed_item_unchecked<
+				  BracketedType>( *this );
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy skip_class( ) {
-				if constexpr( is_unchecked_input ) {
-					return skip_bracketed_item_unchecked<'{'>( );
+#if defined( __cpp_lib_simd ) or defined( __glibcxx_simd )
+				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
+					return json_details::skip_bracketed_item_simd<
+					  json_details::SkipBracketedType::Class>( *this );
+				} else
+#elif defined( DAW_ALLOW_SSE42 )
+				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
+					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+						return json_details::skip_bracketed_item_sse42<
+						  json_details::SkipBracketedType::Class>( *this );
+					}
+				}
+#endif
+				  if constexpr( is_unchecked_input ) {
+					return skip_bracketed_item_unchecked<
+					  json_details::SkipBracketedType::Class>( );
 				} else {
-					return skip_bracketed_item_checked<'{'>( );
+					return skip_bracketed_item_checked<
+					  json_details::SkipBracketedType::Class>( );
 				}
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy skip_array( ) {
-				if constexpr( is_unchecked_input ) {
-					return skip_bracketed_item_unchecked<'['>( );
+#if defined( __cpp_lib_simd ) or defined( __glibcxx_simd )
+				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
+					return json_details::skip_bracketed_item_simd<
+					  json_details::SkipBracketedType::Array>( *this );
+				} else
+#elif defined( DAW_ALLOW_SSE42 )
+				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
+					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+						return json_details::skip_bracketed_item_sse42<
+						  json_details::SkipBracketedType::Array>( *this );
+					}
+				}
+#endif
+				  if constexpr( is_unchecked_input ) {
+					return skip_bracketed_item_unchecked<
+					  json_details::SkipBracketedType::Array>( );
 				} else {
-					return skip_bracketed_item_checked<'['>( );
+					return skip_bracketed_item_checked<
+					  json_details::SkipBracketedType::Array>( );
 				}
 			}
 		};
