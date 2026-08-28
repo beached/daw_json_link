@@ -582,14 +582,10 @@ namespace daw::json {
 							return ParseState( span.first, span.last );
 						}
 					}( );
-					auto parsed_value =
-					  json_details::parse_value<raw_number_json_member,
-					                            true,
-					                            raw_number_json_member::expected_type>(
-					    parse_state );
-					using constructor_t = json_details::json_constructor_t<json_member>;
-					return json_details::construct_value<value_type, constructor_t>(
-					  parse_state, std::move( parsed_value ) );
+					return json_details::parse_value<
+					  raw_number_json_member,
+					  true,
+					  raw_number_json_member::expected_type>( parse_state );
 				}
 
 				constexpr json_simd_number_block_iterator &operator++( ) {
@@ -792,7 +788,6 @@ namespace daw::json {
 				}
 
 				[[nodiscard]] constexpr reference operator*( ) const {
-					auto parse_state = ParseState( m_first, m_last );
 					static_assert(
 					  json_member::literal_as_string ==
 					    options::LiteralAsStringOpt::Never,
@@ -800,9 +795,11 @@ namespace daw::json {
 					  "strings" );
 					auto const value =
 					  ( ( m_boolean_values >> m_value_index ) & std::uint64_t{ 1 } ) != 0;
-					using constructor_t = json_details::json_constructor_t<json_member>;
-					return json_details::construct_value<value_type, constructor_t>(
-					  parse_state, value );
+					using constructor_t = json_constructor_t<json_member>;
+					static_assert(
+					  daw::is_callable_v<constructor_t, bool>,
+					  "Unable to construct value with the supplied arguments" );
+					return constructor_t{ }( value );
 				}
 
 				constexpr json_simd_block_iterator_bool &operator++( ) {
