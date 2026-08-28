@@ -110,6 +110,7 @@ namespace daw::json {
 				std::size_t size = 0;
 
 				std::uint64_t scalar_start = 0;
+				std::uint64_t array_end = 0;
 			};
 
 			template<JsonBaseParseTypes ExpectedType, typename CharT>
@@ -207,6 +208,15 @@ namespace daw::json {
 					count = count < block_size ? count : block_size;
 					auto const input =
 					  simd_details::load<simd_type, block_size, CharT>( first, count );
+					auto const array_end =
+					  input == simd_details::splat<simd_type>( ']' );
+					auto const valid_bits = simd_details::low_bits( count );
+					auto const array_end_bits = array_end.to_ullong( ) & valid_bits;
+					auto const active_bits =
+					  array_end_bits == 0
+					    ? valid_bits
+					    : simd_details::low_bits( static_cast<std::size_t>(
+					        daw::cxmath::count_trailing_zeros( array_end_bits ) ) );
 
 					auto const scalar = [&] {
 						if constexpr( ValidateStart ) {
@@ -222,8 +232,7 @@ namespace daw::json {
 							return not separators;
 						}
 					}( );
-					auto const valid_bits = simd_details::low_bits( count );
-					auto const scalar_bits = scalar.to_ullong( ) & valid_bits;
+					auto const scalar_bits = scalar.to_ullong( ) & active_bits;
 					auto const digit_bits = [&] {
 						if constexpr( ValidateStart ) {
 							return ( ( input >= simd_details::splat<simd_type>( '0' ) ) &
@@ -273,6 +282,7 @@ namespace daw::json {
 					result.data = first;
 					result.size = count;
 					result.scalar_start = scalar_start_bits;
+					result.array_end = array_end_bits;
 					result.number_start = number_start_bits;
 					result.number_characters = scalar_bits;
 					result.decimal_points = decimal_point_bits;
@@ -366,19 +376,27 @@ namespace daw::json {
 					count = count < block_size ? count : block_size;
 					auto const input =
 					  simd_details::load<simd_type, block_size, CharT>( first, count );
+					auto const array_end =
+					  input == simd_details::splat<simd_type>( ']' );
 
 					auto const true_start =
 					  input == simd_details::splat<simd_type>( 't' );
 					auto const boolean_start =
 					  true_start | ( input == simd_details::splat<simd_type>( 'f' ) );
 					auto const valid_bits = simd_details::low_bits( count );
-					auto const boolean_bits = boolean_start.to_ullong( ) & valid_bits;
+					auto const array_end_bits = array_end.to_ullong( ) & valid_bits;
+					auto const active_bits =
+					  array_end_bits == 0
+					    ? valid_bits
+					    : simd_details::low_bits( static_cast<std::size_t>(
+					        daw::cxmath::count_trailing_zeros( array_end_bits ) ) );
+					auto const boolean_bits = boolean_start.to_ullong( ) & active_bits;
 					auto const scalar_start_bits = [&] {
 						if constexpr( ValidateStart ) {
 							auto const whitespace = is_whitespace( input );
 							auto const operators = simd_details::one_of<']', ','>( input );
 							auto const scalar_bits =
-							  ( not( whitespace | operators ) ).to_ullong( ) & valid_bits;
+							  ( not( whitespace | operators ) ).to_ullong( ) & active_bits;
 							auto const follows_scalar_bits =
 							  ( scalar_bits << 1U ) |
 							  ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );
@@ -395,6 +413,7 @@ namespace daw::json {
 					result.data = first;
 					result.size = count;
 					result.scalar_start = scalar_start_bits;
+					result.array_end = array_end_bits;
 					result.boolean_start = boolean_start_bits;
 					result.boolean_values =
 					  daw::simd_impl::compress_bits( true_start, boolean_start_bits );
@@ -411,6 +430,8 @@ namespace daw::json {
 					auto const quote = input == simd_details::splat<simd_type>( '"' );
 					auto const backslash =
 					  input == simd_details::splat<simd_type>( '\\' );
+					auto const array_end =
+					  input == simd_details::splat<simd_type>( ']' );
 
 					auto const valid_bits = low_bits( count );
 					auto const backslash_bits = backslash.to_ullong( ) & valid_bits;
@@ -434,15 +455,23 @@ namespace daw::json {
 					    ( state.in_string ? valid_bits : std::uint64_t{ 0 } ) ) &
 					  valid_bits;
 					state.in_string = simd_details::last_bit( in_string_bits, count );
+					auto const string_tail_bits = in_string_bits ^ quote_bits;
+					auto const outside_string_bits = ~string_tail_bits & valid_bits;
+					auto const array_end_bits =
+					  array_end.to_ullong( ) & outside_string_bits;
+					auto const active_bits =
+					  array_end_bits == 0
+					    ? valid_bits
+					    : simd_details::low_bits( static_cast<std::size_t>(
+					        daw::cxmath::count_trailing_zeros( array_end_bits ) ) );
 					auto value_start_bits = std::uint64_t{ 0 };
-					auto string_start_bits = quote_bits & in_string_bits;
+					auto string_start_bits = quote_bits & in_string_bits & active_bits;
 					if constexpr( ValidateStart ) {
 						auto const whitespace = is_whitespace( input );
 						auto const operators = simd_details::one_of<']', ','>( input );
 						auto const scalar = not( whitespace | operators );
-						auto const operator_bits = operators.to_ullong( ) & valid_bits;
-						auto const scalar_bits = scalar.to_ullong( ) & valid_bits;
-						auto const string_tail_bits = in_string_bits ^ quote_bits;
+						auto const operator_bits = operators.to_ullong( ) & active_bits;
+						auto const scalar_bits = scalar.to_ullong( ) & active_bits;
 						auto const nonquote_scalar_bits = scalar_bits & ~quote_bits;
 						auto const follows_scalar_bits =
 						  ( nonquote_scalar_bits << 1U ) |
@@ -451,9 +480,9 @@ namespace daw::json {
 						  simd_details::last_bit( nonquote_scalar_bits, count );
 						auto const scalar_start_bits = scalar_bits & ~follows_scalar_bits;
 						value_start_bits =
-						  scalar_start_bits & ~string_tail_bits & valid_bits;
+						  scalar_start_bits & ~string_tail_bits & active_bits;
 						auto const structural_bits = ( operator_bits | scalar_start_bits ) &
-						                             ~string_tail_bits & valid_bits;
+						                             ~string_tail_bits & active_bits;
 						string_start_bits &= structural_bits;
 					}
 					auto const string_end_bits = quote_bits & ~in_string_bits;
@@ -462,9 +491,10 @@ namespace daw::json {
 					result.data = first;
 					result.size = count;
 					result.scalar_start = value_start_bits;
+					result.array_end = array_end_bits;
 					result.string_start = string_start_bits;
-					result.string_end = string_end_bits;
-					result.escape_characters = backslash_bits;
+					result.string_end = string_end_bits & active_bits;
+					result.escape_characters = backslash_bits & active_bits;
 					return result;
 				}
 			};
@@ -546,7 +576,12 @@ namespace daw::json {
 							}
 						}
 						m_value_count += block.number_span_count;
-						m_first += static_cast<std::ptrdiff_t>( block.size );
+						if( block.array_end != 0 ) {
+							m_pending_number = { };
+							m_first = m_last;
+						} else {
+							m_first += static_cast<std::ptrdiff_t>( block.size );
+						}
 					}
 				}
 
@@ -582,10 +617,16 @@ namespace daw::json {
 							return ParseState( span.first, span.last );
 						}
 					}( );
-					return json_details::parse_value<
-					  raw_number_json_member,
-					  true,
-					  raw_number_json_member::expected_type>( parse_state );
+					auto value =
+					  json_details::parse_value<raw_number_json_member,
+					                            true,
+					                            raw_number_json_member::expected_type>(
+					    parse_state );
+					using constructor_t = json_constructor_t<json_member>;
+					static_assert(
+					  daw::is_callable_v<constructor_t, bool>,
+					  "Unable to construct value with the supplied arguments" );
+					return constructor_t{ }( value );
 				}
 
 				constexpr json_simd_number_block_iterator &operator++( ) {
@@ -749,7 +790,11 @@ namespace daw::json {
 						m_value_count =
 						  static_cast<std::uint8_t>( m_value_count + consumed );
 						if( consumed == block_value_count ) {
-							m_first += static_cast<std::ptrdiff_t>( block.size );
+							if( block.array_end != 0 ) {
+								m_first = m_last;
+							} else {
+								m_first += static_cast<std::ptrdiff_t>( block.size );
+							}
 							if( m_value_count == boolean_cache_capacity ) {
 								return;
 							}
@@ -897,7 +942,11 @@ namespace daw::json {
 							daw_json_error( true, ErrorReason::InvalidString, error_state );
 						}
 					}
-					m_first += static_cast<std::ptrdiff_t>( block.size );
+					if( block.array_end != 0 ) {
+						m_first = m_last;
+					} else {
+						m_first += static_cast<std::ptrdiff_t>( block.size );
+					}
 					return true;
 				}
 
