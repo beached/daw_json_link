@@ -97,6 +97,13 @@ namespace daw::json {
 				bool previous_scalar = false;
 			};
 
+			struct simd_array_grammar_state {
+				bool previous_event_was_value = false;
+				bool saw_value = false;
+				bool started = false;
+				bool ended = false;
+			};
+
 			template<typename CharT>
 			struct simd_json_block_base {
 				// Classify one native SIMD register at a time. The iterators aggregate
@@ -110,8 +117,55 @@ namespace daw::json {
 				std::size_t size = 0;
 
 				std::uint64_t scalar_start = 0;
+				std::uint64_t comma = 0;
 				std::uint64_t array_end = 0;
 			};
+
+			template<typename ParseState>
+			constexpr void validate_array_events(
+			  char const *data, char const *last, std::uint64_t value_starts,
+			  std::uint64_t commas, std::uint64_t array_end,
+			  simd_array_grammar_state &state ) {
+				auto events = value_starts | commas | array_end;
+				while( events != 0 ) {
+					auto const lane = static_cast<std::size_t>(
+					  daw::cxmath::count_trailing_zeros( events ) );
+					auto const bit = std::uint64_t{ 1 } << lane;
+					if( ( array_end & bit ) != 0 ) {
+						if( state.saw_value and not state.previous_event_was_value ) {
+							auto error_state = ParseState( data + lane, last );
+							daw_json_error( true, ErrorReason::TrailingComma, error_state );
+						}
+						state.ended = true;
+					} else if( ( commas & bit ) != 0 ) {
+						if( not state.previous_event_was_value ) {
+							auto error_state = ParseState( data + lane, last );
+							daw_json_error( true, ErrorReason::InvalidStartOfValue,
+							                error_state );
+						}
+						state.previous_event_was_value = false;
+					} else {
+						if( state.previous_event_was_value ) {
+							auto error_state = ParseState( data + lane, last );
+							daw_json_error( true, ErrorReason::InvalidEndOfValue,
+							                error_state );
+						}
+						state.previous_event_was_value = true;
+						state.saw_value = true;
+					}
+					events &= events - 1U;
+				}
+			}
+
+			template<typename ParseState>
+			constexpr void validate_array_ended( char const *last,
+			                                     simd_array_grammar_state const &state ) {
+				if( state.started and not state.ended ) {
+					auto error_state = ParseState( last, last );
+					daw_json_error(
+					  true, ErrorReason::UnexpectedEndOfData, error_state );
+				}
+			}
 
 			template<JsonBaseParseTypes ExpectedType, typename CharT>
 			struct simd_json_block;
@@ -208,6 +262,8 @@ namespace daw::json {
 					count = count < block_size ? count : block_size;
 					auto const input =
 					  simd_details::load<simd_type, block_size, CharT>( first, count );
+					auto const comma =
+					  input == simd_details::splat<simd_type>( ',' );
 					auto const array_end =
 					  input == simd_details::splat<simd_type>( ']' );
 					auto const valid_bits = simd_details::low_bits( count );
@@ -282,6 +338,7 @@ namespace daw::json {
 					result.data = first;
 					result.size = count;
 					result.scalar_start = scalar_start_bits;
+					result.comma = comma.to_ullong( ) & active_bits;
 					result.array_end = array_end_bits;
 					result.number_start = number_start_bits;
 					result.number_characters = scalar_bits;
@@ -376,6 +433,8 @@ namespace daw::json {
 					count = count < block_size ? count : block_size;
 					auto const input =
 					  simd_details::load<simd_type, block_size, CharT>( first, count );
+					auto const comma =
+					  input == simd_details::splat<simd_type>( ',' );
 					auto const array_end =
 					  input == simd_details::splat<simd_type>( ']' );
 
@@ -413,6 +472,7 @@ namespace daw::json {
 					result.data = first;
 					result.size = count;
 					result.scalar_start = scalar_start_bits;
+					result.comma = comma.to_ullong( ) & active_bits;
 					result.array_end = array_end_bits;
 					result.boolean_start = boolean_start_bits;
 					result.boolean_values =
@@ -430,6 +490,8 @@ namespace daw::json {
 					auto const quote = input == simd_details::splat<simd_type>( '"' );
 					auto const backslash =
 					  input == simd_details::splat<simd_type>( '\\' );
+					auto const comma =
+					  input == simd_details::splat<simd_type>( ',' );
 					auto const array_end =
 					  input == simd_details::splat<simd_type>( ']' );
 
@@ -491,6 +553,8 @@ namespace daw::json {
 					result.data = first;
 					result.size = count;
 					result.scalar_start = value_start_bits;
+					result.comma =
+					  comma.to_ullong( ) & outside_string_bits & active_bits;
 					result.array_end = array_end_bits;
 					result.string_start = string_start_bits;
 					result.string_end = string_end_bits & active_bits;
@@ -540,6 +604,7 @@ namespace daw::json {
 				std::size_t m_value_index = 0;
 				std::size_t m_value_count = 0;
 				simd_json_classifier_state m_state{ };
+				simd_array_grammar_state m_grammar_state{ };
 				pending_span_type m_pending_number{ };
 
 				constexpr void fill_buffer( ) {
@@ -574,6 +639,9 @@ namespace daw::json {
 								auto error_state = ParseState( block.data + lane, m_last );
 								daw_json_error( true, ErrorReason::InvalidNumber, error_state );
 							}
+							validate_array_events<ParseState>(
+							  block.data, m_last, block.number_start, block.comma,
+							  block.array_end, m_grammar_state );
 						}
 						m_value_count += block.number_span_count;
 						if( block.array_end != 0 ) {
@@ -581,6 +649,11 @@ namespace daw::json {
 							m_first = m_last;
 						} else {
 							m_first += static_cast<std::ptrdiff_t>( block.size );
+						}
+					}
+					if constexpr( not ParseState::is_unchecked_input ) {
+						if( m_first != nullptr and m_first == m_last ) {
+							validate_array_ended<ParseState>( m_last, m_grammar_state );
 						}
 					}
 				}
@@ -601,6 +674,7 @@ namespace daw::json {
 						                      parse_state );
 						parse_state.remove_prefix( );
 						m_first = parse_state.data( );
+						m_grammar_state.started = true;
 					}
 					fill_buffer( );
 				}
@@ -718,6 +792,7 @@ namespace daw::json {
 				std::uint8_t m_value_index = 0;
 				std::uint8_t m_value_count = 0;
 				simd_json_classifier_state m_state{ };
+				simd_array_grammar_state m_grammar_state{ };
 
 				constexpr void validate_boolean( char const *first, bool value ) const {
 					if constexpr( not ParseState::is_unchecked_input ) {
@@ -762,6 +837,9 @@ namespace daw::json {
 								daw_json_error(
 								  true, ErrorReason::InvalidLiteral, error_state );
 							}
+							validate_array_events<ParseState>(
+							  block.data, m_last, block.boolean_start, block.comma,
+							  block.array_end, m_grammar_state );
 						}
 
 						auto starts = block.boolean_start;
@@ -808,7 +886,14 @@ namespace daw::json {
 						  daw::cxmath::count_trailing_zeros( starts ) );
 						m_first = block.data + next_lane;
 						m_state = { };
+						m_grammar_state = { };
+						m_grammar_state.started = true;
 						return;
+					}
+					if constexpr( not ParseState::is_unchecked_input ) {
+						if( m_first != nullptr and m_first == m_last ) {
+							validate_array_ended<ParseState>( m_last, m_grammar_state );
+						}
 					}
 				}
 
@@ -828,6 +913,7 @@ namespace daw::json {
 						                      parse_state );
 						parse_state.remove_prefix( );
 						m_first = parse_state.data( );
+						m_grammar_state.started = true;
 					}
 					fill_buffer( );
 				}
@@ -920,9 +1006,15 @@ namespace daw::json {
 				std::uint64_t m_string_ends = 0;
 				std::uint64_t m_escape_characters = 0;
 				simd_json_classifier_state m_state{ };
+				simd_array_grammar_state m_grammar_state{ };
 
 				[[nodiscard]] constexpr bool classify_next_block( ) {
 					if( m_first == nullptr or m_first == m_last ) {
+						if constexpr( not ParseState::is_unchecked_input ) {
+							if( m_first != nullptr ) {
+								validate_array_ended<ParseState>( m_last, m_grammar_state );
+							}
+						}
 						return false;
 					}
 
@@ -941,6 +1033,9 @@ namespace daw::json {
 							auto error_state = ParseState( block.data + lane, m_last );
 							daw_json_error( true, ErrorReason::InvalidString, error_state );
 						}
+						validate_array_events<ParseState>(
+						  block.data, m_last, block.string_start, block.comma,
+						  block.array_end, m_grammar_state );
 					}
 					if( block.array_end != 0 ) {
 						m_first = m_last;
@@ -1013,6 +1108,7 @@ namespace daw::json {
 						                      parse_state );
 						parse_state.remove_prefix( );
 						m_first = parse_state.data( );
+						m_grammar_state.started = true;
 					}
 					move_to_next_value( );
 				}

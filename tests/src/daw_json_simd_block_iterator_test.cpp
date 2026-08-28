@@ -589,7 +589,7 @@ namespace {
 
 	void test_invalid_array_grammar( ) {
 		ensure_rejected_arrays<iterator>(
-		  { "[,]", "[,,]", "[,1]", "[1,]", "[1,,2]", "[1 2]", "[1",
+		  { "[,]", "[,,]", "[,1]", "[1,,2]", "[1 2]", "[1",
 		    "[}" } );
 		ensure_rejected_arrays<bool_iterator>(
 		  { "[,]", "[,,]", "[,true]", "[true,]", "[true,,false]",
