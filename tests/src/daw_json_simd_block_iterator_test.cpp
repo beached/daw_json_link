@@ -15,6 +15,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <initializer_list>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -488,6 +489,125 @@ namespace {
 		daw_ensure( not( *bool_first ).value );
 	}
 
+	template<typename Iterator>
+	void ensure_empty_array( ) {
+		auto values = Iterator( "[]" );
+		daw_ensure( values == values.end( ) );
+	}
+
+	void test_empty_arrays_and_json_whitespace( ) {
+		ensure_empty_array<iterator>( );
+		ensure_empty_array<signed_iterator>( );
+		ensure_empty_array<unsigned_iterator>( );
+		ensure_empty_array<bool_iterator>( );
+		ensure_empty_array<string_iterator>( );
+
+		auto numbers = iterator( "[ \t1\r,\n2 ]" );
+		daw_ensure( *numbers == 1.0 );
+		++numbers;
+		daw_ensure( *numbers == 2.0 );
+		++numbers;
+		daw_ensure( numbers == numbers.end( ) );
+
+		auto booleans = bool_iterator( "[ \ttrue\r,\nfalse ]" );
+		daw_ensure( *booleans );
+		++booleans;
+		daw_ensure( not *booleans );
+		++booleans;
+		daw_ensure( booleans == booleans.end( ) );
+
+		auto strings = string_iterator( "[ \t\"a\"\r,\n\"b\" ]" );
+		daw_ensure( *strings == "a" );
+		++strings;
+		daw_ensure( *strings == "b" );
+		++strings;
+		daw_ensure( strings == strings.end( ) );
+	}
+
+	void test_stops_at_array_end( ) {
+		auto empty = iterator( "[][]" );
+		daw_ensure( empty == empty.end( ) );
+
+		auto numbers = iterator( "[1] 2" );
+		daw_ensure( *numbers == 1.0 );
+		++numbers;
+		daw_ensure( numbers == numbers.end( ) );
+
+		auto booleans = bool_iterator( "[true][false]" );
+		daw_ensure( *booleans );
+		++booleans;
+		daw_ensure( booleans == booleans.end( ) );
+
+		auto strings = string_iterator( R"json(["a"] "b")json" );
+		daw_ensure( *strings == "a" );
+		++strings;
+		daw_ensure( strings == strings.end( ) );
+	}
+
+#if defined( DAW_USE_EXCEPTIONS )
+	template<typename Iterator>
+	[[nodiscard]] bool rejects_array( std::string_view document ) {
+		try {
+			auto values = Iterator( document );
+			while( values != values.end( ) ) {
+				(void)*values;
+				++values;
+			}
+		} catch( daw::json::json_exception const & ) { return true; }
+		return false;
+	}
+
+	template<typename Iterator>
+	void ensure_rejected_arrays(
+	  std::initializer_list<std::string_view> documents ) {
+		for( auto const document : documents ) {
+			daw_ensure( rejects_array<Iterator>( document ) );
+		}
+	}
+
+	template<typename Iterator>
+	void ensure_boundary_rejections( std::size_t block_size,
+	                                 std::string_view first_value,
+	                                 std::string_view second_value ) {
+		auto double_comma = std::string{ "[" };
+		double_comma += first_value;
+		double_comma.append(
+		  padding_to_last_lane( double_comma.size( ), block_size ), ' ' );
+		double_comma += ",,";
+		double_comma += second_value;
+		double_comma += ']';
+		daw_ensure( rejects_array<Iterator>( double_comma ) );
+
+		auto missing_comma = std::string{ "[" };
+		missing_comma += first_value;
+		missing_comma.append(
+		  padding_to_last_lane( missing_comma.size( ), block_size ) + 1U, ' ' );
+		missing_comma += second_value;
+		missing_comma += ']';
+		daw_ensure( rejects_array<Iterator>( missing_comma ) );
+	}
+
+	void test_invalid_array_grammar( ) {
+		ensure_rejected_arrays<iterator>(
+		  { "[,]", "[,,]", "[,1]", "[1,]", "[1,,2]", "[1 2]", "[1",
+		    "[}" } );
+		ensure_rejected_arrays<bool_iterator>(
+		  { "[,]", "[,,]", "[,true]", "[true,]", "[true,,false]",
+		    "[true false]", "[true", "[truth]" } );
+		ensure_rejected_arrays<string_iterator>(
+		  { "[,]", "[,,]", R"json([,"a"])json",
+		    R"json(["a",])json", R"json(["a",,"b"])json",
+		    R"json(["a" "b"])json", R"json(["unterminated])json" } );
+
+		ensure_boundary_rejections<iterator>( block::block_size, "1", "2" );
+		ensure_boundary_rejections<bool_iterator>(
+		  bool_block::block_size, "true", "false" );
+		ensure_boundary_rejections<string_iterator>(
+		  string_block::block_size, R"json("a")json", R"json("b")json" );
+	}
+
+#endif
+
 	void test_separate_base_type_paths( ) {
 		auto bool_values = bool_iterator( "[true, false]" );
 		auto bool_first = bool_values.begin( );
@@ -612,6 +732,11 @@ int main( ) {
 	test_integer_span_buffer_refill( );
 	test_integer_values_across_native_blocks( );
 	test_json_member_result_type( );
+	test_empty_arrays_and_json_whitespace( );
+	test_stops_at_array_end( );
+#if defined( DAW_USE_EXCEPTIONS )
+	test_invalid_array_grammar( );
+#endif
 	test_separate_base_type_paths( );
 }
 
