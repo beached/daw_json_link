@@ -107,7 +107,19 @@ namespace daw::json {
 			template<typename JsonClass = use_default, typename T>
 			constexpr void do_write_value( T const &value ) {
 				prepare_value( );
-				to_json<JsonClass>( value, m_writer.get( ) );
+				if constexpr( std::is_pointer_v<std::remove_reference_t<T>> ) {
+					if( not value ) {
+						m_writer.write( "null" );
+					} else {
+						if constexpr( std::is_convertible_v<T, char const *> ) {
+							to_json<JsonClass>( daw::string_view( value ), m_writer.get( ) );
+						} else {
+							to_json<JsonClass>( value, m_writer.get( ) );
+						}
+					}
+				} else {
+					to_json<JsonClass>( value, m_writer.get( ) );
+				}
 				m_is_first = false;
 			}
 
@@ -219,6 +231,7 @@ namespace daw::json {
 				      json_writer_details::json_writer_states::json_writer_nothing or
 				    m_is_first,
 				  ErrorReason::OutputError );
+
 				do_write_value<JsonClass>( value );
 			}
 
@@ -427,7 +440,7 @@ namespace daw::json {
 		};
 
 		template<auto... PolicyFlags, typename WriterType>
-		constexpr auto json_writer( WriterType && writer DAW_LIFETIME_BOUND) {
+		constexpr auto json_writer( WriterType &&writer DAW_LIFETIME_BOUND ) {
 			return json_writer_t<daw::remove_cvref_t<WriterType>,
 			                     std::vector<json_writer_details::json_writer_states>,
 			                     PolicyFlags...>( writer );
