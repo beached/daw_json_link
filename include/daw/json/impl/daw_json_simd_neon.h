@@ -59,6 +59,18 @@ namespace daw::simd_impl::neon {
 			return details::to_bits( m_value );
 		}
 
+		[[nodiscard]] std::uint64_t to_ullong_sparse( ) const noexcept {
+			auto reduced =
+			  vorr_u8( vget_low_u8( m_value ), vget_high_u8( m_value ) );
+			reduced = vpmax_u8( reduced, reduced );
+			reduced = vpmax_u8( reduced, reduced );
+			reduced = vpmax_u8( reduced, reduced );
+			if( vget_lane_u8( reduced, 0 ) == 0 ) {
+				return 0;
+			}
+			return details::to_bits( m_value );
+		}
+
 		[[nodiscard]] friend mask operator|( mask lhs, mask rhs ) noexcept {
 			return mask( vorrq_u8( lhs.m_value, rhs.m_value ) );
 		}
