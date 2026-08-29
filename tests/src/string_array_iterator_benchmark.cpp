@@ -33,12 +33,9 @@ static_assert( DAW_NUM_RUNS > 0 );
 
 namespace {
 	using namespace daw::json;
-	using scalar_iterator =
-	  json_array_iterator<std::string, options::CheckedParseMode::no,
-	                      options::ExecModeTypes::compile_time>;
-	using simd_iterator = json_simd_block_iterator<
-	  json_string_no_name<std::string>, char, options::CheckedParseMode::no,
-	  options::ExecModeTypes::compile_time>;
+	using scalar_iterator = json_array_iterator<std::string>;
+	using simd_iterator =
+	  json_simd_block_iterator<json_string_no_name<std::string>, char>;
 
 	[[nodiscard]] std::string make_string_array( std::size_t element_count ) {
 		auto result = std::string{ "[" };
@@ -103,8 +100,7 @@ namespace {
 		return result;
 	}
 
-	[[nodiscard]] std::size_t
-	total_simd_block_size( std::string_view document ) {
+	[[nodiscard]] std::size_t total_simd_block_size( std::string_view document ) {
 		auto result = std::size_t{ 0 };
 		for( auto const &value : simd_iterator( document ) ) {
 			result += value.size( );
@@ -131,14 +127,18 @@ int main( int argc, char **argv ) {
 	daw_ensure( simd_size == expected );
 
 	auto scalar_result = daw::json::benchmark::benchmark(
-	  DAW_NUM_RUNS, json_document.size( ),
-	  "string array total size (json iterator, no SIMD)", total_scalar_size,
+	  DAW_NUM_RUNS,
+	  json_document.size( ),
+	  "string array total size (json iterator, no SIMD)",
+	  total_scalar_size,
 	  json_document );
 	daw_ensure( scalar_result.get( ) == expected );
 
 	auto simd_result = daw::json::benchmark::benchmark(
-	  DAW_NUM_RUNS, json_document.size( ),
-	  "string array total size (SIMD block iterator)", total_simd_block_size,
+	  DAW_NUM_RUNS,
+	  json_document.size( ),
+	  "string array total size (SIMD block iterator)",
+	  total_simd_block_size,
 	  json_document );
 	daw_ensure( simd_result.get( ) == expected );
 }

@@ -35,12 +35,12 @@ static_assert( DAW_NUM_RUNS > 0 );
 namespace {
 	using namespace daw::json;
 	using scalar_iterator =
-	  json_array_iterator<bool, options::CheckedParseMode::no,
+	  json_array_iterator<bool, options::CheckedParseMode::yes,
 	                      options::ExecModeTypes::compile_time>;
 	using simd_iterator =
-	  json_simd_block_iterator<
-	    json_bool_no_name<bool>, char, options::CheckedParseMode::no,
-	    options::ExecModeTypes::compile_time>;
+	  json_simd_block_iterator<json_bool_no_name<bool>, char,
+	                           options::CheckedParseMode::yes,
+	                           options::ExecModeTypes::compile_time>;
 
 	[[nodiscard]] std::string make_bool_array( std::size_t element_count ) {
 		auto result = std::string{ "[" };

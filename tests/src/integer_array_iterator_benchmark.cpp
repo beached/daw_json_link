@@ -34,18 +34,12 @@ static_assert( DAW_NUM_RUNS > 0 );
 
 namespace {
 	using namespace daw::json;
-	using signed_scalar_iterator =
-	  json_array_iterator<std::int64_t, options::CheckedParseMode::no,
-	                      options::ExecModeTypes::compile_time>;
-	using signed_simd_iterator = json_simd_block_iterator<
-	  json_number_no_name<std::int64_t>, char, options::CheckedParseMode::no,
-	  options::ExecModeTypes::compile_time>;
-	using unsigned_scalar_iterator =
-	  json_array_iterator<std::uint64_t, options::CheckedParseMode::no,
-	                      options::ExecModeTypes::compile_time>;
-	using unsigned_simd_iterator = json_simd_block_iterator<
-	  json_number_no_name<std::uint64_t>, char, options::CheckedParseMode::no,
-	  options::ExecModeTypes::compile_time>;
+	using signed_scalar_iterator = json_array_iterator<std::int64_t>;
+	using signed_simd_iterator =
+	  json_simd_block_iterator<json_number_no_name<std::int64_t>, char>;
+	using unsigned_scalar_iterator = json_array_iterator<std::uint64_t>;
+	using unsigned_simd_iterator =
+	  json_simd_block_iterator<json_number_no_name<std::uint64_t>, char>;
 
 	template<bool Signed>
 	[[nodiscard]] std::string make_integer_array( std::size_t element_count ) {
@@ -69,8 +63,7 @@ namespace {
 		return result;
 	}
 
-	[[nodiscard]] std::int64_t
-	sum_signed_scalar( std::string_view document ) {
+	[[nodiscard]] std::int64_t sum_signed_scalar( std::string_view document ) {
 		auto result = std::int64_t{ 0 };
 		for( auto const value : signed_scalar_iterator( document ) ) {
 			result += value;
@@ -89,8 +82,7 @@ namespace {
 		return result;
 	}
 
-	[[nodiscard]] std::uint64_t
-	sum_unsigned_scalar( std::string_view document ) {
+	[[nodiscard]] std::uint64_t sum_unsigned_scalar( std::string_view document ) {
 		auto result = std::uint64_t{ 0 };
 		for( auto const value : unsigned_scalar_iterator( document ) ) {
 			result += value;
@@ -127,14 +119,18 @@ int main( int argc, char **argv ) {
 	daw_ensure( simd_signed == expected_signed );
 
 	auto signed_scalar_result = daw::json::benchmark::benchmark(
-	  DAW_NUM_RUNS, signed_document.size( ),
-	  "signed integer array sum (json iterator, no SIMD)", sum_signed_scalar,
+	  DAW_NUM_RUNS,
+	  signed_document.size( ),
+	  "signed integer array sum (json iterator, no SIMD)",
+	  sum_signed_scalar,
 	  signed_document );
 	daw_ensure( signed_scalar_result.get( ) == expected_signed );
 
 	auto signed_simd_result = daw::json::benchmark::benchmark(
-	  DAW_NUM_RUNS, signed_document.size( ),
-	  "signed integer array sum (SIMD block iterator)", sum_signed_simd_blocks,
+	  DAW_NUM_RUNS,
+	  signed_document.size( ),
+	  "signed integer array sum (SIMD block iterator)",
+	  sum_signed_simd_blocks,
 	  signed_document );
 	daw_ensure( signed_simd_result.get( ) == expected_signed );
 
@@ -148,15 +144,19 @@ int main( int argc, char **argv ) {
 	daw_ensure( simd_unsigned == expected_unsigned );
 
 	auto unsigned_scalar_result = daw::json::benchmark::benchmark(
-	  DAW_NUM_RUNS, unsigned_document.size( ),
+	  DAW_NUM_RUNS,
+	  unsigned_document.size( ),
 	  "unsigned integer array sum (json iterator, no SIMD)",
-	  sum_unsigned_scalar, unsigned_document );
+	  sum_unsigned_scalar,
+	  unsigned_document );
 	daw_ensure( unsigned_scalar_result.get( ) == expected_unsigned );
 
 	auto unsigned_simd_result = daw::json::benchmark::benchmark(
-	  DAW_NUM_RUNS, unsigned_document.size( ),
+	  DAW_NUM_RUNS,
+	  unsigned_document.size( ),
 	  "unsigned integer array sum (SIMD block iterator)",
-	  sum_unsigned_simd_blocks, unsigned_document );
+	  sum_unsigned_simd_blocks,
+	  unsigned_document );
 	daw_ensure( unsigned_simd_result.get( ) == expected_unsigned );
 }
 

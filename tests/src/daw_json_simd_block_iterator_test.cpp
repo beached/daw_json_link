@@ -330,7 +330,8 @@ namespace {
 
 	void test_bool_buffer_refill( ) {
 		auto document = std::string{ "[" };
-		for( std::size_t n = 0; n < 130U; ++n ) {
+		constexpr auto value_count = std::size_t{ 530U };
+		for( std::size_t n = 0; n < value_count; ++n ) {
 			if( n != 0 ) {
 				document += ',';
 			}
@@ -339,7 +340,7 @@ namespace {
 		document += ']';
 
 		auto values = bool_iterator( document );
-		for( std::size_t n = 0; n < 130U; ++n ) {
+		for( std::size_t n = 0; n < value_count; ++n ) {
 			auto const expected = n % 3U == 0;
 			daw_ensure( static_cast<bool>( values ) );
 			daw_ensure( *values == expected );

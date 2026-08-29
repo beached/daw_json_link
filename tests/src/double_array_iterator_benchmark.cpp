@@ -34,12 +34,9 @@ static_assert( DAW_NUM_RUNS > 0 );
 
 namespace {
 	using namespace daw::json;
-	using scalar_iterator =
-	  json_array_iterator<double, options::CheckedParseMode::no,
-	                      options::ExecModeTypes::compile_time>;
-	using simd_iterator = json_simd_block_iterator<
-	  json_number_no_name<double>, char,
-	  options::CheckedParseMode::no, options::ExecModeTypes::compile_time>;
+	using scalar_iterator = json_array_iterator<double>;
+	using simd_iterator =
+	  json_simd_block_iterator<json_number_no_name<double>, char>;
 
 	[[nodiscard]] std::string make_double_array( std::size_t element_count ) {
 		auto result = std::string{ "[" };
@@ -107,10 +104,12 @@ int main( int argc, char **argv ) {
 	  json_document );
 	daw_ensure( scalar_result.get( ) == expected );
 
-	auto simd_result = daw::json::benchmark::benchmark(
-	  DAW_NUM_RUNS, json_document.size( ),
-	  "double array sum (SIMD block iterator)", sum_simd_blocks,
-	  json_document );
+	auto simd_result =
+	  daw::json::benchmark::benchmark( DAW_NUM_RUNS,
+	                                   json_document.size( ),
+	                                   "double array sum (SIMD block iterator)",
+	                                   sum_simd_blocks,
+	                                   json_document );
 	daw_ensure( simd_result.get( ) == expected );
 }
 
