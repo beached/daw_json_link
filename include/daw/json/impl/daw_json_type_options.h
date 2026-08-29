@@ -130,6 +130,24 @@ namespace daw::json {
 			}
 		} // namespace options
 
+		// json_fp
+
+		// json_number
+		using fp_opts_t = json_details::JsonOptionList<options::LiteralAsStringOpt,
+		                                               options::JsonRangeCheck,
+		                                               options::JsonNumberErrors>;
+
+		inline constexpr auto fp_opts = fp_opts_t{ };
+		inline constexpr json_options_t fp_opts_def =
+		  fp_opts_t::default_option_flag;
+
+		namespace options {
+			template<typename... Options>
+			constexpr json_options_t fp_opt( Options... options ) {
+				return fp_opts_t::options( options... );
+			}
+		} // namespace options
+
 		// json_bool
 		using bool_opts_t =
 		  json_details::JsonOptionList<options::LiteralAsStringOpt>;
@@ -275,6 +293,10 @@ namespace daw::json {
 			template<json_options_t CurrentOptions, auto option, auto... options>
 			inline constexpr json_options_t number_opts_set =
 			  set_bits( number_opts, CurrentOptions, option, options... );
+
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t fp_opts_set =
+			  set_bits( fp_opts, CurrentOptions, option, options... );
 
 			template<json_options_t CurrentOptions, auto option, auto... options>
 			inline constexpr json_options_t bool_opts_set =

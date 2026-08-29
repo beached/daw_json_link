@@ -6,7 +6,7 @@ the options into a `json_options_t`.
 
 ___
 
-# `json_number`
+# `json_number` and floating-point mappings
 
 To set number options use the `daw::json::options::number_opt( Flags... )` method.
 
@@ -53,14 +53,78 @@ When outputting floating point numbers, control whether Inf/NaN values can be pa
 
 ## `FPOutputFormat`
 
-Control the floating point output format
+Control the floating-point output format used by `json_fp` and the
+`json_checked_fp` mappings. These mappings are useful when the serialized
+representation needs a defined precision, rather than the shortest default
+representation.
 
 ### Values
 
-* `Auto` - Automatically choose between Minimum and Scientific output formats.
-* `Scientific` - Always format in terms of an exponent `<whole>[.fraction]e<exponent>`.
-* `Decimal` - Always format in terms of `<whole>.<fraction>`.
-* `Minimum` - Always format in terms of `<whole>[.fraction]`.
+* `Auto` - Round to `Precision` significant digits and use decimal notation for
+  decimal-point positions from -4 through 6; use scientific notation outside
+  that range.
+* `Scientific` - Use exponent notation `<whole>[.fraction]e<exponent>`. Its
+  `Precision` is the number of digits after the decimal point.
+* `Decimal` - Use fixed-point notation `<whole>[.fraction]`. Its `Precision`
+  is the number of digits after the decimal point.
+* `Minimum` - Round to `Precision` significant digits and use the shortest
+  unpadded decimal representation.
+
+For `Auto` and `Minimum`, `Precision` counts significant digits. For `Decimal`
+and `Scientific`, it counts digits after the decimal point. The default
+`daw::max_value<unsigned>` precision means no explicit digit limit; `Auto` and
+`Minimum` then preserve the shortest representation, while `Decimal` and
+`Scientific` still apply their selected notation. Rounding uses nearest-even
+rounding.
+
+### `json_fp` examples
+
+`json_fp` is the floating-point equivalent of `json_number` with explicit
+format and precision template parameters:
+
+```cpp
+using decimal_amount = daw::json::json_fp_no_name<
+  double, daw::json::options::FPOutputFormat::Decimal, 2>;
+using scientific_amount = daw::json::json_fp_no_name<
+  double, daw::json::options::FPOutputFormat::Scientific, 3>;
+using general_amount = daw::json::json_fp_no_name<
+  double, daw::json::options::FPOutputFormat::Auto, 4>;
+
+daw::json::to_json<decimal_amount>( 12.345 );     // "12.35"
+daw::json::to_json<scientific_amount>( 12.345 );  // "1.235e1"
+daw::json::to_json<general_amount>( 12.345 );     // "12.35"
+```
+
+Named, nullable, and narrowing-checking variants use the same `Format` and
+`Precision` parameters:
+
+```cpp
+using amount = daw::json::json_fp<
+  "amount", double, daw::json::options::FPOutputFormat::Decimal, 2>;
+using optional_amount = daw::json::json_fp_null<
+  "amount", std::optional<double>,
+  daw::json::options::FPOutputFormat::Decimal, 2>;
+using checked_amount = daw::json::json_checked_fp<
+  "amount", double, daw::json::options::FPOutputFormat::Decimal, 2>;
+```
+
+### `json_number` versus `json_fp`
+
+For floating-point values, `json_number` also reads
+`JsonMember::fp_output_format`, which is set through `number_opt`:
+
+```cpp
+using number_decimal = daw::json::json_number_no_name<double,
+  daw::json::options::number_opt(
+    daw::json::options::FPOutputFormat::Decimal )>;
+```
+
+The distinction is that `json_number` selects the output format through its
+encoded options and uses the default precision. `json_fp` selects the format
+through its `Format` template parameter and additionally provides an explicit
+`Precision` template parameter. Internally, both mappings expose the selected
+format as `JsonMember::fp_output_format`; `json_fp` also exposes its precision
+to the serializer.
 
 ### Default
 

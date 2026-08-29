@@ -101,6 +101,8 @@ standard constructor.
 | `json_class` | `T, Constructor = use_default` |
 | `json_number` | `T = double, Options = number_opts_def, Constructor = use_default` |
 | `json_checked_number` | `T = double, Options = number_opts_def, Constructor = use_default` |
+| `json_fp` | `T = double, Format = FPOutputFormat::Auto, Precision = max_value<unsigned>, Options = fp_opts_def, Constructor = use_default` |
+| `json_checked_fp` | `T, Format = FPOutputFormat::Auto, Precision = max_value<unsigned>, Options = fp_opts_def, Constructor = use_default` |
 | `json_bool` | `T = bool, Options = bool_opts_def, Constructor = use_default` |
 | `json_string` | `String = std::string, Options = string_opts_def, Constructor = use_default` |
 | `json_string_raw` | `String = std::string, Options = string_raw_opts_def, Constructor = use_default` |

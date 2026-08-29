@@ -148,6 +148,26 @@ namespace daw::json {
 			         typename Constructor = use_default>
 			struct json_number;
 
+			/**
+			 * Base floating-point JSON mapping.
+			 *
+			 * `Auto` uses significant-digit precision and selects decimal notation
+			 * for decimal-point positions [-4, 6], using scientific notation outside
+			 * that range. `Decimal` uses fixed-point notation with `Precision` digits
+			 * after the decimal point. `Scientific` uses exponential notation with
+			 * `Precision` digits after the decimal point. `Minimum` uses significant
+			 * digits and the shortest unpadded decimal representation.
+			 *
+			 * `daw::max_value<unsigned>` disables the explicit precision limit and
+			 * selects the shortest available representation.
+			 */
+			template<typename T,
+			         options::FPOutputFormat Format = options::FPOutputFormat::Auto,
+			         unsigned Precision = daw::max_value<unsigned>,
+			         json_options_t Options = fp_opts_def,
+			         typename Constructor = use_default>
+			struct json_fp;
+
 			template<typename T, json_options_t Options = number_opts_def,
 			         JsonNullable NullableType = JsonNullable::Nullable,
 			         typename Constructor = use_default>

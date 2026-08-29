@@ -1627,6 +1627,36 @@ int main( ) {
 		ensure( dbl_007_str2 == "-1.7e100" );
 		std::cout << dbl_007_str2 << '\n';
 
+		// Floating-point formatting follows the usual f/e/g precision rules:
+		// Decimal precision is fractional digits; Scientific precision is digits
+		// after the decimal point; Auto and Minimum precision is significant digits.
+		using fp_decimal_2 = json_fp_no_name<
+		  double, options::FPOutputFormat::Decimal, 2>;
+		using fp_decimal_0 = json_fp_no_name<
+		  double, options::FPOutputFormat::Decimal, 0>;
+		using fp_scientific_3 = json_fp_no_name<
+		  double, options::FPOutputFormat::Scientific, 3>;
+		using fp_scientific_0 = json_fp_no_name<
+		  double, options::FPOutputFormat::Scientific, 0>;
+		using fp_scientific_1 = json_fp_no_name<
+		  double, options::FPOutputFormat::Scientific, 1>;
+		using fp_auto_3 = json_fp_no_name<
+		  double, options::FPOutputFormat::Auto, 3>;
+		using fp_minimum_3 = json_fp_no_name<
+		  double, options::FPOutputFormat::Minimum, 3>;
+
+		ensure( to_json<fp_decimal_2>( 123.456 ) == "123.46" );
+		ensure( to_json<fp_decimal_2>( 1.2 ) == "1.20" );
+		ensure( to_json<fp_decimal_0>( 123.5 ) == "124" );
+		ensure( to_json<fp_decimal_2>( 0.0 ) == "0.00" );
+		ensure( to_json<fp_scientific_3>( 123.456 ) == "1.235e2" );
+		ensure( to_json<fp_scientific_0>( 123.456 ) == "1e2" );
+		ensure( to_json<fp_scientific_3>( 1.2 ) == "1.200e0" );
+		ensure( to_json<fp_scientific_1>( 9.99 ) == "1.0e1" );
+		ensure( to_json<fp_auto_3>( 123.456 ) == "123" );
+		ensure( to_json<fp_auto_3>( 0.00123456 ) == "0.00123" );
+		ensure( to_json<fp_minimum_3>( 1.23456 ) == "1.23" );
+
 		auto tp_nn01 =
 		  from_json<json_tuple_null_no_name<std::tuple<int, int>>>( "[1,2]" );
 		static_assert( daw::traits::is_tuple_v<decltype( tp_nn01 )> );

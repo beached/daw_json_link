@@ -110,7 +110,6 @@ namespace daw::json {
 		 * @tparam Options Options created with options::number_opt
 		 * @tparam Constructor Callable used to construct result
 		 */
-
 		template<JSONNAMETYPE Name, typename T = double,
 		         json_options_t Options = number_opts_def,
 		         typename Constructor = use_default>
@@ -150,6 +149,122 @@ namespace daw::json {
 		              json_details::number_opts_set<
 		                Options, options::JsonRangeCheck::CheckForNarrowing>,
 		              Constructor>;
+
+		/**
+		 * The member is a nullable range checked number
+		 * @tparam Name name of json member
+		 * @tparam T type of number(e.g. optional<double>, optional<int>,
+		 * optional<unsigned>...) to pass to Constructor
+		 * @tparam Options Options created with options::number_opt; narrowing
+		 * checks are enabled by this alias
+		 * @tparam NullableType Whether an empty class member may be omitted or must
+		 * be emitted as null
+		 * @tparam Constructor Callable used to construct result
+		 */
+		template<JSONNAMETYPE Name, typename T = std::optional<double>,
+		         json_options_t Options = number_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
+		         typename Constructor = use_default>
+		using json_checked_number_null =
+		  json_nullable<Name, T,
+		                json_base::json_number<
+		                  json_details::unwrapped_t<T>,
+		                  json_details::number_opts_set<
+		                    Options, options::JsonRangeCheck::CheckForNarrowing>>,
+		                NullableType, Constructor>;
+
+		/**
+		 * Maps a named JSON number to a floating-point value and provides explicit
+		 * control over its serialized format and precision.
+		 * @tparam Name Name of the JSON member
+		 * @tparam T Floating-point type to parse and pass to Constructor
+		 * @tparam Format Formatting used during serialization; `Auto`, `Decimal`, `Scientific`, and `Minimum`
+		 * have the floating-point behaviours documented for `json_fp`.
+		 * @tparam Precision Precision counts significant digits for `Auto` and `Minimum`, and digits after the decimal point for `Decimal` and `Scientific`. `daw::max_value<unsigned>` disables the explicit limit.
+		 * @tparam Options Options created with options::fp_opt
+		 * @tparam Constructor Callable used to construct the result
+		 */
+		template<JSONNAMETYPE Name, typename T = double,
+		         options::FPOutputFormat Format =options::FPOutputFormat::Auto,
+		         unsigned Precision = daw::max_value<unsigned>,
+		         json_options_t Options = fp_opts_def,
+		         typename Constructor = use_default>
+		struct json_fp;
+
+		/**
+		 * Maps a named JSON number or null to a nullable floating-point value and
+		 * provides explicit control over its serialized format and precision.
+		 * @tparam Name Name of the JSON member
+		 * @tparam T Nullable type whose underlying value is floating point
+		 * @tparam Format Formatting used during serialization; `Auto`, `Decimal`, `Scientific`, and `Minimum`
+		 * have the floating-point behaviours documented for `json_fp`.
+		 * @tparam Precision Precision counts significant digits for `Auto` and `Minimum`, and digits after the decimal point for `Decimal` and `Scientific`. `daw::max_value<unsigned>` disables the explicit limit.
+		 * @tparam Options Options created with options::fp_opt
+		 * @tparam NullableType Whether an empty class member may be omitted or must
+		 * be emitted as null
+		 * @tparam Constructor Callable used to construct the nullable result
+		 */
+		template<JSONNAMETYPE Name, typename T = std::optional<double>,
+		         options::FPOutputFormat Format =options::FPOutputFormat::Auto,
+		         unsigned Precision = daw::max_value<unsigned>,
+		         json_options_t Options = fp_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
+		         typename Constructor = use_default>
+		using json_fp_null =
+		  json_nullable<Name, T,
+		                json_base::json_fp<json_details::unwrapped_t<T>, Format,
+		                                   Precision, Options>,
+		                NullableType, Constructor>;
+
+		/**
+		 * Maps a named JSON number to a floating-point value with narrowing checks
+		 * enabled and provides explicit control over its serialized format and
+		 * precision.
+		 * @tparam Name Name of the JSON member
+		 * @tparam T Floating-point type to parse and pass to Constructor
+		 * @tparam Format Formatting used during serialization; `Auto`, `Decimal`, `Scientific`, and `Minimum`
+		 * have the floating-point behaviours documented for `json_fp`.
+		 * @tparam Precision Precision counts significant digits for `Auto` and `Minimum`, and digits after the decimal point for `Decimal` and `Scientific`. `daw::max_value<unsigned>` disables the explicit limit.
+		 * @tparam Options Options created with options::fp_opt; narrowing checks
+		 * are enabled by this alias
+		 * @tparam Constructor Callable used to construct the result
+		 */
+		template<JSONNAMETYPE Name, typename T,
+		         options::FPOutputFormat Format =options::FPOutputFormat::Auto,
+		         unsigned Precision = daw::max_value<unsigned>,
+		         json_options_t Options = fp_opts_def,
+		         typename Constructor = use_default>
+		using json_checked_fp =
+		  json_fp<Name, T, Format, Precision, Options, Constructor>;
+
+		/**
+		 * Maps a named JSON number or null to a nullable floating-point value with
+		 * narrowing checks enabled and provides explicit control over its
+		 * serialized format and precision.
+		 * @tparam Name Name of the JSON member
+		 * @tparam T Nullable type whose underlying value is floating point
+		 * @tparam Format Formatting used during serialization; `Auto`, `Decimal`, `Scientific`, and `Minimum`
+		 * have the floating-point behaviours documented for `json_fp`.
+		 * @tparam Precision Precision counts significant digits for `Auto` and `Minimum`, and digits after the decimal point for `Decimal` and `Scientific`. `daw::max_value<unsigned>` disables the explicit limit.
+		 * @tparam Options Options created with options::fp_opt; narrowing checks
+		 * are enabled by this alias
+		 * @tparam NullableType Whether an empty class member may be omitted or must
+		 * be emitted as null
+		 * @tparam Constructor Callable used to construct the nullable result
+		 */
+		template<JSONNAMETYPE Name, typename T = std::optional<double>,
+		         options::FPOutputFormat Format =options::FPOutputFormat::Auto,
+		         unsigned Precision = daw::max_value<unsigned>,
+		         json_options_t Options = fp_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
+		         typename Constructor = use_default>
+		using json_checked_fp_null =
+		  json_nullable<Name, T,
+		                json_base::json_fp<
+		                  json_details::unwrapped_t<T>, Format, Precision,
+		                  json_details::number_opts_set<
+		                    Options, options::JsonRangeCheck::CheckForNarrowing>>,
+		                NullableType, Constructor>;
 
 		/**
 		 * The member is a boolean
@@ -241,28 +356,7 @@ namespace daw::json {
 		  Name, T,
 		  json_base::json_string_raw<json_details::unwrapped_t<T>, Options>,
 		  NullableType, Constructor>;
-		/**
-		 * The member is a nullable range checked number
-		 * @tparam Name name of json member
-		 * @tparam T type of number(e.g. optional<double>, optional<int>,
-		 * optional<unsigned>...) to pass to Constructor
-		 * @tparam Options Options created with options::number_opt; narrowing
-		 * checks are enabled by this alias
-		 * @tparam NullableType Whether an empty class member may be omitted or must
-		 * be emitted as null
-		 * @tparam Constructor Callable used to construct result
-		 */
-		template<JSONNAMETYPE Name, typename T = std::optional<double>,
-		         json_options_t Options = number_opts_def,
-		         JsonNullable NullableType = JsonNullable::Nullable,
-		         typename Constructor = use_default>
-		using json_checked_number_null =
-		  json_nullable<Name, T,
-		                json_base::json_number<
-		                  json_details::unwrapped_t<T>,
-		                  json_details::number_opts_set<
-		                    Options, options::JsonRangeCheck::CheckForNarrowing>>,
-		                NullableType, Constructor>;
+
 		/** Map a KV type json class { "Key StringRaw": ValueType, ... }
 		 *  to a c++ class.  Keys are Always string like and the destination
 		 *  needs to be constructable with a pointer, size
