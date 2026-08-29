@@ -6,9 +6,9 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#include "../../cmake-build/rel_gcc_16_2026/_deps/daw_header_libraries-src/include/daw/daw_random.h"
 #include "daw_json_benchmark.h"
 
+#include <daw/daw_random.h>
 #include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_json_simd_iterator.h>
