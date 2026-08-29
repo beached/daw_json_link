@@ -26,6 +26,8 @@ Maps JSON objects/types to C++ types with a `daw::json::json_data_contract` mapp
 ### `json_custom`
 
 Maps JSON strings/literals to C++ types that don't fit.
+See [Custom Types and Output](custom_types.md) for converter and option
+examples.
 
 ### `json_custom_lit`
 

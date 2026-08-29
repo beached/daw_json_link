@@ -147,6 +147,8 @@ ___
 # `json_custom`
 
 To set json_custom options use the `daw::json::options::json_custom_opt( Flags... )` method.
+See [Custom Types and Output](custom_types.md) for complete converter and
+serialization examples.
 
 ## `JsonCustomTypes`
 
