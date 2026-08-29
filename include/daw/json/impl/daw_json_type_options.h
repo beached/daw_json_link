@@ -131,8 +131,6 @@ namespace daw::json {
 		} // namespace options
 
 		// json_fp
-
-		// json_number
 		using fp_opts_t = json_details::JsonOptionList<options::LiteralAsStringOpt,
 		                                               options::JsonRangeCheck,
 		                                               options::JsonNumberErrors>;
@@ -164,14 +162,14 @@ namespace daw::json {
 		} // namespace options
 
 		namespace options {
-			/// @brief Controls whether any string character has the high bit set. If
-			/// restricted, the member will escape any character with the high bit set
-			/// and when parsing will throw if the high bit is encountered.
-			/// This allows 7bit JSON encoding.
+			/// @brief Controls whether string bytes with the high bit set are allowed.
+			/// When serializing json_string mappings, DisallowHigh escapes such bytes;
+			/// json_string_raw serialization rejects them instead. When parsing
+			/// json_string mappings, DisallowHigh rejects them. json_string_raw parsing
+			/// preserves the input bytes and does not inspect this option.
 			enum class EightBitModes : unsigned {
-				/// Escape any character with the high bit set and throw when
-				/// encountered
-				/// during parse
+				/// Escape high-bit bytes when serializing json_string, and reject them
+				/// when serializing json_string_raw or parsing json_string.
 				DisallowHigh,
 
 				/// Allow the full 8bits in output without escaping

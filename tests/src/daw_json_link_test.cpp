@@ -1875,6 +1875,7 @@ int main( ) {
 			  bool, options::bool_opt( options::LiteralAsStringOpt::Maybe )>;
 			daw_ensure( from_json<maybe_bool>( "true" ) );
 			daw_ensure( from_json<maybe_bool>( R"("true")" ) );
+			daw_ensure( to_json<maybe_bool>( true ) == "true" );
 			daw_ensure(
 			  from_json<mapping_parameter_tests::boolean>( R"("true")" ) == 1 );
 			daw_ensure( to_json<json_bool_no_name<
@@ -1902,6 +1903,12 @@ int main( ) {
 			            R"("text")" );
 			daw_ensure( from_json<custom_literal>( "42" ) == "42" );
 			daw_ensure( to_json<custom_literal>( std::string( "42" ) ) == "42" );
+			daw_ensure( from_json<mapping_parameter_tests::custom_any>(
+			              R"({"value":42})" ) == R"({"value":42})" );
+			daw_ensure( from_json<mapping_parameter_tests::custom_any>(
+			              R"("text")" ) == R"("text")" );
+			daw_ensure( to_json<mapping_parameter_tests::custom_any>(
+			              std::string( "text" ) ) == R"("text")" );
 		}
 		{
 			using namespace daw::json;
@@ -1978,6 +1985,27 @@ int main( ) {
 			auto const ebh_out = daw::json::to_json<escaped_ascii_string>( ebh_in );
 			std::string_view const ebh_expected = R"("\u00E9")";
 			daw_ensure( ebh_out == ebh_expected );
+		}
+		{
+			using restricted_raw_string = daw::json::json_string_raw_no_name<
+			  std::string_view,
+			  daw::json::options::string_raw_opt(
+			    daw::json::options::EightBitModes::DisallowHigh )>;
+			std::string_view const high_bit_text = "\xC3\xA9";
+#if defined( DAW_USE_EXCEPTIONS )
+			try {
+				(void)daw::json::to_json<restricted_raw_string>( high_bit_text );
+				daw_ensure_error(
+				  true, "DisallowHigh unexpectedly serialized a high-bit raw string" );
+			} catch( daw::json::json_exception const &jex ) {
+				daw_ensure( jex.reason_type( ) ==
+				            daw::json::ErrorReason::InvalidStringHighASCII );
+			}
+#endif
+			std::string_view const quoted_high_bit_text = "\"\xC3\xA9\"";
+			daw_ensure(
+			  daw::json::from_json<restricted_raw_string>( quoted_high_bit_text ) ==
+			  high_bit_text );
 		}
 		{
 			auto const opt_int_str = daw::json::to_json( OptInt{ } );

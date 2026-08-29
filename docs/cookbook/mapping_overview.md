@@ -120,7 +120,7 @@ standard constructor.
 | `json_nullable` | `T, JsonMember = use_default, NullableType = JsonNullable::Nullable, Constructor = use_default` |
 
 `Options` is an encoded `json_options_t` value. Build it with the setter for
-the mapping family: `options::number_opt`, `bool_opt`, `string_opt`,
+the mapping family: `options::number_opt`, `fp_opt`, `bool_opt`, `string_opt`,
 `string_raw_opt`, or `json_custom_opt`. The available flags and defaults are
 listed in [Member Options/Type Options](member_options.md).
 

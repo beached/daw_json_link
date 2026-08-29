@@ -6,13 +6,17 @@ the options into a `json_options_t`.
 
 ___
 
-# `json_number` and floating-point mappings
+# `json_number`
 
 To set number options use the `daw::json::options::number_opt( Flags... )` method.
 
 ## `LiteralAsStringOpt`
 
 Controls the ability to parse numbers that are encoded as strings.
+During serialization, `Always` emits the number in quotes. `Never` and `Maybe`
+emit ordinary finite numbers without quotes; `Maybe` only broadens the accepted
+input representation. Allowed NaN and infinity values are always emitted in
+quotes because they are not JSON number literals.
 
 ### Values
 
@@ -53,10 +57,8 @@ When outputting floating point numbers, control whether Inf/NaN values can be pa
 
 ## `FPOutputFormat`
 
-Control the floating-point output format used by `json_fp` and the
-`json_checked_fp` mappings. These mappings are useful when the serialized
-representation needs a defined precision, rather than the shortest default
-representation.
+Control the floating-point output format used by a floating-point
+`json_number`. This option only affects serialization.
 
 ### Values
 
@@ -80,7 +82,8 @@ rounding.
 ### `json_fp` examples
 
 `json_fp` is the floating-point equivalent of `json_number` with explicit
-format and precision template parameters:
+format and precision template parameters. Its format is not supplied through
+`number_opt`:
 
 ```cpp
 using decimal_amount = daw::json::json_fp_no_name<
@@ -132,6 +135,31 @@ to the serializer.
 
 ___
 
+# `json_fp`
+
+To set the encoded options for `json_fp` and `json_checked_fp`, use
+`daw::json::options::fp_opt( Flags... )`. These mappings accept:
+
+* `LiteralAsStringOpt`
+* `JsonRangeCheck`
+* `JsonNumberErrors`
+
+Their meanings and defaults are the same as for `json_number` above.
+`FPOutputFormat` is instead supplied through the mapping's `Format` template
+parameter, followed by the `Precision` template parameter.
+
+```cpp
+using quoted_amount = daw::json::json_fp_no_name<
+  double, daw::json::options::FPOutputFormat::Decimal, 2,
+  daw::json::options::fp_opt(
+    daw::json::options::LiteralAsStringOpt::Always )>;
+```
+
+`JsonRangeCheck` is accepted for consistency with the checked mapping aliases,
+but floating-point parsing currently does not consult it.
+
+___
+
 # `json_bool`
 
 To set bool options use the `daw::json::options::bool_opt( Flags... )` method.
@@ -139,6 +167,9 @@ To set bool options use the `daw::json::options::bool_opt( Flags... )` method.
 ## `LiteralAsStringOpt`
 
 Controls the ability to parse booleans that are encoded as strings.
+During serialization, `Always` emits the boolean in quotes. `Never` and `Maybe`
+emit an unquoted JSON boolean; `Maybe` only broadens the accepted input
+representation.
 
 ### Values
 
@@ -158,14 +189,15 @@ To set string options use the `daw::json::options::string_opt( Flags... )` metho
 
 ## `EightBitModes`
 
-Controls whether any string character has the high bit set. If restricted, the member will escape any character with the
-high bit set and when parsing will throw if the high bit is encountered. This allows 7bit JSON encoding.
+Controls whether any string byte has the high bit set. If restricted, the
+serializer escapes bytes with the high bit set and the parser rejects them.
+This allows 7-bit JSON encoding.
 
 ### Values
 
 * `DisallowHigh` - Escape any character with the high bit set and throw when encountered
   during parse
-* `AllowFull` - Allow the full 8bits in output without escaping
+* `AllowFull` - Allow the full 8 bits in output without escaping
 
 ### Default
 
@@ -179,14 +211,14 @@ To set raw string options use the `daw::json::options::string_raw_opt( Flags... 
 
 ## `EightBitModes`
 
-Controls whether any string character has the high bit set. If restricted, the member will escape any character with the
-high bit set and when parsing will throw if the high bit is encountered. This allows 7bit JSON encoding.
+Controls whether any string byte has the high bit set during serialization. If
+restricted, serialization rejects bytes with the high bit set. Raw-string
+parsing preserves the input bytes and does not inspect this option.
 
 ### Values
 
-* `DisallowHigh` - Escape any character with the high bit set and throw when encountered
-  during parse
-* `AllowFull` - Allow the full 8bits in output without escaping
+* `DisallowHigh` - Reject any byte with the high bit set during serialization
+* `AllowFull` - Allow the full 8 bits in output without escaping
 
 ### Default
 
