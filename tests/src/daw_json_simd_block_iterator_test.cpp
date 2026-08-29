@@ -20,6 +20,55 @@
 #include <string_view>
 #include <type_traits>
 
+struct simd_iterator_child {
+	int value;
+};
+
+struct simd_iterator_class_value {
+	int id;
+	std::string text;
+	bool enabled;
+	simd_iterator_child child;
+};
+
+struct simd_iterator_empty_class {};
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<simd_iterator_child> {
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
+		using type = json_member_list<json_number<"value", int>>;
+#else
+		static constexpr char const value[] = "value";
+		using type = json_member_list<json_number<value, int>>;
+#endif
+	};
+
+	template<>
+	struct json_data_contract<simd_iterator_class_value> {
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
+		using type = json_member_list<json_number<"id", int>,
+		                              json_string<"text", std::string>,
+		                              json_bool<"enabled", bool>,
+		                              json_class<"child", simd_iterator_child>>;
+#else
+		static constexpr char const id[] = "id";
+		static constexpr char const text[] = "text";
+		static constexpr char const enabled[] = "enabled";
+		static constexpr char const child[] = "child";
+		using type = json_member_list<json_number<id, int>,
+		                              json_string<text, std::string>,
+		                              json_bool<enabled, bool>,
+		                              json_class<child, simd_iterator_child>>;
+#endif
+	};
+
+	template<>
+	struct json_data_contract<simd_iterator_empty_class> {
+		using type = json_member_list<>;
+	};
+} // namespace daw::json
+
 namespace {
 	using block = daw::json::json_details::simd_details::simd_json_block<
 	  daw::json::JsonBaseParseTypes::Number, char>;
@@ -56,6 +105,10 @@ namespace {
 	  daw::json::options::ExecModeTypes::compile_time>;
 	using raw_string_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_string_raw_no_name<std::string>>;
+	using class_iterator = daw::json::json_simd_block_iterator<
+	  daw::json::json_class_no_name<simd_iterator_class_value>>;
+	using empty_class_iterator = daw::json::json_simd_block_iterator<
+	  daw::json::json_class_no_name<simd_iterator_empty_class>>;
 
 	struct parsed_number {
 		double value;
@@ -676,6 +729,69 @@ namespace {
 #endif
 	}
 
+	void test_class_iterator( ) {
+		auto values = class_iterator(
+		  R"json([{"id":1,"ignored":{"nested":[1,{"x":"}"}]},"text":"first } value","enabled":true,"child":{"value":11}},{"child":{"value":22},"enabled":false,"text":"second { value","id":2}])json" );
+		auto first = values.begin( );
+		auto copy = first;
+		daw_ensure( first == copy );
+
+		auto const value0 = *first;
+		daw_ensure( value0.id == 1 );
+		daw_ensure( value0.text == "first } value" );
+		daw_ensure( value0.enabled );
+		daw_ensure( value0.child.value == 11 );
+
+		++first;
+		auto const value1 = *first;
+		daw_ensure( value1.id == 2 );
+		daw_ensure( value1.text == "second { value" );
+		daw_ensure( not value1.enabled );
+		daw_ensure( value1.child.value == 22 );
+		++first;
+		daw_ensure( first == values.end( ) );
+
+		auto empty = class_iterator( "[]" );
+		daw_ensure( empty == empty.end( ) );
+
+		auto empty_classes = empty_class_iterator( "[{}, {}]" );
+		(void)*empty_classes;
+		++empty_classes;
+		(void)*empty_classes;
+		++empty_classes;
+		daw_ensure( empty_classes == empty_classes.end( ) );
+
+#if defined( DAW_USE_EXCEPTIONS )
+		auto rejected_non_class = false;
+		try {
+			(void)class_iterator( "[1]" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_non_class = true;
+		}
+		daw_ensure( rejected_non_class );
+
+		auto rejected_trailing_comma = false;
+		try {
+			auto trailing = class_iterator(
+			  R"json([{"id":1,"text":"value","enabled":true},])json" );
+			++trailing;
+		} catch( daw::json::json_exception const & ) {
+			rejected_trailing_comma = true;
+		}
+		daw_ensure( rejected_trailing_comma );
+
+		auto rejected_missing_member = false;
+		try {
+			auto missing = class_iterator(
+			  R"json([{"id":1,"text":"value","child":{"value":1}}])json" );
+			(void)*missing;
+		} catch( daw::json::json_exception const & ) {
+			rejected_missing_member = true;
+		}
+		daw_ensure( rejected_missing_member );
+#endif
+	}
+
 } // namespace
 
 int main( ) {
@@ -739,6 +855,7 @@ int main( ) {
 	test_invalid_array_grammar( );
 #endif
 	test_separate_base_type_paths( );
+	test_class_iterator( );
 }
 
 #else

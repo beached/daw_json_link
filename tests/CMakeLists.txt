@@ -1288,6 +1288,11 @@ add_executable( string_array_iterator_benchmark EXCLUDE_FROM_ALL
 target_link_libraries( string_array_iterator_benchmark PRIVATE json_test )
 add_dependencies( full string_array_iterator_benchmark )
 
+add_executable( class_array_iterator_benchmark EXCLUDE_FROM_ALL
+								src/class_array_iterator_benchmark.cpp )
+target_link_libraries( class_array_iterator_benchmark PRIVATE json_test )
+add_dependencies( full class_array_iterator_benchmark )
+
 add_executable( json_nullable_is_null_test EXCLUDE_FROM_ALL
 								src/json_nullable_is_null_test.cpp )
 target_link_libraries( json_nullable_is_null_test PRIVATE json_test )
