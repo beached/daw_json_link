@@ -35,6 +35,9 @@ namespace {
 	using namespace daw::json;
 	using scalar_iterator = json_array_iterator<std::string>;
 	using simd_iterator = json_simd_block_iterator<std::string>;
+	using raw_string = json_string_raw_no_name<std::string_view>;
+	using scalar_raw_iterator = json_array_iterator<raw_string>;
+	using simd_raw_iterator = json_simd_block_iterator<raw_string>;
 
 	[[nodiscard]] std::string make_string_array( std::size_t element_count ) {
 		auto result = std::string{ "[" };
@@ -107,6 +110,25 @@ namespace {
 		daw::do_not_optimize( result );
 		return result;
 	}
+
+	[[nodiscard]] std::size_t total_scalar_raw_size( std::string_view document ) {
+		auto result = std::size_t{ 0 };
+		for( auto const value : scalar_raw_iterator( document ) ) {
+			result += value.size( );
+		}
+		daw::do_not_optimize( result );
+		return result;
+	}
+
+	[[nodiscard]] std::size_t
+	total_simd_block_raw_size( std::string_view document ) {
+		auto result = std::size_t{ 0 };
+		for( auto const value : simd_raw_iterator( document ) ) {
+			result += value.size( );
+		}
+		daw::do_not_optimize( result );
+		return result;
+	}
 } // namespace
 
 int main( int argc, char **argv ) {
@@ -140,6 +162,29 @@ int main( int argc, char **argv ) {
 	  total_simd_block_size,
 	  json_document );
 	daw_ensure( simd_result.get( ) == expected );
+
+	std::cout << "Computing expected total raw string size: ";
+	auto const expected_raw = total_scalar_raw_size( json_document );
+	std::cout << expected_raw << "\nComputing SIMD total raw string size: ";
+	auto const simd_raw_size = total_simd_block_raw_size( json_document );
+	std::cout << simd_raw_size << '\n' << std::flush;
+	daw_ensure( simd_raw_size == expected_raw );
+
+	auto scalar_raw_result = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS,
+	  json_document.size( ),
+	  "raw string array total size (json iterator, no SIMD)",
+	  total_scalar_raw_size,
+	  json_document );
+	daw_ensure( scalar_raw_result.get( ) == expected_raw );
+
+	auto simd_raw_result = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS,
+	  json_document.size( ),
+	  "raw string array total size (SIMD block iterator)",
+	  total_simd_block_raw_size,
+	  json_document );
+	daw_ensure( simd_raw_result.get( ) == expected_raw );
 }
 
 #else
