@@ -16,9 +16,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <vector>
 
 struct simd_iterator_child {
 	int value;
@@ -32,6 +34,11 @@ struct simd_iterator_class_value {
 };
 
 struct simd_iterator_empty_class {};
+
+struct simd_iterator_container_value {
+	std::vector<int> values;
+	std::optional<std::string> note;
+};
 
 namespace daw::json {
 	template<>
@@ -66,6 +73,21 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<simd_iterator_empty_class> {
 		using type = json_member_list<>;
+	};
+
+	template<>
+	struct json_data_contract<simd_iterator_container_value> {
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
+		using type =
+		  json_member_list<json_array<"values", int, std::vector<int>>,
+		                   json_string_null<"note", std::optional<std::string>>>;
+#else
+		static constexpr char const values[] = "values";
+		static constexpr char const note[] = "note";
+		using type =
+		  json_member_list<json_array<values, int, std::vector<int>>,
+		                   json_string_null<note, std::optional<std::string>>>;
+#endif
 	};
 } // namespace daw::json
 
@@ -107,8 +129,14 @@ namespace {
 	  daw::json::json_string_raw_no_name<std::string>>;
 	using class_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_class_no_name<simd_iterator_class_value>>;
+	using unchecked_class_iterator = daw::json::json_simd_block_iterator<
+	  daw::json::json_class_no_name<simd_iterator_class_value>, char,
+	  daw::json::options::CheckedParseMode::no,
+	  daw::json::options::ExecModeTypes::compile_time>;
 	using empty_class_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_class_no_name<simd_iterator_empty_class>>;
+	using container_class_iterator = daw::json::json_simd_block_iterator<
+	  daw::json::json_class_no_name<simd_iterator_container_value>>;
 
 	struct parsed_number {
 		double value;
@@ -751,6 +779,57 @@ namespace {
 		++first;
 		daw_ensure( first == values.end( ) );
 
+		// Force names, escaped strings, nested unknown values, and the transition
+		// to the next class across several native SIMD blocks.
+		auto const long_prefix = std::string( block::block_size * 3U + 5U, 'a' );
+		auto boundary_document = std::string{ "[" };
+		boundary_document.append( block::block_size - 2U, ' ' );
+		boundary_document += R"json({"ignored":{"padding":")json";
+		boundary_document += long_prefix;
+		boundary_document +=
+		  R"json(-unknown-}-]-,-:-tail"},"text":")json";
+		boundary_document += long_prefix;
+		boundary_document +=
+		  R"json(-escaped-\"-quote-\\-slash-}-,-:-tail","child":{"value":33},"enabled":true,"id":3},{"id":4,"text":"after boundary","enabled":false,"child":{"value":44}}])json";
+		auto boundary_values = class_iterator( boundary_document );
+		auto const boundary0 = *boundary_values;
+		daw_ensure( boundary0.id == 3 );
+		daw_ensure( boundary0.text ==
+		            long_prefix +
+		              R"json(-escaped-"-quote-\-slash-}-,-:-tail)json" );
+		daw_ensure( boundary0.enabled );
+		daw_ensure( boundary0.child.value == 33 );
+		++boundary_values;
+		auto const boundary1 = *boundary_values;
+		daw_ensure( boundary1.id == 4 );
+		daw_ensure( boundary1.text == "after boundary" );
+		daw_ensure( not boundary1.enabled );
+		daw_ensure( boundary1.child.value == 44 );
+		++boundary_values;
+		daw_ensure( boundary_values == boundary_values.end( ) );
+
+		auto unchecked = unchecked_class_iterator(
+		  R"json([{"id":5,"text":"unchecked","enabled":true,"child":{"value":55}}])json" );
+		auto const unchecked_value = *unchecked;
+		daw_ensure( unchecked_value.id == 5 );
+		daw_ensure( unchecked_value.text == "unchecked" );
+		daw_ensure( unchecked_value.enabled );
+		daw_ensure( unchecked_value.child.value == 55 );
+		++unchecked;
+		daw_ensure( unchecked == unchecked.end( ) );
+
+		auto containers = container_class_iterator(
+		  R"json([{"note":null,"values":[1,2,3]},{"values":[4,5],"note":"present"}])json" );
+		auto const container0 = *containers;
+		daw_ensure( container0.values == std::vector<int>( { 1, 2, 3 } ) );
+		daw_ensure( not container0.note );
+		++containers;
+		auto const container1 = *containers;
+		daw_ensure( container1.values == std::vector<int>( { 4, 5 } ) );
+		daw_ensure( container1.note and *container1.note == "present" );
+		++containers;
+		daw_ensure( containers == containers.end( ) );
+
 		auto empty = class_iterator( "[]" );
 		daw_ensure( empty == empty.end( ) );
 
@@ -789,6 +868,42 @@ namespace {
 			rejected_missing_member = true;
 		}
 		daw_ensure( rejected_missing_member );
+
+		auto rejected_missing_colon = false;
+		try {
+			(void)class_iterator(
+			  R"json([{"id" 1,"text":"value","enabled":true,"child":{"value":1}}])json" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_missing_colon = true;
+		}
+		daw_ensure( rejected_missing_colon );
+
+		auto rejected_unterminated_class = false;
+		try {
+			(void)class_iterator(
+			  R"json([{"id":1,"text":"value","enabled":true,"child":{"value":1})json" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_unterminated_class = true;
+		}
+		daw_ensure( rejected_unterminated_class );
+
+		auto rejected_class_boolean = false;
+		try {
+			(void)class_iterator(
+			  R"json([{"id":1,"text":"value","enabled":truX,"child":{"value":1}}])json" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_class_boolean = true;
+		}
+		daw_ensure( rejected_class_boolean );
+
+		auto rejected_class_null = false;
+		try {
+			(void)container_class_iterator(
+			  R"json([{"values":[1,2],"note":nulX}])json" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_class_null = true;
+		}
+		daw_ensure( rejected_class_null );
 #endif
 	}
 
