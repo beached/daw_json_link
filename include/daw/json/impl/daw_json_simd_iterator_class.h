@@ -240,9 +240,35 @@ namespace daw::json {
 						auto const value_is_string = *value_first == '"';
 						auto const value_is_array = *value_first == '[';
 						auto const value_is_class = *value_first == '{';
+						auto const value_is_number =
+						  *value_first == '-' or
+						  ( *value_first >= '0' and *value_first <= '9' );
 						auto delimiter = structural_state.next( colon + 1 );
 						auto found_delimiter = false;
-						while( delimiter != nullptr and not found_delimiter ) {
+						while( value_is_number and delimiter != nullptr and
+						       not found_delimiter ) {
+							switch( *delimiter ) {
+							case '.':
+								if( decimal_point == nullptr ) {
+									decimal_point = delimiter;
+								}
+								break;
+							case 'e':
+							case 'E':
+								if( exponent_marker == nullptr ) {
+									exponent_marker = delimiter;
+								}
+								break;
+							default:
+								found_delimiter = true;
+								break;
+							}
+							if( not found_delimiter ) {
+								delimiter = structural_state.next( delimiter + 1 );
+							}
+						}
+						while( not value_is_number and delimiter != nullptr and
+						       not found_delimiter ) {
 							switch( *delimiter ) {
 							case '"':
 								if( value_is_string and delimiter != value_first and
@@ -253,19 +279,6 @@ namespace daw::json {
 							case '\\':
 								if( value_is_string and first_escape == nullptr ) {
 									first_escape = delimiter;
-								}
-								break;
-							case '.':
-								if( object_depth == 1U and array_depth == 0U and
-								    decimal_point == nullptr ) {
-									decimal_point = delimiter;
-								}
-								break;
-							case 'e':
-							case 'E':
-								if( object_depth == 1U and array_depth == 0U and
-								    exponent_marker == nullptr ) {
-									exponent_marker = delimiter;
 								}
 								break;
 							case '{':

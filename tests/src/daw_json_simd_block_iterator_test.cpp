@@ -40,6 +40,10 @@ struct simd_iterator_container_value {
 	std::optional<std::string> note;
 };
 
+struct simd_iterator_real_value {
+	double value;
+};
+
 namespace daw::json {
 	template<>
 	struct json_data_contract<simd_iterator_child> {
@@ -87,6 +91,16 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_array<values, int, std::vector<int>>,
 		                   json_string_null<note, std::optional<std::string>>>;
+#endif
+	};
+
+	template<>
+	struct json_data_contract<simd_iterator_real_value> {
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
+		using type = json_member_list<json_number<"value", double>>;
+#else
+		static constexpr char const value[] = "value";
+		using type = json_member_list<json_number<value, double>>;
 #endif
 	};
 } // namespace daw::json
@@ -137,6 +151,8 @@ namespace {
 	  daw::json::json_class_no_name<simd_iterator_empty_class>>;
 	using container_class_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_class_no_name<simd_iterator_container_value>>;
+	using real_class_iterator = daw::json::json_simd_block_iterator<
+	  daw::json::json_class_no_name<simd_iterator_real_value>>;
 
 	struct parsed_number {
 		double value;
@@ -829,6 +845,16 @@ namespace {
 		daw_ensure( container1.note and *container1.note == "present" );
 		++containers;
 		daw_ensure( containers == containers.end( ) );
+
+		auto real_values = real_class_iterator(
+		  R"json([{"value":1.25e30},{"value":-4.5E-20},{"value":6.0}])json" );
+		daw_ensure( ( *real_values ).value == 1.25e30 );
+		++real_values;
+		daw_ensure( ( *real_values ).value == -4.5E-20 );
+		++real_values;
+		daw_ensure( ( *real_values ).value == 6.0 );
+		++real_values;
+		daw_ensure( real_values == real_values.end( ) );
 
 		auto empty = class_iterator( "[]" );
 		daw_ensure( empty == empty.end( ) );
