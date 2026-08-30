@@ -42,6 +42,10 @@ struct point_t {
 	constexpr point_t operator-( point_t const &rhs ) const {
 		return point_t{ x - rhs.x, y - rhs.y, z - rhs.z };
 	}
+
+	constexpr bool operator==( point_t const &rhs ) const {
+		return x == rhs.x and y == rhs.y and z == rhs.z;
+	}
 };
 
 namespace daw::json {
@@ -70,8 +74,8 @@ namespace {
 		for( std::size_t n = 0; n < element_count; ++n ) {}
 		auto rnd = daw::RandomFloat<double>{ };
 		for( std::size_t n = 0; n < element_count; ++n ) {
-			v[n].x = rnd( );
-			v[n].y = rnd( );
+			v[n].x = rnd( ) * -10e-30;
+			v[n].y = rnd( ) * 10e-30;
 			v[n].z = rnd( );
 		}
 		return daw::json::to_json(
@@ -81,7 +85,7 @@ namespace {
 	}
 
 	template<typename Iterator>
-	[[nodiscard]] point_t average_points( std::string_view document ) {
+	[[nodiscard]] constexpr point_t average_points( std::string_view document ) {
 		auto result = point_t{ };
 		auto count = std::size_t{ 0 };
 		for( auto const point : Iterator( document ) ) {
@@ -99,15 +103,19 @@ namespace {
 		return result;
 	}
 
-	[[nodiscard]] point_t average_scalar( std::string_view document ) {
+	[[nodiscard]] constexpr point_t average_scalar( std::string_view document ) {
 		return average_points<scalar_iterator>( document );
 	}
 
-	[[nodiscard]] point_t average_simd_blocks( std::string_view document ) {
+	[[nodiscard]] constexpr point_t
+	average_simd_blocks( std::string_view document ) {
 		return average_points<simd_iterator>( document );
 	}
 
-	[[nodiscard]] bool equal( point_t lhs, point_t rhs ) noexcept {
+	[[nodiscard]] constexpr bool equal( point_t lhs, point_t rhs ) noexcept {
+#if not defined( DAW_USE_ALMOST_EQUAL )
+		return lhs == rhs;
+#else
 		constexpr auto abs_tolerance = 1.0e-12;
 		constexpr auto rel_tolerance = 1.0e-12;
 		auto nearly_equal = [&]( double l, double r ) {
@@ -117,15 +125,16 @@ namespace {
 		};
 		return nearly_equal( lhs.x, rhs.x ) and nearly_equal( lhs.y, rhs.y ) and
 		       nearly_equal( lhs.z, rhs.z );
+#endif
 	}
 
-	void print_point( point_t value ) {
+	void print_point( point_t const &value ) {
 		std::cout << "{" << value.x << ", " << value.y << ", " << value.z << "}";
 	}
 } // namespace
 
 int main( int argc, char **argv ) {
-	auto element_count = std::size_t{ 100'000 };
+	auto element_count = std::size_t{ 10'000 };
 	if( argc > 1 ) {
 		element_count =
 		  static_cast<std::size_t>( std::strtoull( argv[1], nullptr, 10 ) );

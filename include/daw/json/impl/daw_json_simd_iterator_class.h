@@ -32,8 +32,8 @@ namespace daw::json {
 			template<typename... JsonMembers>
 			struct simd_class_parser<json_member_list<JsonMembers...>> {
 				template<typename ParseState>
-				using locations_type = decltype(
-				  make_locations_info<ParseState, JsonMembers...>( ) );
+				using locations_type =
+				  decltype( make_locations_info<ParseState, JsonMembers...>( ) );
 
 				template<typename ParseState>
 				[[nodiscard]] static constexpr locations_type<ParseState>
@@ -46,7 +46,7 @@ namespace daw::json {
 				scan_class( ParseState &parse_state,
 				            locations_type<ParseState> &locations ) {
 					using result_t = json_result_t<JsonClass>;
-					constexpr auto must_exist =
+					DAW_CPP23_STATIC_LOCAL constexpr bool must_exist =
 					  all_json_members_must_exist_v<result_t, ParseState>;
 
 					parse_state.trim_left( );
@@ -109,8 +109,7 @@ namespace daw::json {
 						}
 					}( );
 					return parse_class_member_impl<JsonMember, false>(
-					  parse_state,
-					  find_result<ParseState>{ member_state, true } );
+					  parse_state, find_result<ParseState>{ member_state, true } );
 				}
 
 				template<typename JsonClass, typename ParseState, std::size_t... Is>
@@ -123,13 +122,13 @@ namespace daw::json {
 					if constexpr( should_construct_explicitly_v<constructor_t,
 					                                            result_t,
 					                                            ParseState> ) {
-						return result_t{ parse_member<JsonMembers>( parse_state,
-						                                                   locations[Is] )... };
+						return result_t{
+						  parse_member<JsonMembers>( parse_state, locations[Is] )... };
 					} else {
 						return construct_value_tp<result_t, constructor_t>(
 						  parse_state,
-						  fwd_pack{ parse_member<JsonMembers>( parse_state,
-						                                               locations[Is] )... } );
+						  fwd_pack{
+						    parse_member<JsonMembers>( parse_state, locations[Is] )... } );
 					}
 				}
 
@@ -199,7 +198,7 @@ namespace daw::json {
 						return result_t{ };
 					} else {
 						return construct_value_tp<result_t, constructor_t>( parse_state,
-						                                                       fwd_pack{ } );
+						                                                    fwd_pack{ } );
 					}
 				}
 			};
@@ -215,13 +214,16 @@ namespace daw::json {
 			class json_simd_block_iterator_class {
 				static_assert( JsonMember::underlying_json_type ==
 				               JsonBaseParseTypes::Class );
-				static_assert( std::is_same_v<CharT, char>,
-				               "SIMD class iteration currently supports char input only" );
+				static_assert(
+				  std::is_same_v<CharT, char>,
+				  "SIMD class iteration currently supports char input only" );
 
 				using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
 				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
-				using parser_type = simd_class_parser<typename JsonMember::json_member_list>;
-				using locations_type = typename parser_type::template locations_type<ParseState>;
+				using parser_type =
+				  simd_class_parser<typename JsonMember::json_member_list>;
+				using locations_type =
+				  typename parser_type::template locations_type<ParseState>;
 				using structural_state_type =
 				  simd_class_structural_state<locations_type>;
 
@@ -311,8 +313,8 @@ namespace daw::json {
 				[[nodiscard]] constexpr reference operator*( ) const {
 					auto parse_state = ParseState( m_current.first, m_current.last );
 					parse_state.first = m_current.last;
-					return parser_type::template construct_class<json_member>( parse_state,
-					                                                               m_current.locations );
+					return parser_type::template construct_class<json_member>(
+					  parse_state, m_current.locations );
 				}
 
 				constexpr json_simd_block_iterator_class &operator++( ) {
@@ -332,8 +334,7 @@ namespace daw::json {
 					return *this;
 				}
 
-				[[nodiscard]] constexpr json_simd_block_iterator_class static
-				end( ) noexcept {
+				[[nodiscard]] constexpr json_simd_block_iterator_class static end( ) noexcept {
 					return { };
 				}
 
