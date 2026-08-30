@@ -134,6 +134,11 @@ namespace daw::json {
 					fill_buffer( );
 				}
 
+				explicit constexpr json_simd_number_block_iterator(
+				  std::string_view document, daw::string_view start_path )
+				  : json_simd_number_block_iterator(
+				      find_array_range<ParseState>( document, start_path ) ) {}
+
 				[[nodiscard]] constexpr reference operator*( ) const {
 					auto const &span = m_number_spans[m_value_index];
 					auto parse_state = [&] {
@@ -226,4 +231,3 @@ namespace daw::json {
 } // namespace daw::json
 
 #endif
-

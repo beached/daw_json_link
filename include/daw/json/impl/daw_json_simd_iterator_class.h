@@ -677,6 +677,11 @@ namespace daw::json {
 					move_to_next_value( );
 				}
 
+				explicit constexpr json_simd_block_iterator_class(
+				  std::string_view document, daw::string_view start_path )
+				  : json_simd_block_iterator_class(
+				      find_array_range<ParseState>( document, start_path ) ) {}
+
 				[[nodiscard]] constexpr reference operator*( ) const {
 					auto parse_state = ParseState( m_current.first, m_current.last );
 					parse_state.first = m_current.last;

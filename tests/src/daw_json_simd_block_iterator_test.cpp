@@ -309,6 +309,54 @@ namespace {
 		return ( *numbers ).value == 4.5 and ( *booleans ).value;
 	}
 
+	void test_start_path( ) {
+		auto numbers = signed_iterator(
+		  R"json({"payload":{"values":[-42,17]}})json", "payload.values" );
+		daw_ensure( *numbers == -42 );
+		++numbers;
+		daw_ensure( *numbers == 17 );
+		++numbers;
+		daw_ensure( numbers == numbers.end( ) );
+
+		auto booleans = bool_iterator(
+		  R"json({"payload":{"values":[true,false]}})json", "payload.values" );
+		daw_ensure( *booleans );
+		++booleans;
+		daw_ensure( not *booleans );
+		++booleans;
+		daw_ensure( booleans == booleans.end( ) );
+
+		auto strings = string_iterator(
+		  R"json({"payload":{"values":["alpha","beta"]}})json",
+		  "payload.values" );
+		daw_ensure( *strings == "alpha" );
+		++strings;
+		daw_ensure( *strings == "beta" );
+		++strings;
+		daw_ensure( strings == strings.end( ) );
+
+		auto classes = class_iterator(
+		  R"json({"payload":{"values":[{"id":7,"text":"path","enabled":true,"child":{"value":9}}]}})json",
+		  "payload.values" );
+		auto const value = *classes;
+		daw_ensure( value.id == 7 );
+		daw_ensure( value.text == "path" );
+		daw_ensure( value.enabled );
+		daw_ensure( value.child.value == 9 );
+		++classes;
+		daw_ensure( classes == classes.end( ) );
+
+#if defined( DAW_USE_EXCEPTIONS )
+		auto rejected_missing_path = false;
+		try {
+			(void)signed_iterator( R"json({"values":[1]})json", "missing" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_missing_path = true;
+		}
+		daw_ensure( rejected_missing_path );
+#endif
+	}
+
 	[[nodiscard]] constexpr bool test_constexpr_classifiers( ) {
 		using number_classifier = daw::json::json_details::simd_details::
 		  simd_json_classifier<daw::json::JsonBaseParseTypes::Number, char>;
@@ -990,6 +1038,7 @@ int main( ) {
 	test_integer_span_buffer_refill( );
 	test_integer_values_across_native_blocks( );
 	test_json_member_result_type( );
+	test_start_path( );
 	test_empty_arrays_and_json_whitespace( );
 	test_stops_at_array_end( );
 #if defined( DAW_USE_EXCEPTIONS )

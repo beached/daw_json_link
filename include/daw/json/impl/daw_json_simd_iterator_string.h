@@ -152,6 +152,11 @@ namespace daw::json {
 					move_to_next_value( );
 				}
 
+				explicit constexpr json_simd_block_iterator_string(
+				  std::string_view document, daw::string_view start_path )
+				  : json_simd_block_iterator_string(
+				      find_array_range<ParseState>( document, start_path ) ) {}
+
 				[[nodiscard]] constexpr reference operator*( ) const {
 					auto parse_state = ParseState( m_current + 1, m_current_end );
 					parse_state.counter = m_current_escape == nullptr
@@ -206,4 +211,3 @@ namespace daw::json {
 } // namespace daw::json
 
 #endif
-

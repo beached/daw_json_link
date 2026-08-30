@@ -26,6 +26,18 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details::simd_details {
+			template<typename ParseState>
+			[[nodiscard]] constexpr std::string_view
+			find_array_range( std::string_view document,
+			                  daw::string_view start_path ) {
+				auto [result, is_found] = json_details::find_range<ParseState>(
+				  { document.data( ), document.size( ) }, start_path );
+				daw_json_ensure( is_found, ErrorReason::JSONPathNotFound );
+				daw_json_ensure(
+				  result.front( ) == '[', ErrorReason::InvalidArrayStart, result );
+				return { result.data( ), result.size( ) };
+			}
+
 			[[nodiscard]] constexpr std::uint64_t
 			prefix_xor( std::uint64_t bits ) noexcept {
 				bits ^= bits << 1U;

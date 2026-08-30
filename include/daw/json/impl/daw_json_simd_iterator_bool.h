@@ -164,6 +164,11 @@ namespace daw::json {
 					fill_buffer( );
 				}
 
+				explicit constexpr json_simd_block_iterator_bool(
+				  std::string_view document, daw::string_view start_path )
+				  : json_simd_block_iterator_bool(
+				      find_array_range<ParseState>( document, start_path ) ) {}
+
 				[[nodiscard]] constexpr reference operator*( ) const {
 					static_assert(
 					  json_member::literal_as_string ==
@@ -231,4 +236,3 @@ namespace daw::json {
 } // namespace daw::json
 
 #endif
-
