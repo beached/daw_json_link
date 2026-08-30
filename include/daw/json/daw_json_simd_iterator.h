@@ -25,6 +25,21 @@ namespace daw::json {
 		namespace json_details::simd_details {
 			template<typename JsonMember>
 			struct unknown_json_simd_block_iterator_error;
+
+			template<typename JsonMember, typename CharT, auto... PolicyFlags>
+			using json_simd_block_iterator = std::conditional_t<
+			  ( JsonMember::underlying_json_type == JsonBaseParseTypes::Bool ),
+			  json_simd_block_iterator_bool<JsonMember, CharT, PolicyFlags...>,
+			  std::conditional_t<
+			    ( JsonMember::underlying_json_type == JsonBaseParseTypes::Number ),
+			    json_simd_block_iterator_number<JsonMember, CharT, PolicyFlags...>,
+			    std::conditional_t<
+			      ( JsonMember::underlying_json_type == JsonBaseParseTypes::String ),
+			      json_simd_block_iterator_string<JsonMember, CharT, PolicyFlags...>,
+			      std::conditional_t<
+			        ( JsonMember::underlying_json_type == JsonBaseParseTypes::Class ),
+			        json_simd_block_iterator_class<JsonMember, CharT, PolicyFlags...>,
+			        unknown_json_simd_block_iterator_error<JsonMember>>>>>;
 		} // namespace json_details::simd_details
 
 		inline namespace experimental {
@@ -34,24 +49,9 @@ namespace daw::json {
 			 * @tparam JsonMember The JSON Link mapping used to parse each value.
 			 */
 			template<typename JsonMember, typename CharT = char, auto... PolicyFlags>
-			using json_simd_block_iterator = std::conditional_t<
-			  ( JsonMember::underlying_json_type == JsonBaseParseTypes::Bool ),
-			  json_details::simd_details::json_simd_block_iterator_bool<
-			    JsonMember, CharT, PolicyFlags...>,
-			  std::conditional_t<
-			    ( JsonMember::underlying_json_type == JsonBaseParseTypes::Number ),
-			    json_details::simd_details::json_simd_block_iterator_number<
-			      JsonMember, CharT, PolicyFlags...>,
-			    std::conditional_t<
-			      ( JsonMember::underlying_json_type == JsonBaseParseTypes::String ),
-			      json_details::simd_details::json_simd_block_iterator_string<
-			        JsonMember, CharT, PolicyFlags...>,
-			      std::conditional_t<
-			        ( JsonMember::underlying_json_type == JsonBaseParseTypes::Class ),
-			        json_details::simd_details::json_simd_block_iterator_class<
-			          JsonMember, CharT, PolicyFlags...>,
-			        json_details::simd_details::unknown_json_simd_block_iterator_error<
-			          JsonMember>>>>>;
+			using json_simd_block_iterator =
+			  json_details::simd_details::json_simd_block_iterator<
+			    json_details::json_deduced_type<JsonMember>, CharT, PolicyFlags...>;
 		} // namespace experimental
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
