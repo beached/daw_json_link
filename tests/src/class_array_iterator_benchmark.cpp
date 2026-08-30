@@ -16,8 +16,8 @@
 #include <daw/daw_ensure.h>
 
 #include <algorithm>
-#include <cstddef>
 #include <cmath>
+#include <cstddef>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -38,6 +38,10 @@ struct point_t {
 	double x;
 	double y;
 	double z;
+
+	constexpr point_t operator-( point_t const &rhs ) const {
+		return point_t{ x - rhs.x, y - rhs.y, z - rhs.z };
+	}
 };
 
 namespace daw::json {
@@ -72,7 +76,8 @@ namespace {
 		}
 		return daw::json::to_json(
 		  v,
-		  daw::json::options::output_flags<daw::json::options::SerializationFormat::Pretty> );
+		  daw::json::options::output_flags<
+		    daw::json::options::SerializationFormat::Pretty> );
 	}
 
 	template<typename Iterator>
@@ -125,7 +130,8 @@ int main( int argc, char **argv ) {
 		element_count =
 		  static_cast<std::size_t>( std::strtoull( argv[1], nullptr, 10 ) );
 	}
-	std::cout << "testing " << element_count << " items with " << DAW_NUM_RUNS << " runs.\n";
+	std::cout << "testing " << element_count << " items with " << DAW_NUM_RUNS
+	          << " runs.\n";
 	daw_ensure( element_count > 0U );
 
 	auto const json_data = make_point_array( element_count );
@@ -136,7 +142,10 @@ int main( int argc, char **argv ) {
 	std::cout << "\nComputing SIMD point average: ";
 	auto const simd_average = average_simd_blocks( json_document );
 	print_point( simd_average );
+	std::cout << "\nDifference\n";
+	print_point( expected - simd_average );
 	std::cout << "\n\n";
+
 	daw_ensure( equal( simd_average, expected ) );
 
 	auto scalar_result = daw::json::benchmark::benchmark(
