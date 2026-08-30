@@ -140,7 +140,7 @@ namespace {
 	  daw::json::options::CheckedParseMode::no,
 	  daw::json::options::ExecModeTypes::compile_time>;
 	using raw_string_iterator = daw::json::json_simd_block_iterator<
-	  daw::json::json_string_raw_no_name<std::string>>;
+	  daw::json::json_string_raw_no_name<std::string_view>>;
 	using class_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_class_no_name<simd_iterator_class_value>>;
 	using unchecked_class_iterator = daw::json::json_simd_block_iterator<
@@ -301,6 +301,35 @@ namespace {
 		}
 		++unchecked_values;
 		return unchecked_values == unchecked_values.end( );
+	}
+
+	[[nodiscard]] constexpr bool test_constexpr_raw_string_iterator( ) {
+		auto values =
+		  raw_string_iterator( R"json(["plain", "escaped \" quote"])json" );
+		if( *values != "plain" ) {
+			return false;
+		}
+		++values;
+		if( *values != R"json(escaped \" quote)json" ) {
+			return false;
+		}
+		++values;
+		if( values != values.end( ) ) {
+			return false;
+		}
+
+		auto nested = raw_string_iterator(
+		  R"json({"payload":{"values":["alpha","beta"]}})json",
+		  "payload.values" );
+		if( *nested != "alpha" ) {
+			return false;
+		}
+		++nested;
+		if( *nested != "beta" ) {
+			return false;
+		}
+		++nested;
+		return nested == nested.end( );
 	}
 
 	[[nodiscard]] constexpr bool test_constexpr_custom_constructors( ) {
@@ -989,6 +1018,7 @@ int main( ) {
 	static_assert( test_constexpr_integer_iterators( ) );
 	static_assert( test_constexpr_bool_iterator( ) );
 	static_assert( test_constexpr_string_iterator( ) );
+	static_assert( test_constexpr_raw_string_iterator( ) );
 	static_assert( test_constexpr_custom_constructors( ) );
 	static_assert( test_constexpr_classifiers( ) );
 #else
@@ -996,6 +1026,7 @@ int main( ) {
 	daw_ensure( test_constexpr_integer_iterators( ) );
 	daw_ensure( test_constexpr_bool_iterator( ) );
 	daw_ensure( test_constexpr_string_iterator( ) );
+	daw_ensure( test_constexpr_raw_string_iterator( ) );
 	daw_ensure( test_constexpr_custom_constructors( ) );
 	daw_ensure( test_constexpr_classifiers( ) );
 #endif
