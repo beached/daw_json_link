@@ -7,7 +7,7 @@
 //
 
 #include <daw/json/daw_json_link_types.h>
-#include <daw/json/impl/daw_json_simd_iterator.h>
+#include <daw/json/daw_json_simd_iterator.h>
 
 #include <daw/daw_ensure.h>
 

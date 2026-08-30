@@ -14,6 +14,10 @@ else()
 	set( CMAKE_CXX_EXTENSIONS OFF )
 endif()
 
+option( DAW_USE_ALMOST_EQUAL "When doing FP equal use an almost equal method" OFF )
+if( DAW_USE_ALMOST_EQUAL )
+	add_compile_options( -DDAW_USE_ALMOST_EQUAL=1 )
+endif()
 option( DAW_JSON_USE_BOOST "Enable using Boost in tests" ON )
 if( DAW_JSON_USE_BOOST )
 	find_package( Boost 1.83.0 COMPONENTS container system )
@@ -1228,40 +1232,40 @@ add_dependencies( ci_tests daw_json_simd_block_iterator_test )
 add_dependencies( full daw_json_simd_block_iterator_test )
 
 set( DAW_JSON_HEADER_SELF_CONTAINMENT_TESTS
-	 daw_from_json
-	 daw_from_json_fwd
-	 daw_json_apply
-	 daw_json_boost_pfr_mapping
-	 daw_json_data_contract
-	 daw_json_default_constuctor_fwd
-	 daw_json_event_parser
-	 daw_json_exception
-	 daw_json_find_path
-	 daw_json_iostream
-	 daw_json_iterator
-	 daw_json_lines_iterator
-	 daw_json_link_describe
-	 daw_json_link_types
-	 daw_json_parse_options
-	 daw_json_schema
-	 daw_json_serialize_options
-	 daw_json_switches
-	 daw_json_value_state
-	 daw_json_writer
-	 daw_to_json
-	 daw_to_json_fwd )
+		 daw_from_json
+		 daw_from_json_fwd
+		 daw_json_apply
+		 daw_json_boost_pfr_mapping
+		 daw_json_data_contract
+		 daw_json_default_constuctor_fwd
+		 daw_json_event_parser
+		 daw_json_exception
+		 daw_json_find_path
+		 daw_json_iostream
+		 daw_json_iterator
+		 daw_json_lines_iterator
+		 daw_json_link_describe
+		 daw_json_link_types
+		 daw_json_parse_options
+		 daw_json_schema
+		 daw_json_serialize_options
+		 daw_json_switches
+		 daw_json_value_state
+		 daw_json_writer
+		 daw_to_json
+		 daw_to_json_fwd )
 
 if( NOT Boost_FOUND )
 	list( REMOVE_ITEM DAW_JSON_HEADER_SELF_CONTAINMENT_TESTS
-	      daw_json_boost_pfr_mapping
-	      daw_json_link_describe )
+				daw_json_boost_pfr_mapping
+				daw_json_link_describe )
 endif()
 
 foreach( header_name IN LISTS DAW_JSON_HEADER_SELF_CONTAINMENT_TESTS )
 	set( target_name "daw_header_test_${header_name}" )
 	add_executable(
-	  "${target_name}"
-	  "src/header_self_containment/daw_header_test_${header_name}.cpp" )
+			"${target_name}"
+			"src/header_self_containment/daw_header_test_${header_name}.cpp" )
 	target_link_libraries( "${target_name}" PRIVATE json_test )
 	add_test( NAME "${target_name}" COMMAND "${target_name}" )
 	add_dependencies( ci_tests "${target_name}" )
