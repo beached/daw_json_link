@@ -35,11 +35,9 @@ static_assert( DAW_NUM_RUNS > 0 );
 namespace {
 	using namespace daw::json;
 	using signed_scalar_iterator = json_array_iterator<std::int64_t>;
-	using signed_simd_iterator =
-	  json_simd_block_iterator<json_number_no_name<std::int64_t>, char>;
+	using signed_simd_iterator = json_simd_block_iterator<std::int64_t>;
 	using unsigned_scalar_iterator = json_array_iterator<std::uint64_t>;
-	using unsigned_simd_iterator =
-	  json_simd_block_iterator<json_number_no_name<std::uint64_t>, char>;
+	using unsigned_simd_iterator = json_simd_block_iterator<std::uint64_t>;
 
 	template<bool Signed>
 	[[nodiscard]] std::string make_integer_array( std::size_t element_count ) {

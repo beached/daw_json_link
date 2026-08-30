@@ -66,7 +66,7 @@ namespace daw::json {
 namespace {
 	using point_json = daw::json::json_class_no_name<point_t>;
 	using scalar_iterator = daw::json::json_array_iterator<point_json>;
-	using simd_iterator = daw::json::json_simd_block_iterator<point_json, char>;
+	using simd_iterator = daw::json::json_simd_block_iterator<point_json>;
 
 	[[nodiscard]] std::string make_point_array( std::size_t element_count ) {
 		auto v = std::vector<point_t>{ };
