@@ -473,7 +473,7 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename ExecTag>
-			DAW_ATTRIB_FLATINLINE daw::not_null<char const *>
+			DAW_ATTRIB_FLATINLINE inline daw::not_null<char const *>
 			mem_skip_until_end_of_string( daw::not_null<char const *> first,
 			                              daw::not_null<char const *> const last,
 			                              std::ptrdiff_t &first_escape ) {
