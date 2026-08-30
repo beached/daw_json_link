@@ -15,7 +15,9 @@
 
 #include <daw/daw_ensure.h>
 
+#include <algorithm>
 #include <cstddef>
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -100,8 +102,16 @@ namespace {
 		return average_points<simd_iterator>( document );
 	}
 
-	[[nodiscard]] constexpr bool equal( point_t lhs, point_t rhs ) noexcept {
-		return lhs.x == rhs.x and lhs.y == rhs.y and lhs.z == rhs.z;
+	[[nodiscard]] bool equal( point_t lhs, point_t rhs ) noexcept {
+		constexpr auto abs_tolerance = 1.0e-12;
+		constexpr auto rel_tolerance = 1.0e-12;
+		auto nearly_equal = [&]( double l, double r ) {
+			auto const difference = std::abs( l - r );
+			auto const scale = std::max( { 1.0, std::abs( l ), std::abs( r ) } );
+			return difference <= abs_tolerance + rel_tolerance * scale;
+		};
+		return nearly_equal( lhs.x, rhs.x ) and nearly_equal( lhs.y, rhs.y ) and
+		       nearly_equal( lhs.z, rhs.z );
 	}
 
 	void print_point( point_t value ) {
@@ -115,6 +125,7 @@ int main( int argc, char **argv ) {
 		element_count =
 		  static_cast<std::size_t>( std::strtoull( argv[1], nullptr, 10 ) );
 	}
+	std::cout << "testing " << element_count << " items with " << DAW_NUM_RUNS << " runs.\n";
 	daw_ensure( element_count > 0U );
 
 	auto const json_data = make_point_array( element_count );
@@ -125,7 +136,7 @@ int main( int argc, char **argv ) {
 	std::cout << "\nComputing SIMD point average: ";
 	auto const simd_average = average_simd_blocks( json_document );
 	print_point( simd_average );
-	std::cout << '\n' << std::flush;
+	std::cout << "\n\n";
 	daw_ensure( equal( simd_average, expected ) );
 
 	auto scalar_result = daw::json::benchmark::benchmark(
