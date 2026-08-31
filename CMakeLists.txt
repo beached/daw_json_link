@@ -33,6 +33,7 @@ if( DAW_JSON_ENABLE_FULL_RVO )
 endif()
 
 option( DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON )
+option( DAW_NO_FORCED_INLINE "Define: Disable forced inline optimization" ON )
 
 #if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" )
 #	option( DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON )
@@ -108,8 +109,13 @@ else()
 endif()
 
 if( DAW_NO_FLATTEN )
-	message( STATUS "DAW_NO_FLATTEN=ON: Disabling function flattening and forced inline optimization" )
-	add_definitions( -DDAW_NO_FLATTEN -DDAW_NO_FORCED_INLINE )
+	message( STATUS "DAW_NO_FLATTEN=ON: Disabling function flattening optimization" )
+	add_definitions( -DDAW_NO_FLATTEN )
+endif()
+
+if( DAW_NO_FORCED_INLINE )
+	message( STATUS "DAW_NO_FORCED_INLINE=ON: Disabling forced inline optimization" )
+	add_definitions( -DDAW_NO_FORCED_INLINE )
 endif()
 
 if( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
@@ -193,4 +199,3 @@ if( DAW_ENABLE_TESTING )
 	enable_testing()
 	add_subdirectory( tests )
 endif()
-
