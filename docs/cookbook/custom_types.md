@@ -59,6 +59,145 @@ auto id = daw::json::from_json<identifier_json>( R"("42")" );
 auto json = daw::json::to_json<identifier_json>( id ); // "42"
 ```
 
+## Creating reusable mapping aliases
+
+A mapping can be wrapped in an alias template when the same C++ type and
+converters are used for several JSON members. Only the member name needs to
+remain a template parameter:
+
+```cpp
+template<JSONNAMETYPE Name>
+using json_identifier = daw::json::json_custom<
+  Name,
+  Identifier,
+  IdentifierFromJson,
+  IdentifierToJson
+>;
+```
+
+`JSONNAMETYPE` provides compatibility across language versions. In C++17 it
+accepts a `char const *` member name, while in C++20 and later it uses
+`daw::json::json_name`, allowing a string literal to be supplied directly.
+
+The alias can then be used like any other member mapping. In C++20:
+
+```cpp
+using type = daw::json::json_member_list<
+  json_identifier<"primary_id">,
+  json_identifier<"secondary_id">
+>;
+```
+
+For C++17-compatible code, give the member names static storage:
+
+```cpp
+static constexpr char primary_id[] = "primary_id";
+static constexpr char secondary_id[] = "secondary_id";
+
+using type = daw::json::json_member_list<
+  json_identifier<primary_id>,
+  json_identifier<secondary_id>
+>;
+```
+
+When an alias only needs to support C++20 and later, the parameter can instead
+be written explicitly:
+
+```cpp
+template<daw::json::json_name Name>
+using json_identifier = daw::json::json_custom<
+  Name,
+  Identifier,
+  IdentifierFromJson,
+  IdentifierToJson
+>;
+```
+
+The same technique can be used with other mappings, such as `json_string`,
+`json_number`, and `json_class`, to give frequently used mapping configurations
+a descriptive name.
+
+### Hiding converters behind an alias
+
+The converter types can be kept as implementation details while the public
+aliases describe how the application type appears in a JSON contract:
+
+```cpp
+#include <daw/json/daw_json_link.h>
+
+#include <optional>
+#include <string>
+#include <string_view>
+
+struct Identifier {
+  int value;
+};
+
+namespace identifier_json_details {
+  struct FromJson {
+    Identifier operator( )( std::string_view sv ) const {
+      return Identifier{ std::stoi( std::string( sv ) ) };
+    }
+  };
+
+  struct ToJson {
+    std::string operator( )( Identifier const &value ) const {
+      return std::to_string( value.value );
+    }
+  };
+} // namespace identifier_json_details
+
+template<JSONNAMETYPE Name>
+using json_identifier = daw::json::json_custom<
+  Name,
+  Identifier,
+  identifier_json_details::FromJson,
+  identifier_json_details::ToJson
+>;
+
+template<JSONNAMETYPE Name>
+using json_nullable_identifier = daw::json::json_custom_null<
+  Name,
+  std::optional<Identifier>,
+  identifier_json_details::FromJson,
+  identifier_json_details::ToJson
+>;
+```
+
+Code defining a data contract no longer needs to know which converters implement
+the mapping:
+
+```cpp
+using type = daw::json::json_member_list<
+  json_identifier<"primary_id">,
+  json_nullable_identifier<"secondary_id">
+>;
+```
+
+`json_identifier` requires the member to contain a JSON string.
+`json_nullable_identifier` additionally accepts `null` and maps it to an empty
+`std::optional<Identifier>`.
+
+The nullable alias can also be expressed directly with `json_nullable`. Its
+inner mapping must be unnamed:
+
+```cpp
+template<JSONNAMETYPE Name>
+using json_nullable_identifier = daw::json::json_nullable<
+  Name,
+  std::optional<Identifier>,
+  daw::json::json_custom_no_name<
+    Identifier,
+    identifier_json_details::FromJson,
+    identifier_json_details::ToJson
+  >
+>;
+```
+
+The `json_custom_null` form is the shorter convenience alias; the explicit
+`json_nullable` form is useful when building a reusable nullable wrapper around
+another unnamed mapping.
+
 Because the converter's output is copied directly between the quotes, the
 converter must escape any characters that require JSON escaping.
 
