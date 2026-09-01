@@ -6,7 +6,7 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#include <daw/json/daw_json_link_types.h>
+#include <daw/json/daw_json_link.h>
 #include <daw/json/daw_json_simd_iterator.h>
 
 #include <daw/daw_ensure.h>
@@ -47,31 +47,20 @@ struct simd_iterator_real_value {
 namespace daw::json {
 	template<>
 	struct json_data_contract<simd_iterator_child> {
-#if defined( DAW_JSON_CNTTP_JSON_NAME )
-		using type = json_member_list<json_number<"value", int>>;
-#else
 		static constexpr char const value[] = "value";
 		using type = json_member_list<json_number<value, int>>;
-#endif
 	};
 
 	template<>
 	struct json_data_contract<simd_iterator_class_value> {
-#if defined( DAW_JSON_CNTTP_JSON_NAME )
-		using type = json_member_list<json_number<"id", int>,
-		                              json_string<"text", std::string>,
-		                              json_bool<"enabled", bool>,
-		                              json_class<"child", simd_iterator_child>>;
-#else
 		static constexpr char const id[] = "id";
 		static constexpr char const text[] = "text";
 		static constexpr char const enabled[] = "enabled";
 		static constexpr char const child[] = "child";
-		using type = json_member_list<json_number<id, int>,
-		                              json_string<text, std::string>,
-		                              json_bool<enabled, bool>,
-		                              json_class<child, simd_iterator_child>>;
-#endif
+		using type =
+		  json_member_list<json_number<id, int>, json_string<text, std::string>,
+		                   json_bool<enabled, bool>,
+		                   json_class<child, simd_iterator_child>>;
 	};
 
 	template<>
@@ -81,27 +70,17 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<simd_iterator_container_value> {
-#if defined( DAW_JSON_CNTTP_JSON_NAME )
-		using type =
-		  json_member_list<json_array<"values", int, std::vector<int>>,
-		                   json_string_null<"note", std::optional<std::string>>>;
-#else
 		static constexpr char const values[] = "values";
 		static constexpr char const note[] = "note";
 		using type =
 		  json_member_list<json_array<values, int, std::vector<int>>,
 		                   json_string_null<note, std::optional<std::string>>>;
-#endif
 	};
 
 	template<>
 	struct json_data_contract<simd_iterator_real_value> {
-#if defined( DAW_JSON_CNTTP_JSON_NAME )
-		using type = json_member_list<json_number<"value", double>>;
-#else
 		static constexpr char const value[] = "value";
 		using type = json_member_list<json_number<value, double>>;
-#endif
 	};
 } // namespace daw::json
 
@@ -319,8 +298,7 @@ namespace {
 		}
 
 		auto nested = raw_string_iterator(
-		  R"json({"payload":{"values":["alpha","beta"]}})json",
-		  "payload.values" );
+		  R"json({"payload":{"values":["alpha","beta"]}})json", "payload.values" );
 		if( *nested != "alpha" ) {
 			return false;
 		}
@@ -356,8 +334,7 @@ namespace {
 		daw_ensure( booleans == booleans.end( ) );
 
 		auto strings = string_iterator(
-		  R"json({"payload":{"values":["alpha","beta"]}})json",
-		  "payload.values" );
+		  R"json({"payload":{"values":["alpha","beta"]}})json", "payload.values" );
 		daw_ensure( *strings == "alpha" );
 		++strings;
 		daw_ensure( *strings == "beta" );
@@ -733,8 +710,8 @@ namespace {
 	}
 
 	template<typename Iterator>
-	void ensure_rejected_arrays(
-	  std::initializer_list<std::string_view> documents ) {
+	void
+	ensure_rejected_arrays( std::initializer_list<std::string_view> documents ) {
 		for( auto const document : documents ) {
 			daw_ensure( rejects_array<Iterator>( document ) );
 		}
@@ -764,15 +741,22 @@ namespace {
 
 	void test_invalid_array_grammar( ) {
 		ensure_rejected_arrays<iterator>(
-		  { "[,]", "[,,]", "[,1]", "[1,,2]", "[1 2]", "[1",
-		    "[}" } );
-		ensure_rejected_arrays<bool_iterator>(
-		  { "[,]", "[,,]", "[,true]", "[true,]", "[true,,false]",
-		    "[true false]", "[true", "[truth]" } );
-		ensure_rejected_arrays<string_iterator>(
-		  { "[,]", "[,,]", R"json([,"a"])json",
-		    R"json(["a",])json", R"json(["a",,"b"])json",
-		    R"json(["a" "b"])json", R"json(["unterminated])json" } );
+		  { "[,]", "[,,]", "[,1]", "[1,,2]", "[1 2]", "[1", "[}" } );
+		ensure_rejected_arrays<bool_iterator>( { "[,]",
+		                                         "[,,]",
+		                                         "[,true]",
+		                                         "[true,]",
+		                                         "[true,,false]",
+		                                         "[true false]",
+		                                         "[true",
+		                                         "[truth]" } );
+		ensure_rejected_arrays<string_iterator>( { "[,]",
+		                                           "[,,]",
+		                                           R"json([,"a"])json",
+		                                           R"json(["a",])json",
+		                                           R"json(["a",,"b"])json",
+		                                           R"json(["a" "b"])json",
+		                                           R"json(["unterminated])json" } );
 
 		ensure_boundary_rejections<iterator>( block::block_size, "1", "2" );
 		ensure_boundary_rejections<bool_iterator>(
@@ -879,8 +863,7 @@ namespace {
 		boundary_document.append( block::block_size - 2U, ' ' );
 		boundary_document += R"json({"ignored":{"padding":")json";
 		boundary_document += long_prefix;
-		boundary_document +=
-		  R"json(-unknown-}-]-,-:-tail"},"text":")json";
+		boundary_document += R"json(-unknown-}-]-,-:-tail"},"text":")json";
 		boundary_document += long_prefix;
 		boundary_document +=
 		  R"json(-escaped-\"-quote-\\-slash-}-,-:-tail","child":{"value":33},"enabled":true,"id":3},{"id":4,"text":"after boundary","enabled":false,"child":{"value":44}}])json";
@@ -947,9 +930,7 @@ namespace {
 		auto rejected_non_class = false;
 		try {
 			(void)class_iterator( "[1]" );
-		} catch( daw::json::json_exception const & ) {
-			rejected_non_class = true;
-		}
+		} catch( daw::json::json_exception const & ) { rejected_non_class = true; }
 		daw_ensure( rejected_non_class );
 
 		auto rejected_trailing_comma = false;
@@ -1003,9 +984,7 @@ namespace {
 		try {
 			(void)container_class_iterator(
 			  R"json([{"values":[1,2],"note":nulX}])json" );
-		} catch( daw::json::json_exception const & ) {
-			rejected_class_null = true;
-		}
+		} catch( daw::json::json_exception const & ) { rejected_class_null = true; }
 		daw_ensure( rejected_class_null );
 #endif
 	}
