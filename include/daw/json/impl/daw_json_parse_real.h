@@ -40,6 +40,16 @@ namespace daw::json {
 			                         daw::not_null<char const *> const last,
 			                         Unsigned &DAW_RESTRICT v ) {
 				auto value = v;
+				while( last - first >= 16 ) {
+					value *= static_cast<Unsigned>( 10'000'000'000'000'000ULL );
+					value += static_cast<Unsigned>( parse_16_digits( first ) );
+					first += 16;
+				}
+				if( last - first >= 8 ) {
+					value *= static_cast<Unsigned>( 100'000'000U );
+					value += static_cast<Unsigned>( parse_8_digits( first ) );
+					first += 8;
+				}
 				if constexpr( skip_end_check ) {
 					auto dig = parse_digit( *first );
 					while( dig < 10U ) {
@@ -138,14 +148,13 @@ namespace daw::json {
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr daw::not_null<char const *>
 			parse_digits_while_number( daw::not_null<char const *> first,
 			                           daw::not_null<char const *> const last,
-			                           Unsigned &DAW_RESTRICT v ) {
+			                           Unsigned &DAW_RESTRICT v,
+			                           std::size_t sig_dig_in_use ) {
 
 				if( DAW_UNLIKELY( first >= last ) ) {
 					DAW_UNLIKELY_BRANCH
 					return first;
 				}
-				auto const sig_dig_in_use = count_digits( v );
-
 				auto const last_pos =
 				  (std::min)( { std::distance( first, last ),
 				                static_cast<std::ptrdiff_t>( daw::digits10<Unsigned> -
@@ -153,17 +162,26 @@ namespace daw::json {
 				daw::not_null const new_last = std::next( first.get( ), last_pos );
 
 				auto value = v;
+				bool parsed_eight_digits = false;
+				if( new_last - first >= 8 and is_made_of_eight_digits_cx( first ) ) {
+					value *= static_cast<Unsigned>( 100'000'000U );
+					value += static_cast<Unsigned>( parse_8_digits( first ) );
+					first += 8;
+					parsed_eight_digits = true;
+				}
 
-				unsigned dig = 10U;
-				do {
-					dig = parse_digit( *first );
-					if( dig >= 10U ) {
-						break;
-					}
-					value *= 10U;
-					value += dig;
-					++first;
-				} while( first < new_last );
+				unsigned dig = parsed_eight_digits and first == new_last ? 0U : 10U;
+				if( first < new_last ) {
+					do {
+						dig = parse_digit( *first );
+						if( dig >= 10U ) {
+							break;
+						}
+						value *= 10U;
+						value += dig;
+						++first;
+					} while( first < new_last );
+				}
 				if( first < last and dig < 10U ) {
 					++first;
 				}
@@ -205,7 +223,7 @@ namespace daw::json {
 			append_discarded_digits( char const *first, char const *last,
 			                         std::uint64_t &significant_digits,
 			                         Signed &exponent ) {
-				if( first == nullptr ) {
+				if( first == nullptr or first == last ) {
 					return false;
 				}
 
@@ -465,8 +483,8 @@ namespace daw::json {
 				[[maybe_unused]] daw::not_null<char const *> const orig_first =
 				  parse_state.first;
 
-				auto const sign = static_cast<Result>(
-				  parse_policy_details::validate_signed_first( parse_state ) );
+				auto const sign =
+				  parse_policy_details::validate_signed_first( parse_state );
 
 				using max_storage_digits = daw::constant<static_cast<std::int64_t>(
 				  daw::digits10<std::uint64_t> )>;
@@ -494,11 +512,21 @@ namespace daw::json {
 				char const *discarded_fract_first = nullptr;
 				char const *discarded_fract_last = nullptr;
 				daw::not_null<char const *> last_char = parse_digits_while_number(
-				  first.get( ), whole_last.get( ), significant_digits );
-				auto const sig_digit_count = last_char - parse_state.first;
+				  first.get( ), whole_last.get( ), significant_digits, 0 );
+				auto const parsed_whole_digit_count = last_char - parse_state.first;
+				auto const stored_whole_digit_count = [&] {
+					if( significant_digits == 0 ) {
+						return std::size_t{ 0 };
+					}
+					auto first_nonzero = parse_state.first;
+					while( *first_nonzero == '0' ) {
+						++first_nonzero;
+					}
+					return static_cast<std::size_t>( last_char - first_nonzero );
+				}( );
 				bool use_strtod =
 				  std::is_floating_point_v<Result> and ParseState::precise_ieee754 and
-				  DAW_UNLIKELY( sig_digit_count > max_storage_digits::value );
+				  DAW_UNLIKELY( parsed_whole_digit_count > max_storage_digits::value );
 				signed_t exponent_p1 = [&] {
 					if( DAW_UNLIKELY( last_char >= whole_last ) ) {
 						if constexpr( std::is_floating_point_v<Result> and
@@ -547,7 +575,8 @@ namespace daw::json {
 						                        ( first - parse_state.first ) ) );
 
 						last_char = parse_digits_while_number(
-						  first.get( ), fract_last.get( ), significant_digits );
+						  first.get( ), fract_last.get( ), significant_digits,
+						  stored_whole_digit_count );
 						exponent_p1 -= static_cast<signed_t>( last_char - first );
 						first = last_char;
 						if( daw::nsc_and( first >= fract_last, first < last ) ) {
@@ -598,7 +627,7 @@ namespace daw::json {
 						                      parse_state );
 						unsigned_t exp_tmp = 0;
 						last_char =
-						  parse_digits_while_number( first.get( ), last.get( ), exp_tmp );
+						  parse_digits_while_number( first.get( ), last.get( ), exp_tmp, 0 );
 						first = last_char;
 						return to_signed( exp_tmp, exp_sign );
 					}
@@ -659,7 +688,7 @@ namespace daw::json {
 							                           discarded_fract_last,
 							                           significant_digits,
 							                           exponent );
-							return parse_truncated_lemire<Result>( sign < Result{ 0 },
+							return parse_truncated_lemire<Result>( sign < 0,
 							                                       exponent,
 							                                       significant_digits,
 							                                       discarded_nonzero,
@@ -672,7 +701,7 @@ namespace daw::json {
 						}
 					}
 				}
-				return sign *
+				return static_cast<Result>( sign ) *
 				       power10<Result>( ParseState::exec_tag,
 				                        static_cast<Result>( significant_digits ),
 				                        exponent );
