@@ -12,9 +12,6 @@
 
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_array_iterator.h"
-#if defined( DAW_ALLOW_SSE42 )
-#include "daw/json/impl/daw_json_parse_array_sse42_iterator.h"
-#endif
 #include "daw/json/impl/daw_json_parse_kv_array_iterator.h"
 #include "daw/json/impl/daw_json_parse_kv_class_iterator.h"
 #include "daw/json/impl/daw_json_parse_name.h"
