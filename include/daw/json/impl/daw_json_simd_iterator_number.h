@@ -59,7 +59,7 @@ namespace daw::json {
 				simd_array_grammar_state m_grammar_state{ };
 				pending_span_type m_pending_number{ };
 
-				constexpr void fill_buffer( ) {
+				DAW_JSON_SIMD_CONSTEXPR void fill_buffer( ) {
 					m_value_index = 0;
 					m_value_count = 0;
 					while( m_first != nullptr and m_first != m_last and
@@ -114,10 +114,10 @@ namespace daw::json {
 				}
 
 			public:
-				constexpr json_simd_number_block_iterator( ) = default;
+				json_simd_number_block_iterator( ) = default;
 
-				explicit constexpr json_simd_number_block_iterator(
-				  std::string_view document )
+				explicit DAW_JSON_SIMD_CONSTEXPR
+				json_simd_number_block_iterator( std::string_view document )
 				  : m_first( document.data( ) )
 				  , m_last( std::next( document.data( ), static_cast<std::ptrdiff_t>(
 				                                           document.size( ) ) ) ) {
@@ -134,12 +134,13 @@ namespace daw::json {
 					fill_buffer( );
 				}
 
-				explicit constexpr json_simd_number_block_iterator(
-				  std::string_view document, daw::string_view start_path )
+				explicit DAW_JSON_SIMD_CONSTEXPR
+				json_simd_number_block_iterator( std::string_view document,
+				                                 daw::string_view start_path )
 				  : json_simd_number_block_iterator(
 				      find_array_range<ParseState>( document, start_path ) ) {}
 
-				[[nodiscard]] constexpr reference operator*( ) const {
+				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR reference operator*( ) const {
 					auto const &span = m_number_spans[m_value_index];
 					auto parse_state = [&] {
 						if constexpr( number_type == JsonParseTypes::Real ) {
@@ -163,7 +164,7 @@ namespace daw::json {
 					return constructor_t{ }( value );
 				}
 
-				constexpr json_simd_number_block_iterator &operator++( ) {
+				DAW_JSON_SIMD_CONSTEXPR json_simd_number_block_iterator &operator++( ) {
 					if( m_value_index < m_value_count ) {
 						++m_value_index;
 					}
@@ -173,23 +174,26 @@ namespace daw::json {
 					return *this;
 				}
 
-				constexpr void operator++( int ) {
+				DAW_JSON_SIMD_CONSTEXPR void operator++( int ) {
 					(void)operator++( );
 				}
 
-				[[nodiscard]] constexpr explicit operator bool( ) const noexcept {
+				[[nodiscard]] explicit DAW_JSON_SIMD_CONSTEXPR
+				operator bool( ) const noexcept {
 					return m_value_index < m_value_count;
 				}
 
-				[[nodiscard]] constexpr json_simd_number_block_iterator begin( ) const {
+				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR json_simd_number_block_iterator
+				begin( ) const {
 					return *this;
 				}
 
-				[[nodiscard]] constexpr json_simd_number_block_iterator static end( ) noexcept {
+				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR
+				  json_simd_number_block_iterator static end( ) noexcept {
 					return { };
 				}
 
-				friend constexpr bool
+				friend DAW_JSON_SIMD_CONSTEXPR bool
 				operator==( json_simd_number_block_iterator const &lhs,
 				            json_simd_number_block_iterator const &rhs ) noexcept {
 					auto const lhs_at_end = not lhs;
@@ -202,7 +206,7 @@ namespace daw::json {
 					       rhs.m_number_spans[rhs.m_value_index].first;
 				}
 
-				friend constexpr bool
+				friend DAW_JSON_SIMD_CONSTEXPR bool
 				operator!=( json_simd_number_block_iterator const &lhs,
 				            json_simd_number_block_iterator const &rhs ) noexcept {
 					return not( lhs == rhs );

@@ -172,7 +172,7 @@ namespace {
 		       block_size;
 	}
 
-	[[nodiscard]] constexpr bool test_constexpr_number_iterator( ) {
+	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool test_constexpr_number_iterator( ) {
 		auto empty = iterator{ };
 		if( empty or empty.begin( ) != empty.end( ) ) {
 			return false;
@@ -196,7 +196,8 @@ namespace {
 		return first == values.end( );
 	}
 
-	[[nodiscard]] constexpr bool test_constexpr_integer_iterators( ) {
+	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool
+	test_constexpr_integer_iterators( ) {
 		auto signed_values = signed_iterator( "[-42, 0, 123456]" );
 		if( *signed_values != -42 ) {
 			return false;
@@ -230,7 +231,7 @@ namespace {
 		return unsigned_values == unsigned_values.end( );
 	}
 
-	[[nodiscard]] constexpr bool test_constexpr_bool_iterator( ) {
+	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool test_constexpr_bool_iterator( ) {
 		if( daw::simd_impl::compress_bits( 0b10010010U, 0b10010010U ) != 0b111U or
 		    daw::simd_impl::compress_bits( 0b10000010U, 0b10010010U ) != 0b101U ) {
 			return false;
@@ -282,7 +283,8 @@ namespace {
 		return unchecked_values == unchecked_values.end( );
 	}
 
-	[[nodiscard]] constexpr bool test_constexpr_raw_string_iterator( ) {
+	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool
+	test_constexpr_raw_string_iterator( ) {
 		auto values =
 		  raw_string_iterator( R"json(["plain", "escaped \" quote"])json" );
 		if( *values != "plain" ) {
@@ -310,7 +312,8 @@ namespace {
 		return nested == nested.end( );
 	}
 
-	[[nodiscard]] constexpr bool test_constexpr_custom_constructors( ) {
+	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool
+	test_constexpr_custom_constructors( ) {
 		auto numbers = constructed_iterator( "[4.5]" );
 		auto booleans = constructed_bool_iterator( "[true]" );
 		return ( *numbers ).value == 4.5 and ( *booleans ).value;
@@ -363,7 +366,7 @@ namespace {
 #endif
 	}
 
-	[[nodiscard]] constexpr bool test_constexpr_classifiers( ) {
+	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool test_constexpr_classifiers( ) {
 		using number_classifier = daw::json::json_details::simd_details::
 		  simd_json_classifier<daw::json::JsonBaseParseTypes::Number, char>;
 		using bool_classifier = daw::json::json_details::simd_details::
