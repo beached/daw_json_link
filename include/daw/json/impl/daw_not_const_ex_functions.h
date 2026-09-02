@@ -74,6 +74,8 @@ namespace daw::json {
 
 #if not defined( DAW_HAS_MSVC_LIKE )
 			constexpr
+#else
+			inline
 #endif
 			  std::ptrdiff_t find_lsb_set( std::uint64_t value ) {
 #if DAW_HAS_BUILTIN( __builtin_ffsll )
