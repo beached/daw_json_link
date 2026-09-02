@@ -13,6 +13,10 @@ To set number options use the `daw::json::options::number_opt( Flags... )` metho
 ## `LiteralAsStringOpt`
 
 Controls the ability to parse numbers that are encoded as strings.
+During serialization, `Always` emits the number in quotes. `Never` and `Maybe`
+emit ordinary finite numbers without quotes; `Maybe` only broadens the accepted
+input representation. Allowed NaN and infinity values are always emitted in
+quotes because they are not JSON number literals.
 
 ### Values
 
@@ -53,18 +57,106 @@ When outputting floating point numbers, control whether Inf/NaN values can be pa
 
 ## `FPOutputFormat`
 
-Control the floating point output format
+Control the floating-point output format used by a floating-point
+`json_number`. This option only affects serialization.
 
 ### Values
 
-* `Auto` - Automatically choose between Minimum and Scientific output formats.
-* `Scientific` - Always format in terms of an exponent `<whole>[.fraction]e<exponent>`.
-* `Decimal` - Always format in terms of `<whole>.<fraction>`.
-* `Minimum` - Always format in terms of `<whole>[.fraction]`.
+* `Auto` - Round to `Precision` significant digits and use decimal notation for
+  decimal-point positions from -4 through 6; use scientific notation outside
+  that range.
+* `Scientific` - Use exponent notation `<whole>[.fraction]e<exponent>`. Its
+  `Precision` is the number of digits after the decimal point.
+* `Decimal` - Use fixed-point notation `<whole>[.fraction]`. Its `Precision`
+  is the number of digits after the decimal point.
+* `Minimum` - Round to `Precision` significant digits and use the shortest
+  unpadded decimal representation.
+
+For `Auto` and `Minimum`, `Precision` counts significant digits. For `Decimal`
+and `Scientific`, it counts digits after the decimal point. The default
+`daw::max_value<unsigned>` precision means no explicit digit limit; `Auto` and
+`Minimum` then preserve the shortest representation, while `Decimal` and
+`Scientific` still apply their selected notation. Rounding uses nearest-even
+rounding.
+
+### `json_fp` examples
+
+`json_fp` is the floating-point equivalent of `json_number` with explicit
+format and precision template parameters. Its format is not supplied through
+`number_opt`:
+
+```cpp
+using decimal_amount = daw::json::json_fp_no_name<
+  double, daw::json::options::FPOutputFormat::Decimal, 2>;
+using scientific_amount = daw::json::json_fp_no_name<
+  double, daw::json::options::FPOutputFormat::Scientific, 3>;
+using general_amount = daw::json::json_fp_no_name<
+  double, daw::json::options::FPOutputFormat::Auto, 4>;
+
+daw::json::to_json<decimal_amount>( 12.345 );     // "12.35"
+daw::json::to_json<scientific_amount>( 12.345 );  // "1.235e1"
+daw::json::to_json<general_amount>( 12.345 );     // "12.35"
+```
+
+Named, nullable, and narrowing-checking variants use the same `Format` and
+`Precision` parameters:
+
+```cpp
+using amount = daw::json::json_fp<
+  "amount", double, daw::json::options::FPOutputFormat::Decimal, 2>;
+using optional_amount = daw::json::json_fp_null<
+  "amount", std::optional<double>,
+  daw::json::options::FPOutputFormat::Decimal, 2>;
+using checked_amount = daw::json::json_checked_fp<
+  "amount", double, daw::json::options::FPOutputFormat::Decimal, 2>;
+```
+
+### `json_number` versus `json_fp`
+
+For floating-point values, `json_number` also reads
+`JsonMember::fp_output_format`, which is set through `number_opt`:
+
+```cpp
+using number_decimal = daw::json::json_number_no_name<double,
+  daw::json::options::number_opt(
+    daw::json::options::FPOutputFormat::Decimal )>;
+```
+
+The distinction is that `json_number` selects the output format through its
+encoded options and uses the default precision. `json_fp` selects the format
+through its `Format` template parameter and additionally provides an explicit
+`Precision` template parameter. Internally, both mappings expose the selected
+format as `JsonMember::fp_output_format`; `json_fp` also exposes its precision
+to the serializer.
 
 ### Default
 
 * `Auto`
+
+___
+
+# `json_fp`
+
+To set the encoded options for `json_fp` and `json_checked_fp`, use
+`daw::json::options::fp_opt( Flags... )`. These mappings accept:
+
+* `LiteralAsStringOpt`
+* `JsonRangeCheck`
+* `JsonNumberErrors`
+
+Their meanings and defaults are the same as for `json_number` above.
+`FPOutputFormat` is instead supplied through the mapping's `Format` template
+parameter, followed by the `Precision` template parameter.
+
+```cpp
+using quoted_amount = daw::json::json_fp_no_name<
+  double, daw::json::options::FPOutputFormat::Decimal, 2,
+  daw::json::options::fp_opt(
+    daw::json::options::LiteralAsStringOpt::Always )>;
+```
+
+`JsonRangeCheck` is accepted for consistency with the checked mapping aliases,
+but floating-point parsing currently does not consult it.
 
 ___
 
@@ -75,6 +167,9 @@ To set bool options use the `daw::json::options::bool_opt( Flags... )` method.
 ## `LiteralAsStringOpt`
 
 Controls the ability to parse booleans that are encoded as strings.
+During serialization, `Always` emits the boolean in quotes. `Never` and `Maybe`
+emit an unquoted JSON boolean; `Maybe` only broadens the accepted input
+representation.
 
 ### Values
 
@@ -94,18 +189,51 @@ To set string options use the `daw::json::options::string_opt( Flags... )` metho
 
 ## `EightBitModes`
 
-Controls whether any string character has the high bit set. If restricted, the member will escape any character with the
-high bit set and when parsing will throw if the high bit is encountered. This allows 7bit JSON encoding.
+Controls whether any string byte has the high bit set. If restricted, the
+serializer escapes bytes with the high bit set and the parser rejects them.
+This allows 7-bit JSON encoding.
 
 ### Values
 
 * `DisallowHigh` - Escape any character with the high bit set and throw when encountered
   during parse
-* `AllowFull` - Allow the full 8bits in output without escaping
+* `AllowFull` - Allow the full 8 bits in output without escaping
 
 ### Default
 
 * `AllowFull`
+
+## `EscapeValidUTF8`
+
+Controls whether `to_json` validates and JSON-escapes the value of a
+`json_string` mapping. This option affects serialization only; it does not
+change how `from_json` parses the string.
+
+### Values
+
+* `Validate` - Validate the UTF-8 input and escape quotation marks,
+  backslashes, control characters, and any characters required by the active
+  output restrictions.
+* `AssumeValid` - Write the value directly between quotation marks. The caller
+  guarantees that the value is valid UTF-8 and is already correctly escaped as
+  JSON string content.
+
+### Default
+
+* `Validate`
+
+`AssumeValid` avoids UTF-8 validation and escaping and can substantially
+improve serialization performance for trusted data. Supplying unescaped
+quotation marks, backslashes, control characters, or invalid UTF-8 can produce
+invalid JSON. Because the bytes are written directly, `EightBitModes` and
+global restricted-string output processing are not applied to that value.
+
+```cpp
+using trusted_string = daw::json::json_string_no_name<
+  std::string_view,
+  daw::json::options::string_opt(
+    daw::json::options::EscapeValidUTF8::AssumeValid )>;
+```
 
 ___
 
@@ -115,14 +243,14 @@ To set raw string options use the `daw::json::options::string_raw_opt( Flags... 
 
 ## `EightBitModes`
 
-Controls whether any string character has the high bit set. If restricted, the member will escape any character with the
-high bit set and when parsing will throw if the high bit is encountered. This allows 7bit JSON encoding.
+Controls whether any string byte has the high bit set during serialization. If
+restricted, serialization rejects bytes with the high bit set. Raw-string
+parsing preserves the input bytes and does not inspect this option.
 
 ### Values
 
-* `DisallowHigh` - Escape any character with the high bit set and throw when encountered
-  during parse
-* `AllowFull` - Allow the full 8bits in output without escaping
+* `DisallowHigh` - Reject any byte with the high bit set during serialization
+* `AllowFull` - Allow the full 8 bits in output without escaping
 
 ### Default
 
@@ -147,6 +275,8 @@ ___
 # `json_custom`
 
 To set json_custom options use the `daw::json::options::json_custom_opt( Flags... )` method.
+See [Custom Types and Output](custom_types.md) for complete converter and
+serialization examples.
 
 ## `JsonCustomTypes`
 

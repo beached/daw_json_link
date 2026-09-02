@@ -66,6 +66,8 @@ namespace daw::json {
 		} // namespace parse_utils
 
 		namespace datetime {
+			using attoseconds = std::chrono::duration<std::int64_t, std::atto>;
+
 			namespace datetime_details {
 				template<typename Result>
 				constexpr Result parse_number( daw::string_view sv ) {
@@ -97,7 +99,7 @@ namespace daw::json {
 			constexpr TP civil_to_time_point( std::int32_t yr, std::uint32_t mo,
 			                                  std::uint32_t dy, std::uint32_t hr,
 			                                  std::uint32_t mn, std::uint32_t se,
-			                                  std::uint64_t ns ) {
+			                                  std::uint64_t attosecond ) {
 				using Clock = typename TP::clock;
 				using Duration = typename TP::duration;
 				DAW_CPP23_STATIC_LOCAL constexpr auto calc =
@@ -107,7 +109,7 @@ namespace daw::json {
 				      std::uint32_t h,
 				      std::uint32_t min,
 				      std::uint32_t s,
-				      std::uint64_t nano ) DAW_JSON_CPP23_STATIC_CALL_OP {
+				      std::uint64_t atto ) DAW_JSON_CPP23_STATIC_CALL_OP {
 					  y -= static_cast<std::int32_t>( m ) <= 2;
 					  std::int32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
 					  auto const yoe = static_cast<std::uint32_t>(
@@ -124,14 +126,16 @@ namespace daw::json {
 					    static_cast<int64_t>( era ) * 146097LL +
 					    static_cast<std::int64_t>( doe ) - 719468LL;
 
-					  using Days = std::chrono::duration<std::int32_t, std::ratio<86400>>;
-					  auto const dur =
-					    std::chrono::floor<Duration>( std::chrono::nanoseconds( nano ) );
+					  auto const dur = std::chrono::floor<Duration>(
+					    attoseconds( static_cast<std::int64_t>( atto ) ) );
+					  auto const whole_seconds =
+					    std::chrono::seconds( days_since_epoch * 86400LL +
+					                          static_cast<std::int64_t>( h ) * 3600LL +
+					                          static_cast<std::int64_t>( min ) * 60LL +
+					                          static_cast<std::int64_t>( s ) );
 					  return std::chrono::time_point<std::chrono::system_clock,
 					                                 Duration>{ } +
-					         ( Days( days_since_epoch ) + std::chrono::hours( h ) +
-					           std::chrono::minutes( min ) +
-					           std::chrono::seconds( static_cast<std::uint32_t>( s ) ) +
+					         ( std::chrono::duration_cast<Duration>( whole_seconds ) +
 					           dur );
 				  };
 				// Not all clocks have the same epoch.  This should account for the
@@ -139,7 +143,7 @@ namespace daw::json {
 				// relation to unix epoch.  If system_clock is used, as is the default
 				// for the return value, it will be zero and should be removed by the
 				// compiler
-				auto result = calc( yr, mo, dy, hr, mn, se, ns );
+				auto result = calc( yr, mo, dy, hr, mn, se, attosecond );
 
 				if constexpr( std::is_same_v<Clock, std::chrono::system_clock> ) {
 					return result;
@@ -201,7 +205,7 @@ namespace daw::json {
 				std::uint_least32_t hour;
 				std::uint_least32_t minute;
 				std::uint_least32_t second;
-				std::uint64_t nanosecond;
+				std::uint64_t attosecond;
 			};
 
 			constexpr time_parts
@@ -228,14 +232,21 @@ namespace daw::json {
 				if( timestamp_str.empty( ) ) {
 					return result;
 				}
-				if( not parse_utils::is_number( timestamp_str.front( ) ) ) {
-					timestamp_str.remove_prefix( );
+				daw_json_ensure( timestamp_str.front( ) == '.',
+				                 ErrorReason::InvalidTimestamp );
+				timestamp_str.remove_prefix( );
+				daw_json_ensure( not timestamp_str.empty( ),
+				                 ErrorReason::InvalidTimestamp );
+				for( char const c : timestamp_str ) {
+					daw_json_ensure( parse_utils::is_number( c ),
+					                 ErrorReason::InvalidTimestamp );
 				}
-				auto const nanosecond_str = timestamp_str.substr(
-				  0, std::min( timestamp_str.size( ), std::size_t{ 9 } ) );
-				result.nanosecond =
-				  datetime_details::parse_number<std::uint64_t>( nanosecond_str );
-				result.nanosecond *= daw::cxmath::pow10( 9 - timestamp_str.size( ) );
+				auto const precision =
+				  std::min( timestamp_str.size( ), std::size_t{ 18 } );
+				auto const attosecond_str = timestamp_str.substr( 0, precision );
+				result.attosecond =
+				  datetime_details::parse_number<std::uint64_t>( attosecond_str );
+				result.attosecond *= daw::cxmath::pow10( 18 - precision );
 				return result;
 			}
 
@@ -302,7 +313,7 @@ namespace daw::json {
 				                                hms.hour,
 				                                hms.minute,
 				                                hms.second,
-				                                hms.nanosecond );
+				                                hms.attosecond );
 			}
 			struct ymdhms {
 				std::int_least32_t year;
@@ -311,7 +322,7 @@ namespace daw::json {
 				std::uint_least32_t hour;
 				std::uint_least32_t minute;
 				std::uint_least32_t second;
-				std::uint64_t nanosecond;
+				std::uint64_t attosecond;
 			};
 
 			template<typename Clock, typename Duration>
@@ -320,8 +331,9 @@ namespace daw::json {
 				auto dur_from_epoch = tp.time_since_epoch( );
 				using Days =
 				  std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
-				auto const days_since_epoch =
-				  std::chrono::duration_cast<Days>( dur_from_epoch );
+				auto const whole_seconds =
+				  std::chrono::floor<std::chrono::seconds>( dur_from_epoch );
+				auto const days_since_epoch = std::chrono::floor<Days>( whole_seconds );
 				std::int_least32_t z = days_since_epoch.count( );
 				z += 719468;
 				std::int_least32_t const era = ( z >= 0 ? z : z - 146096 ) / 146097;
@@ -339,18 +351,21 @@ namespace daw::json {
 				  static_cast<std::int_least32_t>( mp ) +
 				  ( static_cast<std::int_least32_t>( mp ) < 10 ? 3 : -9 ) ); // [1, 12]
 
-				dur_from_epoch -= days_since_epoch;
+				auto dur_in_day =
+				  whole_seconds -
+				  std::chrono::duration_cast<std::chrono::seconds>( days_since_epoch );
 				auto const hrs =
-				  std::chrono::duration_cast<std::chrono::hours>( dur_from_epoch );
-				dur_from_epoch -= hrs;
+				  std::chrono::duration_cast<std::chrono::hours>( dur_in_day );
+				dur_in_day -= hrs;
 				auto const min =
-				  std::chrono::duration_cast<std::chrono::minutes>( dur_from_epoch );
-				dur_from_epoch -= min;
+				  std::chrono::duration_cast<std::chrono::minutes>( dur_in_day );
+				dur_in_day -= min;
 				auto const sec =
-				  std::chrono::duration_cast<std::chrono::seconds>( dur_from_epoch );
-				dur_from_epoch -= sec;
-				auto const dur = std::chrono::duration_cast<std::chrono::nanoseconds>(
-				  dur_from_epoch );
+				  std::chrono::duration_cast<std::chrono::seconds>( dur_in_day );
+				auto const subseconds =
+				  dur_from_epoch -
+				  std::chrono::duration_cast<Duration>( whole_seconds );
+				auto const dur = std::chrono::duration_cast<attoseconds>( subseconds );
 				return ymdhms{ y + ( m <= 2 ),
 				               m,
 				               d,

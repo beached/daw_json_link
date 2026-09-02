@@ -541,6 +541,213 @@ namespace daw::json {
 		  JsonNullable::NullVisible, Constructor>;
 
 		namespace json_base {
+			/**
+			 * Base mapping for a floating-point JSON number. Serialization supports
+			 * four output formats:
+			 *
+			 * - `Auto` selects decimal notation for decimal-point positions [-4, 6]
+			 *   and scientific notation otherwise.
+			 * - `Decimal` uses fixed-point notation.
+			 * - `Scientific` uses scientific notation.
+			 * - `Minimum` uses an unpadded decimal representation.
+			 *
+			 * `Precision` is a significant-digit count for `Auto` and `Minimum`, and
+			 * the number of digits after the decimal point for `Decimal` and
+			 * `Scientific`. Values are rounded to the requested precision; fixed and
+			 * scientific formats pad with zeroes as needed. A value of
+			 * `daw::max_value<unsigned>` disables the explicit precision limit and
+			 * uses the shortest available representation.
+			 *
+			 * @tparam T Floating-point type to parse and serialize
+			 * @tparam Format Floating-point output format
+			 * @tparam Precision Floating-point output precision
+			 * @tparam Options JSON options created with `options::fp_opt`
+			 * @tparam Constructor Callable used to construct the parsed value
+			 */
+			template<typename T, options::FPOutputFormat Format, unsigned Precision,
+			         json_options_t Options, typename Constructor>
+			struct json_fp {
+				using i_am_a_json_type = void;
+				using wrapped_type = T;
+
+				static_assert( daw::is_floating_point_v<T>,
+				               "json_fp requires a floating point type" );
+				using constructor_t =
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
+				                     default_constructor<T>, Constructor>;
+				using parse_to_t =
+				  typename json_details::construction_result<constructor_t, T>::type;
+
+				static constexpr auto expected_type =
+				  json_details::number_parse_type_v<T>;
+
+				static constexpr options::LiteralAsStringOpt literal_as_string =
+				  json_details::get_bits_for<options::LiteralAsStringOpt>( fp_opts,
+				                                                           Options );
+
+				static constexpr options::JsonRangeCheck range_check =
+				  json_details::get_bits_for<options::JsonRangeCheck>( fp_opts,
+				                                                       Options );
+
+				static constexpr options::FPOutputFormat fp_output_format = Format;
+				static constexpr unsigned precision = Precision;
+
+				static constexpr options::JsonNumberErrors allow_number_errors =
+				  json_details::get_bits_for<options::JsonNumberErrors>( fp_opts,
+				                                                         Options );
+
+				static_assert( allow_number_errors == options::JsonNumberErrors::None or
+				                 literal_as_string !=
+				                   options::LiteralAsStringOpt::Never,
+				               "Cannot allow NaN/Inf/-Inf when numbers cannot be "
+				               "serialized/parsed as a string" );
+
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Number;
+
+				template<JSONNAMETYPE NewName>
+				using with_name = daw::json::json_fp<NewName, T, Format, Precision,
+				                                     Options, Constructor>;
+
+				using as_string =
+				  json_fp<T, Format, Precision,
+				          json_details::fp_opts_set<
+				            Options, options::LiteralAsStringOpt::Always>,
+				          Constructor>;
+			};
+		} // namespace json_base
+
+		/**
+		 * Maps a named JSON number to a floating-point value and provides explicit
+		 * control over its serialized format and precision.
+		 * @tparam Name Name of the JSON member
+		 * @tparam T Floating-point type to parse and pass to Constructor
+		 * @tparam Format Serialization format:
+		 *   - `Auto` (default) rounds to `Precision` significant digits and uses
+		 *     decimal notation for decimal-point positions [-4, 6], otherwise
+		 *     scientific notation.
+		 *   - `Decimal` uses fixed-point notation with `Precision` digits after
+		 *     the decimal point.
+		 *   - `Scientific` uses scientific notation with `Precision` digits after
+		 *     the decimal point.
+		 *   - `Minimum` rounds to `Precision` significant digits and uses the
+		 *     shortest decimal notation without padding.
+		 * @tparam Precision The precision for `Format`: significant digits for
+		 * `Auto` and `Minimum`, fractional digits for `Decimal` and `Scientific`.
+		 * `daw::max_value<unsigned>` disables the explicit precision limit.
+		 * @tparam Options Options created with options::fp_opt
+		 * @tparam Constructor Callable used to construct the result
+		 */
+		template<JSONNAMETYPE Name, typename T, options::FPOutputFormat Format,
+		         unsigned Precision, json_options_t Options, typename Constructor>
+		struct json_fp
+		  : json_base::json_fp<T, Format, Precision, Options, Constructor> {
+
+			static constexpr daw::string_view name = Name;
+
+			using without_name =
+			  json_base::json_fp<T, Format, Precision, Options, Constructor>;
+		};
+
+		/**
+		 * Maps an unnamed JSON number to a floating-point value and provides
+		 * explicit control over its serialized format and precision.
+		 * @tparam T Floating-point type to parse and pass to Constructor
+		 * @tparam Format Formatting used during serialization; see `json_fp` for
+		 * the `Auto`, `Decimal`, `Scientific`, and `Minimum` behaviours.
+		 * @tparam Precision Precision used by `Format`: significant digits for
+		 * `Auto`/`Minimum`, fractional digits for `Decimal`/`Scientific`.
+		 * `daw::max_value<unsigned>` disables the explicit precision limit.
+		 * @tparam Options Options created with options::fp_opt
+		 * @tparam Constructor Callable used to construct the result
+		 */
+		template<typename T = double,
+		         options::FPOutputFormat Format = options::FPOutputFormat::Auto,
+		         unsigned Precision = daw::max_value<unsigned>,
+		         json_options_t Options = fp_opts_def,
+		         typename Constructor = use_default>
+		using json_fp_no_name =
+		  json_base::json_fp<T, Format, Precision, Options, Constructor>;
+
+		/**
+		 * Maps an unnamed JSON number or null to a nullable floating-point value.
+		 * An empty value is emitted as null because an unnamed array or tuple
+		 * element cannot be omitted.
+		 * @tparam T Nullable type whose underlying value is floating point
+		 * @tparam Format Formatting used during serialization; see `json_fp` for
+		 * the `Auto`, `Decimal`, `Scientific`, and `Minimum` behaviours. The
+		 * nullable wrapper emits `null` for an empty value.
+		 * @tparam Precision Precision used by `Format`: significant digits for
+		 * `Auto`/`Minimum`, fractional digits for `Decimal`/`Scientific`.
+		 * `daw::max_value<unsigned>` disables the explicit precision limit.
+		 * @tparam Options Options created with options::fp_opt
+		 * @tparam Constructor Callable used to construct the nullable result
+		 */
+		template<typename T = std::optional<double>,
+		         options::FPOutputFormat Format = options::FPOutputFormat::Auto,
+		         unsigned Precision = daw::max_value<unsigned>,
+		         json_options_t Options = fp_opts_def,
+		         typename Constructor = use_default>
+		using json_fp_null_no_name =
+		  json_base::json_nullable<T,
+		                           json_base::json_fp<json_details::unwrapped_t<T>,
+		                                              Format, Precision, Options>,
+		                           JsonNullable::NullVisible, Constructor>;
+
+		/**
+		 * Maps an unnamed JSON number to a floating-point value with narrowing
+		 * checks enabled and provides explicit control over its serialized format
+		 * and precision.
+		 * @tparam T Floating-point type to parse and pass to Constructor
+		 * @tparam Format Formatting used during serialization; see `json_fp` for
+		 * the `Auto`, `Decimal`, `Scientific`, and `Minimum` behaviours.
+		 * Narrowing checks affect parsing only.
+		 * @tparam Precision Precision used by `Format`: significant digits for
+		 * `Auto`/`Minimum`, fractional digits for `Decimal`/`Scientific`.
+		 * `daw::max_value<unsigned>` disables the explicit precision limit.
+		 * @tparam Options Options created with options::fp_opt; narrowing checks
+		 * are enabled by this alias
+		 * @tparam Constructor Callable used to construct the result
+		 */
+		template<typename T = double, json_options_t Options = fp_opts_def,
+		         options::FPOutputFormat Format = options::FPOutputFormat::Auto,
+		         unsigned Precision = daw::max_value<unsigned>,
+		         typename Constructor = use_default>
+		using json_checked_fp_no_name =
+		  json_base::json_fp<T, Format, Precision,
+		                     json_details::fp_opts_set<
+		                       Options, options::JsonRangeCheck::CheckForNarrowing>,
+		                     Constructor>;
+
+		/**
+		 * Maps an unnamed JSON number or null to a nullable floating-point value
+		 * with narrowing checks enabled. An empty value is emitted as null because
+		 * an unnamed array or tuple element cannot be omitted.
+		 * @tparam T Nullable type whose underlying value is floating point
+		 * @tparam Format Formatting used during serialization; see `json_fp` for
+		 * the `Auto`, `Decimal`, `Scientific`, and `Minimum` behaviours. Narrowing
+		 * checks affect parsing only; the nullable wrapper emits `null` for an
+		 * empty value.
+		 * @tparam Precision Precision used by `Format`: significant digits for
+		 * `Auto`/`Minimum`, fractional digits for `Decimal`/`Scientific`.
+		 * `daw::max_value<unsigned>` disables the explicit precision limit.
+		 * @tparam Options Options created with options::fp_opt; narrowing checks
+		 * are enabled by this alias
+		 * @tparam Constructor Callable used to construct the nullable result
+		 */
+		template<typename T = std::optional<double>,
+		         options::FPOutputFormat Format = options::FPOutputFormat::Auto,
+		         unsigned Precision = daw::max_value<unsigned>,
+		         json_options_t Options = fp_opts_def,
+		         typename Constructor = use_default>
+		using json_checked_fp_null_no_name = json_base::json_nullable<
+		  T,
+		  json_base::json_fp<
+		    json_details::unwrapped_t<T>, Format, Precision,
+		    json_details::fp_opts_set<Options,
+		                              options::JsonRangeCheck::CheckForNarrowing>>,
+		  JsonNullable::NullVisible, Constructor>;
+
+		namespace json_base {
 			template<typename T, json_options_t Options, typename Constructor>
 			struct json_bool {
 				using i_am_a_json_type = void;
@@ -686,6 +893,10 @@ namespace daw::json {
 				  json_details::get_bits_for<options::EightBitModes>( string_opts,
 				                                                      Options );
 
+				static constexpr auto escape_output =
+				  json_details::get_bits_for<options::EscapeValidUTF8>( string_opts,
+				                                                        Options );
+
 				static constexpr auto underlying_json_type = JsonBaseParseTypes::String;
 
 				template<JSONNAMETYPE NewName>
@@ -776,7 +987,7 @@ namespace daw::json {
 			/// @tparam Constructor Specify a Constructor type or use
 			/// the default nullable_constructor<T>
 			template<typename T, typename JsonMember, JsonNullable NullableType,
-			         typename Constructor>
+			         typename Constructor, typename IsNull>
 			struct json_nullable {
 				using i_am_a_json_type = void;
 				using i_am_a_json_nullable = void;
@@ -796,7 +1007,7 @@ namespace daw::json {
 				  daw::traits::identity<raw_member_type>,
 				  json_details::ident_trait<json_details::json_deduced_type,
 				                            raw_member_type>>::type;
-
+				using is_null_checker = IsNull;
 				static_assert( json_details::is_no_name_v<member_type>,
 				               "JsonMember template paramater must be noname type" );
 				using parse_to_t = T;
@@ -812,8 +1023,9 @@ namespace daw::json {
 				  member_type::underlying_json_type;
 
 				template<JSONNAMETYPE NewName>
-				using with_name = daw::json::json_nullable<NewName, T, JsonMember,
-				                                           NullableType, Constructor>;
+				using with_name =
+				  daw::json::json_nullable<NewName, T, JsonMember, NullableType,
+				                           Constructor, IsNull>;
 			};
 		} // namespace json_base
 
@@ -844,11 +1056,12 @@ namespace daw::json {
 		/// must be emitted as null
 		/// @tparam Constructor Specify a Constructor type or use
 		/// the default nullable_constructor<T>
+		/// @tparam IsNull Specify a callable that returns true if the T is null.
 		template<typename T, typename JsonMember = use_default,
-		         typename Constructor = use_default>
+		         typename Constructor = use_default, typename IsNull = use_default>
 		using json_nullable_no_name =
 		  json_base::json_nullable<T, JsonMember, JsonNullable::NullVisible,
-		                           Constructor>;
+		                           Constructor, IsNull>;
 
 		/// @brief Mark a member as nullable
 		/// @tparam Name name of JSON member
@@ -859,15 +1072,16 @@ namespace daw::json {
 		/// must be emitted as null
 		/// @tparam Constructor Specify a Constructor type or use
 		/// the default nullable_constructor<T>
+		/// @tparam IsNull Specify a callable that returns true if the T is null.
 		template<JSONNAMETYPE Name, typename T, typename JsonMember,
-		         JsonNullable NullableType, typename Constructor>
-		struct json_nullable
-		  : json_base::json_nullable<T, JsonMember, NullableType, Constructor> {
+		         JsonNullable NullableType, typename Constructor, typename IsNull>
+		struct json_nullable : json_base::json_nullable<T, JsonMember, NullableType,
+		                                                Constructor, IsNull> {
 
 			static constexpr daw::string_view name = Name;
 
-			using without_name =
-			  json_base::json_nullable<T, JsonMember, NullableType, Constructor>;
+			using without_name = json_base::json_nullable<T, JsonMember, NullableType,
+			                                              Constructor, IsNull>;
 		};
 
 		namespace json_base {

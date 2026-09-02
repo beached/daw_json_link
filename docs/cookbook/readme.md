@@ -7,6 +7,7 @@ This folder contains examples of various JSON constructs and how to create a C++
 * [Automatic Code Generation](automated_code_generation.md)
 * [Classes from Array/JSON Tuples](class_from_array.md)
 * [Classes](class.md)
+* [Custom Types and Output](custom_types.md)
 * [Dates](dates.md)
 * [Enums](enums.md)
 * [Graphs](graphs.md)

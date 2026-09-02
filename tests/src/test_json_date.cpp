@@ -12,6 +12,7 @@
 
 #include <chrono>
 #include <tuple>
+#include <type_traits>
 
 using timestamp_t =
   std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
@@ -62,7 +63,36 @@ static_assert( daw::json::from_json<NullableDate>(
                daw::json::datetime::civil_to_time_point( 2024, 9, 2, 1, 14, 54,
                                                          0 ) );
 
+#if defined( DAW_HAS_INT128 )
+template<typename Rep>
+void test_wide_attosecond_duration( ) {
+	if constexpr( std::is_arithmetic_v<Rep> ) {
+		using wide_attoseconds = std::chrono::duration<Rep, std::atto>;
+		using wide_timestamp_t =
+		  std::chrono::time_point<std::chrono::system_clock, wide_attoseconds>;
+
+		auto const parsed =
+		  daw::json::from_json<daw::json::json_date_no_name<wide_timestamp_t>>(
+		    R"json("1970-01-01T00:00:10.1234567890123456789Z")json" );
+		auto const expected =
+		  std::chrono::duration_cast<wide_attoseconds>(
+		    std::chrono::seconds{ 10 } ) +
+		  wide_attoseconds{ static_cast<Rep>( 123456789012345678LL ) };
+		daw_ensure( parsed.time_since_epoch( ) == expected );
+
+		auto const serialized =
+		  daw::json::to_json<daw::json::json_date_no_name<wide_timestamp_t>>(
+		    parsed );
+		daw_ensure( serialized ==
+		            R"json("1970-01-01T00:00:10.123456789012345678Z")json" );
+	}
+}
+#endif
+
 int main( ) {
+#if defined( DAW_HAS_INT128 )
+	test_wide_attosecond_duration<daw::int128_t>( );
+#endif
 #if defined( DAW_USE_EXCEPTIONS )
 	{
 		bool success = false;
@@ -141,6 +171,39 @@ int main( ) {
 			success = false;
 		} catch( std::exception const & ) { success = true; }
 		daw_ensure( success );
+	}
+	{
+		using nanosecond_timestamp_t =
+		  std::chrono::time_point<std::chrono::system_clock,
+		                          std::chrono::nanoseconds>;
+		auto const parsed = daw::json::from_json<
+		  daw::json::json_date_no_name<nanosecond_timestamp_t>>(
+		  R"json("2024-12-02T05:42:04.1234567890Z")json" );
+		daw_ensure(
+		  parsed ==
+		  daw::json::datetime::civil_to_time_point<nanosecond_timestamp_t>(
+		    2024, 12, 2, 5, 42, 4, 123456789000000000ULL ) );
+	}
+	{
+		using atto_timestamp_t =
+		  std::chrono::time_point<std::chrono::system_clock,
+		                          daw::json::datetime::attoseconds>;
+		auto const parsed =
+		  daw::json::from_json<daw::json::json_date_no_name<atto_timestamp_t>>(
+		    R"json("1970-01-01T00:00:00.1234567890123456789Z")json" );
+		daw_ensure( parsed.time_since_epoch( ).count( ) == 123456789012345678LL );
+		auto const serialized =
+		  daw::json::to_json<daw::json::json_date_no_name<atto_timestamp_t>>(
+		    parsed );
+		daw_ensure( serialized ==
+		            R"json("1970-01-01T00:00:00.123456789012345678Z")json" );
+		auto const one_millisecond =
+		  atto_timestamp_t{ daw::json::datetime::attoseconds{ 1000000000000000LL } };
+		auto const one_millisecond_serialized =
+		  daw::json::to_json<daw::json::json_date_no_name<atto_timestamp_t>>(
+		    one_millisecond );
+		daw_ensure( one_millisecond_serialized ==
+		            R"json("1970-01-01T00:00:00.001Z")json" );
 	}
 	{
 		bool success = false;

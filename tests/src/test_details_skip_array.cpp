@@ -18,12 +18,14 @@
 using namespace daw::json;
 using namespace daw::json::json_details;
 
-bool test_empty_quoted( ) {
+constexpr bool test_empty_quoted( ) {
 	DAW_CONSTEXPR std::string_view sv = "[]";
 	auto rng = daw::json::BasicParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
 	return std::string_view( v.first, v.size( ) ) == sv;
 }
+
+static_assert( test_empty_quoted( ) );
 
 bool test_extra_slash( ) {
 	DAW_CONSTEXPR std::string_view sv = "[\\]";

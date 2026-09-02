@@ -12,9 +12,6 @@
 
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_array_iterator.h"
-#if defined( DAW_ALLOW_SSE42 )
-#include "daw/json/impl/daw_json_parse_array_sse42_iterator.h"
-#endif
 #include "daw/json/impl/daw_json_parse_kv_array_iterator.h"
 #include "daw/json/impl/daw_json_parse_kv_class_iterator.h"
 #include "daw/json/impl/daw_json_parse_name.h"
@@ -579,22 +576,25 @@ namespace daw::json {
 							auto result = parse_state;
 							if( *( result.first - 1 ) == '"' ) {
 								result.first--;
+								result.last++;
 							}
 							return result;
 						} else {
 							if( parse_state.front( ) == '"' ) {
-								auto result = skip_string( parse_state );
-								result.first--;
-								return result;
+								return skip_string<true>( parse_state );
 							}
 							return skip_value( parse_state );
 						}
 					}
 				}( );
-				daw_json_assert_weak(
-				  str.has_more( ) and not( str.front( ) == '[' or str.front( ) == '{' ),
-				  ErrorReason::InvalidStartOfValue,
-				  str );
+				if constexpr( JsonMember::custom_json_type !=
+				              options::JsonCustomTypes::Any ) {
+					daw_json_assert_weak(
+					  str.has_more( ) and
+					    not( str.front( ) == '[' or str.front( ) == '{' ),
+					  ErrorReason::InvalidStartOfValue,
+					  str );
+				}
 				using constructor_t = typename JsonMember::from_converter_t;
 				return construct_value<json_result_t<JsonMember>, constructor_t>(
 				  parse_state, std::string_view( std::data( str ), std::size( str ) ) );

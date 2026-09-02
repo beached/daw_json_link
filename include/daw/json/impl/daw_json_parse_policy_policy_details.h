@@ -16,6 +16,10 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			enum class SkipBracketedType { Array, Class };
+		} // namespace json_details
+
 		namespace parse_policy_details {
 			template<char... keys>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr bool in( char c ) {

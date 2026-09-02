@@ -1,0 +1,198 @@
+// Copyright (c) Darrell Wright
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Official repository: https://github.com/beached/daw_json_link
+//
+
+#include "daw_json_benchmark.h"
+
+#include <daw/json/daw_json_iterator.h>
+#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_json_simd_iterator.h>
+
+#include <daw/daw_ensure.h>
+
+#include <cstddef>
+#include <cstdlib>
+#include <iostream>
+#include <string>
+#include <string_view>
+
+#if not defined( DAW_NUM_RUNS )
+#if not defined( DEBUG ) or defined( NDEBUG )
+static inline constexpr std::size_t DAW_NUM_RUNS = 100;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 2;
+#endif
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
+#if defined( DAW_JSON_HAS_SIMD )
+
+namespace {
+	using namespace daw::json;
+	using scalar_iterator = json_array_iterator<std::string>;
+	using simd_iterator = json_simd_block_iterator<std::string>;
+	using raw_string = json_string_raw_no_name<std::string_view>;
+	using scalar_raw_iterator = json_array_iterator<raw_string>;
+	using simd_raw_iterator = json_simd_block_iterator<raw_string>;
+
+	[[nodiscard]] std::string make_string_array( std::size_t element_count ) {
+		auto result = std::string{ "[" };
+		result.reserve( element_count * 192U + 1U );
+		for( std::size_t n = 0; n < element_count; ++n ) {
+			auto const append_numbered_prefix = [&] {
+				result += "\"value-";
+				result += std::to_string( n );
+			};
+			switch( ( n * 17U + n / 7U ) % 16U ) {
+			case 0:
+				result += R"json("")json";
+				break;
+			case 1:
+				result += R"json("x")json";
+				break;
+			case 2:
+				append_numbered_prefix( );
+				result += R"json(-escaped-\"-quote")json";
+				break;
+			case 3:
+				append_numbered_prefix( );
+				result += R"json(-escaped-\\-slash")json";
+				break;
+			case 4:
+				append_numbered_prefix( );
+				result += R"json(-a-somewhat-longer-string-value")json";
+				break;
+			case 5:
+				append_numbered_prefix( );
+				result += "-long-";
+				result.append( 256U, 'a' );
+				result += '"';
+				break;
+			case 6:
+				append_numbered_prefix( );
+				result += "-very-long-";
+				result.append( 2048U, 'b' );
+				result += R"json(-escaped-\"-tail")json";
+				break;
+			default:
+				append_numbered_prefix( );
+				result += R"json(-short")json";
+				break;
+			}
+			result += ',';
+		}
+		if( element_count == 0U ) {
+			result += ']';
+		} else {
+			result.back( ) = ']';
+		}
+		return result;
+	}
+
+	[[nodiscard]] std::size_t total_scalar_size( std::string_view document ) {
+		auto result = std::size_t{ 0 };
+		for( auto const &value : scalar_iterator( document ) ) {
+			result += value.size( );
+		}
+		daw::do_not_optimize( result );
+		return result;
+	}
+
+	[[nodiscard]] std::size_t total_simd_block_size( std::string_view document ) {
+		auto result = std::size_t{ 0 };
+		for( auto const &value : simd_iterator( document ) ) {
+			result += value.size( );
+		}
+		daw::do_not_optimize( result );
+		return result;
+	}
+
+	[[nodiscard]] std::size_t total_scalar_raw_size( std::string_view document ) {
+		auto result = std::size_t{ 0 };
+		for( auto const value : scalar_raw_iterator( document ) ) {
+			result += value.size( );
+		}
+		daw::do_not_optimize( result );
+		return result;
+	}
+
+	[[nodiscard]] std::size_t
+	total_simd_block_raw_size( std::string_view document ) {
+		auto result = std::size_t{ 0 };
+		for( auto const value : simd_raw_iterator( document ) ) {
+			result += value.size( );
+		}
+		daw::do_not_optimize( result );
+		return result;
+	}
+} // namespace
+
+int main( int argc, char **argv ) {
+	auto element_count = std::size_t{ 100'000 };
+	if( argc > 1 ) {
+		element_count =
+		  static_cast<std::size_t>( std::strtoull( argv[1], nullptr, 10 ) );
+	}
+
+	auto const json_data = make_string_array( element_count );
+	auto const json_document = std::string_view( json_data );
+	std::cout << "Computing expected total string size: ";
+	auto const expected = total_scalar_size( json_document );
+	std::cout << expected << "\nComputing SIMD total string size: ";
+	auto const simd_size = total_simd_block_size( json_document );
+	std::cout << simd_size << '\n' << std::flush;
+	daw_ensure( simd_size == expected );
+
+	auto scalar_result = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS,
+	  json_document.size( ),
+	  "string array total size (json iterator, no SIMD)",
+	  total_scalar_size,
+	  json_document );
+	daw_ensure( scalar_result.get( ) == expected );
+
+	auto simd_result = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS,
+	  json_document.size( ),
+	  "string array total size (SIMD block iterator)",
+	  total_simd_block_size,
+	  json_document );
+	daw_ensure( simd_result.get( ) == expected );
+
+	std::cout << "Computing expected total raw string size: ";
+	auto const expected_raw = total_scalar_raw_size( json_document );
+	std::cout << expected_raw << "\nComputing SIMD total raw string size: ";
+	auto const simd_raw_size = total_simd_block_raw_size( json_document );
+	std::cout << simd_raw_size << '\n' << std::flush;
+	daw_ensure( simd_raw_size == expected_raw );
+
+	auto scalar_raw_result = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS,
+	  json_document.size( ),
+	  "raw string array total size (json iterator, no SIMD)",
+	  total_scalar_raw_size,
+	  json_document );
+	daw_ensure( scalar_raw_result.get( ) == expected_raw );
+
+	auto simd_raw_result = daw::json::benchmark::benchmark(
+	  DAW_NUM_RUNS,
+	  json_document.size( ),
+	  "raw string array total size (SIMD block iterator)",
+	  total_simd_block_raw_size,
+	  json_document );
+	daw_ensure( simd_raw_result.get( ) == expected_raw );
+}
+
+#else
+
+int main( ) {
+	std::cerr
+	  << "This benchmark requires a standard library with <simd> support.\n";
+	return EXIT_FAILURE;
+}
+
+#endif

@@ -26,6 +26,8 @@ Maps JSON objects/types to C++ types with a `daw::json::json_data_contract` mapp
 ### `json_custom`
 
 Maps JSON strings/literals to C++ types that don't fit.
+See [Custom Types and Output](custom_types.md) for converter and option
+examples.
 
 ### `json_custom_lit`
 
@@ -99,6 +101,8 @@ standard constructor.
 | `json_class` | `T, Constructor = use_default` |
 | `json_number` | `T = double, Options = number_opts_def, Constructor = use_default` |
 | `json_checked_number` | `T = double, Options = number_opts_def, Constructor = use_default` |
+| `json_fp` | `T = double, Format = FPOutputFormat::Auto, Precision = max_value<unsigned>, Options = fp_opts_def, Constructor = use_default` |
+| `json_checked_fp` | `T, Format = FPOutputFormat::Auto, Precision = max_value<unsigned>, Options = fp_opts_def, Constructor = use_default` |
 | `json_bool` | `T = bool, Options = bool_opts_def, Constructor = use_default` |
 | `json_string` | `String = std::string, Options = string_opts_def, Constructor = use_default` |
 | `json_string_raw` | `String = std::string, Options = string_raw_opts_def, Constructor = use_default` |
@@ -116,7 +120,7 @@ standard constructor.
 | `json_nullable` | `T, JsonMember = use_default, NullableType = JsonNullable::Nullable, Constructor = use_default` |
 
 `Options` is an encoded `json_options_t` value. Build it with the setter for
-the mapping family: `options::number_opt`, `bool_opt`, `string_opt`,
+the mapping family: `options::number_opt`, `fp_opt`, `bool_opt`, `string_opt`,
 `string_raw_opt`, or `json_custom_opt`. The available flags and defaults are
 listed in [Member Options/Type Options](member_options.md).
 

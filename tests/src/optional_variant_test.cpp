@@ -81,7 +81,6 @@ int main( int argc, char **argv )
 	auto stuff2 =
 	  daw::json::from_json_array<daw::cookbook_variant1::MyVariantStuff1>( str );
 	test_assert( stuff == stuff2, "Unexpected round trip error" );
-	return 0;
 }
 #if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {

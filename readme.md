@@ -11,6 +11,7 @@
     * [Arrays](docs/cookbook/array.md)
     * [Classes](docs/cookbook/class.md)
     * [Classes from Array/JSON Tuples](docs/cookbook/class_from_array.md)
+    * [Custom Types and Output](docs/cookbook/custom_types.md)
     * [Dates](docs/cookbook/dates.md)
     * [Enums](docs/cookbook/enums.md)
     * [Graphs](docs/cookbook/graphs.md)
