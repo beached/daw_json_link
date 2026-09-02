@@ -203,6 +203,38 @@ This allows 7-bit JSON encoding.
 
 * `AllowFull`
 
+## `EscapeValidUTF8`
+
+Controls whether `to_json` validates and JSON-escapes the value of a
+`json_string` mapping. This option affects serialization only; it does not
+change how `from_json` parses the string.
+
+### Values
+
+* `Validate` - Validate the UTF-8 input and escape quotation marks,
+  backslashes, control characters, and any characters required by the active
+  output restrictions.
+* `AssumeValid` - Write the value directly between quotation marks. The caller
+  guarantees that the value is valid UTF-8 and is already correctly escaped as
+  JSON string content.
+
+### Default
+
+* `Validate`
+
+`AssumeValid` avoids UTF-8 validation and escaping and can substantially
+improve serialization performance for trusted data. Supplying unescaped
+quotation marks, backslashes, control characters, or invalid UTF-8 can produce
+invalid JSON. Because the bytes are written directly, `EightBitModes` and
+global restricted-string output processing are not applied to that value.
+
+```cpp
+using trusted_string = daw::json::json_string_no_name<
+  std::string_view,
+  daw::json::options::string_opt(
+    daw::json::options::EscapeValidUTF8::AssumeValid )>;
+```
+
 ___
 
 # `json_string_raw`

@@ -53,8 +53,49 @@ namespace daw::json {
       return std::forward_as_tuple( value.uris );
     }
   };
-} 
+}
 ```
+
+## Trusted, already-escaped strings
+
+By default, `json_string` validates UTF-8 and escapes the value during
+serialization. When an application can guarantee that a value is valid UTF-8
+and is already escaped as JSON string content, the
+`EscapeValidUTF8::AssumeValid` mapping option writes those bytes directly:
+
+```c++
+struct WebData {
+  std::string escaped_uri;
+};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<WebData> {
+    using type = json_member_list<
+      json_string<
+        "escaped_uri",
+        std::string,
+        options::string_opt( options::EscapeValidUTF8::AssumeValid )>
+    >;
+
+    static inline auto to_json_data( WebData const &value ) {
+      return std::forward_as_tuple( value.escaped_uri );
+    }
+  };
+}
+```
+
+For example, a value containing the bytes `already escaped: \"quoted\"` is
+safe for this mapping because its quotation marks already have JSON escape
+characters. A value containing unescaped quotation marks is not safe and can
+produce invalid JSON.
+
+This option affects serialization only. `from_json` continues to decode and
+unescape a `json_string` normally. Consequently, a value produced by parsing
+must not automatically be treated as suitable for `AssumeValid`; the
+application must establish that it is already escaped before serializing it.
+The default `EscapeValidUTF8::Validate` behavior should be used whenever that
+guarantee is unavailable.
 
 ## Raw strings
 Raw strings are useful where we don't want to process the strings, we know they will never be escaped, or we do not require processing.  A raw string, is also simpler in that it only requires a constructor that requires a pointer and size, like `std::string_view` or `std::string`.  

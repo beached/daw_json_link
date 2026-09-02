@@ -280,6 +280,7 @@ namespace daw::json {
 			template<
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
+			  bool use_scanned_write = false,
 			  typename WritableType,
 			  typename Container DAW_ENABLEIF(
 			    daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )>
@@ -292,6 +293,68 @@ namespace daw::json {
 				  ( WritableType::restricted_string_output ==
 				    options::RestrictedStringOutput::OnlyAllow7bitsStrings )>;
 				if constexpr( do_escape ) {
+					if constexpr( use_scanned_write and
+					              json_details::is_string_view_like_v<Container> ) {
+						auto const *const data = std::data( container );
+						auto const size = std::size( container );
+						bool is_ascii = true;
+						for( std::size_t n = 0; n < size; ++n ) {
+							if( static_cast<unsigned char>( data[n] ) >= 0x80U ) {
+								is_ascii = false;
+								break;
+							}
+						}
+						if( is_ascii ) {
+							auto const *first = data;
+							auto const *pos = data;
+							auto const *const last = data + size;
+							while( pos != last ) {
+								auto const c = static_cast<unsigned char>( *pos );
+								if( c != '"' and c != '\\' and c >= 0x20U ) {
+									++pos;
+									continue;
+								}
+								if( first != pos ) {
+									it.write( daw::string_view(
+									  first, static_cast<std::size_t>( pos - first ) ) );
+								}
+								switch( c ) {
+								case '"':
+									it.write( "\\\"" );
+									break;
+								case '\\':
+									it.write( "\\\\" );
+									break;
+								case '\b':
+									it.write( "\\b" );
+									break;
+								case '\f':
+									it.write( "\\f" );
+									break;
+								case '\n':
+									it.write( "\\n" );
+									break;
+								case '\r':
+									it.write( "\\r" );
+									break;
+								case '\t':
+									it.write( "\\t" );
+									break;
+								default:
+									it = json_details::output_hex(
+									  static_cast<std::uint16_t>( c ), it );
+									break;
+								}
+								++pos;
+								first = pos;
+							}
+							if( first != last ) {
+								it.write( daw::string_view(
+								  first, static_cast<std::size_t>( last - first ) ) );
+							}
+							return it;
+						}
+					}
 					using iter = DAW_TYPEOF( std::begin( container ) );
 					using it_t = utf8::unchecked::iterator<iter>;
 
@@ -893,13 +956,9 @@ namespace daw::json {
 			to_json_string_string_escaped( WriteableType it,
 			                               parse_to_t const &value ) {
 				it.put( '"' );
-				if constexpr( escape_output_v<JsonMember> ==
-				              options::EscapeValidUTF8::AssumeValid ) {
-					it.write( std::data( value ), std::size( value ) );
-				} else {
-					it = utils::copy_to_iterator<true, JsonMember::eight_bit_mode>(
-					  it, value );
-				}
+				it = utils::copy_to_iterator<escape_output_v<JsonMember> !=
+				                               options::EscapeValidUTF8::AssumeValid,
+				                             JsonMember::eight_bit_mode>( it, value );
 				it.put( '"' );
 				return it;
 			}
