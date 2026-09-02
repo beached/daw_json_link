@@ -72,7 +72,10 @@ namespace daw::json {
 				  return result;
 			  }( );
 
-			constexpr std::ptrdiff_t find_lsb_set( std::uint64_t value ) {
+#if not defined( DAW_HAS_MSVC_LIKE )
+			constexpr
+#endif
+			  std::ptrdiff_t find_lsb_set( std::uint64_t value ) {
 #if DAW_HAS_BUILTIN( __builtin_ffsll )
 				return __builtin_ffsll( static_cast<long long>( value ) ) - 1;
 #elif defined( DAW_HAS_MSVC_LIKE )
@@ -153,8 +156,9 @@ namespace daw::json {
 
 			// Adapted from
 			// https://github.com/simdjson/simdjson/blob/master/src/generic/stage1/json_string_scanner.h#L79
-			DAW_ATTRIB_INLINE constexpr std::uint64_t find_escaped_branchless(
-			  std::uint64_t &prev_escaped, std::uint64_t backslashes ) {
+			DAW_ATTRIB_INLINE constexpr std::uint64_t
+			find_escaped_branchless( std::uint64_t &prev_escaped,
+			                         std::uint64_t backslashes ) {
 				constexpr std::uint64_t odd_bits = 0xAAAA'AAAA'AAAA'AAAAULL;
 				constexpr auto valid_bits = [] {
 					if constexpr( char_simd_size == 64 ) {
@@ -254,8 +258,8 @@ namespace daw::json {
 						relevant_backslashes &=
 						  ( std::uint64_t{ 1 } << static_cast<unsigned>( quote_pos ) ) - 1U;
 						if( ( relevant_backslashes != 0 ) & ( first_escape < 0 ) ) {
-							first_escape = ( first - first_first ) +
-							               find_lsb_set( relevant_backslashes );
+							first_escape =
+							  ( first - first_first ) + find_lsb_set( relevant_backslashes );
 						}
 						first += quote_pos;
 						return first;
@@ -420,7 +424,7 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename ExecTag>
-			DAW_ATTRIB_INLINE constexpr daw::not_null<char const *>
+			DAW_ATTRIB_INLINE daw::not_null<char const *>
 			mem_skip_until_end_of_string( daw::not_null<char const *> first,
 			                              daw::not_null<char const *> const last ) {
 				if( use_constexpr_exec_mode<ExecTag>( ) ) {
