@@ -162,11 +162,12 @@ namespace daw::json {
 		} // namespace options
 
 		namespace options {
-			/// @brief Controls whether string bytes with the high bit set are allowed.
-			/// When serializing json_string mappings, DisallowHigh escapes such bytes;
-			/// json_string_raw serialization rejects them instead. When parsing
-			/// json_string mappings, DisallowHigh rejects them. json_string_raw parsing
-			/// preserves the input bytes and does not inspect this option.
+			/// @brief Controls whether string bytes with the high bit set are
+			/// allowed. When serializing json_string mappings, DisallowHigh escapes
+			/// such bytes; json_string_raw serialization rejects them instead. When
+			/// parsing json_string mappings, DisallowHigh rejects them.
+			/// json_string_raw parsing preserves the input bytes and does not inspect
+			/// this option.
 			enum class EightBitModes : unsigned {
 				/// Escape high-bit bytes when serializing json_string, and reject them
 				/// when serializing json_string_raw or parsing json_string.
@@ -187,8 +188,35 @@ namespace daw::json {
 			  options::EightBitModes::AllowFull;
 		} // namespace json_details
 
+		namespace options {
+			/// @brief Controls json_string serialization checking
+			enum class EscapeValidUTF8 : unsigned {
+				/// to_sjon will ensure the json_string being serialized is valid and
+				/// escaped
+				Validate,
+				/// The user guarantees that the json_string being serialized will be
+				/// valid for JSON/utf8.  No checks will be performed, like
+				/// json_string_raw.  The user is responsible to ensure all quotes or
+				/// special characters are already escaped
+				AssumeValid
+			}; // 1bit
+		} // namespace options
+
+		namespace json_details {
+			template<>
+			inline constexpr unsigned
+			  json_option_bits_width<options::EscapeValidUTF8> = 1;
+
+			template<>
+			inline constexpr auto
+			  default_json_option_value<options::EscapeValidUTF8> =
+			    options::EscapeValidUTF8::Validate;
+		} // namespace json_details
+
 		// json_string
-		using string_opts_t = json_details::JsonOptionList<options::EightBitModes>;
+		using string_opts_t =
+		  json_details::JsonOptionList<options::EightBitModes,
+		                               options::EscapeValidUTF8>;
 
 		inline constexpr auto string_opts = string_opts_t{ };
 		inline constexpr json_options_t string_opts_def =

@@ -358,13 +358,25 @@ namespace daw::json {
 						}
 					}
 				} else {
-					for( auto c : container ) {
+					if constexpr( json_details::is_string_view_like_v<Container> ) {
 						if constexpr( restrict_high::value ) {
-							daw_json_ensure( ( static_cast<unsigned char>( c ) >= 0x20U and
-							                   static_cast<unsigned char>( c ) <= 0x7FU ),
-							                 ErrorReason::InvalidStringHighASCII );
+							for( auto c : container ) {
+								daw_json_ensure( ( static_cast<unsigned char>( c ) >= 0x20U and
+								                   static_cast<unsigned char>( c ) <= 0x7FU ),
+								                 ErrorReason::InvalidStringHighASCII );
+							}
 						}
-						it.put( c );
+						it.write( daw::string_view( std::data( container ),
+						                            std::size( container ) ) );
+					} else {
+						for( auto c : container ) {
+							if constexpr( restrict_high::value ) {
+								daw_json_ensure( ( static_cast<unsigned char>( c ) >= 0x20U and
+								                   static_cast<unsigned char>( c ) <= 0x7FU ),
+								                 ErrorReason::InvalidStringHighASCII );
+							}
+							it.put( c );
+						}
 					}
 				}
 				return it;
@@ -435,16 +447,18 @@ namespace daw::json {
 							break;
 						}
 					}
-				} else {
+				} else if constexpr( restrict_high::value ) {
+					auto const *const first = ptr;
 					while( *ptr != '\0' ) {
-						if constexpr( restrict_high::value ) {
-							daw_json_ensure( ( static_cast<unsigned>( *ptr ) >= 0x20U and
-							                   static_cast<unsigned>( *ptr ) <= 0x7FU ),
-							                 ErrorReason::InvalidStringHighASCII );
-						}
-						it.put( *ptr );
+						daw_json_ensure( ( static_cast<unsigned char>( *ptr ) >= 0x20U and
+						                   static_cast<unsigned char>( *ptr ) <= 0x7FU ),
+						                 ErrorReason::InvalidStringHighASCII );
 						++ptr;
 					}
+					it.write( daw::string_view(
+					  first, static_cast<std::size_t>( ptr - first ) ) );
+				} else {
+					it.write( ptr );
 				}
 				return it;
 			}
@@ -865,14 +879,27 @@ namespace daw::json {
 				return it;
 			}
 
+			template<typename JsonMember, typename = void>
+			inline constexpr options::EscapeValidUTF8 escape_output_v =
+			  options::EscapeValidUTF8::Validate;
+
+			template<typename JsonMember>
+			inline constexpr options::EscapeValidUTF8 escape_output_v<
+			  JsonMember, std::void_t<decltype( JsonMember::escape_output )>> =
+			  JsonMember::escape_output;
+
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
 			[[nodiscard]] static constexpr WriteableType
 			to_json_string_string_escaped( WriteableType it,
 			                               parse_to_t const &value ) {
-
 				it.put( '"' );
-				it = utils::copy_to_iterator<true, JsonMember::eight_bit_mode>( it,
-				                                                                value );
+				if constexpr( escape_output_v<JsonMember> ==
+				              options::EscapeValidUTF8::AssumeValid ) {
+					it.write( std::data( value ), std::size( value ) );
+				} else {
+					it = utils::copy_to_iterator<true, JsonMember::eight_bit_mode>(
+					  it, value );
+				}
 				it.put( '"' );
 				return it;
 			}
@@ -1648,7 +1675,8 @@ namespace daw::json {
 							--dec.exponent;
 							++current;
 						}
-					} else if constexpr( fp_output_format == options::FPOutputFormat::Minimum ) {
+					} else if constexpr( fp_output_format ==
+					                     options::FPOutputFormat::Minimum ) {
 						// trim to at most Precision significant digits.  Use smallest rep
 						round_significand( Precision );
 					}
@@ -1713,9 +1741,8 @@ namespace daw::json {
 							out_it.copy_buffer( buff, dot + 1 );
 							out_it.copy_buffer( dot + 1, epos );
 						}
-						unsigned count = dot == epos
-						                   ? 0U
-						                   : static_cast<unsigned>( epos - dot - 1 );
+						unsigned count =
+						  dot == epos ? 0U : static_cast<unsigned>( epos - dot - 1 );
 						while( count < scientific_places ) {
 							out_it.put( '0' );
 							++count;
@@ -1776,7 +1803,8 @@ namespace daw::json {
 					out_it = utils::integer_to_string( out_it, p2val );
 					if constexpr( Precision != daw::max_value<unsigned> ) {
 						for( auto n = static_cast<unsigned>( -dec.exponent );
-						     n < decimal_places; ++n ) {
+						     n < decimal_places;
+						     ++n ) {
 							out_it.put( '0' );
 						}
 					}
@@ -1791,7 +1819,7 @@ namespace daw::json {
 				if( fp_output_format == options::FPOutputFormat::Decimal ) {
 					if constexpr( Precision == daw::max_value<unsigned> ) {
 						out_it.put( '.' );
-					out_it.put( '0' );
+						out_it.put( '0' );
 					} else {
 						if( decimal_places != 0 ) {
 							out_it.put( '.' );

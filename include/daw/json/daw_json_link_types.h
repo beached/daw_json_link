@@ -893,6 +893,10 @@ namespace daw::json {
 				  json_details::get_bits_for<options::EightBitModes>( string_opts,
 				                                                      Options );
 
+				static constexpr auto escape_output =
+				  json_details::get_bits_for<options::EscapeValidUTF8>( string_opts,
+				                                                        Options );
+
 				static constexpr auto underlying_json_type = JsonBaseParseTypes::String;
 
 				template<JSONNAMETYPE NewName>
