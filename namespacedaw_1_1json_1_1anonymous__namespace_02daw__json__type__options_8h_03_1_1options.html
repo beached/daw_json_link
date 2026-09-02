@@ -91,8 +91,13 @@ Enumerations</h2></td></tr>
 <tr class="memitem:ab8cd649bdd52af5ab1ea79cb9cdc1803" id="r_ab8cd649bdd52af5ab1ea79cb9cdc1803"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#ab8cd649bdd52af5ab1ea79cb9cdc1803">EightBitModes</a> : unsigned { <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#ab8cd649bdd52af5ab1ea79cb9cdc1803a92c261a689e015f3fc7bfab8b0b9893b">DisallowHigh</a>
 , <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#ab8cd649bdd52af5ab1ea79cb9cdc1803a93072ae463cd6505c69c37152ac6fad6">AllowFull</a>
  }</td></tr>
-<tr class="memdesc:ab8cd649bdd52af5ab1ea79cb9cdc1803"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls whether any string character has the high bit set. If restricted, the member will escape any character with the high bit set and when parsing will throw if the high bit is encountered. This allows 7bit JSON encoding.  <a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#ab8cd649bdd52af5ab1ea79cb9cdc1803">More...</a><br /></td></tr>
+<tr class="memdesc:ab8cd649bdd52af5ab1ea79cb9cdc1803"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls whether string bytes with the high bit set are allowed. When serializing json_string mappings, DisallowHigh escapes such bytes; json_string_raw serialization rejects them instead. When parsing json_string mappings, DisallowHigh rejects them. json_string_raw parsing preserves the input bytes and does not inspect this option.  <a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#ab8cd649bdd52af5ab1ea79cb9cdc1803">More...</a><br /></td></tr>
 <tr class="separator:ab8cd649bdd52af5ab1ea79cb9cdc1803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc1fc0e947d924353843968fe33705d8" id="r_abc1fc0e947d924353843968fe33705d8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#abc1fc0e947d924353843968fe33705d8">EscapeValidUTF8</a> : unsigned { <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#abc1fc0e947d924353843968fe33705d8aad3d06d03d94223fa652babc913de686">Validate</a>
+, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#abc1fc0e947d924353843968fe33705d8ae0b4b5d13bf9e622d51f68e6646fe656">AssumeValid</a>
+ }</td></tr>
+<tr class="memdesc:abc1fc0e947d924353843968fe33705d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls json_string serialization checking.  <a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#abc1fc0e947d924353843968fe33705d8">More...</a><br /></td></tr>
+<tr class="separator:abc1fc0e947d924353843968fe33705d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2daf504eec0026f70b87dd83b240be2c" id="r_a2daf504eec0026f70b87dd83b240be2c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#a2daf504eec0026f70b87dd83b240be2c">FPOutputFormat</a> : unsigned { <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#a2daf504eec0026f70b87dd83b240be2ca06b9281e396db002010bde1de57262eb">Auto</a>
 , <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#a2daf504eec0026f70b87dd83b240be2ca21234a0e100d74037a4da2e53f3200d7">Scientific</a>
 , <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#a2daf504eec0026f70b87dd83b240be2ca937504f318f04eaf0f1d701df4c4d7f3">Decimal</a>
@@ -130,6 +135,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a72390763a005bbaf2ac78fde6dc4a974" id="r_a72390763a005bbaf2ac78fde6dc4a974"><td class="memTemplParams" colspan="2">template&lt;typename... Options&gt; </td></tr>
 <tr class="memitem:a72390763a005bbaf2ac78fde6dc4a974"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#a72390763a005bbaf2ac78fde6dc4a974">bool_opt</a> (Options... options)</td></tr>
 <tr class="separator:a72390763a005bbaf2ac78fde6dc4a974"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35782dc501e47c45b8438f942f4ea10e" id="r_a35782dc501e47c45b8438f942f4ea10e"><td class="memTemplParams" colspan="2">template&lt;typename... Options&gt; </td></tr>
+<tr class="memitem:a35782dc501e47c45b8438f942f4ea10e"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#a35782dc501e47c45b8438f942f4ea10e">fp_opt</a> (Options... options)</td></tr>
+<tr class="separator:a35782dc501e47c45b8438f942f4ea10e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8e7b3166aa85752a116c54de05536a7" id="r_ac8e7b3166aa85752a116c54de05536a7"><td class="memTemplParams" colspan="2">template&lt;typename... Options&gt; </td></tr>
 <tr class="memitem:ac8e7b3166aa85752a116c54de05536a7"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03_1_1options.html#ac8e7b3166aa85752a116c54de05536a7">json_custom_opt</a> (Options... options)</td></tr>
 <tr class="separator:ac8e7b3166aa85752a116c54de05536a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,7 +180,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00193">193</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00237">237</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
 
 </div>
 </div>
@@ -196,15 +204,47 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Controls whether any string character has the high bit set. If restricted, the member will escape any character with the high bit set and when parsing will throw if the high bit is encountered. This allows 7bit JSON encoding. </p>
+<p>Controls whether string bytes with the high bit set are allowed. When serializing <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string.html">json_string</a> mappings, DisallowHigh escapes such bytes; <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string__raw.html">json_string_raw</a> serialization rejects them instead. When parsing <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string.html">json_string</a> mappings, DisallowHigh rejects them. <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string__raw.html">json_string_raw</a> parsing preserves the input bytes and does not inspect this option. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab8cd649bdd52af5ab1ea79cb9cdc1803a92c261a689e015f3fc7bfab8b0b9893b" name="ab8cd649bdd52af5ab1ea79cb9cdc1803a92c261a689e015f3fc7bfab8b0b9893b"></a>DisallowHigh&#160;</td><td class="fielddoc"><p>Escape any character with the high bit set and throw when encountered during parse. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab8cd649bdd52af5ab1ea79cb9cdc1803a92c261a689e015f3fc7bfab8b0b9893b" name="ab8cd649bdd52af5ab1ea79cb9cdc1803a92c261a689e015f3fc7bfab8b0b9893b"></a>DisallowHigh&#160;</td><td class="fielddoc"><p>Escape high-bit bytes when serializing <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string.html">json_string</a>, and reject them when serializing <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string__raw.html">json_string_raw</a> or parsing <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string.html">json_string</a>. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ab8cd649bdd52af5ab1ea79cb9cdc1803a93072ae463cd6505c69c37152ac6fad6" name="ab8cd649bdd52af5ab1ea79cb9cdc1803a93072ae463cd6505c69c37152ac6fad6"></a>AllowFull&#160;</td><td class="fielddoc"><p>Allow the full 8bits in output without escaping. </p>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00153">153</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00171">171</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
+
+</div>
+</div>
+<a id="abc1fc0e947d924353843968fe33705d8" name="abc1fc0e947d924353843968fe33705d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc1fc0e947d924353843968fe33705d8">&#9670;&#160;</a></span>EscapeValidUTF8</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class daw::json::anonymous_namespace{daw_json_type_options.h}::options::EscapeValidUTF8 : unsigned</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Controls <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string.html">json_string</a> serialization checking. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="abc1fc0e947d924353843968fe33705d8aad3d06d03d94223fa652babc913de686" name="abc1fc0e947d924353843968fe33705d8aad3d06d03d94223fa652babc913de686"></a>Validate&#160;</td><td class="fielddoc"><p>to_sjon will ensure the <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string.html">json_string</a> being serialized is valid and escaped </p>
+</td></tr>
+<tr><td class="fieldname"><a id="abc1fc0e947d924353843968fe33705d8ae0b4b5d13bf9e622d51f68e6646fe656" name="abc1fc0e947d924353843968fe33705d8ae0b4b5d13bf9e622d51f68e6646fe656"></a>AssumeValid&#160;</td><td class="fielddoc"><p>The user guarantees that the <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string.html">json_string</a> being serialized will be valid for JSON/utf8. No checks will be performed, like <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string__raw.html">json_string_raw</a>. The user is responsible to ensure all quotes or special characters are already escaped. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00193">193</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
 
 </div>
 </div>
@@ -273,7 +313,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00233">233</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00277">277</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
 
 </div>
 </div>
@@ -406,7 +446,37 @@ template&lt;typename... Options&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00143">143</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00159">159</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
+
+</div>
+</div>
+<a id="a35782dc501e47c45b8438f942f4ea10e" name="a35782dc501e47c45b8438f942f4ea10e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35782dc501e47c45b8438f942f4ea10e">&#9670;&#160;</a></span>fp_opt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Options&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> daw::json::anonymous_namespace{daw_json_type_options.h}::options::fp_opt </td>
+          <td>(</td>
+          <td class="paramtype">Options...&#160;</td>
+          <td class="paramname"><em>options</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00144">144</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
 
 </div>
 </div>
@@ -436,7 +506,7 @@ template&lt;typename... Options&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00269">269</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00313">313</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
 
 </div>
 </div>
@@ -496,7 +566,7 @@ template&lt;typename... Options&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00183">183</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00227">227</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
 
 </div>
 </div>
@@ -526,7 +596,7 @@ template&lt;typename... Options&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00224">224</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__type__options_8h_source.html#l00268">268</a> of file <a class="el" href="daw__json__type__options_8h_source.html">daw_json_type_options.h</a>.</p>
 
 </div>
 </div>

@@ -73,12 +73,65 @@ $(function() {
   <div class="headertitle"><div class="title">json_nullable types</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md37"></a> nullable types are supported by using the <code>json_nullable</code> mapping type or appending the type name with <code>_null</code> to use the convenience wrapper. The requirement of the underlying type is that it will be default constructable for null values or support the <a class="el" href="md_docs_2cookbook_2nullable__value__concept.html">Nullable Concept</a>.</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md50"></a> nullable types are supported by using the <code>json_nullable</code> mapping type or appending the type name with <code>_null</code> to use the convenience wrapper. The requirement of the underlying type is that it will be default constructable for null values or support the <a class="el" href="md_docs_2cookbook_2nullable__value__concept.html">Nullable Concept</a>.</p>
 <p>Named <code>_null</code> mappings accept a <code>JsonNullable</code> template argument that controls how an empty value is serialized when it is a class member:</p>
 <ul>
 <li><code>JsonNullable::Nullable</code> (the default) permits the entire member to be omitted.</li>
 <li><code>JsonNullable::NullVisible</code> always emits the member, using <code>null</code> for an empty value.</li>
 </ul>
+<h1><a class="anchor" id="autotoc_md51"></a>
+Custom null tests</h1>
+<p>When a nullable mapping is serialized, its null state is detected in this order:</p>
+<ol type="1">
+<li>If an <code>IsNull</code> type was specified, a default-constructed <code>IsNull</code> is called with the mapped value.</li>
+<li>Otherwise, if the value can be converted to <code>bool</code>, <code>false</code> means null.</li>
+<li>Otherwise, <code>nullable_value_traits&lt;T&gt;::has_value</code> is used for types satisfying the <a class="el" href="md_docs_2cookbook_2nullable__value__concept.html">Nullable Concept</a>.</li>
+</ol>
+<p>The optional <code>IsNull</code> template argument is useful when neither of the default tests represents the type's null state. It is the last argument of both mappings:</p>
+<div class="fragment"><div class="line"> ++</div>
+<div class="line">json_nullable&lt;</div>
+<div class="line">  Name, T, JsonMember, NullableType, Constructor, IsNull</div>
+<div class="line">&gt;</div>
+<div class="line"> </div>
+<div class="line">json_nullable_no_name&lt;</div>
+<div class="line">  T, JsonMember, Constructor, IsNull</div>
+<div class="line">&gt;</div>
+</div><!-- fragment --><p>For example, a <code>std::variant</code> can reserve <code>std::monostate</code> as its null state:</p>
+<div class="fragment"><div class="line"> ++</div>
+<div class="line"><span class="keyword">using </span>Value = std::variant&lt;std::monostate, int, std::string&gt;;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>IsVariantNull {</div>
+<div class="line">  <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> operator( )( Value <span class="keyword">const</span> &amp;value ) <span class="keyword">const</span> {</div>
+<div class="line">    <span class="keywordflow">return</span> value.index( ) == 0;</div>
+<div class="line">  }</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>MyValue {</div>
+<div class="line">  Value member;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line">  <span class="keyword">struct </span>json_data_contract&lt;MyValue&gt; {</div>
+<div class="line">    <span class="keyword">using </span><a class="code hl_typedef" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;json_nullable&lt;</div>
+<div class="line">      <span class="stringliteral">&quot;member&quot;</span>,</div>
+<div class="line">      Value,</div>
+<div class="line">      json_variant_no_name&lt;Value&gt;,</div>
+<div class="line">      JsonNullable::NullVisible,</div>
+<div class="line">      daw::use_default,</div>
+<div class="line">      IsVariantNull</div>
+<div class="line">    &gt;&gt;;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">auto</span> to_json_data( MyValue <span class="keyword">const</span> &amp;value ) {</div>
+<div class="line">      <span class="keywordflow">return</span> std::forward_as_tuple( value.member );</div>
+<div class="line">    }</div>
+<div class="line">  };</div>
+<div class="line">}</div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00043">daw_json_data_contract.h:43</a></div></div>
+</div><!-- fragment --><p>Here, a variant holding <code>std::monostate</code> serializes as <code>{"member":null}</code>. <code>IsNull</code> controls null detection during serialization; it does not construct a value when parsing JSON <code>null</code>. Parsing continues to use <code>Constructor</code>, and <code>daw::use_default</code> creates a default-constructed variant containing <code>std::monostate</code>.</p>
+<p>For a named class member with a custom null test, use <code>JsonNullable::NullVisible</code> as above so the null member is emitted. For an unnamed value, such as an array element or root value, <code>json_nullable_no_name</code> always emits the JSON literal <code>null</code> for a value that passes its null test.</p>
+<p>For complete named and unnamed mappings, see <a href="../../tests/src/json_nullable_is_null_test.cpp">json_nullable_is_null_test.cpp</a>.</p>
 <p>Take the following JSON</p>
 <div class="fragment"><div class="line">[</div>
 <div class="line">  {</div>
@@ -119,9 +172,8 @@ $(function() {
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">}</div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_html_a39abe44649467f4688c65b75577ce313"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03.html#a39abe44649467f4688c65b75577ce313">daw::json::anonymous_namespace{daw_json_link_types_fwd.h}::json_bool_null</a></div><div class="ttdeci">json_nullable&lt; Name, T, json_base::json_bool&lt; json_details::unwrapped_t&lt; T &gt;, Options &gt;, NullableType, Constructor &gt; json_bool_null</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types__fwd_8h_source.html#l00179">daw_json_link_types_fwd.h:182</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_html_ac6f979ce3e610d6c5af77ff379a86059"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03.html#ac6f979ce3e610d6c5af77ff379a86059">daw::json::anonymous_namespace{daw_json_link_types_fwd.h}::json_number_null</a></div><div class="ttdeci">json_nullable&lt; Name, T, json_base::json_number&lt; json_details::unwrapped_t&lt; T &gt;, Options &gt;, NullableType, Constructor &gt; json_number_null</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types__fwd_8h_source.html#l00133">daw_json_link_types_fwd.h:135</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_html_a39abe44649467f4688c65b75577ce313"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03.html#a39abe44649467f4688c65b75577ce313">daw::json::anonymous_namespace{daw_json_link_types_fwd.h}::json_bool_null</a></div><div class="ttdeci">json_nullable&lt; Name, T, json_base::json_bool&lt; json_details::unwrapped_t&lt; T &gt;, Options &gt;, NullableType, Constructor &gt; json_bool_null</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types__fwd_8h_source.html#l00294">daw_json_link_types_fwd.h:297</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_html_ac6f979ce3e610d6c5af77ff379a86059"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03.html#ac6f979ce3e610d6c5af77ff379a86059">daw::json::anonymous_namespace{daw_json_link_types_fwd.h}::json_number_null</a></div><div class="ttdeci">json_nullable&lt; Name, T, json_base::json_number&lt; json_details::unwrapped_t&lt; T &gt;, Options &gt;, NullableType, Constructor &gt; json_number_null</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types__fwd_8h_source.html#l00132">daw_json_link_types_fwd.h:134</a></div></div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

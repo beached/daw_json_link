@@ -410,135 +410,21 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>        }</div>
 <div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>      }</div>
 <div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span><span class="preprocessor">#if false and defined( DAW_ALLOW_SSE42 )</span></div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>      <span class="comment">/*</span></div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span><span class="comment">      // Adapted from</span></div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span><span class="comment">      //</span></div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span><span class="comment">      //</span></div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span><span class="comment">      https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h</span></div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span><span class="comment">      inline UInt64 parse_eight_digits_unrolled( daw::not_null&lt;char const *&gt; ptr ) {</span></div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span><span class="comment">        // this actually computes *16* values so we are being wasteful.</span></div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span><span class="comment">        static __m128i const ascii0 = _mm_set1_epi8( &#39;0&#39; );</span></div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span><span class="comment"></span> </div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span><span class="comment">        static __m128i const mul_1_10 =</span></div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span><span class="comment">          _mm_setr_epi8( 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1</span></div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span><span class="comment">      );</span></div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span><span class="comment"></span> </div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span><span class="comment">        static __m128i const mul_1_100 =</span></div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span><span class="comment">          _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );</span></div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span><span class="comment"></span> </div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span><span class="comment">        static __m128i const mul_1_10000 =</span></div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span><span class="comment">          _mm_setr_epi16( 10000, 1, 10000, 1, 10000, 1, 10000, 1 );</span></div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span><span class="comment"></span> </div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span><span class="comment">        __m128i const input = _mm_sub_epi8(</span></div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span><span class="comment">          _mm_loadu_si128( reinterpret_cast&lt;__m128i const *&gt;( ptr ) ), ascii0 );</span></div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span><span class="comment">        __m128i const t1 = _mm_maddubs_epi16( input, mul_1_10 );</span></div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span><span class="comment">        __m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );</span></div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span><span class="comment">        __m128i const t3 = _mm_packus_epi32( t2, t2 );</span></div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span><span class="comment">        __m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );</span></div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span><span class="comment">        return to_uint64( static_cast&lt;std::uint32_t&gt;( _mm_cvtsi128_si32(</span></div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span><span class="comment">          t4 ) ) ); // only captures the sum of the first 8 digits, drop the</span></div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span><span class="comment">      rest</span></div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span><span class="comment">      }</span></div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span><span class="comment"></span> </div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span><span class="comment">      inline UInt64 parse_sixteen_digits_unrolled( char const *ptr ) {</span></div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span><span class="comment">        static __m128i const ascii0 = _mm_set1_epi8( &#39;0&#39; );</span></div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span><span class="comment"></span> </div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span><span class="comment">        static __m128i const mul_1_10 =</span></div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span><span class="comment">          _mm_setr_epi8( 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1</span></div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span><span class="comment">      );</span></div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span><span class="comment"></span> </div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span><span class="comment">        static __m128i const mul_1_100 =</span></div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span><span class="comment">          _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );</span></div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span><span class="comment"></span> </div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span><span class="comment">        static __m128i const mul_1_10000 =</span></div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span><span class="comment">          _mm_setr_epi16( 10000, 1, 10000, 1, 10000, 1, 10000, 1 );</span></div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span><span class="comment"></span> </div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span><span class="comment">        __m128i const input = _mm_sub_epi8(</span></div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span><span class="comment">          _mm_loadu_si128( reinterpret_cast&lt;__m128i const *&gt;( ptr ) ), ascii0 );</span></div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span><span class="comment">        __m128i const t1 = _mm_maddubs_epi16( input, mul_1_10 );</span></div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span><span class="comment">        __m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );</span></div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span><span class="comment">        __m128i const t3 = _mm_packus_epi32( t2, t2 );</span></div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span><span class="comment">        __m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );</span></div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span><span class="comment">        return to_uint64( _mm_cvtsi128_si64( t4 ) );</span></div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span><span class="comment">      }</span></div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span><span class="comment"></span> </div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span><span class="comment">      [[nodiscard]] inline bool</span></div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span><span class="comment">      is_made_of_eight_digits_fast( char const *ptr ) {</span></div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span><span class="comment">        UInt64 val;</span></div>
-<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span><span class="comment">        memcpy( &amp;val, ptr, sizeof( std::uint64_t ) );</span></div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span><span class="comment">        return ( ( ( val &amp; 0xF0F0F0F0F0F0F0F0_u64 ) |</span></div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span><span class="comment">                   ( ( ( val + 0x0606060606060606_u64 ) &amp; 0xF0F0F0F0F0F0F0F0_u64</span></div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span><span class="comment">      )</span></div>
-<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span><span class="comment">      &gt;&gt; 4_u64 ) ) == 0x3333333333333333_u64 );</span></div>
-<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span><span class="comment">      }</span></div>
-<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span><span class="comment"></span> </div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span><span class="comment">      template&lt;typename Unsigned, options::JsonRangeCheck RangeChecked, bool, typename</span></div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span><span class="comment">      ParseState&gt;</span></div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span><span class="comment">      [[nodiscard]] inline Unsigned</span></div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span><span class="comment">      unsigned_parser( sse42_exec_tag const &amp;, ParseState &amp;parse_state ) {</span></div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span><span class="comment">        daw_json_assert_weak( parse_state.has_more( ),</span></div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span><span class="comment">      ErrorRange::UnexpectedEndOfData, parse_state</span></div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span><span class="comment">      ); using result_t = max_unsigned_t&lt;RangeChecked, Unsigned, UInt64&gt;;</span></div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span><span class="comment">      result_t result = result_t( ); char const *first = parse_state.first; char const</span></div>
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span><span class="comment">       *const last = parse_state.last; char const *const orig_first =</span></div>
-<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span><span class="comment">      first;</span></div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span><span class="comment">        {</span></div>
-<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span><span class="comment">          auto sz = last - first;</span></div>
-<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span><span class="comment">          while( ( sz &gt;= 8 ) &amp; is_made_of_eight_digits_fast( first ) ) {</span></div>
-<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span><span class="comment">            if( ( sz &lt; 16 ) | ( not is_made_of_eight_digits_fast( first + 8 ) )</span></div>
-<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span><span class="comment">      ) { result *= 100&#39;000&#39;000_u64; result += static_cast&lt;result_t&gt;(</span></div>
-<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span><span class="comment">      parse_eight_digits_unrolled( first ) ); first += 8; break;</span></div>
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span><span class="comment">            }</span></div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span><span class="comment">            result *= 10&#39;000&#39;000&#39;000&#39;000&#39;000_u64;</span></div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span><span class="comment">            result +=</span></div>
-<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span><span class="comment">              static_cast&lt;result_t&gt;( parse_sixteen_digits_unrolled( first ) );</span></div>
-<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span><span class="comment">            sz -= 16;</span></div>
-<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span><span class="comment">            first += 16;</span></div>
-<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span><span class="comment">          }</span></div>
-<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span><span class="comment">        }</span></div>
-<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span><span class="comment"></span> </div>
-<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span><span class="comment">        auto dig = parse_digit( *first );</span></div>
-<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span><span class="comment">        while( dig &lt; 10U ) {</span></div>
-<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span><span class="comment">          result *= 10U;</span></div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span><span class="comment">          result += dig;</span></div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span><span class="comment">          ++first;</span></div>
-<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span><span class="comment">          dig = parse_digit( *first );</span></div>
-<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span><span class="comment">        }</span></div>
-<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span><span class="comment">        if constexpr( RangeChecked != options::JsonRangeCheck::Never ) {</span></div>
-<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span><span class="comment">          auto const count =</span></div>
-<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span><span class="comment">            static_cast&lt;intmax_t&gt;( daw::numeric_limits&lt;Unsigned&gt;::digits10 + 1 )</span></div>
-<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span><span class="comment">      - ( first - orig_first ); daw_json_ensure( (count &gt;= 0) &amp; (result &lt;=</span></div>
-<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span><span class="comment">      static_cast&lt;result_t&gt;( (daw::numeric_limits&lt;Unsigned&gt;::max)( ) )),</span></div>
-<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span><span class="comment">                                         ErrorReason::NumberOutOfRange,</span></div>
-<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span><span class="comment">      parse_state</span></div>
-<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span><span class="comment">      );</span></div>
-<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span><span class="comment">        }</span></div>
-<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span><span class="comment">        parse_state.first = first;</span></div>
-<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span><span class="comment">        if constexpr( RangeChecked == options::JsonRangeCheck::Never ) {</span></div>
-<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span><span class="comment">          return daw::construct_a&lt;Unsigned&gt;( static_cast&lt;Unsigned&gt;( result ) );</span></div>
-<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span><span class="comment">        } else {</span></div>
-<div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span><span class="comment">          return daw::construct_a&lt;Unsigned&gt;( narrow_cast&lt;Unsigned&gt;( result, parse_state ) );</span></div>
-<div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span><span class="comment">        }</span></div>
-<div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span><span class="comment">      }</span></div>
-<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span><span class="comment">       */</span></div>
-<div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span> </div>
-<div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Unsigned, options::JsonRangeCheck RangeChecked,</div>
-<div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span>               <span class="keywordtype">bool</span> KnownBounds, <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span>      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> <span class="keyword">constexpr</span> Unsigned</div>
-<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span>      unsigned_parser( ParseState &amp;parse_state ) {</div>
-<div class="line"><a id="l00446" name="l00446"></a><span class="lineno">  446</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( KnownBounds ) {</div>
-<div class="line"><a id="l00447" name="l00447"></a><span class="lineno">  447</span>          <span class="keywordflow">return</span> unsigned_parser_known&lt;Unsigned, RangeChecked&gt;( parse_state );</div>
-<div class="line"><a id="l00448" name="l00448"></a><span class="lineno">  448</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00449" name="l00449"></a><span class="lineno">  449</span>          <span class="keywordflow">return</span> unsigned_parser_not_known&lt;Unsigned, RangeChecked&gt;(</div>
-<div class="line"><a id="l00450" name="l00450"></a><span class="lineno">  450</span>            parse_state );</div>
-<div class="line"><a id="l00451" name="l00451"></a><span class="lineno">  451</span>        }</div>
-<div class="line"><a id="l00452" name="l00452"></a><span class="lineno">  452</span>      }</div>
-<div class="line"><a id="l00453" name="l00453"></a><span class="lineno">  453</span>    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a id="l00454" name="l00454"></a><span class="lineno">  454</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Unsigned, options::JsonRangeCheck RangeChecked,</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>               <span class="keywordtype">bool</span> KnownBounds, <span class="keyword">typename</span> ParseState&gt;</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">static</span> <span class="keyword">constexpr</span> Unsigned</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>      unsigned_parser( ParseState &amp;parse_state ) {</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( KnownBounds ) {</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>          <span class="keywordflow">return</span> unsigned_parser_known&lt;Unsigned, RangeChecked&gt;( parse_state );</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>          <span class="keywordflow">return</span> unsigned_parser_not_known&lt;Unsigned, RangeChecked&gt;(</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>            parse_state );</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        }</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>      }</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 </div>
-<div class="line"><a id="l00455" name="l00455"></a><span class="lineno">  455</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdoc">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__assert_8h_source.html#l00225">daw_json_assert.h:225</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__assert_8h_source.html#l00185">daw_json_assert.h:185</a></div></div>

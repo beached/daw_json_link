@@ -95,40 +95,42 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">daw/json/impl/version.h</a>&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="daw__json__enums_8h.html">daw/json/impl/daw_json_enums.h</a>&quot;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;daw/daw_attributes.h&gt;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;daw/daw_enable_requires.h&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;daw/daw_traits.h&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;daw/daw_tuple_forward.h&gt;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;daw/stdinc/declval.h&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;daw/stdinc/enable_if.h&gt;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
-<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__aggregate_8h_03.html">   24</a></span>  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code hl_define" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">namespace </span>json_details {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>      <a class="code hl_define" href="daw__json__req__helper_8h.html#a70abbb1d38e555e07d3e03e89f202b0c">DAW_JSON_MAKE_REQ_TRAIT</a>( has_to_tuple_v,</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                               to_tuple( std::declval&lt;T const &amp;&gt;( ) ) );</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T DAW_ENABLEIF( has_to_tuple_v&lt;T&gt; )&gt;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>      <a class="code hl_function" href="daw__json__iostream_8h.html#a2a5dc9ecab22e8c9a5b2bdde83401628">DAW_REQUIRES</a>( has_to_tuple_v&lt;T&gt; )</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>      <span class="keyword">constexpr</span> <span class="keyword">auto</span> to_tuple_impl( T <span class="keyword">const</span> &amp;value ) {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">return</span> to_tuple( value );</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>      }</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>      <a class="code hl_define" href="daw__json__req__helper_8h.html#a70abbb1d38e555e07d3e03e89f202b0c">DAW_JSON_MAKE_REQ_TRAIT</a>( can_convert_to_tuple_v,</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                               to_tuple_impl( std::declval&lt;T const &amp;&gt;( ) ) );</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>      <span class="keyword">using </span>tp_from_struct_binding_result_t =</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        daw::remove_cvref_t&lt;decltype( to_tuple_impl( std::declval&lt;T&gt;( ) ) )&gt;;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="daw__json__req__helper_8h.html">daw/json/impl/daw_json_req_helper.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;daw/daw_attributes.h&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;daw/daw_enable_requires.h&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;daw/daw_traits.h&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;daw/daw_tuple_forward.h&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;daw/stdinc/declval.h&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;daw/stdinc/enable_if.h&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="}">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__aggregate_8h_03.html">   25</a></span>  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code hl_define" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">namespace </span>json_details {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>      <a class="code hl_define" href="daw__json__req__helper_8h.html#a70abbb1d38e555e07d3e03e89f202b0c">DAW_JSON_MAKE_REQ_TRAIT</a>( has_to_tuple_v,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                               to_tuple( std::declval&lt;T const &amp;&gt;( ) ) );</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T DAW_ENABLEIF( has_to_tuple_v&lt;T&gt; )&gt;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>      <a class="code hl_function" href="daw__json__iostream_8h.html#a2a5dc9ecab22e8c9a5b2bdde83401628">DAW_REQUIRES</a>( has_to_tuple_v&lt;T&gt; )</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>      <span class="keyword">constexpr</span> <span class="keyword">auto</span> to_tuple_impl( T <span class="keyword">const</span> &amp;value ) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">return</span> to_tuple( value );</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>      }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>      <a class="code hl_define" href="daw__json__req__helper_8h.html#a70abbb1d38e555e07d3e03e89f202b0c">DAW_JSON_MAKE_REQ_TRAIT</a>( can_convert_to_tuple_v,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                               to_tuple_impl( std::declval&lt;T const &amp;&gt;( ) ) );</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>      <span class="keyword">using </span>tp_from_struct_binding_result_t =</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        daw::remove_cvref_t&lt;decltype( to_tuple_impl( std::declval&lt;T&gt;( ) ) )&gt;;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__enums_8h_html"><div class="ttname"><a href="daw__json__enums_8h.html">daw_json_enums.h</a></div></div>
 <div class="ttc" id="adaw__json__iostream_8h_html_a2a5dc9ecab22e8c9a5b2bdde83401628"><div class="ttname"><a href="daw__json__iostream_8h.html#a2a5dc9ecab22e8c9a5b2bdde83401628">DAW_REQUIRES</a></div><div class="ttdeci">DAW_REQUIRES(daw::json::json_details::is_container_opted_into_json_iostreams_v&lt; Container &gt;) std</div><div class="ttdoc">An opt in ostream interface for containers of types that have JSON mappings.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__iostream_8h_source.html#l00061">daw_json_iostream.h:61</a></div></div>
+<div class="ttc" id="adaw__json__req__helper_8h_html"><div class="ttname"><a href="daw__json__req__helper_8h.html">daw_json_req_helper.h</a></div></div>
 <div class="ttc" id="adaw__json__req__helper_8h_html_a70abbb1d38e555e07d3e03e89f202b0c"><div class="ttname"><a href="daw__json__req__helper_8h.html#a70abbb1d38e555e07d3e03e89f202b0c">DAW_JSON_MAKE_REQ_TRAIT</a></div><div class="ttdeci">#define DAW_JSON_MAKE_REQ_TRAIT(Name,...)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__req__helper_8h_source.html#l00041">daw_json_req_helper.h:41</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>

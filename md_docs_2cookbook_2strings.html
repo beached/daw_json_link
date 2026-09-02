@@ -73,8 +73,8 @@ $(function() {
   <div class="headertitle"><div class="title">Strings</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md167"></a>JSON natively encodes strings. There are two options for mapping them to C++ data structures, fully processed and raw strings. Raw strings only find the end of the string and do not change the underlying values.</p>
-<h1><a class="anchor" id="autotoc_md168"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md187"></a>JSON natively encodes strings. There are two options for mapping them to C++ data structures, fully processed and raw strings. Raw strings only find the end of the string and do not change the underlying values.</p>
+<h1><a class="anchor" id="autotoc_md188"></a>
 Escaped</h1>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;uris&quot;: [</div>
@@ -119,56 +119,91 @@ Escaped</h1>
 <div class="line">      <span class="keywordflow">return</span> std::forward_as_tuple( value.uris );</div>
 <div class="line">    }</div>
 <div class="line">  };</div>
-<div class="line">} </div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md169"></a>
-Raw strings</h1>
-<p>Raw strings are useful where we don't want to process the strings, we know they will never be escaped, or we do not require processing. A raw string, is also simpler in that it only requires a constructor that requires a pointer and size, like <code>std::string_view</code> or <code>std::string</code>. <br  />
- </p><div class="fragment"><div class="line">{</div>
-<div class="line">  &quot;uris&quot;: [</div>
-<div class="line">    &quot;example.com&quot;,</div>
-<div class="line">    &quot;B\u00FCcher.ch&quot;,</div>
-<div class="line">    &quot;happy.cn&quot;,</div>
-<div class="line">    &quot;happy\u5FEB\u4E50.cn&quot;,</div>
-<div class="line">    &quot;\u5FEB\u4E50.cn&quot;,</div>
-<div class="line">    &quot;happy.\u4E2D\u56FD&quot;,</div>
-<div class="line">    &quot;\u5FEB\u4E50.\u4E2D\u56FD&quot;,</div>
-<div class="line">    &quot;www.\u30CF\u30F3\u30C9\u30DC\u30FC\u30EB\u30B5\u30E0\u30BA.com&quot;,</div>
-<div class="line">    &quot;\uD83E\uDD84.com&quot;</div>
-<div class="line">  ]</div>
 <div class="line">}</div>
-</div><!-- fragment --><p> The above JSON document consists of an array member named <code>"uris"</code> with an element type of string.</p>
-<p>The C++ <code>std::vector&lt;std::string&gt;</code> of the above json should be equivalent to when used as <code>json_string_raw</code>: </p><div class="fragment"><div class="line"> ++</div>
-<div class="line">std::vector&lt;std::string&gt; uris = {</div>
-<div class="line">  <span class="stringliteral">&quot;example.com&quot;</span>,</div>
-<div class="line">  <span class="stringliteral">&quot;B\u00FCcher.ch&quot;</span>,</div>
-<div class="line">  <span class="stringliteral">&quot;happy.cn&quot;</span>,</div>
-<div class="line">  <span class="stringliteral">&quot;happy\u5FEB\u4E50.cn&quot;</span>,</div>
-<div class="line">  <span class="stringliteral">&quot;\u5FEB\u4E50.cn&quot;</span>,</div>
-<div class="line">  <span class="stringliteral">&quot;happy.\u4E2D\u56FD&quot;</span>,</div>
-<div class="line">  <span class="stringliteral">&quot;\u5FEB\u4E50.\u4E2D\u56FD&quot;</span>,</div>
-<div class="line">  <span class="stringliteral">&quot;www.\u30CF\u30F3\u30C9\u30DC\u30FC\u30EB\u30B5\u30E0\u30BA.com&quot;</span>,</div>
-<div class="line">  <span class="stringliteral">&quot;\uD83E\uDD84.com&quot;</span></div>
-<div class="line">};</div>
-</div><!-- fragment --><p>Contrasting with the [Escaped]("#Raw Strings") example, the difference will be that the array element type is <code>json_string_raw</code></p>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md189"></a>
+Trusted, already-escaped strings</h1>
+<p>By default, <code>json_string</code> validates UTF-8 and escapes the value during serialization. When an application can guarantee that a value is valid UTF-8 and is already escaped as JSON string content, the <code>EscapeValidUTF8::AssumeValid</code> mapping option writes those bytes directly:</p>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="keyword">struct </span>WebData {</div>
-<div class="line">  std::vector&lt;std::string&gt; uris;</div>
+<div class="line">  std::string escaped_uri;</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
-<div class="line">  <span class="keyword">template</span>&lt;&gt;  </div>
-<div class="line">  json_data_contract&lt;WebData&gt; {</div>
+<div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line">  <span class="keyword">struct </span>json_data_contract&lt;WebData&gt; {</div>
 <div class="line">    <span class="keyword">using </span>type = json_member_list&lt;</div>
-<div class="line">      json_array&lt;<span class="stringliteral">&quot;uris&quot;</span>, json_string_raw_no_name&lt;&gt;&gt;</div>
+<div class="line">      json_string&lt;</div>
+<div class="line">        <span class="stringliteral">&quot;escaped_uri&quot;</span>,</div>
+<div class="line">        std::string,</div>
+<div class="line">        options::string_opt( options::EscapeValidUTF8::AssumeValid )&gt;</div>
 <div class="line">    &gt;;</div>
 <div class="line"> </div>
-<div class="line">    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">auto</span> to_json_data( WebData <span class="keyword">const</span> &amp; value ) {</div>
-<div class="line">      <span class="keywordflow">return</span> std::forward_as_tuple( value.uris );</div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">auto</span> to_json_data( WebData <span class="keyword">const</span> &amp;value ) {</div>
+<div class="line">      <span class="keywordflow">return</span> std::forward_as_tuple( value.escaped_uri );</div>
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">}</div>
-</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- fragment --><p>For example, a value containing the bytes <code>already escaped: \"quoted\\"&lt;/tt&gt; is
+safe for this mapping because its quotation marks already have JSON escape
+characters. A value containing unescaped quotation marks is not safe and can
+produce invalid JSON.
+
+This option affects serialization only. &lt;tt&gt;from_json&lt;/tt&gt; continues to decode and
+unescape a &lt;tt&gt;json_string&lt;/tt&gt; normally. Consequently, a value produced by parsing
+must not automatically be treated as suitable for &lt;tt&gt;AssumeValid&lt;/tt&gt;; the
+application must establish that it is already escaped before serializing it.
+The default &lt;tt&gt;EscapeValidUTF8::Validate&lt;/tt&gt; behavior should be used whenever that
+guarantee is unavailable.
+
+@section autotoc_md190 Raw strings
+Raw strings are useful where we don't want to process the strings, we know they will never be escaped, or we do not require processing.  A raw string, is also simpler in that it only requires a constructor that requires a pointer and size, like &lt;tt&gt;std::string_view&lt;/tt&gt; or &lt;tt&gt;std::string&lt;/tt&gt;.  &lt;br&gt;
+@icode{json} 
+{
+  "uris": [
+    "example.com",
+    "B\u00FCcher.ch",
+    "happy.cn",
+    "happy\u5FEB\u4E50.cn",
+    "\u5FEB\u4E50.cn",
+    "happy.\u4E2D\u56FD",
+    "\u5FEB\u4E50.\u4E2D\u56FD",
+    "www.\u30CF\u30F3\u30C9\u30DC\u30FC\u30EB\u30B5\u30E0\u30BA.com",
+    "\uD83E\uDD84.com"
+  ]
+}
+@endicode 
+The above JSON document consists of an array member named &lt;tt&gt;"uris"&lt;/tt&gt; with an element type of string.
+
+The C++ &lt;tt&gt;std::vector\&lt;std::string\&gt;&lt;/tt&gt; of the above json should be equivalent to when used as &lt;tt&gt;json_string_raw&lt;/tt&gt;:
+@icode{c} ++
+std::vector&lt;std::string&gt; uris = {
+  "example.com",
+  "B\u00FCcher.ch",
+  "happy.cn",
+  "happy\u5FEB\u4E50.cn",
+  "\u5FEB\u4E50.cn",
+  "happy.\u4E2D\u56FD",
+  "\u5FEB\u4E50.\u4E2D\u56FD",
+  "www.\u30CF\u30F3\u30C9\u30DC\u30FC\u30EB\u30B5\u30E0\u30BA.com",
+  "\uD83E\uDD84.com"
+};
+@endicode 
+
+Contrasting with the [Escaped]("#Raw Strings") example, the difference will be that the array element type is &lt;tt&gt;json_string_raw&lt;/tt&gt;
+
+@icode{c} ++
+struct WebData {
+  std::vector&lt;std::string&gt; uris;
+};
+
+namespace daw::json {
+  template&lt;&gt;  
+  json_data_contract&lt;WebData&gt; {
+    using type = json_member_list&lt;
+      json_array&lt;"uris", json_string_raw_no_name&lt;&gt;&gt; &gt;;</code></p>
+<p><code> static inline auto to_json_data( WebData const &amp; value ) { return std::forward_as_tuple( value.uris ); } }; }  </code></p>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

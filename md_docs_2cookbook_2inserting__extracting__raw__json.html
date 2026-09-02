@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DAW JSON Link: inserting_extracting_raw_json</title>
+<title>DAW JSON Link: Inserting and Extracting Raw JSON</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,10 +70,13 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">inserting_extracting_raw_json</div></div>
+  <div class="headertitle"><div class="title">Inserting and Extracting Raw JSON</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>To parse/serialize raw JSON data, such as data from other libraries, one can use the <code>json_raw</code> mapping type. The type requirement for mapping to <code>json_raw</code> is constructable with a <code>char const *</code> and a <code>std::size_t</code>, along with supporting <code>std::begin</code>/<code>std::end</code>.</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md38"></a> Use the <code>json_raw</code> mapping type to parse or serialize a complete JSON value as raw text. This is useful for preserving a section of a document for later or for passing that section to another JSON library.</p>
+<h1><a class="anchor" id="autotoc_md39"></a>
+Storing raw JSON text</h1>
+<p>For a string-like destination, the type must be constructible from a <code>char const *</code> and a <code>std::size_t</code>. For serialization, the supplied value must support <code>std::begin</code> and <code>std::end</code>, with iterators whose value type is <code>char</code>.</p>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line"><span class="keyword">struct </span>Foo {</div>
 <div class="line">  std::string bar;</div>
@@ -95,7 +98,87 @@ $(function() {
 <div class="line">}</div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_a9ebf797bcc6416e46e7df7498cd42505"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a9ebf797bcc6416e46e7df7498cd42505">daw::json::anonymous_namespace{daw_json_link_types.h}::json_link</a></div><div class="ttdeci">typename json_details::ensure_mapped_t&lt; json_details::json_deduced_type&lt; T &gt; &gt;::template with_name&lt; Name &gt; json_link</div><div class="ttdoc">Deduce the json type mapping based on common types and types already mapped.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00111">daw_json_link_types.h:112</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
-</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- fragment --><p>If <code>raw_json</code> contains <code>R"({"answer":42})"</code>, it is emitted as an object rather than as an escaped JSON string:</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;bar&quot;: &quot;example&quot;,</div>
+<div class="line">  &quot;raw_json&quot;: {&quot;answer&quot;:42}</div>
+<div class="line">}</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md40"></a>
+Interoperating with another JSON library</h1>
+<p>Most JSON DOM types are not directly constructible from a character range and do not iterate over their serialized representation. A custom constructor can adapt parsing, while <code>to_json_data</code> can provide the other library's serialized string for output.</p>
+<p>The following example uses placeholder names for the other library's <code>parse</code> and <code>dump</code> operations:</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;other_json_library.hpp&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>ParseOtherJson {</div>
+<div class="line">  other_json_library::value</div>
+<div class="line">  operator( )( <span class="keywordtype">char</span> <span class="keyword">const</span> *data, std::size_t size ) <span class="keyword">const</span> {</div>
+<div class="line">    <span class="keywordflow">return</span> other_json_library::parse( data, data + size );</div>
+<div class="line">  }</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>Message {</div>
+<div class="line">  std::string name;</div>
+<div class="line">  other_json_library::value payload;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line">  <span class="keyword">struct </span>json_data_contract&lt;Message&gt; {</div>
+<div class="line">    <span class="keyword">using </span><a class="code hl_typedef" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;</div>
+<div class="line">      json_string&lt;<span class="stringliteral">&quot;name&quot;</span>&gt;,</div>
+<div class="line">      json_raw&lt;</div>
+<div class="line">        <span class="stringliteral">&quot;payload&quot;</span>,</div>
+<div class="line">        other_json_library::value,</div>
+<div class="line">        ParseOtherJson</div>
+<div class="line">      &gt;</div>
+<div class="line">    &gt;;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">auto</span> to_json_data( Message <span class="keyword">const</span> &amp;message ) {</div>
+<div class="line">      <span class="comment">// std::tuple owns the temporary string returned by dump.</span></div>
+<div class="line">      <span class="keywordflow">return</span> std::tuple{</div>
+<div class="line">        message.name,</div>
+<div class="line">        other_json_library::dump( message.payload )</div>
+<div class="line">      };</div>
+<div class="line">    }</div>
+<div class="line">  };</div>
+<div class="line">}</div>
+<div class="ttc" id="adaw__json__link_8h_html"><div class="ttname"><a href="daw__json__link_8h.html">daw_json_link.h</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00043">daw_json_data_contract.h:43</a></div></div>
+</div><!-- fragment --><p>When parsing the following document:</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;name&quot;: &quot;example&quot;,</div>
+<div class="line">  &quot;payload&quot;: {&quot;answer&quot;:42}</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><code>ParseOtherJson</code> receives a pointer and size covering <code>{"answer":42}</code>. When serializing, the string returned by <code>dump</code> is copied directly into the output, without surrounding quotes or escaping.</p>
+<p>Use an owning <code>std::tuple</code> when the other library returns a temporary string. <code>std::forward_as_tuple</code> would store a reference to that temporary and leave a dangling reference after <code>to_json_data</code> returns.</p>
+<h1><a class="anchor" id="autotoc_md41"></a>
+Requirements and guarantees</h1>
+<h2><a class="anchor" id="autotoc_md42"></a>
+Parsing</h2>
+<ul>
+<li>The constructor passed to <code>json_raw</code> must be callable with <code>(char const *, std::size_t)</code> and return the mapped C++ type.</li>
+<li>The character range contains one complete JSON value. It is not guaranteed to be null-terminated.</li>
+<li>Whitespace surrounding the JSON value may not be preserved.</li>
+<li>If the destination type keeps a non-owning view of the input, the original JSON buffer must outlive that destination value.</li>
+</ul>
+<p>If the destination type is itself constructible from <code>(char const *, std::size_t)</code>, omit the custom constructor:</p>
+<div class="fragment"><div class="line">json_raw&lt;<span class="stringliteral">&quot;payload&quot;</span>, RawJsonType&gt;</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md43"></a>
+Serialization</h2>
+<ul>
+<li>The value supplied by <code>to_json_data</code> must be a character range accepted by <code>std::begin</code> and <code>std::end</code>; its iterator value type must be <code>char</code>.</li>
+<li>The range is copied verbatim. DAW JSON Link does not add quotes or escape the contents.</li>
+<li>The supplied text must therefore already be one valid JSON value.</li>
+<li>The character range must remain alive for the duration of serialization.</li>
+</ul>
+<p>If the third-party type itself iterates over serialized JSON characters, it can be returned directly from <code>to_json_data</code>. Most DOM types instead iterate over array or object elements, so returning their <code>dump</code>, <code>serialize</code>, or equivalent string is usually required.</p>
+<p><code>json_custom</code> configured with <code>options::JsonCustomTypes::Any</code> is not a replacement for <code>json_raw</code> in this situation. <code>Any</code> accepts any JSON value while parsing, but its serialized output is surrounded by quotes. <code>json_raw</code> both accepts and emits complete raw JSON values. </p>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
