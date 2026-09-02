@@ -32,12 +32,12 @@ namespace daw::json {
 #endif
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
 				return __builtin_char_memchr(
-				  first, '"', static_cast<std::size_t>( last - first ) );
+				  first, c, static_cast<std::size_t>( last - first ) );
 #else
 				if( not json_details::use_constexpr_exec_mode<ExecTag>( ) ) {
 					return static_cast<char const *>(
 					  std::memchr( static_cast<void const *>( first ),
-					               '"',
+					               c,
 					               static_cast<std::size_t>( last - first ) ) );
 				}
 				(void)last;
@@ -88,15 +88,15 @@ namespace daw::json {
 #endif
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
 				return __builtin_char_memchr(
-				  first, '"', static_cast<std::size_t>( last - first ) );
+				  first, c, static_cast<std::size_t>( last - first ) );
 #elif DAW_HAS_BUILTIN( __builtin_memchr )
 				return static_cast<char const *>( __builtin_memchr(
-				  first, '"', static_cast<std::size_t>( last - first ) ) );
+				  first, c, static_cast<std::size_t>( last - first ) ) );
 #else
 				if( not json_details::use_constexpr_exec_mode<ExecTag>( ) ) {
 					return static_cast<char const *>(
 					  std::memchr( static_cast<void const *>( first ),
-					               '"',
+					               c,
 					               static_cast<std::size_t>( last - first ) ) );
 				}
 				while( DAW_LIKELY( first < last ) and *first != c ) {
