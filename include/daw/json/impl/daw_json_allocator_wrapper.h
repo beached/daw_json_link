@@ -109,11 +109,11 @@ namespace daw::json {
 				using allocator_type_as = std::allocator<T>;
 
 				template<typename T>
-				[[nodiscard]] constexpr static std::allocator<T> get_allocator_for( ) {
+				[[nodiscard]] static constexpr std::allocator<T> get_allocator_for( ) {
 					return std::allocator<T>( );
 				}
 
-				[[nodiscard]] DAW_CONSTEVAL static NoAllocator get_allocator( ) {
+				[[nodiscard]] static constexpr NoAllocator get_allocator( ) {
 					return { };
 				}
 			};

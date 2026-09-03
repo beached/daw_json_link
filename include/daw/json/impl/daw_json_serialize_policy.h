@@ -16,6 +16,7 @@
 #include "daw_json_serialize_policy_details.h"
 #include <daw/json/concepts/daw_writable_output.h>
 
+#include <daw/daw_consteval.h>
 #include <daw/daw_move.h>
 
 #include <cstddef>

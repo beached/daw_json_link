@@ -1100,9 +1100,9 @@ namespace daw::json {
 
 				if constexpr( daw::is_callable_r_v<
 				                WriteableType,
-				                typename JsonMember::to_converter_t,
-				                WriteableType,
-				                parse_to_t> ) {
+				                                   typename JsonMember::to_converter_t,
+				                                   WriteableType,
+				                                   parse_to_t> ) {
 					it = typename JsonMember::to_converter_t{ }( it, value );
 				} else {
 					it = utils::copy_to_iterator(

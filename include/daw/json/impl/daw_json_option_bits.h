@@ -14,6 +14,7 @@
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_count.h>
 #include <daw/daw_constant.h>
+#include <daw/daw_consteval.h>
 #include <daw/daw_cpp20_concept.h>
 #include <daw/daw_traits.h>
 
@@ -129,8 +130,8 @@ namespace daw::json {
 					static_assert( json_details::are_option_flags<Options...>,
 					               "Only registered option types are allowed" );
 					if constexpr( sizeof...( Options ) > 0 ) {
-						return set_bits( JsonOptionList{ }, default_option_flag,
-						                 options... );
+						return set_bits(
+						  JsonOptionList{ }, default_option_flag, options... );
 					} else {
 						return default_option_flag;
 					}

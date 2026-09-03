@@ -30,6 +30,7 @@
 #include <daw/daw_allocator_construct.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_callable.h>
+#include <daw/daw_consteval.h>
 #include <daw/daw_cpp20_concept.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_enable_requires.h>
