@@ -86,6 +86,7 @@ namespace daw::cookbook_variant6 {
 		case daw::json::JsonBaseParseTypes::Array:
 		case daw::json::JsonBaseParseTypes::Null:
 		case daw::json::JsonBaseParseTypes::None:
+		default:
 			std::abort( );
 		}
 	}
