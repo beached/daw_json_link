@@ -185,7 +185,7 @@ install( FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
 install( DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION include/ )
 
 if( DAW_ENABLE_TESTING )
-	if( NOT EXISTS ${PROJECT_SOURCE_DIR}/test_data )
+	if( NOT EXISTS ${PROJECT_SOURCE_DIR}/test_data/cities.json )
 		FetchContent_Declare(
 				daw_json_link_test_data
 				GIT_REPOSITORY https://github.com/beached/daw_json_link_test_data.git
