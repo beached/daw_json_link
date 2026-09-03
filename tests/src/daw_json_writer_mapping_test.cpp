@@ -44,6 +44,18 @@ namespace {
 		}
 	};
 
+	struct JsonTextFromJson {
+		std::string operator( )( std::string_view value ) const {
+			return std::string( value );
+		}
+	};
+
+	struct JsonTextToJson {
+		std::string_view operator( )( std::string const &value ) const {
+			return value;
+		}
+	};
+
 	using TaggedValue = std::variant<std::string, int, bool>;
 
 	struct TaggedObject {
@@ -178,6 +190,15 @@ int main( ) {
 	  42, R"("42")" );
 	ensure_write_value<
 	  json_custom_lit_no_name<int, CustomFromJson, CustomToJson>>( 42, "42" );
+	using custom_any = json_custom_no_name<
+	  std::string, JsonTextFromJson, JsonTextToJson,
+	  options::json_custom_opt( options::JsonCustomTypes::Any )>;
+	ensure_write_value<custom_any>( std::string{ "null" }, "null" );
+	ensure_write_value<custom_any>( std::string{ R"("null")" }, R"("null")" );
+	ensure_write_value<custom_any>( std::string{ R"({"value":42})" },
+	                                R"({"value":42})" );
+	// JsonCustomTypes::Any copies the converter output without validation.
+	ensure_write_value<custom_any>( std::string{ "not JSON" }, "not JSON" );
 
 	ensure_write_value<json_tuple_no_name<std::tuple<int, bool, std::string>>>(
 	  std::tuple{ 1, true, std::string{ "two" } }, R"([1,true,"two"])" );

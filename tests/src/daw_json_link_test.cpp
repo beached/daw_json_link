@@ -1908,7 +1908,12 @@ int main( ) {
 			daw_ensure( from_json<mapping_parameter_tests::custom_any>(
 			              R"("text")" ) == R"("text")" );
 			daw_ensure( to_json<mapping_parameter_tests::custom_any>(
-			              std::string( "text" ) ) == R"("text")" );
+			              std::string( "null" ) ) == "null" );
+			daw_ensure( to_json<mapping_parameter_tests::custom_any>(
+			              std::string( R"("text")" ) ) == R"("text")" );
+			daw_ensure( to_json<mapping_parameter_tests::custom_any>(
+			              std::string( R"({"value":42})" ) ) ==
+			            R"({"value":42})" );
 		}
 		{
 			using namespace daw::json;

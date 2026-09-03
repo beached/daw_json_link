@@ -281,10 +281,11 @@ namespace daw::json {
 				String,
 				/// Parser will expect a valid JSON literal number, bool, null
 				Literal,
-				/// Experimental - Parser will return any valid JSON value excluding
-				/// leading whitespace. strings will be quoted.  Any is suitable for
-				/// constructing a json_value to allow adhoc parsing if json_raw is not
-				/// suitable
+				/// Experimental - Parser will return any JSON value excluding leading
+				/// whitespace. Strings retain their quotes, and parse-time validation
+				/// follows the selected parse policy. Serialized values are emitted
+				/// verbatim without validation. Any is suitable for constructing a
+				/// json_value to allow adhoc parsing if json_raw is not suitable.
 				Any
 			}; // 2 bits
 		} // namespace options

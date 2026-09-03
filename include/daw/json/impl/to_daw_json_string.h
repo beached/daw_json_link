@@ -1093,26 +1093,27 @@ namespace daw::json {
 				  std::is_convertible_v<parse_to_t, json_result_t<JsonMember>>,
 				  "value must be convertible to specified type in class contract" );
 
-				if constexpr( JsonMember::custom_json_type !=
-				              options::JsonCustomTypes::Literal ) {
+				if constexpr( JsonMember::custom_json_type ==
+				              options::JsonCustomTypes::String ) {
 					it.put( '"' );
+				}
 
-					if constexpr( daw::is_callable_r_v<
-					                WriteableType,
-					                typename JsonMember::to_converter_t,
-					                WriteableType,
-					                parse_to_t> ) {
-						it = typename JsonMember::to_converter_t{ }( it, value );
-					} else {
-						it = utils::copy_to_iterator(
-						  it, typename JsonMember::to_converter_t{ }( value ) );
-					}
-					it.put( '"' );
-					return it;
+				if constexpr( daw::is_callable_r_v<
+				                WriteableType,
+				                typename JsonMember::to_converter_t,
+				                WriteableType,
+				                parse_to_t> ) {
+					it = typename JsonMember::to_converter_t{ }( it, value );
 				} else {
-					return utils::copy_to_iterator(
+					it = utils::copy_to_iterator(
 					  it, typename JsonMember::to_converter_t{ }( value ) );
 				}
+
+				if constexpr( JsonMember::custom_json_type ==
+				              options::JsonCustomTypes::String ) {
+					it.put( '"' );
+				}
+				return it;
 			}
 
 			template<typename JsonMember, typename WriteableType,
