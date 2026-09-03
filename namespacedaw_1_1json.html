@@ -391,6 +391,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__raw.html">json_raw</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__recursive__class.html">json_recursive_class</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__sized__array.html">json_sized_array</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string.html">json_string</a></td></tr>
@@ -636,6 +638,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ab0bb3410907a9a7d47bdfe36ffa6ef85" id="r_ab0bb3410907a9a7d47bdfe36ffa6ef85"><td class="memTemplParams" colspan="2">template&lt;typename T  = std::optional&lt;json_value&gt;, typename Constructor  = use_default&gt; </td></tr>
 <tr class="memitem:ab0bb3410907a9a7d47bdfe36ffa6ef85"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ab0bb3410907a9a7d47bdfe36ffa6ef85">json_raw_null_no_name</a> = json_base::json_nullable&lt; T, json_base::json_raw&lt; json_details::unwrapped_t&lt; T &gt; &gt;, JsonNullable::NullVisible, Constructor &gt;</td></tr>
 <tr class="separator:ab0bb3410907a9a7d47bdfe36ffa6ef85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76dff70992505a22876bdc6e858a61ac" id="r_a76dff70992505a22876bdc6e858a61ac"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Constructor  = use_default&gt; </td></tr>
+<tr class="memitem:a76dff70992505a22876bdc6e858a61ac"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a76dff70992505a22876bdc6e858a61ac">json_recursive_class_no_name</a> = json_base::json_recursive_class&lt; T, Constructor &gt;</td></tr>
+<tr class="separator:a76dff70992505a22876bdc6e858a61ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab2c73f2975c47ac9d671d63f971da0d" id="r_aab2c73f2975c47ac9d671d63f971da0d"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement , typename SizeMember , typename Container  = use_default, typename Constructor  = use_default&gt; </td></tr>
 <tr class="memitem:aab2c73f2975c47ac9d671d63f971da0d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#aab2c73f2975c47ac9d671d63f971da0d">json_sized_array_no_name</a> = json_base::json_sized_array&lt; JsonElement, SizeMember, Container, Constructor &gt;</td></tr>
 <tr class="separator:aab2c73f2975c47ac9d671d63f971da0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1204,7 +1209,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__describe_8h_source.html#l00068">68</a> of file <a class="el" href="daw__json__link__describe_8h_source.html">daw_json_link_describe.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__describe_8h_source.html#l00067">67</a> of file <a class="el" href="daw__json__link__describe_8h_source.html">daw_json_link_describe.h</a>.</p>
 
 </div>
 </div>
@@ -1322,7 +1327,7 @@ template&lt;typename , typename  = void&gt; </div>
 
 <p>Types that use Boost.Describe need to specialize use_boost_describe_v for their type with a bool value of true. This defaults to on, all described structs, but can be opted-out of if one wants to do a custom mapping of a Boost.Described struct. </p>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__describe_8h_source.html#l00034">34</a> of file <a class="el" href="daw__json__link__describe_8h_source.html">daw_json_link_describe.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__describe_8h_source.html#l00033">33</a> of file <a class="el" href="daw__json__link__describe_8h_source.html">daw_json_link_describe.h</a>.</p>
 
 </div>
 </div>
@@ -1356,7 +1361,7 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__boost__pfr__mapping_8h_source.html#l00028">28</a> of file <a class="el" href="daw__json__boost__pfr__mapping_8h_source.html">daw_json_boost_pfr_mapping.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__boost__pfr__mapping_8h_source.html#l00027">27</a> of file <a class="el" href="daw__json__boost__pfr__mapping_8h_source.html">daw_json_boost_pfr_mapping.h</a>.</p>
 
 </div>
 </div>

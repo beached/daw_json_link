@@ -73,8 +73,8 @@ $(function() {
   <div class="headertitle"><div class="title">Unknown Types and Delayed Parsing</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md191"></a> </p>
-<h1><a class="anchor" id="autotoc_md192"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md194"></a> </p>
+<h1><a class="anchor" id="autotoc_md195"></a>
 Unknown JSON Data</h1>
 <p>When the data structure is unknown or partially known it can be parsed as a <code>json_raw</code> type. This also, allows for skipping the parsing of certain members and returning later.</p>
 <div class="fragment"><div class="line">[</div>
@@ -100,7 +100,7 @@ Unknown JSON Data</h1>
 <div class="line">}</div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a03ce1a19bcc03c87524a09913907d38d"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a03ce1a19bcc03c87524a09913907d38d">daw::json::anonymous_namespace{daw_json_enums.h}::to_string</a></div><div class="ttdeci">constexpr std::string_view to_string(JsonBaseParseTypes pt)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__enums_8h_source.html#l00066">daw_json_enums.h:66</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value__fwd_8h_03_html_a0cb1fa415c11a965b691fe2cdbcb6012"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value__fwd_8h_03.html#a0cb1fa415c11a965b691fe2cdbcb6012">daw::json::anonymous_namespace{daw_json_value_fwd.h}::json_value</a></div><div class="ttdeci">basic_json_value&lt;&gt; json_value</div><div class="ttdoc">An untyped JSON value.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__value__fwd_8h_source.html#l00027">daw_json_value_fwd.h:27</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md193"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md196"></a>
 Delayed Parsing</h1>
 <p>It is possible to delay the parsing of json members until a later time. The <code>json_raw</code> member type will store the character range and allow full parsing later. The cost of doing so is similar to that of skipping the value and is already paid for when parsing JSON data.</p>
 <div class="fragment"><div class="line">{</div>
@@ -164,7 +164,7 @@ Delayed Parsing</h1>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00043">daw_json_data_contract.h:43</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__value_8h_03_1_1basic__json__value.html">daw::json::basic_json_value</a></div><div class="ttdoc">A non-owning container for arbitrary JSON values that allows movement/iteration through.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__value_8h_source.html#l00359">daw_json_value.h:359</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md194"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md197"></a>
 RAW JSON</h1>
 <p>Parsing to a raw JSON string can be done too. the <code>json_raw</code> mapping type allows for an optional type argument that specifies the destination/source type. It requires that the type be constructable from a char const * and a std::size_t.</p>
 <p>To see a working example using this code, refer to <a href="../../tests/src/cookbook_unknown_types_and_raw_parsing3_test.cpp">cookbook_unknown_types_and_delayed_parsing3_test.cpp</a>.</p>

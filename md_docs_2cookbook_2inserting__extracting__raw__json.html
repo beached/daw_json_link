@@ -73,8 +73,8 @@ $(function() {
   <div class="headertitle"><div class="title">Inserting and Extracting Raw JSON</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md38"></a> Use the <code>json_raw</code> mapping type to parse or serialize a complete JSON value as raw text. This is useful for preserving a section of a document for later or for passing that section to another JSON library.</p>
-<h1><a class="anchor" id="autotoc_md39"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md41"></a> Use the <code>json_raw</code> mapping type to parse or serialize a complete JSON value as raw text. This is useful for preserving a section of a document for later or for passing that section to another JSON library.</p>
+<h1><a class="anchor" id="autotoc_md42"></a>
 Storing raw JSON text</h1>
 <p>For a string-like destination, the type must be constructible from a <code>char const *</code> and a <code>std::size_t</code>. For serialization, the supplied value must support <code>std::begin</code> and <code>std::end</code>, with iterators whose value type is <code>char</code>.</p>
 <div class="fragment"><div class="line"> ++</div>
@@ -103,7 +103,7 @@ Storing raw JSON text</h1>
 <div class="line">  &quot;bar&quot;: &quot;example&quot;,</div>
 <div class="line">  &quot;raw_json&quot;: {&quot;answer&quot;:42}</div>
 <div class="line">}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md40"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md43"></a>
 Interoperating with another JSON library</h1>
 <p>Most JSON DOM types are not directly constructible from a character range and do not iterate over their serialized representation. A custom constructor can adapt parsing, while <code>to_json_data</code> can provide the other library's serialized string for output.</p>
 <p>The following example uses placeholder names for the other library's <code>parse</code> and <code>dump</code> operations:</p>
@@ -156,9 +156,9 @@ Interoperating with another JSON library</h1>
 <div class="line">}</div>
 </div><!-- fragment --><p><code>ParseOtherJson</code> receives a pointer and size covering <code>{"answer":42}</code>. When serializing, the string returned by <code>dump</code> is copied directly into the output, without surrounding quotes or escaping.</p>
 <p>Use an owning <code>std::tuple</code> when the other library returns a temporary string. <code>std::forward_as_tuple</code> would store a reference to that temporary and leave a dangling reference after <code>to_json_data</code> returns.</p>
-<h1><a class="anchor" id="autotoc_md41"></a>
+<h1><a class="anchor" id="autotoc_md44"></a>
 Requirements and guarantees</h1>
-<h2><a class="anchor" id="autotoc_md42"></a>
+<h2><a class="anchor" id="autotoc_md45"></a>
 Parsing</h2>
 <ul>
 <li>The constructor passed to <code>json_raw</code> must be callable with <code>(char const *, std::size_t)</code> and return the mapped C++ type.</li>
@@ -168,16 +168,16 @@ Parsing</h2>
 </ul>
 <p>If the destination type is itself constructible from <code>(char const *, std::size_t)</code>, omit the custom constructor:</p>
 <div class="fragment"><div class="line">json_raw&lt;<span class="stringliteral">&quot;payload&quot;</span>, RawJsonType&gt;</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md43"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md46"></a>
 Serialization</h2>
 <ul>
 <li>The value supplied by <code>to_json_data</code> must be a character range accepted by <code>std::begin</code> and <code>std::end</code>; its iterator value type must be <code>char</code>.</li>
 <li>The range is copied verbatim. DAW JSON Link does not add quotes or escape the contents.</li>
-<li>The supplied text must therefore already be one valid JSON value.</li>
+<li>The supplied text is not validated during serialization and must therefore already be one valid JSON value.</li>
 <li>The character range must remain alive for the duration of serialization.</li>
 </ul>
 <p>If the third-party type itself iterates over serialized JSON characters, it can be returned directly from <code>to_json_data</code>. Most DOM types instead iterate over array or object elements, so returning their <code>dump</code>, <code>serialize</code>, or equivalent string is usually required.</p>
-<p><code>json_custom</code> configured with <code>options::JsonCustomTypes::Any</code> is not a replacement for <code>json_raw</code> in this situation. <code>Any</code> accepts any JSON value while parsing, but its serialized output is surrounded by quotes. <code>json_raw</code> both accepts and emits complete raw JSON values. </p>
+<p><code>json_custom</code> configured with <code>options::JsonCustomTypes::Any</code> also accepts and emits complete JSON values, but does so through user-supplied conversion functions. Prefer <code>json_raw</code> when the mapped value is already a character range containing serialized JSON. As with <code>json_raw</code>, serialized text is copied without validation. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

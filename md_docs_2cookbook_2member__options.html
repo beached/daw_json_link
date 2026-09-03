@@ -76,31 +76,18 @@ $(function() {
 <div class="textblock"><p>::# Member Options/Type Options</p>
 <p>Many of the member types have options that can change how they are parsed. The options and their setters are located in the <code><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options.html">daw::json::options</a></code> namespace and are placed into <code>Options</code> template parameter via a setter function that encodes the options into a <code>json_options_t</code>.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md96"></a>
+<h1><a class="anchor" id="autotoc_md99"></a>
 &lt;tt&gt;json_number&lt;/tt&gt;</h1>
 <p>To set number options use the <code>daw::json::options::number_opt( Flags... )</code> method.</p>
-<h2><a class="anchor" id="autotoc_md97"></a>
+<h2><a class="anchor" id="autotoc_md100"></a>
 &lt;tt&gt;LiteralAsStringOpt&lt;/tt&gt;</h2>
 <p>Controls the ability to parse numbers that are encoded as strings. During serialization, <code>Always</code> emits the number in quotes. <code>Never</code> and <code>Maybe</code> emit ordinary finite numbers without quotes; <code>Maybe</code> only broadens the accepted input representation. Allowed NaN and infinity values are always emitted in quotes because they are not JSON number literals.</p>
-<h3><a class="anchor" id="autotoc_md98"></a>
+<h3><a class="anchor" id="autotoc_md101"></a>
 Values</h3>
 <ul>
 <li><code>Never</code> - Never allow parsing this member as a string. It is a parser error if this member is encoded as a string</li>
 <li><code>Maybe</code> - Allow parsing this member as a string or number.</li>
 <li><code>Always</code> - Only allow parsing this member as a string. It is an error for this member to not be encoded as a string.</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md99"></a>
-Default</h3>
-<ul>
-<li><code>Never</code></li>
-</ul>
-<h2><a class="anchor" id="autotoc_md100"></a>
-&lt;tt&gt;JsonRangeCheck&lt;/tt&gt;</h2>
-<h3><a class="anchor" id="autotoc_md101"></a>
-Values</h3>
-<ul>
-<li><code>Never</code> - Do not attempt to check for narrowing when parsing integral types</li>
-<li><code>CheckForNarrowing</code> - Attempt to check for narrowing when parsing integral types</li>
 </ul>
 <h3><a class="anchor" id="autotoc_md102"></a>
 Default</h3>
@@ -108,9 +95,22 @@ Default</h3>
 <li><code>Never</code></li>
 </ul>
 <h2><a class="anchor" id="autotoc_md103"></a>
+&lt;tt&gt;JsonRangeCheck&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="autotoc_md104"></a>
+Values</h3>
+<ul>
+<li><code>Never</code> - Do not attempt to check for narrowing when parsing integral types</li>
+<li><code>CheckForNarrowing</code> - Attempt to check for narrowing when parsing integral types</li>
+</ul>
+<h3><a class="anchor" id="autotoc_md105"></a>
+Default</h3>
+<ul>
+<li><code>Never</code></li>
+</ul>
+<h2><a class="anchor" id="autotoc_md106"></a>
 &lt;tt&gt;JsonNumberErrors&lt;/tt&gt;</h2>
 <p>When outputting floating point numbers, control whether Inf/NaN values can be parsed/serialized. This requires that the <code>LiteralAsString</code> option be set to <code>Maybe</code> or <code>Always</code></p>
-<h3><a class="anchor" id="autotoc_md104"></a>
+<h3><a class="anchor" id="autotoc_md107"></a>
 Values</h3>
 <ul>
 <li><code>None</code> - Do not allow serialization/parsing of NaN/Inf</li>
@@ -118,15 +118,15 @@ Values</h3>
 <li><code>AllowInf</code> - Allow Inf/-Inf to be expressed/parsed if number can be a string</li>
 <li><code>AllowNanInf</code> - Allow NaN/Inf/-Inf to be expressed/parsed if number can be a string</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md105"></a>
+<h3><a class="anchor" id="autotoc_md108"></a>
 Default</h3>
 <ul>
 <li><code>None</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md106"></a>
+<h2><a class="anchor" id="autotoc_md109"></a>
 &lt;tt&gt;FPOutputFormat&lt;/tt&gt;</h2>
 <p>Control the floating-point output format used by a floating-point <code>json_number</code>. This option only affects serialization.</p>
-<h3><a class="anchor" id="autotoc_md107"></a>
+<h3><a class="anchor" id="autotoc_md110"></a>
 Values</h3>
 <ul>
 <li><code>Auto</code> - Round to <code>Precision</code> significant digits and use decimal notation for decimal-point positions from -4 through 6; use scientific notation outside that range.</li>
@@ -135,7 +135,7 @@ Values</h3>
 <li><code>Minimum</code> - Round to <code>Precision</code> significant digits and use the shortest unpadded decimal representation.</li>
 </ul>
 <p>For <code>Auto</code> and <code>Minimum</code>, <code>Precision</code> counts significant digits. For <code>Decimal</code> and <code>Scientific</code>, it counts digits after the decimal point. The default <code>daw::max_value&lt;unsigned&gt;</code> precision means no explicit digit limit; <code>Auto</code> and <code>Minimum</code> then preserve the shortest representation, while <code>Decimal</code> and <code>Scientific</code> still apply their selected notation. Rounding uses nearest-even rounding.</p>
-<h3><a class="anchor" id="autotoc_md108"></a>
+<h3><a class="anchor" id="autotoc_md111"></a>
 &lt;tt&gt;json_fp&lt;/tt&gt; examples</h3>
 <p><code>json_fp</code> is the floating-point equivalent of <code>json_number</code> with explicit format and precision template parameters. Its format is not supplied through <code>number_opt</code>:</p>
 <div class="fragment"><div class="line"><span class="keyword">using </span>decimal_amount = <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a034920f33107a4a0fe2fb9688e4a22ca">daw::json::json_fp_no_name</a>&lt;</div>
@@ -159,7 +159,7 @@ Values</h3>
 <div class="line">  <span class="stringliteral">&quot;amount&quot;</span>, double, daw::json::options::FPOutputFormat::Decimal, 2&gt;;</div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__fp_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__fp.html">daw::json::json_fp</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00642">daw_json_link_types.h:643</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__nullable_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__nullable.html">daw::json::json_nullable</a></div><div class="ttdoc">Mark a member as nullable.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01078">daw_json_link_types.h:1079</a></div></div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md109"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md112"></a>
 &lt;tt&gt;json_number&lt;/tt&gt; versus &lt;tt&gt;json_fp&lt;/tt&gt;</h3>
 <p>For floating-point values, <code>json_number</code> also reads <code>JsonMember::fp_output_format</code>, which is set through <code>number_opt</code>:</p>
 <div class="fragment"><div class="line"><span class="keyword">using </span>number_decimal = <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a9ed27157013275c28ec4e704ad4a77fd">daw::json::json_number_no_name</a>&lt;double,</div>
@@ -167,13 +167,13 @@ Values</h3>
 <div class="line">    daw::json::options::FPOutputFormat::Decimal )&gt;;</div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_a9ed27157013275c28ec4e704ad4a77fd"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a9ed27157013275c28ec4e704ad4a77fd">daw::json::anonymous_namespace{daw_json_link_types.h}::json_number_no_name</a></div><div class="ttdeci">json_base::json_number&lt; T, Options, Constructor &gt; json_number_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00503">daw_json_link_types.h:503</a></div></div>
 </div><!-- fragment --><p>The distinction is that <code>json_number</code> selects the output format through its encoded options and uses the default precision. <code>json_fp</code> selects the format through its <code>Format</code> template parameter and additionally provides an explicit <code>Precision</code> template parameter. Internally, both mappings expose the selected format as <code>JsonMember::fp_output_format</code>; <code>json_fp</code> also exposes its precision to the serializer.</p>
-<h3><a class="anchor" id="autotoc_md110"></a>
+<h3><a class="anchor" id="autotoc_md113"></a>
 Default</h3>
 <ul>
 <li><code>Auto</code></li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md111"></a>
+<h1><a class="anchor" id="autotoc_md114"></a>
 &lt;tt&gt;json_fp&lt;/tt&gt;</h1>
 <p>To set the encoded options for <code>json_fp</code> and <code>json_checked_fp</code>, use <code>daw::json::options::fp_opt( Flags... )</code>. These mappings accept:</p>
 <ul>
@@ -188,52 +188,52 @@ Default</h3>
 <div class="line">    daw::json::options::LiteralAsStringOpt::Always )&gt;;</div>
 </div><!-- fragment --><p><code>JsonRangeCheck</code> is accepted for consistency with the checked mapping aliases, but floating-point parsing currently does not consult it.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md112"></a>
+<h1><a class="anchor" id="autotoc_md115"></a>
 &lt;tt&gt;json_bool&lt;/tt&gt;</h1>
 <p>To set bool options use the <code>daw::json::options::bool_opt( Flags... )</code> method.</p>
-<h2><a class="anchor" id="autotoc_md113"></a>
+<h2><a class="anchor" id="autotoc_md116"></a>
 &lt;tt&gt;LiteralAsStringOpt&lt;/tt&gt;</h2>
 <p>Controls the ability to parse booleans that are encoded as strings. During serialization, <code>Always</code> emits the boolean in quotes. <code>Never</code> and <code>Maybe</code> emit an unquoted JSON boolean; <code>Maybe</code> only broadens the accepted input representation.</p>
-<h3><a class="anchor" id="autotoc_md114"></a>
+<h3><a class="anchor" id="autotoc_md117"></a>
 Values</h3>
 <ul>
 <li><code>Never</code> - Never allow parsing this member as a string. It is a parser error if this member is encoded as a string</li>
 <li><code>Maybe</code> - Allow parsing this member as a string or boolean literal.</li>
 <li><code>Always</code> - Only allow parsing this member as a string. It is an error for this member to not be encoded as a string.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md115"></a>
+<h3><a class="anchor" id="autotoc_md118"></a>
 Default</h3>
 <ul>
 <li><code>Never</code></li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md116"></a>
+<h1><a class="anchor" id="autotoc_md119"></a>
 &lt;tt&gt;json_string&lt;/tt&gt;</h1>
 <p>To set string options use the <code>daw::json::options::string_opt( Flags... )</code> method.</p>
-<h2><a class="anchor" id="autotoc_md117"></a>
+<h2><a class="anchor" id="autotoc_md120"></a>
 &lt;tt&gt;EightBitModes&lt;/tt&gt;</h2>
 <p>Controls whether any string byte has the high bit set. If restricted, the serializer escapes bytes with the high bit set and the parser rejects them. This allows 7-bit JSON encoding.</p>
-<h3><a class="anchor" id="autotoc_md118"></a>
+<h3><a class="anchor" id="autotoc_md121"></a>
 Values</h3>
 <ul>
 <li><code>DisallowHigh</code> - Escape any character with the high bit set and throw when encountered during parse</li>
 <li><code>AllowFull</code> - Allow the full 8 bits in output without escaping</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md119"></a>
+<h3><a class="anchor" id="autotoc_md122"></a>
 Default</h3>
 <ul>
 <li><code>AllowFull</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md120"></a>
+<h2><a class="anchor" id="autotoc_md123"></a>
 &lt;tt&gt;EscapeValidUTF8&lt;/tt&gt;</h2>
 <p>Controls whether <code>to_json</code> validates and JSON-escapes the value of a <code>json_string</code> mapping. This option affects serialization only; it does not change how <code>from_json</code> parses the string.</p>
-<h3><a class="anchor" id="autotoc_md121"></a>
+<h3><a class="anchor" id="autotoc_md124"></a>
 Values</h3>
 <ul>
 <li><code>Validate</code> - Validate the UTF-8 input and escape quotation marks, backslashes, control characters, and any characters required by the active output restrictions.</li>
 <li><code>AssumeValid</code> - Write the value directly between quotation marks. The caller guarantees that the value is valid UTF-8 and is already correctly escaped as JSON string content.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md122"></a>
+<h3><a class="anchor" id="autotoc_md125"></a>
 Default</h3>
 <ul>
 <li><code>Validate</code></li>
@@ -245,60 +245,60 @@ Default</h3>
 <div class="line">    daw::json::options::EscapeValidUTF8::AssumeValid )&gt;;</div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_acd36116ab18f90a9e955d5f5147c43c3"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#acd36116ab18f90a9e955d5f5147c43c3">daw::json::anonymous_namespace{daw_json_link_types.h}::json_string_no_name</a></div><div class="ttdeci">json_base::json_string&lt; T, Options, Constructor &gt; json_string_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00929">daw_json_link_types.h:929</a></div></div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md123"></a>
+<h1><a class="anchor" id="autotoc_md126"></a>
 &lt;tt&gt;json_string_raw&lt;/tt&gt;</h1>
 <p>To set raw string options use the <code>daw::json::options::string_raw_opt( Flags... )</code> method.</p>
-<h2><a class="anchor" id="autotoc_md124"></a>
+<h2><a class="anchor" id="autotoc_md127"></a>
 &lt;tt&gt;EightBitModes&lt;/tt&gt;</h2>
 <p>Controls whether any string byte has the high bit set during serialization. If restricted, serialization rejects bytes with the high bit set. Raw-string parsing preserves the input bytes and does not inspect this option.</p>
-<h3><a class="anchor" id="autotoc_md125"></a>
+<h3><a class="anchor" id="autotoc_md128"></a>
 Values</h3>
 <ul>
 <li><code>DisallowHigh</code> - Reject any byte with the high bit set during serialization</li>
 <li><code>AllowFull</code> - Allow the full 8 bits in output without escaping</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md126"></a>
+<h3><a class="anchor" id="autotoc_md129"></a>
 Default</h3>
 <ul>
 <li><code>AllowFull</code></li>
 </ul>
-<h3><a class="anchor" id="autotoc_md127"></a>
+<h3><a class="anchor" id="autotoc_md130"></a>
 &lt;tt&gt;AllowEscapeCharacter&lt;/tt&gt;</h3>
 <p>In RAW String processing, if we know that there are no escaped double quotes <code>\"&lt;/tt&gt; we can stop at the first double quote.
 This allows faster string parsing
 
-@subsubsection autotoc_md128 Values
+@subsubsection autotoc_md131 Values
 
 * &lt;tt&gt;Allow&lt;/tt&gt; - Full string processing to skip escaped characters
 * &lt;tt&gt;NoEscapedDblQuote&lt;/tt&gt; - There will never be a \" sequence inside the string. This allows faster parsing
 
-@subsubsection autotoc_md129 Default
+@subsubsection autotoc_md132 Default
 
 * &lt;tt&gt;Allow&lt;/tt&gt;
 
 &lt;hr&gt;
 
-@section autotoc_md130 &lt;tt&gt;json_custom&lt;/tt&gt;
+@section autotoc_md133 &lt;tt&gt;json_custom&lt;/tt&gt;
 
 To set json_custom options use the &lt;tt&gt;daw::json::options::json_custom_opt( Flags... )&lt;/tt&gt; method.
 See @ref "/home/runner/work/daw_json_link/daw_json_link/docs/cookbook/custom_types.md" "Custom Types and Output" for complete converter and serialization examples.</code></p>
 <p><code></code></p>
-<h2><a class="anchor" id="autotoc_md131"></a>
+<h2><a class="anchor" id="autotoc_md134"></a>
 &lt;tt&gt;JsonCustomTypes&lt;/tt&gt;</h2>
 <p><code></code></p>
-<p><code>Custom JSON types can be Strings(default), unquoted Literals, or a mix.</code></p>
+<p><code>Custom JSON types can be strings, unquoted literals, or any JSON value.</code></p>
 <p><code></code></p>
-<h3><a class="anchor" id="autotoc_md132"></a>
+<h3><a class="anchor" id="autotoc_md135"></a>
 Values</h3>
 <p><code></code></p>
 <p><code></p><ul>
-<li><code>String</code> - Parser always expects a JSON string. Will surround serialized value with double quotes</li>
-<li><code>Literal</code> - Parser will expect a valid JSON literal number, bool, null</li>
-<li><code>Any</code> (Experimental) - Parser will return any valid JSON value excluding leading whitespace. Strings remain quoted. <code>Any</code> is suitable for constructing a <code>json_value</code> to allow adhoc parsing if <code>json_raw</code> is not suitable</li>
+<li><code>String</code> - The parser expects a JSON string and passes its unquoted contents to the converter. Serialization copies the converter output between double quotes without escaping or validating it.</li>
+<li><code>Literal</code> - The parser expects a JSON number, boolean, or <code>null</code>. Serialization copies the converter output verbatim without validation.</li>
+<li><code>Any</code> (Experimental) - The parser passes any JSON value, excluding leading whitespace, to the converter. JSON strings retain their quotes. Serialization copies the converter output verbatim without adding quotes, escaping, or validation. Parse-time validation follows the selected <code>CheckedParseMode</code>. <code>Any</code> is suitable for constructing a <code>json_value</code> to allow ad hoc parsing if <code>json_raw</code> is not suitable.</li>
 </ul>
 <p></code></p>
 <p><code></code></p>
-<h3><a class="anchor" id="autotoc_md133"></a>
+<h3><a class="anchor" id="autotoc_md136"></a>
 Default</h3>
 <p><code></code></p>
 <p><code></p><ul>

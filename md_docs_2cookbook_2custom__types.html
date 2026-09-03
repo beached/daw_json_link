@@ -73,7 +73,7 @@ $(function() {
   <div class="headertitle"><div class="title">Custom Types and Output</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md20"></a> <code>json_custom</code> maps a JSON value to a C++ type by calling user-provided conversion objects. It is useful when a type does not naturally map to one of the standard JSON mappings, or when its JSON representation needs custom formatting.</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md23"></a> <code>json_custom</code> maps a JSON value to a C++ type by calling user-provided conversion objects. It is useful when a type does not naturally map to one of the standard JSON mappings, or when its JSON representation needs custom formatting.</p>
 <p>A custom mapping has the following form:</p>
 <div class="fragment"><div class="line">json_custom&lt;</div>
 <div class="line">  <span class="stringliteral">&quot;member_name&quot;</span>,</div>
@@ -83,7 +83,7 @@ $(function() {
 <div class="line">  options</div>
 <div class="line">&gt;</div>
 </div><!-- fragment --><p>The from-JSON converter accepts a <code>std::string_view</code> and returns the mapped C++ value. The to-JSON converter accepts the C++ value and returns a string-like value containing its serialized representation.</p>
-<h1><a class="anchor" id="autotoc_md21"></a>
+<h1><a class="anchor" id="autotoc_md24"></a>
 String output</h1>
 <p><code>JsonCustomTypes::String</code> is the default. The parser expects a JSON string and passes its unquoted contents to the converter. During serialization, <code>json_custom</code> surrounds the converter's output with double quotes.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
@@ -116,8 +116,8 @@ String output</h1>
 <div class="line"><span class="keyword">auto</span> <span class="keywordtype">id</span> = daw::json::from_json&lt;identifier_json&gt;( R<span class="stringliteral">&quot;(&quot;42&quot;)&quot; );</span></div>
 <div class="line"><span class="stringliteral"></span><span class="keyword">auto</span> json = daw::json::to_json&lt;identifier_json&gt;( <span class="keywordtype">id</span> ); <span class="comment">// &quot;42&quot;</span></div>
 <div class="ttc" id="adaw__json__link_8h_html"><div class="ttname"><a href="daw__json__link_8h.html">daw_json_link.h</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_ad76a146f93a0a01a2914d59f5f54021e"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ad76a146f93a0a01a2914d59f5f54021e">daw::json::anonymous_namespace{daw_json_link_types.h}::json_custom_no_name</a></div><div class="ttdeci">json_base::json_custom&lt; T, FromJsonConverter, ToJsonConverter, Options &gt; json_custom_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01475">daw_json_link_types.h:1476</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md22"></a>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_ad76a146f93a0a01a2914d59f5f54021e"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ad76a146f93a0a01a2914d59f5f54021e">daw::json::anonymous_namespace{daw_json_link_types.h}::json_custom_no_name</a></div><div class="ttdeci">json_base::json_custom&lt; T, FromJsonConverter, ToJsonConverter, Options &gt; json_custom_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01515">daw_json_link_types.h:1516</a></div></div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md25"></a>
 Creating reusable mapping aliases</h1>
 <p>A mapping can be wrapped in an alias template when the same C++ type and converters are used for several JSON members. Only the member name needs to remain a template parameter:</p>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;JSONNAMETYPE Name&gt;</div>
@@ -127,7 +127,7 @@ Creating reusable mapping aliases</h1>
 <div class="line">  IdentifierFromJson,</div>
 <div class="line">  IdentifierToJson</div>
 <div class="line">&gt;;</div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__custom_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__custom.html">daw::json::json_custom</a></div><div class="ttdoc">Allow parsing of a type that does not fit.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01463">daw_json_link_types.h:1464</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__custom_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__custom.html">daw::json::json_custom</a></div><div class="ttdoc">Allow parsing of a type that does not fit.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01503">daw_json_link_types.h:1504</a></div></div>
 </div><!-- fragment --><p><code>JSONNAMETYPE</code> provides compatibility across language versions. In C++17 it accepts a <code>char const *</code> member name, while in C++20 and later it uses <code>daw::json::json_name</code>, allowing a string literal to be supplied directly.</p>
 <p>The alias can then be used like any other member mapping. In C++20:</p>
 <div class="fragment"><div class="line"><span class="keyword">using </span>type = <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__member__list.html">daw::json::json_member_list</a>&lt;</div>
@@ -152,7 +152,7 @@ Creating reusable mapping aliases</h1>
 <div class="line">  IdentifierToJson</div>
 <div class="line">&gt;;</div>
 </div><!-- fragment --><p>The same technique can be used with other mappings, such as <code>json_string</code>, <code>json_number</code>, and <code>json_class</code>, to give frequently used mapping configurations a descriptive name.</p>
-<h2><a class="anchor" id="autotoc_md23"></a>
+<h2><a class="anchor" id="autotoc_md26"></a>
 Hiding converters behind an alias</h2>
 <p>The converter types can be kept as implementation details while the public aliases describe how the application type appears in a JSON contract:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
@@ -222,7 +222,7 @@ Hiding converters behind an alias</h2>
 <div class="line">  daw::json::options::json_custom_opt(</div>
 <div class="line">    daw::json::options::JsonCustomTypes::String )</div>
 <div class="line">&gt;;</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md24"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md27"></a>
 Literal output</h1>
 <p>Use <code>JsonCustomTypes::Literal</code> when the converter produces an unquoted JSON number, boolean, or <code>null</code>. The parser passes the literal text to the converter, and serialization writes the converter's output without adding quotes.</p>
 <div class="fragment"><div class="line"><span class="keyword">using </span>identifier_literal_json = <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ad76a146f93a0a01a2914d59f5f54021e">daw::json::json_custom_no_name</a>&lt;</div>
@@ -241,9 +241,9 @@ Literal output</h1>
 <div class="line">  IdentifierFromJson,</div>
 <div class="line">  IdentifierToJson</div>
 <div class="line">&gt;;</div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_ae5741c4c4207a8941e088292326bd37a"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ae5741c4c4207a8941e088292326bd37a">daw::json::anonymous_namespace{daw_json_link_types.h}::json_custom_lit_no_name</a></div><div class="ttdeci">json_base::json_custom&lt; T, FromJsonConverter, ToJsonConverter, json_details::json_custom_opts_set&lt; Options, options::JsonCustomTypes::Literal &gt; &gt; json_custom_lit_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01481">daw_json_link_types.h:1484</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_ae5741c4c4207a8941e088292326bd37a"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ae5741c4c4207a8941e088292326bd37a">daw::json::anonymous_namespace{daw_json_link_types.h}::json_custom_lit_no_name</a></div><div class="ttdeci">json_base::json_custom&lt; T, FromJsonConverter, ToJsonConverter, json_details::json_custom_opts_set&lt; Options, options::JsonCustomTypes::Literal &gt; &gt; json_custom_lit_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01521">daw_json_link_types.h:1524</a></div></div>
 </div><!-- fragment --><p>The to-JSON converter is responsible for returning a valid JSON literal.</p>
-<h1><a class="anchor" id="autotoc_md25"></a>
+<h1><a class="anchor" id="autotoc_md28"></a>
 Accepting any JSON value</h1>
 <p><code>JsonCustomTypes::Any</code> is experimental. It lets the parser pass any complete JSON value to the from-JSON converter. Unlike <code>String</code>, a JSON string is passed with its surrounding quotes. This is useful for constructing a <code>json_value</code> or performing ad hoc parsing when <code>json_raw</code> is not suitable.</p>
 <div class="fragment"><div class="line"><span class="keyword">struct </span>CopyJsonText {</div>
@@ -270,19 +270,20 @@ Accepting any JSON value</h1>
 <div class="line"><span class="stringliteral"></span><span class="keyword">auto</span> string_text = daw::json::from_json&lt;any_json&gt;( R<span class="stringliteral">&quot;(&quot;answer&quot;)&quot; );</span></div>
 <div class="line"><span class="stringliteral"></span><span class="comment">// object_text == R&quot;({&quot;answer&quot;:42})&quot;</span></div>
 <div class="line"><span class="comment">// string_text == R&quot;(&quot;answer&quot;)&quot;</span></div>
-</div><!-- fragment --><p><code>Any</code> changes the accepted input. For output it has the same quoted behavior as <code>String</code>. Its to-JSON converter must therefore return escaped JSON string contents, not a raw object or array. Use <code>Literal</code> when the converter's result must be emitted without quotes.</p>
-<h1><a class="anchor" id="autotoc_md26"></a>
+</div><!-- fragment --><p>For output, <code>Any</code> treats the to-JSON converter's result as a complete JSON value and emits it verbatim, without adding quotes, escaping characters, or validating the result. To produce a valid JSON document, the converter must therefore return exactly one valid JSON value: <code>null</code> produces a JSON null, while <code>"null"</code> (including the quotes) produces a JSON string.</p>
+<p>On input, <code>Any</code> uses the normal JSON value-skipping parser to determine the range passed to the from-JSON converter. Syntax checking follows the selected parse policy: the default checked mode performs the normal parser checks, whereas <code>CheckedParseMode::no</code> assumes the input is well-formed. This parse-time checking does not apply to text returned by the to-JSON converter.</p>
+<h1><a class="anchor" id="autotoc_md29"></a>
 Options</h1>
 <p>Build the options argument with <code>daw::json::options::json_custom_opt( ... )</code> and one of these values:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone"><code>JsonCustomTypes</code> value   </th><th class="markdownTableHeadNone">Accepted input   </th><th class="markdownTableHeadNone">Serialization treatment    </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>String</code> (default)   </td><td class="markdownTableBodyNone">JSON string   </td><td class="markdownTableBodyNone">Surrounded with double quotes    </td></tr>
+<td class="markdownTableBodyNone"><code>String</code> (default)   </td><td class="markdownTableBodyNone">JSON string; converter receives the contents without quotes   </td><td class="markdownTableBodyNone">Converter output is copied between added double quotes; it is not escaped or validated    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>Literal</code>   </td><td class="markdownTableBodyNone">JSON number, boolean, or <code>null</code>   </td><td class="markdownTableBodyNone">Written without quotes    </td></tr>
+<td class="markdownTableBodyNone"><code>Literal</code>   </td><td class="markdownTableBodyNone">JSON number, boolean, or <code>null</code>   </td><td class="markdownTableBodyNone">Converter output is copied verbatim without validation    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>Any</code> (experimental)   </td><td class="markdownTableBodyNone">Any JSON value   </td><td class="markdownTableBodyNone">Surrounded with double quotes   </td></tr>
+<td class="markdownTableBodyNone"><code>Any</code> (experimental)   </td><td class="markdownTableBodyNone">Any JSON value; strings retain their quotes   </td><td class="markdownTableBodyNone">Converter output is copied verbatim without validation   </td></tr>
 </table>
 <p>Named, unnamed, and nullable forms are available:</p>
 <div class="fragment"><div class="line">json_custom&lt;<span class="stringliteral">&quot;value&quot;</span>, T, FromJson, ToJson&gt;</div>

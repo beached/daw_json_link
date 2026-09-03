@@ -62,6 +62,102 @@ namespace daw::json {
 The elements in the `json_variant_type_list` must have matching types in the variant alternatives. (e.g. std::string ->
 json_string, bool -> json_bool )
 
+## Recursive variants
+
+A variant can use pointer indirection to describe recursive data such as an
+expression or nested value:
+
+```c++
+struct Variant {
+  using value_t =
+    std::variant<int, bool, std::shared_ptr<Variant>>;
+
+  value_t value;
+};
+```
+
+The recursive alternative is represented by another JSON object. For example,
+the following array contains an integer, a boolean, and two recursively nested
+values:
+
+```json
+[
+  { "value": 5 },
+  { "value": true },
+  { "value": { "value": false } },
+  { "value": { "value": { "value": 42 } } }
+]
+```
+
+To see a working example, including serialization and round-trip parsing, refer
+to [cookbook_variant6_test.cpp](../../tests/src/cookbook_variant6_test.cpp).
+
+A direct mapping containing
+`json_class_null_no_name<std::shared_ptr<Variant>>` would require the `Variant`
+data contract while that same contract is still being defined. A `json_raw`
+member delays parsing until the contract is complete. Its constructor examines
+the fundamental JSON type and recursively calls `from_json<Variant>` only when
+the value is an object.
+
+```c++
+struct VariantValueConstructor {
+  Variant::value_t
+  operator()( char const *ptr, std::size_t size ) const;
+};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<Variant> {
+    using type = json_member_list<
+      json_raw<"value", Variant::value_t, VariantValueConstructor>
+    >;
+
+    static std::tuple<std::string>
+    to_json_data( Variant const &value );
+  };
+}
+
+Variant::value_t VariantValueConstructor::operator()(
+  char const *ptr, std::size_t size ) const {
+  auto const raw_json = std::string_view( ptr, size );
+  auto const value = daw::json::json_value( raw_json );
+
+  switch( value.type() ) {
+  case daw::json::JsonBaseParseTypes::Number:
+    return daw::json::from_json<int>( value );
+  case daw::json::JsonBaseParseTypes::Bool:
+    return daw::json::from_json<bool>( value );
+  case daw::json::JsonBaseParseTypes::Class:
+    return std::make_shared<Variant>(
+      daw::json::from_json<Variant>( raw_json ) );
+  default:
+    std::abort();
+  }
+}
+
+std::tuple<std::string>
+daw::json::json_data_contract<Variant>::to_json_data(
+  Variant const &value ) {
+  auto raw_json = std::visit(
+    []( auto const &item ) -> std::string {
+      using item_t = std::decay_t<decltype( item )>;
+      if constexpr(
+        std::is_same_v<item_t, std::shared_ptr<Variant>> ) {
+        return daw::json::to_json( *item );
+      } else {
+        return daw::json::to_json( item );
+      }
+    },
+    value.value );
+  return { std::move( raw_json ) };
+}
+```
+
+The serializer returns complete JSON text for the mapped `json_raw` member, so
+it is emitted verbatim. This example assumes that the `shared_ptr` alternative
+is non-null. Nested JSON must also remain acyclic; cyclic graphs should be
+represented with IDs and edges as described in the [graphs cookbook](graphs.md).
+
 ## Tagged Variants
 
 It is common to have a tag discriminator in JSON data. The `json_tagged_variant` member type allows using another parsed

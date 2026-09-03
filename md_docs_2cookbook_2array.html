@@ -182,7 +182,120 @@ Array's as members</h1>
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">}</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md7"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md7"></a>
+Sized arrays</h1>
+<p>Use <code>json_sized_array</code> when an array's container needs a size supplied by another member of the same JSON object. This is useful for containers such as <code>std::unique_ptr&lt;T[]&gt;</code> that do not store their size.</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;size&quot;: 3,</div>
+<div class="line">  &quot;values&quot;: [1, 2, 3]</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>The size mapping is passed to <code>json_sized_array</code> as its third template argument. Its constructor receives the parsed element range followed by that size. To see a working example, refer to <a href="../../tests/src/test_json_sized_array.cpp">test_json_sized_array.cpp</a>.</p>
+<div class="fragment"><div class="line"> ++</div>
+<div class="line"><span class="preprocessor">#include &lt;daw/daw_span.h&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>Stuff {</div>
+<div class="line">  std::size_t size;</div>
+<div class="line">  std::unique_ptr&lt;int[]&gt; values;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><span class="keyword">struct </span>UniquePtrArrayCtor {</div>
+<div class="line">  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Iterator&gt;</div>
+<div class="line">  std::unique_ptr&lt;T[]&gt; operator()( Iterator first, Iterator last,</div>
+<div class="line">                                   std::size_t size )<span class="keyword"> const </span>{</div>
+<div class="line">    <span class="keywordflow">if</span>( size &gt; 1024 ) {</div>
+<div class="line">      <span class="keywordflow">throw</span> std::length_error( <span class="stringliteral">&quot;array is too large&quot;</span> );</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">auto</span> result = std::make_unique&lt;T[]&gt;( size );</div>
+<div class="line">    std::size_t count = 0;</div>
+<div class="line">    <span class="keywordflow">while</span>( first != last ) {</div>
+<div class="line">      <span class="keywordflow">if</span>( count == size ) {</div>
+<div class="line">        <span class="keywordflow">throw</span> std::length_error( <span class="stringliteral">&quot;array size does not match size member&quot;</span> );</div>
+<div class="line">      }</div>
+<div class="line">      result[count++] = *first;</div>
+<div class="line">      ++first;</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">if</span>( count != size ) {</div>
+<div class="line">      <span class="keywordflow">throw</span> std::length_error( <span class="stringliteral">&quot;array size does not match size member&quot;</span> );</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">return</span> result;</div>
+<div class="line">  }</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line">  <span class="keyword">struct </span>json_data_contract&lt;Stuff&gt; {</div>
+<div class="line">    <span class="keyword">using </span>size_member = json_number&lt;<span class="stringliteral">&quot;size&quot;</span>, std::size_t&gt;;</div>
+<div class="line">    <span class="keyword">using </span><a class="code hl_typedef" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;</div>
+<div class="line">      size_member,</div>
+<div class="line">      json_sized_array&lt;<span class="stringliteral">&quot;values&quot;</span>, int, size_member,</div>
+<div class="line">                       std::unique_ptr&lt;int[]&gt;, UniquePtrArrayCtor&lt;int&gt;&gt;</div>
+<div class="line">    &gt;;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">auto</span> to_json_data( Stuff <span class="keyword">const</span> &amp;value ) {</div>
+<div class="line">      <span class="keywordflow">return</span> std::tuple{</div>
+<div class="line">        value.size,</div>
+<div class="line">        daw::span&lt;int const&gt;( value.values.get(), value.size )</div>
+<div class="line">      };</div>
+<div class="line">    }</div>
+<div class="line">  };</div>
+<div class="line">}</div>
+<div class="ttc" id="adaw__json__link_8h_html"><div class="ttname"><a href="daw__json__link_8h.html">daw_json_link.h</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00043">daw_json_data_contract.h:43</a></div></div>
+</div><!-- fragment --><p>The size member must be a named, non-nullable mapping in the same contract. Because input can request an arbitrarily large allocation or provide a size that disagrees with the array, custom constructors should enforce suitable resource limits and validate the number of parsed elements before returning. For serialization, expose pointer-like storage as a sized range such as <code>daw::span</code>; a pointer alone does not provide an end iterator.</p>
+<h1><a class="anchor" id="autotoc_md8"></a>
+Recursive arrays</h1>
+<p>Arrays often provide the recursive edge in an n-ary tree:</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;name&quot;: &quot;root&quot;,</div>
+<div class="line">  &quot;children&quot;: [</div>
+<div class="line">    {</div>
+<div class="line">      &quot;name&quot;: &quot;left&quot;,</div>
+<div class="line">      &quot;children&quot;: []</div>
+<div class="line">    },</div>
+<div class="line">    {</div>
+<div class="line">      &quot;name&quot;: &quot;right&quot;,</div>
+<div class="line">      &quot;children&quot;: [</div>
+<div class="line">        {</div>
+<div class="line">          &quot;name&quot;: &quot;right.left&quot;,</div>
+<div class="line">          &quot;children&quot;: []</div>
+<div class="line">        }</div>
+<div class="line">      ]</div>
+<div class="line">    }</div>
+<div class="line">  ]</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>To see a working example, including serialization and round-trip parsing, refer to <a href="../../tests/src/cookbook_array4_test.cpp">cookbook_array4_test.cpp</a>.</p>
+<p>A direct <code>json_array&lt;"children", TreeNode&gt;</code> mapping would require the <code>TreeNode</code> contract while that contract is still being defined. The <code>json_recursive_class_no_name</code> element mapping exposes the JSON object type without eagerly instantiating that contract. When parsing reaches a child, the outer contract is complete and can be used normally.</p>
+<div class="fragment"><div class="line"> ++</div>
+<div class="line"><span class="keyword">struct </span>TreeNode {</div>
+<div class="line">  std::string name;</div>
+<div class="line">  std::vector&lt;TreeNode&gt; children;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line">  <span class="keyword">struct </span>json_data_contract&lt;TreeNode&gt; {</div>
+<div class="line">    <span class="keyword">using </span>type = json_member_list&lt;</div>
+<div class="line">      json_string&lt;<span class="stringliteral">&quot;name&quot;</span>&gt;,</div>
+<div class="line">      json_array&lt;</div>
+<div class="line">        <span class="stringliteral">&quot;children&quot;</span>,</div>
+<div class="line">        json_recursive_class_no_name&lt;TreeNode&gt;,</div>
+<div class="line">        std::vector&lt;TreeNode&gt;</div>
+<div class="line">      &gt;</div>
+<div class="line">    &gt;;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">auto</span> to_json_data( TreeNode <span class="keyword">const</span> &amp;node ) {</div>
+<div class="line">      <span class="keywordflow">return</span> std::forward_as_tuple( node.name, node.children );</div>
+<div class="line">    }</div>
+<div class="line">  };</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>The empty children array supplies the recursion's base case, so no nullable or pointer wrapper is required. Parsing and serialization use the ordinary <code>std::vector&lt;TreeNode&gt;</code> value. As with any nested JSON representation, the structure must be acyclic.</p>
+<h2><a class="anchor" id="autotoc_md9"></a>
 Pointer like arrays</h2>
 <p>For dealing with pointer like arrays(T *, has element_type type alias) see <a href="../../tests/src/int_ptr_test.cpp">int_ptr_test</a> </p>
 </div></div><!-- contents -->

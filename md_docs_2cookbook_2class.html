@@ -73,8 +73,8 @@ $(function() {
   <div class="headertitle"><div class="title">Classes</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md10"></a> Arbitrary C++ data structures are supported and can be described using the trait <code>json_data_contract</code>.</p>
-<h1><a class="anchor" id="autotoc_md11"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md12"></a> Arbitrary C++ data structures are supported and can be described using the trait <code>json_data_contract</code>.</p>
+<h1><a class="anchor" id="autotoc_md13"></a>
 Basic class mapping</h1>
 <p>Below is an ordinary JSON object</p>
 <div class="fragment"><div class="line">{</div>
@@ -110,7 +110,7 @@ Basic class mapping</h1>
 <div class="line">}</div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
 </div><!-- fragment --><p>The above <code>json_data_contract</code> trait maps the JSON members to the constructor of <code>MyClass1</code> in the order specified. The arguments of type <code>std::string, int, bool</code> will be passed.</p>
-<h1><a class="anchor" id="autotoc_md12"></a>
+<h1><a class="anchor" id="autotoc_md14"></a>
 Empty classes</h1>
 <p>An empty, default-constructible class without an explicit <code>json_data_contract</code> is automatically treated as an empty JSON object mapping.</p>
 <div class="fragment"><div class="line"> ++</div>
@@ -121,7 +121,7 @@ Empty classes</h1>
 <div class="line"><span class="comment">// json == &quot;{}&quot;</span></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00078">daw_to_json.h:78</a></div></div>
 </div><!-- fragment --><p>If an empty class has an explicit <code>json_data_contract</code>, that mapping is used instead. The automatic empty-object mapping is only a fallback. This allows an empty class to be used wherever an unnamed mapping can be deduced, such as an array element or variant alternative.</p>
-<h1><a class="anchor" id="autotoc_md13"></a>
+<h1><a class="anchor" id="autotoc_md15"></a>
 Class as a member</h1>
 <p>The serializing and deserializing is recursive. So if a class contains another class, the requirement is that that class has been mapped already. Assuming we already have the mapping above, lets embed that into another class</p>
 <div class="fragment"><div class="line">{</div>
@@ -155,7 +155,63 @@ Class as a member</h1>
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">} <span class="comment">// namespace daw::json</span></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md14"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md16"></a>
+Recursive classes</h1>
+<p>A recursive class needs indirection so that the C++ type has a finite size. For example, a linked node can own the next node through a <code>std::shared_ptr</code>:</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;value&quot;: 1,</div>
+<div class="line">  &quot;next&quot;: {</div>
+<div class="line">    &quot;value&quot;: 2,</div>
+<div class="line">    &quot;next&quot;: {</div>
+<div class="line">      &quot;value&quot;: 3</div>
+<div class="line">    }</div>
+<div class="line">  }</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>To see a working example, including serialization and round-trip parsing, refer to <a href="../../tests/src/cookbook_class4_test.cpp">cookbook_class4_test.cpp</a>.</p>
+<p>Writing <code>json_class_null&lt;"next", std::shared_ptr&lt;LinkedNode&gt;&gt;</code> directly would require the <code>LinkedNode</code> data contract while that same contract is still being defined. An unnamed <code>json_raw</code> mapping delays parsing the nested object until the outer contract is complete. Wrapping it in <code>json_nullable</code> also permits the last node to omit <code>"next"</code>.</p>
+<div class="fragment"><div class="line"> ++</div>
+<div class="line"><span class="keyword">struct </span>LinkedNode {</div>
+<div class="line">  <span class="keywordtype">int</span> value;</div>
+<div class="line">  std::shared_ptr&lt;LinkedNode&gt; next;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>LinkedNodeConstructor {</div>
+<div class="line">  LinkedNode operator()( <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr, std::size_t size ) <span class="keyword">const</span>;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line">  <span class="keyword">struct </span>json_data_contract&lt;LinkedNode&gt; {</div>
+<div class="line">    <span class="keyword">using </span><a class="code hl_typedef" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">type</a> = json_member_list&lt;</div>
+<div class="line">      json_number&lt;<span class="stringliteral">&quot;value&quot;</span>, <span class="keywordtype">int</span>&gt;,</div>
+<div class="line">      json_nullable&lt;</div>
+<div class="line">        <span class="stringliteral">&quot;next&quot;</span>, std::shared_ptr&lt;LinkedNode&gt;,</div>
+<div class="line">        json_raw_no_name&lt;LinkedNode, LinkedNodeConstructor&gt;&gt;</div>
+<div class="line">    &gt;;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">static</span> std::tuple&lt;int, std::optional&lt;std::string&gt;&gt;</div>
+<div class="line">    to_json_data( LinkedNode <span class="keyword">const</span> &amp;node );</div>
+<div class="line">  };</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">LinkedNode LinkedNodeConstructor::operator()( <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr,</div>
+<div class="line">                                               std::size_t size )<span class="keyword"> const </span>{</div>
+<div class="line">  <span class="keywordflow">return</span> daw::json::from_json&lt;LinkedNode&gt;(</div>
+<div class="line">    std::string_view( ptr, size ) );</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">std::tuple&lt;int, std::optional&lt;std::string&gt;&gt;</div>
+<div class="line"><a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html">daw::json::json_data_contract&lt;LinkedNode&gt;::to_json_data</a>(</div>
+<div class="line">  LinkedNode <span class="keyword">const</span> &amp;node ) {</div>
+<div class="line">  <span class="keywordflow">if</span>( not node.next ) {</div>
+<div class="line">    <span class="keywordflow">return</span> { node.value, std::nullopt };</div>
+<div class="line">  }</div>
+<div class="line">  <span class="keywordflow">return</span> { node.value, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( *node.next ) };</div>
+<div class="line">}</div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html">daw::json::json_data_contract</a></div><div class="ttdoc">Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00042">daw_json_data_contract.h:42</a></div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00043">daw_json_data_contract.h:43</a></div></div>
+</div><!-- fragment --><p>The string returned for <code>next</code> contains complete JSON and is emitted verbatim by <code>json_raw</code>. This representation is suitable for acyclic structures such as linked lists and trees. Cyclic object graphs should instead store nodes and edges separately and resolve references by ID, as demonstrated in the <a class="el" href="md_docs_2cookbook_2graphs.html">graphs cookbook</a>.</p>
+<h1><a class="anchor" id="autotoc_md17"></a>
 Selective mapping</h1>
 <p>Not all the JSON objects members need to be mapped. Below is the same JSON object as in the <code>MyClass2</code> example above. To see a working example using this code, refer to <a href="../../tests/src/cookbook_class3_test.cpp">cookbook_class3_test.cpp</a></p>
 <div class="fragment"><div class="line">{</div>
@@ -185,7 +241,7 @@ Selective mapping</h1>
 <div class="line">  };</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>Only the <code>"a"</code> member is mapped, the <code>"b"</code> member of the JSON object is ignored.</p>
-<h1><a class="anchor" id="autotoc_md15"></a>
+<h1><a class="anchor" id="autotoc_md18"></a>
 Alternate Class Mappings</h1>
 <p>If a type is already mapped or has many possible JSON mappings you can provide an alternate mapping. This is accomplished by mapping to the <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__alternate__mapping_8h_03_1_1json__alt.html" title="Allows for alternate/multiple mappings of types that already have mappings.">daw::json::json_alt</a>&lt;Type, Index&gt;</code> type. The optional index allows for any number of mappings that fit into a <code>std::size_t</code>.</p>
 <p>To see a working example using this code, refer to <a href="../../tests/src/cookbook_class_alternate1_test.cpp">cookbook_class_alternate1_test.cpp</a></p>
@@ -206,11 +262,10 @@ Alternate Class Mappings</h1>
 <div class="line"><span class="comment">//...</span></div>
 <div class="line">Thing a = daw::json::from_json&lt;Thing&gt;( json_string_a );</div>
 <div class="line">Thing b = daw::json::from_json&lt;daw::json::json_alt&lt;Thing&gt;&gt;( json_string_b );</div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html_a9f269feeb4e12bc343d4da7553ccea31"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html#a9f269feeb4e12bc343d4da7553ccea31">daw::json::anonymous_namespace{daw_json_data_contract.h}::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for_or_unknown_type&lt; T &gt; type</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00043">daw_json_data_contract.h:43</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md16"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md19"></a>
 Class construction</h1>
 <p>If constructing the class requires extra steps than passing the parsed members to it's constructor one can provide a custom Constructor callable as the default for that type or for a specific <code>json_class</code> mapping.</p>
-<h2><a class="anchor" id="autotoc_md17"></a>
+<h2><a class="anchor" id="autotoc_md20"></a>
 Specifying the classes default</h2>
 <p>If one wants to change the default Constructor type of a specific type they can add a type alias in that classes <code>json_data_contract</code>. For instance, if a member needs extra checking that the types constructor does not provide:</p>
 <div class="fragment"><div class="line"><span class="keyword">struct </span>FooConstructor {</div>
@@ -226,7 +281,7 @@ Specifying the classes default</h2>
 <div class="line">  <span class="keyword">using </span>type = json_member_list&lt;json_string&lt;<span class="stringliteral">&quot;name&quot;</span>&gt;,...&gt;;</div>
 <div class="line">};</div>
 </div><!-- fragment --><p>Here the type <code>Foo</code> will use a callable of type <code>FooConstructor</code> to create all <code>Foo</code>'s in the library unless overridden by a mapping.</p>
-<h2><a class="anchor" id="autotoc_md18"></a>
+<h2><a class="anchor" id="autotoc_md21"></a>
 Per mapping</h2>
 <p>The <code>json_class</code> mapping's second parameter is that of a Constructor type to call to construct that class and override the default. It can be specified like</p>
 <div class="fragment"><div class="line">json_class&lt;<span class="stringliteral">&quot;name&quot;</span>, FooConstructor&gt;</div>

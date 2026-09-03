@@ -280,14 +280,21 @@ serialization examples.
 
 ## `JsonCustomTypes`
 
-Custom JSON types can be Strings(default), unquoted Literals, or a mix.
+Custom JSON types can be strings, unquoted literals, or any JSON value.
 
 ### Values
 
-* `String` - Parser always expects a JSON string. Will surround serialized value with double quotes
-* `Literal` - Parser will expect a valid JSON literal number, bool, null
-* `Any` (Experimental) - Parser will return any valid JSON value excluding leading whitespace. Strings remain quoted.
-  `Any` is suitable for constructing a `json_value` to allow adhoc parsing if `json_raw` is not suitable
+* `String` - The parser expects a JSON string and passes its unquoted contents
+  to the converter. Serialization copies the converter output between double
+  quotes without escaping or validating it.
+* `Literal` - The parser expects a JSON number, boolean, or `null`.
+  Serialization copies the converter output verbatim without validation.
+* `Any` (Experimental) - The parser passes any JSON value, excluding leading
+  whitespace, to the converter. JSON strings retain their quotes. Serialization
+  copies the converter output verbatim without adding quotes, escaping, or
+  validation. Parse-time validation follows the selected `CheckedParseMode`.
+  `Any` is suitable for constructing a `json_value` to allow ad hoc parsing if
+  `json_raw` is not suitable.
 
 ### Default
 
