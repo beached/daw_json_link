@@ -107,6 +107,79 @@ namespace daw::json {
 } // namespace daw::json
 ```
 
+## Recursive classes
+
+A recursive class needs indirection so that the C++ type has a finite size. For
+example, a linked node can own the next node through a `std::shared_ptr`:
+
+```json
+{
+  "value": 1,
+  "next": {
+    "value": 2,
+    "next": {
+      "value": 3
+    }
+  }
+}
+```
+
+To see a working example, including serialization and round-trip parsing, refer
+to [cookbook_class4_test.cpp](../../tests/src/cookbook_class4_test.cpp).
+
+Writing `json_class_null<"next", std::shared_ptr<LinkedNode>>` directly would
+require the `LinkedNode` data contract while that same contract is still being
+defined. An unnamed `json_raw` mapping delays parsing the nested object until
+the outer contract is complete. Wrapping it in `json_nullable` also permits the
+last node to omit `"next"`.
+
+```c++
+struct LinkedNode {
+  int value;
+  std::shared_ptr<LinkedNode> next;
+};
+
+struct LinkedNodeConstructor {
+  LinkedNode operator()( char const *ptr, std::size_t size ) const;
+};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<LinkedNode> {
+    using type = json_member_list<
+      json_number<"value", int>,
+      json_nullable<
+        "next", std::shared_ptr<LinkedNode>,
+        json_raw_no_name<LinkedNode, LinkedNodeConstructor>>
+    >;
+
+    static std::tuple<int, std::optional<std::string>>
+    to_json_data( LinkedNode const &node );
+  };
+}
+
+LinkedNode LinkedNodeConstructor::operator()( char const *ptr,
+                                               std::size_t size ) const {
+  return daw::json::from_json<LinkedNode>(
+    std::string_view( ptr, size ) );
+}
+
+std::tuple<int, std::optional<std::string>>
+daw::json::json_data_contract<LinkedNode>::to_json_data(
+  LinkedNode const &node ) {
+  if( not node.next ) {
+    return { node.value, std::nullopt };
+  }
+  return { node.value, daw::json::to_json( *node.next ) };
+}
+```
+
+The string returned for `next` contains complete JSON and is emitted verbatim
+by `json_raw`. This representation is suitable for acyclic structures such as
+linked lists and trees. Cyclic object graphs should instead store nodes and
+edges separately and resolve references by ID, as demonstrated in the
+[graphs cookbook](graphs.md).
+
 ## Selective mapping
 
 Not all the JSON objects members need to be mapped. Below is the same JSON object as in the `MyClass2` example above.
