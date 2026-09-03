@@ -64,12 +64,11 @@ namespace daw::json {
 
 				basic_array_t( ) = default;
 
-				static DAW_CONSTEVAL T const *data( ) const {
+				static DAW_CONSTEVAL T const *data( ) {
 					return nullptr;
 				}
 
-
-				static DAW_CONSTEVAL std::size_t size( ) const {
+				static DAW_CONSTEVAL std::size_t size( ) {
 					return 0;
 				}
 			};
