@@ -73,6 +73,17 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T, typename Constructor = use_default>
 		struct json_class;
 
+		/**
+		 * Link to a JSON class without eagerly instantiating its data contract.
+		 * This permits recursive class mappings through containers and other
+		 * finite indirections.
+		 * @tparam Name name of JSON member to link to
+		 * @tparam T type that has a specialization of json_data_contract
+		 * @tparam Constructor A callable used to construct T
+		 */
+		template<JSONNAMETYPE Name, typename T, typename Constructor = use_default>
+		struct json_recursive_class;
+
 #if defined( DAW_JSON_HAS_REFLECTION )
 		/**
 		 * Used by reflection system, not by user

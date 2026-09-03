@@ -1136,6 +1136,46 @@ namespace daw::json {
 		  T, json_base::json_class<json_details::unwrapped_t<T>>,
 		  JsonNullable::NullVisible, Constructor>;
 
+		namespace json_base {
+			/**
+			 * A class mapping that delays access to T's data contract. This allows T
+			 * to appear recursively in its own contract through a finite indirection,
+			 * such as a container.
+			 */
+			template<typename T, typename Constructor = use_default>
+			struct json_recursive_class {
+				using i_am_a_json_type = void;
+				using wrapped_type = T;
+
+				using constructor_t =
+				  json_details::json_class_constructor_t<T, Constructor>;
+				using parse_to_t = T;
+
+				static constexpr auto expected_type = JsonParseTypes::Class;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_recursive_class<NewName, T, Constructor>;
+			};
+		} // namespace json_base
+
+		/**
+		 * Link to a recursively mapped JSON class member without eagerly
+		 * instantiating T's data contract.
+		 */
+		template<JSONNAMETYPE Name, typename T, typename Constructor>
+		struct json_recursive_class
+		  : json_base::json_recursive_class<T, Constructor> {
+			static constexpr daw::string_view name = Name;
+
+			using without_name = json_base::json_recursive_class<T, Constructor>;
+		};
+
+		template<typename T, typename Constructor = use_default>
+		using json_recursive_class_no_name =
+		  json_base::json_recursive_class<T, Constructor>;
+
 #if defined( DAW_JSON_HAS_REFLECTION )
 		/**
 		 * Link to a JSON class

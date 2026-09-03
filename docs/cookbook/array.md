@@ -168,9 +168,10 @@ To see a working example, including serialization and round-trip parsing, refer
 to [cookbook_array4_test.cpp](../../tests/src/cookbook_array4_test.cpp).
 
 A direct `json_array<"children", TreeNode>` mapping would require the
-`TreeNode` contract while that contract is still being defined. Mapping the
-array as raw JSON delays its parsing until the contract is complete. The custom
-constructor then parses the captured value with `from_json_array`.
+`TreeNode` contract while that contract is still being defined. The
+`json_recursive_class_no_name` element mapping exposes the JSON object type
+without eagerly instantiating that contract. When parsing reaches a child, the
+outer contract is complete and can be used normally.
 
 ```c++
 struct TreeNode {
@@ -178,45 +179,29 @@ struct TreeNode {
   std::vector<TreeNode> children;
 };
 
-struct TreeChildrenConstructor {
-  std::vector<TreeNode>
-  operator()( char const *ptr, std::size_t size ) const;
-};
-
 namespace daw::json {
   template<>
   struct json_data_contract<TreeNode> {
     using type = json_member_list<
       json_string<"name">,
-      json_raw<
-        "children", std::vector<TreeNode>, TreeChildrenConstructor>
+      json_array<
+        "children",
+        json_recursive_class_no_name<TreeNode>,
+        std::vector<TreeNode>
+      >
     >;
 
-    static std::tuple<std::string, std::string>
-    to_json_data( TreeNode const &node );
-  };
-}
-
-std::vector<TreeNode>
-TreeChildrenConstructor::operator()( char const *ptr,
-                                     std::size_t size ) const {
-  return daw::json::from_json_array<TreeNode>(
-    std::string_view( ptr, size ) );
-}
-
-std::tuple<std::string, std::string>
-daw::json::json_data_contract<TreeNode>::to_json_data(
-  TreeNode const &node ) {
-  return {
-    node.name,
-    daw::json::to_json_array( node.children )
+    static auto to_json_data( TreeNode const &node ) {
+      return std::forward_as_tuple( node.name, node.children );
+    }
   };
 }
 ```
 
-The serialized children array is returned as complete JSON text because a
-`json_raw` member writes its value verbatim. As with any nested JSON
-representation, the structure must be acyclic.
+The empty children array supplies the recursion's base case, so no nullable or
+pointer wrapper is required. Parsing and serialization use the ordinary
+`std::vector<TreeNode>` value. As with any nested JSON representation, the
+structure must be acyclic.
 
 ### Pointer like arrays
 

@@ -17,16 +17,13 @@
 #include <iostream>
 #include <string>
 #include <tuple>
+#include <type_traits>
 #include <vector>
 
 namespace daw::cookbook_array4 {
 	struct TreeNode {
 		std::string name;
 		std::vector<TreeNode> children;
-	};
-
-	struct TreeChildrenConstructor {
-		std::vector<TreeNode> operator( )( char const *ptr, std::size_t size ) const;
 	};
 
 	bool operator==( TreeNode const &lhs, TreeNode const &rhs ) {
@@ -39,29 +36,22 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_array4::TreeNode> {
 		static constexpr char const name[] = "name";
 		static constexpr char const children[] = "children";
+		using recursive_node =
+		  json_recursive_class_no_name<daw::cookbook_array4::TreeNode>;
+		static_assert( std::is_same_v<
+		               typename recursive_node::template with_name<children>,
+		               json_recursive_class<children,
+		                                    daw::cookbook_array4::TreeNode>> );
 		using type = json_member_list<
 		  json_string<name>,
-		  json_raw<children, std::vector<daw::cookbook_array4::TreeNode>,
-		           daw::cookbook_array4::TreeChildrenConstructor>>;
+		  json_array<children, recursive_node,
+		             std::vector<daw::cookbook_array4::TreeNode>>>;
 
-		static std::tuple<std::string, std::string>
-		to_json_data( daw::cookbook_array4::TreeNode const &node );
+		static auto to_json_data( daw::cookbook_array4::TreeNode const &node ) {
+			return std::forward_as_tuple( node.name, node.children );
+		}
 	};
 } // namespace daw::json
-
-namespace daw::cookbook_array4 {
-	std::vector<TreeNode>
-	TreeChildrenConstructor::operator( )( char const *ptr,
-	                                      std::size_t size ) const {
-		return daw::json::from_json_array<TreeNode>( std::string_view( ptr, size ) );
-	}
-} // namespace daw::cookbook_array4
-
-std::tuple<std::string, std::string>
-daw::json::json_data_contract<daw::cookbook_array4::TreeNode>::to_json_data(
-  daw::cookbook_array4::TreeNode const &node ) {
-	return std::make_tuple( node.name, daw::json::to_json_array( node.children ) );
-}
 
 int main( int argc, char **argv )
 #if defined( DAW_USE_EXCEPTIONS )

@@ -99,6 +99,7 @@ standard constructor.
 | Mapping | Template parameters after `Name` |
 | --- | --- |
 | `json_class` | `T, Constructor = use_default` |
+| `json_recursive_class` | `T, Constructor = use_default` |
 | `json_number` | `T = double, Options = number_opts_def, Constructor = use_default` |
 | `json_checked_number` | `T = double, Options = number_opts_def, Constructor = use_default` |
 | `json_fp` | `T = double, Format = FPOutputFormat::Auto, Precision = max_value<unsigned>, Options = fp_opts_def, Constructor = use_default` |

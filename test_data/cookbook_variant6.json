@@ -1,0 +1,20 @@
+[
+  {
+    "value": 5
+  },
+  {
+    "value": true
+  },
+  {
+    "value": {
+      "value": false
+    }
+  },
+  {
+    "value": {
+      "value": {
+        "value": 42
+      }
+    }
+  }
+]
