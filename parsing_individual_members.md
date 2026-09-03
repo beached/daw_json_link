@@ -46,3 +46,6 @@ Too see a working example using this code, refer to [cookbook_parsing_individual
 ```c++
 int third_value = daw::json::from_json<int>( json_data, "member1[2]" );
 ```
+
+To apply a relative member path as part of a reusable `json_data_contract`, see
+[Submember Mappings](submember.md).
