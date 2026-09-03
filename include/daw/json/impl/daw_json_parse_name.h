@@ -163,7 +163,17 @@ namespace daw::json {
 			                                   daw::string_view path ) {
 
 				auto pop_result = pop_json_path( path );
-				while( not pop_result.current.empty( ) ) {
+				while( not pop_result.current.empty( ) or
+				       pop_result.found_char != 0 ) {
+					// A path relative to an array starts with '['.  In that case the
+					// first popped component is empty and the index is the next one.
+					if( pop_result.current.empty( ) ) {
+						daw_json_assert_weak( pop_result.found_char == '[',
+						                      ErrorReason::InvalidJSONPath,
+						                      parse_state );
+						pop_result = pop_json_path( path );
+						continue;
+					}
 					if( pop_result.found_char == ']' ) {
 						// Array Index
 						daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
@@ -190,6 +200,10 @@ namespace daw::json {
 						                      parse_state );
 						parse_state.remove_prefix( );
 						parse_state.trim_left_unchecked( );
+						if( parse_state.empty( ) or
+						    parse_state.is_closing_brace_checked( ) ) {
+							return false;
+						}
 						auto name = parse_name( parse_state );
 						while( not json_path_compare( pop_result.current, name ) ) {
 							(void)skip_value( parse_state );

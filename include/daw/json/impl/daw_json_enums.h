@@ -50,6 +50,7 @@ namespace daw::json {
 			ReflectedClass, /// A class that has no backing and falls back to C++26
 			                /// reflection
 #endif
+			Submember, /// Locate a path within a class/array member before parsing
 		};
 
 		/// The fundamental JSON types

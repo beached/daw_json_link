@@ -177,8 +177,9 @@ HTML_EXTRA_FILES       =	"docs/cookbook/aliases.md" \
 													"docs/cookbook/output_options.md" \
 													"docs/cookbook/parser_policies.md" \
 													"docs/cookbook/parsing_individual_members.md" \
-													"docs/cookbook/strings.md" \
-													"docs/cookbook/unknown_types_and_raw_parsing.md" \
+											"docs/cookbook/strings.md" \
+											"docs/cookbook/submember.md" \
+											"docs/cookbook/unknown_types_and_raw_parsing.md" \
 													"docs/cookbook/variant.md"
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100

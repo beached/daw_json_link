@@ -74,6 +74,16 @@ namespace daw::json {
 		struct json_class;
 
 		/**
+		 * Locate a path relative to a named JSON class/array member and parse the
+		 * value at that path using JsonMember.
+		 * @tparam Name name of the outer JSON member
+		 * @tparam JsonPath path relative to the outer member
+		 * @tparam JsonMember unnamed mapping for the value at JsonPath
+		 */
+		template<JSONNAMETYPE Name, JSONNAMETYPE JsonPath, typename JsonMember>
+		struct json_submember;
+
+		/**
 		 * Link to a JSON class without eagerly instantiating its data contract.
 		 * This permits recursive class mappings through containers and other
 		 * finite indirections.

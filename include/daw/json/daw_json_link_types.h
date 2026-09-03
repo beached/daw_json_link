@@ -1131,6 +1131,63 @@ namespace daw::json {
 		template<typename T, typename Constructor = use_default>
 		using json_class_no_name = json_base::json_class<T, Constructor>;
 
+		namespace json_base {
+			template<JSONNAMETYPE JsonPath, typename JsonMember>
+			struct json_submember {
+				using i_am_a_json_type = void;
+				static_assert(
+				  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
+				  "Missing specialization of daw::json::json_data_contract for class "
+				  "mapping or specialization of daw::json::json_link_basic_type_map" );
+				using member_type = json_details::json_deduced_type<JsonMember>;
+
+				static_assert( json_details::is_a_json_type_v<member_type>,
+				               "JsonMember must be a JSON Link mapping or a type with a "
+				               "deduced mapping" );
+				static_assert( json_details::is_no_name_v<member_type>,
+				               "JsonMember must be an unnamed mapping" );
+
+				static constexpr daw::string_view json_path = JsonPath;
+				static_assert( not json_path.empty( ),
+				               "json_submember requires a non-empty JsonPath" );
+
+				using parse_to_t = json_details::json_result_t<member_type>;
+				static constexpr auto expected_type = JsonParseTypes::Submember;
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::None;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_submember<NewName, JsonPath, JsonMember>;
+			};
+		} // namespace json_base
+
+		/**
+		 * Parse the value at JsonPath within the named JSON class/array member.
+		 * JsonPath uses the same syntax as the path overloads of from_json.
+		 *
+		 * @par Invariants
+		 * - JsonPath is non-empty and JsonMember is an unnamed mapping.
+		 * - Each path step must match its JSON container: member names require an
+		 *   object and indexes require an array.
+		 * - The outer member and the complete inner path must exist when parsing.
+		 * - Serialization emits only the minimal object/array hierarchy described
+		 *   by JsonPath; JSON members not represented by the mapping are not
+		 *   reconstructed.
+		 * - Serialization supports only array index `[0]`. Any other array index
+		 *   reports ErrorReason::OutputError.
+		 * - A contract must not use more than one json_submember with the same Name.
+		 *
+		 * A missing inner path reports ErrorReason::JSONPathNotFound. A path step
+		 * whose container type does not match reports ErrorReason::InvalidJSONPath.
+		 */
+		template<JSONNAMETYPE Name, JSONNAMETYPE JsonPath, typename JsonMember>
+		struct json_submember
+		  : json_base::json_submember<JsonPath, JsonMember> {
+			static constexpr daw::string_view name = Name;
+
+			using without_name = json_base::json_submember<JsonPath, JsonMember>;
+		};
+
 		template<typename T, typename Constructor = use_default>
 		using json_class_null_no_name = json_base::json_nullable<
 		  T, json_base::json_class<json_details::unwrapped_t<T>>,

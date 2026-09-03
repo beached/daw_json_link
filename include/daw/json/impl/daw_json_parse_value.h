@@ -1252,6 +1252,27 @@ namespace daw::json {
 				}
 			}
 
+			template<typename JsonMember, bool KnownBounds, typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result_t<JsonMember>
+			parse_value_submember( ParseState &parse_state ) {
+				auto submember_state = [&] {
+					if constexpr( KnownBounds ) {
+						return parse_state;
+					} else {
+						return skip_value( parse_state );
+					}
+				}( );
+
+				auto const found =
+				  find_range2( submember_state, JsonMember::json_path );
+				daw_json_ensure( found, ErrorReason::JSONPathNotFound,
+				                 submember_state );
+
+				using member_type = typename JsonMember::member_type;
+				return parse_value<member_type, false, member_type::expected_type>(
+				  submember_state );
+			}
+
 			template<typename JsonMember, bool KnownBounds, JsonParseTypes PTag,
 			         typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result_t<JsonMember>
@@ -1294,6 +1315,8 @@ namespace daw::json {
 					return parse_value_variant_intrusive<JsonMember>( parse_state );
 				} else if constexpr( PTag == JsonParseTypes::Tuple ) {
 					return parse_value_tuple<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::Submember ) {
+					return parse_value_submember<JsonMember, KnownBounds>( parse_state );
 #if defined( DAW_JSON_HAS_REFLECTION )
 				} else if constexpr( PTag == JsonParseTypes::ReflectedClass ) {
 					return parse_value_reflected_class<JsonMember, KnownBounds>(
