@@ -279,10 +279,17 @@ auto string_text = daw::json::from_json<any_json>( R"("answer")" );
 // string_text == R"("answer")"
 ```
 
-`Any` changes the accepted input. For output it has the same quoted behavior as
-`String`. Its to-JSON converter must therefore return escaped JSON string
-contents, not a raw object or array. Use `Literal` when the converter's result
-must be emitted without quotes.
+For output, `Any` treats the to-JSON converter's result as a complete JSON
+value and emits it verbatim, without adding quotes, escaping characters, or
+validating the result. To produce a valid JSON document, the converter must
+therefore return exactly one valid JSON value: `null` produces a JSON null,
+while `"null"` (including the quotes) produces a JSON string.
+
+On input, `Any` uses the normal JSON value-skipping parser to determine the
+range passed to the from-JSON converter. Syntax checking follows the selected
+parse policy: the default checked mode performs the normal parser checks,
+whereas `CheckedParseMode::no` assumes the input is well-formed. This parse-time
+checking does not apply to text returned by the to-JSON converter.
 
 ## Options
 
@@ -291,9 +298,9 @@ Build the options argument with
 
 | `JsonCustomTypes` value | Accepted input | Serialization treatment |
 |---|---|---|
-| `String` (default) | JSON string | Surrounded with double quotes |
-| `Literal` | JSON number, boolean, or `null` | Written without quotes |
-| `Any` (experimental) | Any JSON value | Surrounded with double quotes |
+| `String` (default) | JSON string; converter receives the contents without quotes | Converter output is copied between added double quotes; it is not escaped or validated |
+| `Literal` | JSON number, boolean, or `null` | Converter output is copied verbatim without validation |
+| `Any` (experimental) | Any JSON value; strings retain their quotes | Converter output is copied verbatim without validation |
 
 Named, unnamed, and nullable forms are available:
 

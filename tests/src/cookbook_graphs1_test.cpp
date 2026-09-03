@@ -57,30 +57,16 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::GraphNode> {
-#if defined( DAW_JSON_CNTTP_JSON_NAME )
-		using type = json_member_list<
-		  json_number<"id", size_t,
-		              options::number_opt( options::LiteralAsStringOpt::Always )>,
-		  json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
-#else
 		static constexpr char const id[] = "id";
 		static constexpr char const metadata[] = "metadata";
 		using type = json_member_list<
 		  json_number<id, size_t,
 		              options::number_opt( options::LiteralAsStringOpt::Always )>,
 		  json_class<metadata, daw::cookbook_graphs1::Metadata>>;
-#endif
 	};
 
 	template<>
 	struct json_data_contract<daw::cookbook_graphs1::GraphEdge> {
-#if defined( DAW_JSON_CNTTP_JSON_NAME )
-		using type = json_member_list<
-		  json_number<"source", size_t,
-		              options::number_opt( options::LiteralAsStringOpt::Always )>,
-		  json_number<"target", size_t,
-		              options::number_opt( options::LiteralAsStringOpt::Always )>>;
-#else
 		static constexpr char const source[] = "source";
 		static constexpr char const target[] = "target";
 		using type = json_member_list<
@@ -88,7 +74,6 @@ namespace daw::json {
 		              options::number_opt( options::LiteralAsStringOpt::Always )>,
 		  json_number<target, size_t,
 		              options::number_opt( options::LiteralAsStringOpt::Always )>>;
-#endif
 	};
 } // namespace daw::json
 

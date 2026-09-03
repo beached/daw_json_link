@@ -20,7 +20,7 @@
 #include <variant>
 
 struct ConfigV1 {
-	constexpr static unsigned version = 1;
+	static constexpr unsigned version = 1;
 	std::string file;
 	bool flag;
 
@@ -30,7 +30,7 @@ struct ConfigV1 {
 };
 
 struct ConfigV2 {
-	constexpr static unsigned version = 2;
+	static constexpr unsigned version = 2;
 	bool flag1;
 	bool flag2;
 	bool flag3;

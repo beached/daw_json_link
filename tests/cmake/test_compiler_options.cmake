@@ -171,7 +171,7 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} ST
 		add_compile_options( -march=native )
 	endif()
 	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"
-	    AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9 )
+			AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9 )
 
 		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 OR ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 17 ))
 			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -D_FORTIFY_SOURCE=2" )
@@ -206,19 +206,19 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 	endif()
 	message( STATUS "g++ ${CMAKE_CXX_COMPILER_VERSION} detected" )
 	add_compile_options( --param max-gcse-memory=260000000
-	                     -Wall
-	                     -Wextra
-	                     -pedantic
-	                     -Wpedantic
-	                     -Wconversion
-	                     -Wduplicated-cond
-	                     -Wlogical-op
-	                     -Wold-style-cast
-	                     -Wshadow
-	                     -Wzero-as-null-pointer-constant
-	                     -Wnull-dereference
-	                     -ftemplate-backtrace-limit=0
-	                     )
+											 -Wall
+											 -Wextra
+											 -pedantic
+											 -Wpedantic
+											 -Wconversion
+											 -Wduplicated-cond
+											 -Wlogical-op
+											 -Wold-style-cast
+											 -Wshadow
+											 -Wzero-as-null-pointer-constant
+											 -Wnull-dereference
+											 -ftemplate-backtrace-limit=0
+											 )
 	if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 12.0.0 )
 		add_compile_options(
 				-ffold-simple-inlines
@@ -241,21 +241,10 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 		message( STATUS "Using -march=native" )
 		add_compile_options( -march=native )
 	endif()
-	# Prior to gcc-12, it tries to concept check an input iterator as a bidirectional and requires
-	# *it-- = *it to be a valid expression
-	if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.0.0 )
-		set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer" )
-		set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wnull-dereference" )
-		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS -Wnull-dereference" )
-	else()
-		set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS" )
-		set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG" )
-		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG" )
-	endif()
 
 	if( DAW_JSON_USE_SANITIZERS )
 		message( STATUS "Using sanitizers" )
-		#UBSAN makes constexpr code paths not constexpr	on gcc9-11
+		#UBSAN makes constexpr code paths not constexpr	on gcc
 		#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=undefined")
 		#set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address" )
 		#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fsanitize=undefined")
@@ -263,9 +252,25 @@ elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 		#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -fsanitize=undefined")
 		#set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -fsanitize=address" )
 
-		add_compile_options( -fsanitize=undefined,address )
+		set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG" )
+		set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG" )
+		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG" )
+		add_compile_options( -fsanitize=undefined,address -fno-sanitize=null,returns-nonnull-attribute,nonnull-attribute )
 		add_link_options( -fsanitize=undefined,address )
+	else()
+		# Prior to gcc-12, it tries to concept check an input iterator as a bidirectional and requires
+		# *it-- = *it to be a valid expression
+		if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.0.0 )
+			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer" )
+			set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wnull-dereference" )
+			set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG -D_GLIBCXX_CONCEPT_CHECKS -Wnull-dereference" )
+		else()
+			set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG -D_GLIBCXX_ASSERTIONS" )
+			set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG" )
+			set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g -DNDEBUG" )
+		endif()
 	endif()
+
 elseif( MSVC )
 	message( STATUS "MSVC detected" )
 	add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 -D_SILENCE_CXX20_CISO646_REMOVED_WARNING )

@@ -23,6 +23,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_consteval.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_not_null.h>
 #include <daw/daw_rw_ref.h>

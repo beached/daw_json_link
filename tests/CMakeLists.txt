@@ -386,6 +386,12 @@ add_test( NAME cookbook_class3_test COMMAND cookbook_class3_test ./cookbook_clas
 add_dependencies( ci_tests cookbook_class3_test )
 add_dependencies( full cookbook_class3_test )
 
+add_executable( cookbook_class4_test src/cookbook_class4_test.cpp )
+target_link_libraries( cookbook_class4_test PRIVATE json_test )
+add_test( NAME cookbook_class4_test COMMAND cookbook_class4_test ./cookbook_class4.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests cookbook_class4_test )
+add_dependencies( full cookbook_class4_test )
+
 add_executable( cookbook_array1_test src/cookbook_array1_test.cpp )
 target_link_libraries( cookbook_array1_test PRIVATE json_test )
 add_test( NAME cookbook_array1_test COMMAND cookbook_array1_test ./cookbook_array1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
@@ -403,6 +409,12 @@ target_link_libraries( cookbook_array3_test PRIVATE json_test )
 add_test( NAME cookbook_array3_test COMMAND cookbook_array3_test ./cookbook_array3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
 add_dependencies( ci_tests cookbook_array3_test )
 add_dependencies( full cookbook_array3_test )
+
+add_executable( cookbook_array4_test src/cookbook_array4_test.cpp )
+target_link_libraries( cookbook_array4_test PRIVATE json_test )
+add_test( NAME cookbook_array4_test COMMAND cookbook_array4_test ./cookbook_array4.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests cookbook_array4_test )
+add_dependencies( full cookbook_array4_test )
 
 add_executable( cookbook_escaped_strings1_test src/cookbook_escaped_strings1_test.cpp )
 target_link_libraries( cookbook_escaped_strings1_test PRIVATE json_test )
@@ -515,6 +527,12 @@ endif()
 target_link_libraries( cookbook_variant5_test PRIVATE json_test )
 add_dependencies( ci_tests cookbook_variant5_test )
 add_dependencies( full cookbook_variant5_test )
+
+add_executable( cookbook_variant6_test src/cookbook_variant6_test.cpp )
+target_link_libraries( cookbook_variant6_test PRIVATE json_test )
+add_test( NAME cookbook_variant6_test COMMAND cookbook_variant6_test ./cookbook_variant6.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests cookbook_variant6_test )
+add_dependencies( full cookbook_variant6_test )
 
 add_executable( optional_tagged_variant_test src/optional_tagged_variant_test.cpp )
 target_link_libraries( optional_tagged_variant_test PRIVATE json_test )
@@ -1168,6 +1186,11 @@ add_test( NAME issue_487_test COMMAND issue_487_test WORKING_DIRECTORY "${CMAKE_
 add_dependencies( ci_tests issue_487_test )
 add_dependencies( full issue_487_test )
 
+add_executable( custom_optional_number_test src/custom_optional_number_test.cpp )
+target_link_libraries( custom_optional_number_test PRIVATE json_test )
+add_test( NAME custom_optional_number_test COMMAND custom_optional_number_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests custom_optional_number_test )
+add_dependencies( full custom_optional_number_test )
 
 add_executable( multi_tu_test src/multi_tu_p0_test.cpp src/multi_tu_p1_test.cpp )
 target_link_libraries( multi_tu_test json_test )

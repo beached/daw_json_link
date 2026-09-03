@@ -136,7 +136,8 @@ json_raw<"payload", RawJsonType>
   `std::begin` and `std::end`; its iterator value type must be `char`.
 * The range is copied verbatim. DAW JSON Link does not add quotes or escape the
   contents.
-* The supplied text must therefore already be one valid JSON value.
+* The supplied text is not validated during serialization and must therefore
+  already be one valid JSON value.
 * The character range must remain alive for the duration of serialization.
 
 If the third-party type itself iterates over serialized JSON characters, it can
@@ -144,7 +145,8 @@ be returned directly from `to_json_data`. Most DOM types instead iterate over
 array or object elements, so returning their `dump`, `serialize`, or equivalent
 string is usually required.
 
-`json_custom` configured with `options::JsonCustomTypes::Any` is not a
-replacement for `json_raw` in this situation. `Any` accepts any JSON value
-while parsing, but its serialized output is surrounded by quotes. `json_raw`
-both accepts and emits complete raw JSON values.
+`json_custom` configured with `options::JsonCustomTypes::Any` also accepts and
+emits complete JSON values, but does so through user-supplied conversion
+functions. Prefer `json_raw` when the mapped value is already a character range
+containing serialized JSON. As with `json_raw`, serialized text is copied
+without validation.

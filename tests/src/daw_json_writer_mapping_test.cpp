@@ -19,85 +19,95 @@
 #include <variant>
 #include <vector>
 
-namespace {
-	template<typename JsonClass, typename T>
-	void ensure_write_value( T const &value, std::string_view expected ) {
-		auto out = std::string{ };
-		auto writer = daw::json::json_writer( out );
-		writer.template write_value<JsonClass>( value );
-		writer.finalize( );
-		if( out != expected ) {
-			std::cerr << "Expected: " << expected << "\nActual:   " << out << '\n';
-		}
-		daw_ensure( out == expected );
+template<typename JsonClass, typename T>
+void ensure_write_value( T const &value, std::string_view expected ) {
+	auto out = std::string{ };
+	auto writer = daw::json::json_writer( out );
+	writer.template write_value<JsonClass>( value );
+	writer.finalize( );
+	if( out != expected ) {
+		std::cerr << "Expected: " << expected << "\nActual:   " << out << '\n';
+	}
+	daw_ensure( out == expected );
+}
+
+struct CustomFromJson {
+	[[maybe_unused]] int operator( )( std::string_view ) const {
+		return 0;
+	}
+};
+
+struct CustomToJson {
+	std::string operator( )( int value ) const {
+		return std::to_string( value );
+	}
+};
+
+struct JsonTextFromJson {
+	std::string operator( )( std::string_view value ) const {
+		return std::string( value );
+	}
+};
+
+struct JsonTextToJson {
+	std::string_view operator( )( std::string const &value ) const {
+		return value;
+	}
+};
+
+using TaggedValue = std::variant<std::string, int, bool>;
+
+struct TaggedObject {
+	std::string name;
+	TaggedValue value;
+};
+
+struct TaggedSwitcher {
+	[[maybe_unused]] constexpr std::size_t operator( )( int type ) const {
+		return static_cast<std::size_t>( type );
 	}
 
-	struct CustomFromJson {
-		[[maybe_unused]] int operator( )( std::string_view ) const {
-			return 0;
-		}
-	};
+	int operator( )( TaggedObject const &value ) const {
+		return static_cast<int>( value.value.index( ) );
+	}
+};
 
-	struct CustomToJson {
-		std::string operator( )( int value ) const {
-			return std::to_string( value );
-		}
-	};
+struct SizedObject {
+	std::size_t size;
+	std::vector<int> values;
+};
 
-	using TaggedValue = std::variant<std::string, int, bool>;
+struct SizedVectorConstructor {
+	[[maybe_unused]] std::vector<int>
+	operator( )( int const *first, int const *last, std::size_t ) const {
+		return { first, last };
+	}
+};
 
-	struct TaggedObject {
-		std::string name;
-		TaggedValue value;
-	};
+struct IntrusiveA {
+	int kind = 0;
+	int value = 0;
+};
 
-	struct TaggedSwitcher {
-		[[maybe_unused]] constexpr std::size_t operator( )( int type ) const {
-			return static_cast<std::size_t>( type );
-		}
+struct IntrusiveB {
+	int kind = 1;
+	std::string value;
+};
 
-		int operator( )( TaggedObject const &value ) const {
-			return static_cast<int>( value.value.index( ) );
-		}
-	};
+using IntrusiveValue = std::variant<IntrusiveA, IntrusiveB>;
 
-	struct SizedObject {
-		std::size_t size;
-		std::vector<int> values;
-	};
-
-	struct SizedVectorConstructor {
-		[[maybe_unused]] std::vector<int>
-		operator( )( int const *first, int const *last, std::size_t ) const {
-			return { first, last };
-		}
-	};
-
-	struct IntrusiveA {
-		int kind = 0;
-		int value = 0;
-	};
-
-	struct IntrusiveB {
-		int kind = 1;
-		std::string value;
-	};
-
-	using IntrusiveValue = std::variant<IntrusiveA, IntrusiveB>;
-
-	struct IntrusiveSwitcher {
-		[[maybe_unused]] constexpr std::size_t operator( )( int type ) const {
-			return static_cast<std::size_t>( type );
-		}
-	};
+struct IntrusiveSwitcher {
+	[[maybe_unused]] constexpr std::size_t operator( )( int type ) const {
+		return static_cast<std::size_t>( type );
+	}
+};
 
 #if defined( DAW_JSON_HAS_REFLECTION )
-	struct ReflectedObject {
-		int number;
-		bool flag;
-	};
+struct ReflectedObject {
+	int number;
+	bool flag;
+};
 #endif
-} // namespace
 
 namespace daw::json {
 	template<>
@@ -178,6 +188,17 @@ int main( ) {
 	  42, R"("42")" );
 	ensure_write_value<
 	  json_custom_lit_no_name<int, CustomFromJson, CustomToJson>>( 42, "42" );
+	using custom_any = json_custom_no_name<std::string,
+	                                       JsonTextFromJson,
+	                                       JsonTextToJson,
+	                                       options::json_custom_opt(
+	                                         options::JsonCustomTypes::Any )>;
+	ensure_write_value<custom_any>( std::string{ "null" }, "null" );
+	ensure_write_value<custom_any>( std::string{ R"("null")" }, R"("null")" );
+	ensure_write_value<custom_any>( std::string{ R"({"value":42})" },
+	                                R"({"value":42})" );
+	// JsonCustomTypes::Any copies the converter output without validation.
+	ensure_write_value<custom_any>( std::string{ "not JSON" }, "not JSON" );
 
 	ensure_write_value<json_tuple_no_name<std::tuple<int, bool, std::string>>>(
 	  std::tuple{ 1, true, std::string{ "two" } }, R"([1,true,"two"])" );

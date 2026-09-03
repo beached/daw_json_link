@@ -43,9 +43,9 @@ struct coordinates_t {
 namespace daw::json {
 	template<>
 	struct json_data_contract<coordinate_t> {
-		constexpr inline static char const x[] = "x";
-		constexpr inline static char const y[] = "y";
-		constexpr inline static char const z[] = "z";
+		static constexpr char x[] = "x";
+		static constexpr char y[] = "y";
+		static constexpr char z[] = "z";
 		using type =
 		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
 	};
