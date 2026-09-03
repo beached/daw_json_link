@@ -139,6 +139,88 @@ namespace daw::json {
 }
 ```
 
+## Sized arrays
+
+Use `json_sized_array` when an array's container needs a size supplied by
+another member of the same JSON object. This is useful for containers such as
+`std::unique_ptr<T[]>` that do not store their size.
+
+```json
+{
+  "size": 3,
+  "values": [1, 2, 3]
+}
+```
+
+The size mapping is passed to `json_sized_array` as its third template
+argument. Its constructor receives the parsed element range followed by that
+size. To see a working example, refer to
+[test_json_sized_array.cpp](../../tests/src/test_json_sized_array.cpp).
+
+```c++
+#include <daw/daw_span.h>
+#include <daw/json/daw_json_link.h>
+
+#include <memory>
+#include <stdexcept>
+
+struct Stuff {
+  std::size_t size;
+  std::unique_ptr<int[]> values;
+};
+
+template<typename T>
+struct UniquePtrArrayCtor {
+  template<typename Iterator>
+  std::unique_ptr<T[]> operator()( Iterator first, Iterator last,
+                                   std::size_t size ) const {
+    if( size > 1024 ) {
+      throw std::length_error( "array is too large" );
+    }
+
+    auto result = std::make_unique<T[]>( size );
+    std::size_t count = 0;
+    while( first != last ) {
+      if( count == size ) {
+        throw std::length_error( "array size does not match size member" );
+      }
+      result[count++] = *first;
+      ++first;
+    }
+    if( count != size ) {
+      throw std::length_error( "array size does not match size member" );
+    }
+    return result;
+  }
+};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<Stuff> {
+    using size_member = json_number<"size", std::size_t>;
+    using type = json_member_list<
+      size_member,
+      json_sized_array<"values", int, size_member,
+                       std::unique_ptr<int[]>, UniquePtrArrayCtor<int>>
+    >;
+
+    static auto to_json_data( Stuff const &value ) {
+      return std::tuple{
+        value.size,
+        daw::span<int const>( value.values.get(), value.size )
+      };
+    }
+  };
+}
+```
+
+The size member must be a named, non-nullable mapping in the same contract.
+Because input can request an arbitrarily large allocation or provide a size
+that disagrees with the array, custom constructors should enforce suitable
+resource limits and validate the number of parsed elements before returning.
+For serialization, expose pointer-like storage as a sized range such as
+`daw::span`; a pointer alone does not provide an end iterator.
+
 ## Recursive arrays
 
 Arrays often provide the recursive edge in an n-ary tree:
