@@ -951,6 +951,12 @@ add_test( test_json_array_test test_json_array )
 add_dependencies( ci_tests test_json_array )
 add_dependencies( full test_json_array )
 
+add_executable( test_json_submember src/test_json_submember.cpp )
+target_link_libraries( test_json_submember PRIVATE json_test )
+add_test( test_json_submember_test test_json_submember )
+add_dependencies( ci_tests test_json_submember )
+add_dependencies( full test_json_submember )
+
 add_executable( test_json_key_value_array src/test_json_key_value_array.cpp )
 target_link_libraries( test_json_key_value_array PRIVATE json_test )
 add_test( test_json_key_value_array_test test_json_key_value_array )

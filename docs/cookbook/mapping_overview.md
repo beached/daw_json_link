@@ -69,6 +69,13 @@ Maps JSON string values to C++ string types. The string type will need to own th
 
 Maps JSON string values to C++ string types without processing. This allows for `string_view` mappings.
 
+### `json_submember`
+
+Maps a C++ member to a value below a named JSON object or array member. The
+relative path is searched while parsing. Serialization reconstructs the minimal
+path and supports only array index `[0]`. See [Submember Mappings](submember.md)
+for its invariants and error behavior.
+
 ### `json_tuple`
 
 Maps JSON tuples/arrays/heterogeneous arrays to C++ class types.  This requires that the order is significant.  This is useful to save space because member names are not needed.

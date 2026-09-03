@@ -48,7 +48,7 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
+			namespace json_details {
 			template<options::FPOutputFormat fp_output_format,
 			         unsigned Precision = daw::max_value<unsigned>, typename Real,
 			         typename WriteableType>
@@ -1382,6 +1382,90 @@ namespace daw::json {
 				return it;
 			}
 
+			template<typename JsonMember, typename WriteableType, typename T>
+			[[nodiscard]] static constexpr WriteableType
+			to_json_string_submember( WriteableType it, daw::string_view path,
+			                          T const &value );
+
+			template<typename JsonMember, typename WriteableType, typename T>
+			[[nodiscard]] static constexpr WriteableType
+			to_json_string_submember_array( WriteableType it, daw::string_view path,
+			                                T const &value ) {
+				auto const index = pop_json_path( path );
+				// Only index zero can be reconstructed without inventing preceding
+				// array elements. This is a runtime output error because serialization
+				// is the operation that requires this stronger path invariant.
+				daw_json_ensure( index.found_char == ']' and
+				                   index.current.size( ) == 1 and
+				                   index.current.front( ) == '0',
+				                 ErrorReason::OutputError );
+
+				it.put( '[' );
+				it.add_indent( );
+				it.next_member( );
+				if( path.empty( ) ) {
+					using member_type = typename JsonMember::member_type;
+					it = to_daw_json_string<member_type, member_type::expected_type>(
+					  it, value );
+				} else {
+					it = to_json_string_submember<JsonMember>( it, path, value );
+				}
+				it.del_indent( );
+				if constexpr( it.output_trailing_comma ==
+				              options::OutputTrailingComma::Yes ) {
+					it.put( ',' );
+				}
+				it.next_member( );
+				it.put( ']' );
+				return it;
+			}
+
+			template<typename JsonMember, typename WriteableType, typename T>
+			[[nodiscard]] static constexpr WriteableType
+			to_json_string_submember( WriteableType it, daw::string_view path,
+			                          T const &value ) {
+				auto const path_item = pop_json_path( path );
+				if( path_item.current.empty( ) ) {
+					daw_json_ensure( path_item.found_char == '[',
+					                 ErrorReason::OutputError );
+					return to_json_string_submember_array<JsonMember>( it, path,
+					                                                   value );
+				}
+
+				it.put( '{' );
+				it.add_indent( );
+				it.next_member( );
+				it.put( '"' );
+				auto name = path_item.current;
+				while( not name.empty( ) ) {
+					if( name.front( ) == '\\' ) {
+						name.remove_prefix( );
+						daw_json_ensure( not name.empty( ), ErrorReason::OutputError );
+					}
+					it.put( name.front( ) );
+					name.remove_prefix( );
+				}
+				it.write( "\":", it.space );
+
+				if( path_item.found_char == '[' ) {
+					it = to_json_string_submember_array<JsonMember>( it, path, value );
+				} else if( path.empty( ) ) {
+					using member_type = typename JsonMember::member_type;
+					it = to_daw_json_string<member_type, member_type::expected_type>(
+					  it, value );
+				} else {
+					it = to_json_string_submember<JsonMember>( it, path, value );
+				}
+				it.del_indent( );
+				if constexpr( it.output_trailing_comma ==
+				              options::OutputTrailingComma::Yes ) {
+					it.put( ',' );
+				}
+				it.next_member( );
+				it.put( '}' );
+				return it;
+			}
+
 			template<typename JsonMember, JsonParseTypes Tag, typename WriteableType,
 			         typename parse_to_t>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr WriteableType
@@ -1422,6 +1506,9 @@ namespace daw::json {
 					return to_json_string_variant_intrusive<JsonMember>( it, value );
 				} else if constexpr( Tag == JsonParseTypes::Tuple ) {
 					return to_json_string_tuple<JsonMember>( it, value );
+				} else if constexpr( Tag == JsonParseTypes::Submember ) {
+					return to_json_string_submember<JsonMember>(
+					  it, JsonMember::json_path, value );
 #if defined( DAW_JSON_HAS_REFLECTION )
 				} else if constexpr( Tag == JsonParseTypes::ReflectedClass ) {
 					return to_json_string_reflected_class<JsonMember>( it, value );

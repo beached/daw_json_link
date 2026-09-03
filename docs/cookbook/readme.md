@@ -27,5 +27,6 @@ This folder contains examples of various JSON constructs and how to create a C++
 * [Parsing Individual Members](parsing_individual_members.md)
 * [Reflection(*New*)](reflection.md)
 * [Strings](strings.md)
+* [Submember Mappings](submember.md) - Mapping a class member through a relative JSON path
 * [Unknown JSON and Raw Parsing](unknown_types_and_raw_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
 * [Variant](variant.md)

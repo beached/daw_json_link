@@ -30,6 +30,7 @@
     * [Parsing Individual Members](docs/cookbook/parsing_individual_members.md)
     * [Reflection(*New*)](docs/cookbook/reflection.md)
     * [Strings](docs/cookbook/strings.md)
+    * [Submember Mappings](docs/cookbook/submember.md)
     * [Unknown JSON and Raw Parsing](docs/cookbook/unknown_types_and_raw_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
     * [Variant](docs/cookbook/variant.md)
     * [Automatic Code Generation](docs/cookbook/automated_code_generation.md)
