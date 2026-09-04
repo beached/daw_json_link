@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DAW JSON Link: C++ 26 Reflection</title>
+<title>DAW JSON Link: Reflection and reflection-like mappings</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,335 +70,215 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">C++ 26 Reflection</div></div>
+  <div class="headertitle"><div class="title">Reflection and reflection-like mappings</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md182"></a> JSON Link has support for C++26 reflection as a fallback when no explicit mapping has been provided for aggregate classes with all public members. One can opt-in with the following ways and change the defaults.</p>
-<p>Because reflection helps with mappings, the calls to (de)serialized are still <code><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__from__json_8h_03.html#a770a797c458a739384f8ff069c27895e" title="Construct the JSONMember from the JSON document argument.">daw::json::from_json</a>&lt;Type&gt;( json_document )</code> and <code>daw::json::to_json( value )</code>. Like explicit mappings with <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">daw::json::json_data_contract</a></code> already mapped, reflection or not, types just work.</p>
-<h1><a class="anchor" id="autotoc_md183"></a>
-Basic example</h1>
-<div class="fragment"><div class="line"> ++</div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">enum class</span> Colour { blue, green, brown };</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">struct </span>[[= reflect ]] Person {</div>
-<div class="line">    <span class="keywordtype">int</span> age;</div>
-<div class="line">    std::string name;</div>
-<div class="line">    Colour eyeColour;</div>
-<div class="line">};</div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
-<div class="line"><span class="stringliteral">{</span></div>
-<div class="line"><span class="stringliteral"> &quot;age&quot;: 42,</span></div>
-<div class="line"><span class="stringliteral"> &quot;name&quot;: &quot;Jane Smith&quot;,</span></div>
-<div class="line"><span class="stringliteral"> &quot;eyeColour&quot;: 0</span></div>
-<div class="line"><span class="stringliteral">}</span></div>
-<div class="line"><span class="stringliteral">)json&quot;;</span></div>
-<div class="line"><span class="stringliteral">    </span><span class="keyword">auto</span> p = daw::json::from_json&lt;Person&gt;( json_doc );</div>
-<div class="line">    assert( p.age == 42 );</div>
-<div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
-<div class="line">    assert( p.eyeColour == Colour::blue );</div>
-<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
-<div class="line">}</div>
-<div class="ttc" id="adaw__json__link_8h_html"><div class="ttname"><a href="daw__json__link_8h.html">daw_json_link.h</a></div></div>
+<div class="textblock"><p><a class="anchor" id="autotoc_md187"></a> JSON Link can derive object mappings from C++26 static reflection. It also provides separate adapters for Boost.PFR and Boost.Describe on toolchains that do not provide standard reflection.</p>
+<p>All three approaches create the mapping used by the normal API:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> value = daw::json::from_json&lt;Type&gt;( json_document );</div>
+<div class="line"><span class="keyword">auto</span> json = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( value );</div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00078">daw_to_json.h:78</a></div></div>
-</div><!-- fragment --><p>The program will output</p>
-<div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;name&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:0}</div>
-</div><!-- fragment --><p>Adding the <code>[[= daw::json::reflect ]]</code> annotation to a class will map any type with all public non-static data members. Another way is to specialize the variable template <code>daw::json::enable_reflection_for</code> for your type. This is useful for types that you do not control the source for. If the class has private members, one can use <code>[[= daw::json::reflect.unchecked ]]</code> to enable reflection of all members.</p>
-<div class="fragment"><div class="line"> ++</div>
-<div class="line"><span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> daw::json::enable_reflection_for&lt;Foo&gt; = <span class="keyword">true</span>;</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md184"></a>
-Renaming members</h1>
-<p>Let's take the previous example and rename a member with member annotations.</p>
-<div class="fragment"><div class="line"> ++</div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">enum class</span> Colour { blue, green, brown };</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">struct </span>[[= reflect ]] Person {</div>
-<div class="line">    <span class="keywordtype">int</span> age;</div>
-<div class="line">    </div>
-<div class="line">    [[= reflect.rename&lt;<span class="stringliteral">&quot;fullName&quot;</span>&gt; ]]</div>
-<div class="line">    std::string name;</div>
-<div class="line">    Colour eyeColour;</div>
-<div class="line">};</div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
-<div class="line"><span class="stringliteral">{</span></div>
-<div class="line"><span class="stringliteral"> &quot;age&quot;: 42,</span></div>
-<div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;,</span></div>
-<div class="line"><span class="stringliteral"> &quot;eyeColour&quot;: 0</span></div>
-<div class="line"><span class="stringliteral">}</span></div>
-<div class="line"><span class="stringliteral">)json&quot;;</span></div>
-<div class="line"><span class="stringliteral">    </span><span class="keyword">auto</span> p = daw::json::from_json&lt;Person&gt;( json_doc );</div>
-<div class="line">    assert( p.age == 42 );</div>
-<div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
-<div class="line">    assert( p.eyeColour == Colour::blue );</div>
-<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
-<div class="line">}</div>
-</div><!-- fragment --><p>The program will output</p>
-<div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:0}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md185"></a>
-Explicitly setting the member mapping</h1>
-<p>Continuing the previous example and allow the age to sometimes be quoted.</p>
-<div class="fragment"><div class="line"> ++</div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">enum class</span> Colour { blue, green, brown };</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">struct </span>[[= reflect ]] Person {</div>
-<div class="line">    [[= reflect.map_as&lt;</div>
-<div class="line">        <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a>&lt;</div>
-<div class="line">            <span class="stringliteral">&quot;age&quot;</span>, </div>
-<div class="line">            int, </div>
-<div class="line">            daw::json::options::number_opt(</div>
-<div class="line">                daw::json::options::LiteralAsStringOpt::Maybe )&gt;&gt; ]]</div>
-<div class="line">    <span class="keywordtype">int</span> age;</div>
-<div class="line">    </div>
-<div class="line">    [[= reflect.rename&lt;<span class="stringliteral">&quot;fullName&quot;</span>&gt; ]]</div>
-<div class="line">    std::string name;</div>
-<div class="line">    Colour eyeColour;</div>
-<div class="line">};</div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
-<div class="line"><span class="stringliteral">{</span></div>
-<div class="line"><span class="stringliteral"> &quot;age&quot;: &quot;42&quot;,</span></div>
-<div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;</span></div>
-<div class="line"><span class="stringliteral">}</span></div>
-<div class="line"><span class="stringliteral">)json&quot;;</span></div>
-<div class="line"><span class="stringliteral">    </span><span class="keyword">auto</span> p = daw::json::from_json&lt;Person&gt;( json_doc );</div>
-<div class="line">    assert( p.age == 42 );</div>
-<div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
-<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
-<div class="line">}</div>
-<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00494">daw_json_link_types.h:494</a></div></div>
-</div><!-- fragment --><p>The program will output</p>
-<div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;}</div>
-</div><!-- fragment --><p>This allows full control of individual member mappings as if it was a <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">daw::json::json_data_contract</a></code>.</p>
-<h2><a class="anchor" id="autotoc_md186"></a>
-Note</h2>
-<p>One cannot use <code>rename</code> and <code>map_as</code> on the same member.</p>
-<h1><a class="anchor" id="autotoc_md187"></a>
-Enumerations as strings</h1>
-<p>By default, enum members are mapped as numbers. If one wants to map them as strings they can with the <code>daw::json::reflect.enum_string</code> annotion. This uses the default options for a <code>json_custom</code> mapping. If one needs to pass options they can use <code>daw::json::reflect.enum_string_with_opt</code>.</p>
-<p>With the previous example</p>
-<div class="fragment"><div class="line"> ++</div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">enum class</span> Colour { blue, green, brown };</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">struct </span>[[= reflect ]] Person {</div>
-<div class="line">    [[= reflect.map_as&lt;</div>
-<div class="line">        <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a>&lt;</div>
-<div class="line">            <span class="stringliteral">&quot;age&quot;</span>, </div>
-<div class="line">            int, </div>
-<div class="line">            daw::json::options::number_opt(</div>
-<div class="line">                daw::json::options::LiteralAsStringOpt::Maybe )&gt;&gt; ]]</div>
-<div class="line">    <span class="keywordtype">int</span> age;</div>
-<div class="line">    </div>
-<div class="line">    [[= reflect.rename&lt;<span class="stringliteral">&quot;fullName&quot;</span>&gt; ]]</div>
-<div class="line">    std::string name;</div>
-<div class="line">    </div>
-<div class="line">    [[= reflect.enum_string ]]</div>
-<div class="line">    Colour eyeColour;</div>
-<div class="line">};</div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
-<div class="line"><span class="stringliteral">{</span></div>
-<div class="line"><span class="stringliteral"> &quot;age&quot;: &quot;42&quot;,</span></div>
-<div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;</span></div>
-<div class="line"><span class="stringliteral"> &quot;eyeColour&quot;: &quot;blue&quot;</span></div>
-<div class="line"><span class="stringliteral">}</span></div>
-<div class="line"><span class="stringliteral">)json&quot;;</span></div>
-<div class="line"><span class="stringliteral">    </span><span class="keyword">auto</span> p = daw::json::from_json&lt;Person&gt;( json_doc );</div>
-<div class="line">    assert( p.age == 42 );</div>
-<div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
-<div class="line">    assert( p.eyeColour == Colour::blue );</div>
-<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
-<div class="line">}</div>
-</div><!-- fragment --><p>The program will output</p>
-<div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md188"></a>
-Ignoring members</h1>
-<p>We can ignore specific members individually and they will use the default constructed value based on it's type(e.g. <code>T{}</code>) or a supplied value. Currently, member initialializers are not used as C++26 reflection does not expose them.</p>
-<p>With the previous example, lets add an ingnored member</p>
-<div class="fragment"><div class="line"> ++</div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">enum class</span> Colour { blue, green, brown };</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">struct </span>[[= reflect ]] Person {</div>
-<div class="line">    [[= reflect.map_as&lt;</div>
-<div class="line">        <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a>&lt;</div>
-<div class="line">            <span class="stringliteral">&quot;age&quot;</span>, </div>
-<div class="line">            int, </div>
-<div class="line">            daw::json::options::number_opt(</div>
-<div class="line">                daw::json::options::LiteralAsStringOpt::Maybe )&gt;&gt; ]]</div>
-<div class="line">    <span class="keywordtype">int</span> age;</div>
-<div class="line">    </div>
-<div class="line">    [[= reflect.rename&lt;<span class="stringliteral">&quot;fullName&quot;</span>&gt; ]]</div>
-<div class="line">    std::string name;</div>
-<div class="line">    </div>
-<div class="line">    [[= reflect.enum_string ]]</div>
-<div class="line">    Colour eyeColour;</div>
-<div class="line">    [[= reflect.ignored ]]</div>
-<div class="line">    std::size_t code;</div>
-<div class="line">};</div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
-<div class="line"><span class="stringliteral">{</span></div>
-<div class="line"><span class="stringliteral"> &quot;age&quot;: &quot;42&quot;,</span></div>
-<div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;</span></div>
-<div class="line"><span class="stringliteral"> &quot;eyeColour&quot;: &quot;blue&quot;</span></div>
-<div class="line"><span class="stringliteral">}</span></div>
-<div class="line"><span class="stringliteral">)json&quot;;</span></div>
-<div class="line"><span class="stringliteral">    </span><span class="keyword">auto</span> p = daw::json::from_json&lt;Person&gt;( json_doc );</div>
-<div class="line">    assert( p.age == 42 );</div>
-<div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
-<div class="line">    assert( p.eyeColour == Colour::blue );</div>
-<div class="line">    assert( p.code == 0 );</div>
-<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
-<div class="line">}</div>
-</div><!-- fragment --><p>The program will output</p>
-<div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
-</div><!-- fragment --><p><code>daw::json::reflect.ignored</code> will only work for default constructible members without a default value or callable specified.</p>
+</div><!-- fragment --><p>An explicit <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">daw::json::json_data_contract</a>&lt;Type&gt;</code> remains authoritative and is used instead of a derived mapping.</p>
+<h1><a class="anchor" id="autotoc_md188"></a>
+C++26 static reflection</h1>
 <h2><a class="anchor" id="autotoc_md189"></a>
-Ignored with default value</h2>
-<p>Let's add a default value to <code>code</code> so that it does not default to <code>std::size_t{}</code>/<code>0</code>.</p>
-<div class="fragment"><div class="line"> ++</div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
+Requirements</h2>
+<p>The standard-reflection integration is available when the compiler defines <code>__cpp_lib_reflection</code> with a value of at least <code>202506L</code>. Include the main JSON Link header:</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
+<div class="ttc" id="adaw__json__link_8h_html"><div class="ttname"><a href="daw__json__link_8h.html">daw_json_link.h</a></div></div>
+</div><!-- fragment --><p>The repository's reflection test configuration uses C++26 and a compiler flag that enables P2996 reflection. With CMake, enable the dedicated test using:</p>
+<div class="fragment"><div class="line">-DCMAKE_CXX_STANDARD=26 -DDAW_JSON_USE_REFLECTION=ON</div>
+</div><!-- fragment --><p>The exact compiler option needed to enable reflection is compiler-specific. <code>DAW_JSON_USE_REFLECTION</code> enables the repository's reflection test; the public headers detect support through the standard feature-test macro.</p>
+<h2><a class="anchor" id="autotoc_md190"></a>
+Automatic mapping</h2>
+<p>When no explicit mapping exists, a class that can be constructed from its public non-static data members can use reflection as a fallback. Member names become JSON object keys, and the normal deduced mapping is used for each member.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
+<div class="line"> </div>
 <div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">enum class</span> Colour { blue, green, brown };</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">struct </span>[[= reflect ]] Person {</div>
-<div class="line">    [[= reflect.map_as&lt;</div>
-<div class="line">        <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a>&lt;</div>
-<div class="line">            <span class="stringliteral">&quot;age&quot;</span>, </div>
-<div class="line">            int, </div>
-<div class="line">            daw::json::options::number_opt(</div>
-<div class="line">                daw::json::options::LiteralAsStringOpt::Maybe )&gt;&gt; ]]</div>
-<div class="line">    <span class="keywordtype">int</span> age;</div>
-<div class="line">    </div>
-<div class="line">    [[= reflect.rename&lt;<span class="stringliteral">&quot;fullName&quot;</span>&gt; ]]</div>
-<div class="line">    std::string name;</div>
-<div class="line">    </div>
-<div class="line">    [[= reflect.enum_string ]]</div>
-<div class="line">    Colour eyeColour;</div>
-<div class="line">    [[= reflect.ignored(55U) ]]</div>
-<div class="line">    std::size_t code;</div>
-<div class="line">};</div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
-<div class="line"><span class="stringliteral">{</span></div>
-<div class="line"><span class="stringliteral"> &quot;age&quot;: &quot;42&quot;,</span></div>
-<div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;</span></div>
-<div class="line"><span class="stringliteral"> &quot;eyeColour&quot;: &quot;blue&quot;</span></div>
-<div class="line"><span class="stringliteral">}</span></div>
-<div class="line"><span class="stringliteral">)json&quot;;</span></div>
-<div class="line"><span class="stringliteral">    </span><span class="keyword">auto</span> p = daw::json::from_json&lt;Person&gt;( json_doc );</div>
-<div class="line">    assert( p.age == 42 );</div>
-<div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
-<div class="line">    assert( p.eyeColour == Colour::blue );</div>
-<div class="line">    assert( p.code == 55 );</div>
-<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
-<div class="line">}</div>
-</div><!-- fragment --><p>The program will output</p>
-<div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md190"></a>
-Ignored with a default callable</h2>
-<p>Lets change the default for <code>code</code> to use a lambda to set the value.</p>
-<div class="fragment"><div class="line"> ++</div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;daw/json/daw_json_reflection.h&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;print&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string_view&gt;</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">enum class</span> Colour { blue, green, brown };</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">struct </span>[[= reflect ]] Person {</div>
-<div class="line">    [[= reflect.map_as&lt;</div>
-<div class="line">        <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a>&lt;</div>
-<div class="line">            <span class="stringliteral">&quot;age&quot;</span>, </div>
-<div class="line">            int, </div>
-<div class="line">            daw::json::options::number_opt(</div>
-<div class="line">                daw::json::options::LiteralAsStringOpt::Maybe )&gt;&gt; ]]</div>
-<div class="line">    <span class="keywordtype">int</span> age;</div>
-<div class="line">    </div>
-<div class="line">    [[= reflect.rename&lt;<span class="stringliteral">&quot;fullName&quot;</span>&gt; ]]</div>
-<div class="line">    std::string name;</div>
-<div class="line">    </div>
-<div class="line">    [[= reflect.enum_string ]]</div>
-<div class="line">    Colour eyeColour;</div>
-<div class="line">    [[= reflect.ignored( []{ <span class="keywordflow">return</span> 5555U; } ) ]]</div>
-<div class="line">    std::size_t code;</div>
+<div class="line"><span class="keyword">struct </span>Person {</div>
+<div class="line">  <span class="keywordtype">int</span> age;</div>
+<div class="line">  std::string name;</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main( ) {</div>
-<div class="line">    std::string_view json_doc = R<span class="stringliteral">&quot;json(</span></div>
-<div class="line"><span class="stringliteral">{</span></div>
-<div class="line"><span class="stringliteral"> &quot;age&quot;: &quot;42&quot;,</span></div>
-<div class="line"><span class="stringliteral"> &quot;fullName&quot;: &quot;Jane Smith&quot;</span></div>
-<div class="line"><span class="stringliteral"> &quot;eyeColour&quot;: &quot;blue&quot;</span></div>
-<div class="line"><span class="stringliteral">}</span></div>
-<div class="line"><span class="stringliteral">)json&quot;;</span></div>
-<div class="line"><span class="stringliteral">    </span><span class="keyword">auto</span> p = daw::json::from_json&lt;Person&gt;( json_doc );</div>
-<div class="line">    assert( p.age == 42 );</div>
-<div class="line">    assert( p.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
-<div class="line">    assert( p.eyeColour == Colour::blue );</div>
-<div class="line">    assert( p.code == 5555 );</div>
-<div class="line">    std::println( <span class="stringliteral">&quot;{}&quot;</span>, <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( p ) ); </div>
+<div class="line">  std::string_view <span class="keyword">const</span> json_document =</div>
+<div class="line">    R<span class="stringliteral">&quot;json({&quot;age&quot;:42,&quot;name&quot;:&quot;Jane Smith&quot;})json&quot;;</span></div>
+<div class="line"><span class="stringliteral"></span> </div>
+<div class="line"><span class="stringliteral">  </span><span class="keyword">auto</span> <span class="keyword">const</span> person = daw::json::from_json&lt;Person&gt;( json_document );</div>
+<div class="line">  assert( person.age == 42 );</div>
+<div class="line">  assert( person.name == <span class="stringliteral">&quot;Jane Smith&quot;</span> );</div>
+<div class="line">  assert( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( person ) == json_document );</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>The program will output</p>
-<div class="fragment"><div class="line">{&quot;age&quot;:42,&quot;fullName&quot;:&quot;Jane Smith&quot;,&quot;eyeColour&quot;:&quot;blue&quot;}</div>
-</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- fragment --><p>Reflected members may themselves use any deduced JSON Link mapping, including other reflected classes, containers, maps, nullable types, and smart pointers.</p>
+<h2><a class="anchor" id="autotoc_md191"></a>
+Explicitly enabling reflection</h2>
+<p>Annotate a class when reflection should be explicitly enabled:</p>
+<div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>[[= reflect ]] Person {</div>
+<div class="line">  <span class="keywordtype">int</span> age;</div>
+<div class="line">  std::string name;</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>For a type whose source cannot be changed, specialize <code>enable_reflection_for</code>:</p>
+<div class="fragment"><div class="line"><span class="keyword">struct </span>ExternalType {</div>
+<div class="line">  <span class="keywordtype">int</span> first;</div>
+<div class="line">  <span class="keywordtype">int</span> second;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span></div>
+<div class="line">  daw::json::enable_reflection_for&lt;ExternalType&gt; = <span class="keyword">true</span>;</div>
+</div><!-- fragment --><p>Member annotations also enable reflection for their containing class, so a class-level <code>[[= reflect ]]</code> annotation is not required when a member already has <code>rename</code>, <code>map_as</code>, <code>enum_string</code>, or <code>ignored</code>.</p>
+<h2><a class="anchor" id="autotoc_md192"></a>
+Renaming a member</h2>
+<p>Use <code>reflect.rename</code> when the JSON key differs from the C++ member name:</p>
+<div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>Person {</div>
+<div class="line">  <span class="keywordtype">int</span> age;</div>
+<div class="line"> </div>
+<div class="line">  [[= reflect.rename&lt;<span class="stringliteral">&quot;fullName&quot;</span>&gt; ]]</div>
+<div class="line">  std::string name;</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>This maps <code>name</code> to <code>"fullName"</code> for both parsing and serialization.</p>
+<h2><a class="anchor" id="autotoc_md193"></a>
+Overriding a member mapping</h2>
+<p>Use <code>reflect.map_as</code> to provide the same mapping type that would otherwise appear in a <code>json_data_contract</code>. The mapping must include the JSON member name:</p>
+<div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>Person {</div>
+<div class="line">  [[= reflect.map_as&lt;</div>
+<div class="line">    <a class="code hl_struct" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a>&lt;</div>
+<div class="line">      <span class="stringliteral">&quot;age&quot;</span>,</div>
+<div class="line">      int,</div>
+<div class="line">      daw::json::options::number_opt(</div>
+<div class="line">        daw::json::options::LiteralAsStringOpt::Maybe )&gt;&gt; ]]</div>
+<div class="line">  <span class="keywordtype">int</span> age;</div>
+<div class="line"> </div>
+<div class="line">  std::string name;</div>
+<div class="line">};</div>
+<div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00494">daw_json_link_types.h:494</a></div></div>
+</div><!-- fragment --><p>This accepts either <code>{"age":42,"name":"Jane"}</code> or <code>{"age":"42","name":"Jane"}</code>. Do not put <code>rename</code> and <code>map_as</code> on the same member because <code>map_as</code> already supplies the name.</p>
+<h2><a class="anchor" id="autotoc_md194"></a>
+Enumerations as strings</h2>
+<p>Reflected enumerations use their underlying numeric representation by default. Annotate an enum member to use its enumerator name instead:</p>
+<div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">enum class</span> Colour { blue, green, brown };</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>Person {</div>
+<div class="line">  std::string name;</div>
+<div class="line"> </div>
+<div class="line">  [[= reflect.enum_string ]]</div>
+<div class="line">  Colour eye_colour;</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>This maps <code>Colour::blue</code> to and from <code>"blue"</code>. The configurable form is <code>reflect.enum_string_with_options&lt;Options&gt;</code>, where <code>Options</code> is a <code>json_custom</code> option value. Do not combine <code>enum_string</code> and <code>map_as</code> on the same member.</p>
+<h2><a class="anchor" id="autotoc_md195"></a>
+Ignoring members</h2>
+<p>An ignored member is absent from both input and output. By default it is constructed as <code>T{}</code>:</p>
+<div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>Request {</div>
+<div class="line">  <span class="keywordtype">int</span> id;</div>
+<div class="line"> </div>
+<div class="line">  [[= reflect.ignored ]]</div>
+<div class="line">  std::size_t internal_code;</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>A value or a nullary callable can supply another default:</p>
+<div class="fragment"><div class="line"><span class="keyword">struct </span>RequestWithValue {</div>
+<div class="line">  <span class="keywordtype">int</span> id;</div>
+<div class="line"> </div>
+<div class="line">  [[= reflect.ignored( 55U )]]</div>
+<div class="line">  std::size_t internal_code;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>RequestWithFactory {</div>
+<div class="line">  <span class="keywordtype">int</span> id;</div>
+<div class="line"> </div>
+<div class="line">  [[= reflect.ignored( [] { <span class="keywordflow">return</span> 5555U; } )]]</div>
+<div class="line">  std::size_t internal_code;</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>The supplied value, or the callable's result, must be convertible to the member type. A bare <code>reflect.ignored</code> therefore requires a default-constructible member type. Member initializers are not used as ignored-member defaults.</p>
+<h2><a class="anchor" id="autotoc_md196"></a>
+Including non-public members</h2>
+<p><code>reflect</code> normally maps public non-static data members only. Use <code>reflect.unchecked</code> to include all non-static data members:</p>
+<div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">class </span>[[= reflect.unchecked ]] PrivateValue {</div>
+<div class="line">  <span class="keywordtype">int</span> value;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">public</span>:</div>
+<div class="line">  <span class="keyword">constexpr</span> <span class="keyword">explicit</span> PrivateValue( <span class="keywordtype">int</span> v )</div>
+<div class="line">    : value( v ) {}</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>This deliberately exposes private representation through JSON and should only be used when that is part of the type's intended wire format. The type must be constructible in reflected member order.</p>
+<p>The executable coverage for these features is in <a href="../../tests/src/daw_json_link_reflection_test.cpp">daw_json_link_reflection_test.cpp</a>.</p>
+<h1><a class="anchor" id="autotoc_md197"></a>
+Boost.PFR adapter</h1>
+<p>Boost.PFR support is independent of C++26 reflection. It derives member names and values for a non-empty aggregate and installs a JSON Link mapping when the type explicitly opts in.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__boost__pfr__mapping_8h.html">daw/json/daw_json_boost_pfr_mapping.h</a>&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>Person {</div>
+<div class="line">  <span class="keywordtype">int</span> id;</div>
+<div class="line">  std::string name;</div>
+<div class="line">  std::vector&lt;int&gt; scores;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> daw::json::use_boost_pfr&lt;Person&gt; = <span class="keyword">true</span>;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main( ) {</div>
+<div class="line">  <span class="keyword">auto</span> <span class="keyword">const</span> person = daw::json::from_json&lt;Person&gt;(</div>
+<div class="line">    R<span class="stringliteral">&quot;json({&quot;id&quot;:42,&quot;name&quot;:&quot;Jane&quot;,&quot;scores&quot;:[10,20]})json&quot; );</span></div>
+<div class="line"><span class="stringliteral"></span> </div>
+<div class="line"><span class="stringliteral">  assert( person.id == 42 );</span></div>
+<div class="line"><span class="stringliteral">  assert( person.name == </span><span class="stringliteral">&quot;Jane&quot;</span> );</div>
+<div class="line">  assert( person.scores == std::vector&lt;int&gt;( { 10, 20 } ) );</div>
+<div class="line">  assert( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( person ) ==</div>
+<div class="line">          R<span class="stringliteral">&quot;json({&quot;id&quot;:42,&quot;name&quot;:&quot;Jane&quot;,&quot;scores&quot;:[10,20]})json&quot; );</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="ttc" id="adaw__json__boost__pfr__mapping_8h_html"><div class="ttname"><a href="daw__json__boost__pfr__mapping_8h.html">daw_json_boost_pfr_mapping.h</a></div></div>
+</div><!-- fragment --><p>The adapter requires <code>&lt;boost/pfr.hpp&gt;</code> and Boost.PFR member-name support. The repository enables its functional test only when that header is available and builds the test as C++20. See <a href="../../tests/src/daw_json_link_boost_pfr_test.cpp">daw_json_link_boost_pfr_test.cpp</a>.</p>
+<h1><a class="anchor" id="autotoc_md198"></a>
+Boost.Describe adapter</h1>
+<p>Boost.Describe support is also independent of standard reflection. Describe the public members and include the adapter; described types are enabled by default.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link__describe_8h.html">daw/json/daw_json_link_describe.h</a>&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;boost/describe.hpp&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;cassert&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span>Person {</div>
+<div class="line">  <span class="keywordtype">int</span> id;</div>
+<div class="line">  std::string name;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">BOOST_DESCRIBE_STRUCT( Person, ( ), ( <span class="keywordtype">id</span>, name ) );</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main( ) {</div>
+<div class="line">  <span class="keyword">auto</span> <span class="keyword">const</span> person = daw::json::from_json&lt;Person&gt;(</div>
+<div class="line">    R<span class="stringliteral">&quot;json({&quot;id&quot;:42,&quot;name&quot;:&quot;Jane&quot;})json&quot; );</span></div>
+<div class="line"><span class="stringliteral"></span> </div>
+<div class="line"><span class="stringliteral">  assert( person.id == 42 );</span></div>
+<div class="line"><span class="stringliteral">  assert( person.name == </span><span class="stringliteral">&quot;Jane&quot;</span> );</div>
+<div class="line">  assert( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( person ) ==</div>
+<div class="line">          R<span class="stringliteral">&quot;json({&quot;id&quot;:42,&quot;name&quot;:&quot;Jane&quot;})json&quot; );</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="ttc" id="adaw__json__link__describe_8h_html"><div class="ttname"><a href="daw__json__link__describe_8h.html">daw_json_link_describe.h</a></div></div>
+</div><!-- fragment --><p>Only public described data members are supported. A type with private or protected described data members must use a manual mapping. To replace the derived mapping for one described type, opt it out and provide a <code>json_data_contract</code>:</p>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> daw::json::use_boost_describe_v&lt;Person&gt; = <span class="keyword">false</span>;</div>
+</div><!-- fragment --><p>See <a href="../../tests/src/daw_json_link_describe_test.cpp">daw_json_link_describe_test.cpp</a> for nested objects, containers, nullable values, smart pointers, and round-trip serialization.</p>
+<p>Do not enable both adapters for the same type. If a Boost-described aggregate is intentionally mapped with Boost.PFR, set <code>use_boost_describe_v&lt;T&gt;</code> to <code>false</code> before enabling <code>use_boost_pfr&lt;T&gt;</code>. </p>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

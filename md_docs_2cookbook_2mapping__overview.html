@@ -73,74 +73,74 @@ $(function() {
   <div class="headertitle"><div class="title">Mapping Types</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md71"></a> The highlighted mappings below are in the <code><a class="el" href="namespacedaw_1_1json.html" title="Customization point traits.">daw::json</a></code> namespace.</p>
-<h2><a class="anchor" id="autotoc_md72"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md76"></a> The highlighted mappings below are in the <code><a class="el" href="namespacedaw_1_1json.html" title="Customization point traits.">daw::json</a></code> namespace.</p>
+<h2><a class="anchor" id="autotoc_md77"></a>
 &lt;tt&gt;json_link&lt;/tt&gt;</h2>
 <p>Uses deduced type mappings to determine the mapping type to use. This is also useful in systems with generic types or reflection(future or simulated). The <code><a class="el" href="daw__json__link__describe_8h.html">daw_json_link_describe.h</a></code>(Uses Boost.Describe for class members) and <code><a class="el" href="daw__json__boost__pfr__mapping_8h.html">daw_json_boost_pfr_mapping.h</a></code>(Uses Boost PFR library to get type members) use this mapping type.</p>
-<h2><a class="anchor" id="autotoc_md73"></a>
+<h2><a class="anchor" id="autotoc_md78"></a>
 &lt;tt&gt;json_array&lt;/tt&gt;</h2>
 <p>Maps JSON arrays to C++ container types.</p>
-<h2><a class="anchor" id="autotoc_md74"></a>
+<h2><a class="anchor" id="autotoc_md79"></a>
 &lt;tt&gt;json_sized_array&lt;/tt&gt;</h2>
 <p>Maps JSON arrays/size member to C++ container types. This allows easier mapping to types like <code>unique_ptr</code>. Precautions should be taken that the input is trusted or validated in the Constructor type to prevent resource exhaustion.</p>
-<h2><a class="anchor" id="autotoc_md75"></a>
+<h2><a class="anchor" id="autotoc_md80"></a>
 &lt;tt&gt;json_bool&lt;/tt&gt;</h2>
 <p>Maps JSON boolean values to C++ boolean/integral types.</p>
-<h2><a class="anchor" id="autotoc_md76"></a>
+<h2><a class="anchor" id="autotoc_md81"></a>
 &lt;tt&gt;json_class&lt;/tt&gt;</h2>
 <p>Maps JSON objects/types to C++ types with a <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">daw::json::json_data_contract</a></code> mapping</p>
-<h2><a class="anchor" id="autotoc_md77"></a>
+<h2><a class="anchor" id="autotoc_md82"></a>
 &lt;tt&gt;json_custom&lt;/tt&gt;</h2>
 <p>Maps JSON strings/literals to C++ types that don't fit. See <a class="el" href="md_docs_2cookbook_2custom__types.html">Custom Types and Output</a> for converter and option examples.</p>
-<h2><a class="anchor" id="autotoc_md78"></a>
+<h2><a class="anchor" id="autotoc_md83"></a>
 &lt;tt&gt;json_custom_lit&lt;/tt&gt;</h2>
 <p>A helper for <code>json_custom</code> for mapping to the non-string types</p>
-<h2><a class="anchor" id="autotoc_md79"></a>
+<h2><a class="anchor" id="autotoc_md84"></a>
 &lt;tt&gt;json_date&lt;/tt&gt;</h2>
 <p>Maps JSON strings in iso8601 timestamp to values to C++ <code>std::chrono::time_point</code> types.</p>
-<h2><a class="anchor" id="autotoc_md80"></a>
+<h2><a class="anchor" id="autotoc_md85"></a>
 &lt;tt&gt;json_key_value&lt;/tt&gt;</h2>
 <p>Maps JSON objects to C++ containers like maps or vector of pairs.</p>
-<h2><a class="anchor" id="autotoc_md81"></a>
+<h2><a class="anchor" id="autotoc_md86"></a>
 &lt;tt&gt;json_key_value_array&lt;/tt&gt;</h2>
 <p>Maps JSON array of objects with key/value members to C++ containers</p>
-<h2><a class="anchor" id="autotoc_md82"></a>
+<h2><a class="anchor" id="autotoc_md87"></a>
 &lt;tt&gt;json_nullable&lt;/tt&gt;</h2>
 <p>Maps JSON values that can be null to Nullable C++ std::optional or pointer like types. The <code>_null</code> variants of other mappings can help with this. Types are required to be Nullable via <code>daw::json::concepts::nullable_value_traits&lt;T&gt;</code>.</p>
-<h2><a class="anchor" id="autotoc_md83"></a>
+<h2><a class="anchor" id="autotoc_md88"></a>
 &lt;tt&gt;json_number&lt;/tt&gt;</h2>
 <p>Maps JSON number values to C++ arithmetic/bool/enum types.</p>
-<h2><a class="anchor" id="autotoc_md84"></a>
+<h2><a class="anchor" id="autotoc_md89"></a>
 &lt;tt&gt;json_checked_number&lt;/tt&gt;</h2>
 <p>Maps JSON number values to C++ arithmetic/bool/enum types but the value is checked for narrowing.</p>
-<h2><a class="anchor" id="autotoc_md85"></a>
+<h2><a class="anchor" id="autotoc_md90"></a>
 &lt;tt&gt;json_raw&lt;/tt&gt;</h2>
 <p>Maps and JSON value to a C++ type. The constructor must take a character/size range and to_json_data returns raw JSON.</p>
-<h2><a class="anchor" id="autotoc_md86"></a>
+<h2><a class="anchor" id="autotoc_md91"></a>
 &lt;tt&gt;json_string&lt;/tt&gt;</h2>
 <p>Maps JSON string values to C++ string types. The string type will need to own the character range they construct(no string_view).</p>
-<h2><a class="anchor" id="autotoc_md87"></a>
+<h2><a class="anchor" id="autotoc_md92"></a>
 &lt;tt&gt;json_string_raw&lt;/tt&gt;</h2>
 <p>Maps JSON string values to C++ string types without processing. This allows for <code>string_view</code> mappings.</p>
-<h2><a class="anchor" id="autotoc_md88"></a>
+<h2><a class="anchor" id="autotoc_md93"></a>
 &lt;tt&gt;json_submember&lt;/tt&gt;</h2>
 <p>Maps a C++ member to a value below a named JSON object or array member. The relative path is searched while parsing. Serialization reconstructs the minimal path and supports only array index <code>[0]</code>. See <a class="el" href="md_docs_2cookbook_2submember.html">Submember Mappings</a> for its invariants and error behavior.</p>
-<h2><a class="anchor" id="autotoc_md89"></a>
+<h2><a class="anchor" id="autotoc_md94"></a>
 &lt;tt&gt;json_tuple&lt;/tt&gt;</h2>
 <p>Maps JSON tuples/arrays/heterogeneous arrays to C++ class types. This requires that the order is significant. This is useful to save space because member names are not needed.</p>
-<h2><a class="anchor" id="autotoc_md90"></a>
+<h2><a class="anchor" id="autotoc_md95"></a>
 &lt;tt&gt;json_value&lt;/tt&gt;</h2>
 <p>General-purpose mapping for JSON values where the type may not be predetermined.</p>
-<h2><a class="anchor" id="autotoc_md91"></a>
+<h2><a class="anchor" id="autotoc_md96"></a>
 &lt;tt&gt;json_variant&lt;/tt&gt;</h2>
 <p>Maps JSON values that may be one of several types to C++ type(s). Because there is no logic specified to determine the type, only one each of JSON string, boolean, object, number, or array are allowed.</p>
-<h2><a class="anchor" id="autotoc_md92"></a>
+<h2><a class="anchor" id="autotoc_md97"></a>
 &lt;tt&gt;json_tagged_variant&lt;/tt&gt;</h2>
 <p>Maps JSON values that may be one of serveral types to C++ type(s). A switcher type that inspects another member to determine which alternative is required.</p>
-<h2><a class="anchor" id="autotoc_md93"></a>
+<h2><a class="anchor" id="autotoc_md98"></a>
 &lt;tt&gt;json_intrusive_variant&lt;/tt&gt;</h2>
 <p>Maps JSON values that may be one of serveral types to C++ type(s). A switcher type that inspects a sub member to determine which alternative is required.</p>
-<h1><a class="anchor" id="autotoc_md94"></a>
+<h1><a class="anchor" id="autotoc_md99"></a>
 Mapping Template Parameters</h1>
 <p>Named mappings use the JSON member name as their first template parameter. The remaining parameters are summarized below; parameters shown with <code>= ...</code> have defaults. <code>use_default</code> asks the library to deduce the mapping or use its standard constructor.</p>
 <table class="markdownTable">
@@ -192,21 +192,21 @@ Mapping Template Parameters</h1>
 <p><code>Options</code> is an encoded <code>json_options_t</code> value. Build it with the setter for the mapping family: <code>options::number_opt</code>, <code>fp_opt</code>, <code>bool_opt</code>, <code>string_opt</code>, <code>string_raw_opt</code>, or <code>json_custom_opt</code>. The available flags and defaults are listed in <a class="el" href="md_docs_2cookbook_2member__options.html">Member Options/Type Options</a>.</p>
 <p><code>JsonElement</code>, <code>JsonValueType</code>, <code>JsonKeyType</code>, <code>JsonTupleTypesList</code>, and <code>JsonElements</code> accept explicit mappings when deduction is not appropriate. Array elements and object keys/values use unnamed mappings such as <code>json_number_no_name&lt;int&gt;</code>.</p>
 <p><code>Constructor</code> is a callable used in place of the standard construction step. For scalar mappings it accepts the parsed scalar. Container and class mappings use the arguments described by that mapping's declaration. Nullable mappings use it to construct the outer nullable result.</p>
-<h2><a class="anchor" id="autotoc_md95"></a>
+<h2><a class="anchor" id="autotoc_md100"></a>
 Nullable convenience mappings</h2>
 <p>Named aliases ending in <code>_null</code> add this parameter before <code>Constructor</code>:</p>
 <div class="fragment"><div class="line">JsonNullable NullableType = JsonNullable::Nullable</div>
 </div><!-- fragment --><p>Their value type is the wrapped/nullable type, such as <code>std::optional&lt;int&gt;</code>. <code>JsonNullable::Nullable</code> permits an empty class member to be omitted; <code>JsonNullable::NullVisible</code> emits that member as <code>null</code>. See <a class="el" href="md_docs_2cookbook_2json__nullable.html">Nullable JSON Values</a>.</p>
 <p>Unnamed nullable aliases ending in <code>_null_no_name</code> always preserve an empty value as the JSON literal <code>null</code>, because an array element or root value cannot be omitted. They therefore do not expose a <code>JsonNullable</code> parameter.</p>
-<h1><a class="anchor" id="autotoc_md96"></a>
+<h1><a class="anchor" id="autotoc_md101"></a>
 Understanding _null and _no_name Variants</h1>
-<h2><a class="anchor" id="autotoc_md97"></a>
+<h2><a class="anchor" id="autotoc_md102"></a>
 Nullable mappings end in &lt;tt&gt;_null&lt;/tt&gt;</h2>
 <p>The <code>_null</code> variant allows the mapped value to be nullable. Useful when the JSON field may or may not be present. The wrapped C++ type is supplied explicitly and may be <code>std::optional</code>, a smart pointer, or another type satisfying the nullable-value requirements.</p>
-<h2><a class="anchor" id="autotoc_md98"></a>
+<h2><a class="anchor" id="autotoc_md103"></a>
 Unnamed mappings end in &lt;tt&gt;_no_name&lt;/tt&gt;</h2>
 <p>The <code>_no_name</code> variant implies the JSON field does not have a named key in the serialized output. Typically used for JSON arrays or when the field names are not necessary. These mappings provide robust and flexible ways to handle different JSON structures and types seamlessly within C++ using daw_json_link.</p>
-<h2><a class="anchor" id="autotoc_md99"></a>
+<h2><a class="anchor" id="autotoc_md104"></a>
 Unnamed nullable mappings &lt;tt&gt;_null_no_name&lt;/tt&gt;</h2>
 <p>The <code>_null_no_name</code> variants combine a nullable type without a name. Empty values serialize as <code>null</code>. </p>
 </div></div><!-- contents -->

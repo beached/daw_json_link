@@ -73,7 +73,7 @@ $(function() {
   <div class="headertitle"><div class="title">Variant Types</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md201"></a> Variant or sum types are where the json member can have more than one type(like string, number, class, or array). JSON Link supports several forms of variant types</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md209"></a> Variant or sum types are where the json member can have more than one type(like string, number, class, or array). JSON Link supports several forms of variant types</p>
 <ul>
 <li>An undiscriminated variant that is limited to a set of alternatives where there is up to one of each of the basic JSON types(array, object, string, number, bool, null).</li>
 <li>A discriminated variant where the discriminator is another member of the same class. e.g. <code>json { "type": 1, "value": [] }</code> where <code>"value"</code>'s type is determined by <code>"type"</code></li>
@@ -117,10 +117,10 @@ $(function() {
 <div class="line">  };</div>
 <div class="line">} </div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md202"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md210"></a>
 Important note:</h1>
 <p>The elements in the <code>json_variant_type_list</code> must have matching types in the variant alternatives. (e.g. std::string -&gt; json_string, bool -&gt; json_bool )</p>
-<h1><a class="anchor" id="autotoc_md203"></a>
+<h1><a class="anchor" id="autotoc_md211"></a>
 Recursive variants</h1>
 <p>A variant can use pointer indirection to describe recursive data such as an expression or nested value:</p>
 <div class="fragment"><div class="line"> ++</div>
@@ -195,7 +195,7 @@ Recursive variants</h1>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00078">daw_to_json.h:78</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html">daw::json::json_data_contract</a></div><div class="ttdoc">Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...</div><div class="ttdef"><b>Definition</b> <a href="daw__json__data__contract_8h_source.html#l00042">daw_json_data_contract.h:42</a></div></div>
 </div><!-- fragment --><p>The serializer returns complete JSON text for the mapped <code>json_raw</code> member, so it is emitted verbatim. This example assumes that the <code>shared_ptr</code> alternative is non-null. Nested JSON must also remain acyclic; cyclic graphs should be represented with IDs and edges as described in the <a class="el" href="md_docs_2cookbook_2graphs.html">graphs cookbook</a>.</p>
-<h1><a class="anchor" id="autotoc_md204"></a>
+<h1><a class="anchor" id="autotoc_md212"></a>
 Tagged Variants</h1>
 <p>It is common to have a tag discriminator in JSON data. The <code>json_tagged_variant</code> member type allows using another parsed member to return an index in a member list to parse. This allows any number of types to be inside the variant.</p>
 <p>Below is a JSON array, containing a variant element where the <code>"type"</code> member determines the type of the <code>"value"</code> member. In many JSON documents, the discriminator will be a string.</p>
@@ -313,7 +313,7 @@ Tagged Variants</h1>
 <div class="line">};</div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_ab0b8c50bc5e45461dee4c39824e23a07"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#ab0b8c50bc5e45461dee4c39824e23a07">daw::json::anonymous_namespace{daw_json_link_types.h}::json_tagged_variant_type_list</a></div><div class="ttdeci">json_variant_type_list&lt; JsonElements... &gt; json_tagged_variant_type_list</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01303">daw_json_link_types.h:1305</a></div></div>
 </div><!-- fragment --><p>As you can see, the json_variant_type_list can use terse type names for some, or the full names.</p>
-<h1><a class="anchor" id="autotoc_md205"></a>
+<h1><a class="anchor" id="autotoc_md213"></a>
 Submember as tag for tagged_variant</h1>
 <p>There are cases where a classes structure is determined by one of it's submembers. This comes up with file versioning.</p>
 <p>In our example we have two versions of a config file. The tag member <code>"version"</code> determines the layout of the other members in the example.</p>

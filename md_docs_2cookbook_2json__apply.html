@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DAW JSON Link: json_apply</title>
+<title>DAW JSON Link: &lt;tt&gt;json_apply&lt;/tt&gt;</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,28 +70,109 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">json_apply</div></div>
+  <div class="headertitle"><div class="title">&lt;tt&gt;json_apply&lt;/tt&gt;</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md47"></a> <code>json_apply</code> parses the document to parameter types specified in signature, then passes them to the Callable for evaluation. This is similar to <code>std::apply</code> but using a JSON documents instead of tuples.</p>
-<h1><a class="anchor" id="autotoc_md48"></a>
-Uses</h1>
-<p><code>json_apply</code> is useful in IPC/RPC situations where the data is (de)serialized from/to JSON, such as JSON RPC or IPC with web views.</p>
-<h1><a class="anchor" id="autotoc_md49"></a>
-Example</h1>
-<div class="fragment"><div class="line"> ++</div>
-<div class="line"><span class="keyword">struct </span>NumberX {</div>
-<div class="line">    <span class="keywordtype">int</span> x;</div>
-<div class="line">};</div>
-<div class="line"><span class="comment">// ...</span></div>
-<div class="line"><span class="keyword">auto</span> x = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__apply_8h_03.html#a07202b9979bc3a6ec79a8842372258ae">daw::json::json_apply</a>( </div>
-<div class="line">  R<span class="stringliteral">&quot;json({&quot;x&quot;:10})json&quot;, </span></div>
-<div class="line"><span class="stringliteral">  []( NumberX nx ) {</span></div>
-<div class="line"><span class="stringliteral">    </span><span class="keywordflow">return</span> nx.x;</div>
+<div class="textblock"><p><a class="anchor" id="autotoc_md47"></a> <code><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__apply_8h_03.html#a07202b9979bc3a6ec79a8842372258ae" title="Parse to parameters specified in signature and pass them to Callable for evaluation....">daw::json::json_apply</a></code> parses JSON values into the parameters of a callable and invokes the callable with those values. It is similar to <code>std::apply</code>, but the arguments come from a JSON document instead of a tuple.</p>
+<p>Include either the main JSON Link header or the dedicated header:</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
+<div class="line"><span class="comment">// or</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__apply_8h.html">daw/json/daw_json_apply.h</a>&gt;</span></div>
+<div class="ttc" id="adaw__json__apply_8h_html"><div class="ttname"><a href="daw__json__apply_8h.html">daw_json_apply.h</a></div></div>
+<div class="ttc" id="adaw__json__link_8h_html"><div class="ttname"><a href="daw__json__link_8h.html">daw_json_link.h</a></div></div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md48"></a>
+Basic use</h1>
+<p>When the callable takes one parameter, the complete JSON value is parsed as that parameter's type:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> <span class="keyword">const</span> length = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__apply_8h_03.html#a07202b9979bc3a6ec79a8842372258ae">daw::json::json_apply</a>(</div>
+<div class="line">  R<span class="stringliteral">&quot;json(&quot;Hello&quot;)json&quot;,</span></div>
+<div class="line"><span class="stringliteral">  []( std::string_view value ) {</span></div>
+<div class="line"><span class="stringliteral">    </span><span class="keywordflow">return</span> value.size( );</div>
 <div class="line">  } );</div>
-<div class="line">  assert( x == 10 );</div>
+<div class="line"> </div>
+<div class="line">assert( length == 5 );</div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__apply_8h_03_html_a07202b9979bc3a6ec79a8842372258ae"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__apply_8h_03.html#a07202b9979bc3a6ec79a8842372258ae">daw::json::anonymous_namespace{daw_json_apply.h}::json_apply</a></div><div class="ttdeci">constexpr auto json_apply(String &amp;&amp;json_doc, Callable &amp;&amp;callable)</div><div class="ttdoc">Parse to parameters specified in signature and pass them to Callable for evaluation....</div><div class="ttdef"><b>Definition</b> <a href="daw__json__apply_8h_source.html#l00077">daw_json_apply.h:77</a></div></div>
-</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- fragment --><p>When the callable takes multiple parameters, the document is a JSON array and its elements are parsed in parameter order:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> <span class="keyword">const</span> result = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__apply_8h_03.html#a07202b9979bc3a6ec79a8842372258ae">daw::json::json_apply</a>(</div>
+<div class="line">  R<span class="stringliteral">&quot;json([&quot;Hello&quot;, 52, true])json&quot;,</span></div>
+<div class="line"><span class="stringliteral">  []( std::string_view text, std::size_t count, </span><span class="keywordtype">bool</span> use_text ) {</div>
+<div class="line">    <span class="keywordflow">return</span> use_text ? text.size( ) : count;</div>
+<div class="line">  } );</div>
+<div class="line"> </div>
+<div class="line">assert( result == 5 );</div>
+</div><!-- fragment --><p>The return value is the result of invoking the callable.</p>
+<h1><a class="anchor" id="autotoc_md49"></a>
+Parameter types</h1>
+<p>By default, <code>json_apply</code> obtains the parameter types from the callable's signature. The usual JSON Link mappings apply, so parameters may be primitive types, containers, or mapped user-defined types.</p>
+<p>CV and reference qualifiers do not affect how a parameter is parsed. For example, parameters such as <code>std::size_t &amp;&amp;</code> and <code>std::string_view &amp;&amp;</code> are parsed using their underlying value types before the callable is invoked.</p>
+<p>A callable with no parameters is also supported:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> <span class="keyword">const</span> result = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__apply_8h_03.html#a07202b9979bc3a6ec79a8842372258ae">daw::json::json_apply</a>(</div>
+<div class="line">  R<span class="stringliteral">&quot;json([])json&quot;,</span></div>
+<div class="line"><span class="stringliteral">  []( ) {</span></div>
+<div class="line"><span class="stringliteral">    </span><span class="keywordflow">return</span> std::size_t{ 5 };</div>
+<div class="line">  } );</div>
+<div class="line"> </div>
+<div class="line">assert( result == 5 );</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md50"></a>
+Explicit signatures</h1>
+<p>The parameter types can be specified instead of inferred by passing a function type as the <code>Signature</code> template argument:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> <span class="keyword">const</span> result = daw::json::json_apply&lt;std::size_t( std::string_view )&gt;(</div>
+<div class="line">  R<span class="stringliteral">&quot;json(&quot;Hello&quot;)json&quot;,</span></div>
+<div class="line"><span class="stringliteral">  []( std::string_view value ) -&gt; std::size_t {</span></div>
+<div class="line"><span class="stringliteral">    </span><span class="keywordflow">return</span> value.size( );</div>
+<div class="line">  } );</div>
+<div class="line"> </div>
+<div class="line">assert( result == 5 );</div>
+</div><!-- fragment --><p>The explicit signature's parameter list determines the types used for parsing; <code>json_apply</code> returns the callable's actual result. The callable must currently have a single, non-template call operator; generic lambdas and types with overloaded call operators do not satisfy <code>json_apply</code>'s callable constraint.</p>
+<h1><a class="anchor" id="autotoc_md51"></a>
+Parsing at a JSON path</h1>
+<p>Pass a JSON path between the document and callable to apply the callable to a value within the document:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> <span class="keyword">const</span> length = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__apply_8h_03.html#a07202b9979bc3a6ec79a8842372258ae">daw::json::json_apply</a>(</div>
+<div class="line">  R<span class="stringliteral">&quot;json({ &quot;name&quot;: &quot;Hello&quot; })json&quot;,</span></div>
+<div class="line"><span class="stringliteral">  </span><span class="stringliteral">&quot;name&quot;</span>,</div>
+<div class="line">  []( std::string_view value ) {</div>
+<div class="line">    <span class="keywordflow">return</span> value.size( );</div>
+<div class="line">  } );</div>
+<div class="line"> </div>
+<div class="line">assert( length == 5 );</div>
+</div><!-- fragment --><p>The value selected by the path is parsed according to the callable's parameters. See <a class="el" href="md_docs_2cookbook_2parsing__individual__members.html">Parsing Individual Members</a> for more about JSON paths.</p>
+<h1><a class="anchor" id="autotoc_md52"></a>
+Parser policies</h1>
+<p>Parser flags may be passed before the callable, with or without a JSON path:</p>
+<div class="fragment"><div class="line"><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options.html">daw::json::options</a>;</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">auto</span> <span class="keyword">const</span> length = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__apply_8h_03.html#a07202b9979bc3a6ec79a8842372258ae">daw::json::json_apply</a>(</div>
+<div class="line">  R<span class="stringliteral">&quot;json({ &quot;name&quot;: &quot;Hello&quot; })json&quot;,</span></div>
+<div class="line"><span class="stringliteral">  </span><span class="stringliteral">&quot;name&quot;</span>,</div>
+<div class="line">  parse_flags&lt;CheckedParseMode::no&gt;,</div>
+<div class="line">  []( std::string_view value ) {</div>
+<div class="line">    <span class="keywordflow">return</span> value.size( );</div>
+<div class="line">  } );</div>
+<div class="line"> </div>
+<div class="line">assert( length == 5 );</div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_html"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options.html">daw::json::options</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__parse__options_8h_source.html#l00015">daw_json_parse_options.h:15</a></div></div>
+</div><!-- fragment --><p>The overloads are:</p>
+<div class="fragment"><div class="line">json_apply&lt;Signature&gt;( json_document, callable );</div>
+<div class="line">json_apply&lt;Signature&gt;( json_document, json_path, callable );</div>
+<div class="line">json_apply&lt;Signature&gt;( json_document, parse_flags, callable );</div>
+<div class="line">json_apply&lt;Signature&gt;( json_document, json_path, parse_flags, callable );</div>
+</div><!-- fragment --><p><code>Signature</code> is optional in every overload. See <a class="el" href="md_docs_2cookbook_2parser__policies.html">Parser Options</a> for the available parsing policies and their safety implications.</p>
+<h1><a class="anchor" id="autotoc_md53"></a>
+Parsed JSON values</h1>
+<p>The input does not have to be JSON text. An existing <code>json_value</code> can be passed to avoid locating the value again:</p>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> <span class="keyword">const</span> value = <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value__fwd_8h_03.html#a0cb1fa415c11a965b691fe2cdbcb6012">daw::json::json_value</a>( R<span class="stringliteral">&quot;json(&quot;Hello&quot;)json&quot; );</span></div>
+<div class="line"><span class="stringliteral"></span><span class="keyword">auto</span> <span class="keyword">const</span> length = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__apply_8h_03.html#a07202b9979bc3a6ec79a8842372258ae">daw::json::json_apply</a>(</div>
+<div class="line">  value,</div>
+<div class="line">  []( std::string_view text ) {</div>
+<div class="line">    <span class="keywordflow">return</span> text.size( );</div>
+<div class="line">  } );</div>
+<div class="line"> </div>
+<div class="line">assert( length == 5 );</div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value__fwd_8h_03_html_a0cb1fa415c11a965b691fe2cdbcb6012"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__value__fwd_8h_03.html#a0cb1fa415c11a965b691fe2cdbcb6012">daw::json::anonymous_namespace{daw_json_value_fwd.h}::json_value</a></div><div class="ttdeci">basic_json_value&lt;&gt; json_value</div><div class="ttdoc">An untyped JSON value.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__value__fwd_8h_source.html#l00027">daw_json_value_fwd.h:27</a></div></div>
+</div><!-- fragment --><p>As with other non-owning JSON Link values, ensure that the source JSON remains alive while it is being referenced. See <a class="el" href="md_docs_2cookbook_2json__value.html">JSON Value</a> for details about inspecting and retaining parsed values.</p>
+<h1><a class="anchor" id="autotoc_md54"></a>
+Typical uses</h1>
+<p><code>json_apply</code> is particularly useful at IPC and RPC boundaries, where an array or value received as JSON maps naturally to a handler's parameters. It keeps the parsing types next to the code that consumes them and avoids a separate intermediate tuple or request object. </p>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

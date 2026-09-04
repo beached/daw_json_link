@@ -73,7 +73,7 @@ $(function() {
   <div class="headertitle"><div class="title">Submember Mappings</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md195"></a> <code>json_submember&lt;Name, JsonPath, JsonMember&gt;</code> maps one C++ value to a value below a named JSON object or array member. <code>JsonPath</code> is relative to <code>Name</code> and uses the same dot and square-bracket syntax as the path overloads of <code>from_json</code>.</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md203"></a> <code>json_submember&lt;Name, JsonPath, JsonMember&gt;</code> maps one C++ value to a value below a named JSON object or array member. <code>JsonPath</code> is relative to <code>Name</code> and uses the same dot and square-bracket syntax as the path overloads of <code>from_json</code>.</p>
 <p>For example, this JSON stores <code>reading</code> below two object members and the first element of an array.</p>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;payload&quot;: {</div>
@@ -115,7 +115,7 @@ $(function() {
 <div class="line"><span class="comment">// json == R&quot;({&quot;payload&quot;:{&quot;readings&quot;:[{&quot;value&quot;:42}]}})&quot;</span></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00078">daw_to_json.h:78</a></div></div>
 </div><!-- fragment --><p>This is a projection rather than preservation of the input document. Object members and array elements not represented by the mapping are discarded during parsing and cannot be recreated by <code>to_json</code>.</p>
-<h1><a class="anchor" id="autotoc_md196"></a>
+<h1><a class="anchor" id="autotoc_md204"></a>
 Invariants and errors</h1>
 <p>The following invariants apply:</p>
 <ul>

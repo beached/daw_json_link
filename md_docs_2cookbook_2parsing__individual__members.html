@@ -73,7 +73,7 @@ $(function() {
   <div class="headertitle"><div class="title">Parsing Individual Members</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md179"></a> Parsing single members from the JSON data is common. This can be to discriminate on a single member or when only a single member is needed.</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md184"></a> Parsing single members from the JSON data is common. This can be to discriminate on a single member or when only a single member is needed.</p>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;member0&quot;: 55,</div>
 <div class="line">  &quot;member1&quot;: [</div>
@@ -97,7 +97,7 @@ $(function() {
 <p>Too see a working example using this code, refer to <a href="../../tests/src/cookbook_parsing_individual_members2_test.cpp">cookbook_parsing_individual_members2_test.cpp</a>.</p>
 <div class="fragment"><div class="line"> ++</div>
 <div class="line">std::vector&lt;int&gt; values = daw::json::from_json_array&lt;int&gt;( json_data, <span class="stringliteral">&quot;member1&quot;</span> );</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md180"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md185"></a>
 Specifying array indexes</h1>
 <p>In the member path array indexes are specified inside square brackets <code>[</code> and <code>]</code>. Below the 3rd item of <code>"member1"</code> will be extracted</p>
 <p>Too see a working example using this code, refer to <a href="../../tests/src/cookbook_parsing_individual_members3_test.cpp">cookbook_parsing_individual_members3_test.cpp</a>.</p>

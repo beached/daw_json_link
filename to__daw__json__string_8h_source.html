@@ -1818,243 +1818,250 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l01745" name="l01745"></a><span class="lineno"> 1745</span>        <span class="keyword">auto</span> <span class="keyword">const</span> original_digits =</div>
 <div class="line"><a id="l01746" name="l01746"></a><span class="lineno"> 1746</span>          daw::jkj::dragonbox::to_chars_detail::decimal_length(</div>
 <div class="line"><a id="l01747" name="l01747"></a><span class="lineno"> 1747</span>            dec.significand );</div>
-<div class="line"><a id="l01748" name="l01748"></a><span class="lineno"> 1748</span>        <span class="keywordtype">unsigned</span> decimal_places = 0;</div>
-<div class="line"><a id="l01749" name="l01749"></a><span class="lineno"> 1749</span>        <span class="keywordtype">unsigned</span> scientific_places = 0;</div>
-<div class="line"><a id="l01750" name="l01750"></a><span class="lineno"> 1750</span>        <span class="comment">// Round a decimal significand to a requested number of significant</span></div>
-<div class="line"><a id="l01751" name="l01751"></a><span class="lineno"> 1751</span>        <span class="comment">// digits.  Dragonbox gives us the exact shortest decimal, so doing</span></div>
-<div class="line"><a id="l01752" name="l01752"></a><span class="lineno"> 1752</span>        <span class="comment">// this here avoids a second (and potentially lossy) conversion.</span></div>
-<div class="line"><a id="l01753" name="l01753"></a><span class="lineno"> 1753</span>        <span class="keyword">auto</span> round_significand = [&amp;]( <span class="keywordtype">unsigned</span> digits ) <span class="keyword">constexpr</span> {</div>
-<div class="line"><a id="l01754" name="l01754"></a><span class="lineno"> 1754</span>          <span class="keywordflow">if</span>( digits == 0 ) {</div>
-<div class="line"><a id="l01755" name="l01755"></a><span class="lineno"> 1755</span>            digits = 1;</div>
-<div class="line"><a id="l01756" name="l01756"></a><span class="lineno"> 1756</span>          }</div>
-<div class="line"><a id="l01757" name="l01757"></a><span class="lineno"> 1757</span>          <span class="keywordflow">if</span>( original_digits &lt;= digits ) {</div>
-<div class="line"><a id="l01758" name="l01758"></a><span class="lineno"> 1758</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01759" name="l01759"></a><span class="lineno"> 1759</span>          }</div>
-<div class="line"><a id="l01760" name="l01760"></a><span class="lineno"> 1760</span>          <span class="keyword">auto</span> <span class="keyword">const</span> remove = original_digits - digits;</div>
-<div class="line"><a id="l01761" name="l01761"></a><span class="lineno"> 1761</span>          <span class="keyword">using </span>carrier_t = <span class="keyword">decltype</span>( dec.significand );</div>
-<div class="line"><a id="l01762" name="l01762"></a><span class="lineno"> 1762</span>          carrier_t divisor = 1;</div>
-<div class="line"><a id="l01763" name="l01763"></a><span class="lineno"> 1763</span>          <span class="keywordflow">for</span>( std::uint32_t n = 0; <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; remove; ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
-<div class="line"><a id="l01764" name="l01764"></a><span class="lineno"> 1764</span>            divisor *= 10;</div>
-<div class="line"><a id="l01765" name="l01765"></a><span class="lineno"> 1765</span>          }</div>
-<div class="line"><a id="l01766" name="l01766"></a><span class="lineno"> 1766</span>          <span class="keyword">auto</span> quotient = dec.significand / divisor;</div>
-<div class="line"><a id="l01767" name="l01767"></a><span class="lineno"> 1767</span>          <span class="keyword">auto</span> <span class="keyword">const</span> remainder = dec.significand % divisor;</div>
-<div class="line"><a id="l01768" name="l01768"></a><span class="lineno"> 1768</span>          <span class="keyword">auto</span> <span class="keyword">const</span> halfway = divisor / 2;</div>
-<div class="line"><a id="l01769" name="l01769"></a><span class="lineno"> 1769</span>          <span class="keywordflow">if</span>( remainder &gt; halfway or</div>
-<div class="line"><a id="l01770" name="l01770"></a><span class="lineno"> 1770</span>              ( remainder == halfway and ( quotient &amp; 1U ) != 0U ) ) {</div>
-<div class="line"><a id="l01771" name="l01771"></a><span class="lineno"> 1771</span>            ++quotient;</div>
-<div class="line"><a id="l01772" name="l01772"></a><span class="lineno"> 1772</span>          }</div>
-<div class="line"><a id="l01773" name="l01773"></a><span class="lineno"> 1773</span>          dec.significand = quotient;</div>
-<div class="line"><a id="l01774" name="l01774"></a><span class="lineno"> 1774</span>          dec.exponent += <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>( remove );</div>
-<div class="line"><a id="l01775" name="l01775"></a><span class="lineno"> 1775</span>          <span class="keywordflow">if</span>( daw::jkj::dragonbox::to_chars_detail::decimal_length(</div>
-<div class="line"><a id="l01776" name="l01776"></a><span class="lineno"> 1776</span>                dec.significand ) &gt; digits ) {</div>
-<div class="line"><a id="l01777" name="l01777"></a><span class="lineno"> 1777</span>            <span class="comment">// Rounding 9.99 to two digits, for example, produces 10.</span></div>
-<div class="line"><a id="l01778" name="l01778"></a><span class="lineno"> 1778</span>            dec.significand /= 10;</div>
-<div class="line"><a id="l01779" name="l01779"></a><span class="lineno"> 1779</span>            ++dec.exponent;</div>
-<div class="line"><a id="l01780" name="l01780"></a><span class="lineno"> 1780</span>          }</div>
-<div class="line"><a id="l01781" name="l01781"></a><span class="lineno"> 1781</span>        };</div>
-<div class="line"><a id="l01782" name="l01782"></a><span class="lineno"> 1782</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( Precision != daw::max_value&lt;unsigned&gt; ) {</div>
-<div class="line"><a id="l01783" name="l01783"></a><span class="lineno"> 1783</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format == options::FPOutputFormat::Auto ) {</div>
-<div class="line"><a id="l01784" name="l01784"></a><span class="lineno"> 1784</span>            <span class="comment">// trim sig digits to at most precision and adjust exponent as</span></div>
-<div class="line"><a id="l01785" name="l01785"></a><span class="lineno"> 1785</span>            <span class="comment">// needed auto chosen decimal/scientific</span></div>
-<div class="line"><a id="l01786" name="l01786"></a><span class="lineno"> 1786</span>            round_significand( Precision );</div>
-<div class="line"><a id="l01787" name="l01787"></a><span class="lineno"> 1787</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format ==</div>
-<div class="line"><a id="l01788" name="l01788"></a><span class="lineno"> 1788</span>                               options::FPOutputFormat::Decimal ) {</div>
-<div class="line"><a id="l01789" name="l01789"></a><span class="lineno"> 1789</span>            <span class="comment">// fixed width/padded to Precisioin in Decimal notation</span></div>
-<div class="line"><a id="l01790" name="l01790"></a><span class="lineno"> 1790</span>            decimal_places = Precision;</div>
-<div class="line"><a id="l01791" name="l01791"></a><span class="lineno"> 1791</span>            <span class="keywordflow">if</span>( dec.exponent &lt; -<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>( Precision ) ) {</div>
-<div class="line"><a id="l01792" name="l01792"></a><span class="lineno"> 1792</span>              <span class="keyword">using </span>carrier_t = <span class="keyword">decltype</span>( dec.significand );</div>
-<div class="line"><a id="l01793" name="l01793"></a><span class="lineno"> 1793</span>              <span class="keyword">auto</span> <span class="keyword">const</span> remove = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(</div>
-<div class="line"><a id="l01794" name="l01794"></a><span class="lineno"> 1794</span>                -<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">long</span><span class="keyword">&gt;</span>( dec.exponent ) - Precision );</div>
-<div class="line"><a id="l01795" name="l01795"></a><span class="lineno"> 1795</span>              carrier_t divisor = 1;</div>
-<div class="line"><a id="l01796" name="l01796"></a><span class="lineno"> 1796</span>              <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> n = 0; <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; remove; ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
-<div class="line"><a id="l01797" name="l01797"></a><span class="lineno"> 1797</span>                divisor *= 10;</div>
-<div class="line"><a id="l01798" name="l01798"></a><span class="lineno"> 1798</span>              }</div>
-<div class="line"><a id="l01799" name="l01799"></a><span class="lineno"> 1799</span>              <span class="keyword">auto</span> quotient = dec.significand / divisor;</div>
-<div class="line"><a id="l01800" name="l01800"></a><span class="lineno"> 1800</span>              <span class="keyword">auto</span> <span class="keyword">const</span> remainder = dec.significand % divisor;</div>
-<div class="line"><a id="l01801" name="l01801"></a><span class="lineno"> 1801</span>              <span class="keyword">auto</span> <span class="keyword">const</span> halfway = divisor / 2;</div>
-<div class="line"><a id="l01802" name="l01802"></a><span class="lineno"> 1802</span>              <span class="keywordflow">if</span>( remainder &gt; halfway or</div>
-<div class="line"><a id="l01803" name="l01803"></a><span class="lineno"> 1803</span>                  ( remainder == halfway and ( quotient &amp; 1U ) != 0U ) ) {</div>
-<div class="line"><a id="l01804" name="l01804"></a><span class="lineno"> 1804</span>                ++quotient;</div>
-<div class="line"><a id="l01805" name="l01805"></a><span class="lineno"> 1805</span>              }</div>
-<div class="line"><a id="l01806" name="l01806"></a><span class="lineno"> 1806</span>              dec.significand = quotient;</div>
-<div class="line"><a id="l01807" name="l01807"></a><span class="lineno"> 1807</span>              dec.exponent = -<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>( Precision );</div>
-<div class="line"><a id="l01808" name="l01808"></a><span class="lineno"> 1808</span>            }</div>
-<div class="line"><a id="l01809" name="l01809"></a><span class="lineno"> 1809</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format ==</div>
-<div class="line"><a id="l01810" name="l01810"></a><span class="lineno"> 1810</span>                               options::FPOutputFormat::Scientific ) {</div>
-<div class="line"><a id="l01811" name="l01811"></a><span class="lineno"> 1811</span>            <span class="comment">// fixed width/padded to Precisioin in Scientific</span></div>
-<div class="line"><a id="l01812" name="l01812"></a><span class="lineno"> 1812</span>            scientific_places = Precision;</div>
-<div class="line"><a id="l01813" name="l01813"></a><span class="lineno"> 1813</span>            round_significand( Precision + 1 );</div>
-<div class="line"><a id="l01814" name="l01814"></a><span class="lineno"> 1814</span>            <span class="comment">// Scientific output requires exactly Precision digits after</span></div>
-<div class="line"><a id="l01815" name="l01815"></a><span class="lineno"> 1815</span>            <span class="comment">// the point.  Add insignificant zeroes to the significand.</span></div>
-<div class="line"><a id="l01816" name="l01816"></a><span class="lineno"> 1816</span>            <span class="keywordtype">unsigned</span> <span class="keyword">const</span> wanted = Precision + 1;</div>
-<div class="line"><a id="l01817" name="l01817"></a><span class="lineno"> 1817</span>            <span class="keywordtype">unsigned</span> current =</div>
-<div class="line"><a id="l01818" name="l01818"></a><span class="lineno"> 1818</span>              daw::jkj::dragonbox::to_chars_detail::decimal_length(</div>
-<div class="line"><a id="l01819" name="l01819"></a><span class="lineno"> 1819</span>                dec.significand );</div>
-<div class="line"><a id="l01820" name="l01820"></a><span class="lineno"> 1820</span>            <span class="keywordflow">while</span>( current &lt; wanted and current &lt; 19 ) {</div>
-<div class="line"><a id="l01821" name="l01821"></a><span class="lineno"> 1821</span>              dec.significand *= 10;</div>
-<div class="line"><a id="l01822" name="l01822"></a><span class="lineno"> 1822</span>              --dec.exponent;</div>
-<div class="line"><a id="l01823" name="l01823"></a><span class="lineno"> 1823</span>              ++current;</div>
-<div class="line"><a id="l01824" name="l01824"></a><span class="lineno"> 1824</span>            }</div>
-<div class="line"><a id="l01825" name="l01825"></a><span class="lineno"> 1825</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format ==</div>
-<div class="line"><a id="l01826" name="l01826"></a><span class="lineno"> 1826</span>                               options::FPOutputFormat::Minimum ) {</div>
-<div class="line"><a id="l01827" name="l01827"></a><span class="lineno"> 1827</span>            <span class="comment">// trim to at most Precision significant digits.  Use smallest rep</span></div>
-<div class="line"><a id="l01828" name="l01828"></a><span class="lineno"> 1828</span>            round_significand( Precision );</div>
-<div class="line"><a id="l01829" name="l01829"></a><span class="lineno"> 1829</span>          }</div>
-<div class="line"><a id="l01830" name="l01830"></a><span class="lineno"> 1830</span>        }</div>
-<div class="line"><a id="l01831" name="l01831"></a><span class="lineno"> 1831</span>        <span class="keyword">auto</span> <span class="keyword">const</span> digit_values =</div>
-<div class="line"><a id="l01832" name="l01832"></a><span class="lineno"> 1832</span>          daw::jkj::dragonbox::to_chars_detail::decimal_length(</div>
-<div class="line"><a id="l01833" name="l01833"></a><span class="lineno"> 1833</span>            dec.significand );</div>
-<div class="line"><a id="l01834" name="l01834"></a><span class="lineno"> 1834</span> </div>
-<div class="line"><a id="l01835" name="l01835"></a><span class="lineno"> 1835</span>        <span class="keyword">auto</span> whole_dig =</div>
-<div class="line"><a id="l01836" name="l01836"></a><span class="lineno"> 1836</span>          <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( digit_values ) + dec.exponent;</div>
-<div class="line"><a id="l01837" name="l01837"></a><span class="lineno"> 1837</span> </div>
-<div class="line"><a id="l01838" name="l01838"></a><span class="lineno"> 1838</span>        <span class="keyword">auto</span> <span class="keyword">const</span> br = [&amp;] {</div>
-<div class="line"><a id="l01839" name="l01839"></a><span class="lineno"> 1839</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, float&gt; ) {</div>
-<div class="line"><a id="l01840" name="l01840"></a><span class="lineno"> 1840</span>            <span class="keywordflow">return</span> daw::jkj::dragonbox::ieee754_bits( value );</div>
-<div class="line"><a id="l01841" name="l01841"></a><span class="lineno"> 1841</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01842" name="l01842"></a><span class="lineno"> 1842</span>            <span class="keywordflow">return</span> daw::jkj::dragonbox::ieee754_bits(</div>
-<div class="line"><a id="l01843" name="l01843"></a><span class="lineno"> 1843</span>              <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>( value ) );</div>
-<div class="line"><a id="l01844" name="l01844"></a><span class="lineno"> 1844</span>          }</div>
-<div class="line"><a id="l01845" name="l01845"></a><span class="lineno"> 1845</span>        }( );</div>
-<div class="line"><a id="l01846" name="l01846"></a><span class="lineno"> 1846</span>        <span class="keywordflow">if</span>( dec.significand == 0 ) {</div>
-<div class="line"><a id="l01847" name="l01847"></a><span class="lineno"> 1847</span>          <span class="keywordflow">if</span>( fp_output_format == options::FPOutputFormat::Decimal ) {</div>
-<div class="line"><a id="l01848" name="l01848"></a><span class="lineno"> 1848</span>            out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01849" name="l01849"></a><span class="lineno"> 1849</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( Precision != daw::max_value&lt;unsigned&gt; ) {</div>
-<div class="line"><a id="l01850" name="l01850"></a><span class="lineno"> 1850</span>              <span class="keywordflow">if</span>( decimal_places != 0 ) {</div>
-<div class="line"><a id="l01851" name="l01851"></a><span class="lineno"> 1851</span>                out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
-<div class="line"><a id="l01852" name="l01852"></a><span class="lineno"> 1852</span>                <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> n = 0; <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; decimal_places; ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
-<div class="line"><a id="l01853" name="l01853"></a><span class="lineno"> 1853</span>                  out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01854" name="l01854"></a><span class="lineno"> 1854</span>                }</div>
-<div class="line"><a id="l01855" name="l01855"></a><span class="lineno"> 1855</span>              }</div>
-<div class="line"><a id="l01856" name="l01856"></a><span class="lineno"> 1856</span>            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01857" name="l01857"></a><span class="lineno"> 1857</span>              out_it.write( <span class="stringliteral">&quot;.0&quot;</span> );</div>
-<div class="line"><a id="l01858" name="l01858"></a><span class="lineno"> 1858</span>            }</div>
-<div class="line"><a id="l01859" name="l01859"></a><span class="lineno"> 1859</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01860" name="l01860"></a><span class="lineno"> 1860</span>            out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01861" name="l01861"></a><span class="lineno"> 1861</span>          }</div>
-<div class="line"><a id="l01862" name="l01862"></a><span class="lineno"> 1862</span>          <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a id="l01863" name="l01863"></a><span class="lineno"> 1863</span>        }</div>
-<div class="line"><a id="l01864" name="l01864"></a><span class="lineno"> 1864</span>        <span class="keywordflow">if</span>( br.is_negative( ) ) {</div>
-<div class="line"><a id="l01865" name="l01865"></a><span class="lineno"> 1865</span>          out_it.put( <span class="charliteral">&#39;-&#39;</span> );</div>
-<div class="line"><a id="l01866" name="l01866"></a><span class="lineno"> 1866</span>        }</div>
-<div class="line"><a id="l01867" name="l01867"></a><span class="lineno"> 1867</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format ==</div>
-<div class="line"><a id="l01868" name="l01868"></a><span class="lineno"> 1868</span>                      options::FPOutputFormat::Scientific ) {</div>
-<div class="line"><a id="l01869" name="l01869"></a><span class="lineno"> 1869</span>          <span class="keywordtype">char</span> buff[50]{ };</div>
-<div class="line"><a id="l01870" name="l01870"></a><span class="lineno"> 1870</span>          <span class="keywordtype">char</span> *ptr = buff;</div>
-<div class="line"><a id="l01871" name="l01871"></a><span class="lineno"> 1871</span>          ptr = daw::jkj::dragonbox::to_chars_detail::to_chars(</div>
-<div class="line"><a id="l01872" name="l01872"></a><span class="lineno"> 1872</span>            dec, ptr, digit_values );</div>
-<div class="line"><a id="l01873" name="l01873"></a><span class="lineno"> 1873</span>          <span class="keywordflow">if</span>( scientific_places == 0 ) {</div>
-<div class="line"><a id="l01874" name="l01874"></a><span class="lineno"> 1874</span>            out_it.copy_buffer( buff, ptr );</div>
-<div class="line"><a id="l01875" name="l01875"></a><span class="lineno"> 1875</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01876" name="l01876"></a><span class="lineno"> 1876</span>            <span class="keywordtype">char</span> <span class="keyword">const</span> *epos = buff;</div>
-<div class="line"><a id="l01877" name="l01877"></a><span class="lineno"> 1877</span>            <span class="keywordflow">while</span>( epos != ptr and *epos != <span class="charliteral">&#39;e&#39;</span> ) {</div>
-<div class="line"><a id="l01878" name="l01878"></a><span class="lineno"> 1878</span>              ++epos;</div>
-<div class="line"><a id="l01879" name="l01879"></a><span class="lineno"> 1879</span>            }</div>
-<div class="line"><a id="l01880" name="l01880"></a><span class="lineno"> 1880</span>            <span class="keywordtype">char</span> <span class="keyword">const</span> *dot = buff;</div>
-<div class="line"><a id="l01881" name="l01881"></a><span class="lineno"> 1881</span>            <span class="keywordflow">while</span>( dot != epos and *dot != <span class="charliteral">&#39;.&#39;</span> ) {</div>
-<div class="line"><a id="l01882" name="l01882"></a><span class="lineno"> 1882</span>              ++dot;</div>
-<div class="line"><a id="l01883" name="l01883"></a><span class="lineno"> 1883</span>            }</div>
-<div class="line"><a id="l01884" name="l01884"></a><span class="lineno"> 1884</span>            <span class="keywordflow">if</span>( dot == epos ) {</div>
-<div class="line"><a id="l01885" name="l01885"></a><span class="lineno"> 1885</span>              out_it.copy_buffer( buff, epos );</div>
-<div class="line"><a id="l01886" name="l01886"></a><span class="lineno"> 1886</span>              out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
-<div class="line"><a id="l01887" name="l01887"></a><span class="lineno"> 1887</span>            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01888" name="l01888"></a><span class="lineno"> 1888</span>              out_it.copy_buffer( buff, dot + 1 );</div>
-<div class="line"><a id="l01889" name="l01889"></a><span class="lineno"> 1889</span>              out_it.copy_buffer( dot + 1, epos );</div>
-<div class="line"><a id="l01890" name="l01890"></a><span class="lineno"> 1890</span>            }</div>
-<div class="line"><a id="l01891" name="l01891"></a><span class="lineno"> 1891</span>            <span class="keywordtype">unsigned</span> count =</div>
-<div class="line"><a id="l01892" name="l01892"></a><span class="lineno"> 1892</span>              dot == epos ? 0U : <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( epos - dot - 1 );</div>
-<div class="line"><a id="l01893" name="l01893"></a><span class="lineno"> 1893</span>            <span class="keywordflow">while</span>( count &lt; scientific_places ) {</div>
-<div class="line"><a id="l01894" name="l01894"></a><span class="lineno"> 1894</span>              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01895" name="l01895"></a><span class="lineno"> 1895</span>              ++count;</div>
-<div class="line"><a id="l01896" name="l01896"></a><span class="lineno"> 1896</span>            }</div>
-<div class="line"><a id="l01897" name="l01897"></a><span class="lineno"> 1897</span>            out_it.copy_buffer( epos, ptr );</div>
-<div class="line"><a id="l01898" name="l01898"></a><span class="lineno"> 1898</span>          }</div>
-<div class="line"><a id="l01899" name="l01899"></a><span class="lineno"> 1899</span>          <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a id="l01900" name="l01900"></a><span class="lineno"> 1900</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format ==</div>
-<div class="line"><a id="l01901" name="l01901"></a><span class="lineno"> 1901</span>                             options::FPOutputFormat::Auto ) {</div>
-<div class="line"><a id="l01902" name="l01902"></a><span class="lineno"> 1902</span>          <span class="keywordflow">if</span>( ( whole_dig &lt; -4 ) | ( whole_dig &gt; 6 ) ) {</div>
-<div class="line"><a id="l01903" name="l01903"></a><span class="lineno"> 1903</span>            <span class="keywordtype">char</span> buff[50]{ };</div>
-<div class="line"><a id="l01904" name="l01904"></a><span class="lineno"> 1904</span>            <span class="keywordtype">char</span> *ptr = buff;</div>
-<div class="line"><a id="l01905" name="l01905"></a><span class="lineno"> 1905</span>            ptr = daw::jkj::dragonbox::to_chars_detail::to_chars(</div>
-<div class="line"><a id="l01906" name="l01906"></a><span class="lineno"> 1906</span>              dec, ptr, digit_values );</div>
-<div class="line"><a id="l01907" name="l01907"></a><span class="lineno"> 1907</span>            out_it.copy_buffer( buff, ptr );</div>
-<div class="line"><a id="l01908" name="l01908"></a><span class="lineno"> 1908</span>            <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a id="l01909" name="l01909"></a><span class="lineno"> 1909</span>          }</div>
-<div class="line"><a id="l01910" name="l01910"></a><span class="lineno"> 1910</span>        }</div>
-<div class="line"><a id="l01911" name="l01911"></a><span class="lineno"> 1911</span>        <span class="keywordflow">if</span>( dec.exponent &lt; 0 ) {</div>
-<div class="line"><a id="l01912" name="l01912"></a><span class="lineno"> 1912</span>          <span class="keywordflow">if</span>( whole_dig &lt; 0 ) {</div>
-<div class="line"><a id="l01913" name="l01913"></a><span class="lineno"> 1913</span>            out_it.write( <span class="stringliteral">&quot;0.&quot;</span> );</div>
-<div class="line"><a id="l01914" name="l01914"></a><span class="lineno"> 1914</span>            <span class="keywordflow">do</span> {</div>
-<div class="line"><a id="l01915" name="l01915"></a><span class="lineno"> 1915</span>              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01916" name="l01916"></a><span class="lineno"> 1916</span>              ++whole_dig;</div>
-<div class="line"><a id="l01917" name="l01917"></a><span class="lineno"> 1917</span>            } <span class="keywordflow">while</span>( whole_dig &lt; 0 );</div>
-<div class="line"><a id="l01918" name="l01918"></a><span class="lineno"> 1918</span>            out_it = utils::integer_to_string( out_it, dec.significand );</div>
-<div class="line"><a id="l01919" name="l01919"></a><span class="lineno"> 1919</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( Precision != daw::max_value&lt;unsigned&gt; ) {</div>
-<div class="line"><a id="l01920" name="l01920"></a><span class="lineno"> 1920</span>              <span class="keywordflow">if</span>( decimal_places != 0 ) {</div>
-<div class="line"><a id="l01921" name="l01921"></a><span class="lineno"> 1921</span>                out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
-<div class="line"><a id="l01922" name="l01922"></a><span class="lineno"> 1922</span>                <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> n = 0; <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; decimal_places; ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
-<div class="line"><a id="l01923" name="l01923"></a><span class="lineno"> 1923</span>                  out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01924" name="l01924"></a><span class="lineno"> 1924</span>                }</div>
-<div class="line"><a id="l01925" name="l01925"></a><span class="lineno"> 1925</span>              }</div>
-<div class="line"><a id="l01926" name="l01926"></a><span class="lineno"> 1926</span>            }</div>
-<div class="line"><a id="l01927" name="l01927"></a><span class="lineno"> 1927</span>            <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a id="l01928" name="l01928"></a><span class="lineno"> 1928</span>          }</div>
-<div class="line"><a id="l01929" name="l01929"></a><span class="lineno"> 1929</span>          <span class="comment">// TODO allow for decimal output for all</span></div>
-<div class="line"><a id="l01930" name="l01930"></a><span class="lineno"> 1930</span>          <span class="keyword">auto</span> <span class="keyword">const</span> p1pow =</div>
-<div class="line"><a id="l01931" name="l01931"></a><span class="lineno"> 1931</span>            daw::cxmath::pow10( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( -dec.exponent ) );</div>
-<div class="line"><a id="l01932" name="l01932"></a><span class="lineno"> 1932</span>          <span class="keyword">auto</span> <span class="keyword">const</span> p1val = dec.significand / p1pow;</div>
-<div class="line"><a id="l01933" name="l01933"></a><span class="lineno"> 1933</span>          out_it = utils::integer_to_string( out_it, p1val );</div>
-<div class="line"><a id="l01934" name="l01934"></a><span class="lineno"> 1934</span>          <span class="keywordflow">if</span>( p1pow == 1 ) {</div>
-<div class="line"><a id="l01935" name="l01935"></a><span class="lineno"> 1935</span>            <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a id="l01936" name="l01936"></a><span class="lineno"> 1936</span>          }</div>
-<div class="line"><a id="l01937" name="l01937"></a><span class="lineno"> 1937</span>          out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
-<div class="line"><a id="l01938" name="l01938"></a><span class="lineno"> 1938</span>          <span class="keyword">auto</span> <span class="keyword">const</span> p2val = dec.significand - ( p1val * p1pow );</div>
-<div class="line"><a id="l01939" name="l01939"></a><span class="lineno"> 1939</span>          <span class="comment">// ensure we account for leading zeros</span></div>
-<div class="line"><a id="l01940" name="l01940"></a><span class="lineno"> 1940</span>          <span class="comment">//          auto const sig_sigits =</span></div>
-<div class="line"><a id="l01941" name="l01941"></a><span class="lineno"> 1941</span>          {</div>
-<div class="line"><a id="l01942" name="l01942"></a><span class="lineno"> 1942</span>            <span class="keyword">auto</span> <span class="keyword">const</span> l10_sig = daw::cxmath::count_digits( dec.significand );</div>
-<div class="line"><a id="l01943" name="l01943"></a><span class="lineno"> 1943</span>            <span class="keyword">auto</span> <span class="keyword">const</span> l10_p1val = daw::cxmath::count_digits( p1val );</div>
-<div class="line"><a id="l01944" name="l01944"></a><span class="lineno"> 1944</span>            <span class="keyword">auto</span> <span class="keyword">const</span> l10_p2val = daw::cxmath::count_digits( p2val );</div>
-<div class="line"><a id="l01945" name="l01945"></a><span class="lineno"> 1945</span>            <span class="keyword">auto</span> <span class="keyword">const</span> extra_zeros = l10_sig - ( l10_p2val + l10_p1val );</div>
-<div class="line"><a id="l01946" name="l01946"></a><span class="lineno"> 1946</span>            <span class="keywordflow">for</span>( <span class="keywordtype">int</span> n = 0; <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; extra_zeros; ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
-<div class="line"><a id="l01947" name="l01947"></a><span class="lineno"> 1947</span>              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01948" name="l01948"></a><span class="lineno"> 1948</span>            }</div>
-<div class="line"><a id="l01949" name="l01949"></a><span class="lineno"> 1949</span>          }</div>
-<div class="line"><a id="l01950" name="l01950"></a><span class="lineno"> 1950</span>          out_it = utils::integer_to_string( out_it, p2val );</div>
-<div class="line"><a id="l01951" name="l01951"></a><span class="lineno"> 1951</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( Precision != daw::max_value&lt;unsigned&gt; ) {</div>
-<div class="line"><a id="l01952" name="l01952"></a><span class="lineno"> 1952</span>            <span class="keywordflow">for</span>( <span class="keyword">auto</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( -dec.exponent );</div>
-<div class="line"><a id="l01953" name="l01953"></a><span class="lineno"> 1953</span>                 <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; decimal_places;</div>
-<div class="line"><a id="l01954" name="l01954"></a><span class="lineno"> 1954</span>                 ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
-<div class="line"><a id="l01955" name="l01955"></a><span class="lineno"> 1955</span>              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01956" name="l01956"></a><span class="lineno"> 1956</span>            }</div>
-<div class="line"><a id="l01957" name="l01957"></a><span class="lineno"> 1957</span>          }</div>
-<div class="line"><a id="l01958" name="l01958"></a><span class="lineno"> 1958</span>          <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a id="l01959" name="l01959"></a><span class="lineno"> 1959</span>        }</div>
-<div class="line"><a id="l01960" name="l01960"></a><span class="lineno"> 1960</span>        out_it = utils::integer_to_string( out_it, dec.significand );</div>
-<div class="line"><a id="l01961" name="l01961"></a><span class="lineno"> 1961</span> </div>
-<div class="line"><a id="l01962" name="l01962"></a><span class="lineno"> 1962</span>        <span class="keywordflow">while</span>( dec.exponent &gt; 0 ) {</div>
-<div class="line"><a id="l01963" name="l01963"></a><span class="lineno"> 1963</span>          out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01964" name="l01964"></a><span class="lineno"> 1964</span>          --dec.exponent;</div>
-<div class="line"><a id="l01965" name="l01965"></a><span class="lineno"> 1965</span>        }</div>
-<div class="line"><a id="l01966" name="l01966"></a><span class="lineno"> 1966</span>        <span class="keywordflow">if</span>( fp_output_format == options::FPOutputFormat::Decimal ) {</div>
-<div class="line"><a id="l01967" name="l01967"></a><span class="lineno"> 1967</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( Precision == daw::max_value&lt;unsigned&gt; ) {</div>
-<div class="line"><a id="l01968" name="l01968"></a><span class="lineno"> 1968</span>            out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
-<div class="line"><a id="l01969" name="l01969"></a><span class="lineno"> 1969</span>            out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01970" name="l01970"></a><span class="lineno"> 1970</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01971" name="l01971"></a><span class="lineno"> 1971</span>            <span class="keywordflow">if</span>( decimal_places != 0 ) {</div>
-<div class="line"><a id="l01972" name="l01972"></a><span class="lineno"> 1972</span>              out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
-<div class="line"><a id="l01973" name="l01973"></a><span class="lineno"> 1973</span>              <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> n = 0; <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; decimal_places; ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
-<div class="line"><a id="l01974" name="l01974"></a><span class="lineno"> 1974</span>                out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
-<div class="line"><a id="l01975" name="l01975"></a><span class="lineno"> 1975</span>              }</div>
-<div class="line"><a id="l01976" name="l01976"></a><span class="lineno"> 1976</span>            }</div>
-<div class="line"><a id="l01977" name="l01977"></a><span class="lineno"> 1977</span>          }</div>
-<div class="line"><a id="l01978" name="l01978"></a><span class="lineno"> 1978</span>        }</div>
-<div class="line"><a id="l01979" name="l01979"></a><span class="lineno"> 1979</span>        <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a id="l01980" name="l01980"></a><span class="lineno"> 1980</span>      }</div>
-<div class="line"><a id="l01981" name="l01981"></a><span class="lineno"> 1981</span>    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a id="l01982" name="l01982"></a><span class="lineno"> 1982</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l01748" name="l01748"></a><span class="lineno"> 1748</span>        <span class="keyword">static_assert</span>(</div>
+<div class="line"><a id="l01749" name="l01749"></a><span class="lineno"> 1749</span>          daw::max_digits10&lt;Real&gt; &lt; daw::digits10&lt;std::uintmax_t&gt;,</div>
+<div class="line"><a id="l01750" name="l01750"></a><span class="lineno"> 1750</span>          <span class="stringliteral">&quot;The integer pow10 table must cover every Dragonbox significand &quot;</span></div>
+<div class="line"><a id="l01751" name="l01751"></a><span class="lineno"> 1751</span>          <span class="stringliteral">&quot;digit&quot;</span> );</div>
+<div class="line"><a id="l01752" name="l01752"></a><span class="lineno"> 1752</span>        <span class="keywordtype">unsigned</span> decimal_places = 0;</div>
+<div class="line"><a id="l01753" name="l01753"></a><span class="lineno"> 1753</span>        <span class="keywordtype">unsigned</span> scientific_places = 0;</div>
+<div class="line"><a id="l01754" name="l01754"></a><span class="lineno"> 1754</span>        <span class="comment">// Round a decimal significand to a requested number of significant</span></div>
+<div class="line"><a id="l01755" name="l01755"></a><span class="lineno"> 1755</span>        <span class="comment">// digits.  Dragonbox gives us the exact shortest decimal, so doing</span></div>
+<div class="line"><a id="l01756" name="l01756"></a><span class="lineno"> 1756</span>        <span class="comment">// this here avoids a second (and potentially lossy) conversion.</span></div>
+<div class="line"><a id="l01757" name="l01757"></a><span class="lineno"> 1757</span>        <span class="keyword">auto</span> round_significand = [&amp;]( <span class="keywordtype">unsigned</span> digits ) <span class="keyword">constexpr</span> {</div>
+<div class="line"><a id="l01758" name="l01758"></a><span class="lineno"> 1758</span>          <span class="keywordflow">if</span>( digits == 0 ) {</div>
+<div class="line"><a id="l01759" name="l01759"></a><span class="lineno"> 1759</span>            digits = 1;</div>
+<div class="line"><a id="l01760" name="l01760"></a><span class="lineno"> 1760</span>          }</div>
+<div class="line"><a id="l01761" name="l01761"></a><span class="lineno"> 1761</span>          <span class="keywordflow">if</span>( original_digits &lt;= digits ) {</div>
+<div class="line"><a id="l01762" name="l01762"></a><span class="lineno"> 1762</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01763" name="l01763"></a><span class="lineno"> 1763</span>          }</div>
+<div class="line"><a id="l01764" name="l01764"></a><span class="lineno"> 1764</span>          <span class="keyword">auto</span> <span class="keyword">const</span> remove = original_digits - digits;</div>
+<div class="line"><a id="l01765" name="l01765"></a><span class="lineno"> 1765</span>          <span class="keyword">using </span>carrier_t = <span class="keyword">decltype</span>( dec.significand );</div>
+<div class="line"><a id="l01766" name="l01766"></a><span class="lineno"> 1766</span>          <span class="keyword">auto</span> <span class="keyword">const</span> divisor =</div>
+<div class="line"><a id="l01767" name="l01767"></a><span class="lineno"> 1767</span>            <span class="keyword">static_cast&lt;</span>carrier_t<span class="keyword">&gt;</span>( daw::cxmath::pow10( remove ) );</div>
+<div class="line"><a id="l01768" name="l01768"></a><span class="lineno"> 1768</span>          <span class="keyword">auto</span> quotient = dec.significand / divisor;</div>
+<div class="line"><a id="l01769" name="l01769"></a><span class="lineno"> 1769</span>          <span class="keyword">auto</span> <span class="keyword">const</span> remainder = dec.significand % divisor;</div>
+<div class="line"><a id="l01770" name="l01770"></a><span class="lineno"> 1770</span>          <span class="keyword">auto</span> <span class="keyword">const</span> halfway = divisor / 2;</div>
+<div class="line"><a id="l01771" name="l01771"></a><span class="lineno"> 1771</span>          <span class="keywordflow">if</span>( remainder &gt; halfway or</div>
+<div class="line"><a id="l01772" name="l01772"></a><span class="lineno"> 1772</span>              ( remainder == halfway and ( quotient &amp; 1U ) != 0U ) ) {</div>
+<div class="line"><a id="l01773" name="l01773"></a><span class="lineno"> 1773</span>            ++quotient;</div>
+<div class="line"><a id="l01774" name="l01774"></a><span class="lineno"> 1774</span>          }</div>
+<div class="line"><a id="l01775" name="l01775"></a><span class="lineno"> 1775</span>          dec.significand = quotient;</div>
+<div class="line"><a id="l01776" name="l01776"></a><span class="lineno"> 1776</span>          dec.exponent += <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>( remove );</div>
+<div class="line"><a id="l01777" name="l01777"></a><span class="lineno"> 1777</span>          <span class="keywordflow">if</span>( daw::jkj::dragonbox::to_chars_detail::decimal_length(</div>
+<div class="line"><a id="l01778" name="l01778"></a><span class="lineno"> 1778</span>                dec.significand ) &gt; digits ) {</div>
+<div class="line"><a id="l01779" name="l01779"></a><span class="lineno"> 1779</span>            <span class="comment">// Rounding 9.99 to two digits, for example, produces 10.</span></div>
+<div class="line"><a id="l01780" name="l01780"></a><span class="lineno"> 1780</span>            dec.significand /= 10;</div>
+<div class="line"><a id="l01781" name="l01781"></a><span class="lineno"> 1781</span>            ++dec.exponent;</div>
+<div class="line"><a id="l01782" name="l01782"></a><span class="lineno"> 1782</span>          }</div>
+<div class="line"><a id="l01783" name="l01783"></a><span class="lineno"> 1783</span>        };</div>
+<div class="line"><a id="l01784" name="l01784"></a><span class="lineno"> 1784</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( Precision != daw::max_value&lt;unsigned&gt; ) {</div>
+<div class="line"><a id="l01785" name="l01785"></a><span class="lineno"> 1785</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format == options::FPOutputFormat::Auto ) {</div>
+<div class="line"><a id="l01786" name="l01786"></a><span class="lineno"> 1786</span>            <span class="comment">// trim sig digits to at most precision and adjust exponent as</span></div>
+<div class="line"><a id="l01787" name="l01787"></a><span class="lineno"> 1787</span>            <span class="comment">// needed auto chosen decimal/scientific</span></div>
+<div class="line"><a id="l01788" name="l01788"></a><span class="lineno"> 1788</span>            round_significand( Precision );</div>
+<div class="line"><a id="l01789" name="l01789"></a><span class="lineno"> 1789</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format ==</div>
+<div class="line"><a id="l01790" name="l01790"></a><span class="lineno"> 1790</span>                               options::FPOutputFormat::Decimal ) {</div>
+<div class="line"><a id="l01791" name="l01791"></a><span class="lineno"> 1791</span>            <span class="comment">// fixed width/padded to Precisioin in Decimal notation</span></div>
+<div class="line"><a id="l01792" name="l01792"></a><span class="lineno"> 1792</span>            decimal_places = Precision;</div>
+<div class="line"><a id="l01793" name="l01793"></a><span class="lineno"> 1793</span>            <span class="keywordflow">if</span>( dec.exponent &lt; -<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>( Precision ) ) {</div>
+<div class="line"><a id="l01794" name="l01794"></a><span class="lineno"> 1794</span>              <span class="keyword">using </span>carrier_t = <span class="keyword">decltype</span>( dec.significand );</div>
+<div class="line"><a id="l01795" name="l01795"></a><span class="lineno"> 1795</span>              <span class="keyword">auto</span> <span class="keyword">const</span> remove = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(</div>
+<div class="line"><a id="l01796" name="l01796"></a><span class="lineno"> 1796</span>                -<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span> <span class="keywordtype">long</span><span class="keyword">&gt;</span>( dec.exponent ) - Precision );</div>
+<div class="line"><a id="l01797" name="l01797"></a><span class="lineno"> 1797</span>              <span class="keywordflow">if</span>( remove &gt; original_digits ) {</div>
+<div class="line"><a id="l01798" name="l01798"></a><span class="lineno"> 1798</span>                <span class="comment">// The discarded power of ten is larger than the entire</span></div>
+<div class="line"><a id="l01799" name="l01799"></a><span class="lineno"> 1799</span>                <span class="comment">// significand, so the value is strictly below half of the</span></div>
+<div class="line"><a id="l01800" name="l01800"></a><span class="lineno"> 1800</span>                <span class="comment">// least retained decimal place.  It rounds to zero without</span></div>
+<div class="line"><a id="l01801" name="l01801"></a><span class="lineno"> 1801</span>                <span class="comment">// constructing a power of ten that cannot fit in carrier_t.</span></div>
+<div class="line"><a id="l01802" name="l01802"></a><span class="lineno"> 1802</span>                dec.significand = 0;</div>
+<div class="line"><a id="l01803" name="l01803"></a><span class="lineno"> 1803</span>              } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01804" name="l01804"></a><span class="lineno"> 1804</span>                <span class="keyword">auto</span> <span class="keyword">const</span> divisor =</div>
+<div class="line"><a id="l01805" name="l01805"></a><span class="lineno"> 1805</span>                  <span class="keyword">static_cast&lt;</span>carrier_t<span class="keyword">&gt;</span>( daw::cxmath::pow10( remove ) );</div>
+<div class="line"><a id="l01806" name="l01806"></a><span class="lineno"> 1806</span>                <span class="keyword">auto</span> quotient = dec.significand / divisor;</div>
+<div class="line"><a id="l01807" name="l01807"></a><span class="lineno"> 1807</span>                <span class="keyword">auto</span> <span class="keyword">const</span> remainder = dec.significand % divisor;</div>
+<div class="line"><a id="l01808" name="l01808"></a><span class="lineno"> 1808</span>                <span class="keyword">auto</span> <span class="keyword">const</span> halfway = divisor / 2;</div>
+<div class="line"><a id="l01809" name="l01809"></a><span class="lineno"> 1809</span>                <span class="keywordflow">if</span>( remainder &gt; halfway or</div>
+<div class="line"><a id="l01810" name="l01810"></a><span class="lineno"> 1810</span>                    ( remainder == halfway and ( quotient &amp; 1U ) != 0U ) ) {</div>
+<div class="line"><a id="l01811" name="l01811"></a><span class="lineno"> 1811</span>                  ++quotient;</div>
+<div class="line"><a id="l01812" name="l01812"></a><span class="lineno"> 1812</span>                }</div>
+<div class="line"><a id="l01813" name="l01813"></a><span class="lineno"> 1813</span>                dec.significand = quotient;</div>
+<div class="line"><a id="l01814" name="l01814"></a><span class="lineno"> 1814</span>              }</div>
+<div class="line"><a id="l01815" name="l01815"></a><span class="lineno"> 1815</span>              dec.exponent = -<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>( Precision );</div>
+<div class="line"><a id="l01816" name="l01816"></a><span class="lineno"> 1816</span>            }</div>
+<div class="line"><a id="l01817" name="l01817"></a><span class="lineno"> 1817</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format ==</div>
+<div class="line"><a id="l01818" name="l01818"></a><span class="lineno"> 1818</span>                               options::FPOutputFormat::Scientific ) {</div>
+<div class="line"><a id="l01819" name="l01819"></a><span class="lineno"> 1819</span>            <span class="comment">// fixed width/padded to Precisioin in Scientific</span></div>
+<div class="line"><a id="l01820" name="l01820"></a><span class="lineno"> 1820</span>            scientific_places = Precision;</div>
+<div class="line"><a id="l01821" name="l01821"></a><span class="lineno"> 1821</span>            round_significand( Precision + 1 );</div>
+<div class="line"><a id="l01822" name="l01822"></a><span class="lineno"> 1822</span>            <span class="comment">// Scientific output requires exactly Precision digits after</span></div>
+<div class="line"><a id="l01823" name="l01823"></a><span class="lineno"> 1823</span>            <span class="comment">// the point.  Add insignificant zeroes to the significand.</span></div>
+<div class="line"><a id="l01824" name="l01824"></a><span class="lineno"> 1824</span>            <span class="keywordtype">unsigned</span> <span class="keyword">const</span> wanted = Precision + 1;</div>
+<div class="line"><a id="l01825" name="l01825"></a><span class="lineno"> 1825</span>            <span class="keywordtype">unsigned</span> current =</div>
+<div class="line"><a id="l01826" name="l01826"></a><span class="lineno"> 1826</span>              daw::jkj::dragonbox::to_chars_detail::decimal_length(</div>
+<div class="line"><a id="l01827" name="l01827"></a><span class="lineno"> 1827</span>                dec.significand );</div>
+<div class="line"><a id="l01828" name="l01828"></a><span class="lineno"> 1828</span>            <span class="keywordflow">while</span>( current &lt; wanted and current &lt; 19 ) {</div>
+<div class="line"><a id="l01829" name="l01829"></a><span class="lineno"> 1829</span>              dec.significand *= 10;</div>
+<div class="line"><a id="l01830" name="l01830"></a><span class="lineno"> 1830</span>              --dec.exponent;</div>
+<div class="line"><a id="l01831" name="l01831"></a><span class="lineno"> 1831</span>              ++current;</div>
+<div class="line"><a id="l01832" name="l01832"></a><span class="lineno"> 1832</span>            }</div>
+<div class="line"><a id="l01833" name="l01833"></a><span class="lineno"> 1833</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format ==</div>
+<div class="line"><a id="l01834" name="l01834"></a><span class="lineno"> 1834</span>                               options::FPOutputFormat::Minimum ) {</div>
+<div class="line"><a id="l01835" name="l01835"></a><span class="lineno"> 1835</span>            <span class="comment">// trim to at most Precision significant digits.  Use smallest rep</span></div>
+<div class="line"><a id="l01836" name="l01836"></a><span class="lineno"> 1836</span>            round_significand( Precision );</div>
+<div class="line"><a id="l01837" name="l01837"></a><span class="lineno"> 1837</span>          }</div>
+<div class="line"><a id="l01838" name="l01838"></a><span class="lineno"> 1838</span>        }</div>
+<div class="line"><a id="l01839" name="l01839"></a><span class="lineno"> 1839</span>        <span class="keyword">auto</span> <span class="keyword">const</span> digit_values =</div>
+<div class="line"><a id="l01840" name="l01840"></a><span class="lineno"> 1840</span>          daw::jkj::dragonbox::to_chars_detail::decimal_length(</div>
+<div class="line"><a id="l01841" name="l01841"></a><span class="lineno"> 1841</span>            dec.significand );</div>
+<div class="line"><a id="l01842" name="l01842"></a><span class="lineno"> 1842</span> </div>
+<div class="line"><a id="l01843" name="l01843"></a><span class="lineno"> 1843</span>        <span class="keyword">auto</span> whole_dig =</div>
+<div class="line"><a id="l01844" name="l01844"></a><span class="lineno"> 1844</span>          <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( digit_values ) + dec.exponent;</div>
+<div class="line"><a id="l01845" name="l01845"></a><span class="lineno"> 1845</span> </div>
+<div class="line"><a id="l01846" name="l01846"></a><span class="lineno"> 1846</span>        <span class="keyword">auto</span> <span class="keyword">const</span> br = [&amp;] {</div>
+<div class="line"><a id="l01847" name="l01847"></a><span class="lineno"> 1847</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, float&gt; ) {</div>
+<div class="line"><a id="l01848" name="l01848"></a><span class="lineno"> 1848</span>            <span class="keywordflow">return</span> daw::jkj::dragonbox::ieee754_bits( value );</div>
+<div class="line"><a id="l01849" name="l01849"></a><span class="lineno"> 1849</span>          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01850" name="l01850"></a><span class="lineno"> 1850</span>            <span class="keywordflow">return</span> daw::jkj::dragonbox::ieee754_bits(</div>
+<div class="line"><a id="l01851" name="l01851"></a><span class="lineno"> 1851</span>              <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>( value ) );</div>
+<div class="line"><a id="l01852" name="l01852"></a><span class="lineno"> 1852</span>          }</div>
+<div class="line"><a id="l01853" name="l01853"></a><span class="lineno"> 1853</span>        }( );</div>
+<div class="line"><a id="l01854" name="l01854"></a><span class="lineno"> 1854</span>        <span class="keywordflow">if</span>( dec.significand == 0 ) {</div>
+<div class="line"><a id="l01855" name="l01855"></a><span class="lineno"> 1855</span>          <span class="keywordflow">if</span>( fp_output_format == options::FPOutputFormat::Decimal ) {</div>
+<div class="line"><a id="l01856" name="l01856"></a><span class="lineno"> 1856</span>            out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01857" name="l01857"></a><span class="lineno"> 1857</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( Precision != daw::max_value&lt;unsigned&gt; ) {</div>
+<div class="line"><a id="l01858" name="l01858"></a><span class="lineno"> 1858</span>              <span class="keywordflow">if</span>( decimal_places != 0 ) {</div>
+<div class="line"><a id="l01859" name="l01859"></a><span class="lineno"> 1859</span>                out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
+<div class="line"><a id="l01860" name="l01860"></a><span class="lineno"> 1860</span>                <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> n = 0; <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; decimal_places; ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
+<div class="line"><a id="l01861" name="l01861"></a><span class="lineno"> 1861</span>                  out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01862" name="l01862"></a><span class="lineno"> 1862</span>                }</div>
+<div class="line"><a id="l01863" name="l01863"></a><span class="lineno"> 1863</span>              }</div>
+<div class="line"><a id="l01864" name="l01864"></a><span class="lineno"> 1864</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01865" name="l01865"></a><span class="lineno"> 1865</span>              out_it.write( <span class="stringliteral">&quot;.0&quot;</span> );</div>
+<div class="line"><a id="l01866" name="l01866"></a><span class="lineno"> 1866</span>            }</div>
+<div class="line"><a id="l01867" name="l01867"></a><span class="lineno"> 1867</span>          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01868" name="l01868"></a><span class="lineno"> 1868</span>            out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01869" name="l01869"></a><span class="lineno"> 1869</span>          }</div>
+<div class="line"><a id="l01870" name="l01870"></a><span class="lineno"> 1870</span>          <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a id="l01871" name="l01871"></a><span class="lineno"> 1871</span>        }</div>
+<div class="line"><a id="l01872" name="l01872"></a><span class="lineno"> 1872</span>        <span class="keywordflow">if</span>( br.is_negative( ) ) {</div>
+<div class="line"><a id="l01873" name="l01873"></a><span class="lineno"> 1873</span>          out_it.put( <span class="charliteral">&#39;-&#39;</span> );</div>
+<div class="line"><a id="l01874" name="l01874"></a><span class="lineno"> 1874</span>        }</div>
+<div class="line"><a id="l01875" name="l01875"></a><span class="lineno"> 1875</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format ==</div>
+<div class="line"><a id="l01876" name="l01876"></a><span class="lineno"> 1876</span>                      options::FPOutputFormat::Scientific ) {</div>
+<div class="line"><a id="l01877" name="l01877"></a><span class="lineno"> 1877</span>          <span class="keywordtype">char</span> buff[50]{ };</div>
+<div class="line"><a id="l01878" name="l01878"></a><span class="lineno"> 1878</span>          <span class="keywordtype">char</span> *ptr = buff;</div>
+<div class="line"><a id="l01879" name="l01879"></a><span class="lineno"> 1879</span>          ptr = daw::jkj::dragonbox::to_chars_detail::to_chars(</div>
+<div class="line"><a id="l01880" name="l01880"></a><span class="lineno"> 1880</span>            dec, ptr, digit_values );</div>
+<div class="line"><a id="l01881" name="l01881"></a><span class="lineno"> 1881</span>          <span class="keywordflow">if</span>( scientific_places == 0 ) {</div>
+<div class="line"><a id="l01882" name="l01882"></a><span class="lineno"> 1882</span>            out_it.copy_buffer( buff, ptr );</div>
+<div class="line"><a id="l01883" name="l01883"></a><span class="lineno"> 1883</span>          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01884" name="l01884"></a><span class="lineno"> 1884</span>            <span class="keywordtype">char</span> <span class="keyword">const</span> *epos = buff;</div>
+<div class="line"><a id="l01885" name="l01885"></a><span class="lineno"> 1885</span>            <span class="keywordflow">while</span>( epos != ptr and *epos != <span class="charliteral">&#39;e&#39;</span> ) {</div>
+<div class="line"><a id="l01886" name="l01886"></a><span class="lineno"> 1886</span>              ++epos;</div>
+<div class="line"><a id="l01887" name="l01887"></a><span class="lineno"> 1887</span>            }</div>
+<div class="line"><a id="l01888" name="l01888"></a><span class="lineno"> 1888</span>            <span class="keywordtype">char</span> <span class="keyword">const</span> *dot = buff;</div>
+<div class="line"><a id="l01889" name="l01889"></a><span class="lineno"> 1889</span>            <span class="keywordflow">while</span>( dot != epos and *dot != <span class="charliteral">&#39;.&#39;</span> ) {</div>
+<div class="line"><a id="l01890" name="l01890"></a><span class="lineno"> 1890</span>              ++dot;</div>
+<div class="line"><a id="l01891" name="l01891"></a><span class="lineno"> 1891</span>            }</div>
+<div class="line"><a id="l01892" name="l01892"></a><span class="lineno"> 1892</span>            <span class="keywordflow">if</span>( dot == epos ) {</div>
+<div class="line"><a id="l01893" name="l01893"></a><span class="lineno"> 1893</span>              out_it.copy_buffer( buff, epos );</div>
+<div class="line"><a id="l01894" name="l01894"></a><span class="lineno"> 1894</span>              out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
+<div class="line"><a id="l01895" name="l01895"></a><span class="lineno"> 1895</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01896" name="l01896"></a><span class="lineno"> 1896</span>              out_it.copy_buffer( buff, dot + 1 );</div>
+<div class="line"><a id="l01897" name="l01897"></a><span class="lineno"> 1897</span>              out_it.copy_buffer( dot + 1, epos );</div>
+<div class="line"><a id="l01898" name="l01898"></a><span class="lineno"> 1898</span>            }</div>
+<div class="line"><a id="l01899" name="l01899"></a><span class="lineno"> 1899</span>            <span class="keywordtype">unsigned</span> count =</div>
+<div class="line"><a id="l01900" name="l01900"></a><span class="lineno"> 1900</span>              dot == epos ? 0U : <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( epos - dot - 1 );</div>
+<div class="line"><a id="l01901" name="l01901"></a><span class="lineno"> 1901</span>            <span class="keywordflow">while</span>( count &lt; scientific_places ) {</div>
+<div class="line"><a id="l01902" name="l01902"></a><span class="lineno"> 1902</span>              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01903" name="l01903"></a><span class="lineno"> 1903</span>              ++count;</div>
+<div class="line"><a id="l01904" name="l01904"></a><span class="lineno"> 1904</span>            }</div>
+<div class="line"><a id="l01905" name="l01905"></a><span class="lineno"> 1905</span>            out_it.copy_buffer( epos, ptr );</div>
+<div class="line"><a id="l01906" name="l01906"></a><span class="lineno"> 1906</span>          }</div>
+<div class="line"><a id="l01907" name="l01907"></a><span class="lineno"> 1907</span>          <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a id="l01908" name="l01908"></a><span class="lineno"> 1908</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( fp_output_format ==</div>
+<div class="line"><a id="l01909" name="l01909"></a><span class="lineno"> 1909</span>                             options::FPOutputFormat::Auto ) {</div>
+<div class="line"><a id="l01910" name="l01910"></a><span class="lineno"> 1910</span>          <span class="keywordflow">if</span>( ( whole_dig &lt; -4 ) | ( whole_dig &gt; 6 ) ) {</div>
+<div class="line"><a id="l01911" name="l01911"></a><span class="lineno"> 1911</span>            <span class="keywordtype">char</span> buff[50]{ };</div>
+<div class="line"><a id="l01912" name="l01912"></a><span class="lineno"> 1912</span>            <span class="keywordtype">char</span> *ptr = buff;</div>
+<div class="line"><a id="l01913" name="l01913"></a><span class="lineno"> 1913</span>            ptr = daw::jkj::dragonbox::to_chars_detail::to_chars(</div>
+<div class="line"><a id="l01914" name="l01914"></a><span class="lineno"> 1914</span>              dec, ptr, digit_values );</div>
+<div class="line"><a id="l01915" name="l01915"></a><span class="lineno"> 1915</span>            out_it.copy_buffer( buff, ptr );</div>
+<div class="line"><a id="l01916" name="l01916"></a><span class="lineno"> 1916</span>            <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a id="l01917" name="l01917"></a><span class="lineno"> 1917</span>          }</div>
+<div class="line"><a id="l01918" name="l01918"></a><span class="lineno"> 1918</span>        }</div>
+<div class="line"><a id="l01919" name="l01919"></a><span class="lineno"> 1919</span>        <span class="keywordflow">if</span>( dec.exponent &lt; 0 ) {</div>
+<div class="line"><a id="l01920" name="l01920"></a><span class="lineno"> 1920</span>          <span class="keywordflow">if</span>( whole_dig &lt; 0 ) {</div>
+<div class="line"><a id="l01921" name="l01921"></a><span class="lineno"> 1921</span>            out_it.write( <span class="stringliteral">&quot;0.&quot;</span> );</div>
+<div class="line"><a id="l01922" name="l01922"></a><span class="lineno"> 1922</span>            <span class="keywordflow">do</span> {</div>
+<div class="line"><a id="l01923" name="l01923"></a><span class="lineno"> 1923</span>              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01924" name="l01924"></a><span class="lineno"> 1924</span>              ++whole_dig;</div>
+<div class="line"><a id="l01925" name="l01925"></a><span class="lineno"> 1925</span>            } <span class="keywordflow">while</span>( whole_dig &lt; 0 );</div>
+<div class="line"><a id="l01926" name="l01926"></a><span class="lineno"> 1926</span>            out_it = utils::integer_to_string( out_it, dec.significand );</div>
+<div class="line"><a id="l01927" name="l01927"></a><span class="lineno"> 1927</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( Precision != daw::max_value&lt;unsigned&gt; ) {</div>
+<div class="line"><a id="l01928" name="l01928"></a><span class="lineno"> 1928</span>              <span class="keywordflow">for</span>( <span class="keyword">auto</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( -dec.exponent );</div>
+<div class="line"><a id="l01929" name="l01929"></a><span class="lineno"> 1929</span>                   <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; decimal_places;</div>
+<div class="line"><a id="l01930" name="l01930"></a><span class="lineno"> 1930</span>                   ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
+<div class="line"><a id="l01931" name="l01931"></a><span class="lineno"> 1931</span>                out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01932" name="l01932"></a><span class="lineno"> 1932</span>              }</div>
+<div class="line"><a id="l01933" name="l01933"></a><span class="lineno"> 1933</span>            }</div>
+<div class="line"><a id="l01934" name="l01934"></a><span class="lineno"> 1934</span>            <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a id="l01935" name="l01935"></a><span class="lineno"> 1935</span>          }</div>
+<div class="line"><a id="l01936" name="l01936"></a><span class="lineno"> 1936</span>          <span class="comment">// TODO allow for decimal output for all</span></div>
+<div class="line"><a id="l01937" name="l01937"></a><span class="lineno"> 1937</span>          <span class="keyword">auto</span> <span class="keyword">const</span> p1pow =</div>
+<div class="line"><a id="l01938" name="l01938"></a><span class="lineno"> 1938</span>            daw::cxmath::pow10( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( -dec.exponent ) );</div>
+<div class="line"><a id="l01939" name="l01939"></a><span class="lineno"> 1939</span>          <span class="keyword">auto</span> <span class="keyword">const</span> p1val = dec.significand / p1pow;</div>
+<div class="line"><a id="l01940" name="l01940"></a><span class="lineno"> 1940</span>          out_it = utils::integer_to_string( out_it, p1val );</div>
+<div class="line"><a id="l01941" name="l01941"></a><span class="lineno"> 1941</span>          <span class="keywordflow">if</span>( p1pow == 1 ) {</div>
+<div class="line"><a id="l01942" name="l01942"></a><span class="lineno"> 1942</span>            <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a id="l01943" name="l01943"></a><span class="lineno"> 1943</span>          }</div>
+<div class="line"><a id="l01944" name="l01944"></a><span class="lineno"> 1944</span>          out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
+<div class="line"><a id="l01945" name="l01945"></a><span class="lineno"> 1945</span>          <span class="keyword">auto</span> <span class="keyword">const</span> p2val = dec.significand - ( p1val * p1pow );</div>
+<div class="line"><a id="l01946" name="l01946"></a><span class="lineno"> 1946</span>          <span class="comment">// ensure we account for leading zeros</span></div>
+<div class="line"><a id="l01947" name="l01947"></a><span class="lineno"> 1947</span>          <span class="comment">//          auto const sig_sigits =</span></div>
+<div class="line"><a id="l01948" name="l01948"></a><span class="lineno"> 1948</span>          {</div>
+<div class="line"><a id="l01949" name="l01949"></a><span class="lineno"> 1949</span>            <span class="keyword">auto</span> <span class="keyword">const</span> l10_sig = daw::cxmath::count_digits( dec.significand );</div>
+<div class="line"><a id="l01950" name="l01950"></a><span class="lineno"> 1950</span>            <span class="keyword">auto</span> <span class="keyword">const</span> l10_p1val = daw::cxmath::count_digits( p1val );</div>
+<div class="line"><a id="l01951" name="l01951"></a><span class="lineno"> 1951</span>            <span class="keyword">auto</span> <span class="keyword">const</span> l10_p2val = daw::cxmath::count_digits( p2val );</div>
+<div class="line"><a id="l01952" name="l01952"></a><span class="lineno"> 1952</span>            <span class="keyword">auto</span> <span class="keyword">const</span> extra_zeros = l10_sig - ( l10_p2val + l10_p1val );</div>
+<div class="line"><a id="l01953" name="l01953"></a><span class="lineno"> 1953</span>            <span class="keywordflow">for</span>( <span class="keywordtype">int</span> n = 0; <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; extra_zeros; ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
+<div class="line"><a id="l01954" name="l01954"></a><span class="lineno"> 1954</span>              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01955" name="l01955"></a><span class="lineno"> 1955</span>            }</div>
+<div class="line"><a id="l01956" name="l01956"></a><span class="lineno"> 1956</span>          }</div>
+<div class="line"><a id="l01957" name="l01957"></a><span class="lineno"> 1957</span>          out_it = utils::integer_to_string( out_it, p2val );</div>
+<div class="line"><a id="l01958" name="l01958"></a><span class="lineno"> 1958</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( Precision != daw::max_value&lt;unsigned&gt; ) {</div>
+<div class="line"><a id="l01959" name="l01959"></a><span class="lineno"> 1959</span>            <span class="keywordflow">for</span>( <span class="keyword">auto</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( -dec.exponent );</div>
+<div class="line"><a id="l01960" name="l01960"></a><span class="lineno"> 1960</span>                 <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; decimal_places;</div>
+<div class="line"><a id="l01961" name="l01961"></a><span class="lineno"> 1961</span>                 ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
+<div class="line"><a id="l01962" name="l01962"></a><span class="lineno"> 1962</span>              out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01963" name="l01963"></a><span class="lineno"> 1963</span>            }</div>
+<div class="line"><a id="l01964" name="l01964"></a><span class="lineno"> 1964</span>          }</div>
+<div class="line"><a id="l01965" name="l01965"></a><span class="lineno"> 1965</span>          <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a id="l01966" name="l01966"></a><span class="lineno"> 1966</span>        }</div>
+<div class="line"><a id="l01967" name="l01967"></a><span class="lineno"> 1967</span>        out_it = utils::integer_to_string( out_it, dec.significand );</div>
+<div class="line"><a id="l01968" name="l01968"></a><span class="lineno"> 1968</span> </div>
+<div class="line"><a id="l01969" name="l01969"></a><span class="lineno"> 1969</span>        <span class="keywordflow">while</span>( dec.exponent &gt; 0 ) {</div>
+<div class="line"><a id="l01970" name="l01970"></a><span class="lineno"> 1970</span>          out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01971" name="l01971"></a><span class="lineno"> 1971</span>          --dec.exponent;</div>
+<div class="line"><a id="l01972" name="l01972"></a><span class="lineno"> 1972</span>        }</div>
+<div class="line"><a id="l01973" name="l01973"></a><span class="lineno"> 1973</span>        <span class="keywordflow">if</span>( fp_output_format == options::FPOutputFormat::Decimal ) {</div>
+<div class="line"><a id="l01974" name="l01974"></a><span class="lineno"> 1974</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( Precision == daw::max_value&lt;unsigned&gt; ) {</div>
+<div class="line"><a id="l01975" name="l01975"></a><span class="lineno"> 1975</span>            out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
+<div class="line"><a id="l01976" name="l01976"></a><span class="lineno"> 1976</span>            out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01977" name="l01977"></a><span class="lineno"> 1977</span>          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01978" name="l01978"></a><span class="lineno"> 1978</span>            <span class="keywordflow">if</span>( decimal_places != 0 ) {</div>
+<div class="line"><a id="l01979" name="l01979"></a><span class="lineno"> 1979</span>              out_it.put( <span class="charliteral">&#39;.&#39;</span> );</div>
+<div class="line"><a id="l01980" name="l01980"></a><span class="lineno"> 1980</span>              <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> n = 0; <a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> &lt; decimal_places; ++<a class="code hl_enumvalue" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a2e0b615c5f7255dc0e1ee17e1b1f8204a7b8b965ad4bca0e41ab51de7b31363a1">n</a> ) {</div>
+<div class="line"><a id="l01981" name="l01981"></a><span class="lineno"> 1981</span>                out_it.put( <span class="charliteral">&#39;0&#39;</span> );</div>
+<div class="line"><a id="l01982" name="l01982"></a><span class="lineno"> 1982</span>              }</div>
+<div class="line"><a id="l01983" name="l01983"></a><span class="lineno"> 1983</span>            }</div>
+<div class="line"><a id="l01984" name="l01984"></a><span class="lineno"> 1984</span>          }</div>
+<div class="line"><a id="l01985" name="l01985"></a><span class="lineno"> 1985</span>        }</div>
+<div class="line"><a id="l01986" name="l01986"></a><span class="lineno"> 1986</span>        <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a id="l01987" name="l01987"></a><span class="lineno"> 1987</span>      }</div>
+<div class="line"><a id="l01988" name="l01988"></a><span class="lineno"> 1988</span>    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a id="l01989" name="l01989"></a><span class="lineno"> 1989</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 </div>
-<div class="line"><a id="l01983" name="l01983"></a><span class="lineno"> 1983</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l01990" name="l01990"></a><span class="lineno"> 1990</span>} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__assert_8h_source.html#l00185">daw_json_assert.h:185</a></div></div>
 <div class="ttc" id="adaw__json__data__contract_8h_html"><div class="ttname"><a href="daw__json__data__contract_8h.html">daw_json_data_contract.h</a></div></div>
