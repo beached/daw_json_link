@@ -24,6 +24,17 @@ if( DAW_JSON_USE_BOOST )
 	find_package( Threads )
 endif()
 
+if( Boost_FOUND )
+	include( CheckIncludeFileCXX )
+	include( CMakePushCheckState )
+	cmake_push_check_state( RESET )
+	set( CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIRS} )
+	check_include_file_cxx( boost/pfr.hpp DAW_JSON_HAS_BOOST_PFR )
+	cmake_pop_check_state( )
+else()
+	set( DAW_JSON_HAS_BOOST_PFR OFF )
+endif()
+
 option( DAW_JSON_USE_REFLECTION "Enable testing of reflection p2996 for JSON" OFF )
 if( DAW_JSON_USE_REFLECTION )
 	message( STATUS "DAW_JSON_USE_REFLECTION=ON: Enabled testing of reflection p2996 for JSON" )
@@ -263,6 +274,18 @@ if( Boost_FOUND )
 	target_link_libraries( daw_json_link_describe_bin PRIVATE json_test Boost::headers )
 	target_compile_features( daw_json_link_describe_bin PRIVATE cxx_std_20 )
 	add_test( NAME daw_json_link_describe_test COMMAND daw_json_link_describe_bin )
+endif()
+
+if( DAW_JSON_HAS_BOOST_PFR )
+	add_executable( daw_json_link_boost_pfr_test
+	                src/daw_json_link_boost_pfr_test.cpp )
+	target_link_libraries( daw_json_link_boost_pfr_test PRIVATE json_test
+	                      Boost::headers )
+	target_compile_features( daw_json_link_boost_pfr_test PRIVATE cxx_std_20 )
+	add_test( NAME daw_json_link_boost_pfr_test
+	          COMMAND daw_json_link_boost_pfr_test )
+	add_dependencies( ci_tests daw_json_link_boost_pfr_test )
+	add_dependencies( full daw_json_link_boost_pfr_test )
 endif()
 
 if( DAW_JSON_FULL_TESTS )
@@ -1286,8 +1309,12 @@ set( DAW_JSON_HEADER_SELF_CONTAINMENT_TESTS
 
 if( NOT Boost_FOUND )
 	list( REMOVE_ITEM DAW_JSON_HEADER_SELF_CONTAINMENT_TESTS
-				daw_json_boost_pfr_mapping
 				daw_json_link_describe )
+endif()
+
+if( NOT DAW_JSON_HAS_BOOST_PFR )
+	list( REMOVE_ITEM DAW_JSON_HEADER_SELF_CONTAINMENT_TESTS
+				daw_json_boost_pfr_mapping )
 endif()
 
 foreach( header_name IN LISTS DAW_JSON_HEADER_SELF_CONTAINMENT_TESTS )
