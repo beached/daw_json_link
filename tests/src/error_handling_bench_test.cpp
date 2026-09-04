@@ -9,10 +9,12 @@
 #include "daw_json_benchmark.h"
 #include "defines.h"
 
-#include <daw/daw_random.h>
-#include <daw/daw_string_view.h>
 #include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
+
+#include <daw/daw_ensure.h>
+#include <daw/daw_random.h>
+#include <daw/daw_string_view.h>
 
 #include <chrono>
 #include <csetjmp>
@@ -88,7 +90,7 @@ int main( ) {
 			}
 			auto const end_time = std::chrono::steady_clock::now( );
 			total_time += end_time - state.start_time;
-			ensure( state.jex );
+			daw_ensure( state.jex );
 		}( numbers_str_bad );
 	}
 	total_time /= total;

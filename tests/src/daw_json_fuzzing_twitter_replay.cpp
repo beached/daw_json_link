@@ -10,6 +10,7 @@
 
 #include "twitter_test_json.h"
 
+#include <daw/daw_ensure.h>
 #include <daw/daw_memory_mapped_file.h>
 #include <daw/daw_parse_args.h>
 #include <daw/json/daw_json_link.h>
@@ -19,9 +20,9 @@
 #include <iostream>
 
 int main( int argc, char **argv ) {
-	ensure( argc >= 2 );
+	daw_ensure( argc >= 2 );
 	auto json_doc = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
-	ensure( not json_doc.empty( ) );
+	daw_ensure( not json_doc.empty( ) );
 #if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif

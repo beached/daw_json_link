@@ -8,7 +8,6 @@
 
 #include "defines.h"
 
-#include <daw/daw_string_view.h>
 #include <daw/json/daw_from_json.h>
 #include <daw/json/daw_from_json_fwd.h>
 #include <daw/json/daw_json_data_contract.h>
@@ -28,6 +27,9 @@
 #include <daw/json/daw_json_value_state.h>
 #include <daw/json/daw_to_json.h>
 #include <daw/json/daw_to_json_fwd.h>
+
+#include <daw/daw_ensure.h>
+#include <daw/daw_string_view.h>
 
 #include <string>
 #include <tuple>
@@ -70,5 +72,5 @@ int main( ) {
 	x.y += z.y;
 	auto const xdoc = from_X( x );
 	auto const x2 = parse_X( xdoc );
-	ensure( x2.y == x.y );
+	daw_ensure( x2.y == x.y );
 }

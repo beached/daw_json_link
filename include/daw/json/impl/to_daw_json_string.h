@@ -1745,6 +1745,10 @@ namespace daw::json {
 				auto const original_digits =
 				  daw::jkj::dragonbox::to_chars_detail::decimal_length(
 				    dec.significand );
+				static_assert(
+				  daw::max_digits10<Real> < daw::digits10<std::uintmax_t>,
+				  "The integer pow10 table must cover every Dragonbox significand "
+				  "digit" );
 				unsigned decimal_places = 0;
 				unsigned scientific_places = 0;
 				// Round a decimal significand to a requested number of significant
@@ -1759,10 +1763,8 @@ namespace daw::json {
 					}
 					auto const remove = original_digits - digits;
 					using carrier_t = decltype( dec.significand );
-					carrier_t divisor = 1;
-					for( std::uint32_t n = 0; n < remove; ++n ) {
-						divisor *= 10;
-					}
+					auto const divisor =
+					  static_cast<carrier_t>( daw::cxmath::pow10( remove ) );
 					auto quotient = dec.significand / divisor;
 					auto const remainder = dec.significand % divisor;
 					auto const halfway = divisor / 2;
@@ -1792,18 +1794,24 @@ namespace daw::json {
 							using carrier_t = decltype( dec.significand );
 							auto const remove = static_cast<unsigned>(
 							  -static_cast<long long>( dec.exponent ) - Precision );
-							carrier_t divisor = 1;
-							for( unsigned n = 0; n < remove; ++n ) {
-								divisor *= 10;
+							if( remove > original_digits ) {
+								// The discarded power of ten is larger than the entire
+								// significand, so the value is strictly below half of the
+								// least retained decimal place.  It rounds to zero without
+								// constructing a power of ten that cannot fit in carrier_t.
+								dec.significand = 0;
+							} else {
+								auto const divisor =
+								  static_cast<carrier_t>( daw::cxmath::pow10( remove ) );
+								auto quotient = dec.significand / divisor;
+								auto const remainder = dec.significand % divisor;
+								auto const halfway = divisor / 2;
+								if( remainder > halfway or
+								    ( remainder == halfway and ( quotient & 1U ) != 0U ) ) {
+									++quotient;
+								}
+								dec.significand = quotient;
 							}
-							auto quotient = dec.significand / divisor;
-							auto const remainder = dec.significand % divisor;
-							auto const halfway = divisor / 2;
-							if( remainder > halfway or
-							    ( remainder == halfway and ( quotient & 1U ) != 0U ) ) {
-								++quotient;
-							}
-							dec.significand = quotient;
 							dec.exponent = -static_cast<int>( Precision );
 						}
 					} else if constexpr( fp_output_format ==
@@ -1917,11 +1925,10 @@ namespace daw::json {
 						} while( whole_dig < 0 );
 						out_it = utils::integer_to_string( out_it, dec.significand );
 						if constexpr( Precision != daw::max_value<unsigned> ) {
-							if( decimal_places != 0 ) {
-								out_it.put( '.' );
-								for( unsigned n = 0; n < decimal_places; ++n ) {
-									out_it.put( '0' );
-								}
+							for( auto n = static_cast<unsigned>( -dec.exponent );
+							     n < decimal_places;
+							     ++n ) {
+								out_it.put( '0' );
 							}
 						}
 						return out_it;

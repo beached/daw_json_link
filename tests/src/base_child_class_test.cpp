@@ -10,6 +10,8 @@
 
 #include <daw/json/daw_json_link.h>
 
+#include <daw/daw_ensure.h>
+
 #include <iostream>
 #include <memory>
 #include <string_view>
@@ -149,15 +151,15 @@ constexpr std::string_view json_doc = R"json(
 
 int main( ) {
 	auto const foo = daw::json::from_json<std::vector<Foo>>( json_doc );
-	ensure( foo[0].value->type( ) == 0 );
-	ensure( foo[0].value->value( ) == 42 );
-	ensure( foo[1].value->type( ) == 1 );
-	ensure( foo[1].value->value( ) == 66 );
-	ensure( foo[2].value->type( ) == 0 );
-	ensure( foo[2].value->value( ) == 77 );
+	daw_ensure( foo[0].value->type( ) == 0 );
+	daw_ensure( foo[0].value->value( ) == 42 );
+	daw_ensure( foo[1].value->type( ) == 1 );
+	daw_ensure( foo[1].value->value( ) == 66 );
+	daw_ensure( foo[2].value->type( ) == 0 );
+	daw_ensure( foo[2].value->value( ) == 77 );
 
 	auto str = daw::json::to_json( foo );
 	std::cout << str << '\n';
 	auto const foo2 = daw::json::from_json<std::vector<Foo>>( str );
-	ensure( foo == foo2 );
+	daw_ensure( foo == foo2 );
 }

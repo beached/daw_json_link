@@ -10,6 +10,8 @@
 
 #include <daw/json/daw_json_link.h>
 
+#include <daw/daw_ensure.h>
+
 #include <iostream>
 #include <optional>
 #include <tuple>
@@ -98,7 +100,7 @@ int main( ) {
 		  json_doc1, opt::parse_flags<opt::UseExactMappingsByDefault::yes> );
 		(void)f;
 	} catch( daw::json::json_exception const & ) { error1_found = true; }
-	ensure( error1_found );
+	daw_ensure( error1_found );
 
 	bool error2_found = false;
 	try {
@@ -106,12 +108,12 @@ int main( ) {
 		auto f = daw::json::from_json<Foo2>( json_doc2 );
 		(void)f;
 	} catch( daw::json::json_exception const & ) { error2_found = true; }
-	ensure( not error2_found );
+	daw_ensure( not error2_found );
 
 	try {
 		// Per class error, only exact for Foo2, not child objects are errors
 		auto f = daw::json::from_json<Foo2>( json_doc3 );
 		(void)f;
 	} catch( daw::json::json_exception const & ) { error2_found = true; }
-	ensure( error2_found );
+	daw_ensure( error2_found );
 }

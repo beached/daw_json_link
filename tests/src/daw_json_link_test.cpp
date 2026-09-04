@@ -16,6 +16,7 @@
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_vector.h>
+#include <daw/daw_ensure.h>
 #include <daw/daw_span.h>
 
 #include <array>
@@ -400,10 +401,10 @@ static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
 
 struct DeducedEmptyClassTest {};
 
-static_assert( std::is_same_v<
-               daw::json::json_details::json_deduced_type<DeducedEmptyClassTest>,
-               daw::json::json_details::json_empty_class<
-                 DeducedEmptyClassTest>> );
+static_assert(
+  std::is_same_v<
+    daw::json::json_details::json_deduced_type<DeducedEmptyClassTest>,
+    daw::json::json_details::json_empty_class<DeducedEmptyClassTest>> );
 
 void test_deduced_empty_class( ) {
 	using daw::json::from_json;
@@ -990,9 +991,8 @@ namespace mapping_parameter_tests {
 	    daw::json::options::AllowEscapeCharacter::NoEscapedDblQuote )>;
 	static_assert( raw_string::eight_bit_mode ==
 	               daw::json::options::EightBitModes::AllowFull );
-	static_assert(
-	  raw_string::allow_escape_character ==
-	  daw::json::options::AllowEscapeCharacter::NoEscapedDblQuote );
+	static_assert( raw_string::allow_escape_character ==
+	               daw::json::options::AllowEscapeCharacter::NoEscapedDblQuote );
 
 	using custom_any = daw::json::json_custom_no_name<
 	  std::string, copy_json_text, emit_json_text,
@@ -1001,12 +1001,14 @@ namespace mapping_parameter_tests {
 	static_assert( custom_any::custom_json_type ==
 	               daw::json::options::JsonCustomTypes::Any );
 
-	using tuple_elements = daw::json::json_tuple_member_list<
-	  daw::json::json_number_no_name<int>, daw::json::json_bool_no_name<bool>>;
+	using tuple_elements =
+	  daw::json::json_tuple_member_list<daw::json::json_number_no_name<int>,
+	                                    daw::json::json_bool_no_name<bool>>;
 	using tuple =
 	  daw::json::json_tuple_no_name<std::tuple<int, bool>, tuple_elements>;
-	using nullable_tuple = daw::json::json_tuple_null_no_name<
-	  std::optional<std::tuple<int, bool>>, tuple_elements>;
+	using nullable_tuple =
+	  daw::json::json_tuple_null_no_name<std::optional<std::tuple<int, bool>>,
+	                                     tuple_elements>;
 	static_assert( std::is_same_v<daw::json::json_details::json_result_t<tuple>,
 	                              std::tuple<int, bool>> );
 	static_assert(
@@ -1044,7 +1046,7 @@ int main( ) {
 		test_parse_real_hard_rounding_cases<true>( );
 
 		auto foo2_val = daw::json::from_json<Foo2>( foo2_json );
-		ensure( foo2_val.m1 );
+		daw_ensure( foo2_val.m1 );
 		auto const foo2_str = daw::json::to_json( foo2_val );
 		(void)foo2_str;
 		using namespace std::string_literals;
@@ -1533,34 +1535,34 @@ int main( ) {
 		          << '\n';
 
 		auto byte_vec = to_json( 5.5, std::vector<std::byte>{ } );
-		ensure( byte_vec.size( ) == 3 );
-		ensure( static_cast<char>( byte_vec[0] ) == '5' );
-		ensure( static_cast<char>( byte_vec[1] ) == '.' );
-		ensure( static_cast<char>( byte_vec[2] ) == '5' );
+		daw_ensure( byte_vec.size( ) == 3 );
+		daw_ensure( static_cast<char>( byte_vec[0] ) == '5' );
+		daw_ensure( static_cast<char>( byte_vec[1] ) == '.' );
+		daw_ensure( static_cast<char>( byte_vec[2] ) == '5' );
 		(void)byte_vec;
 
 		{
 			daw::string_view jd_opt_jv1 = R"json({"name":5,"name2":{"foo":6}})json";
 			auto jv = daw::json::json_value( jd_opt_jv1 );
 			auto opt_int0 = as<std::optional<int>>( jv["name"] );
-			ensure( opt_int0 );
-			ensure( *opt_int0 == 5 );
+			daw_ensure( opt_int0 );
+			daw_ensure( *opt_int0 == 5 );
 			auto opt_int1 = as<std::optional<int>>( jv["name2.foo"] );
-			ensure( opt_int1 );
-			ensure( *opt_int1 == 6 );
+			daw_ensure( opt_int1 );
+			daw_ensure( *opt_int1 == 6 );
 			auto opt_int2 = as<std::optional<int>>( jv["name2.bar"] );
-			ensure( not opt_int2 );
+			daw_ensure( not opt_int2 );
 			auto opt_int3 =
 			  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name" );
-			ensure( opt_int3 );
-			ensure( *opt_int3 == 5 );
+			daw_ensure( opt_int3 );
+			daw_ensure( *opt_int3 == 5 );
 			auto opt_int4 =
 			  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.foo" );
-			ensure( opt_int4 );
-			ensure( *opt_int4 == 6 );
+			daw_ensure( opt_int4 );
+			daw_ensure( *opt_int4 == 6 );
 			auto opt_int5 =
 			  daw::json::from_json<std::optional<int>>( jd_opt_jv1, "name2.bar" );
-			ensure( not opt_int5 );
+			daw_ensure( not opt_int5 );
 		}
 
 		using strsigned_t =
@@ -1569,7 +1571,7 @@ int main( ) {
 		                        options::LiteralAsStringOpt::Always )>;
 
 		std::string negnumber_str = to_json<strsigned_t>( -1234567890LL );
-		ensure( negnumber_str == R"("-1234567890")" );
+		daw_ensure( negnumber_str == R"("-1234567890")" );
 
 		constexpr std::string_view ts = "\"2016-12-31T01:02:03.343Z\"";
 		using tp_t = std::chrono::time_point<std::chrono::system_clock,
@@ -1590,83 +1592,89 @@ int main( ) {
 		auto const parsed_dte_str =
 		  daw::json::to_json<daw::json::json_date_no_name<tp_t>>( parsed_dte );
 		std::cout << "round trip of " << ts << " became " << parsed_dte_str << '\n';
-		ensure( ts == parsed_dte_str );
+		daw_ensure( ts == parsed_dte_str );
 		auto const parsed_dte2_str =
 		  daw::json::to_json<daw::json::json_date_no_name<tp_t>>( parsed_dte2 );
 		std::cout << "round trip of " << ts2 << " became " << parsed_dte2_str
 		          << '\n';
-		ensure( ts2 == parsed_dte2_str );
+		daw_ensure( ts2 == parsed_dte2_str );
 #if DAW_HAS_CLANG_VER_GTE( 9, 0 )
 		static_assert( daw::json::datetime::short_day_of_week(
 		                 std::chrono::time_point<std::chrono::system_clock,
 		                                         std::chrono::milliseconds>( ) ) ==
 		               "Thu" );
 #else
-	ensure( daw::json::datetime::short_day_of_week(
-	          std::chrono::time_point<std::chrono::system_clock,
-	                                  std::chrono::milliseconds>( ) ) == "Thu" );
+	daw_ensure( daw::json::datetime::short_day_of_week(
+	              std::chrono::time_point<std::chrono::system_clock,
+	                                      std::chrono::milliseconds>( ) ) ==
+	            "Thu" );
 #endif
 		constexpr auto dbl_007 = -1.7e100;
 		std::cout << "Large negative double " << dbl_007 << '\n';
 		auto dbl_007_str = to_json<json_base::json_number<
 		  double,
 		  options::number_opt( options::FPOutputFormat::Minimum )>>( dbl_007 );
-		ensure( dbl_007_str ==
-		        "-17000000000000000000000000000000000000000000000000000000000000000"
-		        "000000000000000000000000000000000000" );
+		daw_ensure(
+		  dbl_007_str ==
+		  "-17000000000000000000000000000000000000000000000000000000000000000"
+		  "000000000000000000000000000000000000" );
 		std::cout << dbl_007_str << '\n';
 		auto dbl_007_str1 = to_json<json_base::json_number<
 		  double,
 		  options::number_opt( options::FPOutputFormat::Scientific )>>( dbl_007 );
 		std::cout << dbl_007_str1 << '\n';
-		ensure( dbl_007_str1 == "-1.7e100" );
+		daw_ensure( dbl_007_str1 == "-1.7e100" );
 
 		auto dbl_007_str2 = to_json<json_base::json_number<
 		  double,
 		  options::number_opt( options::FPOutputFormat::Auto )>>( dbl_007 );
-		ensure( dbl_007_str2 == "-1.7e100" );
+		daw_ensure( dbl_007_str2 == "-1.7e100" );
 		std::cout << dbl_007_str2 << '\n';
 
 		// Floating-point formatting follows the usual f/e/g precision rules:
 		// Decimal precision is fractional digits; Scientific precision is digits
-		// after the decimal point; Auto and Minimum precision is significant digits.
-		using fp_decimal_2 = json_fp_no_name<
-		  double, options::FPOutputFormat::Decimal, 2>;
-		using fp_decimal_0 = json_fp_no_name<
-		  double, options::FPOutputFormat::Decimal, 0>;
-		using fp_scientific_3 = json_fp_no_name<
-		  double, options::FPOutputFormat::Scientific, 3>;
-		using fp_scientific_0 = json_fp_no_name<
-		  double, options::FPOutputFormat::Scientific, 0>;
-		using fp_scientific_1 = json_fp_no_name<
-		  double, options::FPOutputFormat::Scientific, 1>;
-		using fp_auto_3 = json_fp_no_name<
-		  double, options::FPOutputFormat::Auto, 3>;
-		using fp_minimum_3 = json_fp_no_name<
-		  double, options::FPOutputFormat::Minimum, 3>;
+		// after the decimal point; Auto and Minimum precision is significant
+		// digits.
+		using fp_decimal_2 =
+		  json_fp_no_name<double, options::FPOutputFormat::Decimal, 2>;
+		using fp_decimal_0 =
+		  json_fp_no_name<double, options::FPOutputFormat::Decimal, 0>;
+		using fp_scientific_3 =
+		  json_fp_no_name<double, options::FPOutputFormat::Scientific, 3>;
+		using fp_scientific_0 =
+		  json_fp_no_name<double, options::FPOutputFormat::Scientific, 0>;
+		using fp_scientific_1 =
+		  json_fp_no_name<double, options::FPOutputFormat::Scientific, 1>;
+		using fp_auto_3 = json_fp_no_name<double, options::FPOutputFormat::Auto, 3>;
+		using fp_minimum_3 =
+		  json_fp_no_name<double, options::FPOutputFormat::Minimum, 3>;
 
-		ensure( to_json<fp_decimal_2>( 123.456 ) == "123.46" );
-		ensure( to_json<fp_decimal_2>( 1.2 ) == "1.20" );
-		ensure( to_json<fp_decimal_0>( 123.5 ) == "124" );
-		ensure( to_json<fp_decimal_2>( 0.0 ) == "0.00" );
-		ensure( to_json<fp_scientific_3>( 123.456 ) == "1.235e2" );
-		ensure( to_json<fp_scientific_0>( 123.456 ) == "1e2" );
-		ensure( to_json<fp_scientific_3>( 1.2 ) == "1.200e0" );
-		ensure( to_json<fp_scientific_1>( 9.99 ) == "1.0e1" );
-		ensure( to_json<fp_auto_3>( 123.456 ) == "123" );
-		ensure( to_json<fp_auto_3>( 0.00123456 ) == "0.00123" );
-		ensure( to_json<fp_minimum_3>( 1.23456 ) == "1.23" );
+		daw_ensure( to_json<fp_decimal_2>( 123.456 ) == "123.46" );
+		daw_ensure( to_json<fp_decimal_2>( 1.2 ) == "1.20" );
+		daw_ensure( to_json<fp_decimal_0>( 123.5 ) == "124" );
+		daw_ensure( to_json<fp_decimal_2>( 0.0 ) == "0.00" );
+		daw_ensure( to_json<fp_decimal_2>(
+		              std::numeric_limits<double>::denorm_min( ) ) == "0.00" );
+		daw_ensure( to_json<fp_decimal_2>( 0.005 ) == "0.00" );
+		daw_ensure( to_json<fp_decimal_2>( 0.015 ) == "0.02" );
+		daw_ensure( to_json<fp_scientific_3>( 123.456 ) == "1.235e2" );
+		daw_ensure( to_json<fp_scientific_0>( 123.456 ) == "1e2" );
+		daw_ensure( to_json<fp_scientific_3>( 1.2 ) == "1.200e0" );
+		daw_ensure( to_json<fp_scientific_1>( 9.99 ) == "1.0e1" );
+		daw_ensure( to_json<fp_auto_3>( 123.456 ) == "123" );
+		daw_ensure( to_json<fp_auto_3>( 0.00123456 ) == "0.00123" );
+		daw_ensure( to_json<fp_minimum_3>( 1.23456 ) == "1.23" );
 
 		auto tp_nn01 =
 		  from_json<json_tuple_null_no_name<std::tuple<int, int>>>( "[1,2]" );
 		static_assert( daw::traits::is_tuple_v<decltype( tp_nn01 )> );
 		static_assert( std::tuple_size_v<decltype( tp_nn01 )> == 2 );
-		ensure( std::get<0>( tp_nn01 ) == 1 );
-		ensure( std::get<1>( tp_nn01 ) == 2 );
+		daw_ensure( std::get<0>( tp_nn01 ) == 1 );
+		daw_ensure( std::get<1>( tp_nn01 ) == 2 );
 
 		constexpr auto chkint =
 		  from_json<json_checked_number_no_name<signed char>>( "42" );
-		ensure( chkint == 42 );
+		daw_ensure( chkint == 42 );
 
 		try {
 			auto chkint_err =
@@ -1676,7 +1684,7 @@ int main( ) {
 			  true,
 			  "Failed to narrow check number that cannot fit into signed char" );
 		} catch( json_exception const &jex ) {
-			ensure( jex.reason_type( ) == ErrorReason::NumberOutOfRange );
+			daw_ensure( jex.reason_type( ) == ErrorReason::NumberOutOfRange );
 		} catch( ... ) {
 			daw_ensure_error( true, "Unexpected error when doing narrow check" );
 		}
@@ -1699,19 +1707,19 @@ int main( ) {
 		struct Unmapped0 {};
 		constexpr auto um0 = daw::json::from_json<Unmapped0>( "{}" );
 		auto um0_str = daw::json::to_json( um0 );
-		ensure( um0_str == "{}" );
+		daw_ensure( um0_str == "{}" );
 
 		constexpr auto um1 =
 		  daw::json::from_json<Unmapped1>( R"json({"x":5})json" );
-		ensure( um1.x == 5 );
+		daw_ensure( um1.x == 5 );
 		auto um1_str = daw::json::to_json( um1 );
-		ensure( um1_str == R"json({"x":5})json" );
+		daw_ensure( um1_str == R"json({"x":5})json" );
 
 		constexpr auto um9 = daw::json::from_json<Unmapped9>(
 		  R"json({"a0":0,"a1":1,"a2":2,"a3":3,"a4":4,"a5":5,"a6":6,"a7":7,"a8":8,})json" );
 
 		auto um9_str = daw::json::to_json( um9 );
-		ensure(
+		daw_ensure(
 		  um9_str ==
 		  R"json({"a0":0,"a1":1,"a2":2,"a3":3,"a4":4,"a5":5,"a6":6,"a7":7,"a8":8})json" );
 #endif
@@ -1719,7 +1727,7 @@ int main( ) {
 		std::cout << "done\n\n";
 
 		{
-			// refs in params are to ensure they don't get in the way of parsing
+			// refs in params are to daw_ensure they don't get in the way of parsing
 			DAW_CONSTEXPR auto const x = daw::json::json_apply(
 			  R"json(["Hello",52,true])json",
 			  []( std::string_view s, std::size_t &&i, bool b ) {
@@ -1728,34 +1736,34 @@ int main( ) {
 				  }
 				  return i * 2;
 			  } );
-			ensure( x == 5 );
+			daw_ensure( x == 5 );
 		}
 		{
-			constexpr auto const x =
+			constexpr auto x =
 			  daw::json::json_apply( R"json(["Hello",52,true])json", []( ) {
 				  return std::size_t{ 5 };
 			  } );
-			ensure( x == 5 );
+			daw_ensure( x == 5 );
 		}
 		{
 			constexpr auto const x = daw::json::json_apply( R"json([])json", []( ) {
 				return std::size_t{ 5 };
 			} );
-			ensure( x == 5 );
+			daw_ensure( x == 5 );
 		}
 		{
 			DAW_CONSTEXPR auto const x =
 			  daw::json::json_apply( R"json({"x":10})json", []( NumberX nx ) {
 				  return nx.x;
 			  } );
-			ensure( x == 10 );
+			daw_ensure( x == 10 );
 		}
 		{
 			DAW_CONSTEXPR auto jv = json_value( R"json({"x":10})json" );
 			DAW_CONSTEXPR auto x = daw::json::json_apply( jv, []( NumberX nx ) {
 				return nx.x;
 			} );
-			ensure( x == 10 );
+			daw_ensure( x == 10 );
 		}
 		{
 			DAW_CONSTEXPR auto jv = json_value( R"json({"x":10})json" );
@@ -1763,22 +1771,22 @@ int main( ) {
 			  daw::json::json_apply<std::size_t( NumberX )>( jv, []( NumberX nx ) {
 				  return nx.x;
 			  } );
-			ensure( x == 10 );
+			daw_ensure( x == 10 );
 		}
 		{
-			// refs in params are to ensure they don't get in the way of parsing
+			// refs in params are to daw_ensure they don't get in the way of parsing
 			DAW_CONSTEXPR auto const x = daw::json::json_apply(
 			  R"json("Hello")json", []( std::string_view &&s ) {
 				  return s.size( );
 			  } );
-			ensure( x == 5 );
+			daw_ensure( x == 5 );
 		}
 		{
 			DAW_CONSTEXPR auto const x = daw::json::json_apply(
 			  R"json({ "x": "Hello" })json", "x", []( std::string_view s ) {
 				  return s.size( );
 			  } );
-			ensure( x == 5 );
+			daw_ensure( x == 5 );
 		}
 		{
 			using namespace daw::json::options;
@@ -1789,7 +1797,7 @@ int main( ) {
 			                         []( std::string_view s ) {
 				                         return s.size( );
 			                         } );
-			ensure( x == 5 );
+			daw_ensure( x == 5 );
 		}
 		{
 			struct DoubleTest {
@@ -1851,53 +1859,61 @@ int main( ) {
 			static constexpr auto most_min = LLONG_MIN;
 			auto most_min_json = to_json( most_min );
 			auto const min_str = std::to_string( most_min );
-			ensure( most_min_json == min_str );
+			daw_ensure( most_min_json == min_str );
 			auto const most_min_parsed = from_json<long long>( most_min_json );
-			ensure( most_min == most_min_parsed );
+			daw_ensure( most_min == most_min_parsed );
 		}
 #endif
 		{
 			using namespace daw::json;
-			using maybe_number = json_number_no_name<
-			  int, options::number_opt( options::LiteralAsStringOpt::Maybe )>;
-			using always_number = json_number_no_name<
-			  int, options::number_opt( options::LiteralAsStringOpt::Always )>;
+			using maybe_number =
+			  json_number_no_name<int,
+			                      options::number_opt(
+			                        options::LiteralAsStringOpt::Maybe )>;
+			using always_number =
+			  json_number_no_name<int,
+			                      options::number_opt(
+			                        options::LiteralAsStringOpt::Always )>;
 			daw_ensure( from_json<maybe_number>( "42" ) == 42 );
 			daw_ensure( from_json<maybe_number>( R"("42")" ) == 42 );
 			daw_ensure( from_json<always_number>( R"("42")" ) == 42 );
 			daw_ensure( to_json<always_number>( 42 ) == R"("42")" );
-			daw_ensure(
-			  from_json<mapping_parameter_tests::number>( R"("41")" ) == 42 );
+			daw_ensure( from_json<mapping_parameter_tests::number>( R"("41")" ) ==
+			            42 );
 		}
 		{
 			using namespace daw::json;
-			using maybe_bool = json_bool_no_name<
-			  bool, options::bool_opt( options::LiteralAsStringOpt::Maybe )>;
+			using maybe_bool =
+			  json_bool_no_name<bool,
+			                    options::bool_opt(
+			                      options::LiteralAsStringOpt::Maybe )>;
 			daw_ensure( from_json<maybe_bool>( "true" ) );
 			daw_ensure( from_json<maybe_bool>( R"("true")" ) );
 			daw_ensure( to_json<maybe_bool>( true ) == "true" );
-			daw_ensure(
-			  from_json<mapping_parameter_tests::boolean>( R"("true")" ) == 1 );
+			daw_ensure( from_json<mapping_parameter_tests::boolean>( R"("true")" ) ==
+			            1 );
 			daw_ensure( to_json<json_bool_no_name<
-			              bool, options::bool_opt(
-			                      options::LiteralAsStringOpt::Always )>>( true ) ==
-			            R"("true")" );
+			              bool,
+			              options::bool_opt( options::LiteralAsStringOpt::Always )>>(
+			              true ) == R"("true")" );
 		}
 		{
 			using namespace daw::json;
-			daw_ensure( from_json<mapping_parameter_tests::string>(
-			              R"("four")" ) == "four" );
+			daw_ensure( from_json<mapping_parameter_tests::string>( R"("four")" ) ==
+			            "four" );
 			daw_ensure( from_json<mapping_parameter_tests::raw_string>(
 			              R"("raw text")" ) == "raw text" );
 		}
 		{
 			using namespace daw::json;
-			using custom_string = json_custom_no_name<
-			  std::string, mapping_parameter_tests::copy_json_text,
-			  mapping_parameter_tests::emit_json_text>;
-			using custom_literal = json_custom_lit_no_name<
-			  std::string, mapping_parameter_tests::copy_json_text,
-			  mapping_parameter_tests::emit_json_text>;
+			using custom_string =
+			  json_custom_no_name<std::string,
+			                      mapping_parameter_tests::copy_json_text,
+			                      mapping_parameter_tests::emit_json_text>;
+			using custom_literal =
+			  json_custom_lit_no_name<std::string,
+			                          mapping_parameter_tests::copy_json_text,
+			                          mapping_parameter_tests::emit_json_text>;
 			daw_ensure( from_json<custom_string>( R"("text")" ) == "text" );
 			daw_ensure( to_json<custom_string>( std::string( "text" ) ) ==
 			            R"("text")" );
@@ -1912,8 +1928,7 @@ int main( ) {
 			daw_ensure( to_json<mapping_parameter_tests::custom_any>(
 			              std::string( R"("text")" ) ) == R"("text")" );
 			daw_ensure( to_json<mapping_parameter_tests::custom_any>(
-			              std::string( R"({"value":42})" ) ) ==
-			            R"({"value":42})" );
+			              std::string( R"({"value":42})" ) ) == R"({"value":42})" );
 		}
 		{
 			using namespace daw::json;
@@ -2008,9 +2023,8 @@ int main( ) {
 			}
 #endif
 			std::string_view const quoted_high_bit_text = "\"\xC3\xA9\"";
-			daw_ensure(
-			  daw::json::from_json<restricted_raw_string>( quoted_high_bit_text ) ==
-			  high_bit_text );
+			daw_ensure( daw::json::from_json<restricted_raw_string>(
+			              quoted_high_bit_text ) == high_bit_text );
 		}
 		{
 			auto const opt_int_str = daw::json::to_json( OptInt{ } );
