@@ -12,6 +12,7 @@ This folder contains examples of various JSON constructs and how to create a C++
 * [Enums](enums.md)
 * [Graphs](graphs.md)
 * [Inserting and Extracting Raw JSON](inserting_extracting_raw_json.md)
+* [`json_apply`](json_apply.md) - Parse JSON values directly into a callable's parameters
 * [JSON Lines/NDJSON](json_lines.md)
 * [JSON Schema Output](json_schema.md)
 * [Incremental JSON Writer](json_writer.md)
