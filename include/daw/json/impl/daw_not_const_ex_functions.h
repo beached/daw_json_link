@@ -426,9 +426,10 @@ namespace daw::json {
 			}
 
 			template<bool is_unchecked_input, typename ExecTag>
-			DAW_ATTRIB_INLINE daw::not_null<char const *>
-			mem_skip_until_end_of_string( daw::not_null<char const *> first,
-			                              daw::not_null<char const *> const last ) {
+			DAW_ATTRIB_INLINE
+			  daw::not_null<char const *> constexpr mem_skip_until_end_of_string(
+			    daw::not_null<char const *> first,
+			    daw::not_null<char const *> const last ) {
 				if( use_constexpr_exec_mode<ExecTag>( ) ) {
 					return mem_skip_until_end_of_string_constexpr<is_unchecked_input>(
 					  first, last );

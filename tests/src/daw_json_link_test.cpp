@@ -1731,7 +1731,7 @@ int main( ) {
 			ensure( x == 5 );
 		}
 		{
-			constexpr auto const x =
+			constexpr auto x =
 			  daw::json::json_apply( R"json(["Hello",52,true])json", []( ) {
 				  return std::size_t{ 5 };
 			  } );
