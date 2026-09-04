@@ -1745,6 +1745,10 @@ namespace daw::json {
 				auto const original_digits =
 				  daw::jkj::dragonbox::to_chars_detail::decimal_length(
 				    dec.significand );
+				static_assert(
+				  daw::max_digits10<Real> < daw::digits10<std::uintmax_t>,
+				  "The integer pow10 table must cover every Dragonbox significand "
+				  "digit" );
 				unsigned decimal_places = 0;
 				unsigned scientific_places = 0;
 				// Round a decimal significand to a requested number of significant
@@ -1759,10 +1763,8 @@ namespace daw::json {
 					}
 					auto const remove = original_digits - digits;
 					using carrier_t = decltype( dec.significand );
-					carrier_t divisor = 1;
-					for( std::uint32_t n = 0; n < remove; ++n ) {
-						divisor *= 10;
-					}
+					auto const divisor =
+					  static_cast<carrier_t>( daw::cxmath::pow10( remove ) );
 					auto quotient = dec.significand / divisor;
 					auto const remainder = dec.significand % divisor;
 					auto const halfway = divisor / 2;
@@ -1799,10 +1801,8 @@ namespace daw::json {
 								// constructing a power of ten that cannot fit in carrier_t.
 								dec.significand = 0;
 							} else {
-								carrier_t divisor = 1;
-								for( unsigned n = 0; n < remove; ++n ) {
-									divisor *= 10;
-								}
+								auto const divisor =
+								  static_cast<carrier_t>( daw::cxmath::pow10( remove ) );
 								auto quotient = dec.significand / divisor;
 								auto const remainder = dec.significand % divisor;
 								auto const halfway = divisor / 2;
