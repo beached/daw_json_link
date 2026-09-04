@@ -6,13 +6,15 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/daw_json_link.h>
 
-#include "defines.h"
+#include <daw/daw_ensure.h>
 
 int main( ) {
 	using namespace daw::json;
 	auto const json = json_value{ R"({"example.com":"justanormalstring"})" };
 	auto const parsed_value = as<std::string>( json["example\\.com"] );
-	ensure( parsed_value == "justanormalstring" );
+	daw_ensure( parsed_value == "justanormalstring" );
 }

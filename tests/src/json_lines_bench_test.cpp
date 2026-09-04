@@ -18,6 +18,8 @@
 #include <daw/json/daw_json_lines_iterator.h>
 #include <daw/json/daw_json_link.h>
 
+#include <daw/daw_ensure.h>
+
 #include <cstdlib>
 #include <future>
 #include <iostream>
@@ -72,7 +74,7 @@ int main( int argc, char **argv ) {
 		  return count;
 	  },
 	  jsonl_doc );
-	ensure( real_count.has_value( ) );
+	daw_ensure( real_count.has_value( ) );
 
 	auto untyped_uncheck_count = daw::json::benchmark::benchmark(
 	  DAW_NUM_RUNS,
@@ -93,8 +95,8 @@ int main( int argc, char **argv ) {
 		  return count;
 	  },
 	  jsonl_doc );
-	ensure( untyped_uncheck_count.has_value( ) );
-	ensure( untyped_uncheck_count.get( ) == real_count.get( ) );
+	daw_ensure( untyped_uncheck_count.has_value( ) );
+	daw_ensure( untyped_uncheck_count.get( ) == real_count.get( ) );
 
 	auto typed_check_count = daw::json::benchmark::benchmark(
 	  DAW_NUM_RUNS,
@@ -112,8 +114,8 @@ int main( int argc, char **argv ) {
 		  return count;
 	  },
 	  jsonl_doc );
-	ensure( typed_check_count.has_value( ) );
-	ensure( typed_check_count.get( ) == real_count.get( ) );
+	daw_ensure( typed_check_count.has_value( ) );
+	daw_ensure( typed_check_count.get( ) == real_count.get( ) );
 
 	auto typed_uncheck_count = daw::json::benchmark::benchmark(
 	  DAW_NUM_RUNS,
@@ -134,8 +136,8 @@ int main( int argc, char **argv ) {
 		  return count;
 	  },
 	  jsonl_doc );
-	ensure( typed_uncheck_count.has_value( ) );
-	ensure( typed_uncheck_count.get( ) == real_count.get( ) );
+	daw_ensure( typed_uncheck_count.has_value( ) );
+	daw_ensure( typed_uncheck_count.get( ) == real_count.get( ) );
 
 	auto const chkpartitions = daw::json::partition_jsonl_document<jsonl_entry>(
 	  std::thread::hardware_concurrency( ), jsonl_doc );
@@ -168,8 +170,8 @@ int main( int argc, char **argv ) {
 		  return count;
 	  },
 	  chkpartitions );
-	ensure( typed_checked_threaded_count.has_value( ) );
-	ensure( typed_checked_threaded_count.get( ) == real_count.get( ) );
+	daw_ensure( typed_checked_threaded_count.has_value( ) );
+	daw_ensure( typed_checked_threaded_count.get( ) == real_count.get( ) );
 
 	auto const unchkpartitions = daw::json::partition_jsonl_document<
 	  jsonl_entry,
@@ -204,6 +206,6 @@ int main( int argc, char **argv ) {
 		  return count;
 	  },
 	  unchkpartitions );
-	ensure( typed_unchecked_threaded_count.has_value( ) );
-	ensure( typed_unchecked_threaded_count.get( ) == real_count.get( ) );
+	daw_ensure( typed_unchecked_threaded_count.has_value( ) );
+	daw_ensure( typed_unchecked_threaded_count.get( ) == real_count.get( ) );
 }

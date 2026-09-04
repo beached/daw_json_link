@@ -10,6 +10,8 @@
 
 #include <daw/json/daw_json_link.h>
 
+#include <daw/daw_ensure.h>
+
 #include <cassert>
 #include <string>
 #include <utility>
@@ -61,19 +63,19 @@ namespace daw::json {
 int main( ) {
 	{
 		auto i = daw::json::from_json<Variant>( "5" );
-		ensure( i.value.index( ) == 0 );
+		daw_ensure( i.value.index( ) == 0 );
 	}
 	{
 		auto b0 = daw::json::from_json<Variant>( "false" );
-		ensure( b0.value.index( ) == 1 );
+		daw_ensure( b0.value.index( ) == 1 );
 	}
 	{
 		auto b1 = daw::json::from_json<Variant>( "true" );
-		ensure( b1.value.index( ) == 1 );
+		daw_ensure( b1.value.index( ) == 1 );
 	}
 	{
 		constexpr std::string_view json_doc = "[1, true, false, [1, false, []]]";
 		auto ary = daw::json::from_json<Variant>( json_doc );
-		ensure( ary.value.index( ) == 2 );
+		daw_ensure( ary.value.index( ) == 2 );
 	}
 }

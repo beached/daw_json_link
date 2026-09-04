@@ -10,6 +10,8 @@
 
 #include <daw/json/daw_json_link.h>
 
+#include <daw/daw_ensure.h>
+
 #include <algorithm>
 #include <string>
 #include <variant>
@@ -76,26 +78,26 @@ int main( ) {
 
 	{
 		auto kx = from_json<my::Var2>( R"(67)" );
-		ensure( std::get<int>( kx ) == 67 );
+		daw_ensure( std::get<int>( kx ) == 67 );
 	}
 	{
 		auto kx = from_json<my::Var2>( R"(67.8)" );
-		ensure( std::get<float>( kx ) == 67.8F );
+		daw_ensure( std::get<float>( kx ) == 67.8F );
 	}
 	{
 		auto kx = from_json<my::Var2>( R"("test")" );
-		ensure( std::get<std::string>( kx ) == "test" );
+		daw_ensure( std::get<std::string>( kx ) == "test" );
 	}
 	{
 		auto kx = from_json<my::Var2>( R"([1,2,3])" );
-		ensure(
+		daw_ensure(
 		  ( std::get<std::vector<int>>( kx ) == std::vector<int>{ 1, 2, 3 } ) );
 	}
 	{
 		auto kx = from_json<my::Var2>( R"({"a":3})" );
-		ensure( std::holds_alternative<my::EmptyType>( kx ) );
+		daw_ensure( std::holds_alternative<my::EmptyType>( kx ) );
 	}
 	my::Var2 v = 1;
 	auto x = to_json( v );
-	ensure( x == "1" );
+	daw_ensure( x == "1" );
 }

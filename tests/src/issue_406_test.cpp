@@ -10,6 +10,8 @@
 
 #include <daw/json/daw_json_link.h>
 
+#include <daw/daw_ensure.h>
+
 #include <variant>
 
 namespace daw::json {
@@ -29,17 +31,17 @@ int main( ) {
 	using type = daw::json::json_variant_null_no_name<
 	  std::variant<std::monostate, double, std::string_view>>;
 	auto a = daw::json::from_json<type>( R"("hello")" );
-	ensure( a.index( ) == 2 );
+	daw_ensure( a.index( ) == 2 );
 	auto a_str = daw::json::to_json<type>( a );
-	ensure( a_str == R"("hello")" );
+	daw_ensure( a_str == R"("hello")" );
 	using type2 = daw::json::json_variant_null_no_name<
 	  std::variant<SomeEmpty, double, std::string_view>>;
 	auto a2 = daw::json::from_json<type2>( R"("hello")" );
-	ensure( a2.index( ) == 2 );
+	daw_ensure( a2.index( ) == 2 );
 	auto a2_str = daw::json::to_json<type2>( a2 );
-	ensure( a2_str == R"("hello")" );
+	daw_ensure( a2_str == R"("hello")" );
 	auto b2 = daw::json::from_json<type2>( "null" );
-	ensure( b2.index( ) == 0 );
+	daw_ensure( b2.index( ) == 0 );
 	auto b2_str = daw::json::to_json<type2>( b2 );
 	(void)b2_str;
 }

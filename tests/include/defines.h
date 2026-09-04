@@ -63,16 +63,10 @@ daw_ensure_error( bool, StringView &&msg ) {
 }
 #endif
 
-#define ensure( Bool )                                             \
-	if( DAW_UNLIKELY( not( Bool ) ) ) {                              \
-		daw_ensure_error( !!( Bool ), "Error in assertion: " #Bool ); \
-	}                                                                \
-	while( false )
-
 #define test_assert( Bool, Msg )          \
 	if( DAW_UNLIKELY( not( Bool ) ) ) {     \
 		DAW_UNLIKELY_BRANCH                   \
-		daw_ensure_error( !!( Bool ), Msg ); \
+		::daw_ensure_error( !!( Bool ), Msg ); \
 	}                                       \
 	while( false )
 
