@@ -55,7 +55,7 @@ namespace daw::json {
 		 * Iterator for iterating over JSON array's
 		 * @tparam JsonElement type under underlying element in array. If
 		 * heterogeneous, a basic_json_value_iterator may be more appropriate
-		 * @tparam ParsePolicy Parsing policy type
+		 * @tparam ParseState Parsing policy type
 		 */
 		template<typename JsonElement, typename ParseState, typename = void>
 		class json_array_iterator_t {
@@ -231,7 +231,6 @@ namespace daw::json {
 		/// op++ be called in that sequence one time until end is reached
 		/// @tparam JsonElement type under underlying element in array.If
 		/// *heterogeneous, a basic_json_value_iterator may be more appropriate
-		/// @tparam ParsePolicy Parsing policy type
 		template<typename JsonElement, auto... PolicyFlags>
 		class json_array_iterator_once {
 			using ParseState = TryDefaultParsePolicy<BasicParsePolicy<
@@ -365,7 +364,6 @@ namespace daw::json {
 
 		/// @brief A range of json_array_iterators
 		/// @tparam JsonElement Type of each element in array
-		/// @tparam ParsePolicy parsing policy type
 		template<typename JsonElement, auto... PolicyFlags>
 		struct json_array_range {
 			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
@@ -406,7 +404,6 @@ namespace daw::json {
 		/// @brief A range of json_array_iterator_onces.  Requires that op*/op++ be
 		/// called in that sequence one time untl end is reached
 		/// @tparam JsonElement Type of each element in array
-		/// @tparam ParsePolicy parsing policy type
 		template<typename JsonElement, auto... PolicyFlags>
 		struct json_array_range_once {
 			using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
