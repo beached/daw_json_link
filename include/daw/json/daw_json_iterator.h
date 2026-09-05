@@ -63,8 +63,7 @@ namespace daw::json {
 			static constexpr ParseState get_range( daw::string_view data,
 			                                       daw::string_view member_path ) {
 				auto [result, is_found] = json_details::find_range<ParseState>(
-				  DAW_FWD( data ),
-				  { std::data( member_path ), std::size( member_path ) } );
+				  data, { std::data( member_path ), std::size( member_path ) } );
 				daw_json_ensure( is_found, ErrorReason::JSONPathNotFound );
 				daw_json_ensure(
 				  result.front( ) == '[', ErrorReason::InvalidArrayStart, result );
@@ -241,8 +240,7 @@ namespace daw::json {
 			static constexpr ParseState get_range( daw::string_view data,
 			                                       daw::string_view member_path ) {
 				auto [result, is_found] = json_details::find_range<ParseState>(
-				  DAW_FWD( data ),
-				  { std::data( member_path ), std::size( member_path ) } );
+				  data, { std::data( member_path ), std::size( member_path ) } );
 				daw_json_ensure( is_found, ErrorReason::JSONPathNotFound );
 				daw_json_ensure(
 				  result.front( ) == '[', ErrorReason::InvalidArrayStart, result );
