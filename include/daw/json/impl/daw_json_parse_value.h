@@ -333,7 +333,6 @@ namespace daw::json {
 					if( parse_state.front( ) == 'n' ) {
 						parse_state.remove_prefix( 4 );
 						parse_state.trim_left_unchecked( );
-						parse_state.remove_prefix( );
 						return construct_empty( );
 					}
 					return construct_value<base_member_type, constructor_t>(
@@ -532,9 +531,7 @@ namespace daw::json {
 					// There are no escapes in the string, we can just use the ptr/size
 					// ctor
 					return construct_value<json_result_t<JsonMember>, constructor_t>(
-					  parse_state,
-					  std::data( parse_state2 ),
-					  daw::data_end( parse_state2 ) );
+					  parse_state, std::data( parse_state2 ), std::size( parse_state2 ) );
 				}
 			}
 
@@ -589,11 +586,10 @@ namespace daw::json {
 				}( );
 				if constexpr( JsonMember::custom_json_type !=
 				              options::JsonCustomTypes::Any ) {
-					daw_json_assert_weak(
-					  str.has_more( ) and
-					    not( str.front( ) == '[' or str.front( ) == '{' ),
-					  ErrorReason::InvalidStartOfValue,
-					  str );
+					daw_json_assert_weak( str.has_more( ) and not( str.front( ) == '[' or
+					                                               str.front( ) == '{' ),
+					                      ErrorReason::InvalidStartOfValue,
+					                      str );
 				}
 				using constructor_t = typename JsonMember::from_converter_t;
 				return construct_value<json_result_t<JsonMember>, constructor_t>(
@@ -1265,8 +1261,8 @@ namespace daw::json {
 
 				auto const found =
 				  find_range2( submember_state, JsonMember::json_path );
-				daw_json_ensure( found, ErrorReason::JSONPathNotFound,
-				                 submember_state );
+				daw_json_ensure(
+				  found, ErrorReason::JSONPathNotFound, submember_state );
 
 				using member_type = typename JsonMember::member_type;
 				return parse_value<member_type, false, member_type::expected_type>(
@@ -1289,6 +1285,9 @@ namespace daw::json {
 					return parse_value_bool<JsonMember, KnownBounds>( parse_state );
 				} else if constexpr( PTag == JsonParseTypes::StringRaw ) {
 					return parse_value_string_raw<JsonMember, KnownBounds>( parse_state );
+				} else if constexpr( PTag == JsonParseTypes::StringInsitu ) {
+					return parse_value_string_escaped<JsonMember, KnownBounds>(
+					  parse_state );
 				} else if constexpr( PTag == JsonParseTypes::StringEscaped ) {
 					return parse_value_string_escaped<JsonMember, KnownBounds>(
 					  parse_state );

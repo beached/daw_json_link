@@ -8,7 +8,7 @@
 #include "defines.h"
 
 #include "daw_json_benchmark.h"
-#include "twitter_test_json.h"
+#include "twitter_insitu_test_json.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_read_file.h>
@@ -32,7 +32,7 @@ using namespace daw::json::options;
 
 inline namespace {
 	template<ExecModeTypes ExecMode>
-	void test( std::string_view json_data, bool do_asserts )
+	void test( std::string json_data, bool do_asserts )
 #if defined( DAW_USE_EXCEPTIONS )
 	  try
 #endif
@@ -40,15 +40,16 @@ inline namespace {
 		auto const sz = json_data.size( );
 		std::cout << "Using " << to_string( ExecMode )
 		          << " exec model\n*********************************************\n";
-		std::optional<daw::twitter::twitter_object_t> twitter_result;
+		std::optional<daw::twitter_insitu::twitter_object_t> twitter_result;
 		// ******************************
 		(void)daw::json::benchmark::benchmark(
 		  DAW_NUM_RUNS,
 		  sz,
 		  "twitter bench(checked)",
 		  [&twitter_result]( auto f1 ) {
-			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1, parse_flags<ExecMode> );
+			  twitter_result =
+			    daw::json::from_json_insitu<daw::twitter_insitu::twitter_object_t>(
+			      f1, parse_flags<ExecMode> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -66,8 +67,9 @@ inline namespace {
 		  sz,
 		  "twitter bench(unchecked)",
 		  [&twitter_result]( auto f1 ) {
-			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1, parse_flags<CheckedParseMode::no, ExecMode> );
+			  twitter_result =
+			    daw::json::from_json_insitu<daw::twitter_insitu::twitter_object_t>(
+			      f1, parse_flags<CheckedParseMode::no, ExecMode> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -84,8 +86,9 @@ inline namespace {
 		  sz,
 		  "twitter bench(cpp comments)",
 		  [&twitter_result]( auto f1 ) {
-			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1, parse_flags<ExecMode, PolicyCommentTypes::cpp> );
+			  twitter_result =
+			    daw::json::from_json_insitu<daw::twitter_insitu::twitter_object_t>(
+			      f1, parse_flags<ExecMode, PolicyCommentTypes::cpp> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -103,11 +106,12 @@ inline namespace {
 		  sz,
 		  "twitter bench(cpp comments, unchecked)",
 		  [&twitter_result]( auto f1 ) {
-			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1,
-			    parse_flags<ExecMode,
-			                CheckedParseMode::no,
-			                PolicyCommentTypes::cpp> );
+			  twitter_result =
+			    daw::json::from_json_insitu<daw::twitter_insitu::twitter_object_t>(
+			      f1,
+			      parse_flags<ExecMode,
+			                  CheckedParseMode::no,
+			                  PolicyCommentTypes::cpp> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -126,7 +130,8 @@ inline namespace {
 		  "twitter bench(hash comments)",
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result =
-			    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
+			    daw::json::from_json_insitu<daw::twitter_insitu::twitter_object_t>(
+			      f1 );
 			  daw::do_not_optimize( twitter_result,
 			                        parse_flags<ExecMode, PolicyCommentTypes::hash> );
 		  },
@@ -145,11 +150,12 @@ inline namespace {
 		  sz,
 		  "twitter bench(hash comments, unchecked)",
 		  [&twitter_result]( auto f1 ) {
-			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1,
-			    parse_flags<ExecMode,
-			                CheckedParseMode::no,
-			                PolicyCommentTypes::hash> );
+			  twitter_result =
+			    daw::json::from_json_insitu<daw::twitter_insitu::twitter_object_t>(
+			      f1,
+			      parse_flags<ExecMode,
+			                  CheckedParseMode::no,
+			                  PolicyCommentTypes::hash> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -168,8 +174,9 @@ inline namespace {
 		  sz,
 		  "twitter bench(checked, escaped names)",
 		  [&twitter_result]( auto f1 ) {
-			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1, parse_flags<ExecMode, AllowEscapedNames::yes> );
+			  twitter_result =
+			    daw::json::from_json_insitu<daw::twitter_insitu::twitter_object_t>(
+			      f1, parse_flags<ExecMode, AllowEscapedNames::yes> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -187,12 +194,13 @@ inline namespace {
 		  sz,
 		  "twitter bench(unchecked, escaped names)",
 		  [&twitter_result]( auto f1 ) {
-			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
-			    f1,
-			    parse_flags<ExecMode,
-			                CheckedParseMode::no,
-			                PolicyCommentTypes::cpp,
-			                AllowEscapedNames::yes> );
+			  twitter_result =
+			    daw::json::from_json_insitu<daw::twitter_insitu::twitter_object_t>(
+			      f1,
+			      parse_flags<ExecMode,
+			                  CheckedParseMode::no,
+			                  PolicyCommentTypes::cpp,
+			                  AllowEscapedNames::yes> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -236,7 +244,7 @@ int main( int argc, char **argv )
 		}
 		return true;
 	}( );
-	std::string const json_data = [argv] {
+	std::string json_data = [argv] {
 		auto const mmf = daw::read_file( argv[1] ).value( );
 		test_assert( mmf.size( ) > 2, "Minimum json data size is 2 '{}'" );
 		return std::string( mmf.data( ), mmf.size( ) );
@@ -249,8 +257,9 @@ int main( int argc, char **argv )
 
 	// ******************************
 	// Test serialization
-	std::optional<daw::twitter::twitter_object_t> twitter_result =
-	  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
+	std::optional<daw::twitter_insitu::twitter_object_t> twitter_result =
+	  daw::json::from_json_insitu<daw::twitter_insitu::twitter_object_t>(
+	    json_data );
 	std::string str{ };
 	(void)daw::json::benchmark::benchmark(
 	  DAW_NUM_RUNS,
@@ -267,7 +276,7 @@ int main( int argc, char **argv )
 	}
 	daw::do_not_optimize( str );
 	auto const twitter_result2 =
-	  daw::json::from_json<daw::twitter::twitter_object_t>( str );
+	  daw::json::from_json_insitu<daw::twitter_insitu::twitter_object_t>( str );
 	daw::do_not_optimize( twitter_result2 );
 }
 #if defined( DAW_USE_EXCEPTIONS )

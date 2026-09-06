@@ -1482,7 +1482,8 @@ namespace daw::json {
 					return to_json_string_bool<JsonMember>( it, value );
 				} else if constexpr( Tag == JsonParseTypes::StringRaw ) {
 					return to_json_string_string_raw<JsonMember>( it, value );
-				} else if constexpr( Tag == JsonParseTypes::StringEscaped ) {
+				} else if constexpr( Tag == JsonParseTypes::StringEscaped or
+				                     Tag == JsonParseTypes::StringInsitu ) {
 					return to_json_string_string_escaped<JsonMember>( it, value );
 				} else if constexpr( Tag == JsonParseTypes::Date ) {
 					return to_json_string_date<JsonMember>( it, value );

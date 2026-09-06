@@ -86,6 +86,7 @@ build/
 ClientBin/
 cmake-build-*/
 cmake-build/
+build-*/
 test_data/
 CMakeFiles/
 CMakeSettings.json

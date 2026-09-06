@@ -35,7 +35,8 @@ namespace daw::json {
 			trim_left_checked( ParseState &parse_state ) {
 				if constexpr( not ParseState::minified_document ) {
 					// SIMD here was much slower, most JSON has very minimal whitespace
-					auto first = daw::not_null<char const *>( parse_state.first );
+					auto first =
+					  daw::not_null<typename ParseState::iterator>( parse_state.first );
 					auto const last = daw::not_null<char const *>( parse_state.last );
 
 					// only used when not zero terminated string and gcc9 warns
@@ -57,7 +58,7 @@ namespace daw::json {
 							++first;
 						}
 					}
-					parse_state.first = first;
+					parse_state.first = json_details::input_pointer( parse_state.first, first.get( ) );
 				}
 			}
 
@@ -65,28 +66,29 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_unchecked( ParseState &parse_state ) {
 				if constexpr( not ParseState::minified_document ) {
-					auto first =
-					  daw::not_null<char const *>( daw::never_null, parse_state.first );
+					auto first = daw::not_null<typename ParseState::iterator>(
+					  daw::never_null, parse_state.first );
 					while( DAW_UNLIKELY(
 					  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 					    1U ) <= 0x1F ) ) {
 
 						++first;
 					}
-					parse_state.first = first;
+					parse_state.first = json_details::input_pointer( parse_state.first, first.get( ) );
 				}
 			}
 
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_next_member_unchecked( ParseState &parse_state ) {
-				auto pf = daw::not_null( daw::never_null, parse_state.first );
-				auto pl = daw::not_null( daw::never_null, parse_state.last );
-				parse_state.first =
+				auto pf = daw::not_null<char const *>( daw::never_null, parse_state.first );
+				auto pl = daw::not_null<char const *>( daw::never_null, parse_state.last );
+				auto const position =
 				  json_details::memchr_unchecked<'"',
 				                                 typename ParseState::exec_tag_t,
 				                                 ParseState::expect_long_strings>( pf,
 				                                                                   pl );
+				parse_state.first = json_details::input_pointer( parse_state.first, position.get( ) );
 			}
 
 			template<char... keys, typename ParseState>
@@ -99,11 +101,12 @@ namespace daw::json {
 				      typename ParseState::exec_tag_t>( ) ) {
 					auto pf = daw::not_null<char const *>{ parse_state.first };
 					auto pl = daw::not_null<char const *>{ parse_state.last };
-					parse_state.first =
+					auto const position =
 					  json_details::mempbrk<ParseState::is_unchecked_input,
 					                        typename ParseState::exec_tag_t,
 					                        ParseState::expect_long_strings,
 					                        keys...>( pf, pl );
+					parse_state.first = json_details::input_pointer( parse_state.first, position.get( ) );
 				} else {
 					auto first = daw::not_null<char const *>( parse_state.first );
 					auto const last = daw::not_null<char const *>( parse_state.last );
@@ -130,7 +133,7 @@ namespace daw::json {
 							  first < last, ErrorReason::UnexpectedEndOfData, parse_state );
 						}
 					}
-					parse_state.first = first;
+					parse_state.first = json_details::input_pointer( parse_state.first, first.get( ) );
 				}
 			}
 
@@ -192,9 +195,9 @@ namespace daw::json {
 							daw_json_ensure( second_bracket_count == 0,
 							                 ErrorReason::InvalidBracketing,
 							                 parse_state );
-							result.last = ptr_first;
+							result.last = json_details::input_pointer( result.first, ptr_first.get( ) );
 							result.counter = cnt;
-							parse_state.first = ptr_first;
+							parse_state.first = json_details::input_pointer( parse_state.first, ptr_first.get( ) );
 							return result;
 						}
 						break;
@@ -213,9 +216,9 @@ namespace daw::json {
 				                 parse_state );
 				// We include the close primary bracket in the range so that subsequent
 				// parsers have a terminator inside their range
-				result.last = ptr_first;
+				result.last = json_details::input_pointer( result.first, ptr_first.get( ) );
 				result.counter = cnt;
-				parse_state.first = ptr_first;
+				parse_state.first = json_details::input_pointer( parse_state.first, ptr_first.get( ) );
 				return result;
 			}
 
@@ -266,9 +269,9 @@ namespace daw::json {
 							++ptr_first;
 							// We include the close primary bracket in the range so that
 							// subsequent parsers have a terminator inside their range
-							result.last = ptr_first;
+							result.last = json_details::input_pointer( result.first, ptr_first.get( ) );
 							result.counter = cnt;
-							parse_state.first = ptr_first;
+							parse_state.first = json_details::input_pointer( parse_state.first, ptr_first.get( ) );
 							return result;
 						}
 						break;

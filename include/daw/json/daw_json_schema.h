@@ -167,6 +167,13 @@ namespace daw::json {
 
 			template<typename JsonMember, bool is_root = false, typename WritableType>
 			constexpr WritableType
+			to_json_schema( ParseTag<JsonParseTypes::StringInsitu>, WritableType out_it ) {
+				return to_json_schema<JsonMember, is_root>(
+				  ParseTag<JsonParseTypes::StringEscaped>{ }, out_it );
+			}
+
+			template<typename JsonMember, bool is_root = false, typename WritableType>
+			constexpr WritableType
 			to_json_schema( ParseTag<JsonParseTypes::StringRaw>,
 			                WritableType out_it ) {
 

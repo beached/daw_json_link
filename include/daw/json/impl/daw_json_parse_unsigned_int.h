@@ -235,7 +235,12 @@ namespace daw::json {
 					  ErrorReason::NumberOutOfRange,
 					  parse_state );
 				}
-				parse_state.first = first;
+				if constexpr( std::is_same_v<char const *,
+				                             typename ParseState::iterator> ) {
+					parse_state.first = first;
+				} else {
+					parse_state.first += first.get( ) - parse_state.first;
+				}
 				if constexpr( RangeChecked == options::JsonRangeCheck::Never ) {
 					return daw::construct_a<Unsigned>( static_cast<Unsigned>( result ) );
 				} else {
@@ -315,7 +320,12 @@ namespace daw::json {
 					  count >= 0, ErrorReason::NumberOutOfRange, parse_state );
 				}
 
-				parse_state.first = first;
+				if constexpr( std::is_same_v<char const *,
+				                             typename ParseState::iterator> ) {
+					parse_state.first = first;
+				} else {
+					parse_state.first += first.get( ) - parse_state.first;
+				}
 				if constexpr( RangeChecked == options::JsonRangeCheck::Never ) {
 					return daw::construct_a<Unsigned>(
 					  static_cast<Unsigned>( static_cast<result_t>( result ) ) );

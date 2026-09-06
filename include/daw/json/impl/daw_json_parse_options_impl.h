@@ -63,6 +63,15 @@ namespace daw::json {
 
 			template<>
 			inline constexpr unsigned
+			  json_option_bits_width<options::AllowStringMutation> = 1;
+
+			template<>
+			inline constexpr auto
+			  default_json_option_value<options::AllowStringMutation> =
+			    options::AllowStringMutation::no;
+
+			template<>
+			inline constexpr unsigned
 			  json_option_bits_width<options::PolicyCommentTypes> = 2;
 
 			template<>
@@ -163,11 +172,12 @@ namespace daw::json {
 
 			using policy_list = typename option_list_impl<
 			  options::ExecModeTypes, options::ZeroTerminatedString,
-			  options::PolicyCommentTypes, options::CheckedParseMode,
-			  options::AllowEscapedNames, options::IEEE754Precise,
-			  options::ForceFullNameCheck, options::MinifiedDocument,
-			  options::UseExactMappingsByDefault, options::MustVerifyEndOfDataIsValid,
-			  options::ExcludeSpecialEscapes, options::ExpectLongNames>::type;
+			  options::AllowStringMutation, options::PolicyCommentTypes,
+			  options::CheckedParseMode, options::AllowEscapedNames,
+			  options::IEEE754Precise, options::ForceFullNameCheck,
+			  options::MinifiedDocument, options::UseExactMappingsByDefault,
+			  options::MustVerifyEndOfDataIsValid, options::ExcludeSpecialEscapes,
+			  options::ExpectLongNames>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =
@@ -258,11 +268,8 @@ namespace daw::json {
 		DAW_CONSTEVAL json_options_t parse_options( Policies... policies ) {
 			static_assert( json_details::are_option_flags<Policies...>,
 			               "Only registered policy types are allowed" );
-			auto result = json_details::default_policy_flag;
-			if constexpr( sizeof...( Policies ) > 0 ) {
-				result |= ( json_details::set_bits_for( policies ) | ... );
-			}
-			return result;
+			return json_details::set_bits( json_details::default_policy_flag,
+			                               policies... );
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -130,6 +130,17 @@ namespace daw::json {
 			  json_nullable<T, json_string<json_details::unwrapped_t<T>, Options>,
 			                NullableType, Constructor>;
 
+			template<typename T, json_options_t Options = string_opts_def,
+			         typename Constructor = use_default>
+			struct json_string_insitu;
+
+			template<typename T, json_options_t Options = string_opts_def,
+			         JsonNullable NullableType = JsonNullable::Nullable,
+			         typename Constructor = use_default>
+			using json_string_insitu_null =
+			  json_nullable<T, json_string_insitu<json_details::unwrapped_t<T>, Options>,
+			                NullableType, Constructor>;
+
 			template<typename T, json_options_t Options = bool_opts_def,
 			         typename Constructor = use_default>
 			struct json_bool;

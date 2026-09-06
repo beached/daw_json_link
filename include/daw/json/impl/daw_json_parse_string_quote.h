@@ -132,7 +132,11 @@ namespace daw::json {
 							}
 						}
 					}
-					parse_state.first = first;
+					if constexpr( std::is_same_v<char const *, typename ParseState::iterator> ) {
+						parse_state.first = first;
+					} else {
+						parse_state.first += first.get( ) - parse_state.first;
+					}
 					return static_cast<std::size_t>( need_slow_path );
 				}
 
@@ -275,7 +279,11 @@ namespace daw::json {
 						                      ErrorReason::InvalidString,
 						                      parse_state );
 					}
-					parse_state.first = first;
+					if constexpr( std::is_same_v<char const *, typename ParseState::iterator> ) {
+						parse_state.first = first;
+					} else {
+						parse_state.first += first.get( ) - parse_state.first;
+					}
 					return static_cast<std::size_t>( need_slow_path );
 				}
 
