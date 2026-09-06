@@ -55,6 +55,10 @@ namespace daw::json {
 		 * Iterator for iterating over JSON array's
 		 * @tparam JsonElement type under underlying element in array. If
 		 * heterogeneous, a basic_json_value_iterator may be more appropriate
+		 * @note An exception from dereferencing or incrementing invalidates the
+		 * iterator. Before using it again, restore it by assigning a valid copy
+		 * saved before the operation that threw. Incrementing an invalidated
+		 * iterator is not a supported way to recover from a parsing error.
 		 * @tparam ParseState Parsing policy type
 		 */
 		template<typename JsonElement, typename ParseState, typename = void>
@@ -102,6 +106,8 @@ namespace daw::json {
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
+				daw_json_assert_weak(
+				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
 			}
 
 			explicit constexpr json_array_iterator_t( daw::string_view jd,
@@ -115,6 +121,8 @@ namespace daw::json {
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
+				daw_json_assert_weak(
+				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
 			}
 
 			/// @return The iterator representing the beginning of the iteration.
@@ -167,7 +175,17 @@ namespace daw::json {
 				} else {
 					(void)json_details::skip_known_value<element_type>( m_state );
 				}
+				m_state.trim_left( );
+				daw_json_assert_weak( m_state.has_more( ) and
+				                        m_state.is_at_next_array_element( ),
+				                      ErrorReason::UnexpectedEndOfData,
+				                      m_state );
+
 				m_state.move_next_member_or_end( );
+				m_state.trim_left( );
+				daw_json_assert_weak(
+				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
+
 				return *this;
 			}
 
@@ -198,10 +216,12 @@ namespace daw::json {
 			/// @return true when equivalent to rhs
 			[[nodiscard]] constexpr bool
 			operator==( json_array_iterator_t const &rhs ) const {
-				if( not( *this ) ) {
-					return not rhs;
+				auto const not_lhs = not( *this );
+				auto const not_rhs = not( rhs );
+				if( not_lhs ) {
+					return not_rhs;
 				}
-				if( not rhs ) {
+				if( not_rhs ) {
 					return false;
 				}
 				return ( m_state.first == rhs.m_state.first );
@@ -227,8 +247,12 @@ namespace daw::json {
 		  JsonElement,
 		  TryDefaultParsePolicy<BasicParsePolicy<
 		    options::details::make_parse_flags<PolicyFlags...>( ).value>>>;
-		/// Iterator for iterating over JSON array's. Requires that op
-		/// op++ be called in that sequence one time until end is reached
+		/// Iterator for iterating over JSON arrays. Requires that operator* and
+		/// operator++ be called in that sequence one time until end is reached.
+		/// @note An exception from dereferencing or incrementing invalidates the
+		/// iterator. Before using it again, restore it by assigning a valid copy
+		/// saved before the operation that threw. Incrementing an invalidated
+		/// iterator is not a supported way to recover from a parsing error.
 		/// @tparam JsonElement type under underlying element in array.If
 		/// *heterogeneous, a basic_json_value_iterator may be more appropriate
 		template<typename JsonElement, auto... PolicyFlags>
@@ -271,6 +295,8 @@ namespace daw::json {
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
+				daw_json_assert_weak(
+				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
 			}
 
 			explicit constexpr json_array_iterator_once( daw::string_view jd,
@@ -284,6 +310,8 @@ namespace daw::json {
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
+				daw_json_assert_weak(
+				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
 			}
 
 			/// @brief Parse the current element
@@ -304,10 +332,13 @@ namespace daw::json {
 			 * @return iterator after moving
 			 */
 			constexpr json_array_iterator_once &operator++( ) {
-				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
+				daw_json_assert_weak( m_state.has_more( ) and
+				                        m_state.is_at_next_array_element( ),
 				                      ErrorReason::UnexpectedEndOfData,
 				                      m_state );
 				m_state.move_next_member_or_end( );
+				daw_json_assert_weak(
+				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
 				return *this;
 			}
 
@@ -338,10 +369,12 @@ namespace daw::json {
 			/// @return true when equivalent to rhs
 			[[nodiscard]] constexpr bool
 			operator==( json_array_iterator_once const &rhs ) const {
-				if( not( *this ) ) {
-					return static_cast<bool>( rhs );
+				auto const not_lhs = not( *this );
+				auto const not_rhs = not( rhs );
+				if( not_lhs ) {
+					return not_rhs;
 				}
-				if( not rhs ) {
+				if( not_rhs ) {
 					return false;
 				}
 				return ( m_state.first == rhs.m_state.first );
@@ -352,10 +385,12 @@ namespace daw::json {
 			/// @return true when rhs is not equivalent
 			[[nodiscard]] constexpr bool
 			operator!=( json_array_iterator_once const &rhs ) const {
-				if( not( *this ) ) {
-					return not rhs;
+				auto const not_lhs = not( *this );
+				auto const not_rhs = not( rhs );
+				if( not_lhs ) {
+					return not not_rhs;
 				}
-				if( not rhs ) {
+				if( not_rhs ) {
 					return true;
 				}
 				return m_state.first != rhs.m_state.first;
