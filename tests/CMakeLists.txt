@@ -770,6 +770,12 @@ add_test( test_parse_real_lemire_test test_parse_real_lemire )
 add_dependencies( ci_tests test_parse_real_lemire )
 add_dependencies( full test_parse_real_lemire )
 
+add_executable( long_double_test src/long_double_test.cpp )
+target_link_libraries( long_double_test PRIVATE json_test )
+add_test( NAME long_double_test COMMAND long_double_test )
+add_dependencies( ci_tests long_double_test )
+add_dependencies( full long_double_test )
+
 if( DAW_USE_EXCEPTIONS )
 	add_executable( test_details_skip_string src/test_details_skip_string.cpp )
 	target_link_libraries( test_details_skip_string PRIVATE json_test )
