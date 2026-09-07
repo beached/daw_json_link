@@ -17,6 +17,7 @@
 #include <daw/daw_cpp20_concept.h>
 #include <daw/daw_move.h>
 #include <daw/daw_string_view.h>
+#include <daw/daw_utility.h>
 
 #include <cstddef>
 #include <daw/stdinc/declval.h>
@@ -315,8 +316,10 @@ namespace daw::json {
 			}
 		};
 
-		template<typename StackContainerPolicy = use_default, json_options_t P,
-		         typename A, typename Handler, auto... ParseFlags>
+		template<typename StackContainerPolicy = use_default,
+		         std::size_t MaxDepth = daw::max_value<std::size_t>,
+		         json_options_t P, typename A, typename Handler,
+		         auto... ParseFlags>
 		constexpr void json_event_parser( basic_json_value<P, A> bjv,
 		                                  Handler &&handler,
 		                                  options::parse_flags_t<ParseFlags...> ) {
@@ -376,6 +379,10 @@ namespace daw::json {
 					case json_parse_handler_result::Continue:
 						break;
 					}
+					daw_json_ensure(
+					  static_cast<std::size_t>( class_depth + array_depth ) <=
+					    MaxDepth,
+					  ErrorReason::MaxDepthExceeded );
 					parent_stack.push_back(
 					  { StackParseStateType::Array,
 					    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
@@ -393,6 +400,10 @@ namespace daw::json {
 					case json_parse_handler_result::Continue:
 						break;
 					}
+					daw_json_ensure(
+					  static_cast<std::size_t>( class_depth + array_depth ) <=
+					    MaxDepth,
+					  ErrorReason::MaxDepthExceeded );
 					parent_stack.push_back(
 					  { StackParseStateType::Class,
 					    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
@@ -523,29 +534,33 @@ namespace daw::json {
 			                 ErrorReason::InvalidEndOfValue );
 		}
 
-		template<typename StackContainerPolicy = use_default, json_options_t P,
-		         typename A, typename Handler>
+		template<typename StackContainerPolicy = use_default,
+		         std::size_t MaxDepth = daw::max_value<std::size_t>,
+		         json_options_t P, typename A, typename Handler>
 		DAW_ATTRIB_INLINE constexpr void
 		json_event_parser( basic_json_value<P, A> bjv, Handler &&handler ) {
-			json_event_parser<StackContainerPolicy>(
+			json_event_parser<StackContainerPolicy, MaxDepth>(
 			  std::move( bjv ), DAW_FWD( handler ), options::parse_flags<> );
 		}
 
-		template<typename StackContainerPolicy = use_default, typename Handler,
-		         auto... ParseFlags>
+		template<typename StackContainerPolicy = use_default,
+		         std::size_t MaxDepth = daw::max_value<std::size_t>,
+		         typename Handler, auto... ParseFlags>
 		DAW_ATTRIB_INLINE void
 		json_event_parser( daw::string_view json_document, Handler &&handler,
 		                   options::parse_flags_t<ParseFlags...> pflags ) {
 
-			return json_event_parser<StackContainerPolicy>(
+			return json_event_parser<StackContainerPolicy, MaxDepth>(
 			  basic_json_value( json_document ), DAW_FWD( handler ), pflags );
 		}
 
-		template<typename StackContainerPolicy = use_default, typename Handler>
+		template<typename StackContainerPolicy = use_default,
+		         std::size_t MaxDepth = daw::max_value<std::size_t>,
+		         typename Handler>
 		DAW_ATTRIB_INLINE void json_event_parser( daw::string_view json_document,
 		                                          Handler &&handler ) {
 
-			return json_event_parser<StackContainerPolicy>(
+			return json_event_parser<StackContainerPolicy, MaxDepth>(
 			  basic_json_value( json_document ),
 			  DAW_FWD( handler ),
 			  options::parse_flags<> );
