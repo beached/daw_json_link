@@ -776,6 +776,22 @@ add_test( NAME long_double_test COMMAND long_double_test )
 add_dependencies( ci_tests long_double_test )
 add_dependencies( full long_double_test )
 
+add_executable( json_event_parser_max_depth_test
+                 src/json_event_parser_max_depth_test.cpp )
+target_link_libraries( json_event_parser_max_depth_test PRIVATE json_test )
+add_test( NAME json_event_parser_max_depth_test
+          COMMAND json_event_parser_max_depth_test )
+add_dependencies( ci_tests json_event_parser_max_depth_test )
+add_dependencies( full json_event_parser_max_depth_test )
+
+add_executable( json_event_parser_handler_result_test
+                 src/json_event_parser_handler_result_test.cpp )
+target_link_libraries( json_event_parser_handler_result_test PRIVATE json_test )
+add_test( NAME json_event_parser_handler_result_test
+          COMMAND json_event_parser_handler_result_test )
+add_dependencies( ci_tests json_event_parser_handler_result_test )
+add_dependencies( full json_event_parser_handler_result_test )
+
 if( DAW_USE_EXCEPTIONS )
 	add_executable( test_details_skip_string src/test_details_skip_string.cpp )
 	target_link_libraries( test_details_skip_string PRIVATE json_test )

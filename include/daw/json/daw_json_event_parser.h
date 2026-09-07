@@ -345,8 +345,26 @@ namespace daw::json {
 			long long class_depth = 0;
 			long long array_depth = 0;
 
+			// Complete means the caller deliberately stopped early, possibly from
+			// inside a nested array/class; the class_depth/array_depth invariant
+			// checked below no longer applies in that case.
+			bool user_completed = false;
+			auto const complete_now = [&]( ) {
+				parent_stack.clear( );
+				user_completed = true;
+			};
+
+			// Skip remaining elements/members of the current class/array without
+			// firing further value events, by walking (not jumping to end( ), which
+			// is a sentinel with no real position) until the raw cursor lands on
+			// the container's closing bracket. This is what lets the subsequent
+			// "container exhausted" check and the matching end event fire
+			// correctly, same as reaching the end normally would.
 			auto const move_to_last = [&]( ) {
-				parent_stack.back( ).value.first = parent_stack.back( ).value.second;
+				auto &top = parent_stack.back( );
+				while( top.value.first ) {
+					++top.value.first;
+				}
 			};
 
 			auto const process_value = [&]( json_value_t p ) {
@@ -354,7 +372,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_value( handler, p );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -371,7 +389,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_array_start( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -392,7 +410,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_class_start( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -412,7 +430,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_number( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -425,7 +443,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_bool( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -438,7 +456,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_string( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -451,7 +469,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_null( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -465,7 +483,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_error( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -495,7 +513,7 @@ namespace daw::json {
 						auto result = json_details::handle_on_class_end( handler );
 						switch( result.value ) {
 						case json_parse_handler_result::Complete:
-							parent_stack.clear( );
+							complete_now( );
 							return;
 						case json_parse_handler_result::SkipClassArray:
 						case json_parse_handler_result::Continue:
@@ -512,7 +530,7 @@ namespace daw::json {
 						auto result = json_details::handle_on_array_end( handler );
 						switch( result.value ) {
 						case json_parse_handler_result::Complete:
-							parent_stack.clear( );
+							complete_now( );
 							return;
 						case json_parse_handler_result::SkipClassArray:
 						case json_parse_handler_result::Continue:
@@ -530,7 +548,8 @@ namespace daw::json {
 				parent_stack.pop_back( );
 				process_range( v );
 			}
-			daw_json_ensure( class_depth == 0 and array_depth == 0,
+			daw_json_ensure( user_completed or
+			                   ( class_depth == 0 and array_depth == 0 ),
 			                 ErrorReason::InvalidEndOfValue );
 		}
 
