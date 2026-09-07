@@ -11,6 +11,7 @@
 #include "daw/json/impl/version.h"
 
 #include "daw/json/impl/daw_json_exec_modes.h"
+#include "daw/json/impl/daw_json_parse_real_eisellemire.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_likely.h>
@@ -133,8 +134,15 @@ namespace daw::json {
 				if constexpr( std::is_same_v<Result, double> or
 				              std::is_same_v<Result, float> ) {
 					return power10_constexpr( result, static_cast<std::int32_t>( p ) );
+				} else if constexpr( is_double_sized_long_double_v<Result> ) {
+					// long double here has no more precision than double, so the
+					// double-precision table used by power10_constexpr loses nothing.
+					return static_cast<Result>( power10_constexpr(
+					  static_cast<double>( result ), static_cast<std::int32_t>( p ) ) );
 				} else {
-					// For long double and others fallback to the slower std::pow
+					// For genuine extended/quad precision long double, std::pow keeps
+					// full precision; power10_constexpr's table is double-precision
+					// only and would silently truncate it.
 					using std::pow;
 					return result * pow( static_cast<Result>( 10.0 ), p );
 				}
