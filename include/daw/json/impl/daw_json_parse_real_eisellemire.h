@@ -38,7 +38,8 @@ namespace daw::json {
 
 				[[nodiscard]] constexpr bool
 				try_append_digit( std::uint64_t &value, unsigned digit ) noexcept {
-					constexpr auto max_value = daw::max_value<std::uint64_t>;
+					DAW_CPP23_STATIC_LOCAL constexpr auto max_value =
+				  daw::max_value<std::uint64_t>;
 					if( digit > 9U or value > ( max_value - digit ) / 10U ) {
 						return false;
 					}
@@ -132,7 +133,7 @@ namespace daw::json {
 
 					// Three extra bits are required: the implicit bit, the rounding bit,
 					// and one bit that may be lost while normalizing the product.
-					constexpr std::uint64_t precision_mask =
+					DAW_CPP23_STATIC_LOCAL constexpr std::uint64_t precision_mask =
 					  daw::max_value<std::uint64_t> >>
 					  ( binary_format<Real>::mantissa_bits + 3 );
 					if( ( product.high & precision_mask ) == precision_mask ) {

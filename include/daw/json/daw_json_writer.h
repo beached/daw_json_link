@@ -391,7 +391,7 @@ namespace daw::json {
 			constexpr void write_number( T const &value ) {
 				using JsonMember =
 				  json_writer_details::json_write_value_class_t<JsonClass, T>;
-				constexpr JsonBaseParseTypes json_base_type =
+				DAW_CPP23_STATIC_LOCAL constexpr JsonBaseParseTypes json_base_type =
 				  JsonMember::underlying_json_type;
 				static_assert(
 				  json_base_type == JsonBaseParseTypes::Number or
@@ -410,7 +410,7 @@ namespace daw::json {
 			constexpr void write_string( T const &value ) {
 				using JsonMember =
 				  json_writer_details::json_write_value_class_t<JsonClass, T>;
-				constexpr JsonBaseParseTypes json_base_type =
+				DAW_CPP23_STATIC_LOCAL constexpr JsonBaseParseTypes json_base_type =
 				  JsonMember::underlying_json_type;
 				if constexpr( json_base_type == JsonBaseParseTypes::String ) {
 					write_value<JsonClass>( value );

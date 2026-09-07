@@ -62,7 +62,7 @@ namespace daw::json {
 							return;
 						}
 
-						constexpr std::size_t max_growth = 19;
+						DAW_CPP23_STATIC_LOCAL constexpr std::size_t max_growth = 19;
 						std::uint8_t result[max_digits + max_growth]{ };
 						auto write = max_digits + max_growth;
 						auto read = digit_count;
@@ -180,8 +180,10 @@ namespace daw::json {
 
 				[[nodiscard]] constexpr std::int64_t
 				saturating_add( std::int64_t lhs, std::int64_t rhs ) {
-					constexpr auto max_value = daw::max_value<std::int64_t>;
-					constexpr auto lowest_value = daw::lowest_value<std::int64_t>;
+					DAW_CPP23_STATIC_LOCAL constexpr auto max_value =
+					  daw::max_value<std::int64_t>;
+					DAW_CPP23_STATIC_LOCAL constexpr auto lowest_value =
+					  daw::lowest_value<std::int64_t>;
 
 					if( rhs > 0 and lhs > max_value - rhs ) {
 						return max_value;
@@ -204,9 +206,10 @@ namespace daw::json {
 						++first;
 					}
 
-					constexpr auto positive_limit =
+					DAW_CPP23_STATIC_LOCAL constexpr auto positive_limit =
 					  static_cast<std::uint64_t>( daw::max_value<std::int64_t> );
-					constexpr auto negative_limit = positive_limit + 1U;
+					DAW_CPP23_STATIC_LOCAL constexpr auto negative_limit =
+					  positive_limit + 1U;
 					auto const limit = negative ? negative_limit : positive_limit;
 					std::uint64_t result = 0;
 					bool overflow = false;
@@ -327,9 +330,9 @@ namespace daw::json {
 					return decimal_details::pack_real<Real>( negative, 0, 0 );
 				}
 
-				constexpr std::int32_t smallest_decimal_point =
-				  std::is_same_v<Real, double> ? -324 : -45;
-				constexpr std::int32_t largest_decimal_point =
+				DAW_CPP23_STATIC_LOCAL constexpr std::int32_t
+				  smallest_decimal_point = std::is_same_v<Real, double> ? -324 : -45;
+				DAW_CPP23_STATIC_LOCAL constexpr std::int32_t largest_decimal_point =
 				  std::is_same_v<Real, double> ? 310 : 40;
 				if( decimal.decimal_point < smallest_decimal_point ) {
 					return decimal_details::pack_real<Real>( negative, 0, 0 );
@@ -362,7 +365,8 @@ namespace daw::json {
 
 				// decimal is now in [0.5, 1); IEEE formats use [1, 2).
 				--exponent2;
-				constexpr auto minimum_exponent = 1 - format::exponent_bias;
+				DAW_CPP23_STATIC_LOCAL constexpr auto minimum_exponent =
+				  1 - format::exponent_bias;
 				while( exponent2 < minimum_exponent ) {
 					auto shift = minimum_exponent - exponent2;
 					if( shift > 60 ) {

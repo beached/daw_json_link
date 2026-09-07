@@ -150,7 +150,7 @@ namespace daw::json {
 			         typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
-				constexpr char PrimLeft =
+				DAW_CPP23_STATIC_LOCAL constexpr char PrimLeft =
 				  BracketedType == json_details::SkipBracketedType::Class ? '{' : '[';
 				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
 				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;
@@ -262,7 +262,7 @@ namespace daw::json {
 			         typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
-				constexpr char PrimLeft =
+				DAW_CPP23_STATIC_LOCAL constexpr char PrimLeft =
 				  BracketedType == json_details::SkipBracketedType::Class ? '{' : '[';
 				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
 				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;

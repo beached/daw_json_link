@@ -506,7 +506,8 @@ namespace daw::json {
 					auto const valid_bits = low_bits( count );
 					auto const backslash_bits = backslash.to_ullong( ) & valid_bits;
 
-					constexpr std::uint64_t odd_bits = 0xAAAAAAAAAAAAAAAAULL;
+					DAW_CPP23_STATIC_LOCAL constexpr std::uint64_t odd_bits =
+					  0xAAAAAAAAAAAAAAAAULL;
 					auto const previous_escaped = state.escaped ? std::uint64_t{ 1 } : 0;
 					auto const potential_escape = backslash_bits & ~previous_escaped;
 					auto const maybe_escaped = potential_escape << 1U;
