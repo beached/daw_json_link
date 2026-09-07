@@ -162,16 +162,14 @@ namespace daw::json {
 				daw::not_null const new_last = std::next( first.get( ), last_pos );
 
 				auto value = v;
-				bool parsed_eight_digits = false;
 				if( new_last - first >= 8 and
 				    is_made_of_eight_digits_cx( first.get( ) ) ) {
 					value *= static_cast<Unsigned>( 100'000'000U );
 					value += static_cast<Unsigned>( parse_8_digits( first.get( ) ) );
 					first += 8;
-					parsed_eight_digits = true;
 				}
 
-				unsigned dig = parsed_eight_digits and first == new_last ? 0U : 10U;
+				unsigned dig = 10U;
 				if( first < new_last ) {
 					do {
 						dig = parse_digit( *first );
@@ -182,9 +180,6 @@ namespace daw::json {
 						value += dig;
 						++first;
 					} while( first < new_last );
-				}
-				if( first < last and dig < 10U ) {
-					++first;
 				}
 				while( first < last ) {
 					dig = parse_digit( *first );
@@ -590,7 +585,19 @@ namespace daw::json {
 						                                       fract_last.get( ),
 						                                       significant_digits,
 						                                       stored_whole_digit_count );
-						exponent_p1 -= static_cast<signed_t>( last_char - first );
+						// Only count the digits actually stored in significant_digits;
+						// parse_digits_while_number skips overflow digits up to last_char
+						// but those must not adjust the decimal-point exponent.
+						auto const fract_stored_cap = static_cast<std::ptrdiff_t>(
+						  daw::digits10<unsigned_t> - stored_whole_digit_count );
+						exponent_p1 -= static_cast<signed_t>(
+						  ( std::min )( { last_char - first, fract_stored_cap } ) );
+						if constexpr( std::is_floating_point_v<Result> and
+						              ParseState::precise_ieee754 ) {
+							// If we silently dropped fractional digits, the power10 result
+							// may be incorrectly rounded — fall back to strtod.
+							use_strtod |= ( last_char - first ) > fract_stored_cap;
+						}
 						first = last_char;
 						if( daw::nsc_and( first >= fract_last, first < last ) ) {
 							auto new_first =

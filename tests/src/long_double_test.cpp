@@ -8,7 +8,9 @@
 
 #include <daw/json/daw_json_link.h>
 
+#include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <string>
 #include <string_view>
 
@@ -30,14 +32,37 @@ namespace {
 	// magnitude > 22, and more significant digits than fit in a double's
 	// mantissa.
 	constexpr std::string_view cases[] = {
+	  // power10 path (|exponent| <= 22)
 	  "3.14",
 	  "-123.456e10",
+	  "1.23456789012345678e15",
+	  "1.23456789012345678e-15",
+	  // boundary of use_strtod trigger: exactly ±22 stays in power10, ±23 flips
+	  // to strtod
+	  "1e22",
+	  "1e-22",
+	  "1e23",
+	  "1e-23",
+	  // strtod/Eisel-Lemire fallback (|exponent| > 22)
 	  "1.7976931348623157e308",
 	  "2.2250738585072014e-308",
+	  // exponent_p1 > 0: whole-part digit count exceeds max_exponent, so digits
+	  // are discarded and exponent_p1 is positive
+	  "12345678901234567890123e5",
+	  // discarded nonzero fractional digits: forces parse_json_real_exact path
+	  // for double/float via parse_truncated_lemire
+	  "1.23456789012345678901",
+	  // many significant digits
 	  "123456789012345678901234567890.123456789",
-	  "-0.0",
+	  // subnormal / deep-underflow long double (exercises power10 p < -max_exp
+	  // and strtod underflow)
+	  "1e-4932",
+	  "3.3621031431120935e-4932",
+	  // overflow / infinity
 	  "1e400",
 	  "1e-400",
+	  // zero and negative zero
+	  "-0.0",
 	};
 
 	[[nodiscard]] bool check_unknown_bounds( ) {
@@ -47,6 +72,8 @@ namespace {
 			auto const expected = std::strtold( std::string( c ).c_str( ), nullptr );
 			if( not( parsed == expected or
 			         ( parsed != parsed and expected != expected ) ) ) {
+				std::cerr << "unknown_bounds FAIL: " << c
+				          << "  parsed=" << parsed << " expected=" << expected << '\n';
 				return false;
 			}
 		}
@@ -60,6 +87,8 @@ namespace {
 			auto const expected = std::strtold( std::string( c ).c_str( ), nullptr );
 			if( not( parsed == expected or
 			         ( parsed != parsed and expected != expected ) ) ) {
+				std::cerr << "known_bounds FAIL: " << c
+				          << "  parsed=" << parsed << " expected=" << expected << '\n';
 				return false;
 			}
 		}
