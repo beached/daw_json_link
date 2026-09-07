@@ -243,7 +243,7 @@ namespace daw::json {
 						if( significant_digits != 0 ) {
 							++retained_digits;
 						}
-						if( exponent > std::numeric_limits<Signed>::lowest( ) ) {
+						if( exponent > daw::lowest_value<Signed> ) {
 							--exponent;
 						}
 					} else {
@@ -440,9 +440,8 @@ namespace daw::json {
 					use_fallback |= exponent > 22;
 					use_fallback |= exponent < -22;
 					if constexpr( is_lemire_capable ) {
-						use_fallback |=
-						  significant_digits >
-						  ( std::uint64_t{ 1 } << std::numeric_limits<Result>::digits );
+						use_fallback |= significant_digits >
+						                ( std::uint64_t{ 1 } << daw::digits<Result> );
 					}
 					if( is_extended_long_double or DAW_UNLIKELY( use_fallback ) ) {
 						if constexpr( is_lemire_capable ) {
@@ -690,8 +689,7 @@ namespace daw::json {
 					use_strtod |= DAW_UNLIKELY( exponent < -22 );
 					if constexpr( is_lemire_capable ) {
 						use_strtod |= DAW_UNLIKELY(
-						  significant_digits >
-						  ( std::uint64_t{ 1 } << std::numeric_limits<Result>::digits ) );
+						  significant_digits > (std::uint64_t{ 1 } << daw::digits<Result>));
 					}
 					if( DAW_UNLIKELY( use_strtod ) ) {
 						if constexpr( is_lemire_capable ) {

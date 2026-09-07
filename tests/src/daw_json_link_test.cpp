@@ -1143,34 +1143,32 @@ namespace iterator_regression_tests {
 		};
 		test_equality<iterator>( check );
 		context = "once equality";
-		iterator_type =
-		  "json_array_iterator_once<int, CheckedParseMode::yes>";
+		iterator_type = "json_array_iterator_once<int, CheckedParseMode::yes>";
 		test_equality<once_iterator>( check );
 		context = "regular range";
-		iterator_type =
-		  "json_array_iterator<int, CheckedParseMode::yes>";
+		iterator_type = "json_array_iterator<int, CheckedParseMode::yes>";
 		test_ranges<json_array_range<int, options::CheckedParseMode::yes>>( check );
 		context = "once range";
-		iterator_type =
-		  "json_array_iterator_once<int, CheckedParseMode::yes>";
+		iterator_type = "json_array_iterator_once<int, CheckedParseMode::yes>";
 		test_ranges<json_array_range_once<int, options::CheckedParseMode::yes>>(
 		  check );
 		context = "conformance regular range";
 		iterator_type =
-		  "json_array_iterator<int, CheckedParseMode::yes, DAW_JSON_CONFORMANCE_FLAGS>";
+		  "json_array_iterator<int, CheckedParseMode::yes, "
+		  "DAW_JSON_CONFORMANCE_FLAGS>";
 		test_ranges<json_array_range<int,
 		                             options::CheckedParseMode::yes,
 		                             DAW_JSON_CONFORMANCE_FLAGS>>( check );
 		context = "conformance once range";
 		iterator_type =
-		  "json_array_iterator_once<int, CheckedParseMode::yes, DAW_JSON_CONFORMANCE_FLAGS>";
+		  "json_array_iterator_once<int, CheckedParseMode::yes, "
+		  "DAW_JSON_CONFORMANCE_FLAGS>";
 		test_ranges<json_array_range_once<int,
 		                                  options::CheckedParseMode::yes,
 		                                  DAW_JSON_CONFORMANCE_FLAGS>>( check );
 
 		context = "repeat dereference and copy";
-		iterator_type =
-		  "json_array_iterator<int, CheckedParseMode::yes>";
+		iterator_type = "json_array_iterator<int, CheckedParseMode::yes>";
 		auto it = iterator( "[1,2]" );
 		check( *it == 1 and *it == 1,
 		       "expected two reads at the first position to both return 1" );
@@ -1207,8 +1205,7 @@ namespace iterator_regression_tests {
 		}
 		// Exercise completion separately from the once iterator's comparisons.
 		context = "once final increment";
-		iterator_type =
-		  "json_array_iterator_once<int, CheckedParseMode::yes>";
+		iterator_type = "json_array_iterator_once<int, CheckedParseMode::yes>";
 		for( auto doc : { "[1]", "[1 ]", "[1,]", "[1, ]" } ) {
 			try {
 				auto last = once_iterator( doc );
@@ -1224,8 +1221,7 @@ namespace iterator_regression_tests {
 			}
 		}
 		context = "once malformed input";
-		iterator_type =
-		  "json_array_iterator_once<int, CheckedParseMode::yes>";
+		iterator_type = "json_array_iterator_once<int, CheckedParseMode::yes>";
 		for( auto doc : { "[", "[ ", "[1", "[1,", "[1,2", "[1 2]" } ) {
 			test_invalid<once_iterator>( doc, true, check );
 		}
@@ -1595,8 +1591,7 @@ int main( ) {
 #if defined( LDBL_MAX )
 		if constexpr( sizeof( double ) < sizeof( long double ) ) {
 			std::cout << "long double test\n";
-			std::cout << std::setprecision(
-			               std::numeric_limits<long double>::max_digits10 )
+			std::cout << std::setprecision( daw::max_digits10<long double> )
 			          << from_json<long double>(
 			               "11111111111111111111111111111111111111111111"
 			               "11111111111111111111111111111111111111111111"

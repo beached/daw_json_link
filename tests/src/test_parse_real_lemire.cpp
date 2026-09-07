@@ -5,6 +5,7 @@
 
 #include <daw/json/impl/daw_json_parse_real_eisellemire.h>
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_bit_cast.h>
 
 #include <array>
@@ -21,22 +22,21 @@ namespace {
 	constexpr bool append_digit_check( ) {
 		std::uint64_t value = 1844674407370955161ULL;
 		if( not try_append_digit( value, 5U ) or
-		    value != std::numeric_limits<std::uint64_t>::max( ) ) {
+		    value != daw::max_value<std::uint64_t> ) {
 			return false;
 		}
 		return not try_append_digit( value, 0U ) and
-		       value == std::numeric_limits<std::uint64_t>::max( );
+		       value == daw::max_value<std::uint64_t>;
 	}
 
 	static_assert( append_digit_check( ) );
 
 	constexpr auto multiplication_check =
 	  daw::json::json_details::eisellemire_details::full_multiplication_generic(
-	    std::numeric_limits<std::uint64_t>::max( ),
-	    std::numeric_limits<std::uint64_t>::max( ) );
+	    daw::max_value<std::uint64_t>, daw::max_value<std::uint64_t> );
 	static_assert( multiplication_check.low == 1 );
 	static_assert( multiplication_check.high ==
-	               std::numeric_limits<std::uint64_t>::max( ) - 1 );
+	               daw::max_value<std::uint64_t> - 1 );
 	static_assert( parse_real_eisellemire( false, 0, 1 ) == 1.0 );
 	static_assert( parse_real_eisellemire( true, 0, 1 ) == -1.0 );
 	static_assert( parse_real_eisellemire( false, -2, 12345 ) == 123.45 );
@@ -61,11 +61,11 @@ namespace {
 		if( negative ) {
 			*first++ = '-';
 		}
-		auto result = std::to_chars( first, buffer.data( ) + buffer.size( ) - 1,
-		                             significant_digits );
+		auto result = std::to_chars(
+		  first, buffer.data( ) + buffer.size( ) - 1, significant_digits );
 		*result.ptr++ = 'e';
-		result = std::to_chars( result.ptr, buffer.data( ) + buffer.size( ) - 1,
-		                        exponent );
+		result = std::to_chars(
+		  result.ptr, buffer.data( ) + buffer.size( ) - 1, exponent );
 		*result.ptr = '\0';
 		if constexpr( std::is_same_v<Real, float> ) {
 			return std::strtof( buffer.data( ), nullptr );
@@ -76,9 +76,8 @@ namespace {
 
 	template<typename Real>
 	[[nodiscard]] bool same_bits( Real lhs, Real rhs ) {
-		using uint_type =
-		  std::conditional_t<std::is_same_v<Real, float>, std::uint32_t,
-		                     std::uint64_t>;
+		using uint_type = std::
+		  conditional_t<std::is_same_v<Real, float>, std::uint32_t, std::uint64_t>;
 		return DAW_BIT_CAST( uint_type, lhs ) == DAW_BIT_CAST( uint_type, rhs );
 	}
 } // namespace
@@ -100,7 +99,7 @@ int main( ) {
 	  { 22250738585072014ULL, -324, false },
 	  { 17976931348623157ULL, 292, false },
 	  { 17976931348623158ULL, 292, false },
-	  { std::numeric_limits<std::uint64_t>::max( ), -342, false },
+	  { daw::max_value<std::uint64_t>, -342, false },
 	};
 
 	for( auto const &test : cases ) {
@@ -136,7 +135,7 @@ int main( ) {
 	  { 11754944, -45, false },
 	  { 34028235, 31, false },
 	  { 34028236, 31, false },
-	  { std::numeric_limits<std::uint64_t>::max( ), -64, false },
+	  { daw::max_value<std::uint64_t>, -64, false },
 	};
 	for( auto const &test : float_cases ) {
 		auto const actual = parse_real_eisellemire<float>(

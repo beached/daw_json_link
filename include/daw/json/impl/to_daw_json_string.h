@@ -48,7 +48,7 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-			namespace json_details {
+		namespace json_details {
 			template<options::FPOutputFormat fp_output_format,
 			         unsigned Precision = daw::max_value<unsigned>, typename Real,
 			         typename WriteableType>
@@ -280,8 +280,7 @@ namespace daw::json {
 			template<
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
-			  bool use_scanned_write = false,
-			  typename WritableType,
+			  bool use_scanned_write = false, typename WritableType,
 			  typename Container DAW_ENABLEIF(
 			    daw::traits::is_container_like_v<daw::remove_cvref_t<Container>> )>
 			DAW_REQUIRES(
@@ -778,7 +777,7 @@ namespace daw::json {
 				              daw::is_integral_v<parse_to_t> ) {
 					auto v = static_cast<under_type>( value );
 
-					char buff[daw::numeric_limits<under_type>::digits10 + 10]{ };
+					char buff[daw::digits10<under_type> + 10]{ };
 					char *num_start = buff;
 					char *ptr = buff;
 					if constexpr( JsonMember::literal_as_string ==
@@ -790,7 +789,7 @@ namespace daw::json {
 						*ptr++ = '-';
 						++num_start;
 						// Do 1 round here just in case we are
-						// daw::numeric_limits<intmax_t>::min( ) and cannot negate
+						// daw::min_value<intmax_t> and cannot negate
 						// This is a subtraction because when v < 0, v % 100 is negative
 						auto const tmp = -static_cast<std::size_t>( v % 10 );
 						v /= -10;
@@ -870,7 +869,7 @@ namespace daw::json {
 						it.put( '0' );
 					} else {
 						daw_json_ensure( v > 0, ErrorReason::NumberOutOfRange );
-						char buff[daw::numeric_limits<under_type>::digits10 + 10]{ };
+						char buff[daw::digits10<under_type> + 10U]{ };
 						char *ptr = buff;
 						while( v >= 10 ) {
 							auto const tmp = static_cast<std::size_t>( v % 100U );
@@ -1098,8 +1097,7 @@ namespace daw::json {
 					it.put( '"' );
 				}
 
-				if constexpr( daw::is_callable_r_v<
-				                WriteableType,
+				if constexpr( daw::is_callable_r_v<WriteableType,
 				                                   typename JsonMember::to_converter_t,
 				                                   WriteableType,
 				                                   parse_to_t> ) {
@@ -1428,8 +1426,7 @@ namespace daw::json {
 				if( path_item.current.empty( ) ) {
 					daw_json_ensure( path_item.found_char == '[',
 					                 ErrorReason::OutputError );
-					return to_json_string_submember_array<JsonMember>( it, path,
-					                                                   value );
+					return to_json_string_submember_array<JsonMember>( it, path, value );
 				}
 
 				it.put( '{' );

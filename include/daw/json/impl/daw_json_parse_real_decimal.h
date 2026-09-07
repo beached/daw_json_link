@@ -13,12 +13,12 @@
 #include "daw/json/impl/daw_json_parse_real_eisellemire.h"
 #include "daw/json/impl/daw_json_parse_unsigned_int.h"
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_bit_cast.h>
 #include <daw/daw_not_null.h>
 
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <type_traits>
 
 namespace daw::json {
@@ -154,7 +154,7 @@ namespace daw::json {
 							return 0;
 						}
 						if( decimal_point >= 19 ) {
-							return std::numeric_limits<std::uint64_t>::max( );
+							return daw::max_value<std::uint64_t>;
 						}
 
 						auto const point = static_cast<std::size_t>( decimal_point );
@@ -180,14 +180,14 @@ namespace daw::json {
 
 				[[nodiscard]] constexpr std::int64_t
 				saturating_add( std::int64_t lhs, std::int64_t rhs ) {
-					constexpr auto max_value = std::numeric_limits<std::int64_t>::max( );
-					constexpr auto min_value = daw::lowest_value<std::int64_t>;
+					constexpr auto max_value = daw::max_value<std::int64_t>;
+					constexpr auto lowest_value = daw::lowest_value<std::int64_t>;
 
 					if( rhs > 0 and lhs > max_value - rhs ) {
 						return max_value;
 					}
-					if( rhs < 0 and lhs < min_value - rhs ) {
-						return min_value;
+					if( rhs < 0 and lhs < lowest_value - rhs ) {
+						return lowest_value;
 					}
 					return lhs + rhs;
 				}
@@ -204,8 +204,8 @@ namespace daw::json {
 						++first;
 					}
 
-					constexpr auto positive_limit = static_cast<std::uint64_t>(
-					  std::numeric_limits<std::int64_t>::max( ) );
+					constexpr auto positive_limit =
+					  static_cast<std::uint64_t>( daw::max_value<std::int64_t> );
 					constexpr auto negative_limit = positive_limit + 1U;
 					auto const limit = negative ? negative_limit : positive_limit;
 					std::uint64_t result = 0;
@@ -225,7 +225,7 @@ namespace daw::json {
 
 					if( negative ) {
 						if( result == negative_limit ) {
-							return std::numeric_limits<std::int64_t>::lowest( );
+							return daw::lowest_value<std::int64_t>;
 						}
 						return -static_cast<std::int64_t>( result );
 					}
