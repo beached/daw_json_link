@@ -242,7 +242,7 @@ namespace daw::json {
 					                 ErrorReason::InvalidTimestamp );
 				}
 				auto const precision =
-				  std::min( timestamp_str.size( ), std::size_t{ 18 } );
+				  (std::min)( { timestamp_str.size( ), std::size_t{ 18 } } );
 				auto const attosecond_str = timestamp_str.substr( 0, precision );
 				result.attosecond =
 				  datetime_details::parse_number<std::uint64_t>( attosecond_str );
