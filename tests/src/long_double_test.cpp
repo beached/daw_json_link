@@ -28,22 +28,25 @@ namespace daw::json {
 
 namespace {
 	// significant_digits/exponent chosen to hit both the ordinary fast path and
-	// the edge cases that force the Eisel-Lemire/strtod fallback: exponent
-	// magnitude > 22, and more significant digits than fit in a double's
-	// mantissa.
+	// the edge cases that force the Eisel-Lemire/strtod fallback, including more
+	// significant digits than fit in a double's mantissa.
 	constexpr std::string_view cases[] = {
-	  // power10 path (|exponent| <= 22)
+	  // ordinary power10 path
 	  "3.14",
 	  "-123.456e10",
 	  "1.23456789012345678e15",
 	  "1.23456789012345678e-15",
-	  // boundary of use_strtod trigger: exactly ±22 stays in power10, ±23 flips
-	  // to strtod
+	  // values around the legacy double-precision threshold
 	  "1e22",
 	  "1e-22",
 	  "1e23",
 	  "1e-23",
-	  // strtod/Eisel-Lemire fallback (|exponent| > 22)
+	  // 80-bit long double power10 boundary (binary128 extends this to ±48)
+	  "1e27",
+	  "1e-27",
+	  "1e28",
+	  "1e-28",
+	  // large-exponent fallback
 	  "1.7976931348623157e308",
 	  "2.2250738585072014e-308",
 	  // exponent_p1 > 0: whole-part digit count exceeds max_exponent, so digits

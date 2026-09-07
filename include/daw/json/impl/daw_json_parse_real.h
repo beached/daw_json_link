@@ -706,8 +706,19 @@ namespace daw::json {
 					DAW_CPP23_STATIC_LOCAL constexpr bool is_lemire_capable =
 					  std::is_same_v<Result, float> or std::is_same_v<Result, double> or
 					  is_double_sized_long_double_v<Result>;
-					use_strtod |= DAW_UNLIKELY( exponent > 22 );
-					use_strtod |= DAW_UNLIKELY( exponent < -22 );
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_80bit_long_double_v =
+					  std::is_same_v<Result, long double> and
+					  std::numeric_limits<long double>::digits == 64;
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_128bit_long_double_v =
+					  std::is_same_v<Result, long double> and
+					  std::numeric_limits<long double>::digits == 113;
+
+					DAW_CPP23_STATIC_LOCAL constexpr int pow10_threshold =
+					  is_80bit_long_double_v    ? 27
+					  : is_128bit_long_double_v ? 48
+					                            : 22;
+					use_strtod |= DAW_UNLIKELY( exponent > pow10_threshold );
+					use_strtod |= DAW_UNLIKELY( exponent < -pow10_threshold );
 					if constexpr( is_lemire_capable ) {
 						use_strtod |= DAW_UNLIKELY(
 						  significant_digits > (std::uint64_t{ 1 } << daw::digits<Result>));
