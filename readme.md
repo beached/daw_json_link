@@ -375,7 +375,7 @@ Parsing errors default to throwing a `daw::json::json_exception` that includes i
 If exceptions are disabled the library will call `std::terminate` upon a parse error by default.
 
 ## Custom Error Handling
-While, the error handling defaults to throwing a `daw::json::json_exception` on errors, or calling `std::terminate` if exceptions are disabled.  One can change this behaviour by setting the function pointer `daw::json::daw_json_error_handler`.  The only requirement is that the function does not return.  An example that utilizes this is in [error_handling_bench_test.cpp](tests/src/error_handling_bench_test.cpp) 
+While, the error handling defaults to throwing a `daw::json::json_exception` on errors, or calling `std::terminate` if exceptions are disabled.  One can change this behaviour by setting the function pointer `daw::json::daw_json_error_handler` (and its companion user-data pointer `daw::json::daw_json_error_handler_data`).  The only requirement is that the function does not return.  **Both are `thread_local`**: setting them affects parsing on the thread that set them only, so a handler installed on a "setup" thread will not apply to parsing done on other threads, each of which sees the default handler until it sets its own.  An example that utilizes this is in [error_handling_bench_test.cpp](tests/src/error_handling_bench_test.cpp) 
 
 ## Parsing call
 ###### [Top](#content)
