@@ -181,8 +181,8 @@ namespace daw::json {
 				[[nodiscard]] constexpr std::int64_t
 				saturating_add( std::int64_t lhs, std::int64_t rhs ) {
 					constexpr auto max_value = std::numeric_limits<std::int64_t>::max( );
-					constexpr auto min_value =
-					  std::numeric_limits<std::int64_t>::lowest( );
+					constexpr auto min_value = daw::lowest_value<std::int64_t>;
+
 					if( rhs > 0 and lhs > max_value - rhs ) {
 						return max_value;
 					}

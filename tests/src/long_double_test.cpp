@@ -19,12 +19,8 @@ struct Holder {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Holder> {
-#if defined( DAW_JSON_CNTTP_JSON_NAME )
-		using type = json_member_list<json_number<"v", long double>>;
-#else
 		static constexpr char const v[] = "v";
 		using type = json_member_list<json_number<v, long double>>;
-#endif
 	};
 } // namespace daw::json
 
@@ -46,7 +42,7 @@ namespace {
 
 	[[nodiscard]] bool check_unknown_bounds( ) {
 		for( auto const c : cases ) {
-			auto const parsed =
+			long double const parsed =
 			  daw::json::from_json<long double>( daw::string_view( c ) );
 			auto const expected = std::strtold( std::string( c ).c_str( ), nullptr );
 			if( not( parsed == expected or

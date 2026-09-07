@@ -657,13 +657,13 @@ namespace daw::json {
 
 							return exponent_p1 + exponent_p2;
 						}
-						auto const s = exponent_p1 < 0 ? signed_t{ -1 } : signed_t{ 1 };
+						signed_t const s = exponent_p1 < 0 ? signed_t{ -1 } : signed_t{ 1 };
 						if( s < 0 ) {
-							if( DAW_UNLIKELY( ( daw::min_value<signed_t> - exponent_p1 ) >
+							if( DAW_UNLIKELY( ( daw::lowest_value<signed_t> - exponent_p1 ) >
 							                  exponent_p2 ) ) {
 								// We don't have inf, but we can just saturate it to min as it
 								// will be 0 anyways for the other result
-								return daw::min_value<signed_t>;
+								return daw::lowest_value<signed_t>;
 							}
 							return exponent_p1 + exponent_p2;
 						}
