@@ -1942,12 +1942,11 @@ namespace daw::json {
 					out_it.put( '.' );
 					auto const p2val = dec.significand - ( p1val * p1pow );
 					// ensure we account for leading zeros
-					//					auto const sig_sigits =
 					{
-						auto const l10_sig = daw::cxmath::count_digits( dec.significand );
 						auto const l10_p1val = daw::cxmath::count_digits( p1val );
 						auto const l10_p2val = daw::cxmath::count_digits( p2val );
-						auto const extra_zeros = l10_sig - ( l10_p2val + l10_p1val );
+						auto const extra_zeros =
+						  static_cast<int>( digit_values ) - ( l10_p2val + l10_p1val );
 						for( int n = 0; n < extra_zeros; ++n ) {
 							out_it.put( '0' );
 						}
