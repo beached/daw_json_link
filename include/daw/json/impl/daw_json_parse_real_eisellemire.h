@@ -151,6 +151,18 @@ namespace daw::json {
 				}
 			} // namespace eisellemire_details
 
+			/// @brief True when `long double` has the same size, precision, and
+			/// exponent range as `double` (e.g. MSVC, and some ARM/AArch64 ABIs),
+			/// meaning it can be computed as `double` with no loss.
+			template<typename Real>
+			inline constexpr bool is_double_sized_long_double_v =
+			  std::is_same_v<Real, long double> and
+			  sizeof( long double ) == sizeof( double ) and
+			  std::numeric_limits<long double>::digits ==
+			    std::numeric_limits<double>::digits and
+			  std::numeric_limits<long double>::max_exponent ==
+			    std::numeric_limits<double>::max_exponent;
+
 			/// Convert the exact decimal value
 			///   (-1 if negative else 1) * significant_digits * 10^exponent
 			/// to the correctly rounded IEEE-754 binary32 or binary64 value.

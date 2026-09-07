@@ -428,19 +428,24 @@ namespace daw::json {
 				              ParseState::precise_ieee754 ) {
 					// On std floating point types, check for conditions that cannot be
 					// precisely calculated using the normal method and use the fallback
-					// method(usually strtod/from_chars)
+					// method(usually strtod/from_chars).  long double that shares
+					// double's size/precision/exponent range (e.g. MSVC) is computed
+					// as double instead, since Eisel-Lemire only supports
+					// binary32/binary64.
+					constexpr bool is_lemire_capable =
+					  std::is_same_v<Result, float> or std::is_same_v<Result, double> or
+					  is_double_sized_long_double_v<Result>;
+					constexpr bool is_extended_long_double =
+					  std::is_same_v<Result, long double> and not is_lemire_capable;
 					use_fallback |= exponent > 22;
 					use_fallback |= exponent < -22;
-					if constexpr( std::is_same_v<Result, float> or
-					              std::is_same_v<Result, double> ) {
+					if constexpr( is_lemire_capable ) {
 						use_fallback |=
 						  significant_digits >
 						  ( std::uint64_t{ 1 } << std::numeric_limits<Result>::digits );
 					}
-					if( std::is_same_v<Result, long double> or
-					    DAW_UNLIKELY( use_fallback ) ) {
-						if constexpr( std::is_same_v<Result, float> or
-						              std::is_same_v<Result, double> ) {
+					if( is_extended_long_double or DAW_UNLIKELY( use_fallback ) ) {
+						if constexpr( is_lemire_capable ) {
 							bool discarded_nonzero = append_discarded_digits(
 							  whole_last, all_whole_last, significant_digits, exponent );
 							if( all_fract_first != nullptr ) {
@@ -452,14 +457,19 @@ namespace daw::json {
 								                           significant_digits,
 								                           exponent );
 							}
-							return parse_truncated_lemire<Result>( sign < Result{ 0 },
-							                                       exponent,
-							                                       significant_digits,
-							                                       discarded_nonzero,
-							                                       parse_state.first,
-							                                       parse_state.last );
+							using compute_t =
+							  std::conditional_t<std::is_same_v<Result, long double>,
+							                     double,
+							                     Result>;
+							return static_cast<Result>(
+							  parse_truncated_lemire<compute_t>( sign < Result{ 0 },
+							                                     exponent,
+							                                     significant_digits,
+							                                     discarded_nonzero,
+							                                     parse_state.first,
+							                                     parse_state.last ) );
 						} else {
-							static_assert( std::is_same_v<Result, long double> );
+							static_assert( is_extended_long_double );
 							return json_details::parse_with_strtod<Result>(
 							  parse_state.first, parse_state.last );
 						}
@@ -670,17 +680,21 @@ namespace daw::json {
 
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754 ) {
+					// long double that shares double's size/precision/exponent range
+					// (e.g. MSVC) is computed as double instead, since Eisel-Lemire
+					// only supports binary32/binary64.
+					constexpr bool is_lemire_capable =
+					  std::is_same_v<Result, float> or std::is_same_v<Result, double> or
+					  is_double_sized_long_double_v<Result>;
 					use_strtod |= DAW_UNLIKELY( exponent > 22 );
 					use_strtod |= DAW_UNLIKELY( exponent < -22 );
-					if constexpr( std::is_same_v<Result, float> or
-					              std::is_same_v<Result, double> ) {
+					if constexpr( is_lemire_capable ) {
 						use_strtod |= DAW_UNLIKELY(
 						  significant_digits >
 						  ( std::uint64_t{ 1 } << std::numeric_limits<Result>::digits ) );
 					}
 					if( DAW_UNLIKELY( use_strtod ) ) {
-						if constexpr( std::is_same_v<Result, float> or
-						              std::is_same_v<Result, double> ) {
+						if constexpr( is_lemire_capable ) {
 							bool discarded_nonzero =
 							  append_discarded_digits( discarded_whole_first,
 							                           discarded_whole_last,
@@ -691,12 +705,17 @@ namespace daw::json {
 							                           discarded_fract_last,
 							                           significant_digits,
 							                           exponent );
-							return parse_truncated_lemire<Result>( sign < 0,
-							                                       exponent,
-							                                       significant_digits,
-							                                       discarded_nonzero,
-							                                       orig_first.get( ),
-							                                       first.get( ) );
+							using compute_t =
+							  std::conditional_t<std::is_same_v<Result, long double>,
+							                     double,
+							                     Result>;
+							return static_cast<Result>(
+							  parse_truncated_lemire<compute_t>( sign < 0,
+							                                     exponent,
+							                                     significant_digits,
+							                                     discarded_nonzero,
+							                                     orig_first.get( ),
+							                                     first.get( ) ) );
 						} else {
 							static_assert( std::is_same_v<Result, long double> );
 							return json_details::parse_with_strtod<Result>( orig_first.get( ),
