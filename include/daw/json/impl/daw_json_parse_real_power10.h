@@ -57,6 +57,17 @@ namespace daw::json {
 			  1e290, 1e291, 1e292, 1e293, 1e294, 1e295, 1e296, 1e297, 1e298, 1e299,
 			  1e300, 1e301, 1e302, 1e303, 1e304, 1e305, 1e306, 1e307, 1e308 };
 
+			// 10^0 .. 10^27: exactly representable in 80-bit long double (5^27 < 2^64).
+			// Entries 0-22 are also exact as double; 23-27 require the full 64-bit
+			// mantissa and must not be sourced from dpow10_tbl for extended LD.
+			inline constexpr long double ldpow10_tbl[] = {
+			  1e0L,  1e1L,  1e2L,  1e3L,  1e4L,  1e5L,  1e6L,
+			  1e7L,  1e8L,  1e9L,  1e10L, 1e11L, 1e12L, 1e13L,
+			  1e14L, 1e15L, 1e16L, 1e17L, 1e18L, 1e19L, 1e20L,
+			  1e21L, 1e22L, 1e23L, 1e24L, 1e25L, 1e26L, 1e27L,
+			};
+			inline constexpr int max_ld_exact_exp = 27;
+
 			inline constexpr int max_dbl_exp =
 			  std::numeric_limits<double>::max_exponent10;
 
@@ -78,8 +89,18 @@ namespace daw::json {
 			template<typename Result, typename Unsigned>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr Result
 			power10_constexpr( Result result, Unsigned p ) {
-				// We only have a double table, of which float is a subset.  Long double
-				// will be calculated in terms of that
+				// For extended long double use the exact LD table for |p| <= 27;
+				// the double table loses precision for p in [23, 27].
+				if constexpr( is_double_sized_long_double_v<Result> == false and
+				              std::is_same_v<Result, long double> ) {
+					if( p >= -max_ld_exact_exp and p <= max_ld_exact_exp ) {
+						if( p < 0 ) {
+							return result /
+							       ldpow10_tbl[static_cast<std::size_t>( -p )];
+						}
+						return result * ldpow10_tbl[static_cast<std::size_t>( p )];
+					}
+				}
 
 				DAW_CPP23_STATIC_LOCAL constexpr auto max_v =
 				  static_cast<Result>( dpow10_tbl[max_exp<Result>] );
@@ -140,11 +161,9 @@ namespace daw::json {
 					return static_cast<Result>( power10_constexpr(
 					  static_cast<double>( result ), static_cast<std::int32_t>( p ) ) );
 				} else {
-					// For genuine extended/quad precision long double, std::pow keeps
-					// full precision; power10_constexpr's table is double-precision
-					// only and would silently truncate it.
-					using std::pow;
-					return result * pow( static_cast<Result>( 10.0 ), p );
+					// Extended long double: power10_constexpr now uses the exact LD
+					// table for |p| <= 27, covering all exponents the parser routes here.
+					return power10_constexpr( result, static_cast<std::int32_t>( p ) );
 				}
 			}
 

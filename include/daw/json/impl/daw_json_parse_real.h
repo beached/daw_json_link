@@ -427,18 +427,32 @@ namespace daw::json {
 					// double's size/precision/exponent range (e.g. MSVC) is computed
 					// as double instead, since Eisel-Lemire only supports
 					// binary32/binary64.
-					constexpr bool is_lemire_capable =
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_lemire_capable =
 					  std::is_same_v<Result, float> or std::is_same_v<Result, double> or
 					  is_double_sized_long_double_v<Result>;
-					constexpr bool is_extended_long_double =
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_extended_long_double =
 					  std::is_same_v<Result, long double> and not is_lemire_capable;
-					use_fallback |= exponent > 22;
-					use_fallback |= exponent < -22;
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_80bit_long_double_v =
+					  std::is_same_v<Result, long double> and
+					  std::numeric_limits<long double>::digits == 64;
+
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_128bit_long_double_v =
+					  std::is_same_v<Result, long double> and
+					  std::numeric_limits<long double>::digits == 113;
+
+					// Extended long double (80-bit) can exactly represent 10^k for
+					// |k| <= 27 (5^27 < 2^64); Eisel-Lemire types are limited to 22.
+					DAW_CPP23_STATIC_LOCAL constexpr int pow10_threshold =
+					  is_80bit_long_double_v    ? 27
+					  : is_128bit_long_double_v ? 48
+					                            : 22;
+					use_fallback |= exponent > pow10_threshold;
+					use_fallback |= exponent < -pow10_threshold;
 					if constexpr( is_lemire_capable ) {
 						use_fallback |= significant_digits >
 						                ( std::uint64_t{ 1 } << daw::digits<Result> );
 					}
-					if( is_extended_long_double or DAW_UNLIKELY( use_fallback ) ) {
+					if( DAW_UNLIKELY( use_fallback ) ) {
 						if constexpr( is_lemire_capable ) {
 							bool discarded_nonzero = append_discarded_digits(
 							  whole_last, all_whole_last, significant_digits, exponent );
@@ -591,7 +605,7 @@ namespace daw::json {
 						auto const fract_stored_cap = static_cast<std::ptrdiff_t>(
 						  daw::digits10<unsigned_t> - stored_whole_digit_count );
 						exponent_p1 -= static_cast<signed_t>(
-						  ( std::min )( { last_char - first, fract_stored_cap } ) );
+						  (std::min)( { last_char - first, fract_stored_cap } ) );
 						if constexpr( std::is_floating_point_v<Result> and
 						              ParseState::precise_ieee754 ) {
 							// If we silently dropped fractional digits, the power10 result
@@ -689,7 +703,7 @@ namespace daw::json {
 					// long double that shares double's size/precision/exponent range
 					// (e.g. MSVC) is computed as double instead, since Eisel-Lemire
 					// only supports binary32/binary64.
-					constexpr bool is_lemire_capable =
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_lemire_capable =
 					  std::is_same_v<Result, float> or std::is_same_v<Result, double> or
 					  is_double_sized_long_double_v<Result>;
 					use_strtod |= DAW_UNLIKELY( exponent > 22 );
