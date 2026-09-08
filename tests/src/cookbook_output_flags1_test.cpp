@@ -42,7 +42,7 @@ int main( ) {
 	auto v2_json = daw::json::to_json(
 	  v2,
 	  output_flags<SerializationFormat::Pretty,
-	               RestrictedStringOutput::OnlyAllow7bitsStrings> );
+	               RestrictedStringOutput::OnlyAllow7bitStrings> );
 	puts( v2_json.c_str( ) );
 	auto v2_2 = daw::json::from_json<OutputFlags1>( v2_json );
 	puts( daw::json::to_json( v2_2 ).c_str( ) );

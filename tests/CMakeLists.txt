@@ -1251,6 +1251,24 @@ add_test( NAME custom_optional_number_test COMMAND custom_optional_number_test W
 add_dependencies( ci_tests custom_optional_number_test )
 add_dependencies( full custom_optional_number_test )
 
+add_executable( custom_types_string_literal_test src/custom_types_string_literal_test.cpp )
+target_link_libraries( custom_types_string_literal_test PRIVATE json_test )
+add_test( NAME custom_types_string_literal_test COMMAND custom_types_string_literal_test )
+add_dependencies( ci_tests custom_types_string_literal_test )
+add_dependencies( full custom_types_string_literal_test )
+
+add_executable( parse_policy_options_test src/parse_policy_options_test.cpp )
+target_link_libraries( parse_policy_options_test PRIVATE json_test )
+add_test( NAME parse_policy_options_test COMMAND parse_policy_options_test )
+add_dependencies( ci_tests parse_policy_options_test )
+add_dependencies( full parse_policy_options_test )
+
+add_executable( serialize_policy_options_test src/serialize_policy_options_test.cpp )
+target_link_libraries( serialize_policy_options_test PRIVATE json_test )
+add_test( NAME serialize_policy_options_test COMMAND serialize_policy_options_test )
+add_dependencies( ci_tests serialize_policy_options_test )
+add_dependencies( full serialize_policy_options_test )
+
 add_executable( multi_tu_test src/multi_tu_p0_test.cpp src/multi_tu_p1_test.cpp )
 target_link_libraries( multi_tu_test json_test )
 add_test( NAME multi_tu_test_test COMMAND multi_tu_test )

@@ -290,7 +290,7 @@ namespace daw::json {
 				using restrict_high = std::bool_constant<
 				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( WritableType::restricted_string_output ==
-				    options::RestrictedStringOutput::OnlyAllow7bitsStrings )>;
+				    options::RestrictedStringOutput::OnlyAllow7bitStrings )>;
 				if constexpr( do_escape ) {
 					if constexpr( use_scanned_write and
 					              json_details::is_string_view_like_v<Container> ) {
@@ -456,7 +456,7 @@ namespace daw::json {
 				using restrict_high = std::bool_constant<
 				  EightBitMode != options::EightBitModes::AllowFull or
 				  ( WriteableType::restricted_string_output ==
-				    options::RestrictedStringOutput::OnlyAllow7bitsStrings )>;
+				    options::RestrictedStringOutput::OnlyAllow7bitStrings )>;
 
 				if constexpr( do_escape ) {
 					auto chr_it = utf8::unchecked::iterator<char const *>( ptr );
