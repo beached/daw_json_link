@@ -17,7 +17,7 @@
 #include <daw/daw_not_null.h>
 
 #include <cstdlib>
-#include <limits>
+#include <string>
 #include <system_error>
 #include <type_traits>
 
@@ -52,10 +52,17 @@ namespace daw::json {
 				Real result;
 				auto fc_res = std::from_chars( first, last, result );
 				if( fc_res.ec == std::errc::result_out_of_range ) {
-					if( *first == '-' ) {
-						return -std::numeric_limits<Real>::infinity( );
+					// from_chars reports the same error for overflow and underflow.
+					// Retry this cold path with a bounded, null-terminated token so
+					// subnormal values are not incorrectly returned as infinity.
+					auto const token = std::string( first.get( ), last.get( ) );
+					if constexpr( std::is_same_v<Real, float> ) {
+						return std::strtof( token.c_str( ), nullptr );
+					} else if constexpr( std::is_same_v<Real, double> ) {
+						return std::strtod( token.c_str( ), nullptr );
+					} else {
+						return std::strtold( token.c_str( ), nullptr );
 					}
-					return std::numeric_limits<Real>::infinity( );
 				}
 				daw_json_ensure( fc_res.ec == std::errc( ),
 				                 ErrorReason::InvalidNumber );
