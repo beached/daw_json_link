@@ -70,7 +70,7 @@ namespace daw::json {
 			DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING DAW_ATTRIB_INLINE
 			  DAW_JSON_CPP23_STATIC_CALL_OP constexpr std::array<T, Sz>
 			  operator( )( std::array<T, Sz> &&v )
-			    DAW_JSON_CPP23_STATIC_CALL_OP_CONST noexcept {
+			    DAW_JSON_CPP23_STATIC_CALL_OP_CONST {
 				return std::move( v );
 			}
 
