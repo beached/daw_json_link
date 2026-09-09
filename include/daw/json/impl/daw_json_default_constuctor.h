@@ -135,7 +135,8 @@ namespace daw::json {
 					  json_details::iter_range_t{ std::move( first ), std::move( last ) },
 					  alloc );
 				} else {
-					using reserve_amount = daw::constant<4096U / ( sizeof( T ) * 8U )>;
+					using reserve_amount = daw::constant<
+					  ( 4096U / sizeof( T ) ) == 0 ? 1 : ( 4096U / sizeof( T ) )>;
 					auto result = std::vector<T, Alloc>( alloc );
 					// Lets use a WAG and go for a 4k page size
 					result.reserve( reserve_amount::value );
