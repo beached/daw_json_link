@@ -140,6 +140,29 @@ int main( )
 		daw_ensure( not out.empty( ) );
 	}
 
+	// RestrictedStringOutput::OnlyAllow7bitStrings permits the full 7-bit
+	// range, including DEL (0x7F).
+	{
+		std::string value = "ok ";
+		value.push_back( static_cast<char>( 0x7F ) );
+		auto const out = to_json(
+		  RestrictedOutputHolder{ value },
+		  options::output_flags<
+		    options::RestrictedStringOutput::OnlyAllow7bitStrings> );
+		auto expected = std::string{ R"({"s":"ok )" };
+		expected.push_back( static_cast<char>( 0x7F ) );
+		expected += R"("})";
+		daw_ensure( out == expected );
+	}
+	{
+		using disallow_high_string = json_string_no_name<
+		  std::string,
+		  options::string_opt( options::EightBitModes::DisallowHigh )>;
+		std::string_view const value = "\x7F";
+		std::string_view const expected = "\"\x7F\"";
+		daw_ensure( to_json<disallow_high_string>( value ) == expected );
+	}
+
 #if defined( DAW_USE_EXCEPTIONS )
 	// RestrictedStringOutput::ErrorInvalidUTF8 throws on invalid UTF-8.
 	{

@@ -277,6 +277,57 @@ namespace daw::json {
 		} // namespace json_details
 
 		namespace utils {
+			template<bool RestrictHigh, typename WriteableType>
+			[[nodiscard]] static constexpr WriteableType
+			escape_codepoint_to_iterator( WriteableType it, std::uint32_t cp ) {
+				switch( cp ) {
+				case '"':
+					it.write( "\\\"" );
+					break;
+				case '\\':
+					it.write( "\\\\" );
+					break;
+				case '\b':
+					it.write( "\\b" );
+					break;
+				case '\f':
+					it.write( "\\f" );
+					break;
+				case '\n':
+					it.write( "\\n" );
+					break;
+				case '\r':
+					it.write( "\\r" );
+					break;
+				case '\t':
+					it.write( "\\t" );
+					break;
+				default:
+					if( cp < 0x20U ) {
+						it = json_details::output_hex( static_cast<std::uint16_t>( cp ),
+						                               it );
+						break;
+					}
+					if constexpr( RestrictHigh ) {
+						if( cp >= 0x80U and cp <= 0xFFFFU ) {
+							it = json_details::output_hex(
+							  static_cast<std::uint16_t>( cp ), it );
+							break;
+						}
+						if( cp > 0xFFFFU ) {
+							it = json_details::output_hex(
+							  static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ), it );
+							it = json_details::output_hex(
+							  static_cast<std::uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
+							break;
+						}
+					}
+					json_details::utf32_to_utf8( cp, it );
+					break;
+				}
+				return it;
+			}
+
 			template<
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
@@ -372,52 +423,7 @@ namespace daw::json {
 								first = it_t( std::next( first.base( ) ) );
 							}
 						}
-						switch( cp ) {
-						case '"':
-							it.write( "\\\"" );
-							break;
-						case '\\':
-							it.write( "\\\\" );
-							break;
-						case '\b':
-							it.write( "\\b" );
-							break;
-						case '\f':
-							it.write( "\\f" );
-							break;
-						case '\n':
-							it.write( "\\n" );
-							break;
-						case '\r':
-							it.write( "\\r" );
-							break;
-						case '\t':
-							it.write( "\\t" );
-							break;
-						default:
-							if( cp < 0x20U ) {
-								it = json_details::output_hex( static_cast<std::uint16_t>( cp ),
-								                               it );
-								break;
-							}
-							if constexpr( restrict_high::value ) {
-								if( cp >= 0x7FU and cp <= 0xFFFFU ) {
-									it = json_details::output_hex(
-									  static_cast<std::uint16_t>( cp ), it );
-									break;
-								}
-								if( cp > 0xFFFFU ) {
-									it = json_details::output_hex(
-									  static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ), it );
-									it = json_details::output_hex(
-									  static_cast<std::uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ),
-									  it );
-									break;
-								}
-							}
-							json_details::utf32_to_utf8( cp, it );
-							break;
-						}
+						it = escape_codepoint_to_iterator<restrict_high::value>( it, cp );
 					}
 				} else {
 					if constexpr( json_details::is_string_view_like_v<Container> ) {
@@ -462,52 +468,7 @@ namespace daw::json {
 					auto chr_it = utf8::unchecked::iterator<char const *>( ptr );
 					while( *chr_it.base( ) != '\0' ) {
 						auto const cp = *chr_it++;
-						switch( cp ) {
-						case '"':
-							it.write( "\\\"" );
-							break;
-						case '\\':
-							it.write( "\\\\" );
-							break;
-						case '\b':
-							it.write( "\\b" );
-							break;
-						case '\f':
-							it.write( "\\f" );
-							break;
-						case '\n':
-							it.write( "\\n" );
-							break;
-						case '\r':
-							it.write( "\\r" );
-							break;
-						case '\t':
-							it.write( "\\t" );
-							break;
-						default:
-							if( cp < 0x20U ) {
-								it = json_details::output_hex( static_cast<std::uint16_t>( cp ),
-								                               it );
-								break;
-							}
-							if constexpr( restrict_high::value ) {
-								if( cp >= 0x7FU and cp <= 0xFFFFU ) {
-									it = json_details::output_hex(
-									  static_cast<std::uint16_t>( cp ), it );
-									break;
-								}
-								if( cp > 0xFFFFU ) {
-									it = json_details::output_hex(
-									  static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ), it );
-									it = output_hex(
-									  static_cast<std::uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ),
-									  it );
-									break;
-								}
-							}
-							json_details::utf32_to_utf8( cp, it );
-							break;
-						}
+						it = escape_codepoint_to_iterator<restrict_high::value>( it, cp );
 					}
 				} else if constexpr( restrict_high::value ) {
 					auto const *const first = ptr;
@@ -957,7 +918,7 @@ namespace daw::json {
 				it.put( '"' );
 				it = utils::copy_to_iterator<escape_output_v<JsonMember> !=
 				                               options::EscapeValidUTF8::AssumeValid,
-				                             JsonMember::eight_bit_mode>( it, value );
+				                             JsonMember::eight_bit_mode, true>( it, value );
 				it.put( '"' );
 				return it;
 			}

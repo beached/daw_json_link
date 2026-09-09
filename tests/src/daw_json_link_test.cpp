@@ -329,7 +329,7 @@ DAW_CONSTEXPR char const json_data_array[] =
 			"s": "yo yo yo",
 			"s2": "ho ho ho",
 			"o": 1344,
-			"dte": "2019-11-31T01:02:03.343Z"
+			"dte": "2019-11-30T01:02:03.343Z"
 	  },{
 	    "i": 55,
 	    "d": 2.2,
@@ -341,7 +341,7 @@ DAW_CONSTEXPR char const json_data_array[] =
 			"s": "yo yo yo",
 			"s2": "ho ho ho",
 			"o": 1322,
-			"dte": "2010-06-31T01:02:03.343Z"
+			"dte": "2010-06-30T01:02:03.343Z"
 	  }])";
 
 struct EmptyClassTest {
@@ -1307,6 +1307,18 @@ int main( ) {
 			daw::do_not_optimize( data2 );
 		}
 		to_json( data, std::cout ) << '\n';
+#if defined( DAW_USE_EXCEPTIONS )
+		auto const ensure_invalid_date = []( std::string_view timestamp ) {
+			bool threw = false;
+			try {
+				(void)from_json<json_date_no_name<std::chrono::system_clock::time_point>>(
+				  timestamp );
+			} catch( json_exception const & ) { threw = true; }
+			daw_ensure( threw );
+		};
+		ensure_invalid_date( R"("2019-11-31T01:02:03.343Z")" );
+		ensure_invalid_date( R"("2010-06-31T01:02:03.343Z")" );
+#endif
 		CX auto ary =
 		  from_json_array<test_001_t, daw::bounded_vector_t<test_001_t, 10>>(
 		    json_data_array );
