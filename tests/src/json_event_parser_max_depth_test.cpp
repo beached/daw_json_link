@@ -9,6 +9,7 @@
 #include <daw/json/daw_json_event_parser.h>
 #include <daw/json/daw_json_link.h>
 
+#if defined( DAW_USE_EXCEPTIONS )
 #include <cstddef>
 #include <string>
 
@@ -58,3 +59,6 @@ int main( ) {
 		daw::json::json_event_parser<daw::use_default, depth>( doc, h );
 	}
 }
+#else
+int main( ) {}
+#endif
