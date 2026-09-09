@@ -499,8 +499,8 @@ namespace daw::json {
 				  ErrorReason::InvalidNumberStart,
 				  parse_state );
 
-				using iterator = typename ParseState::iterator;
-				[[maybe_unused]] daw::not_null<iterator> const orig_first =
+				using iterator_t = typename ParseState::iterator;
+				[[maybe_unused]] daw::not_null<iterator_t> const orig_first =
 				  parse_state.first;
 
 				auto const sign =
@@ -519,19 +519,20 @@ namespace daw::json {
 				                     std::int64_t,
 				                     Result>;
 
-				daw::not_null<iterator> first = parse_state.first;
-				daw::not_null<iterator> const last = parse_state.last;
-				daw::not_null<iterator> const whole_last =
+				daw::not_null<iterator_t> first = parse_state.first;
+				daw::not_null<iterator_t> const last = parse_state.last;
+				daw::not_null<iterator_t> const whole_last =
 				  parse_state.first +
 				  (std::min)( { parse_state.last - parse_state.first,
 				                static_cast<std::ptrdiff_t>( max_exponent::value ) } );
 
 				unsigned_t significant_digits = 0;
-				iterator discarded_whole_first = nullptr;
-				iterator discarded_whole_last = nullptr;
-				iterator discarded_fract_first = nullptr;
-				iterator discarded_fract_last = nullptr;
-				daw::not_null<iterator> last_char = parse_digits_while_number<iterator>(
+				iterator_t discarded_whole_first = nullptr;
+				iterator_t discarded_whole_last = nullptr;
+				iterator_t discarded_fract_first = nullptr;
+				iterator_t discarded_fract_last = nullptr;
+				daw::not_null<iterator_t> last_char =
+				  parse_digits_while_number<iterator_t>(
 				  first.get( ), whole_last.get( ), significant_digits, 0 );
 				auto const parsed_whole_digit_count = last_char - parse_state.first;
 				auto const stored_whole_digit_count = [&] {
@@ -555,7 +556,7 @@ namespace daw::json {
 						}
 						// We have sig digits we cannot parse because there isn't enough
 						// room in a std::uint64_t
-						daw::not_null<iterator> ptr =
+						daw::not_null<iterator_t> ptr =
 						  skip_digits<( ParseState::is_zero_terminated_string or
 						                ParseState::is_unchecked_input )>( last_char,
 						                                                   last );
@@ -588,14 +589,14 @@ namespace daw::json {
 							discarded_fract_last = first.get( );
 						}
 					} else {
-						daw::not_null<iterator> fract_last =
+						daw::not_null<iterator_t> fract_last =
 						  first + (std::min)( parse_state.last - first,
 						                      static_cast<std::ptrdiff_t>(
 						                        max_exponent::value -
 						                        ( first - parse_state.first ) ) );
 
 						last_char =
-						  parse_digits_while_number<iterator>( first.get( ),
+						  parse_digits_while_number<iterator_t>( first.get( ),
 						                                       fract_last.get( ),
 						                                       significant_digits,
 						                                       stored_whole_digit_count );
