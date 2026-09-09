@@ -115,9 +115,9 @@ namespace daw::json {
 						m_writer.write( "null" );
 					} else {
 						if constexpr( std::is_convertible_v<T, char const *> ) {
-							m_writer =
-							  json_details::member_to_string<json_string_raw_no_name<daw::string_view>>(
-							    m_writer, daw::string_view( value ) );
+							m_writer = json_details::member_to_string<
+							  json_string_raw_no_name<daw::string_view>>(
+							  m_writer, daw::string_view( value ) );
 						} else {
 							m_writer =
 							  json_details::member_to_string<json_class_t>( m_writer, value );
@@ -192,6 +192,10 @@ namespace daw::json {
 				}
 				m_writer.del_indent( );
 				if( not m_is_first ) {
+					if constexpr( iterator_t::output_trailing_comma ==
+					              options::OutputTrailingComma::Yes ) {
+						m_writer.put( ',' );
+					}
 					m_writer.next_member( );
 				}
 				m_writer.put( '}' );
@@ -215,6 +219,10 @@ namespace daw::json {
 				  ErrorReason::OutputError );
 				m_writer.del_indent( );
 				if( not m_is_first ) {
+					if constexpr( iterator_t::output_trailing_comma ==
+					              options::OutputTrailingComma::Yes ) {
+						m_writer.put( ',' );
+					}
 					m_writer.next_member( );
 				}
 				m_writer.put( ']' );

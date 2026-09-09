@@ -123,6 +123,19 @@ int main( ) {
 		}
 		daw_ensure( out == R"json([])json" );
 	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer<
+			  daw::json::options::OutputTrailingComma::Yes>( out );
+			w.open_object( );
+			w.add_key( "a" );
+			w.open_array( );
+			w.write_value( 1 );
+			w.close_array( );
+		}
+		daw_ensure( out == R"json({"a":[1,],})json" );
+	}
 
 	{
 		auto out = std::string{ };
