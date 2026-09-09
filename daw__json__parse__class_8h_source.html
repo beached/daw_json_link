@@ -213,7 +213,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>               <span class="keyword">typename</span> ParseState, std::size_t N, <span class="keywordtype">bool</span> B&gt;</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">constexpr</span> json_result_t&lt;JsonMember&gt;</div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>      parse_class_member( ParseState &amp;parse_state,</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                          locations_info_t&lt;N, B&gt; &amp;locations ) {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                          locations_info_t&lt;N, B, typename ParseState::iterator&gt; &amp;locations ) {</div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        parse_state.move_next_member_or_end( );</div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <a class="code hl_define" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( not parse_state.empty( ) and</div>

@@ -97,12 +97,12 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="daw__json__parse__real__eisellemire_8h.html">daw/json/impl/daw_json_parse_real_eisellemire.h</a>&quot;</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="daw__json__parse__unsigned__int_8h.html">daw/json/impl/daw_json_parse_unsigned_int.h</a>&quot;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;daw/daw_bit_cast.h&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;daw/daw_not_null.h&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;daw/daw_arith_traits.h&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;daw/daw_bit_cast.h&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;daw/daw_not_null.h&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
@@ -147,7 +147,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>              <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            }</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keyword">constexpr</span> std::size_t max_growth = 19;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            DAW_CPP23_STATIC_LOCAL <span class="keyword">constexpr</span> std::size_t max_growth = 19;</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            std::uint8_t result[max_digits + max_growth]{ };</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keyword">auto</span> write = max_digits + max_growth;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <span class="keyword">auto</span> read = digit_count;</div>
@@ -239,7 +239,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>              <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            }</div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            <span class="keywordflow">if</span>( decimal_point &gt;= 19 ) {</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>              <span class="keywordflow">return</span> std::numeric_limits&lt;std::uint64_t&gt;::max( );</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>              <span class="keywordflow">return</span> daw::max_value&lt;std::uint64_t&gt;;</div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>            }</div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            <span class="keyword">auto</span> <span class="keyword">const</span> point = <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( decimal_point );</div>
@@ -265,228 +265,232 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        [[nodiscard]] <span class="keyword">constexpr</span> std::int64_t</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        saturating_add( std::int64_t lhs, std::int64_t rhs ) {</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>          <span class="keyword">constexpr</span> <span class="keyword">auto</span> max_value = std::numeric_limits&lt;std::int64_t&gt;::max( );</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>          <span class="keyword">constexpr</span> <span class="keyword">auto</span> min_value =</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            std::numeric_limits&lt;std::int64_t&gt;::lowest( );</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>          <span class="keywordflow">if</span>( rhs &gt; 0 and lhs &gt; max_value - rhs ) {</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            <span class="keywordflow">return</span> max_value;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>          }</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>          <span class="keywordflow">if</span>( rhs &lt; 0 and lhs &lt; min_value - rhs ) {</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            <span class="keywordflow">return</span> min_value;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>          }</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>          <span class="keywordflow">return</span> lhs + rhs;</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        }</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        [[nodiscard]] <span class="keyword">constexpr</span> std::int64_t</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        parse_exponent( <span class="keywordtype">char</span> <span class="keyword">const</span> *first, <span class="keywordtype">char</span> <span class="keyword">const</span> *last ) {</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>          <span class="keywordflow">if</span>( first == <span class="keyword">nullptr</span> or first == last ) {</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>          }</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>          <span class="keywordtype">bool</span> negative = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>          <span class="keywordflow">if</span>( *first == <span class="charliteral">&#39;+&#39;</span> or *first == <span class="charliteral">&#39;-&#39;</span> ) {</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            negative = *first == <span class="charliteral">&#39;-&#39;</span>;</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            ++first;</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>          }</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>          <span class="keyword">constexpr</span> <span class="keyword">auto</span> positive_limit = <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>(</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            std::numeric_limits&lt;std::int64_t&gt;::max( ) );</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>          <span class="keyword">constexpr</span> <span class="keyword">auto</span> negative_limit = positive_limit + 1U;</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>          <span class="keyword">auto</span> <span class="keyword">const</span> limit = negative ? negative_limit : positive_limit;</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>          std::uint64_t result = 0;</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>          <span class="keywordtype">bool</span> overflow = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>          <span class="keywordflow">while</span>( first &lt; last ) {</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            <span class="keyword">auto</span> <span class="keyword">const</span> digit = parse_digit( *first++ );</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            <span class="keywordflow">if</span>( digit &gt;= 10U ) {</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>              <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            }</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <span class="keywordflow">if</span>( result &gt; ( limit - digit ) / 10U ) {</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>              result = limit;</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>              overflow = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span>( not overflow ) {</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>              result = result * 10U + digit;</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            }</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>          }</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>          <span class="keywordflow">if</span>( negative ) {</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>            <span class="keywordflow">if</span>( result == negative_limit ) {</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>              <span class="keywordflow">return</span> std::numeric_limits&lt;std::int64_t&gt;::lowest( );</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>            }</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>            <span class="keywordflow">return</span> -<span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>( result );</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>          }</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>( result );</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        }</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        [[nodiscard]] <span class="keyword">constexpr</span> decimal_sequence</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        parse_json_decimal( daw::not_null&lt;char const *&gt; first,</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                            daw::not_null&lt;char const *&gt; <span class="keyword">const</span> last ) {</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>          decimal_sequence result{ };</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>          <span class="keywordflow">if</span>( *first == <span class="charliteral">&#39;-&#39;</span> ) {</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>            ++first;</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>          }</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>          std::int64_t decimal_point = 0;</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>          <span class="keywordtype">bool</span> seen_nonzero = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>          <span class="keywordflow">while</span>( first &lt; last and parse_digit( *first ) &lt; 10U ) {</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>            <span class="keyword">auto</span> <span class="keyword">const</span> digit = parse_digit( *first++ );</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>            <span class="keywordflow">if</span>( seen_nonzero or digit != 0 ) {</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>              seen_nonzero = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>              result.push_digit( digit );</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>              ++decimal_point;</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>            }</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>          }</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>          <span class="keywordflow">if</span>( first &lt; last and *first == <span class="charliteral">&#39;.&#39;</span> ) {</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>            ++first;</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>            <span class="keywordflow">while</span>( first &lt; last and parse_digit( *first ) &lt; 10U ) {</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>              <span class="keyword">auto</span> <span class="keyword">const</span> digit = parse_digit( *first++ );</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>              <span class="keywordflow">if</span>( seen_nonzero or digit != 0 ) {</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                seen_nonzero = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                result.push_digit( digit );</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>              } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>                --decimal_point;</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>              }</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            }</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>          }</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>          <span class="keywordtype">char</span> <span class="keyword">const</span> *exponent_first = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>          <span class="keywordflow">if</span>( first &lt; last and ( *first == <span class="charliteral">&#39;e&#39;</span> or *first == <span class="charliteral">&#39;E&#39;</span> ) ) {</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            exponent_first = ++first;</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>          }</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>          decimal_point = saturating_add(</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            decimal_point, parse_exponent( exponent_first, last.get( ) ) );</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>          <span class="keywordflow">if</span>( not seen_nonzero ) {</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            result.digit_count = 0;</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            result.decimal_point = 0;</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            result.truncated = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            <span class="keywordflow">return</span> result;</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>          }</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>          <span class="keywordflow">if</span>( decimal_point &gt; decimal_sequence::decimal_point_limit ) {</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            result.decimal_point = decimal_sequence::decimal_point_limit;</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span>( decimal_point &lt; -decimal_sequence::decimal_point_limit ) {</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            result.decimal_point = -decimal_sequence::decimal_point_limit;</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>            result.decimal_point = <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( decimal_point );</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>          }</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>          result.trim( );</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>          <span class="keywordflow">return</span> result;</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        }</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span> </div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span></div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        shift_amount( std::int32_t decimal_places ) {</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>          <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> powers[19] = {</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            0,  3,  6,  9,  13, 16, 19, 23, 26, 29,</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            33, 36, 39, 43, 46, 49, 53, 56, 59,</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>          };</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>          <span class="keyword">auto</span> <span class="keyword">const</span> places = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>            decimal_places &lt; 0 ? -decimal_places : decimal_places );</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>          <span class="keywordflow">return</span> places &lt; 19U ? powers[places] : 60U;</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        }</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Real&gt;</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        [[nodiscard]] <span class="keyword">constexpr</span> Real pack_real( <span class="keywordtype">bool</span> negative,</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>                                                std::uint64_t mantissa,</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>                                                std::int32_t power2 ) {</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>          <span class="keyword">using </span>format = eisellemire_details::binary_format&lt;Real&gt;;</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>          <span class="keyword">using </span>uint_type = <span class="keyword">typename</span> format::uint_type;</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>          <span class="keyword">auto</span> <span class="keyword">const</span> bits = <span class="keyword">static_cast&lt;</span>uint_type<span class="keyword">&gt;</span>(</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>            mantissa |</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>            ( <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>( power2 ) &lt;&lt; format::mantissa_bits ) |</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>            ( <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>( negative ) &lt;&lt; format::sign_bit ) );</div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>          <span class="keywordflow">return</span> DAW_BIT_CAST( Real, bits );</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        }</div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>      } <span class="comment">// namespace decimal_details</span></div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Real&gt;</div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>      [[nodiscard]] <span class="keyword">constexpr</span> Real</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>      parse_json_real_exact( <span class="keywordtype">bool</span> negative, daw::not_null&lt;char const *&gt; first,</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>                             daw::not_null&lt;char const *&gt; last ) {</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        <span class="keyword">static_assert</span>( std::is_same_v&lt;Real, float&gt; or</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>                       std::is_same_v&lt;Real, double&gt; );</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        <span class="keyword">using </span>format = eisellemire_details::binary_format&lt;Real&gt;;</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        <span class="keyword">auto</span> decimal = decimal_details::parse_json_decimal( first, last );</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span> </div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        <span class="keywordflow">if</span>( decimal.digit_count == 0 ) {</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>          <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;( negative, 0, 0 );</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        }</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span> </div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="keyword">constexpr</span> std::int32_t smallest_decimal_point =</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>          std::is_same_v&lt;Real, double&gt; ? -324 : -45;</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        <span class="keyword">constexpr</span> std::int32_t largest_decimal_point =</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>          std::is_same_v&lt;Real, double&gt; ? 310 : 40;</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        <span class="keywordflow">if</span>( decimal.decimal_point &lt; smallest_decimal_point ) {</div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>          <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;( negative, 0, 0 );</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        }</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        <span class="keywordflow">if</span>( decimal.decimal_point &gt;= largest_decimal_point ) {</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>          <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;(</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>            negative, 0, format::infinite_power );</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        }</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span> </div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        std::int32_t exponent2 = 0;</div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>        <span class="keywordflow">while</span>( decimal.decimal_point &gt; 0 ) {</div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>          <span class="keyword">auto</span> <span class="keyword">const</span> shift =</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            decimal_details::shift_amount( decimal.decimal_point );</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>          decimal.shift_right( shift );</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>          exponent2 += <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( shift );</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        }</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>        <span class="keywordflow">while</span>( decimal.decimal_point &lt;= 0 ) {</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>          <span class="keywordtype">unsigned</span> shift = 0;</div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>          <span class="keywordflow">if</span>( decimal.decimal_point == 0 ) {</div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>            <span class="keywordflow">if</span>( decimal.digits[0] &gt;= 5 ) {</div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>              <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>            }</div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>            shift = decimal.digits[0] &lt;= 1 ? 2U : 1U;</div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>            shift = decimal_details::shift_amount( decimal.decimal_point );</div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>          }</div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>          decimal.shift_left( shift );</div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>          exponent2 -= <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( shift );</div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        }</div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span> </div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        <span class="comment">// decimal is now in [0.5, 1); IEEE formats use [1, 2).</span></div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        --exponent2;</div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> minimum_exponent = 1 - format::exponent_bias;</div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        <span class="keywordflow">while</span>( exponent2 &lt; minimum_exponent ) {</div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>          <span class="keyword">auto</span> shift = minimum_exponent - exponent2;</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>          <span class="keywordflow">if</span>( shift &gt; 60 ) {</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            shift = 60;</div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>          }</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>          decimal.shift_right( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( shift ) );</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>          exponent2 += shift;</div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        }</div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span> </div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>        <span class="keywordflow">if</span>( exponent2 - minimum_exponent + 1 &gt;= format::infinite_power ) {</div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>          <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;(</div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>            negative, 0, format::infinite_power );</div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>        }</div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span> </div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>        decimal.shift_left(</div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( format::mantissa_bits + 1 ) );</div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>        <span class="keyword">auto</span> mantissa = decimal.round( );</div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>        <span class="keywordflow">if</span>( mantissa &gt;=</div>
-<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>            ( std::uint64_t{ 1 } &lt;&lt; ( format::mantissa_bits + 1 ) ) ) {</div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>          decimal.shift_right( 1 );</div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>          ++exponent2;</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>          mantissa = decimal.round( );</div>
-<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>          <span class="keywordflow">if</span>( exponent2 - minimum_exponent + 1 &gt;= format::infinite_power ) {</div>
-<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>            <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;(</div>
-<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>              negative, 0, format::infinite_power );</div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>          }</div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>        }</div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span> </div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>        <span class="keyword">auto</span> power2 = exponent2 - minimum_exponent + 1;</div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>        <span class="keywordflow">if</span>( mantissa &lt; ( std::uint64_t{ 1 } &lt;&lt; format::mantissa_bits ) ) {</div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>          --power2;</div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>        }</div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>        mantissa &amp;= ( std::uint64_t{ 1 } &lt;&lt; format::mantissa_bits ) - 1U;</div>
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>        <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;( negative, mantissa, power2 );</div>
-<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>      }</div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>          DAW_CPP23_STATIC_LOCAL <span class="keyword">constexpr</span> <span class="keyword">auto</span> max_value =</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            daw::max_value&lt;std::int64_t&gt;;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>          DAW_CPP23_STATIC_LOCAL <span class="keyword">constexpr</span> <span class="keyword">auto</span> lowest_value =</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            daw::lowest_value&lt;std::int64_t&gt;;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>          <span class="keywordflow">if</span>( rhs &gt; 0 and lhs &gt; max_value - rhs ) {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            <span class="keywordflow">return</span> max_value;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>          }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>          <span class="keywordflow">if</span>( rhs &lt; 0 and lhs &lt; lowest_value - rhs ) {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            <span class="keywordflow">return</span> lowest_value;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>          }</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>          <span class="keywordflow">return</span> lhs + rhs;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        [[nodiscard]] <span class="keyword">constexpr</span> std::int64_t</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        parse_exponent( <span class="keywordtype">char</span> <span class="keyword">const</span> *first, <span class="keywordtype">char</span> <span class="keyword">const</span> *last ) {</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>          <span class="keywordflow">if</span>( first == <span class="keyword">nullptr</span> or first == last ) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>          }</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>          <span class="keywordtype">bool</span> negative = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>          <span class="keywordflow">if</span>( *first == <span class="charliteral">&#39;+&#39;</span> or *first == <span class="charliteral">&#39;-&#39;</span> ) {</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            negative = *first == <span class="charliteral">&#39;-&#39;</span>;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            ++first;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>          }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>          DAW_CPP23_STATIC_LOCAL <span class="keyword">constexpr</span> <span class="keyword">auto</span> positive_limit =</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>( daw::max_value&lt;std::int64_t&gt; );</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>          DAW_CPP23_STATIC_LOCAL <span class="keyword">constexpr</span> <span class="keyword">auto</span> negative_limit =</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            positive_limit + 1U;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>          <span class="keyword">auto</span> <span class="keyword">const</span> limit = negative ? negative_limit : positive_limit;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>          std::uint64_t result = 0;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>          <span class="keywordtype">bool</span> overflow = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>          <span class="keywordflow">while</span>( first &lt; last ) {</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            <span class="keyword">auto</span> <span class="keyword">const</span> digit = parse_digit( *first++ );</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <span class="keywordflow">if</span>( digit &gt;= 10U ) {</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>              <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            <span class="keywordflow">if</span>( result &gt; ( limit - digit ) / 10U ) {</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>              result = limit;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>              overflow = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span>( not overflow ) {</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>              result = result * 10U + digit;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            }</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>          }</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>          <span class="keywordflow">if</span>( negative ) {</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>            <span class="keywordflow">if</span>( result == negative_limit ) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>              <span class="keywordflow">return</span> daw::lowest_value&lt;std::int64_t&gt;;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            }</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            <span class="keywordflow">return</span> -<span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>( result );</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>          }</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>( result );</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        }</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        [[nodiscard]] <span class="keyword">constexpr</span> decimal_sequence</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        parse_json_decimal( daw::not_null&lt;char const *&gt; first,</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                            daw::not_null&lt;char const *&gt; <span class="keyword">const</span> last ) {</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>          decimal_sequence result{ };</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>          <span class="keywordflow">if</span>( *first == <span class="charliteral">&#39;-&#39;</span> ) {</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            ++first;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>          }</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>          std::int64_t decimal_point = 0;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>          <span class="keywordtype">bool</span> seen_nonzero = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>          <span class="keywordflow">while</span>( first &lt; last and parse_digit( *first ) &lt; 10U ) {</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>            <span class="keyword">auto</span> <span class="keyword">const</span> digit = parse_digit( *first++ );</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>            <span class="keywordflow">if</span>( seen_nonzero or digit != 0 ) {</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>              seen_nonzero = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>              result.push_digit( digit );</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>              ++decimal_point;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>            }</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>          }</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>          <span class="keywordflow">if</span>( first &lt; last and *first == <span class="charliteral">&#39;.&#39;</span> ) {</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            ++first;</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            <span class="keywordflow">while</span>( first &lt; last and parse_digit( *first ) &lt; 10U ) {</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>              <span class="keyword">auto</span> <span class="keyword">const</span> digit = parse_digit( *first++ );</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>              <span class="keywordflow">if</span>( seen_nonzero or digit != 0 ) {</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>                seen_nonzero = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>                result.push_digit( digit );</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>              } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                --decimal_point;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>              }</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            }</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>          }</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>          <span class="keywordtype">char</span> <span class="keyword">const</span> *exponent_first = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>          <span class="keywordflow">if</span>( first &lt; last and ( *first == <span class="charliteral">&#39;e&#39;</span> or *first == <span class="charliteral">&#39;E&#39;</span> ) ) {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            exponent_first = ++first;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>          }</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>          decimal_point = saturating_add(</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            decimal_point, parse_exponent( exponent_first, last.get( ) ) );</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>          <span class="keywordflow">if</span>( not seen_nonzero ) {</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            result.digit_count = 0;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>            result.decimal_point = 0;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            result.truncated = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>            <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>          }</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>          <span class="keywordflow">if</span>( decimal_point &gt; decimal_sequence::decimal_point_limit ) {</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>            result.decimal_point = decimal_sequence::decimal_point_limit;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span>( decimal_point &lt; -decimal_sequence::decimal_point_limit ) {</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            result.decimal_point = -decimal_sequence::decimal_point_limit;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>            result.decimal_point = <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( decimal_point );</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>          }</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>          result.trim( );</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>          <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        }</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span></div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>        shift_amount( std::int32_t decimal_places ) {</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>          <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> powers[19] = {</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            0,  3,  6,  9,  13, 16, 19, 23, 26, 29,</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>            33, 36, 39, 43, 46, 49, 53, 56, 59,</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>          };</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>          <span class="keyword">auto</span> <span class="keyword">const</span> places = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            decimal_places &lt; 0 ? -decimal_places : decimal_places );</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>          <span class="keywordflow">return</span> places &lt; 19U ? powers[places] : 60U;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        }</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Real&gt;</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        [[nodiscard]] <span class="keyword">constexpr</span> Real pack_real( <span class="keywordtype">bool</span> negative,</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>                                                std::uint64_t mantissa,</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>                                                std::int32_t power2 ) {</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>          <span class="keyword">using </span>format = eisellemire_details::binary_format&lt;Real&gt;;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>          <span class="keyword">using </span>uint_type = <span class="keyword">typename</span> format::uint_type;</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>          <span class="keyword">auto</span> <span class="keyword">const</span> bits = <span class="keyword">static_cast&lt;</span>uint_type<span class="keyword">&gt;</span>(</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>            mantissa |</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>            ( <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>( power2 ) &lt;&lt; format::mantissa_bits ) |</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>            ( <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>( negative ) &lt;&lt; format::sign_bit ) );</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>          <span class="keywordflow">return</span> DAW_BIT_CAST( Real, bits );</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        }</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>      } <span class="comment">// namespace decimal_details</span></div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Real&gt;</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>      [[nodiscard]] <span class="keyword">constexpr</span> Real</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>      parse_json_real_exact( <span class="keywordtype">bool</span> negative, daw::not_null&lt;char const *&gt; first,</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>                             daw::not_null&lt;char const *&gt; last ) {</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        <span class="keyword">static_assert</span>( std::is_same_v&lt;Real, float&gt; or</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>                       std::is_same_v&lt;Real, double&gt; );</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        <span class="keyword">using </span>format = eisellemire_details::binary_format&lt;Real&gt;;</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        <span class="keyword">auto</span> decimal = decimal_details::parse_json_decimal( first, last );</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span> </div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        <span class="keywordflow">if</span>( decimal.digit_count == 0 ) {</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>          <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;( negative, 0, 0 );</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        }</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        DAW_CPP23_STATIC_LOCAL <span class="keyword">constexpr</span> std::int32_t</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>          smallest_decimal_point = std::is_same_v&lt;Real, double&gt; ? -324 : -45;</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        DAW_CPP23_STATIC_LOCAL <span class="keyword">constexpr</span> std::int32_t largest_decimal_point =</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>          std::is_same_v&lt;Real, double&gt; ? 310 : 40;</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        <span class="keywordflow">if</span>( decimal.decimal_point &lt; smallest_decimal_point ) {</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>          <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;( negative, 0, 0 );</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        }</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        <span class="keywordflow">if</span>( decimal.decimal_point &gt;= largest_decimal_point ) {</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>          <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;(</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>            negative, 0, format::infinite_power );</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>        }</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span> </div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>        std::int32_t exponent2 = 0;</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>        <span class="keywordflow">while</span>( decimal.decimal_point &gt; 0 ) {</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>          <span class="keyword">auto</span> <span class="keyword">const</span> shift =</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>            decimal_details::shift_amount( decimal.decimal_point );</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>          decimal.shift_right( shift );</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>          exponent2 += <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( shift );</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>        }</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        <span class="keywordflow">while</span>( decimal.decimal_point &lt;= 0 ) {</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>          <span class="keywordtype">unsigned</span> shift = 0;</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>          <span class="keywordflow">if</span>( decimal.decimal_point == 0 ) {</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>            <span class="keywordflow">if</span>( decimal.digits[0] &gt;= 5 ) {</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>              <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>            }</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>            shift = decimal.digits[0] &lt;= 1 ? 2U : 1U;</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>            shift = decimal_details::shift_amount( decimal.decimal_point );</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>          }</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>          decimal.shift_left( shift );</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>          exponent2 -= <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>( shift );</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        }</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span> </div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        <span class="comment">// decimal is now in [0.5, 1); IEEE formats use [1, 2).</span></div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>        --exponent2;</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        DAW_CPP23_STATIC_LOCAL <span class="keyword">constexpr</span> <span class="keyword">auto</span> minimum_exponent =</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>          1 - format::exponent_bias;</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        <span class="keywordflow">while</span>( exponent2 &lt; minimum_exponent ) {</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>          <span class="keyword">auto</span> shift = minimum_exponent - exponent2;</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>          <span class="keywordflow">if</span>( shift &gt; 60 ) {</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>            shift = 60;</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>          }</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>          decimal.shift_right( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( shift ) );</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>          exponent2 += shift;</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        }</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span> </div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>        <span class="keywordflow">if</span>( exponent2 - minimum_exponent + 1 &gt;= format::infinite_power ) {</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>          <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;(</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>            negative, 0, format::infinite_power );</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>        }</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span> </div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>        decimal.shift_left(</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( format::mantissa_bits + 1 ) );</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>        <span class="keyword">auto</span> mantissa = decimal.round( );</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>        <span class="keywordflow">if</span>( mantissa &gt;=</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>            ( std::uint64_t{ 1 } &lt;&lt; ( format::mantissa_bits + 1 ) ) ) {</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>          decimal.shift_right( 1 );</div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>          ++exponent2;</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>          mantissa = decimal.round( );</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>          <span class="keywordflow">if</span>( exponent2 - minimum_exponent + 1 &gt;= format::infinite_power ) {</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>            <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;(</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>              negative, 0, format::infinite_power );</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>          }</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        }</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span> </div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>        <span class="keyword">auto</span> power2 = exponent2 - minimum_exponent + 1;</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>        <span class="keywordflow">if</span>( mantissa &lt; ( std::uint64_t{ 1 } &lt;&lt; format::mantissa_bits ) ) {</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>          --power2;</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>        }</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>        mantissa &amp;= ( std::uint64_t{ 1 } &lt;&lt; format::mantissa_bits ) - 1U;</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>        <span class="keywordflow">return</span> decimal_details::pack_real&lt;Real&gt;( negative, mantissa, power2 );</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>      }</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 </div>
-<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__parse__real__eisellemire_8h_html"><div class="ttname"><a href="daw__json__parse__real__eisellemire_8h.html">daw_json_parse_real_eisellemire.h</a></div></div>
 <div class="ttc" id="adaw__json__parse__unsigned__int_8h_html"><div class="ttname"><a href="daw__json__parse__unsigned__int_8h.html">daw_json_parse_unsigned_int.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>

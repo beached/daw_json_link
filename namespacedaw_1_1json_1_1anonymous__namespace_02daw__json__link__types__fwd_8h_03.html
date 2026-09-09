@@ -112,6 +112,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__string.html">json_string</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__string__insitu.html">json_string_insitu</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode string values in the writable input buffer.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__string__insitu.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__string__raw.html">json_string_raw</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__submember.html">json_submember</a></td></tr>
@@ -176,6 +179,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ac6f979ce3e610d6c5af77ff379a86059" id="r_ac6f979ce3e610d6c5af77ff379a86059"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, typename T  = std::optional&lt;double&gt;, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> Options = number_opts_def, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a76c935c7d7920b0b78037e1968ad56bb">JsonNullable</a> NullableType = JsonNullable::Nullable, typename Constructor  = use_default&gt; </td></tr>
 <tr class="memitem:ac6f979ce3e610d6c5af77ff379a86059"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03.html#ac6f979ce3e610d6c5af77ff379a86059">json_number_null</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__nullable.html">json_nullable</a>&lt; Name, T, json_base::json_number&lt; json_details::unwrapped_t&lt; T &gt;, Options &gt;, NullableType, Constructor &gt;</td></tr>
 <tr class="separator:ac6f979ce3e610d6c5af77ff379a86059"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab48b724c73aad6d9491fbabce33091ef" id="r_ab48b724c73aad6d9491fbabce33091ef"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, typename T  = std::optional&lt;std::string_view&gt;, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> Options = string_opts_def, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a76c935c7d7920b0b78037e1968ad56bb">JsonNullable</a> NullableType = JsonNullable::Nullable, typename Constructor  = use_default&gt; </td></tr>
+<tr class="memitem:ab48b724c73aad6d9491fbabce33091ef"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03.html#ab48b724c73aad6d9491fbabce33091ef">json_string_insitu_null</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__nullable.html">json_nullable</a>&lt; Name, T, json_base::json_string_insitu&lt; json_details::unwrapped_t&lt; T &gt;, Options &gt;, NullableType, Constructor &gt;</td></tr>
+<tr class="separator:ab48b724c73aad6d9491fbabce33091ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91a6757a9ec2f40afac3af7b4824129c" id="r_a91a6757a9ec2f40afac3af7b4824129c"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, typename T  = std::optional&lt;std::string&gt;, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> Options = string_opts_def, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a76c935c7d7920b0b78037e1968ad56bb">JsonNullable</a> NullableType = JsonNullable::Nullable, typename Constructor  = use_default&gt; </td></tr>
 <tr class="memitem:a91a6757a9ec2f40afac3af7b4824129c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03.html#a91a6757a9ec2f40afac3af7b4824129c">json_string_null</a> = <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__nullable.html">json_nullable</a>&lt; Name, T, json_base::json_string&lt; json_details::unwrapped_t&lt; T &gt;, Options &gt;, NullableType, Constructor &gt;</td></tr>
 <tr class="separator:a91a6757a9ec2f40afac3af7b4824129c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -218,7 +224,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00505">505</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00529">529</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -405,7 +411,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00614">614</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00638">638</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -435,7 +441,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00638">638</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00662">662</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -465,7 +471,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00595">595</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00619">619</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -492,7 +498,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00454">454</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00478">478</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -551,7 +557,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00552">552</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00576">576</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -580,7 +586,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00420">420</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00444">444</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -609,6 +615,34 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00153">153</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+
+</div>
+</div>
+<a id="ab48b724c73aad6d9491fbabce33091ef" name="ab48b724c73aad6d9491fbabce33091ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab48b724c73aad6d9491fbabce33091ef">&#9670;&#160;</a></span>json_string_insitu_null</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> Name, typename T  = std::optional&lt;std::string_view&gt;, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__option__bits_8h_03.html#a6bf32487f7fc0134e4894a3ae7126884">json_options_t</a> Options = string_opts_def, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a76c935c7d7920b0b78037e1968ad56bb">JsonNullable</a> NullableType = JsonNullable::Nullable, typename Constructor  = use_default&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using daw::json::anonymous_namespace{daw_json_link_types_fwd.h}::json_string_insitu_null = typedef <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types__fwd_8h_03_1_1json__nullable.html">json_nullable</a>&lt; Name, T, json_base::json_string_insitu&lt;json_details::unwrapped_t&lt;T&gt;, Options&gt;, NullableType, Constructor&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Member is a nullable escaped string and requires unescaping and escaping of string data </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Name</td><td>of json member </td></tr>
+    <tr><td class="paramname">String</td><td>result type constructed by Constructor </td></tr>
+    <tr><td class="paramname">Options</td><td>Options created with options::string_opt </td></tr>
+    <tr><td class="paramname">NullableType</td><td>Whether an empty class member may be omitted or must be emitted as null </td></tr>
+    <tr><td class="paramname">Constructor</td><td>Callable used to construct the result string </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00370">370</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -664,7 +698,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00376">376</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00400">400</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -682,7 +716,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00842">842</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00866">866</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -712,7 +746,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00879">879</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00903">903</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -730,7 +764,7 @@ template&lt;<a class="el" href="daw__json__name_8h.html#acfb619fe070194ca3766d9d
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00763">763</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__link__types__fwd_8h_source.html#l00787">787</a> of file <a class="el" href="daw__json__link__types__fwd_8h_source.html">daw_json_link_types_fwd.h</a>.</p>
 
 </div>
 </div>

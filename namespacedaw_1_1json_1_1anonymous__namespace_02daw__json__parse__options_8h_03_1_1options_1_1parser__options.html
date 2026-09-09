@@ -90,6 +90,10 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a40d70dc1be3d4434188a2165d5f48fd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allow the escape character '\' in names. This forces a slower parser and is generally not needed. The default is no, and the end of string matching only needs to look for a <code>"&lt;/tt&gt;, not skip &lt;tt&gt;\\"</code> in names.  <a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a40d70dc1be3d4434188a2165d5f48fd0">More...</a><br /></td></tr>
 <tr class="separator:a40d70dc1be3d4434188a2165d5f48fd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ff5724fb63c942ed9f3cba49b5f5690" id="r_a3ff5724fb63c942ed9f3cba49b5f5690"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a3ff5724fb63c942ed9f3cba49b5f5690">AllowStringMutation</a> : unsigned { <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a3ff5724fb63c942ed9f3cba49b5f5690a7fa3b767c460b54a2be4d49030b349c7">no</a>
+, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a3ff5724fb63c942ed9f3cba49b5f5690aa6105c0a611b41b08f1209506350279e">yes</a>
+ }</td></tr>
+<tr class="separator:a3ff5724fb63c942ed9f3cba49b5f5690"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16aa08aaa4dc960f3ddeff2cb7d05b13" id="r_a16aa08aaa4dc960f3ddeff2cb7d05b13"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a16aa08aaa4dc960f3ddeff2cb7d05b13">CheckedParseMode</a> : unsigned { <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a16aa08aaa4dc960f3ddeff2cb7d05b13aa6105c0a611b41b08f1209506350279e">yes</a>
 , <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a16aa08aaa4dc960f3ddeff2cb7d05b13a7fa3b767c460b54a2be4d49030b349c7">no</a>
  }</td></tr>
@@ -184,7 +188,37 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a40d70dc1be3d4434188a2165d5f48fd0aa6105c0a611b41b08f1209506350279e" name="a40d70dc1be3d4434188a2165d5f48fd0aa6105c0a611b41b08f1209506350279e"></a>yes&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00092">92</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00100">100</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+
+</div>
+</div>
+<a id="a3ff5724fb63c942ed9f3cba49b5f5690" name="a3ff5724fb63c942ed9f3cba49b5f5690"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ff5724fb63c942ed9f3cba49b5f5690">&#9670;&#160;</a></span>AllowStringMutation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class daw::json::anonymous_namespace{daw_json_parse_options.h}::options::parser_options::AllowStringMutation : unsigned</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a3ff5724fb63c942ed9f3cba49b5f5690a7fa3b767c460b54a2be4d49030b349c7" name="a3ff5724fb63c942ed9f3cba49b5f5690a7fa3b767c460b54a2be4d49030b349c7"></a>no&#160;</td><td class="fielddoc"><p>String is not allowed to be mutated. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a3ff5724fb63c942ed9f3cba49b5f5690aa6105c0a611b41b08f1209506350279e" name="a3ff5724fb63c942ed9f3cba49b5f5690aa6105c0a611b41b08f1209506350279e"></a>yes&#160;</td><td class="fielddoc"><p>String maybe mutated during parsing. This is useful for <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__string__insitu.html">json_string_insitu</a>. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00053">53</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
@@ -215,7 +249,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a16aa08aaa4dc960f3ddeff2cb7d05b13a7fa3b767c460b54a2be4d49030b349c7" name="a16aa08aaa4dc960f3ddeff2cb7d05b13a7fa3b767c460b54a2be4d49030b349c7"></a>no&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00074">74</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00082">82</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
@@ -246,7 +280,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a239e33768330ca5c90db090dc0de8516aa6105c0a611b41b08f1209506350279e" name="a239e33768330ca5c90db090dc0de8516aa6105c0a611b41b08f1209506350279e"></a>yes&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00158">158</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00166">166</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
@@ -314,7 +348,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a1d90e6e17c1708f39b379a09e6fdf2baaa6105c0a611b41b08f1209506350279e" name="a1d90e6e17c1708f39b379a09e6fdf2baaa6105c0a611b41b08f1209506350279e"></a>yes&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00136">136</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00144">144</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
@@ -345,7 +379,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a3b13b5dac2c1dc2ced1ba51e3a3f3d08aa6105c0a611b41b08f1209506350279e" name="a3b13b5dac2c1dc2ced1ba51e3a3f3d08aa6105c0a611b41b08f1209506350279e"></a>yes&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00112">112</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00120">120</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
@@ -377,7 +411,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="adcf4c999a1ed0cfef9ab34e4e28d62bdaa6105c0a611b41b08f1209506350279e" name="adcf4c999a1ed0cfef9ab34e4e28d62bdaa6105c0a611b41b08f1209506350279e"></a>yes&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00102">102</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00110">110</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
@@ -408,7 +442,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a5fb16ea290469d91158d78a7affa99bfaa6105c0a611b41b08f1209506350279e" name="a5fb16ea290469d91158d78a7affa99bfaa6105c0a611b41b08f1209506350279e"></a>yes&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00082">82</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00090">90</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
@@ -439,7 +473,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="aabfb8a9d62508879f2891c1c13b93c0daa6105c0a611b41b08f1209506350279e" name="aabfb8a9d62508879f2891c1c13b93c0daa6105c0a611b41b08f1209506350279e"></a>yes&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00129">129</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00137">137</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
@@ -474,7 +508,7 @@ Enumerations</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00060">60</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00068">68</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
@@ -505,7 +539,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a80864bc246be37089cce117142b4bd59aa6105c0a611b41b08f1209506350279e" name="a80864bc246be37089cce117142b4bd59aa6105c0a611b41b08f1209506350279e"></a>yes&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00146">146</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00154">154</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
@@ -536,7 +570,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="afa1fb40f999b16e1946c916fe64c4e81aa6105c0a611b41b08f1209506350279e" name="afa1fb40f999b16e1946c916fe64c4e81aa6105c0a611b41b08f1209506350279e"></a>yes&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00121">121</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00129">129</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>

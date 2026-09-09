@@ -101,7 +101,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;daw/daw_not_null.h&gt;</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;cstdlib&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;system_error&gt;</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
@@ -133,20 +133,27 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        Real result;</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">auto</span> fc_res = std::from_chars( first, last, result );</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">if</span>( fc_res.ec == std::errc::result_out_of_range ) {</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>          <span class="keywordflow">if</span>( *first == <span class="charliteral">&#39;-&#39;</span> ) {</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keywordflow">return</span> -std::numeric_limits&lt;Real&gt;::infinity( );</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>          }</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>          <span class="keywordflow">return</span> std::numeric_limits&lt;Real&gt;::infinity( );</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        }</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <a class="code hl_define" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( fc_res.ec == std::errc( ),</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                         ErrorReason::InvalidNumber );</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>      }</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>          <span class="comment">// from_chars reports the same error for overflow and underflow.</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>          <span class="comment">// Retry this cold path with a bounded, null-terminated token so</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>          <span class="comment">// subnormal values are not incorrectly returned as infinity.</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>          <span class="keyword">auto</span> <span class="keyword">const</span> token = std::string( first.get( ), last.get( ) );</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, float&gt; ) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">return</span> std::strtof( token.c_str( ), <span class="keyword">nullptr</span> );</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, double&gt; ) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keywordflow">return</span> std::strtod( token.c_str( ), <span class="keyword">nullptr</span> );</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">return</span> std::strtold( token.c_str( ), <span class="keyword">nullptr</span> );</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>          }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <a class="code hl_define" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( fc_res.ec == std::errc( ),</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                         ErrorReason::InvalidNumber );</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>      }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__assert_8h_source.html#l00185">daw_json_assert.h:185</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>

@@ -145,6 +145,13 @@ Functions</h2></td></tr>
 <tr class="memitem:ab33c80e15df534c8ad9f6a5673b1cddb"><td class="memTemplItemLeft" align="right" valign="top">constexpr Container&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__from__json__fwd_8h_03.html#ab33c80e15df534c8ad9f6a5673b1cddb">from_json_array</a> (String &amp;&amp;json_data, std::string_view member_path, options::parse_flags_t&lt; PolicyFlags... &gt;)</td></tr>
 <tr class="memdesc:ab33c80e15df534c8ad9f6a5673b1cddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse JSON data where the root item is an array.  <br /></td></tr>
 <tr class="separator:ab33c80e15df534c8ad9f6a5673b1cddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c48aa14783121db81ad2dbbd5f179b2" id="r_a7c48aa14783121db81ad2dbbd5f179b2"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds = false, typename String &gt; </td></tr>
+<tr class="memitem:a7c48aa14783121db81ad2dbbd5f179b2"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__from__json__fwd_8h_03.html#a7c48aa14783121db81ad2dbbd5f179b2">from_json_insitu</a> (String &amp;&amp;json_data)</td></tr>
+<tr class="separator:a7c48aa14783121db81ad2dbbd5f179b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3acc90f0c2cce38e954e18db5844d58" id="r_ae3acc90f0c2cce38e954e18db5844d58"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds = false, typename String , auto... PolicyFlags&gt; </td></tr>
+<tr class="memitem:ae3acc90f0c2cce38e954e18db5844d58"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__from__json__fwd_8h_03.html#ae3acc90f0c2cce38e954e18db5844d58">from_json_insitu</a> (String &amp;&amp;json_data, options::parse_flags_t&lt; PolicyFlags... &gt;)</td></tr>
+<tr class="memdesc:ae3acc90f0c2cce38e954e18db5844d58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a writable JSON buffer with string mutation enabled. The buffer must outlive borrowed results and keep a stable address. Parsing may modify the buffer, including on failure.  <br /></td></tr>
+<tr class="separator:ae3acc90f0c2cce38e954e18db5844d58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a5f2a9dc7b3f75b12966b103a9327a90a" name="a5f2a9dc7b3f75b12966b103a9327a90a"></a>
@@ -1201,6 +1208,74 @@ template&lt;typename JsonElement , typename Container  = std::vector&lt;json_det
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a7c48aa14783121db81ad2dbbd5f179b2" name="a7c48aa14783121db81ad2dbbd5f179b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c48aa14783121db81ad2dbbd5f179b2">&#9670;&#160;</a></span>from_json_insitu() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonMember , bool KnownBounds = false, typename String &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto daw::json::anonymous_namespace{daw_from_json_fwd.h}::from_json_insitu </td>
+          <td>(</td>
+          <td class="paramtype">String &amp;&amp;&#160;</td>
+          <td class="paramname"><em>json_data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae3acc90f0c2cce38e954e18db5844d58" name="ae3acc90f0c2cce38e954e18db5844d58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3acc90f0c2cce38e954e18db5844d58">&#9670;&#160;</a></span>from_json_insitu() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonMember , bool KnownBounds = false, typename String , auto... PolicyFlags&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto daw::json::anonymous_namespace{daw_from_json_fwd.h}::from_json_insitu </td>
+          <td>(</td>
+          <td class="paramtype">String &amp;&amp;&#160;</td>
+          <td class="paramname"><em>json_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">options::parse_flags_t&lt; PolicyFlags... &gt;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse a writable JSON buffer with string mutation enabled. The buffer must outlive borrowed results and keep a stable address. Parsing may modify the buffer, including on failure. </p>
 
 </div>
 </div>

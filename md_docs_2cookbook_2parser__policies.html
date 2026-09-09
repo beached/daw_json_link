@@ -121,11 +121,12 @@ Default</h2>
 <h1><a class="anchor" id="autotoc_md176"></a>
 &lt;tt&gt;CheckedParseMode&lt;/tt&gt;</h1>
 <p>Do a checked parse or not. If the data is known to be trustworthy and generated correctly, one can disable checking of a parse and gain performance(measured 15% in some documents).</p>
+<p><b>Warning:</b> <code>no</code> is a memory-safety contract, not just a speed/strictness knob. Disabled checks include bounds checks on the parse cursor (e.g. scanning for the next member no longer verifies the cursor is still within the buffer), so malformed, truncated, or adversarial input can cause out-of-bounds reads (undefined behavior) rather than a catchable parse error. Only use <code>no</code> with input you fully trust and control, such as data your own code just serialized — never with input received from an external or untrusted source.</p>
 <h2><a class="anchor" id="autotoc_md177"></a>
 Values</h2>
 <ul>
 <li><code>yes</code> - All checks are performed</li>
-<li><code>no</code> - Disable many parse time checks, assumes perfect input</li>
+<li><code>no</code> - Disable many parse time checks, assumes perfect, trusted input; malformed input is undefined behavior, not just a wrong result</li>
 </ul>
 <h2><a class="anchor" id="autotoc_md178"></a>
 Default</h2>

@@ -135,7 +135,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            trim_end_of_name( parse_state );</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordflow">return</span> daw::string_view( std::data( r ), std::size( r ) );</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> ptr = parse_state.first;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keyword">auto</span> <span class="keyword">const</span> ptr = parse_state.first;</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( ParseState::is_unchecked_input ) {</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>              parse_state.template move_to_next_of_unchecked&lt;<span class="charliteral">&#39;&quot;&#39;</span>&gt;( );</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            } <span class="keywordflow">else</span> {</div>

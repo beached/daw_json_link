@@ -585,75 +585,76 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>          <span class="keyword">auto</span> <span class="keyword">const</span> valid_bits = low_bits( count );</div>
 <div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span>          <span class="keyword">auto</span> <span class="keyword">const</span> backslash_bits = backslash.to_ullong( ) &amp; valid_bits;</div>
 <div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span> </div>
-<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>          <span class="keyword">constexpr</span> std::uint64_t odd_bits = 0xAAAAAAAAAAAAAAAAULL;</div>
-<div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span>          <span class="keyword">auto</span> <span class="keyword">const</span> previous_escaped = state.escaped ? std::uint64_t{ 1 } : 0;</div>
-<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>          <span class="keyword">auto</span> <span class="keyword">const</span> potential_escape = backslash_bits &amp; ~previous_escaped;</div>
-<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>          <span class="keyword">auto</span> <span class="keyword">const</span> maybe_escaped = potential_escape &lt;&lt; 1U;</div>
-<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>          <span class="keyword">auto</span> <span class="keyword">const</span> escape_and_terminal =</div>
-<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>            ( ( maybe_escaped | odd_bits ) - potential_escape ) ^ odd_bits;</div>
-<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>          <span class="keyword">auto</span> <span class="keyword">const</span> escaped_bits =</div>
-<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>            ( escape_and_terminal ^ ( backslash_bits | previous_escaped ) ) &amp;</div>
-<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>            valid_bits;</div>
-<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span>          <span class="keyword">auto</span> <span class="keyword">const</span> escape_bits = escape_and_terminal &amp; backslash_bits;</div>
-<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>          state.escaped = simd_details::last_bit( escape_bits, count );</div>
-<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span> </div>
-<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>          <span class="keyword">auto</span> <span class="keyword">const</span> quote_bits =</div>
-<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>            quote.to_ullong( ) &amp; ~escaped_bits &amp; valid_bits;</div>
-<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>          <span class="keyword">auto</span> <span class="keyword">const</span> in_string_bits =</div>
-<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>            ( simd_details::prefix_xor( quote_bits ) ^</div>
-<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>              ( state.in_string ? valid_bits : std::uint64_t{ 0 } ) ) &amp;</div>
-<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>            valid_bits;</div>
-<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>          state.in_string = simd_details::last_bit( in_string_bits, count );</div>
-<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>          <span class="keyword">auto</span> <span class="keyword">const</span> string_tail_bits = in_string_bits ^ quote_bits;</div>
-<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>          <span class="keyword">auto</span> <span class="keyword">const</span> outside_string_bits = ~string_tail_bits &amp; valid_bits;</div>
-<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>          <span class="keyword">auto</span> <span class="keyword">const</span> array_end_bits =</div>
-<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>            array_end.to_ullong( ) &amp; outside_string_bits;</div>
-<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>          <span class="keyword">auto</span> <span class="keyword">const</span> active_bits =</div>
-<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>            array_end_bits == 0</div>
-<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>              ? valid_bits</div>
-<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>              : simd_details::low_bits(</div>
-<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>                  <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( daw::cxmath::count_trailing_zeros(</div>
-<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>                    <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>( array_end_bits ) ) ) );</div>
-<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>          <span class="keyword">auto</span> value_start_bits = std::uint64_t{ 0 };</div>
-<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>          <span class="keyword">auto</span> string_start_bits = quote_bits &amp; in_string_bits &amp; active_bits;</div>
-<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( ValidateStart ) {</div>
-<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>            <span class="keyword">auto</span> <span class="keyword">const</span> whitespace = is_whitespace( input );</div>
-<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>            <span class="keyword">auto</span> <span class="keyword">const</span> operators = simd_details::one_of&lt;&#39;]&#39;, &#39;,&#39;&gt;( input );</div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>            <span class="keyword">auto</span> <span class="keyword">const</span> scalar = not( whitespace | operators );</div>
-<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>            <span class="keyword">auto</span> <span class="keyword">const</span> operator_bits = operators.to_ullong( ) &amp; active_bits;</div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>            <span class="keyword">auto</span> <span class="keyword">const</span> scalar_bits = scalar.to_ullong( ) &amp; active_bits;</div>
-<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>            <span class="keyword">auto</span> <span class="keyword">const</span> nonquote_scalar_bits = scalar_bits &amp; ~quote_bits;</div>
-<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>            <span class="keyword">auto</span> <span class="keyword">const</span> follows_scalar_bits =</div>
-<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>              ( nonquote_scalar_bits &lt;&lt; 1U ) |</div>
-<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>              ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );</div>
-<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>            state.previous_scalar =</div>
-<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>              simd_details::last_bit( nonquote_scalar_bits, count );</div>
-<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>            <span class="keyword">auto</span> <span class="keyword">const</span> scalar_start_bits = scalar_bits &amp; ~follows_scalar_bits;</div>
-<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>            value_start_bits =</div>
-<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>              scalar_start_bits &amp; ~string_tail_bits &amp; active_bits;</div>
-<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>            <span class="keyword">auto</span> <span class="keyword">const</span> structural_bits = ( operator_bits | scalar_start_bits ) &amp;</div>
-<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>                                         ~string_tail_bits &amp; active_bits;</div>
-<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>            string_start_bits &amp;= structural_bits;</div>
-<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>          }</div>
-<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>          <span class="keyword">auto</span> <span class="keyword">const</span> string_end_bits = quote_bits &amp; ~in_string_bits;</div>
-<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span> </div>
-<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>          block_type result{ };</div>
-<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>          result.data = first;</div>
-<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>          result.size = count;</div>
-<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>          result.scalar_start = value_start_bits;</div>
-<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>          result.comma = comma.to_ullong( ) &amp; outside_string_bits &amp; active_bits;</div>
-<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>          result.array_end = array_end_bits;</div>
-<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>          result.string_start = string_start_bits;</div>
-<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>          result.string_end = string_end_bits &amp; active_bits;</div>
-<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>          result.escape_characters = backslash_bits &amp; active_bits;</div>
-<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>          <span class="keywordflow">return</span> result;</div>
-<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>        }</div>
-<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>      };</div>
-<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>    } <span class="comment">// namespace json_details::simd_details</span></div>
-<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>} <span class="comment">// namespace daw::json</span></div>
-<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span> </div>
-<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>          DAW_CPP23_STATIC_LOCAL <span class="keyword">constexpr</span> std::uint64_t odd_bits =</div>
+<div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span>            0xAAAAAAAAAAAAAAAAULL;</div>
+<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>          <span class="keyword">auto</span> <span class="keyword">const</span> previous_escaped = state.escaped ? std::uint64_t{ 1 } : 0;</div>
+<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>          <span class="keyword">auto</span> <span class="keyword">const</span> potential_escape = backslash_bits &amp; ~previous_escaped;</div>
+<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>          <span class="keyword">auto</span> <span class="keyword">const</span> maybe_escaped = potential_escape &lt;&lt; 1U;</div>
+<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>          <span class="keyword">auto</span> <span class="keyword">const</span> escape_and_terminal =</div>
+<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>            ( ( maybe_escaped | odd_bits ) - potential_escape ) ^ odd_bits;</div>
+<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>          <span class="keyword">auto</span> <span class="keyword">const</span> escaped_bits =</div>
+<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>            ( escape_and_terminal ^ ( backslash_bits | previous_escaped ) ) &amp;</div>
+<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span>            valid_bits;</div>
+<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>          <span class="keyword">auto</span> <span class="keyword">const</span> escape_bits = escape_and_terminal &amp; backslash_bits;</div>
+<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>          state.escaped = simd_details::last_bit( escape_bits, count );</div>
+<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span> </div>
+<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>          <span class="keyword">auto</span> <span class="keyword">const</span> quote_bits =</div>
+<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>            quote.to_ullong( ) &amp; ~escaped_bits &amp; valid_bits;</div>
+<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>          <span class="keyword">auto</span> <span class="keyword">const</span> in_string_bits =</div>
+<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>            ( simd_details::prefix_xor( quote_bits ) ^</div>
+<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>              ( state.in_string ? valid_bits : std::uint64_t{ 0 } ) ) &amp;</div>
+<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>            valid_bits;</div>
+<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>          state.in_string = simd_details::last_bit( in_string_bits, count );</div>
+<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>          <span class="keyword">auto</span> <span class="keyword">const</span> string_tail_bits = in_string_bits ^ quote_bits;</div>
+<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>          <span class="keyword">auto</span> <span class="keyword">const</span> outside_string_bits = ~string_tail_bits &amp; valid_bits;</div>
+<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>          <span class="keyword">auto</span> <span class="keyword">const</span> array_end_bits =</div>
+<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>            array_end.to_ullong( ) &amp; outside_string_bits;</div>
+<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>          <span class="keyword">auto</span> <span class="keyword">const</span> active_bits =</div>
+<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>            array_end_bits == 0</div>
+<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>              ? valid_bits</div>
+<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>              : simd_details::low_bits(</div>
+<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>                  <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( daw::cxmath::count_trailing_zeros(</div>
+<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>                    <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>( array_end_bits ) ) ) );</div>
+<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>          <span class="keyword">auto</span> value_start_bits = std::uint64_t{ 0 };</div>
+<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>          <span class="keyword">auto</span> string_start_bits = quote_bits &amp; in_string_bits &amp; active_bits;</div>
+<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( ValidateStart ) {</div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>            <span class="keyword">auto</span> <span class="keyword">const</span> whitespace = is_whitespace( input );</div>
+<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>            <span class="keyword">auto</span> <span class="keyword">const</span> operators = simd_details::one_of&lt;&#39;]&#39;, &#39;,&#39;&gt;( input );</div>
+<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>            <span class="keyword">auto</span> <span class="keyword">const</span> scalar = not( whitespace | operators );</div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>            <span class="keyword">auto</span> <span class="keyword">const</span> operator_bits = operators.to_ullong( ) &amp; active_bits;</div>
+<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>            <span class="keyword">auto</span> <span class="keyword">const</span> scalar_bits = scalar.to_ullong( ) &amp; active_bits;</div>
+<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>            <span class="keyword">auto</span> <span class="keyword">const</span> nonquote_scalar_bits = scalar_bits &amp; ~quote_bits;</div>
+<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>            <span class="keyword">auto</span> <span class="keyword">const</span> follows_scalar_bits =</div>
+<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>              ( nonquote_scalar_bits &lt;&lt; 1U ) |</div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>              ( state.previous_scalar ? std::uint64_t{ 1 } : 0 );</div>
+<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>            state.previous_scalar =</div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>              simd_details::last_bit( nonquote_scalar_bits, count );</div>
+<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>            <span class="keyword">auto</span> <span class="keyword">const</span> scalar_start_bits = scalar_bits &amp; ~follows_scalar_bits;</div>
+<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>            value_start_bits =</div>
+<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>              scalar_start_bits &amp; ~string_tail_bits &amp; active_bits;</div>
+<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>            <span class="keyword">auto</span> <span class="keyword">const</span> structural_bits = ( operator_bits | scalar_start_bits ) &amp;</div>
+<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>                                         ~string_tail_bits &amp; active_bits;</div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>            string_start_bits &amp;= structural_bits;</div>
+<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>          }</div>
+<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>          <span class="keyword">auto</span> <span class="keyword">const</span> string_end_bits = quote_bits &amp; ~in_string_bits;</div>
+<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span> </div>
+<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>          block_type result{ };</div>
+<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>          result.data = first;</div>
+<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>          result.size = count;</div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>          result.scalar_start = value_start_bits;</div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>          result.comma = comma.to_ullong( ) &amp; outside_string_bits &amp; active_bits;</div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>          result.array_end = array_end_bits;</div>
+<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>          result.string_start = string_start_bits;</div>
+<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>          result.string_end = string_end_bits &amp; active_bits;</div>
+<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>          result.escape_characters = backslash_bits &amp; active_bits;</div>
+<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>          <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>        }</div>
+<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>      };</div>
+<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>    } <span class="comment">// namespace json_details::simd_details</span></div>
+<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span> </div>
+<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__assert_8h_source.html#l00185">daw_json_assert.h:185</a></div></div>
 <div class="ttc" id="adaw__json__parse__value_8h_html"><div class="ttname"><a href="daw__json__parse__value_8h.html">daw_json_parse_value.h</a></div></div>
 <div class="ttc" id="adaw__json__simd_8h_html"><div class="ttname"><a href="daw__json__simd_8h.html">daw_json_simd.h</a></div></div>
@@ -663,7 +664,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a7450e9320c653f81c31714a390d56674a7f80fcc452c2f1ed2bb51b39d0864df1"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674a7f80fcc452c2f1ed2bb51b39d0864df1">daw::json::anonymous_namespace{daw_json_enums.h}::JsonParseTypes::Real</a></div><div class="ttdeci">@ Real</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a7450e9320c653f81c31714a390d56674aa1a914735b205424ba6c40b85528d78a"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674aa1a914735b205424ba6c40b85528d78a">daw::json::anonymous_namespace{daw_json_enums.h}::JsonParseTypes::Unsigned</a></div><div class="ttdeci">@ Unsigned</div><div class="ttdoc">Number - Signed Integer.</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_a7450e9320c653f81c31714a390d56674ac26f15e86e3de4c398a8273272aba034"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674ac26f15e86e3de4c398a8273272aba034">daw::json::anonymous_namespace{daw_json_enums.h}::JsonParseTypes::Bool</a></div><div class="ttdeci">@ Bool</div><div class="ttdoc">Number - Unsigned Integer.</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_acd40264b57a9a9f908f31622031701de"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#acd40264b57a9a9f908f31622031701de">daw::json::anonymous_namespace{daw_json_enums.h}::JsonBaseParseTypes</a></div><div class="ttdeci">JsonBaseParseTypes</div><div class="ttdoc">The fundamental JSON types.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__enums_8h_source.html#l00057">daw_json_enums.h:57</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_acd40264b57a9a9f908f31622031701de"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#acd40264b57a9a9f908f31622031701de">daw::json::anonymous_namespace{daw_json_enums.h}::JsonBaseParseTypes</a></div><div class="ttdeci">JsonBaseParseTypes</div><div class="ttdoc">The fundamental JSON types.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__enums_8h_source.html#l00058">daw_json_enums.h:58</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_acd40264b57a9a9f908f31622031701dea27118326006d3829667a400ad23d5d98"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#acd40264b57a9a9f908f31622031701dea27118326006d3829667a400ad23d5d98">daw::json::anonymous_namespace{daw_json_enums.h}::JsonBaseParseTypes::String</a></div><div class="ttdeci">@ String</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03_html_acd40264b57a9a9f908f31622031701deab2ee912b91d69b435159c7c3f6df7f5f"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#acd40264b57a9a9f908f31622031701deab2ee912b91d69b435159c7c3f6df7f5f">daw::json::anonymous_namespace{daw_json_enums.h}::JsonBaseParseTypes::Number</a></div><div class="ttdeci">@ Number</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>

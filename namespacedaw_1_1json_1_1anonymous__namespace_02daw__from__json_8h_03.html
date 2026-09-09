@@ -146,6 +146,13 @@ Functions</h2></td></tr>
 <tr class="memitem:aa0b50a3e65ac399cf4f4b59bca2fc913"><td class="memTemplItemLeft" align="right" valign="top">constexpr Container&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__from__json_8h_03.html#aa0b50a3e65ac399cf4f4b59bca2fc913">from_json_array</a> (String &amp;&amp;json_data, std::string_view member_path, options::parse_flags_t&lt; PolicyFlags... &gt;)</td></tr>
 <tr class="memdesc:aa0b50a3e65ac399cf4f4b59bca2fc913"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse JSON data where the root item is an array.  <br /></td></tr>
 <tr class="separator:aa0b50a3e65ac399cf4f4b59bca2fc913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d65ba53b92180d52f67e6bbe8aef78f" id="r_a1d65ba53b92180d52f67e6bbe8aef78f"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename String &gt; </td></tr>
+<tr class="memitem:a1d65ba53b92180d52f67e6bbe8aef78f"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__from__json_8h_03.html#a1d65ba53b92180d52f67e6bbe8aef78f">from_json_insitu</a> (String &amp;&amp;json_data)</td></tr>
+<tr class="separator:a1d65ba53b92180d52f67e6bbe8aef78f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad31cdc990d67ee6f3598466953e2c4f5" id="r_ad31cdc990d67ee6f3598466953e2c4f5"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename String , auto... PolicyFlags&gt; </td></tr>
+<tr class="memitem:ad31cdc990d67ee6f3598466953e2c4f5"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__from__json_8h_03.html#ad31cdc990d67ee6f3598466953e2c4f5">from_json_insitu</a> (String &amp;&amp;json_data, options::parse_flags_t&lt; PolicyFlags... &gt;)</td></tr>
+<tr class="memdesc:ad31cdc990d67ee6f3598466953e2c4f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a writable JSON buffer with string mutation enabled. The buffer must remain alive and at a stable address while borrowed results are used. Parsing may modify the buffer, including on failure.  <br /></td></tr>
+<tr class="separator:ad31cdc990d67ee6f3598466953e2c4f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a5f20d6588ae11dc5bc9ac7b0d8b8240d" name="a5f20d6588ae11dc5bc9ac7b0d8b8240d"></a>
@@ -211,7 +218,7 @@ template&lt;typename JsonMember , bool KnownBounds, <a class="el" href="namespac
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00394">394</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00418">418</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -280,7 +287,7 @@ template&lt;typename JsonMember , bool KnownBounds, <a class="el" href="namespac
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00449">449</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00473">473</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -343,7 +350,7 @@ template&lt;typename JsonMember , bool KnownBounds, <a class="el" href="namespac
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00499">499</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00523">523</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -400,7 +407,7 @@ template&lt;typename JsonMember , bool KnownBounds, <a class="el" href="namespac
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00430">430</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00454">454</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -457,7 +464,7 @@ template&lt;typename JsonMember , bool KnownBounds, typename String &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00100">100</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00102">102</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -593,7 +600,7 @@ template&lt;typename JsonMember , bool KnownBounds, typename String &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00274">274</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00298">298</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -668,7 +675,7 @@ template&lt;typename JsonMember , bool KnownBounds, typename String , auto... Po
 </dl>
 <p>If the string is known to have a trailing zero, allow optimization on that</p>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00197">197</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00221">221</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -735,7 +742,7 @@ template&lt;typename JsonMember , bool KnownBounds, typename String , typename A
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00175">175</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00199">199</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -809,7 +816,7 @@ template&lt;typename JsonMember , bool KnownBounds, typename String , typename A
 </dl>
 <p>If the string is known to have a trailing zero, allow optimization on that</p>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00119">119</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00143">143</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -883,7 +890,7 @@ template&lt;typename JsonMember , bool KnownBounds, typename String , typename A
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00373">373</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00397">397</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -964,7 +971,7 @@ template&lt;typename JsonMember , bool KnownBounds, typename String , typename A
 </dl>
 <p>If the string is known to have a trailing zero, allow optimization on that</p>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00297">297</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00321">321</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -1023,7 +1030,7 @@ template&lt;typename JsonElement , typename Container , typename Constructor , b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00591">591</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00615">615</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -1093,7 +1100,7 @@ template&lt;typename JsonElement , typename Container , typename Constructor , b
 </dl>
 <p>If the string is known to have a trailing zero, allow optimization on that</p>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00518">518</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00542">542</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -1163,7 +1170,7 @@ template&lt;typename JsonElement , typename Container , typename Constructor , b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00708">708</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00732">732</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
@@ -1240,7 +1247,79 @@ template&lt;typename JsonElement , typename Container , typename Constructor , b
 </dl>
 <p>If the string is known to have a trailing zero, allow optimization on that</p>
 
-<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00615">615</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00639">639</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+
+</div>
+</div>
+<a id="a1d65ba53b92180d52f67e6bbe8aef78f" name="a1d65ba53b92180d52f67e6bbe8aef78f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d65ba53b92180d52f67e6bbe8aef78f">&#9670;&#160;</a></span>from_json_insitu() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonMember , bool KnownBounds, typename String &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto daw::json::anonymous_namespace{daw_from_json.h}::from_json_insitu </td>
+          <td>(</td>
+          <td class="paramtype">String &amp;&amp;&#160;</td>
+          <td class="paramname"><em>json_data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00127">127</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
+
+</div>
+</div>
+<a id="ad31cdc990d67ee6f3598466953e2c4f5" name="ad31cdc990d67ee6f3598466953e2c4f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad31cdc990d67ee6f3598466953e2c4f5">&#9670;&#160;</a></span>from_json_insitu() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonMember , bool KnownBounds, typename String , auto... PolicyFlags&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto daw::json::anonymous_namespace{daw_from_json.h}::from_json_insitu </td>
+          <td>(</td>
+          <td class="paramtype">String &amp;&amp;&#160;</td>
+          <td class="paramname"><em>json_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">options::parse_flags_t&lt; PolicyFlags... &gt;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse a writable JSON buffer with string mutation enabled. The buffer must remain alive and at a stable address while borrowed results are used. Parsing may modify the buffer, including on failure. </p>
+
+<p class="definition">Definition at line <a class="el" href="daw__from__json_8h_source.html#l00116">116</a> of file <a class="el" href="daw__from__json_8h_source.html">daw_from_json.h</a>.</p>
 
 </div>
 </div>
