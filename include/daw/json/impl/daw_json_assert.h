@@ -34,7 +34,7 @@ namespace daw::json {
 	inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
-	static thread_local void *daw_json_error_handler_data = nullptr;
+	inline thread_local void *daw_json_error_handler_data = nullptr;
 
 #if defined( DAW_USE_EXCEPTIONS )
 	[[noreturn, maybe_unused]] DAW_ATTRIB_NOINLINE inline void
@@ -57,10 +57,10 @@ namespace daw::json {
 	  daw::not_null<void ( * )( json_exception &&, void * )>;
 
 #if defined( DAW_USE_EXCEPTIONS )
-	static thread_local daw_json_error_handler_t daw_json_error_handler =
+	inline thread_local daw_json_error_handler_t daw_json_error_handler =
 	  default_error_handler_throwing;
 #else
-	static thread_local daw_json_error_handler_t daw_json_error_handler =
+	inline thread_local daw_json_error_handler_t daw_json_error_handler =
 	  default_error_handler_terminating;
 #endif
 

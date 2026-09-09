@@ -90,7 +90,8 @@ namespace daw::json {
 			ExpectedTokenNotFound,
 			UnexpectedJSONVariantType,
 			TrailingComma,
-			AttemptToCallOpStarOnConstIterator
+			AttemptToCallOpStarOnConstIterator,
+			MaxDepthExceeded
 		};
 
 		constexpr std::string_view reason_message( ErrorReason er ) {
@@ -192,6 +193,8 @@ namespace daw::json {
 				return "Trailing comma"sv;
 			case ErrorReason::AttemptToCallOpStarOnConstIterator:
 				return "Use of operator*( ) on const iterator";
+			case ErrorReason::MaxDepthExceeded:
+				return "Maximum nesting depth exceeded"sv;
 			}
 			DAW_UNREACHABLE( );
 		}

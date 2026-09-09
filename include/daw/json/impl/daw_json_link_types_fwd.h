@@ -346,6 +346,30 @@ namespace daw::json {
 		using json_string_null = json_nullable<
 		  Name, T, json_base::json_string<json_details::unwrapped_t<T>, Options>,
 		  NullableType, Constructor>;
+		/// Decode string values in the writable input buffer.
+
+		template<JSONNAMETYPE Name, typename String = std::string_view,
+		         json_options_t Options = string_opts_def,
+		         typename Constructor = use_default>
+		struct json_string_insitu;
+
+		/**
+		 * Member is a nullable escaped string and requires unescaping and escaping
+		 * of string data
+		 * @tparam Name of json member
+		 * @tparam String result type constructed by Constructor
+		 * @tparam Options Options created with options::string_opt
+		 * @tparam NullableType Whether an empty class member may be omitted or must
+		 * be emitted as null
+		 * @tparam Constructor Callable used to construct the result string
+		 */
+		template<JSONNAMETYPE Name, typename T = std::optional<std::string_view>,
+		         json_options_t Options = string_opts_def,
+		         JsonNullable NullableType = JsonNullable::Nullable,
+		         typename Constructor = use_default>
+		using json_string_insitu_null = json_nullable<
+		  Name, T, json_base::json_string_insitu<json_details::unwrapped_t<T>, Options>,
+		  NullableType, Constructor>;
 		/**
 		 * Member is an escaped string and requires unescaping and escaping of
 		 * string data

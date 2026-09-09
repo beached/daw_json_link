@@ -161,8 +161,9 @@ namespace daw::json {
 			DAW_ATTRIB_INLINE constexpr std::uint64_t
 			find_escaped_branchless( std::uint64_t &prev_escaped,
 			                         std::uint64_t backslashes ) {
-				constexpr std::uint64_t odd_bits = 0xAAAA'AAAA'AAAA'AAAAULL;
-				constexpr auto valid_bits = [] {
+				DAW_CPP23_STATIC_LOCAL constexpr std::uint64_t odd_bits =
+				  0xAAAA'AAAA'AAAA'AAAAULL;
+				DAW_CPP23_STATIC_LOCAL constexpr auto valid_bits = [] {
 					if constexpr( char_simd_size == 64 ) {
 						return ~std::uint64_t{ 0 };
 					} else {

@@ -230,6 +230,17 @@ int main( ) {
 #if defined( DAW_JSON_HAS_REFLECTION )
 	ensure_write_value<json_reflected_class_no_name<ReflectedObject>>(
 	  ReflectedObject{ 7, true }, R"({"number":7,"flag":true})" );
+	// The explicit json_reflected_class(_no_name) mapping is otherwise only
+	// exercised for serialization above; confirm its parse path too, rather
+	// than relying solely on the automatic reflection-fallback deduction path
+	// exercised elsewhere (daw_json_link_reflection_test.cpp).
+	{
+		auto const parsed = daw::json::from_json<
+		  json_reflected_class_no_name<ReflectedObject>>(
+		  R"({"number":7,"flag":true})" );
+		daw_ensure( parsed.number == 7 );
+		daw_ensure( parsed.flag );
+	}
 #endif
 
 	using decimal_number =

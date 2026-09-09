@@ -198,6 +198,18 @@ namespace daw::json {
 				}
 				result.year =
 				  datetime_details::parse_number<std::int_least32_t>( timestamp_str );
+				auto max_day = std::uint32_t{ 31 };
+				if( result.month == 2 ) {
+					auto const is_leap_year =
+					  result.year % 4 == 0 and
+					  ( result.year % 100 != 0 or result.year % 400 == 0 );
+					max_day = is_leap_year ? 29U : 28U;
+				} else if( result.month == 4 or result.month == 6 or
+				           result.month == 9 or result.month == 11 ) {
+					max_day = 30;
+				}
+				daw_json_ensure( result.day <= max_day,
+				                 ErrorReason::InvalidTimestamp );
 				return result;
 			}
 
@@ -221,6 +233,8 @@ namespace daw::json {
 				  std::data( timestamp_str.pop_front( 2 ) ) );
 				daw_json_ensure( result.minute <= 59, ErrorReason::InvalidTimestamp );
 				if( timestamp_str.empty( ) ) {
+					daw_json_ensure( result.hour != 24 or result.minute == 0,
+					                 ErrorReason::InvalidTimestamp );
 					return result;
 				}
 				if( not parse_utils::is_number( timestamp_str.front( ) ) ) {
@@ -230,6 +244,9 @@ namespace daw::json {
 				  std::data( timestamp_str.pop_front( 2 ) ) );
 				daw_json_ensure( result.second <= 60, ErrorReason::InvalidTimestamp );
 				if( timestamp_str.empty( ) ) {
+					daw_json_ensure( result.hour != 24 or
+					                   ( result.minute == 0 and result.second == 0 ),
+					                 ErrorReason::InvalidTimestamp );
 					return result;
 				}
 				daw_json_ensure( timestamp_str.front( ) == '.',
@@ -242,11 +259,16 @@ namespace daw::json {
 					                 ErrorReason::InvalidTimestamp );
 				}
 				auto const precision =
-				  std::min( timestamp_str.size( ), std::size_t{ 18 } );
+				  (std::min)( { timestamp_str.size( ), std::size_t{ 18 } } );
 				auto const attosecond_str = timestamp_str.substr( 0, precision );
 				result.attosecond =
 				  datetime_details::parse_number<std::uint64_t>( attosecond_str );
 				result.attosecond *= daw::cxmath::pow10( 18 - precision );
+				daw_json_ensure(
+				  result.hour != 24 or
+				    ( result.minute == 0 and result.second == 0 and
+				      result.attosecond == 0 ),
+				  ErrorReason::InvalidTimestamp );
 				return result;
 			}
 
@@ -255,65 +277,94 @@ namespace daw::json {
 				DAW_CPP23_STATIC_LOCAL constexpr daw::string_view t_str = "T";
 				auto const date_str = ts.pop_front_until( t_str );
 				if( ts.empty( ) ) {
-					daw_json_error(
-					  true,
-					  ErrorReason::InvalidTimestamp ); // Invalid timestamp,
-					                                   // missing T separator
+					daw_json_error( true,
+					                ErrorReason::InvalidTimestamp ); // Invalid timestamp,
+					// missing T separator
 				}
 
 				date_parts const ymd = parse_iso_8601_date( date_str );
-				auto time_str =
-				  ts.pop_front_until( []( char c ) DAW_JSON_CPP23_STATIC_CALL_OP {
+				auto time_str = ts.pop_front_until(
+				  []( char c ) DAW_JSON_CPP23_STATIC_CALL_OP {
 					  return not( parse_utils::is_number( c ) | ( c == ':' ) |
 					              ( c == '.' ) );
-				  } );
+				  },
+				  nodiscard );
 				// TODO: verify or parse timezone
-				auto hms = parse_iso_8601_time( time_str );
-				if( not( ts.empty( ) or ts.front( ) == 'Z' ) ) {
-					daw_json_ensure( std::size( ts ) == 5 or std::size( ts ) == 6,
-					                 ErrorReason::InvalidTimestamp );
-					// The format will be (+|-)hh[:]mm
-					bool sign = false;
-					daw_json_ensure( not ts.empty( ), ErrorReason::InvalidTimestamp );
-					switch( ts.front( ) ) {
-					case '+':
-						sign = true;
-						break;
-					case '-':
-						break;
-					default:
-						daw_json_error( true, daw::json::ErrorReason::InvalidTimestamp );
-					}
-					ts.remove_prefix( );
-					auto hr_offset = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
-					  std::data( ts ) );
-					daw_json_ensure( hr_offset <= 24,
-					                 daw::json::ErrorReason::InvalidTimestamp );
-					if( ts.front( ) == ':' ) {
-						ts.remove_prefix( );
-					}
-					auto mn_offset = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
-					  std::data( ts ) );
-					daw_json_ensure( mn_offset <= 61,
-					                 daw::json::ErrorReason::InvalidTimestamp );
-					// Want to subtract offset from current time, we are converting to UTC
-					if( sign ) {
-						// Positive offset
-						hms.hour -= hr_offset;
-						hms.minute -= mn_offset;
-					} else {
-						// Negative offset
-						hms.hour += hr_offset;
-						hms.minute += mn_offset;
-					}
+				auto const hms = parse_iso_8601_time( time_str );
+
+				auto const local_tp = civil_to_time_point<TP>( ymd.year,
+				                                               ymd.month,
+				                                               ymd.day,
+				                                               hms.hour,
+				                                               hms.minute,
+				                                               hms.second,
+				                                               hms.attosecond );
+				if( ts.empty( ) or ts.front( ) == 'Z' ) {
+					return local_tp;
 				}
-				return civil_to_time_point<TP>( ymd.year,
-				                                ymd.month,
-				                                ymd.day,
-				                                hms.hour,
-				                                hms.minute,
-				                                hms.second,
-				                                hms.attosecond );
+				daw_json_ensure( std::size( ts ) == 5 or std::size( ts ) == 6,
+				                 ErrorReason::InvalidTimestamp );
+				// The format will be (+|-)hh[:]mm
+				bool sign = false;
+				switch( ts.front( ) ) {
+				case '+':
+					sign = true;
+					break;
+				case '-':
+					break;
+				default:
+					daw_json_error( true, ErrorReason::InvalidTimestamp );
+				}
+				ts.remove_prefix( );
+				auto hr_offset_str = ts.pop_front( 2 );
+				auto mn_offset_str = daw::string_view{ };
+				if( hr_offset_str.size( ) == 4 ) {
+					mn_offset_str = hr_offset_str.pop_back( 2 );
+				}
+				daw_json_ensure( hr_offset_str.size( ) == 2 and
+				                   parse_utils::is_number( hr_offset_str[0] ) and
+				                   parse_utils::is_number( hr_offset_str[1] ),
+				                 ErrorReason::InvalidTimestamp );
+
+				auto const hr_offset =
+				  parse_utils::parse_unsigned<std::uint_least32_t, 2>(
+				    std::data( hr_offset_str ) );
+				daw_json_ensure( hr_offset <= 24, ErrorReason::InvalidTimestamp );
+				if( not ts.empty( ) and ts.front( ) == ':' ) {
+					ts.remove_prefix( );
+				}
+				if( mn_offset_str.empty( ) ) {
+					mn_offset_str = ts.pop_front( 2 );
+				}
+				daw_json_ensure( mn_offset_str.size( ) == 2 and ts.empty( ) and
+				                   parse_utils::is_number( mn_offset_str[0] ) and
+				                   parse_utils::is_number( mn_offset_str[1] ),
+				                 ErrorReason::InvalidTimestamp );
+				auto const mn_offset =
+				  parse_utils::parse_unsigned<std::uint_least32_t, 2>(
+				    std::data( mn_offset_str ) );
+				daw_json_ensure( mn_offset <= 61, ErrorReason::InvalidTimestamp );
+
+				if( hr_offset == 0 and mn_offset == 0 ) {
+					return std::chrono::time_point_cast<typename TP::duration>(
+					  local_tp );
+				}
+				// Apply the offset as a duration on the time_point so that
+				// borrowing across hour/day boundaries (e.g. 01:14 - 02:30)
+				// is handled by chrono instead of wrapping unsigned fields.
+				auto const offset = std::chrono::seconds{
+				  static_cast<std::chrono::seconds::rep>( hr_offset ) * 3600 +
+				  static_cast<std::chrono::seconds::rep>( mn_offset ) * 60 };
+				// Want to subtract offset from current time, we are converting to UTC
+				if( sign ) {
+					// Positive offset
+					return std::chrono::time_point_cast<typename TP::duration>(
+					         local_tp ) -
+					       std::chrono::duration_cast<typename TP::duration>( offset );
+				}
+				// Negative offset
+				return std::chrono::time_point_cast<typename TP::duration>( local_tp ) +
+				       std::chrono::duration_cast<typename TP::duration>( offset );
 			}
 			struct ymdhms {
 				std::int_least32_t year;

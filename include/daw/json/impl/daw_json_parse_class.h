@@ -154,7 +154,7 @@ namespace daw::json {
 			         typename ParseState, std::size_t N, bool B>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result_t<JsonMember>
 			parse_class_member( ParseState &parse_state,
-			                    locations_info_t<N, B> &locations ) {
+			                    locations_info_t<N, B, typename ParseState::iterator> &locations ) {
 				parse_state.move_next_member_or_end( );
 
 				daw_json_assert_weak( not parse_state.empty( ) and

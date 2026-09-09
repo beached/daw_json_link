@@ -12,6 +12,7 @@
 
 #include "daw/json/impl/power_of_five_128_table.h"
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_bit_cast.h>
 #include <daw/daw_cxmath.h>
@@ -37,7 +38,8 @@ namespace daw::json {
 
 				[[nodiscard]] constexpr bool
 				try_append_digit( std::uint64_t &value, unsigned digit ) noexcept {
-					constexpr auto max_value = std::numeric_limits<std::uint64_t>::max( );
+					DAW_CPP23_STATIC_LOCAL constexpr auto max_value =
+				  daw::max_value<std::uint64_t>;
 					if( digit > 9U or value > ( max_value - digit ) / 10U ) {
 						return false;
 					}
@@ -131,8 +133,8 @@ namespace daw::json {
 
 					// Three extra bits are required: the implicit bit, the rounding bit,
 					// and one bit that may be lost while normalizing the product.
-					constexpr std::uint64_t precision_mask =
-					  std::numeric_limits<std::uint64_t>::max( ) >>
+					DAW_CPP23_STATIC_LOCAL constexpr std::uint64_t precision_mask =
+					  daw::max_value<std::uint64_t> >>
 					  ( binary_format<Real>::mantissa_bits + 3 );
 					if( ( product.high & precision_mask ) == precision_mask ) {
 						auto const second =
@@ -150,6 +152,18 @@ namespace daw::json {
 					return ( ( 217706 * exponent ) >> 16 ) + 63;
 				}
 			} // namespace eisellemire_details
+
+			/// @brief True when `long double` has the same size, precision, and
+			/// exponent range as `double` (e.g. MSVC, and some ARM/AArch64 ABIs),
+			/// meaning it can be computed as `double` with no loss.
+			template<typename Real>
+			inline constexpr bool is_double_sized_long_double_v =
+			  std::is_same_v<Real, long double> and
+			  sizeof( long double ) == sizeof( double ) and
+			  daw::digits<long double> ==
+			    daw::digits<double> and
+			  std::numeric_limits<long double>::max_exponent ==
+			    std::numeric_limits<double>::max_exponent;
 
 			/// Convert the exact decimal value
 			///   (-1 if negative else 1) * significant_digits * 10^exponent

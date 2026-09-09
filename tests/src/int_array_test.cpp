@@ -11,6 +11,7 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_vector.h>
 #include <daw/daw_do_n.h>
@@ -54,8 +55,8 @@ static std::vector<T> const &make_int_array( ) {
 		auto result = std::vector<T>( );
 		result.reserve( N );
 		for( size_t n = 0; n < N; ++n ) {
-			result.push_back( daw::randint<T>( daw::numeric_limits<T>::min( ),
-			                                   daw::numeric_limits<T>::max( ) ) );
+			result.push_back(
+			  daw::randint<T>( daw::lowest_value<T>, daw::max_value<T> ) );
 		}
 		return result;
 	}( );
@@ -68,10 +69,9 @@ static std::string_view make_int_array_data( ) {
 		std::string result = "[";
 		result.reserve( N * 23 + 8 );
 		for( size_t n = 0; n < N; ++n ) {
-			result +=
-			  std::to_string( daw::randint<T>( daw::numeric_limits<T>::min( ),
-			                                   daw::numeric_limits<T>::max( ) ) ) +
-			  ',';
+			result += std::to_string(
+			            daw::randint<T>( daw::lowest_value<T>, daw::max_value<T> ) ) +
+			          ',';
 		}
 		result.back( ) = ']';
 		// result.shrink_to_fit( );
@@ -96,11 +96,11 @@ void test_func( ) {
 		// allocations
 		result.reserve( NUMVALUES * 23 + 8 );
 		daw::algorithm::do_n( NUMVALUES, [&result] {
-			result += "{\"a\":" +
-			          std::to_string( daw::randint<intmax_t>(
-			            daw::numeric_limits<intmax_t>::min( ),
-			            daw::numeric_limits<intmax_t>::max( ) ) ) +
-			          "},";
+			result +=
+			  "{\"a\":" +
+			  std::to_string( daw::randint<intmax_t>(
+			    daw::lowest_value<std::int64_t>, daw::max_value<std::int64_t> ) ) +
+			  "},";
 		} );
 		result.back( ) = ']';
 		return result;

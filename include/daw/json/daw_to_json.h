@@ -69,8 +69,8 @@ namespace daw::json {
 			auto out_it =
 			  json_details::apply_policy_flags<output_t, PolicyFlags...>( it );
 
-			return json_details::member_to_string<json_class_t>( out_it, value )
-			  .get( );
+			out_it = json_details::member_to_string<json_class_t>( out_it, value );
+			return out_it.get( );
 		}
 
 		template<typename JsonClass, typename Value, auto... PolicyFlags>

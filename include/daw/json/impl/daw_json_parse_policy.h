@@ -59,8 +59,6 @@ namespace daw::json {
 				return PolicyFlags;
 			}
 
-			using iterator = char const *;
-
 			/***
 			 * see options::CheckedParseMode
 			 */
@@ -98,6 +96,13 @@ namespace daw::json {
 			static constexpr bool is_zero_terminated_string =
 			  json_details::get_bits_for<options::ZeroTerminatedString>(
 			    PolicyFlags ) == options::ZeroTerminatedString::yes;
+
+			/***
+			 * see options::AllowStringMutation
+			 */
+			static constexpr bool allow_string_mutation =
+			  json_details::get_bits_for<options::AllowStringMutation>(
+			    PolicyFlags ) == options::AllowStringMutation::yes;
 
 			/***
 			 * See options::IEEE754Precise
@@ -141,6 +146,8 @@ namespace daw::json {
 			           NoCommentSkippingPolicy, CppCommentSkippingPolicy,
 			           HashCommentSkippingPolicy>;
 
+			using iterator = std::conditional_t<allow_string_mutation ,
+			                                    char *, char const *>;
 			iterator first{ };
 			iterator last{ };
 			iterator class_first{ };
@@ -331,17 +338,20 @@ namespace daw::json {
 
 			template<char c>
 			DAW_ATTRIB_INLINE constexpr void move_to_next_of_unchecked( ) {
-				first =
+				auto const position =
 				  json_details::memchr_unchecked<c, exec_tag_t, expect_long_strings>(
-				    daw::not_null{ daw::never_null, first },
-				    daw::not_null{ daw::never_null, last } );
+				    daw::not_null<char const *>{ daw::never_null, first },
+				    daw::not_null<char const *>{ daw::never_null, last } );
+				first = json_details::input_pointer( first, position.get( ) );
 			}
 
 			template<char c>
 			DAW_ATTRIB_INLINE constexpr void move_to_next_of_checked( ) {
-				first =
+				auto const position =
 				  json_details::memchr_checked<c, exec_tag_t, expect_long_strings>(
-				    daw::not_null{ first }, daw::not_null{ last } );
+				    daw::not_null<char const *>{ first },
+				    daw::not_null<char const *>{ last } );
+				first = json_details::input_pointer( first, position.get( ) );
 			}
 
 			template<char c>
@@ -386,8 +396,8 @@ namespace daw::json {
 			}
 
 			struct class_pos_t {
-				char const *f;
-				char const *l;
+				iterator f;
+				iterator l;
 			};
 
 			constexpr void set_class_position( class_pos_t new_pos ) {
@@ -561,17 +571,25 @@ namespace daw::json {
 		BasicParsePolicy( ) -> BasicParsePolicy<>;
 
 		BasicParsePolicy( char const *, char const * ) -> BasicParsePolicy<>;
+		BasicParsePolicy( char *, char * ) -> BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, Allocator const & )
 		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
+		template<typename Allocator>
+		BasicParsePolicy( char *, char *, Allocator const & )
+		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
 
 		BasicParsePolicy( char const *, char const *, char const *, char const * )
 		  -> BasicParsePolicy<>;
+		BasicParsePolicy( char *, char *, char *, char * ) -> BasicParsePolicy<>;
 
 		template<typename Allocator>
 		BasicParsePolicy( char const *, char const *, char const *, char const *,
 		                  Allocator const & )
+		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
+		template<typename Allocator>
+		BasicParsePolicy( char *, char *, char *, char *, Allocator const & )
 		  -> BasicParsePolicy<json_details::default_policy_flag, Allocator>;
 
 		struct DefaultParsePolicy

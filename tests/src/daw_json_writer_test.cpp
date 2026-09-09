@@ -123,6 +123,19 @@ int main( ) {
 		}
 		daw_ensure( out == R"json([])json" );
 	}
+	{
+		auto out = std::string{ };
+		{
+			auto w = daw::json::json_writer<
+			  daw::json::options::OutputTrailingComma::Yes>( out );
+			w.open_object( );
+			w.add_key( "a" );
+			w.open_array( );
+			w.write_value( 1 );
+			w.close_array( );
+		}
+		daw_ensure( out == R"json({"a":[1,],})json" );
+	}
 
 	{
 		auto out = std::string{ };
@@ -228,6 +241,30 @@ int main( ) {
 			w.write_key_value( "a", Foo{ 42, "Hello", { 1, 2, 3 } } );
 		}
 		daw_ensure( out == R"json({"a":{"a":42,"b":"Hello","c":[1,2,3]}})json" );
+	}
+	{
+		// A nested class value written via write_key_value must continue the
+		// writer's current indentation depth in Pretty output, rather than
+		// restarting its own members at the top-level indent.
+		auto out = std::string{ };
+		{
+			auto w =
+			  daw::json::json_writer<daw::json::options::SerializationFormat::Pretty>(
+			    out );
+			w.open_object( );
+			w.write_key_value( "a", 1 );
+			w.write_key_value( "foo", Foo{ 2, "x", { 3 } } );
+		}
+		daw_ensure( out == R"json({
+  "a": 1,
+  "foo": {
+    "a": 2,
+    "b": "x",
+    "c": [
+      3
+    ]
+  }
+})json" );
 	}
 	{
 		auto out = std::string{ };

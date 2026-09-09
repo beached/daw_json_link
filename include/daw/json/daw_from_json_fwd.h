@@ -47,6 +47,18 @@ namespace daw::json {
 		template<typename JsonMember, bool KnownBounds = false, typename String>
 		[[nodiscard]] constexpr auto from_json( String &&json_data );
 
+		/// @brief Parse a writable JSON buffer with string mutation enabled.
+		/// The buffer must outlive borrowed results and keep a stable address.
+		/// Parsing may modify the buffer, including on failure.
+		template<typename JsonMember, bool KnownBounds = false, typename String,
+		         auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
+		from_json_insitu( String &&json_data,
+		                  options::parse_flags_t<PolicyFlags...> );
+
+		template<typename JsonMember, bool KnownBounds = false, typename String>
+		[[nodiscard]] constexpr auto from_json_insitu( String &&json_data );
+
 		/// @brief Construct the JSONMember from the JSON document argument.
 		/// @tparam JsonMember any bool, arithmetic, string, string_view,
 		/// daw::json::json_data_contract

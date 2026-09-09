@@ -10,6 +10,7 @@
 
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_random.h>
 
@@ -23,8 +24,8 @@ std::vector<T> make_random_data( ) {
 	std::vector<T> result{ };
 	result.reserve( N );
 	for( size_t n = 0; n < N; ++n ) {
-		result.push_back( daw::randint<T>( daw::numeric_limits<T>::min( ),
-		                                   daw::numeric_limits<T>::max( ) ) );
+		result.push_back(
+		  daw::randint<T>( daw::lowest_value<T>, daw::max_value<T> ) );
 	}
 	return result;
 }

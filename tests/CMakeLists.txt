@@ -249,6 +249,14 @@ endif()
 target_link_libraries( twitter_test PRIVATE json_test )
 add_dependencies( full twitter_test )
 
+if( DAW_JSON_FULL_TESTS )
+	add_executable( twitter_insitu_test src/twitter_insitu_test.cpp )
+	add_test( NAME twitter_insitu_test COMMAND twitter_insitu_test ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+else()
+	add_executable( twitter_insitu_test EXCLUDE_FROM_ALL src/twitter_insitu_test.cpp )
+endif()
+target_link_libraries( twitter_insitu_test PRIVATE json_test )
+add_dependencies( full twitter_insitu_test )
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND CLANG_VERSION_MAJOR VERSION_GREATER_EQUAL 9 )
 	if( DAW_JSON_FULL_TESTS )
@@ -762,6 +770,28 @@ add_test( test_parse_real_lemire_test test_parse_real_lemire )
 add_dependencies( ci_tests test_parse_real_lemire )
 add_dependencies( full test_parse_real_lemire )
 
+add_executable( long_double_test src/long_double_test.cpp )
+target_link_libraries( long_double_test PRIVATE json_test )
+add_test( NAME long_double_test COMMAND long_double_test )
+add_dependencies( ci_tests long_double_test )
+add_dependencies( full long_double_test )
+
+add_executable( json_event_parser_max_depth_test
+                 src/json_event_parser_max_depth_test.cpp )
+target_link_libraries( json_event_parser_max_depth_test PRIVATE json_test )
+add_test( NAME json_event_parser_max_depth_test
+          COMMAND json_event_parser_max_depth_test )
+add_dependencies( ci_tests json_event_parser_max_depth_test )
+add_dependencies( full json_event_parser_max_depth_test )
+
+add_executable( json_event_parser_handler_result_test
+                 src/json_event_parser_handler_result_test.cpp )
+target_link_libraries( json_event_parser_handler_result_test PRIVATE json_test )
+add_test( NAME json_event_parser_handler_result_test
+          COMMAND json_event_parser_handler_result_test )
+add_dependencies( ci_tests json_event_parser_handler_result_test )
+add_dependencies( full json_event_parser_handler_result_test )
+
 if( DAW_USE_EXCEPTIONS )
 	add_executable( test_details_skip_string src/test_details_skip_string.cpp )
 	target_link_libraries( test_details_skip_string PRIVATE json_test )
@@ -1221,6 +1251,24 @@ add_test( NAME custom_optional_number_test COMMAND custom_optional_number_test W
 add_dependencies( ci_tests custom_optional_number_test )
 add_dependencies( full custom_optional_number_test )
 
+add_executable( custom_types_string_literal_test src/custom_types_string_literal_test.cpp )
+target_link_libraries( custom_types_string_literal_test PRIVATE json_test )
+add_test( NAME custom_types_string_literal_test COMMAND custom_types_string_literal_test )
+add_dependencies( ci_tests custom_types_string_literal_test )
+add_dependencies( full custom_types_string_literal_test )
+
+add_executable( parse_policy_options_test src/parse_policy_options_test.cpp )
+target_link_libraries( parse_policy_options_test PRIVATE json_test )
+add_test( NAME parse_policy_options_test COMMAND parse_policy_options_test )
+add_dependencies( ci_tests parse_policy_options_test )
+add_dependencies( full parse_policy_options_test )
+
+add_executable( serialize_policy_options_test src/serialize_policy_options_test.cpp )
+target_link_libraries( serialize_policy_options_test PRIVATE json_test )
+add_test( NAME serialize_policy_options_test COMMAND serialize_policy_options_test )
+add_dependencies( ci_tests serialize_policy_options_test )
+add_dependencies( full serialize_policy_options_test )
+
 add_executable( multi_tu_test src/multi_tu_p0_test.cpp src/multi_tu_p1_test.cpp )
 target_link_libraries( multi_tu_test json_test )
 add_test( NAME multi_tu_test_test COMMAND multi_tu_test )
@@ -1266,6 +1314,12 @@ target_link_libraries( daw_json_writer_test json_test )
 add_test( NAME daw_json_writer_test_test COMMAND daw_json_writer_test )
 add_dependencies( ci_tests daw_json_writer_test )
 add_dependencies( full daw_json_writer_test )
+
+add_executable( json_string_insitu_test src/json_string_insitu_test.cpp )
+target_link_libraries( json_string_insitu_test PRIVATE json_test )
+add_test( NAME json_string_insitu_test COMMAND json_string_insitu_test )
+add_dependencies( ci_tests json_string_insitu_test )
+add_dependencies( full json_string_insitu_test )
 
 add_executable( daw_json_writer_mapping_test
 								src/daw_json_writer_mapping_test.cpp )

@@ -50,6 +50,14 @@ namespace daw::json {
 					yes
 				}; // 1bit
 
+				enum class AllowStringMutation : unsigned {
+					/// @brief String is not allowed to be mutated.
+					no,
+					/// @brief String maybe mutated during parsing.  This is useful for
+					/// json_string_insitu
+					yes
+				}; // 1 bit
+
 				///
 				/// @brief Allow comments in JSON.  The supported modes are none, C++
 				/// style comments, and # hash style comments.  Default is none, no

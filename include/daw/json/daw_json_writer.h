@@ -8,8 +8,6 @@
 
 #pragma once
 
-// Allow writing to a Writer incrementally
-
 #include "daw/json/impl/version.h"
 
 #include "daw/json/concepts/daw_writable_output.h"
@@ -106,19 +104,28 @@ namespace daw::json {
 
 			template<typename JsonClass = use_default, typename T>
 			constexpr void do_write_value( T const &value ) {
+				using json_class_t = typename daw::conditional_t<
+				  std::is_same_v<use_default, JsonClass>,
+				  json_details::ident_trait<json_details::json_deduced_type, T>,
+				  json_details::ident_trait<json_details::json_deduced_type,
+				                            JsonClass>>::type;
 				prepare_value( );
 				if constexpr( std::is_pointer_v<std::remove_reference_t<T>> ) {
 					if( not value ) {
 						m_writer.write( "null" );
 					} else {
 						if constexpr( std::is_convertible_v<T, char const *> ) {
-							to_json<JsonClass>( daw::string_view( value ), m_writer.get( ) );
+							m_writer = json_details::member_to_string<
+							  json_string_raw_no_name<daw::string_view>>(
+							  m_writer, daw::string_view( value ) );
 						} else {
-							to_json<JsonClass>( value, m_writer.get( ) );
+							m_writer =
+							  json_details::member_to_string<json_class_t>( m_writer, value );
 						}
 					}
 				} else {
-					to_json<JsonClass>( value, m_writer.get( ) );
+					m_writer =
+					  json_details::member_to_string<json_class_t>( m_writer, value );
 				}
 				m_is_first = false;
 			}
@@ -185,6 +192,10 @@ namespace daw::json {
 				}
 				m_writer.del_indent( );
 				if( not m_is_first ) {
+					if constexpr( iterator_t::output_trailing_comma ==
+					              options::OutputTrailingComma::Yes ) {
+						m_writer.put( ',' );
+					}
 					m_writer.next_member( );
 				}
 				m_writer.put( '}' );
@@ -208,6 +219,10 @@ namespace daw::json {
 				  ErrorReason::OutputError );
 				m_writer.del_indent( );
 				if( not m_is_first ) {
+					if constexpr( iterator_t::output_trailing_comma ==
+					              options::OutputTrailingComma::Yes ) {
+						m_writer.put( ',' );
+					}
 					m_writer.next_member( );
 				}
 				m_writer.put( ']' );
@@ -391,7 +406,7 @@ namespace daw::json {
 			constexpr void write_number( T const &value ) {
 				using JsonMember =
 				  json_writer_details::json_write_value_class_t<JsonClass, T>;
-				constexpr JsonBaseParseTypes json_base_type =
+				DAW_CPP23_STATIC_LOCAL constexpr JsonBaseParseTypes json_base_type =
 				  JsonMember::underlying_json_type;
 				static_assert(
 				  json_base_type == JsonBaseParseTypes::Number or
@@ -405,12 +420,25 @@ namespace daw::json {
 				}
 			}
 
-			/// When outputting a class, uses default to_json
+		private:
+			template<typename T>
+			DAW_CPP20_CX_ALLOC void write_string_class( T const &value ) {
+				using json_class_t = json_details::json_deduced_type<T>;
+				auto tmp = std::string{ };
+				auto tmp_iterator =
+				  json_details::make_output_iterator<PolicyFlags...>( tmp );
+				tmp_iterator.indentation_level = m_writer.indentation_level;
+				(void)json_details::member_to_string<json_class_t>( tmp_iterator,
+				                                                    value );
+				do_write_value<json_string_no_name<>>( tmp );
+			}
+
+		public:
 			template<typename JsonClass = use_default, typename T>
 			constexpr void write_string( T const &value ) {
 				using JsonMember =
 				  json_writer_details::json_write_value_class_t<JsonClass, T>;
-				constexpr JsonBaseParseTypes json_base_type =
+				DAW_CPP23_STATIC_LOCAL constexpr JsonBaseParseTypes json_base_type =
 				  JsonMember::underlying_json_type;
 				if constexpr( json_base_type == JsonBaseParseTypes::String ) {
 					write_value<JsonClass>( value );
@@ -418,12 +446,12 @@ namespace daw::json {
 				                     json_base_type == JsonBaseParseTypes::Number ) {
 					prepare_value( );
 					m_writer.put( '"' );
-					to_json<JsonClass>( value, m_writer.get( ) );
+					m_writer =
+					  json_details::member_to_string<JsonMember>( m_writer, value );
 					m_writer.put( '"' );
 					m_is_first = false;
 				} else {
-					auto const tmp = to_json( value );
-					do_write_value<json_string_no_name<>>( tmp );
+					write_string_class( value );
 				}
 			}
 

@@ -150,19 +150,18 @@ namespace daw::json {
 			         typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
-				constexpr char PrimLeft =
+				DAW_CPP23_STATIC_LOCAL constexpr char PrimLeft =
 				  BracketedType == json_details::SkipBracketedType::Class ? '{' : '[';
 				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
 				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;
 				using SecRight = daw::constant<SecLeft::value == '{' ? '}' : ']'>;
-
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				auto ptr_first = daw::not_null<char const *>( parse_state.first );
-				auto const ptr_last = daw::not_null<char const *>( parse_state.last );
+				auto ptr_first = daw::not_null( parse_state.first );
+				auto const ptr_last = daw::not_null( parse_state.last );
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
 				}
@@ -176,9 +175,18 @@ namespace daw::json {
 						break;
 					case '"':
 						++ptr_first;
-						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input,
-						  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
+						if constexpr( std::is_same_v<char *,
+						                             typename ParseState::iterator> ) {
+							auto skip_ptr = json_details::mem_skip_until_end_of_string<
+							  ParseState::is_unchecked_input,
+							  typename ParseState::exec_tag_t>( ptr_first.get( ),
+							                                    ptr_last.get( ) );
+							ptr_first += skip_ptr - ptr_first.get( );
+						} else {
+							ptr_first = json_details::mem_skip_until_end_of_string<
+							  ParseState::is_unchecked_input,
+							  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
+						}
 						daw_json_ensure( ptr_first < ptr_last,
 						                 ErrorReason::UnexpectedEndOfData,
 						                 parse_state );
@@ -254,7 +262,7 @@ namespace daw::json {
 			         typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
-				constexpr char PrimLeft =
+				DAW_CPP23_STATIC_LOCAL constexpr char PrimLeft =
 				  BracketedType == json_details::SkipBracketedType::Class ? '{' : '[';
 				using PrimRight = daw::constant<PrimLeft == '{' ? '}' : ']'>;
 				using SecLeft = daw::constant<PrimLeft == '{' ? '[' : '{'>;
@@ -265,10 +273,9 @@ namespace daw::json {
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				auto ptr_first =
-				  daw::not_null<char const *>( daw::never_null, parse_state.first );
+				auto ptr_first = daw::not_null( daw::never_null, parse_state.first );
 				auto const ptr_last =
-				  daw::not_null<char const *>( daw::never_null, parse_state.last );
+				  daw::not_null( daw::never_null, parse_state.last );
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}
@@ -279,9 +286,18 @@ namespace daw::json {
 						break;
 					case '"':
 						++ptr_first;
-						ptr_first = json_details::mem_skip_until_end_of_string<
-						  ParseState::is_unchecked_input,
-						  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
+						if constexpr( std::is_same_v<char *,
+						                             typename ParseState::iterator> ) {
+							auto skip_ptr = json_details::mem_skip_until_end_of_string<
+							  ParseState::is_unchecked_input,
+							  typename ParseState::exec_tag_t>( ptr_first.get( ),
+							                                    ptr_last.get( ) );
+							ptr_first += skip_ptr - ptr_first.get( );
+						} else {
+							ptr_first = json_details::mem_skip_until_end_of_string<
+							  ParseState::is_unchecked_input,
+							  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
+						}
 						break;
 					case ',':
 						if( prime_bracket_count == 1 and second_bracket_count == 0 ) {

@@ -334,6 +334,12 @@ namespace daw::json {
 						} else {
 							return json_link_quick_map_type<json_base::json_string<T>>{ };
 						}
+					} else if constexpr( parse_type::value == JsonParseTypes::StringInsitu ) {
+						if constexpr( is_null::value ) {
+							return json_link_quick_map_type<json_base::json_string_null<T>>{ };
+						} else {
+							return json_link_quick_map_type<json_base::json_string<T>>{ };
+						}
 					} else if constexpr( parse_type::value == JsonParseTypes::Bool ) {
 						if constexpr( is_null::value ) {
 							return json_link_quick_map_type<json_base::json_bool_null<T>>{ };

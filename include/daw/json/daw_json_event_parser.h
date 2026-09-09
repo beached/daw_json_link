@@ -17,6 +17,7 @@
 #include <daw/daw_cpp20_concept.h>
 #include <daw/daw_move.h>
 #include <daw/daw_string_view.h>
+#include <daw/daw_utility.h>
 
 #include <cstddef>
 #include <daw/stdinc/declval.h>
@@ -315,8 +316,10 @@ namespace daw::json {
 			}
 		};
 
-		template<typename StackContainerPolicy = use_default, json_options_t P,
-		         typename A, typename Handler, auto... ParseFlags>
+		template<typename StackContainerPolicy = use_default,
+		         std::size_t MaxDepth = daw::max_value<std::size_t>,
+		         json_options_t P, typename A, typename Handler,
+		         auto... ParseFlags>
 		constexpr void json_event_parser( basic_json_value<P, A> bjv,
 		                                  Handler &&handler,
 		                                  options::parse_flags_t<ParseFlags...> ) {
@@ -342,8 +345,26 @@ namespace daw::json {
 			long long class_depth = 0;
 			long long array_depth = 0;
 
+			// Complete means the caller deliberately stopped early, possibly from
+			// inside a nested array/class; the class_depth/array_depth invariant
+			// checked below no longer applies in that case.
+			bool user_completed = false;
+			auto const complete_now = [&]( ) {
+				parent_stack.clear( );
+				user_completed = true;
+			};
+
+			// Skip remaining elements/members of the current class/array without
+			// firing further value events, by walking (not jumping to end( ), which
+			// is a sentinel with no real position) until the raw cursor lands on
+			// the container's closing bracket. This is what lets the subsequent
+			// "container exhausted" check and the matching end event fire
+			// correctly, same as reaching the end normally would.
 			auto const move_to_last = [&]( ) {
-				parent_stack.back( ).value.first = parent_stack.back( ).value.second;
+				auto &top = parent_stack.back( );
+				while( top.value.first ) {
+					++top.value.first;
+				}
 			};
 
 			auto const process_value = [&]( json_value_t p ) {
@@ -351,7 +372,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_value( handler, p );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -368,7 +389,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_array_start( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -376,6 +397,10 @@ namespace daw::json {
 					case json_parse_handler_result::Continue:
 						break;
 					}
+					daw_json_ensure(
+					  static_cast<std::size_t>( class_depth + array_depth ) <=
+					    MaxDepth,
+					  ErrorReason::MaxDepthExceeded );
 					parent_stack.push_back(
 					  { StackParseStateType::Array,
 					    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
@@ -385,7 +410,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_class_start( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -393,6 +418,10 @@ namespace daw::json {
 					case json_parse_handler_result::Continue:
 						break;
 					}
+					daw_json_ensure(
+					  static_cast<std::size_t>( class_depth + array_depth ) <=
+					    MaxDepth,
+					  ErrorReason::MaxDepthExceeded );
 					parent_stack.push_back(
 					  { StackParseStateType::Class,
 					    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
@@ -401,7 +430,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_number( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -414,7 +443,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_bool( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -427,7 +456,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_string( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -440,7 +469,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_null( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -454,7 +483,7 @@ namespace daw::json {
 					auto result = json_details::handle_on_error( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
+						complete_now( );
 						return;
 					case json_parse_handler_result::SkipClassArray:
 						move_to_last( );
@@ -484,7 +513,7 @@ namespace daw::json {
 						auto result = json_details::handle_on_class_end( handler );
 						switch( result.value ) {
 						case json_parse_handler_result::Complete:
-							parent_stack.clear( );
+							complete_now( );
 							return;
 						case json_parse_handler_result::SkipClassArray:
 						case json_parse_handler_result::Continue:
@@ -501,7 +530,7 @@ namespace daw::json {
 						auto result = json_details::handle_on_array_end( handler );
 						switch( result.value ) {
 						case json_parse_handler_result::Complete:
-							parent_stack.clear( );
+							complete_now( );
 							return;
 						case json_parse_handler_result::SkipClassArray:
 						case json_parse_handler_result::Continue:
@@ -519,33 +548,38 @@ namespace daw::json {
 				parent_stack.pop_back( );
 				process_range( v );
 			}
-			daw_json_ensure( class_depth == 0 and array_depth == 0,
+			daw_json_ensure( user_completed or
+			                   ( class_depth == 0 and array_depth == 0 ),
 			                 ErrorReason::InvalidEndOfValue );
 		}
 
-		template<typename StackContainerPolicy = use_default, json_options_t P,
-		         typename A, typename Handler>
+		template<typename StackContainerPolicy = use_default,
+		         std::size_t MaxDepth = daw::max_value<std::size_t>,
+		         json_options_t P, typename A, typename Handler>
 		DAW_ATTRIB_INLINE constexpr void
 		json_event_parser( basic_json_value<P, A> bjv, Handler &&handler ) {
-			json_event_parser<StackContainerPolicy>(
+			json_event_parser<StackContainerPolicy, MaxDepth>(
 			  std::move( bjv ), DAW_FWD( handler ), options::parse_flags<> );
 		}
 
-		template<typename StackContainerPolicy = use_default, typename Handler,
-		         auto... ParseFlags>
+		template<typename StackContainerPolicy = use_default,
+		         std::size_t MaxDepth = daw::max_value<std::size_t>,
+		         typename Handler, auto... ParseFlags>
 		DAW_ATTRIB_INLINE void
 		json_event_parser( daw::string_view json_document, Handler &&handler,
 		                   options::parse_flags_t<ParseFlags...> pflags ) {
 
-			return json_event_parser<StackContainerPolicy>(
+			return json_event_parser<StackContainerPolicy, MaxDepth>(
 			  basic_json_value( json_document ), DAW_FWD( handler ), pflags );
 		}
 
-		template<typename StackContainerPolicy = use_default, typename Handler>
+		template<typename StackContainerPolicy = use_default,
+		         std::size_t MaxDepth = daw::max_value<std::size_t>,
+		         typename Handler>
 		DAW_ATTRIB_INLINE void json_event_parser( daw::string_view json_document,
 		                                          Handler &&handler ) {
 
-			return json_event_parser<StackContainerPolicy>(
+			return json_event_parser<StackContainerPolicy, MaxDepth>(
 			  basic_json_value( json_document ),
 			  DAW_FWD( handler ),
 			  options::parse_flags<> );

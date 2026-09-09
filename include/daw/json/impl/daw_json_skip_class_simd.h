@@ -87,13 +87,13 @@ namespace daw::json {
 			template<SkipBracketedType BracketedType, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_FLATTEN DAW_JSON_SIMD_CONSTEXPR ParseState
 			skip_bracketed_item_simd( ParseState &parse_state ) {
-				constexpr char primary_left =
+				DAW_CPP23_STATIC_LOCAL constexpr char primary_left =
 				  BracketedType == SkipBracketedType::Class ? '{' : '[';
-				constexpr char primary_right =
+				DAW_CPP23_STATIC_LOCAL constexpr char primary_right =
 				  BracketedType == SkipBracketedType::Class ? '}' : ']';
-				constexpr char secondary_left =
+				DAW_CPP23_STATIC_LOCAL constexpr char secondary_left =
 				  BracketedType == SkipBracketedType::Class ? '[' : '{';
-				constexpr char secondary_right =
+				DAW_CPP23_STATIC_LOCAL constexpr char secondary_right =
 				  BracketedType == SkipBracketedType::Class ? ']' : '}';
 
 				using namespace skip_bracketed_item_simd_details;
@@ -124,7 +124,8 @@ namespace daw::json {
 					auto const backslash_bits =
 					  ( input == splat( '\\' ) ).to_ullong( ) & valid_bits;
 
-					constexpr std::uint64_t odd_bits = 0xAAAAAAAAAAAAAAAAULL;
+					DAW_CPP23_STATIC_LOCAL constexpr std::uint64_t odd_bits =
+					  0xAAAAAAAAAAAAAAAAULL;
 					auto const previous_escaped = escaped ? std::uint64_t{ 1 } : 0;
 					auto const potential_escape = backslash_bits & ~previous_escaped;
 					auto const maybe_escaped = potential_escape << 1U;

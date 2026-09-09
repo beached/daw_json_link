@@ -59,8 +59,10 @@ namespace daw::json {
 			  String,
 			  options::ZeroTerminatedString::yes>;
 
-			auto first = daw::not_null<char const *>( std::data( json_data ) );
-			auto last = daw::not_null<char const *>( daw::data_end( json_data ) );
+			auto first =
+			  daw::not_null<typename ParsePolicy::iterator>( std::data( json_data ) );
+			auto last = daw::not_null<typename ParsePolicy::iterator>(
+			  daw::data_end( json_data ) );
 			if( first != last and last[-1] == 0 ) {
 				--last;
 			}
@@ -103,6 +105,28 @@ namespace daw::json {
 			  "String type must have a be a contiguous range of Characters" );
 			return from_json<JsonMember, KnownBounds>( DAW_FWD( json_data ),
 			                                           options::parse_flags<> );
+		}
+
+		/// @brief Parse a writable JSON buffer with string mutation enabled.
+		/// The buffer must remain alive and at a stable address while borrowed
+		/// results are used. Parsing may modify the buffer, including on failure.
+		template<typename JsonMember, bool KnownBounds, typename String,
+		         auto... PolicyFlags>
+		[[nodiscard]] constexpr auto
+		from_json_insitu( String &&json_data,
+		                  options::parse_flags_t<PolicyFlags...> ) {
+			static_assert( std::is_same_v<decltype( std::data( json_data ) ), char *>,
+			               "from_json_insitu requires a mutable character buffer" );
+			return from_json<JsonMember, KnownBounds>(
+			  DAW_FWD( json_data ),
+			  options::parse_flags<PolicyFlags...,
+			                       options::AllowStringMutation::yes> );
+		}
+
+		template<typename JsonMember, bool KnownBounds, typename String>
+		[[nodiscard]] constexpr auto from_json_insitu( String &&json_data ) {
+			return from_json_insitu<JsonMember, KnownBounds>(
+			  DAW_FWD( json_data ), options::parse_flags<> );
 		}
 
 		/// @brief Construct the JSONMember from the JSON document argument.

@@ -708,7 +708,8 @@ namespace daw::jkj::dragonbox {
 				struct table_holder {
 					static constexpr table_t<UInt, a, N> table =
 					  [] DAW_CPP23_STATIC_CALL_OP {
-						  constexpr auto mod_inverse = modular_inverse<UInt, a>( );
+						  DAW_CPP23_STATIC_LOCAL constexpr auto mod_inverse =
+						    modular_inverse<UInt, a>( );
 						  table_t<UInt, a, N> tbl{ };
 						  std::common_type_t<UInt, unsigned int> pow_of_mod_inverse = 1;
 						  UInt pow_of_a = 1;

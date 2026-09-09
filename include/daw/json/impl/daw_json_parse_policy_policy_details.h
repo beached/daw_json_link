@@ -13,10 +13,22 @@
 #include "daw_json_assert.h"
 
 #include <daw/daw_attributes.h>
+#include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+			// Translate a read-only scanner result back into the input range's
+			// pointer type. Non-null positions must belong to the same buffer.
+			template<typename Char>
+			[[nodiscard]] constexpr Char *input_pointer( Char *origin, char const *position ) {
+				if constexpr( std::is_const_v<Char> ) {
+					return position;
+				} else {
+					return position ? origin + ( position - origin ) : nullptr;
+				}
+			}
+
 			enum class SkipBracketedType { Array, Class };
 		} // namespace json_details
 

@@ -56,7 +56,7 @@ namespace daw::json {
 				///
 				/// @brief Allow for restricting the output of strings to 7bits
 				///
-				/// default: None
+				/// default: ErrorInvalidUTF8
 				///
 				enum class RestrictedStringOutput : unsigned {
 					/* Do not impose any extra restrictions on string output during
@@ -65,9 +65,9 @@ namespace daw::json {
 					/// When invalid UTF8 is encountered, throw an error
 					ErrorInvalidUTF8,
 					/* Restrict all string member values and all member names to 7bits.
-					   This will result in escaping all values >= 0x7F.  This can affect
+					   This will result in escaping all values >= 0x80.  This can affect
 					   round trips where the name contains high bits set*/
-					OnlyAllow7bitsStrings
+					OnlyAllow7bitStrings
 				};
 
 				///

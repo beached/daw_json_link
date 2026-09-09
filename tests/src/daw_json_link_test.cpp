@@ -329,7 +329,7 @@ DAW_CONSTEXPR char const json_data_array[] =
 			"s": "yo yo yo",
 			"s2": "ho ho ho",
 			"o": 1344,
-			"dte": "2019-11-31T01:02:03.343Z"
+			"dte": "2019-11-30T01:02:03.343Z"
 	  },{
 	    "i": 55,
 	    "d": 2.2,
@@ -341,7 +341,7 @@ DAW_CONSTEXPR char const json_data_array[] =
 			"s": "yo yo yo",
 			"s2": "ho ho ho",
 			"o": 1322,
-			"dte": "2010-06-31T01:02:03.343Z"
+			"dte": "2010-06-30T01:02:03.343Z"
 	  }])";
 
 struct EmptyClassTest {
@@ -1028,10 +1028,214 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
+namespace iterator_regression_tests {
+	using namespace daw::json;
+	using iterator = json_array_iterator<int, options::CheckedParseMode::yes>;
+	using once_iterator =
+	  json_array_iterator_once<int, options::CheckedParseMode::yes>;
+
+	template<typename Iterator, typename Check>
+	void test_equality( Check const &check ) {
+		Iterator const end{ };
+		Iterator const other_end{ };
+		Iterator const live( "[1]" );
+		auto const copy = live;
+		check( end == other_end, "expected end == end to be true" );
+		check( not( end != other_end ), "expected end != end to be false" );
+		check( not( end == live ) and not( live == end ),
+		       "expected end == live and live == end to both be false" );
+		check( end != live and live != end,
+		       "expected end != live and live != end to both be true" );
+		check( live == copy and not( live != copy ),
+		       "expected a live iterator and its copy to compare equal" );
+	}
+
+	template<typename Range, typename Check>
+	void test_ranges( Check const &check ) {
+		check( Range{ }.empty( ), "expected a default range to report empty()" );
+		struct test_case {
+			char const *document;
+			unsigned count;
+		};
+		for( auto const [doc, expected] : { test_case{ "[]", 0 },
+		                                    test_case{ "[ ]", 0 },
+		                                    test_case{ "[1]", 1 },
+		                                    test_case{ "[1 ]", 1 },
+		                                    test_case{ "[1,2]", 2 },
+		                                    test_case{ " [1, 2] ", 2 },
+		                                    test_case{ "[1,]", 1 },
+		                                    test_case{ "[1, ]", 1 } } ) {
+#if defined( DAW_USE_EXCEPTIONS )
+			try {
+#endif
+				Range const range( doc );
+				check( range.empty( ) == ( expected == 0 ),
+				       expected == 0 ? "expected empty() to return true"
+				                     : "expected empty() to return false",
+				       doc );
+				unsigned count = 0;
+				for( int value : range ) {
+					++count;
+					check( value == static_cast<int>( count ),
+					       "expected values 1, 2 in array order",
+					       doc );
+					// Bound the loop so broken sentinel comparisons cannot hang.
+					if( count > expected ) {
+						break;
+					}
+				}
+				check( count == expected,
+				       expected == 0   ? "expected zero loop iterations"
+				       : expected == 1 ? "expected exactly one loop iteration"
+				                       : "expected exactly two loop iterations",
+				       doc );
+#if defined( DAW_USE_EXCEPTIONS )
+			} catch( json_exception const &ex ) {
+				(void)ex;
+				check( false,
+				       "expected valid array iteration to finish without throwing",
+				       doc );
+			}
+#endif
+		}
+	}
+
+#if defined( DAW_USE_EXCEPTIONS )
+	template<typename Iterator, typename Check>
+	void test_invalid( daw::string_view doc, bool dereference,
+	                   Check const &check ) {
+		bool rejected = false;
+		try {
+			auto it = Iterator( doc );
+			for( unsigned count = 0; it and count < 8; ++count ) {
+				if( dereference ) {
+					(void)*it;
+				}
+				++it;
+			}
+		} catch( json_exception const &ex ) {
+			(void)ex;
+			rejected = true;
+		}
+		check( rejected,
+		       "expected json_exception for a missing closing bracket or separator",
+		       doc );
+	}
+#endif
+
+	void test( ) {
+		unsigned failures = 0;
+		char const *context = "regular equality";
+		char const *iterator_type =
+		  "json_array_iterator<int, CheckedParseMode::yes>";
+		auto const check = [&]( bool success,
+		                        daw::string_view description,
+		                        daw::string_view doc = { } ) {
+			if( not success ) {
+				++failures;
+				std::cerr << "Iterator regression (" << context << ", " << iterator_type
+				          << "): " << description;
+				if( not doc.empty( ) ) {
+					std::cerr << "; input: `" << doc << '`';
+				}
+				std::cerr << '\n';
+			}
+		};
+		test_equality<iterator>( check );
+		context = "once equality";
+		iterator_type = "json_array_iterator_once<int, CheckedParseMode::yes>";
+		test_equality<once_iterator>( check );
+		context = "regular range";
+		iterator_type = "json_array_iterator<int, CheckedParseMode::yes>";
+		test_ranges<json_array_range<int, options::CheckedParseMode::yes>>( check );
+		context = "once range";
+		iterator_type = "json_array_iterator_once<int, CheckedParseMode::yes>";
+		test_ranges<json_array_range_once<int, options::CheckedParseMode::yes>>(
+		  check );
+		context = "conformance regular range";
+		iterator_type =
+		  "json_array_iterator<int, CheckedParseMode::yes, "
+		  "DAW_JSON_CONFORMANCE_FLAGS>";
+		test_ranges<json_array_range<int,
+		                             options::CheckedParseMode::yes,
+		                             DAW_JSON_CONFORMANCE_FLAGS>>( check );
+		context = "conformance once range";
+		iterator_type =
+		  "json_array_iterator_once<int, CheckedParseMode::yes, "
+		  "DAW_JSON_CONFORMANCE_FLAGS>";
+		test_ranges<json_array_range_once<int,
+		                                  options::CheckedParseMode::yes,
+		                                  DAW_JSON_CONFORMANCE_FLAGS>>( check );
+
+		context = "repeat dereference and copy";
+		iterator_type = "json_array_iterator<int, CheckedParseMode::yes>";
+		auto it = iterator( "[1,2]" );
+		check( *it == 1 and *it == 1,
+		       "expected two reads at the first position to both return 1" );
+		auto copy = it;
+		++it;
+		check( *it == 2 and *copy == 1,
+		       "expected the advanced iterator to return 2 and its unadvanced copy "
+		       "to return 1" );
+		++copy;
+		check(
+		  copy == it and *copy == 2,
+		  "expected advancing the copy to reach the same position and return 2" );
+		++it;
+		++copy;
+		check(
+		  it == iterator{ } and copy == it,
+		  "expected both exhausted copies to compare equal to the end iterator" );
+
+#if defined( DAW_USE_EXCEPTIONS )
+		for( bool dereference : { false, true } ) {
+			context = dereference ? "regular parse then advance" : "regular skip";
+			iterator_type = "json_array_iterator<int, CheckedParseMode::yes>";
+			for( auto doc : { "[", "[ ", "[1", "[1,", "[1,2", "[1 2]" } ) {
+				test_invalid<iterator>( doc, dereference, check );
+			}
+			iterator_type = "json_array_iterator<std::string, CheckedParseMode::yes>";
+			test_invalid<
+			  json_array_iterator<std::string, options::CheckedParseMode::yes>>(
+			  R"(["a" "b"])", dereference, check );
+			iterator_type = "json_array_iterator<NumberX, CheckedParseMode::yes>";
+			test_invalid<
+			  json_array_iterator<NumberX, options::CheckedParseMode::yes>>(
+			  R"([{"x":1} {"x":2}])", dereference, check );
+		}
+		// Exercise completion separately from the once iterator's comparisons.
+		context = "once final increment";
+		iterator_type = "json_array_iterator_once<int, CheckedParseMode::yes>";
+		for( auto doc : { "[1]", "[1 ]", "[1,]", "[1, ]" } ) {
+			try {
+				auto last = once_iterator( doc );
+				check( *last == 1, "expected dereference to return 1", doc );
+				++last;
+				check(
+				  not last, "expected iterator to be exhausted after final ++", doc );
+			} catch( json_exception const & ) {
+				check( false,
+				       "expected dereference followed by final ++ to complete without "
+				       "throwing",
+				       doc );
+			}
+		}
+		context = "once malformed input";
+		iterator_type = "json_array_iterator_once<int, CheckedParseMode::yes>";
+		for( auto doc : { "[", "[ ", "[1", "[1,", "[1,2", "[1 2]" } ) {
+			test_invalid<once_iterator>( doc, true, check );
+		}
+
+#endif
+		daw_ensure( failures == 0 );
+	}
+} // namespace iterator_regression_tests
+
 int main( ) {
 #if defined( DAW_USE_EXCEPTIONS )
 	try {
 #endif
+		iterator_regression_tests::test( );
 		test_deduced_empty_class( );
 		constexpr daw::string_view foo2_json =
 		  R"json( { "m1": {}, "m2": 42  } )json";
@@ -1103,6 +1307,18 @@ int main( ) {
 			daw::do_not_optimize( data2 );
 		}
 		to_json( data, std::cout ) << '\n';
+#if defined( DAW_USE_EXCEPTIONS )
+		auto const ensure_invalid_date = []( std::string_view timestamp ) {
+			bool threw = false;
+			try {
+				(void)from_json<json_date_no_name<std::chrono::system_clock::time_point>>(
+				  timestamp );
+			} catch( json_exception const & ) { threw = true; }
+			daw_ensure( threw );
+		};
+		ensure_invalid_date( R"("2019-11-31T01:02:03.343Z")" );
+		ensure_invalid_date( R"("2010-06-31T01:02:03.343Z")" );
+#endif
 		CX auto ary =
 		  from_json_array<test_001_t, daw::bounded_vector_t<test_001_t, 10>>(
 		    json_data_array );
@@ -1387,8 +1603,7 @@ int main( ) {
 #if defined( LDBL_MAX )
 		if constexpr( sizeof( double ) < sizeof( long double ) ) {
 			std::cout << "long double test\n";
-			std::cout << std::setprecision(
-			               std::numeric_limits<long double>::max_digits10 )
+			std::cout << std::setprecision( daw::max_digits10<long double> )
 			          << from_json<long double>(
 			               "11111111111111111111111111111111111111111111"
 			               "11111111111111111111111111111111111111111111"

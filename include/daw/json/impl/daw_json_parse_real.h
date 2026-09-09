@@ -144,10 +144,10 @@ namespace daw::json {
 				}
 			}
 
-			template<typename Unsigned>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr daw::not_null<char const *>
-			parse_digits_while_number( daw::not_null<char const *> first,
-			                           daw::not_null<char const *> const last,
+			template<typename iterator, typename Unsigned>
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr daw::not_null<iterator>
+			parse_digits_while_number( daw::not_null<iterator> first,
+			                           daw::not_null<iterator> const last,
 			                           Unsigned &DAW_RESTRICT v,
 			                           std::size_t sig_dig_in_use ) {
 
@@ -162,15 +162,14 @@ namespace daw::json {
 				daw::not_null const new_last = std::next( first.get( ), last_pos );
 
 				auto value = v;
-				bool parsed_eight_digits = false;
-				if( new_last - first >= 8 and is_made_of_eight_digits_cx( first ) ) {
+				if( new_last - first >= 8 and
+				    is_made_of_eight_digits_cx( first.get( ) ) ) {
 					value *= static_cast<Unsigned>( 100'000'000U );
-					value += static_cast<Unsigned>( parse_8_digits( first ) );
+					value += static_cast<Unsigned>( parse_8_digits( first.get( ) ) );
 					first += 8;
-					parsed_eight_digits = true;
 				}
 
-				unsigned dig = parsed_eight_digits and first == new_last ? 0U : 10U;
+				unsigned dig = 10U;
 				if( first < new_last ) {
 					do {
 						dig = parse_digit( *first );
@@ -181,9 +180,6 @@ namespace daw::json {
 						value += dig;
 						++first;
 					} while( first < new_last );
-				}
-				if( first < last and dig < 10U ) {
-					++first;
 				}
 				while( first < last ) {
 					dig = parse_digit( *first );
@@ -242,7 +238,7 @@ namespace daw::json {
 						if( significant_digits != 0 ) {
 							++retained_digits;
 						}
-						if( exponent > std::numeric_limits<Signed>::lowest( ) ) {
+						if( exponent > daw::lowest_value<Signed> ) {
 							--exponent;
 						}
 					} else {
@@ -375,15 +371,15 @@ namespace daw::json {
 						switch( *exp_first ) {
 						case '-':
 							++exp_first;
-							daw_json_assert_weak(
-							  exp_first < exp_last and parse_digit( *exp_first ) < 10U,
-							  ErrorReason::InvalidNumber );
+							daw_json_assert_weak( exp_first < exp_last and
+							                        parse_digit( *exp_first ) < 10U,
+							                      ErrorReason::InvalidNumber );
 							return -1;
 						case '+':
 							++exp_first;
-							daw_json_assert_weak(
-							  exp_first < exp_last and parse_digit( *exp_first ) < 10U,
-							  ErrorReason::InvalidNumber );
+							daw_json_assert_weak( exp_first < exp_last and
+							                        parse_digit( *exp_first ) < 10U,
+							                      ErrorReason::InvalidNumber );
 							return 1;
 						default:
 							daw_json_assert_weak( parse_digit( *exp_first ) < 10U,
@@ -427,19 +423,37 @@ namespace daw::json {
 				              ParseState::precise_ieee754 ) {
 					// On std floating point types, check for conditions that cannot be
 					// precisely calculated using the normal method and use the fallback
-					// method(usually strtod/from_chars)
-					use_fallback |= exponent > 22;
-					use_fallback |= exponent < -22;
-					if constexpr( std::is_same_v<Result, float> or
-					              std::is_same_v<Result, double> ) {
-						use_fallback |=
-						  significant_digits >
-						  ( std::uint64_t{ 1 } << std::numeric_limits<Result>::digits );
+					// method(usually strtod/from_chars).  long double that shares
+					// double's size/precision/exponent range (e.g. MSVC) is computed
+					// as double instead, since Eisel-Lemire only supports
+					// binary32/binary64.
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_lemire_capable =
+					  std::is_same_v<Result, float> or std::is_same_v<Result, double> or
+					  is_double_sized_long_double_v<Result>;
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_extended_long_double =
+					  std::is_same_v<Result, long double> and not is_lemire_capable;
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_80bit_long_double_v =
+					  std::is_same_v<Result, long double> and
+					  std::numeric_limits<long double>::digits == 64;
+
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_128bit_long_double_v =
+					  std::is_same_v<Result, long double> and
+					  std::numeric_limits<long double>::digits == 113;
+
+					// Extended long double (80-bit) can exactly represent 10^k for
+					// |k| <= 27 (5^27 < 2^64); Eisel-Lemire types are limited to 22.
+					DAW_CPP23_STATIC_LOCAL constexpr int pow10_threshold =
+					  is_80bit_long_double_v    ? 27
+					  : is_128bit_long_double_v ? 48
+					                            : 22;
+					use_fallback |= exponent > pow10_threshold;
+					use_fallback |= exponent < -pow10_threshold;
+					if constexpr( is_lemire_capable ) {
+						use_fallback |= significant_digits >
+						                ( std::uint64_t{ 1 } << daw::digits<Result> );
 					}
-					if( std::is_same_v<Result, long double> or
-					    DAW_UNLIKELY( use_fallback ) ) {
-						if constexpr( std::is_same_v<Result, float> or
-						              std::is_same_v<Result, double> ) {
+					if( DAW_UNLIKELY( use_fallback ) ) {
+						if constexpr( is_lemire_capable ) {
 							bool discarded_nonzero = append_discarded_digits(
 							  whole_last, all_whole_last, significant_digits, exponent );
 							if( all_fract_first != nullptr ) {
@@ -451,14 +465,19 @@ namespace daw::json {
 								                           significant_digits,
 								                           exponent );
 							}
-							return parse_truncated_lemire<Result>( sign < Result{ 0 },
-							                                       exponent,
-							                                       significant_digits,
-							                                       discarded_nonzero,
-							                                       parse_state.first,
-							                                       parse_state.last );
+							using compute_t =
+							  std::conditional_t<std::is_same_v<Result, long double>,
+							                     double,
+							                     Result>;
+							return static_cast<Result>(
+							  parse_truncated_lemire<compute_t>( sign < Result{ 0 },
+							                                     exponent,
+							                                     significant_digits,
+							                                     discarded_nonzero,
+							                                     parse_state.first,
+							                                     parse_state.last ) );
 						} else {
-							static_assert( std::is_same_v<Result, long double> );
+							static_assert( is_extended_long_double );
 							return json_details::parse_with_strtod<Result>(
 							  parse_state.first, parse_state.last );
 						}
@@ -480,7 +499,8 @@ namespace daw::json {
 				  ErrorReason::InvalidNumberStart,
 				  parse_state );
 
-				[[maybe_unused]] daw::not_null<char const *> const orig_first =
+				using iterator_t = typename ParseState::iterator;
+				[[maybe_unused]] daw::not_null<iterator_t> const orig_first =
 				  parse_state.first;
 
 				auto const sign =
@@ -499,19 +519,20 @@ namespace daw::json {
 				                     std::int64_t,
 				                     Result>;
 
-				daw::not_null<char const *> first = parse_state.first;
-				daw::not_null<char const *> const last = parse_state.last;
-				daw::not_null<char const *> const whole_last =
+				daw::not_null<iterator_t> first = parse_state.first;
+				daw::not_null<iterator_t> const last = parse_state.last;
+				daw::not_null<iterator_t> const whole_last =
 				  parse_state.first +
 				  (std::min)( { parse_state.last - parse_state.first,
 				                static_cast<std::ptrdiff_t>( max_exponent::value ) } );
 
 				unsigned_t significant_digits = 0;
-				char const *discarded_whole_first = nullptr;
-				char const *discarded_whole_last = nullptr;
-				char const *discarded_fract_first = nullptr;
-				char const *discarded_fract_last = nullptr;
-				daw::not_null<char const *> last_char = parse_digits_while_number(
+				iterator_t discarded_whole_first = nullptr;
+				iterator_t discarded_whole_last = nullptr;
+				iterator_t discarded_fract_first = nullptr;
+				iterator_t discarded_fract_last = nullptr;
+				daw::not_null<iterator_t> last_char =
+				  parse_digits_while_number<iterator_t>(
 				  first.get( ), whole_last.get( ), significant_digits, 0 );
 				auto const parsed_whole_digit_count = last_char - parse_state.first;
 				auto const stored_whole_digit_count = [&] {
@@ -535,7 +556,7 @@ namespace daw::json {
 						}
 						// We have sig digits we cannot parse because there isn't enough
 						// room in a std::uint64_t
-						daw::not_null<char const *> ptr =
+						daw::not_null<iterator_t> ptr =
 						  skip_digits<( ParseState::is_zero_terminated_string or
 						                ParseState::is_unchecked_input )>( last_char,
 						                                                   last );
@@ -568,16 +589,30 @@ namespace daw::json {
 							discarded_fract_last = first.get( );
 						}
 					} else {
-						daw::not_null<char const *> fract_last =
+						daw::not_null<iterator_t> fract_last =
 						  first + (std::min)( parse_state.last - first,
 						                      static_cast<std::ptrdiff_t>(
 						                        max_exponent::value -
 						                        ( first - parse_state.first ) ) );
 
-						last_char = parse_digits_while_number(
-						  first.get( ), fract_last.get( ), significant_digits,
-						  stored_whole_digit_count );
-						exponent_p1 -= static_cast<signed_t>( last_char - first );
+						last_char =
+						  parse_digits_while_number<iterator_t>( first.get( ),
+						                                       fract_last.get( ),
+						                                       significant_digits,
+						                                       stored_whole_digit_count );
+						// Only count the digits actually stored in significant_digits;
+						// parse_digits_while_number skips overflow digits up to last_char
+						// but those must not adjust the decimal-point exponent.
+						auto const fract_stored_cap = static_cast<std::ptrdiff_t>(
+						  daw::digits10<unsigned_t> - stored_whole_digit_count );
+						exponent_p1 -= static_cast<signed_t>(
+						  (std::min)( { last_char - first, fract_stored_cap } ) );
+						if constexpr( std::is_floating_point_v<Result> and
+						              ParseState::precise_ieee754 ) {
+							// If we silently dropped fractional digits, the power10 result
+							// may be incorrectly rounded — fall back to strtod.
+							use_strtod |= ( last_char - first ) > fract_stored_cap;
+						}
 						first = last_char;
 						if( daw::nsc_and( first >= fract_last, first < last ) ) {
 							auto new_first =
@@ -626,8 +661,7 @@ namespace daw::json {
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
 						unsigned_t exp_tmp = 0;
-						last_char =
-						  parse_digits_while_number( first.get( ), last.get( ), exp_tmp, 0 );
+						last_char = parse_digits_while_number( first, last, exp_tmp, 0 );
 						first = last_char;
 						return to_signed( exp_tmp, exp_sign );
 					}
@@ -644,13 +678,13 @@ namespace daw::json {
 
 							return exponent_p1 + exponent_p2;
 						}
-						auto const s = exponent_p1 < 0 ? signed_t{ -1 } : signed_t{ 1 };
+						signed_t const s = exponent_p1 < 0 ? signed_t{ -1 } : signed_t{ 1 };
 						if( s < 0 ) {
-							if( DAW_UNLIKELY( ( daw::min_value<signed_t> - exponent_p1 ) >
+							if( DAW_UNLIKELY( ( daw::lowest_value<signed_t> - exponent_p1 ) >
 							                  exponent_p2 ) ) {
 								// We don't have inf, but we can just saturate it to min as it
 								// will be 0 anyways for the other result
-								return daw::min_value<signed_t>;
+								return daw::lowest_value<signed_t>;
 							}
 							return exponent_p1 + exponent_p2;
 						}
@@ -667,17 +701,31 @@ namespace daw::json {
 
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754 ) {
-					use_strtod |= DAW_UNLIKELY( exponent > 22 );
-					use_strtod |= DAW_UNLIKELY( exponent < -22 );
-					if constexpr( std::is_same_v<Result, float> or
-					              std::is_same_v<Result, double> ) {
+					// long double that shares double's size/precision/exponent range
+					// (e.g. MSVC) is computed as double instead, since Eisel-Lemire
+					// only supports binary32/binary64.
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_lemire_capable =
+					  std::is_same_v<Result, float> or std::is_same_v<Result, double> or
+					  is_double_sized_long_double_v<Result>;
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_80bit_long_double_v =
+					  std::is_same_v<Result, long double> and
+					  std::numeric_limits<long double>::digits == 64;
+					DAW_CPP23_STATIC_LOCAL constexpr bool is_128bit_long_double_v =
+					  std::is_same_v<Result, long double> and
+					  std::numeric_limits<long double>::digits == 113;
+
+					DAW_CPP23_STATIC_LOCAL constexpr int pow10_threshold =
+					  is_80bit_long_double_v    ? 27
+					  : is_128bit_long_double_v ? 48
+					                            : 22;
+					use_strtod |= DAW_UNLIKELY( exponent > pow10_threshold );
+					use_strtod |= DAW_UNLIKELY( exponent < -pow10_threshold );
+					if constexpr( is_lemire_capable ) {
 						use_strtod |= DAW_UNLIKELY(
-						  significant_digits >
-						  ( std::uint64_t{ 1 } << std::numeric_limits<Result>::digits ) );
+						  significant_digits > (std::uint64_t{ 1 } << daw::digits<Result>));
 					}
 					if( DAW_UNLIKELY( use_strtod ) ) {
-						if constexpr( std::is_same_v<Result, float> or
-						              std::is_same_v<Result, double> ) {
+						if constexpr( is_lemire_capable ) {
 							bool discarded_nonzero =
 							  append_discarded_digits( discarded_whole_first,
 							                           discarded_whole_last,
@@ -688,16 +736,21 @@ namespace daw::json {
 							                           discarded_fract_last,
 							                           significant_digits,
 							                           exponent );
-							return parse_truncated_lemire<Result>( sign < 0,
-							                                       exponent,
-							                                       significant_digits,
-							                                       discarded_nonzero,
-							                                       orig_first,
-							                                       first );
+							using compute_t =
+							  std::conditional_t<std::is_same_v<Result, long double>,
+							                     double,
+							                     Result>;
+							return static_cast<Result>(
+							  parse_truncated_lemire<compute_t>( sign < 0,
+							                                     exponent,
+							                                     significant_digits,
+							                                     discarded_nonzero,
+							                                     orig_first.get( ),
+							                                     first.get( ) ) );
 						} else {
 							static_assert( std::is_same_v<Result, long double> );
-							return json_details::parse_with_strtod<Result>( orig_first,
-							                                                first );
+							return json_details::parse_with_strtod<Result>( orig_first.get( ),
+							                                                first.get( ) );
 						}
 					}
 				}

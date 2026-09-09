@@ -28,16 +28,6 @@
 #include <daw/stdinc/data_access.h>
 #include <limits>
 
-#if defined( DAW_ALLOW_SSE42 )
-#include <emmintrin.h>
-#include <smmintrin.h>
-#include <tmmintrin.h>
-#include <xmmintrin.h>
-#if defined( DAW_HAS_MSVC_LIKE )
-#include <intrin.h>
-#endif
-#endif
-
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
@@ -56,19 +46,7 @@ namespace daw::json {
 				// The copy to local buffer is to get the compiler to treat it like a
 				// reinterpret_cast
 
-				std::byte const buff[8]{ static_cast<std::byte>( ptr[0] ),
-				                         static_cast<std::byte>( ptr[1] ),
-				                         static_cast<std::byte>( ptr[2] ),
-				                         static_cast<std::byte>( ptr[3] ),
-				                         static_cast<std::byte>( ptr[4] ),
-				                         static_cast<std::byte>( ptr[5] ),
-				                         static_cast<std::byte>( ptr[6] ),
-				                         static_cast<std::byte>( ptr[7] ) };
-
-				auto val = UInt64( );
-				for( std::size_t n = 0; n < 8; ++n ) {
-					val |= to_uint64( buff[n] ) << ( 8 * n );
-				}
+				auto const val = daw::to_uint64_buffer( ptr.get( ) );
 				return ( ( ( val & 0xF0F0'F0F0'F0F0'F0F0_u64 ) |
 				           ( ( ( val + 0x0606'0606'0606'0606_u64 ) &
 				               0xF0F0'F0F0'F0F0'F0F0_u64 ) >>
@@ -226,16 +204,20 @@ namespace daw::json {
 					}
 				}
 				if constexpr( RangeChecked != options::JsonRangeCheck::Never ) {
-					auto const count = ( daw::numeric_limits<result_t>::digits10 + 1U ) -
-					                   std::size( parse_state );
+					auto const count =
+					  ( daw::digits10<result_t> + 1U ) - std::size( parse_state );
 					daw_json_ensure(
-					  ( ( result <= static_cast<uresult_t>(
-					                  ( daw::numeric_limits<result_t>::max )( ) ) ) &
+					  ( ( result <= static_cast<uresult_t>( daw::max_value<result_t> ) ) &
 					    ( count >= 0 ) ),
 					  ErrorReason::NumberOutOfRange,
 					  parse_state );
 				}
-				parse_state.first = first;
+				if constexpr( std::is_same_v<char const *,
+				                             typename ParseState::iterator> ) {
+					parse_state.first = first;
+				} else {
+					parse_state.first += first.get( ) - parse_state.first;
+				}
 				if constexpr( RangeChecked == options::JsonRangeCheck::Never ) {
 					return daw::construct_a<Unsigned>( static_cast<Unsigned>( result ) );
 				} else {
@@ -308,14 +290,19 @@ namespace daw::json {
 				}
 
 				if constexpr( RangeChecked != options::JsonRangeCheck::Never ) {
-					auto const count = static_cast<std::ptrdiff_t>(
-					                     daw::numeric_limits<result_t>::digits10 + 1 ) -
-					                   ( first - orig_first );
+					auto const count =
+					  static_cast<std::ptrdiff_t>( daw::digits10<result_t> + 1 ) -
+					  ( first - orig_first );
 					daw_json_ensure(
 					  count >= 0, ErrorReason::NumberOutOfRange, parse_state );
 				}
 
-				parse_state.first = first;
+				if constexpr( std::is_same_v<char const *,
+				                             typename ParseState::iterator> ) {
+					parse_state.first = first;
+				} else {
+					parse_state.first += first.get( ) - parse_state.first;
+				}
 				if constexpr( RangeChecked == options::JsonRangeCheck::Never ) {
 					return daw::construct_a<Unsigned>(
 					  static_cast<Unsigned>( static_cast<result_t>( result ) ) );

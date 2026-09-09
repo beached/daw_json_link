@@ -120,7 +120,13 @@
 
 // Use strtod instead of from_chars when avialable by defining
 // DAW_JSON_USE_STRTOD
-#if not defined( DAW_JSON_USE_STRTOD ) and not defined( __cpp_lib_to_chars )
+#if defined( __cpp_lib_to_chars )
+#if __cpp_lib_to_chars >= 201611L
+#define DAW_HAS_CPP17_FP_FROM_CHARS 1
+#endif
+#endif
+#if not defined( DAW_JSON_USE_STRTOD ) and \
+  not defined( DAW_HAS_CPP17_FP_FROM_CHARS )
 #define DAW_JSON_USE_STRTOD
 #endif
 

@@ -26,14 +26,6 @@ using constexpr_checked_pol = parse_flags_t<ExecModeTypes::compile_time>;
 using constexpr_unchecked_pol =
   parse_flags_t<ExecModeTypes::compile_time, CheckedParseMode::no>;
 
-using runtime_checked_pol = parse_flags_t<ExecModeTypes::runtime>;
-using runtime_unchecked_pol =
-  parse_flags_t<ExecModeTypes::runtime, CheckedParseMode::no>;
-
-using simd_checked_pol = parse_flags_t<ExecModeTypes::simd>;
-using simd_unchecked_pol =
-  parse_flags_t<ExecModeTypes::simd, CheckedParseMode::no>;
-
 using PPair = std::pair<std::string_view, std::string_view>;
 
 template<typename ParseObj, typename ParsePolicy>
@@ -121,15 +113,6 @@ int main( int argc, char **argv ) {
 	  b1, "constexpr checked", twitter_doc, citm_doc, canada_doc );
 	bench<constexpr_unchecked_pol>(
 	  b1, "constexpr unchecked", twitter_doc, citm_doc, canada_doc );
-	bench<runtime_checked_pol>(
-	  b1, "runtime checked", twitter_doc, citm_doc, canada_doc );
-	bench<runtime_unchecked_pol>(
-	  b1, "runtime unchecked", twitter_doc, citm_doc, canada_doc );
-
-	bench<simd_checked_pol>(
-	  b1, "simd checked", twitter_doc, citm_doc, canada_doc );
-	bench<simd_unchecked_pol>(
-	  b1, "simd unchecked", twitter_doc, citm_doc, canada_doc );
 
 	if( argc > 4 ) {
 		std::string_view const fname = argv[4];

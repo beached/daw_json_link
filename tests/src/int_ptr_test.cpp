@@ -6,6 +6,7 @@
 // Official repository: https://github.com/beached/daw_json_link/
 //
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_span.h>
 #include <daw/json/daw_json_link.h>
 
@@ -29,8 +30,7 @@ struct Foo {
 
 template<JSONNAMETYPE, typename T>
 struct ArrayPointerConstructor {
-	inline static thread_local std::size_t size =
-	  std::numeric_limits<std::size_t>::max( );
+	inline static thread_local std::size_t size = daw::max_value<std::size_t>;
 
 	struct SizeCtor {
 		std::size_t operator( )( std::size_t v ) const noexcept {

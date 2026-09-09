@@ -16,6 +16,7 @@
 #include "daw/json/impl/daw_json_value.h"
 #include "daw/json/impl/daw_murmur3.h"
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_enable_requires.h>
 #include <daw/daw_move.h>
 #include <daw/daw_string_view.h>
@@ -242,7 +243,7 @@ namespace daw::json {
 				switch( current_type ) {
 				case JsonBaseParseTypes::Array:
 				case JsonBaseParseTypes::Class:
-					return move_to( ( daw::numeric_limits<std::size_t>::max )( ) );
+					return move_to( daw::max_value<std::size_t> );
 				case JsonBaseParseTypes::Number:
 				case JsonBaseParseTypes::Bool:
 				case JsonBaseParseTypes::String:

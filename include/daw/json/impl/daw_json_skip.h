@@ -151,10 +151,10 @@ namespace daw::json {
 				return result;
 			}
 
-			template<bool skip_end_check>
-			DAW_ATTRIB_FLATINLINE [[nodiscard]] constexpr daw::not_null<char const *>
-			skip_digits( daw::not_null<char const *> first,
-			             daw::not_null<char const *> const last ) {
+			template<bool skip_end_check, typename iterator>
+			DAW_ATTRIB_FLATINLINE [[nodiscard]] constexpr daw::not_null<iterator>
+			skip_digits( daw::not_null<iterator> first,
+			             daw::not_null<iterator> const last ) {
 				(void)last; // only used inside if constexpr and gcc9 warns
 				unsigned dig = parse_digit( *first );
 				while( dig < 10 ) {
@@ -242,7 +242,7 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  first < last, ErrorReason::UnexpectedEndOfData, [&] {
 						  auto r = parse_state;
-						  r.first = first;
+						  r.first = input_pointer( r.first, first.get( ) );
 						  return r;
 					  }( ) );
 					dig = parse_digit( *first );
@@ -261,10 +261,10 @@ namespace daw::json {
 					}
 				}
 
-				parse_state.first = first;
-				result.last = first;
-				result.class_first = decimal;
-				result.class_last = exp;
+				parse_state.first = input_pointer( parse_state.first, first.get( ) );
+				result.last = input_pointer( result.first, first.get( ) );
+				result.class_first = input_pointer( result.first, decimal );
+				result.class_last = input_pointer( result.first, exp );
 				return result;
 			}
 
@@ -335,6 +335,8 @@ namespace daw::json {
 				              JsonMember::expected_type == JsonParseTypes::StringRaw or
 				              JsonMember::expected_type ==
 				                JsonParseTypes::StringEscaped or
+				              JsonMember::expected_type ==
+				                JsonParseTypes::StringInsitu or
 				              JsonMember::expected_type == JsonParseTypes::Custom ) {
 					// json string encodings
 					daw_json_assert_weak( parse_state.front( ) == '"',

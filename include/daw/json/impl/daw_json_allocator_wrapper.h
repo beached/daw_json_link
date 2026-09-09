@@ -38,10 +38,10 @@ namespace daw::json {
 			};
 
 			template<typename Alloc>
-			class AllocatorWrapperBase<Alloc, true /*is_empty*/> {
+			class AllocatorWrapperBase<Alloc, true /*is_empty*/>
+			  : std::remove_reference_t<Alloc> {
 				using has_stateless_allocator = void;
 				using allocator_t = std::remove_reference_t<Alloc>;
-				static constexpr allocator_t allocator{ };
 
 			public:
 				explicit AllocatorWrapperBase( ) = default;
@@ -49,7 +49,7 @@ namespace daw::json {
 				  allocator_t const & ) noexcept {}
 
 				[[nodiscard]] constexpr allocator_t const &get_allocator( ) const {
-					return allocator;
+					return *static_cast<allocator_t *>( this );
 				}
 			};
 

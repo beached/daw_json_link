@@ -34,12 +34,13 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+			template<typename Iterator = char const *>
 			struct location_info_t {
 				daw::string_view name;
-				char const *first = nullptr;
-				char const *last = nullptr;
-				char const *class_first = nullptr;
-				char const *class_last = nullptr;
+				Iterator first = nullptr;
+				Iterator last = nullptr;
+				Iterator class_first = nullptr;
+				Iterator class_last = nullptr;
 				std::size_t counter = 0;
 
 				[[nodiscard]] constexpr bool missing( ) const {
@@ -66,9 +67,10 @@ namespace daw::json {
 			 * Contains an array of member location_info mapped in a json_class
 			 * @tparam MemberCount Number of mapped members from json_class
 			 */
-			template<std::size_t MemberCount, bool DoFullNameMatch = true>
+			template<std::size_t MemberCount, bool DoFullNameMatch = true,
+			         typename Iterator = char const *>
 			struct locations_info_t {
-				using value_type = location_info_t;
+				using value_type = location_info_t<Iterator>;
 				using reference = value_type &;
 				using const_reference = value_type const &;
 				static constexpr bool do_full_name_match = DoFullNameMatch;
@@ -139,9 +141,9 @@ namespace daw::json {
 				                     do_hashes_collide<JsonMembers...>( )>;
 #endif
 				return locations_info_t<sizeof...( JsonMembers ),
-				                        do_full_name_match::value>{
+				                        do_full_name_match::value, typename ParseState::iterator>{
 				  /*hashes*/ { daw::name_hash<false>( JsonMembers::name )... },
-				  /*names*/ { location_info_t{ JsonMembers::name }... } };
+				  /*names*/ { location_info_t<typename ParseState::iterator>{ JsonMembers::name }... } };
 			}
 
 			/***
@@ -160,7 +162,7 @@ namespace daw::json {
 			         bool B>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr find_result<ParseState>
 			find_class_member( ParseState &parse_state,
-			                   locations_info_t<N, B> &locations, bool is_nullable,
+			                   locations_info_t<N, B, typename ParseState::iterator> &locations, bool is_nullable,
 			                   daw::string_view member_name ) {
 
 				// silencing gcc9 warning as these are selectively used

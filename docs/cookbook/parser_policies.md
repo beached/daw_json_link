@@ -54,10 +54,17 @@ Are comments in whitespace allowed(defaults to no) and, if so, what kind
 Do a checked parse or not. If the data is known to be trustworthy and generated correctly, one can
 disable checking of a parse and gain performance(measured 15% in some documents).
 
+**Warning:** `no` is a memory-safety contract, not just a speed/strictness knob. Disabled checks
+include bounds checks on the parse cursor (e.g. scanning for the next member no longer verifies the
+cursor is still within the buffer), so malformed, truncated, or adversarial input can cause
+out-of-bounds reads (undefined behavior) rather than a catchable parse error. Only use `no` with
+input you fully trust and control, such as data your own code just serialized — never with input
+received from an external or untrusted source.
+
 ### Values
 
 * `yes` - All checks are performed
-* `no` - Disable many parse time checks, assumes perfect input
+* `no` - Disable many parse time checks, assumes perfect, trusted input; malformed input is undefined behavior, not just a wrong result
 
 ### Default
 

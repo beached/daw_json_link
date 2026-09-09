@@ -936,6 +936,68 @@ namespace daw::json {
 		  JsonNullable::NullVisible, Constructor>;
 
 		namespace json_base {
+			template<typename String, json_options_t Options, typename Constructor>
+			struct json_string_insitu {
+				using i_am_a_json_type = void;
+
+				using constructor_t =
+				  daw::conditional_t<std::is_same_v<use_default, Constructor>,
+				                     default_constructor<String>, Constructor>;
+
+				static_assert(
+				  daw::is_callable_v<constructor_t, String>,
+				  "Constructor must support copy and/or move construction" );
+				using parse_to_t = std::invoke_result_t<constructor_t, String>;
+
+				static constexpr auto expected_type = JsonParseTypes::StringInsitu;
+
+				static constexpr options::EightBitModes eight_bit_mode =
+				  json_details::get_bits_for<options::EightBitModes>( string_opts,
+				                                                      Options );
+
+				static constexpr auto escape_output =
+				  json_details::get_bits_for<options::EscapeValidUTF8>( string_opts,
+				                                                        Options );
+
+				static constexpr auto underlying_json_type = JsonBaseParseTypes::String;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_string_insitu<NewName, String, Options, Constructor>;
+
+				using as_string = json_string_insitu;
+			};
+		} // namespace json_base
+
+		/**
+		 * Decode a JSON string in place and borrow its storage by default.
+		 * Requires AllowStringMutation::yes (normally via from_json_insitu).
+		 * The input is consumed: it must not be parsed again after mutation.
+		 * Keep its storage alive and at a stable address while using views.
+		 * No null terminator is written; embedded nulls are supported.
+		 * Constructor receives (char *, std::size_t).
+		 */
+
+		template<JSONNAMETYPE Name, typename String, json_options_t Options,
+		         typename Constructor>
+		struct json_string_insitu : json_base::json_string_insitu<String, Options, Constructor> {
+			static constexpr daw::string_view name = Name;
+
+			using without_name = json_base::json_string_insitu<String, Options, Constructor>;
+		};
+
+		template<typename T = std::string_view, json_options_t Options = string_opts_def,
+		         typename Constructor = use_default>
+		using json_string_insitu_no_name = json_base::json_string_insitu<T, Options, Constructor>;
+
+		template<typename T = std::optional<std::string_view>,
+		         json_options_t Options = string_opts_def,
+		         typename Constructor = use_default>
+		using json_string_insitu_null_no_name = json_base::json_nullable<
+		  T, json_base::json_string_insitu<json_details::unwrapped_t<T>, Options>,
+		  JsonNullable::NullVisible, Constructor>;
+
+		namespace json_base {
 			template<typename T, typename Constructor>
 			struct json_date {
 				using clock_type = typename T::clock;

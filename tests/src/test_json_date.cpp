@@ -11,6 +11,7 @@
 #include <daw/daw_ensure.h>
 
 #include <chrono>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
 
@@ -93,7 +94,43 @@ int main( ) {
 #if defined( DAW_HAS_INT128 )
 	test_wide_attosecond_duration<daw::int128_t>( );
 #endif
+	{
+		auto const parsed = daw::json::from_json<Date>(
+		  R"json({"timestamp":"2024-09-02T01:14:54+02:30"})json" );
+		auto const expected = daw::json::datetime::civil_to_time_point(
+		  2024, 9, 1, 22, 44, 54, 0 );
+		daw_ensure( parsed.timestamp == expected );
+	}
+	{
+		auto const parsed = daw::json::from_json<Date>(
+		  R"json({"timestamp":"2024-09-02T23:14:54-02:30"})json" );
+		auto const expected = daw::json::datetime::civil_to_time_point(
+		  2024, 9, 3, 1, 44, 54, 0 );
+		daw_ensure( parsed.timestamp == expected );
+	}
+	{
+		auto const parsed = daw::json::from_json<Date>(
+		  R"json({"timestamp":"2024-09-02T01:14:54+0230"})json" );
+		auto const expected = daw::json::datetime::civil_to_time_point(
+		  2024, 9, 1, 22, 44, 54, 0 );
+		daw_ensure( parsed.timestamp == expected );
+	}
 #if defined( DAW_USE_EXCEPTIONS )
+	auto const ensure_invalid_timestamp = []( std::string_view json_document ) {
+		bool success = false;
+		try {
+			(void)daw::json::from_json<Date>( json_document );
+		} catch( std::exception const & ) { success = true; }
+		daw_ensure( success );
+	};
+	ensure_invalid_timestamp(
+	  R"json({"timestamp":"2023-02-29T01:14:54Z"})json" );
+	ensure_invalid_timestamp(
+	  R"json({"timestamp":"2024-02-31T01:14:54Z"})json" );
+	ensure_invalid_timestamp(
+	  R"json({"timestamp":"2024-04-31T01:14:54Z"})json" );
+	ensure_invalid_timestamp(
+	  R"json({"timestamp":"2024-09-02T24:59:59Z"})json" );
 	{
 		bool success = false;
 		try {

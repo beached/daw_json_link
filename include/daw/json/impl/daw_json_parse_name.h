@@ -50,7 +50,7 @@ namespace daw::json {
 						trim_end_of_name( parse_state );
 						return daw::string_view( std::data( r ), std::size( r ) );
 					} else {
-						char const *const ptr = parse_state.first;
+						auto const ptr = parse_state.first;
 						if constexpr( ParseState::is_unchecked_input ) {
 							parse_state.template move_to_next_of_unchecked<'"'>( );
 						} else {
