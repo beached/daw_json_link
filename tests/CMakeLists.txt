@@ -1204,6 +1204,9 @@ add_dependencies( full issue_418_test )
 
 add_executable( issue_421_test EXCLUDE_FROM_ALL src/issue_421_test.cpp )
 target_link_libraries( issue_421_test PRIVATE json_test )
+add_test( NAME issue_421_test COMMAND issue_421_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests issue_421_test )
+add_dependencies( full issue_421_test )
 
 add_executable( issue_428_test src/issue_428_test.cpp )
 target_link_libraries( issue_428_test PRIVATE json_test )
