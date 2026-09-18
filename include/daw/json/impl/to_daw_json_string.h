@@ -304,14 +304,14 @@ namespace daw::json {
 					break;
 				default:
 					if( cp < 0x20U ) {
-						it = json_details::output_hex( static_cast<std::uint16_t>( cp ),
-						                               it );
+						it =
+						  json_details::output_hex( static_cast<std::uint16_t>( cp ), it );
 						break;
 					}
 					if constexpr( RestrictHigh ) {
 						if( cp >= 0x80U and cp <= 0xFFFFU ) {
-							it = json_details::output_hex(
-							  static_cast<std::uint16_t>( cp ), it );
+							it = json_details::output_hex( static_cast<std::uint16_t>( cp ),
+							                               it );
 							break;
 						}
 						if( cp > 0xFFFFU ) {
@@ -572,13 +572,17 @@ namespace daw::json {
 				return it;
 			}
 
-			template<typename /*JsonMember*/, typename = void>
-			inline constexpr bool has_null_checker_v = false;
+			DAW_JSON_MAKE_REQ_TRAIT( has_null_checker_v,
+			                         typename T::is_null_checker );
 
-			template<typename JsonMember>
-			inline constexpr bool has_null_checker_v<
-			  JsonMember, std::void_t<typename JsonMember::is_null_checker>> =
-			  not std::is_same_v<use_default, typename JsonMember::is_null_checker>;
+			//	template<typename /*JsonMember*/, typename = void>
+			//	inline constexpr bool has_null_checker_v = false;
+
+			//	template<typename JsonMember>
+			//	inline constexpr bool has_null_checker_v<
+			//	  JsonMember, std::void_t<typename JsonMember::is_null_checker>> =
+			//	  not std::is_same_v<use_default, typename
+			//JsonMember::is_null_checker>;
 
 			template<typename JsonMember, typename WriteableType, typename Optional>
 			[[nodiscard]] static constexpr WriteableType
@@ -918,7 +922,8 @@ namespace daw::json {
 				it.put( '"' );
 				it = utils::copy_to_iterator<escape_output_v<JsonMember> !=
 				                               options::EscapeValidUTF8::AssumeValid,
-				                             JsonMember::eight_bit_mode, true>( it, value );
+				                             JsonMember::eight_bit_mode,
+				                             true>( it, value );
 				it.put( '"' );
 				return it;
 			}
@@ -1615,6 +1620,11 @@ namespace daw::json {
 					if constexpr( JsonMember::nullable == JsonNullable::Nullable ) {
 						if( not concepts::nullable_value_has_value( get<pos>( tp ) ) ) {
 							return;
+						}
+						if constexpr( has_null_checker_v<JsonMember> ) {
+							if( typename JsonMember::is_null_checker{}( get<pos>( tp ) ) ) {
+								return;
+							}
 						}
 					}
 				}
