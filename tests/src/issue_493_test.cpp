@@ -29,9 +29,11 @@ struct VariableDescription {
 namespace daw::json {
 	template<>
 	struct json_data_contract<VariableDescription> {
+		static constexpr char const name[] = "name";
+		static constexpr char const variant_field[] = "variant_field";
 		using type = json_member_list<
-		  json_string<"name">,
-		  json_nullable<"variant_field", MyVariant, json_variant_no_name<MyVariant>,
+		  json_string<name>,
+		  json_nullable<variant_field, MyVariant, json_variant_no_name<MyVariant>,
 		                JsonNullable::Nullable, // NOTE HERE
 		                daw::use_default, MonostateNullVariantChecker>>;
 
@@ -43,8 +45,8 @@ namespace daw::json {
 
 int main( ) {
 	VariableDescription desc = {
-	  .name = "saymyname",
-	  .variant_field = { },
+	  "saymyname",
+	  { },
 	};
 
 	constexpr std::string_view expected = R"json({"name":"saymyname"})json";

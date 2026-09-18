@@ -572,17 +572,13 @@ namespace daw::json {
 				return it;
 			}
 
-			DAW_JSON_MAKE_REQ_TRAIT( has_null_checker_v,
-			                         typename T::is_null_checker );
+			template<typename /*JsonMember*/, typename = void>
+			inline constexpr bool has_null_checker_v = false;
 
-			//	template<typename /*JsonMember*/, typename = void>
-			//	inline constexpr bool has_null_checker_v = false;
-
-			//	template<typename JsonMember>
-			//	inline constexpr bool has_null_checker_v<
-			//	  JsonMember, std::void_t<typename JsonMember::is_null_checker>> =
-			//	  not std::is_same_v<use_default, typename
-			//JsonMember::is_null_checker>;
+			template<typename JsonMember>
+			inline constexpr bool has_null_checker_v<
+			  JsonMember, std::void_t<typename JsonMember::is_null_checker>> =
+			  not std::is_same_v<use_default, typename JsonMember::is_null_checker>;
 
 			template<typename JsonMember, typename WriteableType, typename Optional>
 			[[nodiscard]] static constexpr WriteableType
@@ -1622,7 +1618,7 @@ namespace daw::json {
 							return;
 						}
 						if constexpr( has_null_checker_v<JsonMember> ) {
-							if( typename JsonMember::is_null_checker{}( get<pos>( tp ) ) ) {
+							if( typename JsonMember::is_null_checker{ }( get<pos>( tp ) ) ) {
 								return;
 							}
 						}
