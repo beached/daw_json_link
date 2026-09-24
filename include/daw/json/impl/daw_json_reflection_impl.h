@@ -74,7 +74,7 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 	template<std::ranges::input_range R>
 	requires( std::is_constructible_v<std::ranges::range_value_t<R>,
 	                                  std::ranges::range_reference_t<R>> )
-	  consteval auto as_stdarray( R &&elems ) {
+	consteval auto as_stdarray( R &&elems ) {
 
 		auto args = std::vector{ ^^std::ranges::range_value_t<R> };
 		for( const auto &V : elems ) {
@@ -250,16 +250,12 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 
 	template<typename T, typename... Ts>
 	inline constexpr bool construction_test_v<T, std::tuple<Ts...>> =
-	  requires( Ts... ts ) {
-		reflected_constructor<T>{ }( ts... );
-	};
+	  requires( Ts... ts ) { reflected_constructor<T>{ }( ts... ); };
 
 	template<typename T>
-	concept Reflectable =
-	  not std::is_empty_v<T> and std::is_class_v<T> and requires( T v ) {
-		to_tuple( v );
-	}
-	and construction_test_v<T, to_tuple_t<T>>;
+	concept Reflectable = not std::is_empty_v<T> and std::is_class_v<T> and
+	                      requires( T v ) { to_tuple( v ); } and
+	                      construction_test_v<T, to_tuple_t<T>>;
 
 	// Checks for an annotation of a specific type and returns it if it exists
 	template<typename AnnotationType, std::meta::info r>
@@ -307,8 +303,8 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 		static constexpr std::string_view svname =
 		  annot_rename ? std::string_view( annot_rename->name )
 		               : identifier_of( member_info );
-		static constexpr auto name = json_name<svname.size( ) + 1>(
-		  svname.data( ), std::make_index_sequence<svname.size( ) + 1>{ } );
+		// DAWDAW
+		static constexpr auto name = json_name{ daw::string_view( svname ) };
 		static_assert( not name.empty( ), "Unexpected empty name" );
 
 		static constexpr auto annot_map_as =

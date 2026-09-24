@@ -1,3 +1,4 @@
+Standard: Latest
 AccessModifierOffset: -2
 AlignAfterOpenBracket: "true"
 AlignEscapedNewlines: Left
@@ -54,7 +55,6 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: true
 SpacesInParentheses: true
 SpacesInSquareBrackets: false
-Standard: c++17
 TabWidth: 2
 UseTab: ForIndentation
 AllowShortLambdasOnASingleLine: Empty
