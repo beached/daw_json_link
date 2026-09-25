@@ -13,6 +13,7 @@ if( CYGWIN )
 else()
 	set( CMAKE_CXX_EXTENSIONS OFF )
 endif()
+add_compile_definitions( DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD} )
 
 option( DAW_USE_ALMOST_EQUAL "When doing FP equal use an almost equal method" OFF )
 if( DAW_USE_ALMOST_EQUAL )
@@ -1315,6 +1316,27 @@ if( DAW_JSON_USE_REFLECTION )
 	add_test( NAME daw_json_link_reflection_test_test COMMAND daw_json_link_reflection_test )
 	add_dependencies( ci_tests daw_json_link_reflection_test )
 	add_dependencies( full daw_json_link_reflection_test )
+
+	# Misuse of reflection annotations must fail to compile with a clear message
+	set( DAW_REFL_FAIL_CASES
+		"reflect is only valid on class types"
+		"reflect.rename is only valid on members, not types"
+		"reflect.ignored is only valid on members, not types"
+		"reflect.enum_string is only valid on enum types"
+		"Do not use reflect.enum_string and reflect.map_as at the same time"
+		"requires a no name JSON type"
+		"requires a JSON type, e.g." )
+	set( DAW_REFL_FAIL_CASE 0 )
+	foreach( DAW_REFL_FAIL_MESSAGE IN LISTS DAW_REFL_FAIL_CASES )
+		math( EXPR DAW_REFL_FAIL_CASE "${DAW_REFL_FAIL_CASE} + 1" )
+		set( DAW_REFL_FAIL_TARGET daw_json_link_reflection_fail_test_${DAW_REFL_FAIL_CASE} )
+		add_executable( ${DAW_REFL_FAIL_TARGET} EXCLUDE_FROM_ALL src/daw_json_link_reflection_fail_test.cpp )
+		target_link_libraries( ${DAW_REFL_FAIL_TARGET} json_test )
+		target_compile_definitions( ${DAW_REFL_FAIL_TARGET} PRIVATE DAW_REFL_FAIL_CASE=${DAW_REFL_FAIL_CASE} )
+		add_test( NAME ${DAW_REFL_FAIL_TARGET}
+			COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${DAW_REFL_FAIL_TARGET} --config $<CONFIG> )
+		set_tests_properties( ${DAW_REFL_FAIL_TARGET} PROPERTIES PASS_REGULAR_EXPRESSION "${DAW_REFL_FAIL_MESSAGE}" )
+	endforeach( )
 endif()
 
 add_executable( daw_json_writer_test src/daw_json_writer_test.cpp )

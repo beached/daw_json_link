@@ -18,6 +18,7 @@
 #include "daw/json/impl/daw_json_value.h"
 
 #include <daw/daw_algorithm.h>
+#include <daw/traits/daw_traits_is_explicitly_convertible.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_callable.h>
 #include <daw/daw_constant.h>
@@ -727,7 +728,8 @@ namespace daw::json {
 			to_json_string_signed( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, json_base_type_t<JsonMember>>,
+				  daw::is_explicitly_convertible_v<parse_to_t,
+				                                   json_base_type_t<JsonMember>>,
 				  "value must be convertible to specified type in class contract" );
 
 				using std::to_string;
@@ -806,7 +808,8 @@ namespace daw::json {
 			to_json_string_unsigned( WriteableType it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, json_result_t<JsonMember>>,
+				  daw::is_explicitly_convertible_v<parse_to_t,
+				                                   json_result_t<JsonMember>>,
 				  "value must be convertible to specified type in class contract" );
 
 				using std::to_string;

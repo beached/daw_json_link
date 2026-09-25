@@ -42,7 +42,7 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 			if constexpr( std::is_convertible_v<D, T> ) {
 				return default_value;
 			} else if constexpr( requires( D v ) {
-				                     { v( ) }->std::convertible_to<T>;
+				                     { v( ) } -> std::convertible_to<T>;
 			                     } ) {
 				return default_value( );
 			}
@@ -70,14 +70,15 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 
 	template<EnumType E>
 	constexpr E enum_from_string( std::string_view name ) {
-		template for( constexpr auto enumerator : enumerators_of( ^^E ) ) {
+		static constexpr auto enums =
+		  reflect_constant_array( enumerators_of( ^^E ) );
+		template for( constexpr auto enumerator : [:enums:] ) {
 			// TODO add name formatting e.g lower/upper/first capital
 			if( name == identifier_of( enumerator ) ) {
 				return [:enumerator:];
 			}
 		}
-		daw_json_ensure( daw::pipelines::Contains( name )( enumerators_of( ^^E ) ),
-		                 ErrorReason::InvalidString );
+		daw_json_error( true, ErrorReason::InvalidString );
 	}
 
 	template<EnumType E>
@@ -89,6 +90,7 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 				return identifier_of( enumerator );
 			}
 		}
+		daw_json_error( true, ErrorReason::CouldNotFindEnumeratorForValue );
 		return std::string_view{ };
 	}
 
@@ -176,9 +178,10 @@ namespace daw::json::inline DAW_JSON_VER {
 
 	template<typename T>
 	concept ReflectionEnabled =
-	  enable_reflection_for<T> or
-	  refl_details::has_annotation<reflect_base_t, T>( ) or
-	  refl_details::has_reflected_submembers<T>( );
+	  std::is_class_v<T> and
+	  ( enable_reflection_for<T> or
+	    refl_details::has_annotation<reflect_base_t, T>( ) or
+	    refl_details::has_reflected_submembers<T>( ) );
 
 	template<ReflectionEnabled T>
 	struct json_data_contract<T> {

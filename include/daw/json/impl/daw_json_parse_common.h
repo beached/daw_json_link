@@ -428,6 +428,11 @@ namespace daw::json {
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_deduced_type_impl( ) noexcept {
 				if constexpr( is_a_basic_json_value<T> ) {
 					return daw::traits::identity<json_base::json_raw<T>>{ };
+#if defined( DAW_JSON_HAS_REFLECTION )
+				} else if constexpr( refl_details::HasTypeLevelAnnotation<T> ) {
+					return daw::traits::identity<
+					  refl_details::type_annotation_mapping_t<T>>{ };
+#endif
 				} else if constexpr( is_an_ordered_member_v<T> ) {
 					using type = T;
 					return daw::traits::identity<type>{ };

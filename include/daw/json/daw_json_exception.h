@@ -91,7 +91,8 @@ namespace daw::json {
 			UnexpectedJSONVariantType,
 			TrailingComma,
 			AttemptToCallOpStarOnConstIterator,
-			MaxDepthExceeded
+			MaxDepthExceeded,
+			CouldNotFindEnumeratorForValue
 		};
 
 		constexpr std::string_view reason_message( ErrorReason er ) {
@@ -195,6 +196,9 @@ namespace daw::json {
 				return "Use of operator*( ) on const iterator";
 			case ErrorReason::MaxDepthExceeded:
 				return "Maximum nesting depth exceeded"sv;
+			case ErrorReason::CouldNotFindEnumeratorForValue:
+				return "The enum_string mapping requires that values passed map to an "
+				       "enumerator in the enum definition";
 			}
 			DAW_UNREACHABLE( );
 		}
@@ -205,7 +209,7 @@ namespace daw::json {
 		 * parser if available.  Using the bool flag to ensure that the exception
 		 * type matches the compiler define and has a different name
 		 */
-		class json_exception final: public std::exception {
+		class json_exception final : public std::exception {
 			ErrorReason m_reason = ErrorReason::Unknown;
 
 			union data_t {

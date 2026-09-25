@@ -35,38 +35,6 @@
 namespace daw::json::inline DAW_JSON_VER::refl_details {
 	struct reflect_all_t {};
 
-	template<EnumType E, json_options_t Options = json_custom_opts_def>
-	struct enum_string;
-
-	struct refl_ignored_base {
-		consteval refl_ignored_base( ) = default;
-	};
-
-	struct refl_annotation_base {
-		consteval refl_annotation_base( ) = default;
-	};
-
-	struct refl_map_as : refl_annotation_base {
-		std::meta::info type;
-
-		explicit consteval refl_map_as( std::meta::info i )
-		  : type( i ) {}
-	};
-
-	struct refl_enum_string : refl_annotation_base {
-		json_options_t Options;
-
-		explicit consteval refl_enum_string( json_options_t opts )
-		  : Options( opts ) {}
-	};
-
-	struct refl_rename : refl_annotation_base {
-		char const *name;
-
-		explicit consteval refl_rename( char const *Name )
-		  : name( Name ) {}
-	};
-
 	template<typename T, T... Vals>
 	inline constexpr std::array<T, sizeof...( Vals )> constant_fixed_array = {
 	  Vals... };
@@ -83,16 +51,6 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 		return substitute( ^^constant_fixed_array, args );
 	}
 
-	consteval std::vector<std::meta::info>
-	annotations_of_with_base_type( std::meta::info item, std::meta::info type ) {
-		auto result = std::vector<std::meta::info>{ };
-		for( auto annotation : annotations_of( item ) ) {
-			if( is_base_of_type( type, type_of( annotation ) ) ) {
-				result.push_back( annotation );
-			}
-		}
-		return result;
-	}
 #if defined( __clang__ )
 	consteval std::vector<std::meta::info>
 	annotations_of_with_type( std::meta::info item, std::meta::info type ) {
