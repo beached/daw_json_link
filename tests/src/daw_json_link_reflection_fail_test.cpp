@@ -41,6 +41,28 @@ struct[[= reflect.map_as<json_number<"t", int>>]] T {
 struct[[= reflect.map_as<int>]] T {
 	int v;
 };
+#elif DAW_REFL_FAIL_CASE == 8
+struct[[= reflect.enum_string_or_number]] T {
+	int v;
+};
+#elif DAW_REFL_FAIL_CASE == 9
+enum class [[= reflect.enum_string_or_number]] [[= reflect.map_as<
+  json_number_no_name<int>>]] T : int { A };
+#elif DAW_REFL_FAIL_CASE == 10
+enum class [[= reflect.enum_string_or_number]] [[= reflect.enum_string]] T {
+	A
+};
+#elif DAW_REFL_FAIL_CASE == 11
+enum class E { A };
+struct T {
+	[[= reflect.enum_string_or_number]] [[= reflect.enum_string]] E e;
+};
+#elif DAW_REFL_FAIL_CASE == 12
+enum class E { A };
+struct T {
+	[[= reflect.enum_string_or_number]] [[= reflect.map_as<
+	  json_number<"e", int>>]] E e;
+};
 #else
 #error "Unknown DAW_REFL_FAIL_CASE"
 #endif

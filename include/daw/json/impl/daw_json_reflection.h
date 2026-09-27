@@ -104,6 +104,53 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 			return enum_to_string( value );
 		}
 	};
+
+	/// Map an enum as the enumerator's name when the value has one, otherwise
+	/// as a number of the underlying type. Parsing accepts either form
+	template<EnumType E, json_options_t NumberOptions>
+	struct reflect_enum_as_string_or_number {
+		using number_t = std::underlying_type_t<E>;
+		using json_number_t = json_number_no_name<number_t, NumberOptions>;
+
+		/// Values are from a JsonCustomTypes::Any mapping, strings retain their
+		/// quotes
+		static constexpr E operator( )( std::string_view json_value ) {
+			daw_json_ensure( not json_value.empty( ),
+			                 ErrorReason::UnexpectedEndOfData );
+			if( json_value.front( ) == '"' ) {
+				auto const name_end = json_value.find( '"', 1 );
+				daw_json_ensure( name_end != std::string_view::npos,
+				                 ErrorReason::InvalidString );
+				auto const name = json_value.substr( 1, name_end - 1 );
+				// Identifiers cannot start with these, allow the number options to
+				// decide if a number in a string is valid
+				if( name.empty( ) or
+				    not( name.front( ) == '-' or name.front( ) == '+' or
+				         ( name.front( ) >= '0' and name.front( ) <= '9' ) ) ) {
+					return enum_from_string<E>( name );
+				}
+			}
+			return static_cast<E>( from_json<json_number_t>( json_value ) );
+		}
+
+		template<typename WritableType>
+		static constexpr WritableType operator( )( WritableType it, E value ) {
+			static constexpr auto enums =
+			  reflect_constant_array( enumerators_of( ^^E ) );
+			template for( constexpr auto enumerator : [:enums:] ) {
+				if( value == [:enumerator:] ) {
+					static constexpr std::string_view name = identifier_of( enumerator );
+					it.put( '"' );
+					it.write( name );
+					it.put( '"' );
+					return it;
+				}
+			}
+			return json_details::member_to_string<json_number_t>(
+			  std::move( it ), static_cast<number_t>( value ) );
+		}
+	};
+
 	template<typename T, std::size_t... Idx>
 	consteval std::meta::info
 	get_json_members_list_impl( std::index_sequence<Idx...> ) {
@@ -121,6 +168,13 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 	struct enum_string : json_custom_no_name<E, reflect_enum_as_string<E>,
 	                                         reflect_enum_as_string<E>, Options> {
 	};
+
+	template<EnumType E, json_options_t NumberOptions>
+	struct enum_string_or_number
+	  : json_custom_no_name<
+	      E, reflect_enum_as_string_or_number<E, NumberOptions>,
+	      reflect_enum_as_string_or_number<E, NumberOptions>,
+	      options::json_custom_opt( options::JsonCustomTypes::Any )> {};
 
 	template<Reflectable T>
 	consteval bool has_reflected_submembers( ) {
@@ -163,6 +217,16 @@ namespace daw::json::inline DAW_JSON_VER {
 
 		static constexpr auto enum_string =
 		  enum_string_with_options<json_custom_opts_def>;
+
+		/// Map the enum as a string when the value is an enumerator, otherwise as
+		/// a number of the underlying type. NumberOptions are the json_number
+		/// options, e.g. number_opt( options::JsonRangeCheck::CheckForNarrowing )
+		template<json_options_t NumberOptions>
+		static constexpr auto enum_string_or_number_with_options =
+		  refl_details::refl_enum_string_or_number{ NumberOptions };
+
+		static constexpr auto enum_string_or_number =
+		  enum_string_or_number_with_options<number_opts_def>;
 	};
 	struct reflect_all_t : reflect_base_t, refl_details::reflect_all_t {};
 	struct reflect_t : reflect_base_t {

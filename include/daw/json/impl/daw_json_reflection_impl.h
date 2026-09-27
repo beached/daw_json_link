@@ -233,14 +233,32 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 		static constexpr auto refl_enum_string_annot =
 		  get_annotation<refl_enum_string, member_info>( );
 
+		static constexpr auto refl_enum_string_or_number_annot =
+		  get_annotation<refl_enum_string_or_number, member_info>( );
+
+		static_assert( not( refl_enum_string_annot and
+		                    refl_enum_string_or_number_annot ),
+		               "Do not use reflect.enum_string_or_number and "
+		               "reflect.enum_string at the same time" );
+
 		if constexpr( refl_map_as_annot ) {
 			static_assert( not refl_enum_string_annot,
 			               "Do not use reflect.enum_string and reflect.map_as "
 			               "at the same time" );
+			static_assert( not refl_enum_string_or_number_annot,
+			               "Do not use reflect.enum_string_or_number and "
+			               "reflect.map_as at the same time" );
 			return refl_map_as_annot;
 		} else if constexpr( refl_enum_string_annot ) {
 			using json_member_no_name = enum_string<
 			  typename[:type_of( member_info ):], refl_enum_string_annot->Options>;
+			static constexpr auto info =
+			  ^^typename json_member_no_name::template with_name<name>;
+			return refl_map_as{ info };
+		} else if constexpr( refl_enum_string_or_number_annot ) {
+			using json_member_no_name =
+			  enum_string_or_number<typename[:type_of( member_info ):],
+			                        refl_enum_string_or_number_annot->NumberOptions>;
 			static constexpr auto info =
 			  ^^typename json_member_no_name::template with_name<name>;
 			return refl_map_as{ info };

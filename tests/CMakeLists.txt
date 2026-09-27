@@ -1325,7 +1325,12 @@ if( DAW_JSON_USE_REFLECTION )
 		"reflect.enum_string is only valid on enum types"
 		"Do not use reflect.enum_string and reflect.map_as at the same time"
 		"requires a no name JSON type"
-		"requires a JSON type, e.g." )
+		"requires a JSON type, e.g."
+		"reflect.enum_string_or_number is only valid on enum types"
+		"Do not use reflect.enum_string_or_number and reflect.map_as at the same time"
+		"Do not use reflect.enum_string_or_number and reflect.enum_string at the same time"
+		"Do not use reflect.enum_string_or_number and reflect.enum_string at the same time"
+		"Do not use reflect.enum_string_or_number and reflect.map_as at the same time" )
 	set( DAW_REFL_FAIL_CASE 0 )
 	foreach( DAW_REFL_FAIL_MESSAGE IN LISTS DAW_REFL_FAIL_CASES )
 		math( EXPR DAW_REFL_FAIL_CASE "${DAW_REFL_FAIL_CASE} + 1" )

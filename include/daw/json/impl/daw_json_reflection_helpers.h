@@ -55,6 +55,9 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 	template<EnumType E, json_options_t Options = json_custom_opts_def>
 	struct enum_string;
 
+	template<EnumType E, json_options_t NumberOptions = number_opts_def>
+	struct enum_string_or_number;
+
 	struct refl_ignored_base {
 		consteval refl_ignored_base( ) = default;
 	};
@@ -75,6 +78,13 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 
 		explicit consteval refl_enum_string( json_options_t opts )
 		  : Options( opts ) {}
+	};
+
+	struct refl_enum_string_or_number : refl_annotation_base {
+		json_options_t NumberOptions;
+
+		explicit consteval refl_enum_string_or_number( json_options_t opts )
+		  : NumberOptions( opts ) {}
 	};
 
 	struct refl_rename : refl_annotation_base {
@@ -140,6 +150,14 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 	  std::is_enum_v<E> and
 	  get_type_annotation<refl_enum_string, E>( ).has_value( );
 
+	/// Enum types annotated with reflect.enum_string_or_number are mapped as
+	/// strings, or numbers when the value is not an enumerator, wherever their
+	/// mapping is deduced
+	template<typename E>
+	concept EnumStringOrNumberAnnotated =
+	  std::is_enum_v<E> and
+	  get_type_annotation<refl_enum_string_or_number, E>( ).has_value( );
+
 	/// Types annotated with reflect.map_as<JsonType> are mapped with JsonType
 	/// wherever their mapping is deduced
 	template<typename T>
@@ -162,12 +180,28 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 		                 not get_type_annotation<refl_enum_string, T>( ),
 		               "reflect.enum_string is only valid on enum types or "
 		               "members of enum type" );
+		static_assert( std::is_enum_v<T> or
+		                 not get_type_annotation<refl_enum_string_or_number, T>( ),
+		               "reflect.enum_string_or_number is only valid on enum "
+		               "types or members of enum type" );
 		static_assert( not( EnumStringAnnotated<T> and MapAsAnnotated<T> ),
 		               "Do not use reflect.enum_string and reflect.map_as "
 		               "at the same time" );
+		static_assert( not( EnumStringOrNumberAnnotated<T> and MapAsAnnotated<T> ),
+		               "Do not use reflect.enum_string_or_number and "
+		               "reflect.map_as at the same time" );
+		static_assert(
+		  not( EnumStringOrNumberAnnotated<T> and EnumStringAnnotated<T> ),
+		  "Do not use reflect.enum_string_or_number and reflect.enum_string at "
+		  "the same time" );
 		if constexpr( EnumStringAnnotated<T> ) {
 			static constexpr auto annot = get_type_annotation<refl_enum_string, T>( );
 			return daw::traits::identity<enum_string<T, annot->Options>>{ };
+		} else if constexpr( EnumStringOrNumberAnnotated<T> ) {
+			static constexpr auto annot =
+			  get_type_annotation<refl_enum_string_or_number, T>( );
+			return daw::traits::identity<
+			  enum_string_or_number<T, annot->NumberOptions>>{ };
 		} else if constexpr( MapAsAnnotated<T> ) {
 			static constexpr auto annot = get_type_annotation<refl_map_as, T>( );
 			using mapping_t = typename[:annot->type:];

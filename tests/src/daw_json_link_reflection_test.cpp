@@ -13,9 +13,11 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -151,6 +153,62 @@ static_assert(
 // Compile time serialization of a member annotated enum
 static_assert( to_json_equals( EnumMemberString{ EFoo::AChoo },
                                R"json({"foo":"AChoo"})json" ) );
+
+// Enumerators are mapped as their name, other values as a number of the
+// underlying type.  Parsing accepts either
+enum class [[= reflect.enum_string_or_number]] EQux : std::uint8_t {
+	A = 1,
+	B = 2
+};
+
+struct[[= reflect]] EnumTypeStringOrNumber {
+	int x;
+	EQux qux;
+	std::vector<EQux> quxs;
+};
+
+struct EnumMemberStringOrNumber {
+	[[= reflect.enum_string_or_number]] EFoo foo;
+};
+
+namespace qux_opts {
+	using namespace daw::json;
+	inline constexpr json_options_t range_checked =
+	  number_opt( options::JsonRangeCheck::CheckForNarrowing );
+	inline constexpr json_options_t literal_as_string =
+	  number_opt( options::LiteralAsStringOpt::Always );
+} // namespace qux_opts
+
+enum class [[= reflect.enum_string_or_number_with_options<
+  qux_opts::range_checked>]] EQuxChecked : std::uint8_t { A };
+
+enum class [[= reflect.enum_string_or_number_with_options<
+  qux_opts::literal_as_string>]] EQuxQuoted : int { A };
+
+static_assert( daw::json::refl_details::EnumStringOrNumberAnnotated<EQux> );
+static_assert( not daw::json::refl_details::EnumStringOrNumberAnnotated<EBar> );
+static_assert( daw::json::from_json<EQux>( R"json("A")json" ) == EQux::A );
+static_assert( daw::json::from_json<EQux>( R"json(2)json" ) == EQux::B );
+static_assert( daw::json::from_json<EQux>( R"json(200)json" ) ==
+               static_cast<EQux>( 200 ) );
+static_assert( daw::json::from_json<EnumMemberStringOrNumber>(
+                 R"json({"foo":"BlessYou"})json" )
+                 .foo == EFoo::BlessYou );
+static_assert(
+  daw::json::from_json<EnumMemberStringOrNumber>( R"json({"foo":-5})json" )
+    .foo == static_cast<EFoo>( -5 ) );
+static_assert( to_json_equals( EQux::B, R"json("B")json" ) );
+static_assert( to_json_equals( static_cast<EQux>( 200 ), "200" ) );
+static_assert( to_json_equals( EnumMemberStringOrNumber{ EFoo::AChoo },
+                               R"json({"foo":"AChoo"})json" ) );
+static_assert(
+  to_json_equals( EnumMemberStringOrNumber{ static_cast<EFoo>( -5 ) },
+                  R"json({"foo":-5})json" ) );
+static_assert( to_json_equals( static_cast<EQuxQuoted>( 7 ), R"json("7")json" ) );
+static_assert( daw::json::from_json<EQuxQuoted>( R"json("7")json" ) ==
+               static_cast<EQuxQuoted>( 7 ) );
+static_assert( daw::json::from_json<EQuxQuoted>( R"json("A")json" ) ==
+               EQuxQuoted::A );
 
 // Annotating a type with map_as maps it with that JSON type everywhere it is
 // used.  The JSON type must not have a name, it is supplied by the member
@@ -456,6 +514,57 @@ int main( ) try {
 	auto const fb1_json = daw::json::to_json( fb1 );
 	auto const fb2 = daw::json::from_json<Fallback>( fb1_json );
 	daw_ensure( fb1 == fb2 );
+
+	auto const etsn0 = EnumTypeStringOrNumber{
+	  1, EQux::B, { EQux::A, static_cast<EQux>( 200 ), EQux::B } };
+	auto const etsn0_json = daw::json::to_json( etsn0 );
+	daw::println( "EnumTypeStringOrNumber as json: {}", etsn0_json );
+	daw_ensure( etsn0_json ==
+	            R"json({"x":1,"qux":"B","quxs":["A",200,"B"]})json" );
+	auto const etsn1 = daw::json::from_json<EnumTypeStringOrNumber>( etsn0_json );
+	daw_ensure( etsn1.x == etsn0.x );
+	daw_ensure( etsn1.qux == etsn0.qux );
+	daw_ensure( etsn1.quxs == etsn0.quxs );
+
+	// Out of order members are skipped and parsed later with known bounds
+	auto const etsn2 = daw::json::from_json<EnumTypeStringOrNumber>(
+	  R"json({ "quxs" : [ 5 , "A" ] , "qux" : "B" , "x" : 3 })json" );
+	daw_ensure( etsn2.x == 3 );
+	daw_ensure( etsn2.qux == EQux::B );
+	daw_ensure( etsn2.quxs == std::vector{ static_cast<EQux>( 5 ), EQux::A } );
+	auto const etsn3 = daw::json::from_json<EnumTypeStringOrNumber>(
+	  R"json({ "quxs" : [ ] , "qux" : 9 , "x" : 3 })json" );
+	daw_ensure( etsn3.qux == static_cast<EQux>( 9 ) );
+
+	auto const ensure_throws = []( auto f ) {
+		bool threw = false;
+		try {
+			(void)f( );
+		} catch( daw::json::json_exception const & ) { threw = true; }
+		daw_ensure( threw );
+	};
+	// Unknown names are still an error
+	ensure_throws( [] { return daw::json::from_json<EQux>( R"json("C")json" ); } );
+	// Numbers in strings are only allowed with LiteralAsStringOpt
+	ensure_throws( [] { return daw::json::from_json<EQux>( R"json("5")json" ); } );
+	// The number options are used when parsing the number
+	daw_ensure( daw::json::from_json<EQuxChecked>( "255" ) ==
+	            static_cast<EQuxChecked>( 255 ) );
+	ensure_throws( [] { return daw::json::from_json<EQuxChecked>( "256" ); } );
+
+	auto const qux_writer_out = [] {
+		auto output = std::string{ };
+		auto writer = daw::json::json_writer( output );
+		writer.open_array( );
+		writer.write_enum_string_or_number( EFoo::BlessYou );
+		writer.write_enum_string_or_number( static_cast<EFoo>( 42 ) );
+		writer.write_enum_string_or_number<qux_opts::literal_as_string>(
+		  static_cast<EFoo>( 42 ) );
+		writer.close_array( );
+		return output;
+	}( );
+	daw::println( "write_enum_string_or_number: {}", qux_writer_out );
+	daw_ensure( qux_writer_out == R"json(["BlessYou",42,"42"])json" );
 
 	return EXIT_SUCCESS;
 } catch( daw::json::json_exception const &jex ) {
