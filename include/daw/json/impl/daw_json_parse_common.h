@@ -361,7 +361,7 @@ namespace daw::json {
 						}
 					} else if constexpr( parse_type::value == JsonParseTypes::KeyValue ) {
 						if constexpr( is_null::value ) {
-							using b_t = json_base_type_t<mapped_type_t>;
+							using b_t = typename mapped_type_t::type;
 							using k_t = typename b_t::key;
 							using v_t = typename b_t::value;
 							return json_link_quick_map_type<
@@ -374,10 +374,11 @@ namespace daw::json {
 						}
 					} else if constexpr( parse_type::value == JsonParseTypes::Array ) {
 						if constexpr( is_null::value ) {
-							using b_t = json_base_type_t<mapped_type_t>;
+							using b_t = typename mapped_type_t::type;
 							using v_t = typename b_t::value;
 							return json_link_quick_map_type<
-							  json_base::json_nullable<T, json_base::json_array<v_t, T>>>{ };
+							  json_base::json_nullable<
+							    T, json_base::json_array<v_t, json_details::unwrapped_t<T>>>>{ };
 						} else {
 							using v_t = typename mapped_type_t::value;
 							return json_link_quick_map_type<json_base::json_array<v_t, T>>{ };

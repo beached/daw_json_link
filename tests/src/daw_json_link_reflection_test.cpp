@@ -48,6 +48,10 @@ struct[[= reflect]] Foo {
 	std::shared_ptr<int> m2;
 };
 
+struct[[= reflect]] NullableArray {
+	std::optional<std::vector<std::string>> values;
+};
+
 class[[= reflect]] A {
 	mutable int counter = 0;
 
@@ -565,6 +569,16 @@ int main( ) try {
 	}( );
 	daw::println( "write_enum_string_or_number: {}", qux_writer_out );
 	daw_ensure( qux_writer_out == R"json(["BlessYou",42,"42"])json" );
+
+	auto v = daw::json::from_json<std::optional<std::vector<std::string>>>( "null" );
+	daw_ensure( not v );
+	auto const nullable_array = daw::json::from_json<NullableArray>(
+	  R"json({"values":null})json" );
+	daw_ensure( not nullable_array.values );
+	auto const populated_array = daw::json::from_json<NullableArray>(
+	  R"json({"values":["a","b"]})json" );
+	daw_ensure( populated_array.values ==
+	            std::vector<std::string>{ "a", "b" } );
 
 	return EXIT_SUCCESS;
 } catch( daw::json::json_exception const &jex ) {
