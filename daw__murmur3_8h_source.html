@@ -109,8 +109,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  <span class="keyword">namespace </span>murmur3_details {</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    [[nodiscard]] DAW_ATTRIB_FLATINLINE <span class="keyword">static</span> <span class="keyword">constexpr</span> daw::UInt32</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    murmur3_32_scramble( daw::UInt32 k ) {</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>      <span class="keyword">using </span>prime1 = daw::constant&lt;0xcc9e&#39;2d51_u32&gt;;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>      <span class="keyword">using </span>prime2 = daw::constant&lt;0x1b87&#39;3593_u32&gt;;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>      <span class="keyword">using </span>prime1 = daw::constant&lt;daw::UInt32{0xcc9e&#39;2d51}&gt;;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>      <span class="keyword">using </span>prime2 = daw::constant&lt;daw::UInt32{0x1b87&#39;3593}&gt;;</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>      k *= prime1::value;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>      k = rotate_left&lt;15&gt;( k );</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>      k *= prime2::value;</div>
@@ -124,14 +124,14 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespacedaw.html#a07c2db902d9efbbc85a26623284dc29c">   40</a></span>  <span class="keyword">inline</span> <span class="keyword">constexpr</span> T <a class="code hl_variable" href="namespacedaw.html#a07c2db902d9efbbc85a26623284dc29c">fnv1a_prime_v</a> = daw::undefined_v&lt;T&gt;;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> fnv1a_basis_v&lt;daw::UInt32&gt; = 0x811c&#39;9dc5_u32;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> fnv1a_basis_v&lt;daw::UInt32&gt; = daw::UInt32{0x811c&#39;9dc5};</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> fnv1a_prime_v&lt;daw::UInt32&gt; = 0x0100&#39;0193_u32;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> fnv1a_prime_v&lt;daw::UInt32&gt; = daw::UInt32{0x0100&#39;0193};</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> fnv1a_basis_v&lt;daw::UInt64&gt; = 0xcbf2&#39;9ce4&#39;8422&#39;2325_u64;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> fnv1a_basis_v&lt;daw::UInt64&gt; = daw::UInt64{ 0xcbf2&#39;9ce4&#39;8422&#39;2325 };</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> fnv1a_prime_v&lt;daw::UInt64&gt; = 0x0000&#39;0100&#39;0000&#39;01b3_u64;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> fnv1a_prime_v&lt;daw::UInt64&gt; = daw::UInt64{ 0x0000&#39;0100&#39;0000&#39;01b3 };</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  <span class="comment">// Unrolled fnv1a to N elements</span></div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="keyword">template</span>&lt;std::<span class="keywordtype">size_t</span> N, <span class="keyword">typename</span> Hash&gt;</div>
@@ -201,7 +201,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">static_assert</span>( daw::traits::is_string_view_like_v&lt;StringView&gt;,</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                   <span class="stringliteral">&quot;Can only pass contiguous character ranges to fnv1a&quot;</span> );</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    daw::UInt32 h = to_uint32( seed );</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    daw::UInt32 k = 0_u32;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    daw::UInt32 k = daw::UInt32{0};</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">char</span> <span class="keyword">const</span> *first = std::data( key );</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> last = daw::data_end( key );</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">while</span>( ( last - first ) &gt;= 4 ) {</div>
@@ -211,11 +211,11 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>      first += 4;</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>      h ^= murmur3_details::murmur3_32_scramble( k );</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>      h = rotate_left&lt;13&gt;( h );</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>      h = h * 5 + 0xe654&#39;6b64_u32;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>      h = h * 5 + daw::UInt32{0xe654&#39;6b64};</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    }</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="comment">// Anything left over</span></div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    k = 0_u32;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    k = daw::UInt32{0};</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">for</span>( <span class="keyword">auto</span> i = ( last - first ); i &gt; 0; --i ) {</div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>      k &lt;&lt;= 8U;</div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>      k |= <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( first[i - 1] );</div>
@@ -225,9 +225,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    h ^= to_uint32( std::size( key ) );</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    h ^= h &gt;&gt; 16U;</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    h *= 0x85eb&#39;ca6b_u32;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    h *= daw::UInt32{0x85eb&#39;ca6b};</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    h ^= h &gt;&gt; 13U;</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    h *= 0xc2b2&#39;ae35_u32;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    h *= daw::UInt32{0xc2b2&#39;ae35};</div>
 <div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    h ^= h &gt;&gt; 16U;</div>
 <div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">return</span> h;</div>
 <div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>  }</div>

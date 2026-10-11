@@ -132,10 +132,10 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="comment">// reinterpret_cast</span></div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keyword">auto</span> <span class="keyword">const</span> val = daw::to_uint64_buffer( ptr.get( ) );</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> ( ( ( val &amp; 0xF0F0&#39;F0F0&#39;F0F0&#39;F0F0_u64 ) |</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                   ( ( ( val + 0x0606&#39;0606&#39;0606&#39;0606_u64 ) &amp;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                       0xF0F0&#39;F0F0&#39;F0F0&#39;F0F0_u64 ) &gt;&gt;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                     4U ) ) == 0x3333&#39;3333&#39;3333&#39;3333_u64 );</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> ( ( ( val &amp; daw::UInt64{0xF0F0&#39;F0F0&#39;F0F0&#39;F0F0ULL} ) |</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                   ( ( ( val + daw::UInt64{0x0606&#39;0606&#39;0606&#39;0606ULL} ) &amp;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                       daw::UInt64{0xF0F0&#39;F0F0&#39;F0F0&#39;F0F0ULL} ) &gt;&gt;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                     4U ) ) == daw::UInt64{0x3333&#39;3333&#39;3333&#39;3333ULL} );</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      }</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>      <span class="keyword">template</span>&lt;options::JsonRangeCheck RangeCheck, <span class="keyword">typename</span> Unsigned,</div>
@@ -152,40 +152,40 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keyword">auto</span> <span class="keyword">const</span> chunk = daw::to_uint64_buffer( str.get( ) );</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="comment">// 1-byte mask trick (works on 4 pairs of single digits)</span></div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keyword">auto</span> <span class="keyword">const</span> lower_digits =</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>          ( chunk &amp; 0x0F&#39;00&#39;0F&#39;00&#39;0F&#39;00&#39;0F&#39;00_u64 ) &gt;&gt; 8U;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>          ( chunk &amp; daw::UInt64{0x0F&#39;00&#39;0F&#39;00&#39;0F&#39;00&#39;0F&#39;00ULL} ) &gt;&gt; 8U;</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">auto</span> <span class="keyword">const</span> upper_digits =</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>          ( chunk &amp; 0x00&#39;0F&#39;00&#39;0F&#39;00&#39;0F&#39;00&#39;0F_u64 ) * 10U;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>          ( chunk &amp; daw::UInt64{0x00&#39;0F&#39;00&#39;0F&#39;00&#39;0F&#39;00&#39;0FULL} ) * 10U;</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keyword">auto</span> <span class="keyword">const</span> chunk2 = lower_digits + upper_digits;</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="comment">// 2-byte mask trick (works on 2 pairs of two digits)</span></div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">auto</span> <span class="keyword">const</span> lower_digits2 =</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>          ( chunk2 &amp; 0x00&#39;FF&#39;00&#39;00&#39;00&#39;FF&#39;00&#39;00_u64 ) &gt;&gt; 16U;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>          ( chunk2 &amp; daw::UInt64{0x00&#39;FF&#39;00&#39;00&#39;00&#39;FF&#39;00&#39;00ULL} ) &gt;&gt; 16U;</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keyword">auto</span> <span class="keyword">const</span> upper_digits2 =</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>          ( chunk2 &amp; 0x00&#39;00&#39;00&#39;FF&#39;00&#39;00&#39;00&#39;FF_u64 ) * 100U;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>          ( chunk2 &amp; daw::UInt64{0x00&#39;00&#39;00&#39;FF&#39;00&#39;00&#39;00&#39;FFULL} ) * 100U;</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">auto</span> <span class="keyword">const</span> chunk3 = lower_digits2 + upper_digits2;</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="comment">// 4-byte mask trick (works on pair of four digits)</span></div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keyword">auto</span> <span class="keyword">const</span> lower_digits3 =</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>          ( chunk3 &amp; 0x00&#39;00&#39;FF&#39;FF&#39;00&#39;00&#39;00&#39;00_u64 ) &gt;&gt; 32U;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>          ( chunk3 &amp; daw::UInt64{0x00&#39;00&#39;FF&#39;FF&#39;00&#39;00&#39;00&#39;00ULL} ) &gt;&gt; 32U;</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keyword">auto</span> <span class="keyword">const</span> upper_digits3 =</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>          ( chunk3 &amp; 0x00&#39;00&#39;00&#39;00&#39;00&#39;00&#39;FF&#39;FF_u64 ) * 10000U;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>          ( chunk3 &amp; daw::UInt64{0x00&#39;00&#39;00&#39;00&#39;00&#39;00&#39;FF&#39;FFULL} ) * 10000U;</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keyword">auto</span> <span class="keyword">const</span> chunk4 = lower_digits3 + upper_digits3;</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">return</span> chunk4 &amp; 0xFFFF&#39;FFFF_u64;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">return</span> chunk4 &amp; daw::UInt64{0xFFFF&#39;FFFFULL};</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>      }</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>      <span class="keyword">static_assert</span>( parse_8_digits( <span class="stringliteral">&quot;12345678&quot;</span> ) == 1234&#39;5678_u64,</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>      <span class="keyword">static_assert</span>( parse_8_digits( <span class="stringliteral">&quot;12345678&quot;</span> ) == daw::UInt64{1234&#39;5678},</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                     <span class="stringliteral">&quot;8 digit parser does not work on this platform&quot;</span> );</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>      <span class="keyword">constexpr</span> UInt64</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>      parse_16_digits( daw::not_null&lt;char const *&gt; <span class="keyword">const</span> str ) {</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keyword">auto</span> <span class="keyword">const</span> upper = parse_8_digits( str );</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keyword">auto</span> <span class="keyword">const</span> lower = parse_8_digits( str + 8 );</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> upper * 100&#39;000&#39;000_u64 + lower;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> upper * daw::UInt64{100&#39;000&#39;000ULL} + lower;</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>      }</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>      <span class="keyword">static_assert</span>( parse_16_digits( <span class="stringliteral">&quot;1234567890123456&quot;</span> ) ==</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                       1234567890123456_u64,</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                       daw::UInt64{1234567890123456ULL},</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                     <span class="stringliteral">&quot;16 digit parser does not work on this platform&quot;</span> );</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
