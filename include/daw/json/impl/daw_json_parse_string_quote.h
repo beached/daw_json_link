@@ -24,7 +24,7 @@ namespace daw::json {
 		namespace json_details::string_quote {
 			template<std::size_t N, char c>
 			constexpr UInt8 test_at_byte( UInt64 b ) {
-				auto const lhs = b & ( 0xFF_u64 << ( N * 8U ) );
+				auto const lhs = b & ( daw::UInt64{0xFF} << ( N * 8U ) );
 				using rhs = daw::constant<to_uint64( static_cast<unsigned char>( c ) )
 				                          << ( N * 8U )>;
 				return to_uint8( not( lhs - rhs::value ) );
@@ -32,7 +32,7 @@ namespace daw::json {
 
 			template<std::size_t N, char c>
 			DAW_ATTRIB_INLINE constexpr UInt8 test_at_byte( UInt32 b ) {
-				auto const lhs = b & ( 0xFF_u32 << ( N * 8U ) );
+				auto const lhs = b & ( daw::UInt32{0xFF} << ( N * 8U ) );
 				using rhs = daw::constant<to_uint32( static_cast<unsigned char>( c ) )
 				                          << ( N * 8U )>;
 				return to_uint8( not( lhs - rhs::value ) );
