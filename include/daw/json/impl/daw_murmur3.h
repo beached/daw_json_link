@@ -25,8 +25,8 @@ namespace daw {
 	namespace murmur3_details {
 		[[nodiscard]] DAW_ATTRIB_FLATINLINE static constexpr daw::UInt32
 		murmur3_32_scramble( daw::UInt32 k ) {
-			using prime1 = daw::constant<0xcc9e'2d51_u32>;
-			using prime2 = daw::constant<0x1b87'3593_u32>;
+			using prime1 = daw::constant<daw::UInt32{0xcc9e'2d51}>;
+			using prime2 = daw::constant<daw::UInt32{0x1b87'3593}>;
 			k *= prime1::value;
 			k = rotate_left<15>( k );
 			k *= prime2::value;
@@ -40,14 +40,14 @@ namespace daw {
 	inline constexpr T fnv1a_prime_v = daw::undefined_v<T>;
 
 	template<>
-	inline constexpr auto fnv1a_basis_v<daw::UInt32> = 0x811c'9dc5_u32;
+	inline constexpr auto fnv1a_basis_v<daw::UInt32> = daw::UInt32{0x811c'9dc5};
 	template<>
-	inline constexpr auto fnv1a_prime_v<daw::UInt32> = 0x0100'0193_u32;
+	inline constexpr auto fnv1a_prime_v<daw::UInt32> = daw::UInt32{0x0100'0193};
 
 	template<>
-	inline constexpr auto fnv1a_basis_v<daw::UInt64> = 0xcbf2'9ce4'8422'2325_u64;
+	inline constexpr auto fnv1a_basis_v<daw::UInt64> = daw::UInt64{ 0xcbf2'9ce4'8422'2325 };
 	template<>
-	inline constexpr auto fnv1a_prime_v<daw::UInt64> = 0x0000'0100'0000'01b3_u64;
+	inline constexpr auto fnv1a_prime_v<daw::UInt64> = daw::UInt64{ 0x0000'0100'0000'01b3 };
 
 	// Unrolled fnv1a to N elements
 	template<std::size_t N, typename Hash>
@@ -108,9 +108,9 @@ namespace daw {
 	[[nodiscard]] static constexpr daw::UInt32
 	murmur3_32( StringView key, std::uint32_t seed = 0 ) {
 		static_assert( daw::traits::is_string_view_like_v<StringView>,
-		               "Can only pass contiguous character ranges to fnv1a" );
+									 "Can only pass contiguous character ranges to fnv1a" );
 		daw::UInt32 h = to_uint32( seed );
-		daw::UInt32 k = 0_u32;
+		daw::UInt32 k = daw::UInt32{0};
 		char const *first = std::data( key );
 		char const *const last = daw::data_end( key );
 		while( ( last - first ) >= 4 ) {
@@ -120,11 +120,11 @@ namespace daw {
 			first += 4;
 			h ^= murmur3_details::murmur3_32_scramble( k );
 			h = rotate_left<13>( h );
-			h = h * 5 + 0xe654'6b64_u32;
+			h = h * 5 + daw::UInt32{0xe654'6b64};
 		}
 
 		// Anything left over
-		k = 0_u32;
+		k = daw::UInt32{0};
 		for( auto i = ( last - first ); i > 0; --i ) {
 			k <<= 8U;
 			k |= static_cast<unsigned char>( first[i - 1] );
@@ -134,9 +134,9 @@ namespace daw {
 
 		h ^= to_uint32( std::size( key ) );
 		h ^= h >> 16U;
-		h *= 0x85eb'ca6b_u32;
+		h *= daw::UInt32{0x85eb'ca6b};
 		h ^= h >> 13U;
-		h *= 0xc2b2'ae35_u32;
+		h *= daw::UInt32{0xc2b2'ae35};
 		h ^= h >> 16U;
 		return h;
 	}

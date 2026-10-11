@@ -361,7 +361,7 @@ namespace daw::json {
 						}
 					} else if constexpr( parse_type::value == JsonParseTypes::KeyValue ) {
 						if constexpr( is_null::value ) {
-							using b_t = json_base_type_t<mapped_type_t>;
+							using b_t = typename mapped_type_t::type;
 							using k_t = typename b_t::key;
 							using v_t = typename b_t::value;
 							return json_link_quick_map_type<
@@ -374,10 +374,11 @@ namespace daw::json {
 						}
 					} else if constexpr( parse_type::value == JsonParseTypes::Array ) {
 						if constexpr( is_null::value ) {
-							using b_t = json_base_type_t<mapped_type_t>;
+							using b_t = typename mapped_type_t::type;
 							using v_t = typename b_t::value;
 							return json_link_quick_map_type<
-							  json_base::json_nullable<T, json_base::json_array<v_t, T>>>{ };
+							  json_base::json_nullable<
+							    T, json_base::json_array<v_t, json_details::unwrapped_t<T>>>>{ };
 						} else {
 							using v_t = typename mapped_type_t::value;
 							return json_link_quick_map_type<json_base::json_array<v_t, T>>{ };
@@ -428,6 +429,11 @@ namespace daw::json {
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_deduced_type_impl( ) noexcept {
 				if constexpr( is_a_basic_json_value<T> ) {
 					return daw::traits::identity<json_base::json_raw<T>>{ };
+#if defined( DAW_JSON_HAS_REFLECTION )
+				} else if constexpr( refl_details::HasTypeLevelAnnotation<T> ) {
+					return daw::traits::identity<
+					  refl_details::type_annotation_mapping_t<T>>{ };
+#endif
 				} else if constexpr( is_an_ordered_member_v<T> ) {
 					using type = T;
 					return daw::traits::identity<type>{ };

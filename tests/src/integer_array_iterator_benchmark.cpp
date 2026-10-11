@@ -116,17 +116,21 @@ int main( int argc, char **argv ) {
 	std::cout << simd_signed << '\n' << std::flush;
 	daw_ensure( simd_signed == expected_signed );
 
-	auto signed_scalar_result = daw::json::benchmark::benchmark(
+	auto signed_scalar_result = daw::json::benchmark::benchmark_items(
 	  DAW_NUM_RUNS,
 	  signed_document.size( ),
+	  element_count,
+	  "integer",
 	  "signed integer array sum (json iterator, no SIMD)",
 	  sum_signed_scalar,
 	  signed_document );
 	daw_ensure( signed_scalar_result.get( ) == expected_signed );
 
-	auto signed_simd_result = daw::json::benchmark::benchmark(
+	auto signed_simd_result = daw::json::benchmark::benchmark_items(
 	  DAW_NUM_RUNS,
 	  signed_document.size( ),
+	  element_count,
+	  "integer",
 	  "signed integer array sum (SIMD block iterator)",
 	  sum_signed_simd_blocks,
 	  signed_document );
@@ -141,17 +145,21 @@ int main( int argc, char **argv ) {
 	std::cout << simd_unsigned << '\n' << std::flush;
 	daw_ensure( simd_unsigned == expected_unsigned );
 
-	auto unsigned_scalar_result = daw::json::benchmark::benchmark(
+	auto unsigned_scalar_result = daw::json::benchmark::benchmark_items(
 	  DAW_NUM_RUNS,
 	  unsigned_document.size( ),
+	  element_count,
+	  "integer",
 	  "unsigned integer array sum (json iterator, no SIMD)",
 	  sum_unsigned_scalar,
 	  unsigned_document );
 	daw_ensure( unsigned_scalar_result.get( ) == expected_unsigned );
 
-	auto unsigned_simd_result = daw::json::benchmark::benchmark(
+	auto unsigned_simd_result = daw::json::benchmark::benchmark_items(
 	  DAW_NUM_RUNS,
 	  unsigned_document.size( ),
+	  element_count,
+	  "integer",
 	  "unsigned integer array sum (SIMD block iterator)",
 	  sum_unsigned_simd_blocks,
 	  unsigned_document );

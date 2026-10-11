@@ -35,38 +35,6 @@
 namespace daw::json::inline DAW_JSON_VER::refl_details {
 	struct reflect_all_t {};
 
-	template<EnumType E, json_options_t Options = json_custom_opts_def>
-	struct enum_string;
-
-	struct refl_ignored_base {
-		consteval refl_ignored_base( ) = default;
-	};
-
-	struct refl_annotation_base {
-		consteval refl_annotation_base( ) = default;
-	};
-
-	struct refl_map_as : refl_annotation_base {
-		std::meta::info type;
-
-		explicit consteval refl_map_as( std::meta::info i )
-		  : type( i ) {}
-	};
-
-	struct refl_enum_string : refl_annotation_base {
-		json_options_t Options;
-
-		explicit consteval refl_enum_string( json_options_t opts )
-		  : Options( opts ) {}
-	};
-
-	struct refl_rename : refl_annotation_base {
-		char const *name;
-
-		explicit consteval refl_rename( char const *Name )
-		  : name( Name ) {}
-	};
-
 	template<typename T, T... Vals>
 	inline constexpr std::array<T, sizeof...( Vals )> constant_fixed_array = {
 	  Vals... };
@@ -74,7 +42,7 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 	template<std::ranges::input_range R>
 	requires( std::is_constructible_v<std::ranges::range_value_t<R>,
 	                                  std::ranges::range_reference_t<R>> )
-	  consteval auto as_stdarray( R &&elems ) {
+	consteval auto as_stdarray( R &&elems ) {
 
 		auto args = std::vector{ ^^std::ranges::range_value_t<R> };
 		for( const auto &V : elems ) {
@@ -83,16 +51,6 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 		return substitute( ^^constant_fixed_array, args );
 	}
 
-	consteval std::vector<std::meta::info>
-	annotations_of_with_base_type( std::meta::info item, std::meta::info type ) {
-		auto result = std::vector<std::meta::info>{ };
-		for( auto annotation : annotations_of( item ) ) {
-			if( is_base_of_type( type, type_of( annotation ) ) ) {
-				result.push_back( annotation );
-			}
-		}
-		return result;
-	}
 #if defined( __clang__ )
 	consteval std::vector<std::meta::info>
 	annotations_of_with_type( std::meta::info item, std::meta::info type ) {
@@ -250,16 +208,12 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 
 	template<typename T, typename... Ts>
 	inline constexpr bool construction_test_v<T, std::tuple<Ts...>> =
-	  requires( Ts... ts ) {
-		reflected_constructor<T>{ }( ts... );
-	};
+	  requires( Ts... ts ) { reflected_constructor<T>{ }( ts... ); };
 
 	template<typename T>
-	concept Reflectable =
-	  not std::is_empty_v<T> and std::is_class_v<T> and requires( T v ) {
-		to_tuple( v );
-	}
-	and construction_test_v<T, to_tuple_t<T>>;
+	concept Reflectable = not std::is_empty_v<T> and std::is_class_v<T> and
+	                      requires( T v ) { to_tuple( v ); } and
+	                      construction_test_v<T, to_tuple_t<T>>;
 
 	// Checks for an annotation of a specific type and returns it if it exists
 	template<typename AnnotationType, std::meta::info r>
@@ -279,14 +233,32 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 		static constexpr auto refl_enum_string_annot =
 		  get_annotation<refl_enum_string, member_info>( );
 
+		static constexpr auto refl_enum_string_or_number_annot =
+		  get_annotation<refl_enum_string_or_number, member_info>( );
+
+		static_assert( not( refl_enum_string_annot and
+		                    refl_enum_string_or_number_annot ),
+		               "Do not use reflect.enum_string_or_number and "
+		               "reflect.enum_string at the same time" );
+
 		if constexpr( refl_map_as_annot ) {
 			static_assert( not refl_enum_string_annot,
 			               "Do not use reflect.enum_string and reflect.map_as "
 			               "at the same time" );
+			static_assert( not refl_enum_string_or_number_annot,
+			               "Do not use reflect.enum_string_or_number and "
+			               "reflect.map_as at the same time" );
 			return refl_map_as_annot;
 		} else if constexpr( refl_enum_string_annot ) {
 			using json_member_no_name = enum_string<
 			  typename[:type_of( member_info ):], refl_enum_string_annot->Options>;
+			static constexpr auto info =
+			  ^^typename json_member_no_name::template with_name<name>;
+			return refl_map_as{ info };
+		} else if constexpr( refl_enum_string_or_number_annot ) {
+			using json_member_no_name =
+			  enum_string_or_number<typename[:type_of( member_info ):],
+			                        refl_enum_string_or_number_annot->NumberOptions>;
 			static constexpr auto info =
 			  ^^typename json_member_no_name::template with_name<name>;
 			return refl_map_as{ info };
@@ -307,8 +279,8 @@ namespace daw::json::inline DAW_JSON_VER::refl_details {
 		static constexpr std::string_view svname =
 		  annot_rename ? std::string_view( annot_rename->name )
 		               : identifier_of( member_info );
-		static constexpr auto name = json_name<svname.size( ) + 1>(
-		  svname.data( ), std::make_index_sequence<svname.size( ) + 1>{ } );
+		// DAWDAW
+		static constexpr auto name = json_name{ daw::string_view( svname ) };
 		static_assert( not name.empty( ), "Unexpected empty name" );
 
 		static constexpr auto annot_map_as =

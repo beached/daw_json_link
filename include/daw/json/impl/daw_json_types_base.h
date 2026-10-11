@@ -38,10 +38,9 @@ namespace daw::json {
 			inline constexpr bool is_json_nullable_v = false;
 
 			template<typename T, typename JsonMember, JsonNullable NullableType,
-			         typename Constructor>
-			inline constexpr bool is_json_nullable_v<
-			  json_base::json_nullable<T, JsonMember, NullableType, Constructor>> =
-			  true;
+			         typename Constructor, typename IsNull>
+			inline constexpr bool is_json_nullable_v<json_base::json_nullable<
+			  T, JsonMember, NullableType, Constructor, IsNull>> = true;
 
 			template<typename T>
 			struct json_empty_class {
@@ -138,7 +137,8 @@ namespace daw::json {
 			         JsonNullable NullableType = JsonNullable::Nullable,
 			         typename Constructor = use_default>
 			using json_string_insitu_null =
-			  json_nullable<T, json_string_insitu<json_details::unwrapped_t<T>, Options>,
+			  json_nullable<T,
+			                json_string_insitu<json_details::unwrapped_t<T>, Options>,
 			                NullableType, Constructor>;
 
 			template<typename T, json_options_t Options = bool_opts_def,

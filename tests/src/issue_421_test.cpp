@@ -22,43 +22,17 @@ struct Variant {
 	std::variant<int, bool, std::vector<Variant>> value;
 };
 
-struct VariantCtor {
-	Variant operator( )( char const *ptr, std::size_t sz ) const {
-		auto value = daw::json::json_value( std::string_view( ptr, sz ) );
-		return operator( )( value );
-	}
+template<>
+struct daw::json::json_data_contract<Variant> {
+	using type = json_type_alias<json_variant_no_name<
+	  std::variant<int, bool, std::vector<Variant>>,
+	  json_variant_type_list<
+	    int, bool, json_array_no_name<json_recursive_class_no_name<Variant>>>>>;
 
-	Variant operator( )( daw::json::json_value value ) const {
-		using namespace daw::json;
-		switch( value.type( ) ) {
-		case JsonBaseParseTypes::Number:
-			return Variant{ from_json<int>( value ) };
-		case JsonBaseParseTypes::Bool:
-			return Variant{ from_json<bool>( value ) };
-		case JsonBaseParseTypes::Array: {
-			auto res = std::vector<Variant>( );
-			for( auto jp : value ) {
-				res.push_back( operator( )( jp.value ) );
-			}
-			return Variant{ std::move( res ) };
-		}
-		default:
-			std::abort( );
-		}
+	static auto to_json_data( Variant const &v ) {
+		return v.value;
 	}
 };
-
-namespace daw::json {
-	template<>
-	struct json_data_contract<Variant> {
-		using type = json_type_alias<json_raw_no_name<
-		  std::variant<int, bool, std::vector<Variant>>, VariantCtor>>;
-
-		static auto to_json_data( const Variant &value ) {
-			return value.value;
-		}
-	};
-} // namespace daw::json
 
 int main( ) {
 	{
@@ -74,8 +48,11 @@ int main( ) {
 		daw_ensure( b1.value.index( ) == 1 );
 	}
 	{
-		constexpr std::string_view json_doc = "[1, true, false, [1, false, []]]";
+		constexpr std::string_view json_doc = "[1,true,false,[1,false,[]]]";
 		auto ary = daw::json::from_json<Variant>( json_doc );
 		daw_ensure( ary.value.index( ) == 2 );
+
+		auto d = daw::json::to_json( ary );
+		daw_ensure( d == json_doc );
 	}
 }

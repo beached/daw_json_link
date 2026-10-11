@@ -127,9 +127,12 @@ namespace daw::json::benchmark {
 	}
 
 	DAW_ATTRIB_NOINLINE
-	inline bool benchmark_nr( std::size_t min_num_runs, std::size_t data_size,
-	                          daw::string_view title, void ( *fnc )( void * ),
-	                          void *data ) {
+	inline bool benchmark_nr_items( std::size_t min_num_runs,
+	                                std::size_t data_size,
+	                                std::size_t item_count,
+	                                daw::string_view item_label,
+	                                daw::string_view title,
+	                                void ( *fnc )( void * ), void *data ) {
 		if( min_num_runs < 2 ) {
 			min_num_runs = 2;
 		} else {
@@ -206,6 +209,37 @@ namespace daw::json::benchmark {
 		          << "\tthroughput: " << to_min_SI_unit( min_throughput, 2 )
 		          << "B/s\titems/s: " << to_min_SI_unit_full( min_per_second )
 		          << " items/s\n";
+		if( data_size > 0 ) {
+			using ns_double_t = std::chrono::duration<double, std::nano>;
+			auto const min_time_per_byte = ns_double_t(
+			  static_cast<double>( min_duration.count( ) ) /
+			  static_cast<double>( data_size ) );
+			auto const avg_time_per_byte = ns_double_t(
+			  static_cast<double>( avg_duration.count( ) ) /
+			  static_cast<double>( data_size ) );
+			auto const max_time_per_byte = ns_double_t(
+			  static_cast<double>( max_duration.count( ) ) /
+			  static_cast<double>( data_size ) );
+			std::cout << "min time/byte: " << ns_to_string( min_time_per_byte, 2 )
+			          << "\tavg time/byte: " << ns_to_string( avg_time_per_byte, 2 )
+			          << "\tmax time/byte: " << ns_to_string( max_time_per_byte, 2 )
+			          << '\n';
+		}
+		if( item_count > 0 ) {
+			auto const min_ns_per_item =
+			  static_cast<double>( min_duration.count( ) ) /
+			  static_cast<double>( item_count );
+			auto const avg_ns_per_item =
+			  static_cast<double>( avg_duration.count( ) ) /
+			  static_cast<double>( item_count );
+			auto const max_ns_per_item =
+			  static_cast<double>( max_duration.count( ) ) /
+			  static_cast<double>( item_count );
+			std::cout << "min ns/" << item_label << ": " << min_ns_per_item
+			          << "\tavg ns/" << item_label << ": " << avg_ns_per_item
+			          << "\tmax ns/" << item_label << ": " << max_ns_per_item
+			          << '\n';
+		}
 		std::cout << "total time: " << ns_to_string( total_duration, 2 )
 		          << "\tdata size: " << to_min_SI_unit( data_size )
 		          << "B\tnumber of runs: " << min_num_runs << "\n\n";
@@ -223,6 +257,14 @@ namespace daw::json::benchmark {
 #endif
 	}
 
+	DAW_ATTRIB_NOINLINE
+	inline bool benchmark_nr( std::size_t min_num_runs, std::size_t data_size,
+	                          daw::string_view title, void ( *fnc )( void * ),
+	                          void *data ) {
+		return benchmark_nr_items( min_num_runs, data_size, 0, "item", title,
+		                           fnc, data );
+	}
+
 	template<typename Func, typename... Args>
 	inline auto benchmark( std::size_t min_num_runs, std::size_t data_size,
 	                       daw::string_view title, Func &&func,
@@ -237,6 +279,26 @@ namespace daw::json::benchmark {
 			(void)f( );
 		};
 		(void)benchmark_nr( min_num_runs, data_size, title, fnc, &data_fn );
+		return daw::expected_from_code( DAW_FWD( func ), DAW_FWD( args )... );
+	}
+
+	template<typename Func, typename... Args>
+	inline auto benchmark_items( std::size_t min_num_runs,
+	                             std::size_t data_size, std::size_t item_count,
+	                             daw::string_view item_label,
+	                             daw::string_view title, Func &&func,
+	                             Args const &...args ) {
+
+		auto data_fn = [&]( ) {
+			return func( args... );
+		};
+		using data_fn_t = DAW_TYPEOF( data_fn );
+		void ( *fnc )( void * ) = []( void *d ) {
+			data_fn_t &f = *reinterpret_cast<data_fn_t *>( d );
+			(void)f( );
+		};
+		(void)benchmark_nr_items( min_num_runs, data_size, item_count,
+		                         item_label, title, fnc, &data_fn );
 		return daw::expected_from_code( DAW_FWD( func ), DAW_FWD( args )... );
 	}
 

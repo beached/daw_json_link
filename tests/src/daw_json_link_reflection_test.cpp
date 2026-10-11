@@ -9,11 +9,18 @@
 #include <daw/daw_ensure.h>
 #include <daw/daw_print.h>
 #include <daw/json/daw_json_link.h>
+#include <daw/json/daw_json_writer.h>
 
+#include <array>
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 using daw::json::reflect;
 
@@ -39,6 +46,10 @@ struct[[= reflect]] Foo {
 	std::optional<Y> m0;
 	std::vector<X> m1;
 	std::shared_ptr<int> m2;
+};
+
+struct[[= reflect]] NullableArray {
+	std::optional<std::vector<std::string>> values;
 };
 
 class[[= reflect]] A {
@@ -86,6 +97,169 @@ struct[[= reflect]] EnumMember {
 struct EnumMemberString {
 	[[= reflect.enum_string]] EFoo foo;
 };
+
+// Annotating the enum type itself maps it as a string everywhere it is used
+enum class [[= reflect.enum_string]] EBar { A, B };
+
+struct[[= reflect]] EnumTypeString {
+	EBar bar;
+	std::vector<EBar> bars;
+};
+
+enum class [[= reflect.map_as<daw::json::json_number_no_name<int>>]] EBaz {
+	A = 1,
+	B = 2
+};
+
+struct[[= reflect]] EnumTypeNumber {
+	EBaz baz;
+};
+
+static_assert( daw::json::refl_details::EnumStringAnnotated<EBar> );
+static_assert( not daw::json::refl_details::EnumStringAnnotated<EFoo> );
+static_assert(
+  daw::json::reason_message(
+    daw::json::ErrorReason::CouldNotFindEnumeratorForValue ) ==
+  "The enum_string mapping requires that values passed map to an enumerator "
+  "in the enum definition" );
+
+// Compile time parsing of a type annotated enum
+static_assert( daw::json::from_json<EBar>( R"json("A")json" ) == EBar::A );
+static_assert( daw::json::from_json<EBar>( R"json("B")json" ) == EBar::B );
+static_assert(
+  daw::json::from_json<EnumTypeString>( R"json({"bar":"B","bars":[]})json" )
+    .bar == EBar::B );
+static_assert(
+  daw::json::from_json<EnumTypeNumber>( R"json({"baz":2})json" ).baz ==
+  EBaz::B );
+// Compile time parsing of a member annotated enum
+static_assert( daw::json::from_json<EnumMemberString>(
+                 R"json({"foo":"BlessYou"})json" )
+                 .foo == EFoo::BlessYou );
+
+template<typename T>
+constexpr bool to_json_equals( T const &value, std::string_view expected ) {
+	auto buff = std::array<char, 64>{ };
+	char const *const last = daw::json::to_json( value, buff.data( ) );
+	return std::string_view(
+	         buff.data( ), static_cast<std::size_t>( last - buff.data( ) ) ) ==
+	       expected;
+}
+
+// Compile time serialization of a type annotated enum
+static_assert( to_json_equals( EBar::A, R"json("A")json" ) );
+static_assert( to_json_equals( EBar::B, R"json("B")json" ) );
+static_assert( to_json_equals( EnumTypeString{ EBar::A, { } },
+                               R"json({"bar":"A","bars":[]})json" ) );
+static_assert( to_json_equals( EBaz::A, "1" ) );
+static_assert(
+  to_json_equals( EnumTypeNumber{ EBaz::B }, R"json({"baz":2})json" ) );
+// Compile time serialization of a member annotated enum
+static_assert( to_json_equals( EnumMemberString{ EFoo::AChoo },
+                               R"json({"foo":"AChoo"})json" ) );
+
+// Enumerators are mapped as their name, other values as a number of the
+// underlying type.  Parsing accepts either
+enum class [[= reflect.enum_string_or_number]] EQux : std::uint8_t {
+	A = 1,
+	B = 2
+};
+
+struct[[= reflect]] EnumTypeStringOrNumber {
+	int x;
+	EQux qux;
+	std::vector<EQux> quxs;
+};
+
+struct EnumMemberStringOrNumber {
+	[[= reflect.enum_string_or_number]] EFoo foo;
+};
+
+namespace qux_opts {
+	using namespace daw::json;
+	inline constexpr json_options_t range_checked =
+	  number_opt( options::JsonRangeCheck::CheckForNarrowing );
+	inline constexpr json_options_t literal_as_string =
+	  number_opt( options::LiteralAsStringOpt::Always );
+} // namespace qux_opts
+
+enum class [[= reflect.enum_string_or_number_with_options<
+  qux_opts::range_checked>]] EQuxChecked : std::uint8_t { A };
+
+enum class [[= reflect.enum_string_or_number_with_options<
+  qux_opts::literal_as_string>]] EQuxQuoted : int { A };
+
+static_assert( daw::json::refl_details::EnumStringOrNumberAnnotated<EQux> );
+static_assert( not daw::json::refl_details::EnumStringOrNumberAnnotated<EBar> );
+static_assert( daw::json::from_json<EQux>( R"json("A")json" ) == EQux::A );
+static_assert( daw::json::from_json<EQux>( R"json(2)json" ) == EQux::B );
+static_assert( daw::json::from_json<EQux>( R"json(200)json" ) ==
+               static_cast<EQux>( 200 ) );
+static_assert( daw::json::from_json<EnumMemberStringOrNumber>(
+                 R"json({"foo":"BlessYou"})json" )
+                 .foo == EFoo::BlessYou );
+static_assert(
+  daw::json::from_json<EnumMemberStringOrNumber>( R"json({"foo":-5})json" )
+    .foo == static_cast<EFoo>( -5 ) );
+static_assert( to_json_equals( EQux::B, R"json("B")json" ) );
+static_assert( to_json_equals( static_cast<EQux>( 200 ), "200" ) );
+static_assert( to_json_equals( EnumMemberStringOrNumber{ EFoo::AChoo },
+                               R"json({"foo":"AChoo"})json" ) );
+static_assert(
+  to_json_equals( EnumMemberStringOrNumber{ static_cast<EFoo>( -5 ) },
+                  R"json({"foo":-5})json" ) );
+static_assert( to_json_equals( static_cast<EQuxQuoted>( 7 ), R"json("7")json" ) );
+static_assert( daw::json::from_json<EQuxQuoted>( R"json("7")json" ) ==
+               static_cast<EQuxQuoted>( 7 ) );
+static_assert( daw::json::from_json<EQuxQuoted>( R"json("A")json" ) ==
+               EQuxQuoted::A );
+
+// Annotating a type with map_as maps it with that JSON type everywhere it is
+// used.  The JSON type must not have a name, it is supplied by the member
+struct Temperature;
+struct TemperatureConv {
+	static constexpr Temperature operator( )( std::string_view sv );
+	static constexpr std::string_view operator( )( Temperature const &t );
+};
+
+struct[[= reflect.map_as<daw::json::json_custom_no_name<
+  Temperature, TemperatureConv, TemperatureConv>>]] Temperature {
+	bool is_hot;
+
+	constexpr bool operator==( Temperature const & ) const = default;
+};
+
+constexpr Temperature TemperatureConv::operator( )( std::string_view sv ) {
+	return Temperature{ sv == "hot" };
+}
+
+constexpr std::string_view
+TemperatureConv::operator( )( Temperature const &t ) {
+	return t.is_hot ? "hot" : "cold";
+}
+
+struct[[= reflect]] Weather {
+	Temperature today;
+	[[= reflect.rename<"tomorrow">]] Temperature next;
+	std::vector<Temperature> week;
+};
+
+static_assert( daw::json::refl_details::MapAsAnnotated<Temperature> );
+static_assert( not daw::json::refl_details::MapAsAnnotated<Weather> );
+
+// Compile time parsing of a type level map_as
+static_assert( daw::json::from_json<Temperature>( R"json("hot")json" ) ==
+               Temperature{ true } );
+static_assert(
+  daw::json::from_json<Weather>(
+    R"json({"today":"hot","tomorrow":"cold","week":["cold","hot"]})json" )
+    .next == Temperature{ false } );
+
+// Compile time serialization of a type level map_as
+static_assert( to_json_equals( Temperature{ false }, R"json("cold")json" ) );
+static_assert( to_json_equals( Weather{ { true }, { false }, { } },
+                               R"json({"today":"hot","tomorrow":"cold",)json"
+                               R"json("week":[]})json" ) );
 
 struct HasHidden {
 	int x;
@@ -231,6 +405,66 @@ int main( ) try {
 	daw::println( "EnumMemberString{{ EFoo::BlessYou }}; as json: {}",
 	              val9_json );
 
+	auto const bfoo2 = daw::json::from_json<EnumMemberString>( val9_json );
+	daw_ensure( bfoo2.foo == EFoo::BlessYou );
+
+	auto const ets0 = EnumTypeString{ EBar::B, { EBar::A, EBar::B, EBar::A } };
+	auto const ets0_json = daw::json::to_json( ets0 );
+	daw::println( "EnumTypeString as json: {}", ets0_json );
+	daw_ensure( ets0_json == R"json({"bar":"B","bars":["A","B","A"]})json" );
+	auto const ets1 = daw::json::from_json<EnumTypeString>( ets0_json );
+	daw_ensure( ets1.bar == ets0.bar );
+	daw_ensure( ets1.bars == ets0.bars );
+
+	auto const ebars = daw::json::from_json_array<EBar>( R"json(["B","A"])json" );
+	daw_ensure( ebars == std::vector{ EBar::B, EBar::A } );
+	daw_ensure( daw::json::to_json_array( ebars ) == R"json(["B","A"])json" );
+
+	bool bad_enum_string_threw = false;
+	try {
+		(void)daw::json::from_json<EBar>( R"json("C")json" );
+	} catch( daw::json::json_exception const & ) {
+		bad_enum_string_threw = true;
+	}
+	daw_ensure( bad_enum_string_threw );
+
+	auto const invalid_ebar = static_cast<EBar>( 42 );
+	bool invalid_enum_to_json_threw = false;
+	try {
+		(void)daw::json::to_json( invalid_ebar );
+	} catch( daw::json::json_exception const &jex ) {
+		invalid_enum_to_json_threw = true;
+		daw_ensure(
+		  jex.reason_type( ) ==
+		  daw::json::ErrorReason::CouldNotFindEnumeratorForValue );
+	}
+	daw_ensure( invalid_enum_to_json_threw );
+
+	bool invalid_enum_writer_threw = false;
+	try {
+		auto output = std::string{ };
+		auto writer = daw::json::json_writer( output );
+		writer.write_enum_string( invalid_ebar );
+	} catch( daw::json::json_exception const &jex ) {
+		invalid_enum_writer_threw = true;
+		daw_ensure(
+		  jex.reason_type( ) ==
+		  daw::json::ErrorReason::CouldNotFindEnumeratorForValue );
+	}
+	daw_ensure( invalid_enum_writer_threw );
+
+	auto const w0 =
+	  Weather{ { true }, { false }, { { false }, { true }, { true } } };
+	auto const w0_json = daw::json::to_json( w0 );
+	daw::println( "Weather as json: {}", w0_json );
+	daw_ensure(
+	  w0_json ==
+	  R"json({"today":"hot","tomorrow":"cold","week":["cold","hot","hot"]})json" );
+	auto const w1 = daw::json::from_json<Weather>( w0_json );
+	daw_ensure( w1.today == w0.today );
+	daw_ensure( w1.next == w0.next );
+	daw_ensure( w1.week == w0.week );
+
 	static constexpr daw::string_view h0_doc = R"json({"x": 55, "z": 66 })json";
 	daw::println( "json: {}", h0_doc );
 	auto const h0 = daw::json::from_json<HasHidden>( h0_doc );
@@ -284,6 +518,67 @@ int main( ) try {
 	auto const fb1_json = daw::json::to_json( fb1 );
 	auto const fb2 = daw::json::from_json<Fallback>( fb1_json );
 	daw_ensure( fb1 == fb2 );
+
+	auto const etsn0 = EnumTypeStringOrNumber{
+	  1, EQux::B, { EQux::A, static_cast<EQux>( 200 ), EQux::B } };
+	auto const etsn0_json = daw::json::to_json( etsn0 );
+	daw::println( "EnumTypeStringOrNumber as json: {}", etsn0_json );
+	daw_ensure( etsn0_json ==
+	            R"json({"x":1,"qux":"B","quxs":["A",200,"B"]})json" );
+	auto const etsn1 = daw::json::from_json<EnumTypeStringOrNumber>( etsn0_json );
+	daw_ensure( etsn1.x == etsn0.x );
+	daw_ensure( etsn1.qux == etsn0.qux );
+	daw_ensure( etsn1.quxs == etsn0.quxs );
+
+	// Out of order members are skipped and parsed later with known bounds
+	auto const etsn2 = daw::json::from_json<EnumTypeStringOrNumber>(
+	  R"json({ "quxs" : [ 5 , "A" ] , "qux" : "B" , "x" : 3 })json" );
+	daw_ensure( etsn2.x == 3 );
+	daw_ensure( etsn2.qux == EQux::B );
+	daw_ensure( etsn2.quxs == std::vector{ static_cast<EQux>( 5 ), EQux::A } );
+	auto const etsn3 = daw::json::from_json<EnumTypeStringOrNumber>(
+	  R"json({ "quxs" : [ ] , "qux" : 9 , "x" : 3 })json" );
+	daw_ensure( etsn3.qux == static_cast<EQux>( 9 ) );
+
+	auto const ensure_throws = []( auto f ) {
+		bool threw = false;
+		try {
+			(void)f( );
+		} catch( daw::json::json_exception const & ) { threw = true; }
+		daw_ensure( threw );
+	};
+	// Unknown names are still an error
+	ensure_throws( [] { return daw::json::from_json<EQux>( R"json("C")json" ); } );
+	// Numbers in strings are only allowed with LiteralAsStringOpt
+	ensure_throws( [] { return daw::json::from_json<EQux>( R"json("5")json" ); } );
+	// The number options are used when parsing the number
+	daw_ensure( daw::json::from_json<EQuxChecked>( "255" ) ==
+	            static_cast<EQuxChecked>( 255 ) );
+	ensure_throws( [] { return daw::json::from_json<EQuxChecked>( "256" ); } );
+
+	auto const qux_writer_out = [] {
+		auto output = std::string{ };
+		auto writer = daw::json::json_writer( output );
+		writer.open_array( );
+		writer.write_enum_string_or_number( EFoo::BlessYou );
+		writer.write_enum_string_or_number( static_cast<EFoo>( 42 ) );
+		writer.write_enum_string_or_number<qux_opts::literal_as_string>(
+		  static_cast<EFoo>( 42 ) );
+		writer.close_array( );
+		return output;
+	}( );
+	daw::println( "write_enum_string_or_number: {}", qux_writer_out );
+	daw_ensure( qux_writer_out == R"json(["BlessYou",42,"42"])json" );
+
+	auto v = daw::json::from_json<std::optional<std::vector<std::string>>>( "null" );
+	daw_ensure( not v );
+	auto const nullable_array = daw::json::from_json<NullableArray>(
+	  R"json({"values":null})json" );
+	daw_ensure( not nullable_array.values );
+	auto const populated_array = daw::json::from_json<NullableArray>(
+	  R"json({"values":["a","b"]})json" );
+	daw_ensure( populated_array.values ==
+	            std::vector<std::string>{ "a", "b" } );
 
 	return EXIT_SUCCESS;
 } catch( daw::json::json_exception const &jex ) {

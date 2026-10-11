@@ -464,6 +464,14 @@ namespace daw::json {
 			constexpr void write_enum_string( daw::EnumType auto e ) {
 				write_string( refl_details::enum_to_string( e ) );
 			}
+
+			/// Write the enumerator name as a string, or when e is not an
+			/// enumerator a number of the underlying type
+			template<json_options_t NumberOptions = number_opts_def>
+			constexpr void write_enum_string_or_number( daw::EnumType auto e ) {
+				write_value<refl_details::enum_string_or_number<decltype( e ),
+				                                                NumberOptions>>( e );
+			}
 #endif
 		};
 

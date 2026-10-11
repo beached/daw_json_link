@@ -21,6 +21,9 @@
 #include <cstddef>
 #include <string_view>
 #include <utility>
+#if defined( DAW_JSON_HAS_REFLECTION )
+#include <meta>
+#endif
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -32,6 +35,63 @@ namespace daw::json {
 		 * A fixed string used for member names in json descriptions
 		 * @tparam N size of string plus 1.  Do not set explicitly.  Use CTAD
 		 */
+#if defined( DAW_JSON_HAS_REFLECTION )
+		struct json_name {
+			char const *m_data{ };
+			std::size_t m_size{ };
+
+			template<std::size_t N>
+			consteval json_name( char const ( &ptr )[N] ) noexcept
+			  : json_name( daw::string_view( ptr, N - 1 ) ) {}
+
+			consteval json_name( daw::string_view sv ) noexcept
+			  : m_data( std::define_static_string( sv ) )
+			  , m_size( sv.size( ) ) {}
+
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr
+			operator daw::string_view( ) const noexcept {
+				return { m_data, m_size };
+			}
+
+			// Needed for copy_to_iterator
+			[[nodiscard]] DAW_ATTRIB_RET_NONNULL
+			  DAW_ATTRIB_INLINE constexpr char const *
+			  begin( ) const noexcept {
+				return m_data;
+			}
+
+			// Needed for copy_to_iterator
+			[[nodiscard]] DAW_ATTRIB_RET_NONNULL
+			  DAW_ATTRIB_INLINE constexpr char const *
+			  end( ) const noexcept {
+				return m_data + m_size;
+			}
+
+			[[nodiscard]] constexpr std::size_t size( ) const {
+				return m_size;
+			}
+
+			[[nodiscard]] constexpr bool empty( ) const {
+				return m_size == 0;
+			}
+
+			[[nodiscard]] constexpr bool
+			operator==( json_name const &rhs ) const noexcept {
+				return daw::string_view( m_data, m_size ) ==
+				       daw::string_view( rhs.m_data, rhs.m_size );
+			}
+
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
+			operator==( daw::string_view rhs ) const noexcept {
+				return daw::string_view( m_data, m_size ) == rhs;
+			}
+
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr
+			operator std::string_view( ) const noexcept {
+				return std::string_view( m_data, m_size );
+			}
+		};
+#else
 		template<std::size_t N>
 		struct json_name {
 			static_assert( N > 0 );
@@ -107,7 +167,7 @@ namespace daw::json {
 
 		template<std::size_t N>
 		json_name( char const ( & )[N] ) -> json_name<N>;
-
+#endif
 #define JSONNAMETYPE ::daw::json::json_name
 		inline constexpr JSONNAMETYPE default_key_name{ "key" };
 		inline constexpr JSONNAMETYPE default_value_name{ "value" };

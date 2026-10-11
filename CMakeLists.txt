@@ -9,12 +9,10 @@
 cmake_minimum_required( VERSION 3.14 )
 
 project( "daw-json-link"
-				 VERSION "3.39.0"
+				 VERSION "3.41.1"
 				 DESCRIPTION "Static JSON parsing in C++"
 				 HOMEPAGE_URL "https://github.com/beached/daw_json_link"
 				 LANGUAGES C CXX )
-
-set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested." )
 
 # Options used. Those tagged with Define are also the name of the source definition
 set( DAW_JSON_VER_OVERRIDE OFF CACHE STRING "Override the default inline namespace name used for API versioning" )
@@ -76,9 +74,6 @@ set( json_link_INSTALL_CMAKEDIR
 		 "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
 		 CACHE STRING
 		 "The install directory to use for CMake package config files" )
-
-
-add_compile_definitions( DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD} )
 
 if( NOT DAW_USE_PACKAGE_MANAGEMENT )
 	add_subdirectory( extern )

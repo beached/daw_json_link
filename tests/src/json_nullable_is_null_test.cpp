@@ -9,6 +9,7 @@
 #include "defines.h"
 
 #include "daw/json/daw_json_link.h"
+#include "daw/json/daw_json_switches.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
@@ -58,7 +59,7 @@ namespace daw::json {
 		  json_variant_no_name<std::variant<std::monostate, int, std::string>>,
 		  daw::use_default, CheckVariantNull>>;
 
-		static constexpr auto to_json_data( Bar const & b ) {
+		static DAW_CPP20_CX_ALLOC auto to_json_data( Bar const &b ) {
 			return b.member;
 		}
 	};
