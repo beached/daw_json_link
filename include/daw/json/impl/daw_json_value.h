@@ -373,27 +373,36 @@ namespace daw::json {
 			explicit constexpr basic_json_value( BasicParsePolicy<P, A> parse_state )
 			  : m_parse_state( std::move( parse_state ) ) {
 				// Ensure we are at the actual value.
-				m_parse_state.trim_left( );
+				if( DAW_LIKELY( not m_parse_state.empty( ) ) ) {
+					m_parse_state.trim_left( );
+				}
 			}
 
 			/// @brief Construct from string_view
 			explicit constexpr basic_json_value( daw::string_view sv )
 			  : m_parse_state( std::data( sv ), daw::data_end( sv ) ) {
-				m_parse_state.trim_left( );
+				if( DAW_LIKELY( not m_parse_state.empty( ) ) ) {
+					m_parse_state.trim_left( );
+				}
 			}
 
 			/// @brief Construct from char const *, std::size_t
 			explicit constexpr basic_json_value( char const *first DAW_LIFETIME_BOUND,
 			                                     std::size_t sz )
-			  : m_parse_state( first, first + static_cast<std::ptrdiff_t>( sz ) ) {
-				m_parse_state.trim_left( );
+			  : m_parse_state(
+			      first, first ? first + static_cast<std::ptrdiff_t>( sz ) : first ) {
+				if( DAW_LIKELY( not m_parse_state.empty( ) ) ) {
+					m_parse_state.trim_left( );
+				}
 			}
 
 			/// @brief Construct from char const *, char const *
 			explicit constexpr basic_json_value( char const *first DAW_LIFETIME_BOUND,
 			                                     char const *last )
 			  : m_parse_state( first, last ) {
-				m_parse_state.trim_left( );
+				if( DAW_LIKELY( not m_parse_state.empty( ) ) ) {
+					m_parse_state.trim_left( );
+				}
 			}
 
 			/// @brief Get a copy of the underlying parse state
@@ -415,8 +424,10 @@ namespace daw::json {
 				                               m_parse_state.first,
 				                               m_parse_state.last,
 				                               m_parse_state.get_allocator( ) );
-				parse_state.remove_prefix( );
-				parse_state.trim_left( );
+				if( DAW_LIKELY( not m_parse_state.empty( ) ) ) {
+					parse_state.remove_prefix( );
+					parse_state.trim_left( );
+				}
 				return iterator( parse_state );
 			}
 
