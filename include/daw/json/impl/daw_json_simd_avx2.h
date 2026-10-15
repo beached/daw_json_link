@@ -106,16 +106,22 @@ namespace daw::simd_impl::avx2 {
 
 	struct flag_default_t {};
 	struct flag_convert_t {};
+	struct flag_aligned_t {};
 
 	inline constexpr flag_default_t flag_default = { };
 	inline constexpr flag_convert_t flag_convert = { };
+	inline constexpr flag_aligned_t flag_aligned = { };
 
 	template<typename Simd, typename Range, typename Flag = flag_default_t>
 	[[nodiscard]] inline Simd unchecked_load( Range values,
 	                                          Flag = flag_default ) {
 		static_assert( Simd::size( ) == 32 );
-		return Simd( _mm256_loadu_si256(
-		  reinterpret_cast<__m256i const *>( values.data( ) ) ) );
+		auto const *ptr = reinterpret_cast<__m256i const *>( values.data( ) );
+		if constexpr( std::is_same_v<Flag, flag_aligned_t> ) {
+			return Simd( _mm256_load_si256( ptr ) );
+		} else {
+			return Simd( _mm256_loadu_si256( ptr ) );
+		}
 	}
 
 	template<typename Simd, typename Range, typename Flag = flag_default_t>

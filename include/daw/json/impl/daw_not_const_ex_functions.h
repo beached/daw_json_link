@@ -33,12 +33,6 @@
 #include <cstring>
 #include <type_traits>
 
-#if defined( DAW_JSON_HAS_SIMD ) and                                      \
-  ( defined( __i386__ ) or defined( __x86_64__ ) or defined( _M_IX86 ) or \
-    defined( _M_X64 ) )
-#define DAW_JSON_HAS_INTEL_STRING_SIMD 1
-#endif
-
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
@@ -54,24 +48,7 @@ namespace daw::json {
 				return *( ptr - 2 ) != '\\';
 			}
 
-#if defined( DAW_JSON_HAS_INTEL_STRING_SIMD )
-			struct key_table_t {
-				alignas( 16 ) bool values[256] = { };
-
-				constexpr bool operator[]( char idx ) const {
-					return values[static_cast<unsigned char>( idx )];
-				}
-			};
-
-			template<char... keys>
-			static constexpr inline key_table_t key_table =
-			  [] DAW_CPP23_STATIC_CALL_OP {
-				  auto result = key_table_t{ };
-				  (void)( daw::nsc_or(
-				    ( result.values[static_cast<unsigned char>( keys )] = true )... ) );
-				  return result;
-			  }( );
-
+#if defined( DAW_JSON_HAS_SIMD )
 #if not defined( DAW_HAS_MSVC_LIKE )
 			constexpr
 #else
@@ -113,12 +90,18 @@ namespace daw::json {
 
 			using char_simd_t = daw::simd::vec<char>;
 			static constexpr std::size_t char_simd_size = char_simd_t::size( );
-			static_assert( char_simd_size <= 64 );
+			static_assert( char_simd_size <= 64 and
+			                 ( char_simd_size & ( char_simd_size - 1U ) ) == 0,
+			               "Block size must be a power of two no larger than 64" );
 
-			DAW_ATTRIB_INLINE char_simd_t
-			load_char_data_simd( daw::not_null<char const *> ptr ) {
-				return daw::simd::unchecked_load<char_simd_t>(
-				  daw::span( ptr.get( ), char_simd_size ) );
+			/// The scans below load whole aligned blocks.  The first block starts at
+			/// first rounded down with the bits before first masked off, and the
+			/// scan stops at the first block that starts at or after last, so every
+			/// block holds at least one byte of [first, last).  Hits at or after
+			/// last are clamped to last.
+			[[nodiscard]] DAW_ATTRIB_INLINE std::uintptr_t
+			align_down_to_block( std::uintptr_t addr ) {
+				return addr & ~std::uintptr_t{ char_simd_size - 1U };
 			}
 
 			template<char k>
@@ -130,30 +113,51 @@ namespace daw::json {
 			DAW_ATTRIB_INLINE daw::not_null<char const *>
 			mem_move_to_next_of_simd( daw::not_null<char const *> first,
 			                          daw::not_null<char const *> const last ) {
-
-				while( last - first >= static_cast<std::ptrdiff_t>( char_simd_size ) ) {
-					auto const val0 = load_char_data_simd( first );
-					auto const key_positions = ( mem_find_eq_simd<keys>( val0 ) | ... );
-					if( key_positions != 0 ) {
-						return first + find_lsb_set( key_positions );
-					}
-					first += char_simd_size;
-				}
-				auto const max_pos = last - first;
-				if( max_pos == 0 ) {
+				if( first >= last ) {
 					return last;
 				}
-				auto const val1 = daw::simd::partial_load<char_simd_t>(
-				  daw::span( first.get( ), static_cast<std::size_t>( max_pos ) ) );
-				auto const key_positions = ( mem_find_eq_simd<keys>( val1 ) | ... );
-				if( key_positions != 0 ) {
-					auto const offset = find_lsb_set( key_positions );
-					if( offset >= max_pos ) {
+				auto const first_addr = reinterpret_cast<std::uintptr_t>( first.get( ) );
+				auto const last_addr = reinterpret_cast<std::uintptr_t>( last.get( ) );
+				auto const find_keys = []( char_simd_t block ) {
+					return ( mem_find_eq_simd<keys>( block ) | ... );
+				};
+				std::uintptr_t block_addr;
+				std::uint64_t key_positions;
+				if( last_addr - first_addr >= char_simd_size ) {
+					// Most strings are short, one unaligned load usually covers them
+					auto const key_positions0 =
+					  find_keys( daw::simd::unchecked_load<char_simd_t>(
+					    daw::span( first.get( ), char_simd_size ) ) );
+					if( key_positions0 != 0 ) {
+						return first + find_lsb_set( key_positions0 );
+					}
+					block_addr = align_down_to_block( first_addr + char_simd_size );
+					key_positions = ~std::uint64_t{ 0 }
+					                << ( first_addr + char_simd_size - block_addr );
+				} else {
+					block_addr = align_down_to_block( first_addr );
+					key_positions = ~std::uint64_t{ 0 } << ( first_addr - block_addr );
+				}
+				if( block_addr >= last_addr ) {
+					return last;
+				}
+				key_positions &= find_keys(
+				  load_aligned_block<char_simd_t>( block_addr, first_addr, last_addr ) );
+				while( key_positions == 0 ) {
+					block_addr += char_simd_size;
+					if( block_addr >= last_addr ) {
 						return last;
 					}
-					return first + offset;
+					key_positions = find_keys(
+					  load_aligned_block<char_simd_t>( block_addr, first_addr, last_addr ) );
 				}
-				return last;
+				auto const hit_addr =
+				  block_addr +
+				  static_cast<std::uintptr_t>( find_lsb_set( key_positions ) );
+				if( hit_addr >= last_addr ) {
+					return last;
+				}
+				return first + static_cast<std::ptrdiff_t>( hit_addr - first_addr );
 			}
 
 			// Adapted from
@@ -181,63 +185,96 @@ namespace daw::json {
 				return escaped;
 			}
 
-			DAW_ATTRIB_INLINE constexpr std::uint64_t
-			prefix_xor_simd( std::uint64_t bitmask ) {
-				bitmask ^= bitmask << 1U;
-				bitmask ^= bitmask << 2U;
-				bitmask ^= bitmask << 4U;
-				bitmask ^= bitmask << 8U;
-				bitmask ^= bitmask << 16U;
-				bitmask ^= bitmask << 32U;
-				return bitmask;
+			/// Find the closing quote of a string whose contents start at first.
+			/// first_escape, when not null and still negative, is set to the offset
+			/// from first of the first backslash before the closing quote.
+			/// When there is room the first block is an unaligned load at first, as
+			/// most strings are short.  The aligned blocks after it may overlap it,
+			/// the overlap is masked off and the escape carry is moved to the first
+			/// byte that was not scanned yet.
+			template<bool is_unchecked_input>
+			inline daw::not_null<char const *>
+			mem_skip_until_end_of_string_simd( daw::not_null<char const *> first,
+			                                   daw::not_null<char const *> const last,
+			                                   std::ptrdiff_t *first_escape ) {
+				if( first >= last ) {
+					return last;
+				}
+				auto const first_addr = reinterpret_cast<std::uintptr_t>( first.get( ) );
+				auto const last_addr = reinterpret_cast<std::uintptr_t>( last.get( ) );
+				std::uint64_t prev_escapes = 0;
+				char const *result = nullptr;
+				// Scan one block.  Bits below lead_shift are not part of the string
+				// or were already scanned.  Returns true when the scan is done
+				auto const scan = [&]( char_simd_t block, std::uintptr_t block_addr,
+				                       unsigned lead_shift ) {
+					auto const lead_mask = ~std::uint64_t{ 0 } << lead_shift;
+					auto const backslashes = mem_find_eq_simd<'\\'>( block ) & lead_mask;
+					prev_escapes <<= lead_shift;
+					auto const escaped =
+					  find_escaped_branchless( prev_escapes, backslashes );
+					auto const quotes =
+					  mem_find_eq_simd<'"'>( block ) & lead_mask & ~escaped;
+					auto relevant_backslashes = backslashes;
+					if( quotes != 0 ) {
+						auto const quote_pos = find_lsb_set( quotes );
+						relevant_backslashes &=
+						  ( std::uint64_t{ 1 } << static_cast<unsigned>( quote_pos ) ) - 1U;
+					}
+					if( first_escape != nullptr and *first_escape < 0 and
+					    relevant_backslashes != 0 ) {
+						auto const escape_addr =
+						  block_addr + static_cast<std::uintptr_t>(
+						                 find_lsb_set( relevant_backslashes ) );
+						if( escape_addr < last_addr ) {
+							*first_escape =
+							  static_cast<std::ptrdiff_t>( escape_addr - first_addr );
+						}
+					}
+					if( quotes == 0 ) {
+						return false;
+					}
+					auto const quote_addr =
+					  block_addr + static_cast<std::uintptr_t>( find_lsb_set( quotes ) );
+					result = quote_addr >= last_addr
+					           ? last.get( )
+					           : first.get( ) +
+					               static_cast<std::ptrdiff_t>( quote_addr - first_addr );
+					return true;
+				};
+				std::uintptr_t block_addr;
+				unsigned lead_shift;
+				if( last_addr - first_addr >= char_simd_size ) {
+					if( scan( daw::simd::unchecked_load<char_simd_t>(
+					            daw::span( first.get( ), char_simd_size ) ),
+					          first_addr, 0 ) ) {
+						return result;
+					}
+					block_addr = align_down_to_block( first_addr + char_simd_size );
+					lead_shift = static_cast<unsigned>( first_addr + char_simd_size -
+					                                    block_addr );
+				} else {
+					block_addr = align_down_to_block( first_addr );
+					lead_shift = static_cast<unsigned>( first_addr - block_addr );
+				}
+				while( block_addr < last_addr ) {
+					if( scan(
+					      load_aligned_block<char_simd_t>( block_addr, first_addr, last_addr ),
+					      block_addr, lead_shift ) ) {
+						return result;
+					}
+					block_addr += char_simd_size;
+					lead_shift = 0;
+				}
+				return last;
 			}
 
 			template<bool is_unchecked_input>
-			inline daw::not_null<char const *> mem_skip_until_end_of_string_simd(
-			  daw::not_null<char const *> first,
-			  daw::not_null<char const *> const last ) {
-				std::uint64_t prev_escapes = 0;
-				while( last - first >= static_cast<std::ptrdiff_t>( char_simd_size ) ) {
-					auto const val0 = load_char_data_simd( first );
-					std::uint64_t const backslashes = mem_find_eq_simd<'\\'>( val0 );
-					std::uint64_t const escaped =
-					  find_escaped_branchless( prev_escapes, backslashes );
-					std::uint64_t const quotes =
-					  mem_find_eq_simd<'"'>( val0 ) & ( ~escaped );
-					std::uint64_t const in_string = prefix_xor_simd( quotes );
-					if( in_string != 0 ) {
-						first += find_lsb_set( in_string );
-						return first;
-					}
-					first += char_simd_size;
-				}
-				if constexpr( is_unchecked_input ) {
-					while( *first != '"' ) {
-						while( not key_table<'"', '\\'>[*first] ) {
-							++first;
-						}
-						if( *first == '"' ) {
-							return first;
-						}
-						first += 2;
-					}
-				} else {
-					while( DAW_LIKELY( first < last ) and *first != '"' ) {
-						while( DAW_LIKELY( first < last ) and
-						       not key_table<'"', '\\'>[*first] ) {
-							++first;
-						}
-						if( first >= last ) {
-							return last;
-						}
-						if( *first == '"' ) {
-							return first;
-						}
-						first += 2;
-					}
-				}
-				return ( is_unchecked_input or DAW_LIKELY( first < last ) ) ? first
-				                                                            : last;
+			inline daw::not_null<char const *>
+			mem_skip_until_end_of_string_simd( daw::not_null<char const *> first,
+			                                   daw::not_null<char const *> const last ) {
+				return mem_skip_until_end_of_string_simd<is_unchecked_input>(
+				  first, last, nullptr );
 			}
 
 			template<bool is_unchecked_input>
@@ -245,67 +282,8 @@ namespace daw::json {
 			mem_skip_until_end_of_string_simd( daw::not_null<char const *> first,
 			                                   daw::not_null<char const *> const last,
 			                                   std::ptrdiff_t &first_escape ) {
-				auto const first_first = first;
-				std::uint64_t prev_escapes = 0;
-				while( last - first >= static_cast<std::ptrdiff_t>( char_simd_size ) ) {
-					auto const val0 = load_char_data_simd( first );
-					std::uint64_t const backslashes = mem_find_eq_simd<'\\'>( val0 );
-					std::uint64_t const escaped =
-					  find_escaped_branchless( prev_escapes, backslashes );
-					std::uint64_t const quotes =
-					  mem_find_eq_simd<'"'>( val0 ) & ( ~escaped );
-					std::uint64_t const in_string = prefix_xor_simd( quotes );
-					auto relevant_backslashes = backslashes;
-					if( in_string != 0 ) {
-						auto const quote_pos = find_lsb_set( in_string );
-						relevant_backslashes &=
-						  ( std::uint64_t{ 1 } << static_cast<unsigned>( quote_pos ) ) - 1U;
-						if( ( relevant_backslashes != 0 ) & ( first_escape < 0 ) ) {
-							first_escape =
-							  ( first - first_first ) + find_lsb_set( relevant_backslashes );
-						}
-						first += quote_pos;
-						return first;
-					}
-					if( ( relevant_backslashes != 0 ) & ( first_escape < 0 ) ) {
-						first_escape =
-						  ( first - first_first ) + find_lsb_set( relevant_backslashes );
-					}
-					first += char_simd_size;
-				}
-				if constexpr( is_unchecked_input ) {
-					while( *first != '"' ) {
-						while( not key_table<'"', '\\'>[*first] ) {
-							++first;
-						}
-						if( *first == '"' ) {
-							return first;
-						}
-						if( first_escape < 0 ) {
-							first_escape = first - first_first;
-						}
-						first += 2;
-					}
-				} else {
-					while( DAW_LIKELY( first < last ) and *first != '"' ) {
-						while( DAW_LIKELY( first < last ) and
-						       not key_table<'"', '\\'>[*first] ) {
-							++first;
-						}
-						if( first >= last ) {
-							return last;
-						}
-						if( *first == '"' ) {
-							return first;
-						}
-						if( first_escape < 0 ) {
-							first_escape = first - first_first;
-						}
-						first += 2;
-					}
-				}
-				return ( is_unchecked_input or DAW_LIKELY( first < last ) ) ? first
-				                                                            : last;
+				return mem_skip_until_end_of_string_simd<is_unchecked_input>(
+				  first, last, &first_escape );
 			}
 
 #endif
@@ -341,8 +319,8 @@ namespace daw::json {
 			mem_move_to_next_of( daw::not_null<char const *> first,
 			                     daw::not_null<char const *> last ) {
 
-#if defined( DAW_JSON_HAS_INTEL_STRING_SIMD )
-				if( not std::is_same_v<runtime_exec_tag, ExecTag> ) {
+#if defined( DAW_JSON_HAS_SIMD )
+				if( use_simd_exec_mode<ExecTag>( ) ) {
 					return mem_move_to_next_of_simd<is_unchecked_input, keys...>( first,
 					                                                              last );
 				}
@@ -435,8 +413,8 @@ namespace daw::json {
 					return mem_skip_until_end_of_string_constexpr<is_unchecked_input>(
 					  first, last );
 				}
-#if defined( DAW_JSON_HAS_INTEL_STRING_SIMD )
-				if( not std::is_same_v<runtime_exec_tag, ExecTag> ) {
+#if defined( DAW_JSON_HAS_SIMD )
+				if( use_simd_exec_mode<ExecTag>( ) ) {
 					return mem_skip_until_end_of_string_simd<is_unchecked_input>( first,
 					                                                              last );
 				}
@@ -486,8 +464,8 @@ namespace daw::json {
 			mem_skip_until_end_of_string( daw::not_null<char const *> first,
 			                              daw::not_null<char const *> const last,
 			                              std::ptrdiff_t &first_escape ) {
-#if defined( DAW_JSON_HAS_INTEL_STRING_SIMD )
-				if( not std::is_same_v<runtime_exec_tag, ExecTag> ) {
+#if defined( DAW_JSON_HAS_SIMD )
+				if( use_simd_exec_mode<ExecTag>( ) ) {
 					return mem_skip_until_end_of_string_simd<is_unchecked_input>(
 					  first, last, first_escape );
 				}
@@ -498,7 +476,3 @@ namespace daw::json {
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
-
-#if defined( DAW_JSON_HAS_INTEL_STRING_SIMD )
-#undef DAW_JSON_HAS_INTEL_STRING_SIMD
-#endif

@@ -149,7 +149,10 @@ namespace daw::json {
 					auto const last =
 					  daw::not_null<char const *>( parse_state.class_last );
 
-					if( not json_details::use_constexpr_exec_mode<
+					// The SIMD scan does not validate control characters or escapes,
+					// strict parsing keeps the validating loops below
+					if( not ParseState::exclude_special_escapes and
+					    not json_details::use_constexpr_exec_mode<
 					      typename ParseState::exec_tag_t>( ) ) {
 						first =
 						  mem_skip_until_end_of_string<false,

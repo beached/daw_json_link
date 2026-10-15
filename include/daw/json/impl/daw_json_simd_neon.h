@@ -132,16 +132,24 @@ namespace daw::simd_impl::neon {
 
 	struct flag_default_t {};
 	struct flag_convert_t {};
+	struct flag_aligned_t {};
 
 	inline constexpr flag_default_t flag_default = { };
 	inline constexpr flag_convert_t flag_convert = { };
+	inline constexpr flag_aligned_t flag_aligned = { };
 
 	template<typename Simd, typename Range, typename Flag = flag_default_t>
 	[[nodiscard]] inline Simd unchecked_load( Range values,
 	                                          Flag = flag_default ) {
 		static_assert( Simd::size( ) == 16 );
-		return Simd(
-		  vld1q_u8( reinterpret_cast<std::uint8_t const *>( values.data( ) ) ) );
+		auto const *ptr = reinterpret_cast<std::uint8_t const *>( values.data( ) );
+#if DAW_HAS_BUILTIN( __builtin_assume_aligned )
+		if constexpr( std::is_same_v<Flag, flag_aligned_t> ) {
+			ptr = static_cast<std::uint8_t const *>(
+			  __builtin_assume_aligned( ptr, 16 ) );
+		}
+#endif
+		return Simd( vld1q_u8( ptr ) );
 	}
 
 	template<typename Simd, typename Range, typename Flag = flag_default_t>

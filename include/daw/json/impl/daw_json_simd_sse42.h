@@ -104,16 +104,22 @@ namespace daw::simd_impl::sse42 {
 
 	struct flag_default_t {};
 	struct flag_convert_t {};
+	struct flag_aligned_t {};
 
 	inline constexpr flag_default_t flag_default = { };
 	inline constexpr flag_convert_t flag_convert = { };
+	inline constexpr flag_aligned_t flag_aligned = { };
 
 	template<typename Simd, typename Range, typename Flag = flag_default_t>
 	[[nodiscard]] inline Simd unchecked_load( Range values,
 	                                          Flag = flag_default ) {
 		static_assert( Simd::size( ) == 16 );
-		return Simd( _mm_loadu_si128(
-		  reinterpret_cast<__m128i const *>( values.data( ) ) ) );
+		auto const *ptr = reinterpret_cast<__m128i const *>( values.data( ) );
+		if constexpr( std::is_same_v<Flag, flag_aligned_t> ) {
+			return Simd( _mm_load_si128( ptr ) );
+		} else {
+			return Simd( _mm_loadu_si128( ptr ) );
+		}
 	}
 
 	template<typename Simd, typename Range, typename Flag = flag_default_t>

@@ -13,6 +13,7 @@
 #include "daw/json/daw_json_data_contract.h"
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_iso8601_utils.h"
+#include "daw/json/impl/daw_json_serialize_string_simd.h"
 #include "daw/json/impl/daw_json_serialize_options_impl.h"
 #include "daw/json/impl/daw_json_serialize_policy.h"
 #include "daw/json/impl/daw_json_value.h"
@@ -329,6 +330,69 @@ namespace daw::json {
 				return it;
 			}
 
+#if defined( DAW_JSON_HAS_SERIALIZE_STRING_SIMD )
+			/// Escape [first, last) for output that allows 8-bit strings, using a
+			/// SIMD scan to find each byte that needs work.  Runs between them are written as one block.  ASCII escapes
+			/// and non-ASCII sequences go through the same codepoint path as the
+			/// scalar code so the output is unchanged.
+			template<typename WritableType>
+			[[nodiscard]] DAW_ATTRIB_NOINLINE static WritableType
+			copy_escaped_string_simd( WritableType it, char const *first,
+			                          char const *const last ) {
+				using it_t = utf8::unchecked::iterator<char const *>;
+				if( first >= last ) {
+					return it;
+				}
+				auto scanner =
+				  json_details::serialize_string_simd::escape_scanner( first, last );
+				while( first < last ) {
+					auto const hit = scanner.next( first );
+					if( hit != first ) {
+						it.write( daw::string_view(
+						  first, static_cast<std::size_t>( hit - first ) ) );
+					}
+					if( hit == last ) {
+						break;
+					}
+					auto const c = static_cast<unsigned char>( *hit );
+					if( c < 0x80U ) {
+						it = escape_codepoint_to_iterator<false>( it, c );
+						first = hit + 1;
+						continue;
+					}
+					// Text with non-ASCII characters usually has many of them.  Rather
+					// than a scan per character, finish the block one codepoint at a
+					// time like the scalar code does, then resume scanning.
+					constexpr auto block_mask = static_cast<std::uintptr_t>(
+					  json_details::serialize_string_simd::block_size - 1U );
+					auto const block_end_addr =
+					  ( reinterpret_cast<std::uintptr_t>( hit ) | block_mask ) + 1U;
+					auto const block_end =
+					  block_end_addr < reinterpret_cast<std::uintptr_t>( last )
+					    ? hit + ( block_end_addr - reinterpret_cast<std::uintptr_t>( hit ) )
+					    : last;
+					auto cp_first = it_t( hit );
+					while( cp_first.base( ) < block_end ) {
+						auto const cp_start = cp_first;
+						auto const cp = *cp_first++;
+						if( cp_start == cp_first ) {
+							// Not a valid unicode cp
+							if constexpr( WritableType::restricted_string_output ==
+							              options::RestrictedStringOutput::
+							                ErrorInvalidUTF8 ) {
+								daw_json_error( true, ErrorReason::InvalidStringHighASCII );
+							} else {
+								cp_first = it_t( std::next( cp_first.base( ) ) );
+							}
+						}
+						it = escape_codepoint_to_iterator<false>( it, cp );
+					}
+					first = cp_first.base( );
+				}
+				return it;
+			}
+#endif
+
 			template<
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
@@ -348,6 +412,18 @@ namespace daw::json {
 					              json_details::is_string_view_like_v<Container> ) {
 						auto const *const data = std::data( container );
 						auto const size = std::size( container );
+#if defined( DAW_JSON_HAS_SERIALIZE_STRING_SIMD )
+						// Restricted 7-bit output is uncommon, it keeps the scalar code
+						if constexpr( not restrict_high::value and
+						              std::is_same_v<daw::remove_cvref_t<decltype( *data )>,
+						                             char> ) {
+							// Strings shorter than a block are faster with the scalar code
+							if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) and
+							    size >= json_details::serialize_string_simd::block_size ) {
+								return copy_escaped_string_simd( it, data, data + size );
+							}
+						}
+#endif
 						bool is_ascii = true;
 						for( std::size_t n = 0; n < size; ++n ) {
 							if( static_cast<unsigned char>( data[n] ) >= 0x80U ) {

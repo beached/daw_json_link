@@ -1362,6 +1362,18 @@ add_test( NAME json_string_insitu_test COMMAND json_string_insitu_test )
 add_dependencies( ci_tests json_string_insitu_test )
 add_dependencies( full json_string_insitu_test )
 
+add_executable( serialize_string_simd_test src/serialize_string_simd_test.cpp )
+target_link_libraries( serialize_string_simd_test PRIVATE json_test )
+add_test( NAME serialize_string_simd_test COMMAND serialize_string_simd_test )
+add_dependencies( ci_tests serialize_string_simd_test )
+add_dependencies( full serialize_string_simd_test )
+
+add_executable( parse_string_simd_test src/parse_string_simd_test.cpp )
+target_link_libraries( parse_string_simd_test PRIVATE json_test )
+add_test( NAME parse_string_simd_test COMMAND parse_string_simd_test )
+add_dependencies( ci_tests parse_string_simd_test )
+add_dependencies( full parse_string_simd_test )
+
 add_executable( daw_json_writer_mapping_test
 								src/daw_json_writer_mapping_test.cpp )
 target_link_libraries( daw_json_writer_mapping_test json_test )
