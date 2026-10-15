@@ -758,6 +758,12 @@ add_test( NAME test_stateful_json_value_test COMMAND test_stateful_json_value ./
 add_dependencies( ci_tests test_stateful_json_value )
 add_dependencies( full test_stateful_json_value )
 
+add_executable( test_empty_json_value src/test_empty_json_value.cpp )
+target_link_libraries( test_empty_json_value PRIVATE json_test )
+add_test( NAME test_empty_json_value_test COMMAND test_empty_json_value )
+add_dependencies( ci_tests test_empty_json_value )
+add_dependencies( full test_empty_json_value )
+
 
 add_executable( test_details_parse_real src/test_details_parse_real.cpp )
 target_link_libraries( test_details_parse_real PRIVATE json_test )
