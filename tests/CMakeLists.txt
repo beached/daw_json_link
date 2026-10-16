@@ -1260,6 +1260,12 @@ add_test( NAME issue_493_test COMMAND issue_493_test WORKING_DIRECTORY "${CMAKE_
 add_dependencies( ci_tests issue_493_test )
 add_dependencies( full issue_493_test )
 
+add_executable( issue_496_test src/issue_496_test.cpp )
+target_link_libraries( issue_496_test PRIVATE json_test )
+add_test( NAME issue_496_test COMMAND issue_496_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests issue_496_test )
+add_dependencies( full issue_496_test )
+
 add_executable( custom_optional_number_test src/custom_optional_number_test.cpp )
 target_link_libraries( custom_optional_number_test PRIVATE json_test )
 add_test( NAME custom_optional_number_test COMMAND custom_optional_number_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )

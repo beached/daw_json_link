@@ -13,13 +13,12 @@
 #include "daw/json/daw_json_data_contract.h"
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_parse_iso8601_utils.h"
-#include "daw/json/impl/daw_json_serialize_string_simd.h"
 #include "daw/json/impl/daw_json_serialize_options_impl.h"
 #include "daw/json/impl/daw_json_serialize_policy.h"
+#include "daw/json/impl/daw_json_serialize_string_simd.h"
 #include "daw/json/impl/daw_json_value.h"
 
 #include <daw/daw_algorithm.h>
-#include <daw/traits/daw_traits_is_explicitly_convertible.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_callable.h>
 #include <daw/daw_constant.h>
@@ -33,6 +32,7 @@
 #include <daw/daw_utility.h>
 #include <daw/daw_visit.h>
 #include <daw/third_party/dragonbox/dragonbox.h>
+#include <daw/traits/daw_traits_is_explicitly_convertible.h>
 #include <daw/utf8/unchecked.h>
 
 #include <array>
@@ -332,9 +332,10 @@ namespace daw::json {
 
 #if defined( DAW_JSON_HAS_SERIALIZE_STRING_SIMD )
 			/// Escape [first, last) for output that allows 8-bit strings, using a
-			/// SIMD scan to find each byte that needs work.  Runs between them are written as one block.  ASCII escapes
-			/// and non-ASCII sequences go through the same codepoint path as the
-			/// scalar code so the output is unchanged.
+			/// SIMD scan to find each byte that needs work.  Runs between them are
+			/// written as one block.  ASCII escapes and non-ASCII sequences go
+			/// through the same codepoint path as the scalar code so the output is
+			/// unchanged.
 			template<typename WritableType>
 			[[nodiscard]] DAW_ATTRIB_NOINLINE static WritableType
 			copy_escaped_string_simd( WritableType it, char const *first,
@@ -369,7 +370,8 @@ namespace daw::json {
 					  ( reinterpret_cast<std::uintptr_t>( hit ) | block_mask ) + 1U;
 					auto const block_end =
 					  block_end_addr < reinterpret_cast<std::uintptr_t>( last )
-					    ? hit + ( block_end_addr - reinterpret_cast<std::uintptr_t>( hit ) )
+					    ? hit +
+					        ( block_end_addr - reinterpret_cast<std::uintptr_t>( hit ) )
 					    : last;
 					auto cp_first = it_t( hit );
 					while( cp_first.base( ) < block_end ) {
@@ -579,6 +581,18 @@ namespace daw::json {
 		} // namespace utils
 
 		namespace json_details {
+			template<typename Writer, typename Name>
+			DAW_ATTRIB_INLINE constexpr void encode_name( Writer &it,
+			                                              Name const &name ) {
+				if constexpr( Writer::allow_escaped_names ) {
+					it.put( '"' );
+					it = utils::copy_to_iterator<true>( it, name );
+					it.write( "\":", it.space );
+				} else {
+					it.write( '"', name, "\":", it.space );
+				}
+			}
+
 			template<typename JsonMember, JsonParseTypes Tag, typename WriteableType,
 			         typename parse_to_t>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr WriteableType
@@ -1338,7 +1352,7 @@ namespace daw::json {
 					it.add_indent( );
 					it.next_member( );
 					// Append Key Name
-					it.write( "\"", key_t::name, "\":", it.space );
+					it = encode_name( it, key_t::name );
 					// Append Key Value
 					it = to_daw_json_string<key_t, key_t::expected_type>(
 					  it, json_get_key( *first ) );
@@ -1346,7 +1360,7 @@ namespace daw::json {
 					it.put( ',' );
 					// Append Value Name
 					it.next_member( );
-					it.write( "\"", value_t::name, "\":", it.space );
+					it = encode_name( it, value_t::name );
 					// Append Value Value
 					it = to_daw_json_string<value_t, value_t::expected_type>(
 					  it, json_get_value( *first ) );
@@ -1659,7 +1673,7 @@ namespace daw::json {
 					}
 					it.next_member( );
 					is_first = false;
-					it.write( '"', dependent_member::name, "\":", it.space );
+					encode_name( it, dependent_member::name );
 
 					if constexpr( has_switcher_v<base_member_t> ) {
 						it = member_to_string<dependent_member>(
@@ -1708,7 +1722,7 @@ namespace daw::json {
 				}
 				it.next_member( );
 				is_first = false;
-				it.write( '"', JsonMember::name, "\":", it.space );
+				encode_name( it, JsonMember::name );
 
 				it = member_to_string<JsonMember>( std::move( it ), get<pos>( tp ) );
 			}

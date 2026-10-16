@@ -78,7 +78,7 @@ namespace daw::json {
 			}
 
 			DAW_ATTRIB_INLINE explicit constexpr serialization_policy(
-			  WritableType & writable DAW_LIFETIME_BOUND )
+			  WritableType &writable DAW_LIFETIME_BOUND )
 			  : m_writable( std::addressof( writable ) ) {}
 
 			static constexpr options::SerializationFormat serialization_format =
@@ -100,6 +100,10 @@ namespace daw::json {
 			static constexpr options::OutputTrailingComma output_trailing_comma =
 			  json_details::serialization::get_bits_for<options::OutputTrailingComma>(
 			    PolicyFlags );
+
+			static constexpr bool allow_escaped_names =
+			  json_details::serialization::get_bits_for<options::AllowEscapedNames>(
+			    PolicyFlags ) == options::AllowEscapedNames::yes;
 
 			DAW_ATTRIB_INLINE constexpr void add_indent( ) {
 				if constexpr( serialization_format !=

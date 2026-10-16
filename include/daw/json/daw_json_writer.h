@@ -310,7 +310,7 @@ namespace daw::json {
 				  ErrorReason::OutputError );
 
 				write_item_prefix( );
-				m_writer.write( "\"", name, "\":", m_writer.space );
+				json_details::encode_name( m_writer, name );
 				m_is_key_written = true;
 			}
 

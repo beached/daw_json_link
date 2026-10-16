@@ -26,7 +26,7 @@ namespace daw::json {
 			using policy_list = typename option_list_impl<
 			  options::SerializationFormat, options::IndentationType,
 			  options::RestrictedStringOutput, options::NewLineDelimiter,
-			  options::OutputTrailingComma>::type;
+			  options::OutputTrailingComma, options::AllowEscapedNames>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =

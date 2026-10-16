@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include "daw_json_option_bits.h"
+#include "daw_json_parse_options_impl.h"
 #include <daw/json/daw_json_serialize_options.h>
 
 namespace daw::json {
@@ -82,6 +83,10 @@ namespace daw::json {
 			inline constexpr auto
 			  default_json_option_value<options::OutputTrailingComma> =
 			    options::OutputTrailingComma::No;
+
+			template<>
+			inline constexpr bool is_output_option_v<options::AllowEscapedNames> =
+			  true;
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
