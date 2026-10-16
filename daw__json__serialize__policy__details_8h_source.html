@@ -111,7 +111,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>      <span class="keyword">using </span>policy_list = <span class="keyword">typename</span> option_list_impl&lt;</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        options::SerializationFormat, options::IndentationType,</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        options::RestrictedStringOutput, options::NewLineDelimiter,</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        options::OutputTrailingComma&gt;::type;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        options::OutputTrailingComma, options::AllowEscapedNames&gt;::type;</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Policy, <span class="keyword">typename</span> Policies&gt;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> basic_policy_bits_start =</div>

@@ -82,7 +82,7 @@ $(function() {
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Type   </th><th class="markdownTableHeadNone">Mapped To   </th><th class="markdownTableHeadNone">Notes    </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">std:string_view   </td><td class="markdownTableBodyNone">json_string_raw   </td><td class="markdownTableBodyNone"></td></tr>
+<td class="markdownTableBodyNone">std:string_view   </td><td class="markdownTableBodyNone">json_string_raw   </td><td class="markdownTableBodyNone">Escaped when serialized without a contract, see below    </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">std::string   </td><td class="markdownTableBodyNone">json_string   </td><td class="markdownTableBodyNone"></td></tr>
 <tr class="markdownTableRowOdd">
@@ -103,8 +103,28 @@ $(function() {
 <td class="markdownTableBodyNone">Empty default-constructible types   </td><td class="markdownTableBodyNone">Empty JSON object   </td><td class="markdownTableBodyNone">Used only when no explicit mapping exists; serializes as <code>{}</code>   </td></tr>
 </table>
 <ul>
-<li>Containers - map to json_array with the element type as the detected type of the value_type. Must have the methods begin(), end(), type alias value_type, and can be constructed with two iterators. Same Iterator requirements as std:: vector's two iterator constructor. </li>
+<li>Containers - map to json_array with the element type as the detected type of the value_type. Must have the methods begin(), end(), type alias value_type, and can be constructed with two iterators. Same Iterator requirements as std:: vector's two iterator constructor.</li>
 </ul>
+<h2><a class="anchor" id="autotoc_md78"></a>
+Serialization without a contract</h2>
+<p><code>to_json</code>, <code>to_json_array</code>, and <code>json_writer</code> never parse the value they are given, so a raw string mapping would write unescaped text. When they deduce a mapping, either because no mapping type was given or because a C++ type was given in its place, string-like types are mapped to escaped strings instead. This also applies to the elements of deduced containers, key/value types, nullable types, and tuples. An explicit JSON mapping type, such as <code>json_string_raw_no_name&lt;daw::string_view&gt;</code>, is used as given.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Type   </th><th class="markdownTableHeadNone">In a <code>json_data_contract</code>   </th><th class="markdownTableHeadNone"><code>to_json</code>, <code>to_json_array</code>, <code>json_writer</code>    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>std::string_view</code>, <code>daw::string_view</code>   </td><td class="markdownTableBodyNone"><code>json_string_raw</code>   </td><td class="markdownTableBodyNone">escaped string    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>std::string</code>   </td><td class="markdownTableBodyNone"><code>json_string</code>   </td><td class="markdownTableBodyNone">escaped string    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>char</code>   </td><td class="markdownTableBodyNone"><code>json_number</code>   </td><td class="markdownTableBodyNone">one character escaped string    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>signed char</code>, <code>unsigned char</code>   </td><td class="markdownTableBodyNone"><code>json_number</code>   </td><td class="markdownTableBodyNone"><code>json_number</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>char[N]</code>, <code>char const[N]</code>   </td><td class="markdownTableBodyNone">not deduced   </td><td class="markdownTableBodyNone">escaped string of length <code>N - 1</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>char *</code>, <code>char const *</code>   </td><td class="markdownTableBodyNone">nullable <code>char</code>   </td><td class="markdownTableBodyNone">escaped string, <code>nullptr</code> is <code>null</code>; inside a container, nullable <code>char</code>   </td></tr>
+</table>
+<p>Character pointers are converted where the value is passed to <code>to_json</code> or the writer, not by deduction, so they are only treated as strings when passed directly. See <a href="strings.md#serializing-strings-without-a-mapping">Strings</a> for examples and their output. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

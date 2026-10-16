@@ -297,7 +297,42 @@ Recursive arrays</h1>
 </div><!-- fragment --><p>The empty children array supplies the recursion's base case, so no nullable or pointer wrapper is required. Parsing and serialization use the ordinary <code>std::vector&lt;TreeNode&gt;</code> value. As with any nested JSON representation, the structure must be acyclic.</p>
 <h2><a class="anchor" id="autotoc_md9"></a>
 Pointer like arrays</h2>
-<p>For dealing with pointer like arrays(T *, has element_type type alias) see <a href="../../tests/src/int_ptr_test.cpp">int_ptr_test</a> </p>
+<p>For dealing with pointer like arrays(T *, has element_type type alias) see <a href="../../tests/src/int_ptr_test.cpp">int_ptr_test</a></p>
+<h1><a class="anchor" id="autotoc_md10"></a>
+Serializing C arrays and strings with to_json_array</h1>
+<p><code>to_json_array</code> writes its argument as a JSON array. C arrays are accepted along with containers. A <code>char</code> array is treated as a <code>std::string_view</code> of length <code>N - 1</code>, so each character is written as a one character string. Pointers have no length and are a compile error; pass a container or a <code>daw::span</code> instead.</p>
+<p>Given</p>
+<div class="fragment"><div class="line"> ++</div>
+<div class="line"><span class="keywordtype">char</span> buffer[] = <span class="stringliteral">&quot;Hi\&quot;&quot;</span>;</div>
+<div class="line"><span class="keywordtype">int</span> ints[3] = { 1, 2, 3 };</div>
+<div class="line">std::vector&lt;char const *&gt; ptrs{ <span class="stringliteral">&quot;A\&quot;da&quot;</span>, <span class="keyword">nullptr</span> };</div>
+</div><!-- fragment --><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Expression   </th><th class="markdownTableHeadNone">Output    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>to_json_array( "Hi\"" )</code>   </td><td class="markdownTableBodyNone"><code>["H","i","\""]</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>to_json_array( buffer )</code>   </td><td class="markdownTableBodyNone"><code>["H","i","\""]</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>to_json_array( "Hi\""sv )</code>   </td><td class="markdownTableBodyNone"><code>["H","i","\""]</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>to_json_array( ints )</code>   </td><td class="markdownTableBodyNone"><code>[1,2,3]</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>to_json_array( std::vector&lt;std::string_view&gt;{ "A\"da" } )</code>   </td><td class="markdownTableBodyNone"><code>["A\"da"]</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>to_json_array( ptrs )</code>   </td><td class="markdownTableBodyNone"><code>[65,null]</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>to_json_array( ptr )</code> with <code>char const *ptr</code>   </td><td class="markdownTableBodyNone">compile error: pointers have no length   </td></tr>
+</table>
+<p>As with <code>to_json</code>, character pointers inside a container are deduced as a nullable <code>char</code>. To write them as strings, give the element mapping explicitly:</p>
+<div class="fragment"><div class="line"> ++</div>
+<div class="line"><span class="keyword">using </span>char_ptr_string = <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a4f01a6c3ebf4c6aa56d715d20931bc18">daw::json::json_nullable_no_name</a>&lt;</div>
+<div class="line">  <span class="keywordtype">char</span> <span class="keyword">const</span> *, <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#acd36116ab18f90a9e955d5f5147c43c3">daw::json::json_string_no_name&lt;daw::string_view&gt;</a>&gt;;</div>
+<div class="line"> </div>
+<div class="line">to_json_array&lt;char_ptr_string&gt;( ptrs ); <span class="comment">// [&quot;A\&quot;da&quot;,null]</span></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_a4f01a6c3ebf4c6aa56d715d20931bc18"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a4f01a6c3ebf4c6aa56d715d20931bc18">daw::json::anonymous_namespace{daw_json_link_types.h}::json_nullable_no_name</a></div><div class="ttdeci">json_base::json_nullable&lt; T, JsonMember, JsonNullable::NullVisible, Constructor, IsNull &gt; json_nullable_no_name</div><div class="ttdoc">Mark a member as nullable.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01124">daw_json_link_types.h:1126</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_acd36116ab18f90a9e955d5f5147c43c3"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#acd36116ab18f90a9e955d5f5147c43c3">daw::json::anonymous_namespace{daw_json_link_types.h}::json_string_no_name</a></div><div class="ttdeci">json_base::json_string&lt; T, Options, Constructor &gt; json_string_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00929">daw_json_link_types.h:929</a></div></div>
+</div><!-- fragment --><p>See <a href="strings.md#containers-of-character-pointers">Containers of character pointers</a>. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

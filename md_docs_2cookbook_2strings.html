@@ -73,8 +73,8 @@ $(function() {
   <div class="headertitle"><div class="title">Strings</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md199"></a>JSON natively encodes strings. There are two options for mapping them to C++ data structures, fully processed and raw strings. Raw strings only find the end of the string and do not change the underlying values.</p>
-<h1><a class="anchor" id="autotoc_md200"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md202"></a>JSON natively encodes strings. There are two options for mapping them to C++ data structures, fully processed and raw strings. Raw strings only find the end of the string and do not change the underlying values.</p>
+<h1><a class="anchor" id="autotoc_md203"></a>
 Escaped</h1>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;uris&quot;: [</div>
@@ -121,7 +121,7 @@ Escaped</h1>
 <div class="line">  };</div>
 <div class="line">}</div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md201"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md204"></a>
 Trusted, already-escaped strings</h1>
 <p>By default, <code>json_string</code> validates UTF-8 and escapes the value during serialization. When an application can guarantee that a value is valid UTF-8 and is already escaped as JSON string content, the <code>EscapeValidUTF8::AssumeValid</code> mapping option writes those bytes directly:</p>
 <div class="fragment"><div class="line"> ++</div>
@@ -156,7 +156,7 @@ application must establish that it is already escaped before serializing it.
 The default &lt;tt&gt;EscapeValidUTF8::Validate&lt;/tt&gt; behavior should be used whenever that
 guarantee is unavailable.
 
-@section autotoc_md202 Raw strings
+@section autotoc_md205 Raw strings
 Raw strings are useful where we don't want to process the strings, we know they will never be escaped, or we do not require processing.  A raw string, is also simpler in that it only requires a constructor that requires a pointer and size, like &lt;tt&gt;std::string_view&lt;/tt&gt; or &lt;tt&gt;std::string&lt;/tt&gt;.  &lt;br&gt;
 @icode{json} 
 {
@@ -201,8 +201,147 @@ namespace daw::json {
   template&lt;&gt;  
   json_data_contract&lt;WebData&gt; {
     using type = json_member_list&lt;
-      json_array&lt;"uris", json_string_raw_no_name&lt;&gt;&gt; &gt;;</code></p>
-<p><code> static inline auto to_json_data( WebData const &amp; value ) { return std::forward_as_tuple( value.uris ); } }; }  </code></p>
+      json_array&lt;"uris", json_string_raw_no_name&lt;&gt;&gt;
+    &gt;;
+
+    static inline auto to_json_data( WebData const &amp; value ) {
+      return std::forward_as_tuple( value.uris );
+    }
+  };
+}
+@endicode 
+
+@section autotoc_md206 Serializing strings without a mapping
+
+&lt;tt&gt;to_json&lt;/tt&gt;, &lt;tt&gt;to_json_array&lt;/tt&gt;, and &lt;tt&gt;json_writer&lt;/tt&gt; can serialize values that have no
+&lt;tt&gt;json_data_contract&lt;/tt&gt;. Because these values did not come from parsing, string
+values are always escaped. A &lt;tt&gt;std::string_view&lt;/tt&gt; is deduced as a raw string only
+inside a &lt;tt&gt;json_data_contract&lt;/tt&gt;, where it holds the still-escaped text from the
+parsed document (see @ref "/home/runner/work/daw_json_link/daw_json_link/docs/cookbook/mapping_deduction.md" "Mapping Deduction").
+
+Character types are handled before deduction:
+
+* &lt;tt&gt;char *&lt;/tt&gt; and &lt;tt&gt;char const *&lt;/tt&gt; are nul terminated strings. &lt;tt&gt;nullptr&lt;/tt&gt; is written as &lt;tt&gt;null&lt;/tt&gt;.
+* &lt;tt&gt;char[N]&lt;/tt&gt; and &lt;tt&gt;char const[N]&lt;/tt&gt;, including string literals, are strings of length &lt;tt&gt;N - 1&lt;/tt&gt;.
+* &lt;tt&gt;char&lt;/tt&gt; is a one character string. &lt;tt&gt;signed char&lt;/tt&gt; and &lt;tt&gt;unsigned char&lt;/tt&gt;, including
+  &lt;tt&gt;std::int8_t&lt;/tt&gt; and &lt;tt&gt;std::uint8_t&lt;/tt&gt;, are distinct types and remain numbers.
+
+Given
+
+@icode{c} ++
+char buffer[] = "Hi"";
+char const *ptr = "A"da";
+char const *null_ptr = nullptr;
+std::vector&lt;char const *&gt; ptrs{ "A"da", nullptr };
+@endicode 
+
+&lt;table class="markdownTable"&gt;
+  &lt;tr class="markdownTableHead"&gt;    &lt;th class="markdownTableHeadNone"&gt; Expression   </code></p>
+<p><code> Output    </code></p>
+<p><code> </code></p>
+<p><code> <code>to_json( "A\"da" )</code>   </code></p>
+<p><code> <code>"A\"da"</code>    </code></p>
+<p><code> </code></p>
+<p><code> <code>to_json( buffer )</code>   </code></p>
+<p><code> <code>"Hi\""</code>    </code></p>
+<p><code> </code></p>
+<p><code> <code>to_json( ptr )</code>   </code></p>
+<p><code> <code>"A\"da"</code>    </code></p>
+<p><code> </code></p>
+<p><code> <code>to_json( null_ptr )</code>   </code></p>
+<p><code> <code>null</code>    </code></p>
+<p><code> </code></p>
+<p><code> <code>to_json( "A\"da"s )</code>   </code></p>
+<p><code> <code>"A\"da"</code>    </code></p>
+<p><code> </code></p>
+<p><code> <code>to_json( "A\"da"sv )</code>   </code></p>
+<p><code> <code>"A\"da"</code>    </code></p>
+<p><code> </code></p>
+<p><code> &lsquo;to_json( 'x&rsquo; )<code>\ilinebr &lt;/td&gt; &lt;td class="markdownTableBodyNone"&gt;</code>"x"<code>\ilinebr &lt;/td&gt; &lt;/tr&gt; &lt;tr class="markdownTableRowEven"&gt; &lt;td class="markdownTableBodyNone"&gt;</code>to_json( std::int8_t{ 65 } )<code>\ilinebr &lt;/td&gt; &lt;td class="markdownTableBodyNone"&gt;</code>65<code>\ilinebr &lt;/td&gt; &lt;/tr&gt; &lt;tr class="markdownTableRowOdd"&gt; &lt;td class="markdownTableBodyNone"&gt;</code>to_json( std::uint8_t{ 65 } )<code>\ilinebr &lt;/td&gt; &lt;td class="markdownTableBodyNone"&gt;</code>65<code>\ilinebr &lt;/td&gt; &lt;/tr&gt; &lt;tr class="markdownTableRowEven"&gt; &lt;td class="markdownTableBodyNone"&gt;</code>to_json( std::optional&lt;std::string_view&gt;( "A\"da" ) )`   </code></p>
+<p><code> `"A\"da"<code>\ilinebr &lt;/td&gt; &lt;/tr&gt; &lt;tr class="markdownTableRowOdd"&gt; &lt;td class="markdownTableBodyNone"&gt;</code>to_json( std::vector&lt;std::string_view&gt;{ "A\"da", "B\\b" } )`   </code></p>
+<p><code> `["A\"da","B\\b"]<code>\ilinebr &lt;/td&gt; &lt;/tr&gt; &lt;tr class="markdownTableRowEven"&gt; &lt;td class="markdownTableBodyNone"&gt;</code>to_json( std::map&lt;std::string_view, std::string_view&gt;{ { "na\"me", "A\"da" } } )<code>\ilinebr &lt;/td&gt; &lt;td class="markdownTableBodyNone"&gt;</code>{"na\"me":"A\"da"}<code>\ilinebr &lt;/td&gt; &lt;/tr&gt; &lt;tr class="markdownTableRowOdd"&gt; &lt;td class="markdownTableBodyNone"&gt;</code>to_json( std::tuple&lt;int, std::string_view&gt;{ 1, "A\"da" } )`   </code></p>
+<p><code> `[1,"A\"da"]<code>\ilinebr &lt;/td&gt; &lt;/tr&gt; &lt;tr class="markdownTableRowEven"&gt; &lt;td class="markdownTableBodyNone"&gt;</code>to_json( std::vector&lt;char&gt;{ 'a', 'b' } )<code>\ilinebr &lt;/td&gt; &lt;td class="markdownTableBodyNone"&gt;</code>["a","b"]<code>\ilinebr &lt;/td&gt; &lt;/tr&gt; &lt;tr class="markdownTableRowOdd"&gt; &lt;td class="markdownTableBodyNone"&gt;</code>to_json( ptrs )<code>\ilinebr &lt;/td&gt; &lt;td class="markdownTableBodyNone"&gt;</code>[65,null]`   </code></p>
+<p><code></code></p>
+<p><code>Character pointers are only converted when passed directly. Inside a container they are deduced as a nullable <code>char</code>, so <code>to_json( ptrs )</code> writes the first character's code.</code></p>
+<p><code></code></p>
+<h2><a class="anchor" id="autotoc_md207"></a>
+Containers of character pointers</h2>
+<p><code></code></p>
+<p><code>To write a container of character pointers as strings, map the element explicitly as a nullable string. A <code>nullptr</code> element is written as <code>null</code>.</code></p>
+<p><code></p><div class="fragment"><div class="line"> ++</div>
+<div class="line"><span class="keyword">using </span>char_ptr_string = <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a4f01a6c3ebf4c6aa56d715d20931bc18">daw::json::json_nullable_no_name</a>&lt;</div>
+<div class="line">  <span class="keywordtype">char</span> <span class="keyword">const</span> *, <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#acd36116ab18f90a9e955d5f5147c43c3">daw::json::json_string_no_name&lt;daw::string_view&gt;</a>&gt;;</div>
+<div class="line"><span class="keyword">using </span>char_ptr_strings = <a class="code hl_typedef" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a939261eb490dc52eafc178ae1f03413c">daw::json::json_array_no_name&lt;char_ptr_string&gt;</a>;</div>
+<div class="line"> </div>
+<div class="line">std::vector&lt;char const *&gt; ptrs{ <span class="stringliteral">&quot;A\&quot;da&quot;</span>, <span class="keyword">nullptr</span> };</div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_a4f01a6c3ebf4c6aa56d715d20931bc18"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a4f01a6c3ebf4c6aa56d715d20931bc18">daw::json::anonymous_namespace{daw_json_link_types.h}::json_nullable_no_name</a></div><div class="ttdeci">json_base::json_nullable&lt; T, JsonMember, JsonNullable::NullVisible, Constructor, IsNull &gt; json_nullable_no_name</div><div class="ttdoc">Mark a member as nullable.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01124">daw_json_link_types.h:1126</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_a939261eb490dc52eafc178ae1f03413c"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#a939261eb490dc52eafc178ae1f03413c">daw::json::anonymous_namespace{daw_json_link_types.h}::json_array_no_name</a></div><div class="ttdeci">json_base::json_array&lt; JsonElement, Container, Constructor &gt; json_array_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l01725">daw_json_link_types.h:1726</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_html_acd36116ab18f90a9e955d5f5147c43c3"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03.html#acd36116ab18f90a9e955d5f5147c43c3">daw::json::anonymous_namespace{daw_json_link_types.h}::json_string_no_name</a></div><div class="ttdeci">json_base::json_string&lt; T, Options, Constructor &gt; json_string_no_name</div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00929">daw_json_link_types.h:929</a></div></div>
+</div><!-- fragment --><p></code></p>
+<p><code></p><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Expression   </th><th class="markdownTableHeadNone">Output    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>to_json&lt;char_ptr_strings&gt;( ptrs )</code>   </td><td class="markdownTableBodyNone"><code>["A\"da",null]</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>to_json_array&lt;char_ptr_string&gt;( ptrs )</code>   </td><td class="markdownTableBodyNone"><code>["A\"da",null]</code>   </td></tr>
+</table>
+<p></code></p>
+<p><code>The same element mapping works as a member of a <code>json_data_contract</code>. The container type must be given, as it is not the default for the element type:</code></p>
+<p><code></p><div class="fragment"><div class="line"> ++</div>
+<div class="line"><span class="keyword">struct </span>Names {</div>
+<div class="line">  std::vector&lt;char const *&gt; names;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line">  <span class="keyword">struct </span>json_data_contract&lt;Names&gt; {</div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">char</span> <span class="keyword">const</span> names[] = <span class="stringliteral">&quot;names&quot;</span>;</div>
+<div class="line">    <span class="keyword">using </span>type = json_member_list&lt;</div>
+<div class="line">      json_array&lt;names, char_ptr_string, std::vector&lt;char const *&gt;&gt;&gt;;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> to_json_data( Names <span class="keyword">const</span> &amp;value ) {</div>
+<div class="line">      <span class="keywordflow">return</span> std::forward_as_tuple( value.names );</div>
+<div class="line">    }</div>
+<div class="line">  };</div>
+<div class="line">}</div>
+</div><!-- fragment --><p></code></p>
+<p><code><code>to_json( Names{ ptrs } )</code> writes <code>{"names":["A\"da",null]}</code>. This mapping is serialization only: <code>from_json&lt;Names&gt;</code> does not compile, as a <code>char const *</code> cannot be constructed from a parsed string.</code></p>
+<p><code>Alternatively, use a container of <code>std::string_view</code> or write the elements with <code>json_writer::write_array_values</code>.</code></p>
+<p><code></code></p>
+<h2><a class="anchor" id="autotoc_md208"></a>
+Already escaped values</h2>
+<p><code></code></p>
+<p><code>Passing an explicit raw mapping writes the value as-is. The value must already be valid, escaped JSON string content.</code></p>
+<p><code></p><div class="fragment"><div class="line"> ++</div>
+<div class="line"><span class="keyword">using </span>raw = json_string_raw_no_name&lt;daw::string_view&gt;;</div>
+</div><!-- fragment --><p></code></p>
+<p><code></p><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Expression   </th><th class="markdownTableHeadNone">Output    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>to_json&lt;raw&gt;( R"(A\"da)"sv )</code>   </td><td class="markdownTableBodyNone"><code>"A\"da"</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>to_json&lt;raw&gt;( R"(A\"da)" )</code>   </td><td class="markdownTableBodyNone"><code>"A\"da"</code>   </td></tr>
+</table>
+<p></code></p>
+<p><code>A <code>std::string_view</code> member of a <code>json_data_contract</code> is also raw. Given a contract mapping <code>json_link&lt;"value", std::string_view&gt;</code> for <code>Member</code>, <code>to_json( Member{ R"(A\"da)" } )</code> writes <code>{"value":"A\"da"}</code>. Likewise a <code>char</code> member of a contract, <code>json_link&lt;"c", char&gt;</code>, remains a number: &lsquo;to_json( CharMember{ 'z&rsquo; } )<code>writes</code>{"c":122}`.</code></p>
+<p><code></code></p>
+<h2><a class="anchor" id="autotoc_md209"></a>
+Invalid UTF-8</h2>
+<p><code></code></p>
+<p><code>With the default <code>RestrictedStringOutput::ErrorInvalidUTF8</code> output option, valid UTF-8 is written unchanged and invalid UTF-8 is an error.</code></p>
+<p><code></p><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Expression   </th><th class="markdownTableHeadNone">Output    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>to_json( "caf\xC3\xA9"sv )</code>   </td><td class="markdownTableBodyNone"><code>"café"</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>to_json( "\xC3"sv )</code>   </td><td class="markdownTableBodyNone">throws <code>json_exception</code> with <code>ErrorReason::InvalidUTFCodepoint</code>   </td></tr>
+</table>
+<p></code></p>
+<p><code>A lone byte above <code>0x7F</code> is not a complete UTF-8 character, so <code>to_json( char( 0xC3 ) )</code> also throws.</code></p>
+<p><code>See <a href="array.md#serializing-c-arrays-and-strings-with-to_json_array">Arrays</a> for <code>to_json_array</code> and <a href="json_writer.md#strings-characters-and-character-pointers">Incremental JSON Writer</a> for <code>json_writer</code>. </code></p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

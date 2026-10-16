@@ -291,6 +291,81 @@ underlying JSON type. The mapping supplied to `write_string` must have a
 number, Boolean, or string underlying JSON type. `write_boolean` and
 `write_null` have fixed representations and do not take a mapping type.
 
+## Strings, Characters, and Character Pointers
+
+Values written by the writer did not come from parsing, so strings are always
+escaped. The writer treats each value the same way as
+[`to_json`](strings.md#serializing-strings-without-a-mapping):
+
+* `char *` and `char const *` are nul terminated strings. `nullptr` is written as `null`.
+* `char[N]`, including string literals, are strings of length `N - 1`.
+* `char` is a one character string. `signed char` and `unsigned char` remain numbers.
+
+`write_array_values` writes each value it is given, or each element of a
+range, as if it were passed to `write_value`. Inside an array, given
+
+```cpp
+char buffer[] = "Hi\"";
+char const *ptr = "A\"da";
+char const *null_ptr = nullptr;
+std::vector<char const *> ptrs{ "A\"da", nullptr };
+using raw = daw::json::json_string_raw_no_name<daw::string_view>;
+```
+
+| Call                                           | Output                         |
+|------------------------------------------------|--------------------------------|
+| `writer.write_value( "A\"da" )`                | `"A\"da"`                      |
+| `writer.write_value( buffer )`                 | `"Hi\""`                       |
+| `writer.write_value( ptr )`                    | `"A\"da"`                      |
+| `writer.write_value( null_ptr )`               | `null`                         |
+| `writer.write_value( "A\"da"sv )`              | `"A\"da"`                      |
+| `writer.write_value( 'x' )`                    | `"x"`                          |
+| `writer.write_string( ptr )`                   | `"A\"da"`                      |
+| `writer.write_value<raw>( R"(A\"da)" )`        | `"A\"da"`                      |
+| `writer.write_value( ptrs )`                   | `[65,null]`                    |
+| `writer.write_array_values( ptrs )`            | `"A\"da",null`                 |
+| `writer.write_array_values( ptr, null_ptr, "lit", buffer )` | `"A\"da",null,"lit","Hi\""` |
+
+`write_value<raw>` writes an already escaped value as-is. `write_value( ptrs )`
+writes the vector as one value, so its elements are deduced and each
+`char const *` is a nullable `char`; `write_array_values( ptrs )` converts each
+element.
+
+To write the vector as one value with string elements, give the mapping
+explicitly:
+
+```cpp
+using char_ptr_strings = daw::json::json_array_no_name<
+  daw::json::json_nullable_no_name<
+    char const *, daw::json::json_string_no_name<daw::string_view>>>;
+
+writer.write_value<char_ptr_strings>( ptrs ); // ["A\"da",null]
+```
+
+See [Containers of character pointers](strings.md#containers-of-character-pointers).
+
+Member names are written as-is by default. To escape them, construct the
+writer with `daw::json::options::AllowEscapedNames::yes`:
+
+```cpp
+auto result = std::string{ };
+{
+  auto writer = daw::json::json_writer<daw::json::options::AllowEscapedNames::yes>( result );
+  writer.open_object( );
+  writer.write_key_value( "na\"me", "A\"da" );
+  writer.close_object( );
+}
+```
+
+The result is:
+
+```json
+{"na\"me":"A\"da"}
+```
+
+Without `AllowEscapedNames::yes`, the same calls produce `{"na"me":"A\"da"}`,
+which is not valid JSON.
+
 ## Pretty Output
 
 Serialization policy flags are template arguments to `json_writer`. For

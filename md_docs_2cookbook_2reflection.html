@@ -73,15 +73,15 @@ $(function() {
   <div class="headertitle"><div class="title">Reflection and reflection-like mappings</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md187"></a> JSON Link can derive object mappings from C++26 static reflection. It also provides separate adapters for Boost.PFR and Boost.Describe on toolchains that do not provide standard reflection.</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md190"></a> JSON Link can derive object mappings from C++26 static reflection. It also provides separate adapters for Boost.PFR and Boost.Describe on toolchains that do not provide standard reflection.</p>
 <p>All three approaches create the mapping used by the normal API:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> value = daw::json::from_json&lt;Type&gt;( json_document );</div>
 <div class="line"><span class="keyword">auto</span> json = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( value );</div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00078">daw_to_json.h:78</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00095">daw_to_json.h:95</a></div></div>
 </div><!-- fragment --><p>An explicit <code><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__data__contract_8h_03_1_1json__data__contract.html" title="Mapping class for JSON data structures to C++. It must be specialized in order to parse to a user cla...">daw::json::json_data_contract</a>&lt;Type&gt;</code> remains authoritative and is used instead of a derived mapping.</p>
-<h1><a class="anchor" id="autotoc_md188"></a>
+<h1><a class="anchor" id="autotoc_md191"></a>
 C++26 static reflection</h1>
-<h2><a class="anchor" id="autotoc_md189"></a>
+<h2><a class="anchor" id="autotoc_md192"></a>
 Requirements</h2>
 <p>The standard-reflection integration is available when the compiler defines <code>__cpp_lib_reflection</code> with a value of at least <code>202506L</code>. Include the main JSON Link header:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
@@ -89,7 +89,7 @@ Requirements</h2>
 </div><!-- fragment --><p>The repository's reflection test configuration uses C++26 and a compiler flag that enables P2996 reflection. With CMake, enable the dedicated test using:</p>
 <div class="fragment"><div class="line">-DCMAKE_CXX_STANDARD=26 -DDAW_JSON_USE_REFLECTION=ON</div>
 </div><!-- fragment --><p>The exact compiler option needed to enable reflection is compiler-specific. <code>DAW_JSON_USE_REFLECTION</code> enables the repository's reflection test; the public headers detect support through the standard feature-test macro.</p>
-<h2><a class="anchor" id="autotoc_md190"></a>
+<h2><a class="anchor" id="autotoc_md193"></a>
 Automatic mapping</h2>
 <p>When no explicit mapping exists, a class that can be constructed from its public non-static data members can use reflection as a fallback. Member names become JSON object keys, and the normal deduced mapping is used for each member.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link_8h.html">daw/json/daw_json_link.h</a>&gt;</span></div>
@@ -113,7 +113,7 @@ Automatic mapping</h2>
 <div class="line">  assert( <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( person ) == json_document );</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>Reflected members may themselves use any deduced JSON Link mapping, including other reflected classes, containers, maps, nullable types, and smart pointers.</p>
-<h2><a class="anchor" id="autotoc_md191"></a>
+<h2><a class="anchor" id="autotoc_md194"></a>
 Explicitly enabling reflection</h2>
 <p>Annotate a class when reflection should be explicitly enabled:</p>
 <div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
@@ -132,7 +132,7 @@ Explicitly enabling reflection</h2>
 <div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span></div>
 <div class="line">  daw::json::enable_reflection_for&lt;ExternalType&gt; = <span class="keyword">true</span>;</div>
 </div><!-- fragment --><p>Member annotations also enable reflection for their containing class, so a class-level <code>[[= reflect ]]</code> annotation is not required when a member already has <code>rename</code>, <code>map_as</code>, <code>enum_string</code>, or <code>ignored</code>.</p>
-<h2><a class="anchor" id="autotoc_md192"></a>
+<h2><a class="anchor" id="autotoc_md195"></a>
 Renaming a member</h2>
 <p>Use <code>reflect.rename</code> when the JSON key differs from the C++ member name:</p>
 <div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
@@ -144,7 +144,7 @@ Renaming a member</h2>
 <div class="line">  std::string name;</div>
 <div class="line">};</div>
 </div><!-- fragment --><p>This maps <code>name</code> to <code>"fullName"</code> for both parsing and serialization.</p>
-<h2><a class="anchor" id="autotoc_md193"></a>
+<h2><a class="anchor" id="autotoc_md196"></a>
 Overriding a member mapping</h2>
 <p>Use <code>reflect.map_as</code> to provide the same mapping type that would otherwise appear in a <code>json_data_contract</code>. The mapping must include the JSON member name:</p>
 <div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
@@ -162,7 +162,7 @@ Overriding a member mapping</h2>
 <div class="line">};</div>
 <div class="ttc" id="astructdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number_html"><div class="ttname"><a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__number.html">daw::json::json_number</a></div><div class="ttdef"><b>Definition</b> <a href="daw__json__link__types_8h_source.html#l00494">daw_json_link_types.h:494</a></div></div>
 </div><!-- fragment --><p>This accepts either <code>{"age":42,"name":"Jane"}</code> or <code>{"age":"42","name":"Jane"}</code>. Do not put <code>rename</code> and <code>map_as</code> on the same member because <code>map_as</code> already supplies the name.</p>
-<h2><a class="anchor" id="autotoc_md194"></a>
+<h2><a class="anchor" id="autotoc_md197"></a>
 Enumerations as strings</h2>
 <p>Reflected enumerations use their underlying numeric representation by default. Annotate an enum member to use its enumerator name instead:</p>
 <div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
@@ -176,7 +176,7 @@ Enumerations as strings</h2>
 <div class="line">  Colour eye_colour;</div>
 <div class="line">};</div>
 </div><!-- fragment --><p>This maps <code>Colour::blue</code> to and from <code>"blue"</code>. The configurable form is <code>reflect.enum_string_with_options&lt;Options&gt;</code>, where <code>Options</code> is a <code>json_custom</code> option value. Do not combine <code>enum_string</code> and <code>map_as</code> on the same member.</p>
-<h2><a class="anchor" id="autotoc_md195"></a>
+<h2><a class="anchor" id="autotoc_md198"></a>
 Ignoring members</h2>
 <p>An ignored member is absent from both input and output. By default it is constructed as <code>T{}</code>:</p>
 <div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
@@ -202,7 +202,7 @@ Ignoring members</h2>
 <div class="line">  std::size_t internal_code;</div>
 <div class="line">};</div>
 </div><!-- fragment --><p>The supplied value, or the callable's result, must be convertible to the member type. A bare <code>reflect.ignored</code> therefore requires a default-constructible member type. Member initializers are not used as ignored-member defaults.</p>
-<h2><a class="anchor" id="autotoc_md196"></a>
+<h2><a class="anchor" id="autotoc_md199"></a>
 Including non-public members</h2>
 <p><code>reflect</code> normally maps public non-static data members only. Use <code>reflect.unchecked</code> to include all non-static data members:</p>
 <div class="fragment"><div class="line"><span class="keyword">using </span>daw::json::reflect;</div>
@@ -216,7 +216,7 @@ Including non-public members</h2>
 <div class="line">};</div>
 </div><!-- fragment --><p>This deliberately exposes private representation through JSON and should only be used when that is part of the type's intended wire format. The type must be constructible in reflected member order.</p>
 <p>The executable coverage for these features is in <a href="../../tests/src/daw_json_link_reflection_test.cpp">daw_json_link_reflection_test.cpp</a>.</p>
-<h1><a class="anchor" id="autotoc_md197"></a>
+<h1><a class="anchor" id="autotoc_md200"></a>
 Boost.PFR adapter</h1>
 <p>Boost.PFR support is independent of C++26 reflection. It derives member names and values for a non-empty aggregate and installs a JSON Link mapping when the type explicitly opts in.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__boost__pfr__mapping_8h.html">daw/json/daw_json_boost_pfr_mapping.h</a>&gt;</span></div>
@@ -246,7 +246,7 @@ Boost.PFR adapter</h1>
 <div class="line"><span class="stringliteral">}</span></div>
 <div class="ttc" id="adaw__json__boost__pfr__mapping_8h_html"><div class="ttname"><a href="daw__json__boost__pfr__mapping_8h.html">daw_json_boost_pfr_mapping.h</a></div></div>
 </div><!-- fragment --><p>The adapter requires <code>&lt;boost/pfr.hpp&gt;</code> and Boost.PFR member-name support. The repository enables its functional test only when that header is available and builds the test as C++20. See <a href="../../tests/src/daw_json_link_boost_pfr_test.cpp">daw_json_link_boost_pfr_test.cpp</a>.</p>
-<h1><a class="anchor" id="autotoc_md198"></a>
+<h1><a class="anchor" id="autotoc_md201"></a>
 Boost.Describe adapter</h1>
 <p>Boost.Describe support is also independent of standard reflection. Describe the public members and include the adapter; described types are enabled by default.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="daw__json__link__describe_8h.html">daw/json/daw_json_link_describe.h</a>&gt;</span></div>
