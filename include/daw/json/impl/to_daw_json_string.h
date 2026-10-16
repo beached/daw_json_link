@@ -15,10 +15,10 @@
 #include "daw/json/impl/daw_json_parse_iso8601_utils.h"
 #include "daw/json/impl/daw_json_serialize_options_impl.h"
 #include "daw/json/impl/daw_json_serialize_policy.h"
+#include "daw/json/impl/daw_json_serialize_string_simd.h"
 #include "daw/json/impl/daw_json_value.h"
 
 #include <daw/daw_algorithm.h>
-#include <daw/traits/daw_traits_is_explicitly_convertible.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_callable.h>
 #include <daw/daw_constant.h>
@@ -32,6 +32,7 @@
 #include <daw/daw_utility.h>
 #include <daw/daw_visit.h>
 #include <daw/third_party/dragonbox/dragonbox.h>
+#include <daw/traits/daw_traits_is_explicitly_convertible.h>
 #include <daw/utf8/unchecked.h>
 
 #include <array>
@@ -329,6 +330,71 @@ namespace daw::json {
 				return it;
 			}
 
+#if defined( DAW_JSON_HAS_SERIALIZE_STRING_SIMD )
+			/// Escape [first, last) for output that allows 8-bit strings, using a
+			/// SIMD scan to find each byte that needs work.  Runs between them are
+			/// written as one block.  ASCII escapes and non-ASCII sequences go
+			/// through the same codepoint path as the scalar code so the output is
+			/// unchanged.
+			template<typename WritableType>
+			[[nodiscard]] DAW_ATTRIB_NOINLINE static WritableType
+			copy_escaped_string_simd( WritableType it, char const *first,
+			                          char const *const last ) {
+				using it_t = utf8::unchecked::iterator<char const *>;
+				if( first >= last ) {
+					return it;
+				}
+				auto scanner =
+				  json_details::serialize_string_simd::escape_scanner( first, last );
+				while( first < last ) {
+					auto const hit = scanner.next( first );
+					if( hit != first ) {
+						it.write( daw::string_view(
+						  first, static_cast<std::size_t>( hit - first ) ) );
+					}
+					if( hit == last ) {
+						break;
+					}
+					auto const c = static_cast<unsigned char>( *hit );
+					if( c < 0x80U ) {
+						it = escape_codepoint_to_iterator<false>( it, c );
+						first = hit + 1;
+						continue;
+					}
+					// Text with non-ASCII characters usually has many of them.  Rather
+					// than a scan per character, finish the block one codepoint at a
+					// time like the scalar code does, then resume scanning.
+					constexpr auto block_mask = static_cast<std::uintptr_t>(
+					  json_details::serialize_string_simd::block_size - 1U );
+					auto const block_end_addr =
+					  ( reinterpret_cast<std::uintptr_t>( hit ) | block_mask ) + 1U;
+					auto const block_end =
+					  block_end_addr < reinterpret_cast<std::uintptr_t>( last )
+					    ? hit +
+					        ( block_end_addr - reinterpret_cast<std::uintptr_t>( hit ) )
+					    : last;
+					auto cp_first = it_t( hit );
+					while( cp_first.base( ) < block_end ) {
+						auto const cp_start = cp_first;
+						auto const cp = *cp_first++;
+						if( cp_start == cp_first ) {
+							// Not a valid unicode cp
+							if constexpr( WritableType::restricted_string_output ==
+							              options::RestrictedStringOutput::
+							                ErrorInvalidUTF8 ) {
+								daw_json_error( true, ErrorReason::InvalidUTFCodepoint );
+							} else {
+								cp_first = it_t( std::next( cp_first.base( ) ) );
+							}
+						}
+						it = escape_codepoint_to_iterator<false>( it, cp );
+					}
+					first = cp_first.base( );
+				}
+				return it;
+			}
+#endif
+
 			template<
 			  bool do_escape = false,
 			  options::EightBitModes EightBitMode = options::EightBitModes::AllowFull,
@@ -348,6 +414,18 @@ namespace daw::json {
 					              json_details::is_string_view_like_v<Container> ) {
 						auto const *const data = std::data( container );
 						auto const size = std::size( container );
+#if defined( DAW_JSON_HAS_SERIALIZE_STRING_SIMD )
+						// Restricted 7-bit output is uncommon, it keeps the scalar code
+						if constexpr( not restrict_high::value and
+						              std::is_same_v<daw::remove_cvref_t<decltype( *data )>,
+						                             char> ) {
+							// Strings shorter than a block are faster with the scalar code
+							if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) and
+							    size >= json_details::serialize_string_simd::block_size ) {
+								return copy_escaped_string_simd( it, data, data + size );
+							}
+						}
+#endif
 						bool is_ascii = true;
 						for( std::size_t n = 0; n < size; ++n ) {
 							if( static_cast<unsigned char>( data[n] ) >= 0x80U ) {
@@ -419,7 +497,7 @@ namespace daw::json {
 							if constexpr( WritableType::restricted_string_output ==
 							              options::RestrictedStringOutput::
 							                ErrorInvalidUTF8 ) {
-								daw_json_error( true, ErrorReason::InvalidStringHighASCII );
+								daw_json_error( true, ErrorReason::InvalidUTFCodepoint );
 							} else {
 								first = it_t( std::next( first.base( ) ) );
 							}
@@ -503,6 +581,17 @@ namespace daw::json {
 		} // namespace utils
 
 		namespace json_details {
+			template<typename Writer, typename Name>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr Writer
+			encode_name( Writer it, Name const &name ) {
+				if constexpr( Writer::allow_escaped_names ) {
+					return utils::copy_to_iterator<true>( it, name );
+				} else {
+					it.write( name );
+					return it;
+				}
+			}
+
 			template<typename JsonMember, JsonParseTypes Tag, typename WriteableType,
 			         typename parse_to_t>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr WriteableType
@@ -609,7 +698,12 @@ namespace daw::json {
 				using member_type = typename JsonMember::member_type;
 				return to_daw_json_string<member_type, member_type::expected_type>(
 				  it, [&] {
-					  if constexpr( concepts::is_nullable_value_v<Optional> ) {
+					  if constexpr( is_char_pointer_v<Optional> and
+					                member_type::underlying_json_type ==
+					                  JsonBaseParseTypes::String ) {
+						  // The pointer is a nul terminated string, not a nullable char
+						  return daw::string_view( value );
+					  } else if constexpr( concepts::is_nullable_value_v<Optional> ) {
 						  return concepts::nullable_value_traits<Optional>::read( value );
 					  } else if constexpr( json_details::has_op_star_v<Optional> ) {
 						  return *value;
@@ -918,13 +1012,22 @@ namespace daw::json {
 			[[nodiscard]] static constexpr WriteableType
 			to_json_string_string_escaped( WriteableType it,
 			                               parse_to_t const &value ) {
-				it.put( '"' );
-				it = utils::copy_to_iterator<escape_output_v<JsonMember> !=
-				                               options::EscapeValidUTF8::AssumeValid,
-				                             JsonMember::eight_bit_mode,
-				                             true>( it, value );
-				it.put( '"' );
-				return it;
+				if constexpr( is_char_array_v<parse_to_t> ) {
+					// Exclude the trailing nul, same as json_writer's literal overloads
+					return to_json_string_string_escaped<JsonMember>(
+					  it, daw::string_view( value, std::extent_v<parse_to_t> - 1U ) );
+				} else if constexpr( std::is_same_v<parse_to_t, char> ) {
+					return to_json_string_string_escaped<JsonMember>(
+					  it, daw::string_view( &value, 1U ) );
+				} else {
+					it.put( '"' );
+					it = utils::copy_to_iterator<escape_output_v<JsonMember> !=
+					                               options::EscapeValidUTF8::AssumeValid,
+					                             JsonMember::eight_bit_mode,
+					                             true>( it, value );
+					it.put( '"' );
+					return it;
+				}
 			}
 
 			template<typename T>
@@ -1106,7 +1209,7 @@ namespace daw::json {
 				daw::empty_t const expander[]{
 				  ( to_daw_json_string_help( daw::constant_v<Is> ),
 				    daw::empty_t{ } )...,
-				  daw::empty_t{ } };
+				  daw::empty_t{} };
 				(void)expander;
 
 				return it;
@@ -1262,7 +1365,9 @@ namespace daw::json {
 					it.add_indent( );
 					it.next_member( );
 					// Append Key Name
-					it.write( "\"", key_t::name, "\":", it.space );
+					it.put( '"' );
+					it = json_details::encode_name( it, key_t::name );
+					it.write( "\":", it.space );
 					// Append Key Value
 					it = to_daw_json_string<key_t, key_t::expected_type>(
 					  it, json_get_key( *first ) );
@@ -1270,7 +1375,9 @@ namespace daw::json {
 					it.put( ',' );
 					// Append Value Name
 					it.next_member( );
-					it.write( "\"", value_t::name, "\":", it.space );
+					it.put( '"' );
+					it = json_details::encode_name( it, value_t::name );
+					it.write( "\":", it.space );
 					// Append Value Value
 					it = to_daw_json_string<value_t, value_t::expected_type>(
 					  it, json_get_value( *first ) );
@@ -1399,13 +1506,16 @@ namespace daw::json {
 				it.next_member( );
 				it.put( '"' );
 				auto name = path_item.current;
+
 				while( not name.empty( ) ) {
-					if( name.front( ) == '\\' ) {
-						name.remove_prefix( );
-						daw_json_ensure( not name.empty( ), ErrorReason::OutputError );
+					auto const segment = name.pop_front_until( '\\', daw::nodiscard );
+					it = encode_name( it, segment );
+					if( name.empty( ) ) {
+						break;
 					}
-					it.put( name.front( ) );
 					name.remove_prefix( );
+					daw_json_ensure( not name.empty( ), ErrorReason::OutputError );
+					it = encode_name( it, name.pop_front( 1 ) );
 				}
 				it.write( "\":", it.space );
 
@@ -1583,7 +1693,9 @@ namespace daw::json {
 					}
 					it.next_member( );
 					is_first = false;
-					it.write( '"', dependent_member::name, "\":", it.space );
+					it.write( '"' );
+					it = encode_name( it, dependent_member::name );
+					it.write( "\":", it.space );
 
 					if constexpr( has_switcher_v<base_member_t> ) {
 						it = member_to_string<dependent_member>(
@@ -1632,7 +1744,9 @@ namespace daw::json {
 				}
 				it.next_member( );
 				is_first = false;
-				it.write( '"', JsonMember::name, "\":", it.space );
+				it.put( '"' );
+				it = json_details::encode_name( it, JsonMember::name );
+				it.write( "\":", it.space );
 
 				it = member_to_string<JsonMember>( std::move( it ), get<pos>( tp ) );
 			}

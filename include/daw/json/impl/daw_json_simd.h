@@ -10,10 +10,13 @@
 
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_is_constant_evaluated.h>
+#include <daw/daw_span.h>
 
 #include "daw/json/impl/version.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <type_traits>
 
 #if defined( __BMI2__ ) and ( defined( __x86_64__ ) or defined( _M_X64 ) )
@@ -127,6 +130,57 @@ namespace daw::simd_impl {
 		return compress_bits( values.to_ullong( ), selection.to_ullong( ) );
 	}
 } // namespace daw::simd_impl
+
+// Scans load whole aligned blocks, which can extend past either end of the
+// range being scanned.  An aligned load never crosses a page so this cannot
+// fault, but sanitizers report the bytes outside the range.  Under a
+// sanitizer only the bytes inside the range are copied to an aligned local
+// block and loaded from there.
+#if defined( __SANITIZE_ADDRESS__ ) or defined( __SANITIZE_HWADDRESS__ )
+#define DAW_JSON_SIMD_SAFE_ALIGNED_LOADS 1
+#elif defined( __has_feature )
+#if __has_feature( address_sanitizer ) or                \
+  __has_feature( hwaddress_sanitizer ) or __has_feature( memory_sanitizer )
+#define DAW_JSON_SIMD_SAFE_ALIGNED_LOADS 1
+#endif
+#endif
+
+namespace daw::json {
+	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			/// Load the aligned block at block_addr.  The block must hold at least
+			/// one byte of [first_addr, last_addr), lanes outside of it have
+			/// unspecified values and must be masked off by the caller.
+			template<typename Simd>
+			[[nodiscard]] inline Simd
+			load_aligned_block( std::uintptr_t block_addr,
+			                    [[maybe_unused]] std::uintptr_t first_addr,
+			                    [[maybe_unused]] std::uintptr_t last_addr ) {
+				using value_t = typename Simd::value_type;
+				static_assert( sizeof( value_t ) == 1 );
+				constexpr std::size_t block_size = Simd::size( );
+#if defined( DAW_JSON_SIMD_SAFE_ALIGNED_LOADS )
+				alignas( block_size ) value_t buff[block_size] = { };
+				auto const lo = block_addr < first_addr ? first_addr : block_addr;
+				auto const hi = last_addr < block_addr + block_size
+				                  ? last_addr
+				                  : block_addr + block_size;
+				std::memcpy( buff + ( lo - block_addr ),
+				             reinterpret_cast<void const *>( lo ), hi - lo );
+				value_t const *const ptr = buff;
+#else
+				auto const *const ptr = reinterpret_cast<value_t const *>( block_addr );
+#endif
+				return daw::simd::unchecked_load<Simd>( daw::span( ptr, block_size ),
+				                                        daw::simd::flag_aligned );
+			}
+		} // namespace json_details
+	} // namespace DAW_JSON_VER
+} // namespace daw::json
+
+#if defined( DAW_JSON_SIMD_SAFE_ALIGNED_LOADS )
+#undef DAW_JSON_SIMD_SAFE_ALIGNED_LOADS
+#endif
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

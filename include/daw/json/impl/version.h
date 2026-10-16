@@ -17,9 +17,9 @@
 #if not defined( DAW_JSON_VER_OVERRIDE )
 // Should be updated when a potential ABI break is anticipated
 #if defined( DEBUG ) or not defined( NDEBUG )
-#define DAW_JSON_VER v3_41_1d
+#define DAW_JSON_VER v3_42_0d
 #else
-#define DAW_JSON_VER v3_41_1
+#define DAW_JSON_VER v3_42_0
 #endif
 #else
 #define DAW_JSON_VER DAW_JSON_VER_OVERRIDE

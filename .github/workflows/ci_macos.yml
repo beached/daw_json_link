@@ -29,7 +29,7 @@ jobs:
       matrix:
         cpp_version: [ 17, 20 ]
         build_type: [ Debug, Release ]
-        os: [ macos-latest, macos-14 ]
+        os: [ macos-latest ]
         toolset: [ clang++ ]
     runs-on: ${{ matrix.os }}
     name: "${{ matrix.os }} ${{ matrix.toolset }} ${{ matrix.cpp_version }} ${{ matrix.build_type }}"

@@ -17,9 +17,12 @@
 #include "daw/json/impl/to_daw_json_string.h"
 
 #include <daw/daw_enable_requires.h>
+#include <daw/daw_span.h>
+#include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 
 #include <iterator>
+#include <optional>
 #include <string>
 #include <type_traits>
 
@@ -54,23 +57,37 @@ namespace daw::json {
 		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json(
 		  Value const &value, WritableType &&it,
-		  options::output_flags_t<PolicyFlags...> ) {
+		  options::output_flags_t<PolicyFlags...> flags ) {
+			if constexpr( json_details::is_char_pointer_v<Value> ) {
+				// A nul terminated string, nullptr is null.  An explicit JsonClass
+				// is given the string_view
+				if( value == nullptr ) {
+					return to_json<use_default>(
+					  std::optional<daw::string_view>( ), DAW_FWD( it ), flags );
+				}
+				return to_json<JsonClass>(
+				  daw::string_view( value ), DAW_FWD( it ), flags );
+			} else if constexpr( json_details::is_char_array_v<Value> ) {
+				// Exclude the trailing nul.  An explicit JsonClass is given the
+				// string_view
+				return to_json<JsonClass>(
+				  daw::string_view( value, std::extent_v<Value> - 1U ),
+				  DAW_FWD( it ),
+				  flags );
+			} else {
+				using json_class_t =
+				  json_details::json_serialize_deduced_type<JsonClass, Value>;
 
-			using json_class_t = typename daw::conditional_t<
-			  std::is_same_v<use_default, JsonClass>,
-			  json_details::ident_trait<json_details::json_deduced_type, Value>,
-			  json_details::ident_trait<json_details::json_deduced_type,
-			                            JsonClass>>::type;
+				using output_t = daw::rvalue_to_value_t<WritableType>;
+				if constexpr( std::is_pointer_v<daw::remove_cvref_t<WritableType>> ) {
+					daw_json_ensure( it != nullptr, ErrorReason::NullOutputIterator );
+				}
+				auto out_it =
+				  json_details::apply_policy_flags<output_t, PolicyFlags...>( it );
 
-			using output_t = daw::rvalue_to_value_t<WritableType>;
-			if constexpr( std::is_pointer_v<daw::remove_cvref_t<WritableType>> ) {
-				daw_json_ensure( it != nullptr, ErrorReason::NullOutputIterator );
+				out_it = json_details::member_to_string<json_class_t>( out_it, value );
+				return out_it.get( );
 			}
-			auto out_it =
-			  json_details::apply_policy_flags<output_t, PolicyFlags...>( it );
-
-			out_it = json_details::member_to_string<json_class_t>( out_it, value );
-			return out_it.get( );
 		}
 
 		template<typename JsonClass, typename Value, auto... PolicyFlags>
@@ -79,7 +96,7 @@ namespace daw::json {
 		         options::output_flags_t<PolicyFlags...> flgs ) {
 			std::string result{ };
 			result.reserve( 4096 );
-			(void)to_json( value, result, flgs );
+			(void)to_json<JsonClass>( value, result, flgs );
 			result.shrink_to_fit( );
 			return result;
 		}
@@ -118,52 +135,66 @@ namespace daw::json {
 		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json_array(
 		  Container const &c, WritableType &&it,
-		  options::output_flags_t<PolicyFlags...> ) {
-			static_assert(
-			  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
-			  "Supplied container must support begin( )/end( )" );
+		  options::output_flags_t<PolicyFlags...> flags ) {
+			if constexpr( json_details::is_char_array_v<Container> ) {
+				// Exclude the trailing nul, same as to_json and json_writer
+				return to_json_array<JsonElement>(
+				  daw::string_view( c, std::extent_v<Container> - 1U ),
+				  DAW_FWD( it ),
+				  flags );
+			} else if constexpr( std::is_array_v<Container> ) {
+				return to_json_array<JsonElement>(
+				  daw::span<std::remove_extent_t<Container> const>(
+				    c, std::extent_v<Container> ),
+				  DAW_FWD( it ),
+				  flags );
+			} else if constexpr( std::is_pointer_v<Container> ) {
+				static_assert( daw::deduced_false_v<Container>,
+				               "Pointers have no length, pass a span or container" );
+			} else {
+				static_assert(
+				  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
+				  "Supplied container must support begin( )/end( )" );
 
-			auto out_it =
-			  json_details::make_output_iterator<PolicyFlags...>( DAW_FWD( it ) );
-			out_it.put( '[' );
-			out_it.add_indent( );
-			// Not const & as some types(vector<bool>::const_reference are not ref
-			// types
-			auto first = std::begin( c );
-			auto last = std::end( c );
-			bool const has_elements = first != last;
-			while( first != last ) {
-				(void)[&out_it]( auto &&v ) {
-					using v_type = DAW_TYPEOF( v );
-					using JsonMember = typename daw::conditional_t<
-					  std::is_same_v<JsonElement, use_default>,
-					  json_details::ident_trait<json_details::json_deduced_type, v_type>,
-					  json_details::ident_trait<json_details::json_deduced_type,
-					                            JsonElement>>::type;
+				auto out_it =
+				  json_details::make_output_iterator<PolicyFlags...>( DAW_FWD( it ) );
+				out_it.put( '[' );
+				out_it.add_indent( );
+				// Not const & as some types(vector<bool>::const_reference are not ref
+				// types
+				auto first = std::begin( c );
+				auto last = std::end( c );
+				bool const has_elements = first != last;
+				while( first != last ) {
+					(void)[&out_it]( auto &&v ) {
+						using v_type = DAW_TYPEOF( v );
+						using JsonMember =
+						  json_details::json_serialize_deduced_type<JsonElement, v_type>;
 
-					static_assert(
-					  not std::is_same_v<
-					    JsonMember,
-					    missing_json_data_contract_for_or_unknown_type<JsonElement>>,
-					  "Unable to detect unnamed mapping" );
-					// static_assert( not std::is_same_v<JsonElement, JsonMember> );
-					out_it.next_member( );
+						static_assert(
+						  not std::is_same_v<
+						    JsonMember,
+						    missing_json_data_contract_for_or_unknown_type<JsonElement>>,
+						  "Unable to detect unnamed mapping" );
+						// static_assert( not std::is_same_v<JsonElement, JsonMember> );
+						out_it.next_member( );
 
-					out_it = json_details::member_to_string<JsonMember>( out_it, v );
+						out_it = json_details::member_to_string<JsonMember>( out_it, v );
+					}
+					( *first );
+					++first;
+					if( first != last ) {
+						out_it.put( ',' );
+					}
 				}
-				( *first );
-				++first;
-				if( first != last ) {
-					out_it.put( ',' );
+				// The last character will be a ',' prior to this
+				out_it.del_indent( );
+				if( has_elements ) {
+					out_it.output_newline( );
 				}
+				out_it.put( ']' );
+				return out_it.get( );
 			}
-			// The last character will be a ',' prior to this
-			out_it.del_indent( );
-			if( has_elements ) {
-				out_it.output_newline( );
-			}
-			out_it.put( ']' );
-			return out_it.get( );
 		}
 
 		template<typename JsonElement, typename Container, auto... PolicyFlags>
@@ -173,7 +204,7 @@ namespace daw::json {
 			static_assert( not std::is_same_v<std::string, JsonElement> );
 			auto result = std::string{ };
 			result.reserve( 4096 );
-			(void)to_json_array( c, result, flgs );
+			(void)to_json_array<JsonElement>( c, result, flgs );
 			result.shrink_to_fit( );
 			return result;
 		}

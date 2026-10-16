@@ -1260,6 +1260,18 @@ add_test( NAME issue_493_test COMMAND issue_493_test WORKING_DIRECTORY "${CMAKE_
 add_dependencies( ci_tests issue_493_test )
 add_dependencies( full issue_493_test )
 
+add_executable( issue_496_test src/issue_496_test.cpp )
+target_link_libraries( issue_496_test PRIVATE json_test )
+add_test( NAME issue_496_test COMMAND issue_496_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests issue_496_test )
+add_dependencies( full issue_496_test )
+
+add_executable( deduced_string_escaping_test src/deduced_string_escaping_test.cpp )
+target_link_libraries( deduced_string_escaping_test PRIVATE json_test )
+add_test( NAME deduced_string_escaping_test COMMAND deduced_string_escaping_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests deduced_string_escaping_test )
+add_dependencies( full deduced_string_escaping_test )
+
 add_executable( custom_optional_number_test src/custom_optional_number_test.cpp )
 target_link_libraries( custom_optional_number_test PRIVATE json_test )
 add_test( NAME custom_optional_number_test COMMAND custom_optional_number_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
@@ -1361,6 +1373,18 @@ target_link_libraries( json_string_insitu_test PRIVATE json_test )
 add_test( NAME json_string_insitu_test COMMAND json_string_insitu_test )
 add_dependencies( ci_tests json_string_insitu_test )
 add_dependencies( full json_string_insitu_test )
+
+add_executable( serialize_string_simd_test src/serialize_string_simd_test.cpp )
+target_link_libraries( serialize_string_simd_test PRIVATE json_test )
+add_test( NAME serialize_string_simd_test COMMAND serialize_string_simd_test )
+add_dependencies( ci_tests serialize_string_simd_test )
+add_dependencies( full serialize_string_simd_test )
+
+add_executable( parse_string_simd_test src/parse_string_simd_test.cpp )
+target_link_libraries( parse_string_simd_test PRIVATE json_test )
+add_test( NAME parse_string_simd_test COMMAND parse_string_simd_test )
+add_dependencies( ci_tests parse_string_simd_test )
+add_dependencies( full parse_string_simd_test )
 
 add_executable( daw_json_writer_mapping_test
 								src/daw_json_writer_mapping_test.cpp )

@@ -529,7 +529,7 @@ namespace daw::json {
 				} else
 #elif defined( DAW_JSON_HAS_SIMD )
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
-					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
 						return json_details::skip_bracketed_item_simd<
 						  json_details::SkipBracketedType::Class>( *this );
 					}
@@ -552,7 +552,7 @@ namespace daw::json {
 				} else
 #elif defined( DAW_JSON_HAS_SIMD )
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
-					if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
+					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
 						return json_details::skip_bracketed_item_simd<
 						  json_details::SkipBracketedType::Array>( *this );
 					}
