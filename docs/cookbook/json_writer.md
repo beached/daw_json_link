@@ -331,6 +331,19 @@ writes the vector as one value, so its elements are deduced and each
 `char const *` is a nullable `char`; `write_array_values( ptrs )` converts each
 element.
 
+To write the vector as one value with string elements, give the mapping
+explicitly:
+
+```cpp
+using char_ptr_strings = daw::json::json_array_no_name<
+  daw::json::json_nullable_no_name<
+    char const *, daw::json::json_string_no_name<daw::string_view>>>;
+
+writer.write_value<char_ptr_strings>( ptrs ); // ["A\"da",null]
+```
+
+See [Containers of character pointers](strings.md#containers-of-character-pointers).
+
 Member names are written as-is by default. To escape them, construct the
 writer with `daw::json::options::AllowEscapedNames::yes`:
 

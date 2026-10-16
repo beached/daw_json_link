@@ -150,10 +150,40 @@ namespace {
 	}
 } // namespace
 
+namespace {
+	// Character pointers in a container are not deduced as strings, an explicit
+	// mapping is required
+	using char_ptr_string = daw::json::json_nullable_no_name<
+	  char const *, daw::json::json_string_no_name<daw::string_view>>;
+	using char_ptr_strings = daw::json::json_array_no_name<char_ptr_string>;
+
+	void explicit_char_pointer_array( ) {
+		auto const ptrs = std::vector<char const *>{ "A\"da", nullptr };
+
+		check( "to_json explicit vector<char const *>",
+		       R"(["A\"da",null])",
+		       daw::json::to_json<char_ptr_strings>( ptrs ) );
+
+		check( "to_json_array explicit vector<char const *>",
+		       R"(["A\"da",null])",
+		       daw::json::to_json_array<char_ptr_string>( ptrs ) );
+
+		auto result = std::string{ };
+		{
+			auto writer = daw::json::json_writer( result );
+			writer.write_value<char_ptr_strings>( ptrs );
+		}
+		check( "json_writer explicit vector<char const *>",
+		       R"(["A\"da",null])",
+		       result );
+	}
+} // namespace
+
 int main( ) {
 	to_json_top_level( );
 	to_json_nested( );
 	json_writer_values( );
 	json_writer_key_values( );
 	contract_string_view_is_raw( );
+	explicit_char_pointer_array( );
 }

@@ -316,4 +316,13 @@ std::vector<char const *> ptrs{ "A\"da", nullptr };
 | `to_json_array( ptr )` with `char const *ptr`                | compile error: pointers have no length |
 
 As with `to_json`, character pointers inside a container are deduced as a
-nullable `char`. See [Strings](strings.md#serializing-strings-without-a-mapping).
+nullable `char`. To write them as strings, give the element mapping explicitly:
+
+```c++
+using char_ptr_string = daw::json::json_nullable_no_name<
+  char const *, daw::json::json_string_no_name<daw::string_view>>;
+
+to_json_array<char_ptr_string>( ptrs ); // ["A\"da",null]
+```
+
+See [Containers of character pointers](strings.md#containers-of-character-pointers).

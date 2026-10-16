@@ -698,7 +698,12 @@ namespace daw::json {
 				using member_type = typename JsonMember::member_type;
 				return to_daw_json_string<member_type, member_type::expected_type>(
 				  it, [&] {
-					  if constexpr( concepts::is_nullable_value_v<Optional> ) {
+					  if constexpr( is_char_pointer_v<Optional> and
+					                member_type::underlying_json_type ==
+					                  JsonBaseParseTypes::String ) {
+						  // The pointer is a nul terminated string, not a nullable char
+						  return daw::string_view( value );
+					  } else if constexpr( concepts::is_nullable_value_v<Optional> ) {
 						  return concepts::nullable_value_traits<Optional>::read( value );
 					  } else if constexpr( json_details::has_op_star_v<Optional> ) {
 						  return *value;

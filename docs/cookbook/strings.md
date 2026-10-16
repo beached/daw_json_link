@@ -196,8 +196,54 @@ std::vector<char const *> ptrs{ "A\"da", nullptr };
 
 Character pointers are only converted when passed directly. Inside a container
 they are deduced as a nullable `char`, so `to_json( ptrs )` writes the first
-character's code. Use a container of `std::string_view` instead, or write the
-elements with `json_writer::write_array_values`.
+character's code.
+
+### Containers of character pointers
+
+To write a container of character pointers as strings, map the element
+explicitly as a nullable string. A `nullptr` element is written as `null`.
+
+```c++
+using char_ptr_string = daw::json::json_nullable_no_name<
+  char const *, daw::json::json_string_no_name<daw::string_view>>;
+using char_ptr_strings = daw::json::json_array_no_name<char_ptr_string>;
+
+std::vector<char const *> ptrs{ "A\"da", nullptr };
+```
+
+| Expression                                 | Output           |
+|--------------------------------------------|------------------|
+| `to_json<char_ptr_strings>( ptrs )`        | `["A\"da",null]` |
+| `to_json_array<char_ptr_string>( ptrs )`   | `["A\"da",null]` |
+
+The same element mapping works as a member of a `json_data_contract`. The
+container type must be given, as it is not the default for the element type:
+
+```c++
+struct Names {
+  std::vector<char const *> names;
+};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<Names> {
+    static constexpr char const names[] = "names";
+    using type = json_member_list<
+      json_array<names, char_ptr_string, std::vector<char const *>>>;
+
+    static constexpr auto to_json_data( Names const &value ) {
+      return std::forward_as_tuple( value.names );
+    }
+  };
+}
+```
+
+`to_json( Names{ ptrs } )` writes `{"names":["A\"da",null]}`. This mapping is
+serialization only: `from_json<Names>` does not compile, as a `char const *`
+cannot be constructed from a parsed string.
+
+Alternatively, use a container of `std::string_view` or write the elements with
+`json_writer::write_array_values`.
 
 ### Already escaped values
 
