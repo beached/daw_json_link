@@ -19,10 +19,10 @@ struct Submember {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Submember> {
-		static constexpr char const object[] = "object";
-		static constexpr char const object_path[] = "nested.value";
-		static constexpr char const array[] = "array";
-		static constexpr char const array_path[] = "[1].name";
+		static constexpr char object[] = "object";
+		static constexpr char object_path[] = "nested.value";
+		static constexpr char array[] = "array";
+		static constexpr char array_path[] = "[1].name";
 
 		using type = json_member_list<
 		  json_submember<object, object_path, int>,
@@ -44,11 +44,44 @@ namespace daw::json {
 	struct json_data_contract<SerializableSubmember> {
 		static constexpr char const data[] = "data";
 		static constexpr char const value_path[] = "values[0].value";
-		using type =
-		  json_member_list<json_submember<data, value_path, int>>;
+		using type = json_member_list<json_submember<data, value_path, int>>;
 
-		static constexpr auto
-		to_json_data( SerializableSubmember const &value ) {
+		static constexpr auto to_json_data( SerializableSubmember const &value ) {
+			return std::forward_as_tuple( value.value );
+		}
+	};
+} // namespace daw::json
+
+struct EscapedPathSubmember {
+	int value;
+};
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<EscapedPathSubmember> {
+		static constexpr char const data[] = "data";
+		static constexpr char const value_path[] =
+		  R"(\.leading.adjacent\.\[.na\"me.na\\me)";
+		using type = json_member_list<json_submember<data, value_path, int>>;
+
+		static constexpr auto to_json_data( EscapedPathSubmember const &value ) {
+			return std::forward_as_tuple( value.value );
+		}
+	};
+} // namespace daw::json
+
+struct TrailingEscapeSubmember {
+	int value;
+};
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<TrailingEscapeSubmember> {
+		static constexpr char const data[] = "data";
+		static constexpr char const value_path[] = R"(value\)";
+		using type = json_member_list<json_submember<data, value_path, int>>;
+
+		static constexpr auto to_json_data( TrailingEscapeSubmember const &value ) {
 			return std::forward_as_tuple( value.value );
 		}
 	};
@@ -73,13 +106,31 @@ int main( ) {
 	daw_ensure( value1.object_value == 42 );
 	daw_ensure( value1.array_value == "second" );
 
-	auto const serialized =
-	  daw::json::to_json( SerializableSubmember{ 42 } );
+	auto const serialized = daw::json::to_json( SerializableSubmember{ 42 } );
 	daw_ensure( serialized == R"json({"data":{"values":[{"value":42}]}})json" );
+	daw_ensure( daw::json::from_json<SerializableSubmember>( serialized ).value ==
+	            42 );
+
+	auto const escaped_path_serialized =
+	  daw::json::to_json( EscapedPathSubmember{ 42 },
+	                      daw::json::options::output_flags<
+	                        daw::json::options::AllowEscapedNames::yes> );
 	daw_ensure(
-	  daw::json::from_json<SerializableSubmember>( serialized ).value == 42 );
+	  escaped_path_serialized ==
+	  R"json({"data":{".leading":{"adjacent.[":{"na\"me":{"na\\me":42}}}}})json" );
 
 #if defined( DAW_USE_EXCEPTIONS )
+	bool trailing_escape_threw = false;
+	try {
+		(void)daw::json::to_json( TrailingEscapeSubmember{ 42 },
+		                          daw::json::options::output_flags<
+		                            daw::json::options::AllowEscapedNames::yes> );
+	} catch( daw::json::json_exception const &ex ) {
+		trailing_escape_threw = true;
+		daw_ensure( ex.reason_type( ) == daw::json::ErrorReason::OutputError );
+	}
+	daw_ensure( trailing_escape_threw );
+
 	bool nonzero_array_index_threw = false;
 	try {
 		(void)daw::json::to_json( value0 );

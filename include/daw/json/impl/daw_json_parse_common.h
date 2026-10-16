@@ -77,7 +77,7 @@ namespace daw::json {
 			inline constexpr JsonParseTypes number_parse_type_v =
 			  number_parse_type_test<T>( );
 
-			template<typename, typename = void>
+			template<typename, typename AllowRawString, typename = void>
 			struct json_deduced_type_map {
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type = JsonParseTypes::Unknown;
@@ -85,10 +85,10 @@ namespace daw::json {
 				static constexpr bool type_map_found = false;
 			};
 
-			template<typename JsonType>
+			template<typename JsonType, typename AllowRawString>
 			DAW_REQUIRES( is_a_json_type_v<JsonType> )
 			struct json_deduced_type_map<
-			  JsonType DAW_ENABLEIF_S( is_a_json_type_v<JsonType> )> {
+			  JsonType, AllowRawString DAW_ENABLEIF_S( is_a_json_type_v<JsonType> )> {
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type = JsonParseTypes::Unknown;
 
@@ -96,10 +96,10 @@ namespace daw::json {
 				static constexpr bool type_map_found = true;
 			};
 
-			template<typename T>
+			template<typename T, typename AllowRawString>
 			DAW_REQUIRES( has_json_data_contract_trait_v<T> )
 			struct json_deduced_type_map<
-			  T DAW_ENABLEIF_S( has_json_data_contract_trait_v<T> )> {
+			  T, AllowRawString DAW_ENABLEIF_S( has_json_data_contract_trait_v<T> )> {
 				static constexpr bool is_null = false;
 				using type = typename json_data_contract<T>::type;
 				static_assert( is_json_member_list_v<type>,
@@ -110,7 +110,7 @@ namespace daw::json {
 			};
 
 			template<>
-			struct json_deduced_type_map<daw::string_view> {
+			struct json_deduced_type_map<daw::string_view, std::true_type> {
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type = JsonParseTypes::StringRaw;
 
@@ -118,7 +118,15 @@ namespace daw::json {
 			};
 
 			template<>
-			struct json_deduced_type_map<std::string_view> {
+			struct json_deduced_type_map<daw::string_view, std::false_type> {
+				static constexpr bool is_null = false;
+				static constexpr auto parse_type = JsonParseTypes::StringInsitu;
+
+				static constexpr bool type_map_found = true;
+			};
+
+			template<>
+			struct json_deduced_type_map<std::string_view, std::true_type> {
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type = JsonParseTypes::StringRaw;
 
@@ -126,15 +134,23 @@ namespace daw::json {
 			};
 
 			template<>
-			struct json_deduced_type_map<std::string> {
+			struct json_deduced_type_map<std::string_view, std::false_type> {
+				static constexpr bool is_null = false;
+				static constexpr auto parse_type = JsonParseTypes::StringInsitu;
+
+				static constexpr bool type_map_found = true;
+			};
+
+			template<typename AllowRawString>
+			struct json_deduced_type_map<std::string, AllowRawString> {
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type = JsonParseTypes::StringEscaped;
 
 				static constexpr bool type_map_found = true;
 			};
 
-			template<>
-			struct json_deduced_type_map<bool> {
+			template<typename AllowRawString>
+			struct json_deduced_type_map<bool, AllowRawString> {
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type = JsonParseTypes::Bool;
 				static constexpr bool type_map_found = true;
@@ -143,9 +159,9 @@ namespace daw::json {
 			// libc++ has a non-conforming vector<bool>::const_reference as it isn't
 			// bool https://bugs.llvm.org/show_bug.cgi?id=16077
 #if defined( _LIBCPP_VERSION )
-			template<>
-			struct json_deduced_type_map<
-			  typename std::vector<bool>::const_reference> {
+			template<typename AllowRawString>
+			struct json_deduced_type_map<typename std::vector<bool>::const_reference,
+			                             AllowRawString> {
 
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type = JsonParseTypes::Bool;
@@ -154,13 +170,14 @@ namespace daw::json {
 			};
 #endif
 
-			template<typename Integer>
+			template<typename Integer, typename AllowRawString>
 			DAW_REQUIRES(
 			  not json_details::has_json_data_contract_trait_v<Integer> and
 			  daw::is_integral_v<Integer> )
-			struct json_deduced_type_map<Integer DAW_ENABLEIF_S(
-			  not json_details::has_json_data_contract_trait_v<Integer> and
-			  daw::is_integral_v<Integer> )> {
+			struct json_deduced_type_map<
+			  Integer, AllowRawString DAW_ENABLEIF_S(
+			             not json_details::has_json_data_contract_trait_v<Integer> and
+			             daw::is_integral_v<Integer> )> {
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type = daw::is_signed_v<Integer>
 				                                     ? JsonParseTypes::Signed
@@ -169,12 +186,13 @@ namespace daw::json {
 				static constexpr bool type_map_found = true;
 			};
 
-			template<typename Enum>
+			template<typename Enum, typename AllowRawString>
 			DAW_REQUIRES( not json_details::has_json_data_contract_trait_v<Enum> and
 			              std::is_enum_v<Enum> )
-			struct json_deduced_type_map<Enum DAW_ENABLEIF_S(
-			  not json_details::has_json_data_contract_trait_v<Enum> and
-			  std::is_enum_v<Enum> )> {
+			struct json_deduced_type_map<
+			  Enum, AllowRawString DAW_ENABLEIF_S(
+			          not json_details::has_json_data_contract_trait_v<Enum> and
+			          std::is_enum_v<Enum> )> {
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type =
 				  daw::is_signed_v<std::underlying_type<Enum>>
@@ -184,25 +202,28 @@ namespace daw::json {
 				static constexpr bool type_map_found = true;
 			};
 
-			template<typename FloatingPoint>
+			template<typename FloatingPoint, typename AllowRawString>
 			DAW_REQUIRES(
 			  not json_details::has_json_data_contract_trait_v<FloatingPoint> and
 			  daw::is_floating_point_v<FloatingPoint> )
-			struct json_deduced_type_map<FloatingPoint DAW_ENABLEIF_S(
-			  not json_details::has_json_data_contract_trait_v<FloatingPoint> and
-			  daw::is_floating_point_v<FloatingPoint> )> {
+			struct json_deduced_type_map<
+			  FloatingPoint,
+			  AllowRawString DAW_ENABLEIF_S(
+			    not json_details::has_json_data_contract_trait_v<FloatingPoint> and
+			    daw::is_floating_point_v<FloatingPoint> )> {
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type = JsonParseTypes::Real;
 
 				static constexpr bool type_map_found = true;
 			};
 
-			template<typename Tuple>
+			template<typename Tuple, typename AllowRawString>
 			DAW_REQUIRES( not json_details::has_json_data_contract_trait_v<Tuple> and
 			              is_tuple_v<Tuple> )
-			struct json_deduced_type_map<Tuple DAW_ENABLEIF_S(
-			  not json_details::has_json_data_contract_trait_v<Tuple> and
-			  is_tuple_v<Tuple> )> {
+			struct json_deduced_type_map<
+			  Tuple, AllowRawString DAW_ENABLEIF_S(
+			           not json_details::has_json_data_contract_trait_v<Tuple> and
+			           is_tuple_v<Tuple> )> {
 				static constexpr bool is_null = false;
 				static constexpr auto parse_type = JsonParseTypes::Tuple;
 
@@ -229,12 +250,14 @@ namespace daw::json {
 			    (void)( std::declval<typename T::key_type>( ) ),
 			    (void)( std::declval<typename T::mapped_type>( ) ) ) );
 
-			template<typename AssociativeContainer>
+			template<typename AssociativeContainer, typename AllowRawString>
 			DAW_REQUIRES( not has_json_data_contract_trait_v<AssociativeContainer> and
 			              is_associative_container_v<AssociativeContainer> )
-			struct json_deduced_type_map<AssociativeContainer DAW_ENABLEIF_S(
-			  not has_json_data_contract_trait_v<AssociativeContainer> and
-			  is_associative_container_v<AssociativeContainer> )> {
+			struct json_deduced_type_map<
+			  AssociativeContainer,
+			  AllowRawString DAW_ENABLEIF_S(
+			    not has_json_data_contract_trait_v<AssociativeContainer> and
+			    is_associative_container_v<AssociativeContainer> )> {
 				static constexpr bool is_null = false;
 				using key = typename AssociativeContainer::key_type;
 				using value = typename AssociativeContainer::mapped_type;
@@ -249,10 +272,11 @@ namespace daw::json {
 			  not is_associative_container_v<T> and concepts::is_container_v<T> and
 			  not is_string_v<T>;
 
-			template<typename Container>
+			template<typename Container, typename AllowRawString>
 			DAW_REQUIRES( is_deduced_array_v<Container> )
 			struct json_deduced_type_map<
-			  Container DAW_ENABLEIF_S( is_deduced_array_v<Container> )> {
+			  Container,
+			  AllowRawString DAW_ENABLEIF_S( is_deduced_array_v<Container> )> {
 				static constexpr bool is_null = false;
 				using value = typename Container::value_type;
 				static constexpr auto parse_type = JsonParseTypes::Array;
@@ -260,27 +284,44 @@ namespace daw::json {
 				static constexpr bool type_map_found = true;
 			};
 
-			template<typename T>
+#if defined( DAW_JSON_USE_CONCEPTS )
+			template<typename T, typename AllowRawString>
+			inline constexpr bool detected_deduced_type_map_v = requires {
+				requires json_deduced_type_map<T, AllowRawString>::type_map_found;
+			};
+#else
+			template<typename, typename, typename = void>
+			inline constexpr bool detected_deduced_type_map_v = false;
+
+			template<typename T, typename AllowRawString>
+			inline constexpr bool detected_deduced_type_map_v<
+			  T, AllowRawString,
+			  std::void_t<decltype( json_deduced_type_map<
+			                        T, AllowRawString>::type_map_found )>> =
+			  json_deduced_type_map<T, AllowRawString>::type_map_found;
+#endif
+			template<typename T, typename AllowRawString>
 			DAW_CPP20_CONCEPT has_nullable_type_map_v =
 			  concepts::is_nullable_value_v<T> and
 			  not has_json_data_contract_trait_v<T> and
-			  daw::is_detected_v<json_deduced_type_map,
-			                     concepts::nullable_value_type_t<T>>;
+			  detected_deduced_type_map_v<concepts::nullable_value_type_t<T>,
+			                              AllowRawString>;
 
-			template<typename T>
-			DAW_REQUIRES( has_nullable_type_map_v<T> )
+			template<typename T, typename AllowRawString>
+			DAW_REQUIRES( has_nullable_type_map_v<T, AllowRawString> )
 			struct json_deduced_type_map<
-			  T DAW_ENABLEIF_S( has_nullable_type_map_v<T> )> {
+			  T, AllowRawString DAW_ENABLEIF_S(
+			       has_nullable_type_map_v<T, AllowRawString> )> {
 				static constexpr bool is_null = true;
 				using sub_type = concepts::nullable_value_type_t<T>;
-				using type = json_deduced_type_map<sub_type>;
+				using type = json_deduced_type_map<sub_type, AllowRawString>;
 				static constexpr auto parse_type = type::parse_type;
 				static constexpr bool type_map_found = true;
 			};
 
-			template<typename T>
+			template<typename T, typename AllowRawString = std::true_type>
 			DAW_CPP20_CONCEPT has_deduced_type_mapping_v =
-			  json_deduced_type_map<T>::type_map_found;
+			  json_deduced_type_map<T, AllowRawString>::type_map_found;
 
 			template<typename... Ts>
 			DAW_CPP20_CONCEPT are_deduced_type_mapped_v =
@@ -298,12 +339,12 @@ namespace daw::json {
 			                                 JsonParseTypes::Unsigned,
 			                                 JsonParseTypes::Real>;
 
-			template<typename T>
+			template<typename T, typename AllowRawString = std::true_type>
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_link_quick_map( ) noexcept {
 				if constexpr( is_a_json_type_v<T> ) {
 					return json_link_quick_map_type<T>{ };
-				} else if constexpr( has_deduced_type_mapping_v<T> ) {
-					using mapped_type_t = json_deduced_type_map<T>;
+				} else if constexpr( has_deduced_type_mapping_v<T, AllowRawString> ) {
+					using mapped_type_t = json_deduced_type_map<T, AllowRawString>;
 					using parse_type = daw::constant<mapped_type_t::parse_type>;
 					using is_null = daw::constant<mapped_type_t::is_null>;
 					if constexpr( parse_type::value == JsonParseTypes::Unknown ) {
@@ -334,9 +375,11 @@ namespace daw::json {
 						} else {
 							return json_link_quick_map_type<json_base::json_string<T>>{ };
 						}
-					} else if constexpr( parse_type::value == JsonParseTypes::StringInsitu ) {
+					} else if constexpr( parse_type::value ==
+					                     JsonParseTypes::StringInsitu ) {
 						if constexpr( is_null::value ) {
-							return json_link_quick_map_type<json_base::json_string_null<T>>{ };
+							return json_link_quick_map_type<
+							  json_base::json_string_null<T>>{ };
 						} else {
 							return json_link_quick_map_type<json_base::json_string<T>>{ };
 						}
@@ -376,9 +419,9 @@ namespace daw::json {
 						if constexpr( is_null::value ) {
 							using b_t = typename mapped_type_t::type;
 							using v_t = typename b_t::value;
-							return json_link_quick_map_type<
-							  json_base::json_nullable<
-							    T, json_base::json_array<v_t, json_details::unwrapped_t<T>>>>{ };
+							return json_link_quick_map_type<json_base::json_nullable<
+							  T,
+							  json_base::json_array<v_t, json_details::unwrapped_t<T>>>>{ };
 						} else {
 							using v_t = typename mapped_type_t::value;
 							return json_link_quick_map_type<json_base::json_array<v_t, T>>{ };
@@ -402,14 +445,15 @@ namespace daw::json {
 			}
 
 			/// Check if the current type has a quick map specialized for it
-			template<typename T>
+			template<typename T, typename AllowRawString = std::true_type>
 			DAW_CPP20_CONCEPT has_json_link_quick_map_v =
-			  decltype( json_link_quick_map<T>( ) )::value;
+			  decltype( json_link_quick_map<T, AllowRawString>( ) )::value;
 
 			/// @brief Get the quick mapped json type for type T
-			template<typename T>
+			template<typename T, typename AllowRawString = std::true_type>
 			using json_link_quick_map_t =
-			  typename decltype( json_link_quick_map<T>( ) )::mapped_type;
+			  typename decltype( json_link_quick_map<
+			                     T, AllowRawString>( ) )::mapped_type;
 
 			template<typename JsonType>
 			struct json_class_map_type {
@@ -425,7 +469,7 @@ namespace daw::json {
 			  has_json_data_contract_trait_v<T> and
 			  is_json_class_map_v<json_data_contract_trait_t<T>>;
 
-			template<typename T>
+			template<typename T, typename AllowRawString = std::true_type>
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_deduced_type_impl( ) noexcept {
 				if constexpr( is_a_basic_json_value<T> ) {
 					return daw::traits::identity<json_base::json_raw<T>>{ };
@@ -447,9 +491,9 @@ namespace daw::json {
 					static_assert( not is_nonesuch_v<remove_cvref_t<type>>,
 					               "Detection failure" );
 					return daw::traits::identity<type>{ };
-				} else if constexpr( has_json_link_quick_map_v<T> ) {
+				} else if constexpr( has_json_link_quick_map_v<T, AllowRawString> ) {
 					static_assert( not std::is_same_v<T, void> );
-					using type = json_link_quick_map_t<T>;
+					using type = json_link_quick_map_t<T, AllowRawString>;
 					using rcvref_type = remove_cvref_t<type>;
 					static_assert( not std::is_same_v<rcvref_type, void>,
 					               "Detection failure" );
@@ -468,8 +512,9 @@ namespace daw::json {
 					return daw::traits::identity<type>{ };
 				} else if constexpr( concepts::is_nullable_value_v<T> ) {
 					using value_type = concepts::nullable_value_type_t<T>;
-					using sub_type =
-					  typename decltype( json_deduced_type_impl<value_type>( ) )::type;
+					using sub_type = typename decltype( json_deduced_type_impl<
+					                                    value_type,
+					                                    AllowRawString>( ) )::type;
 					using type = json_base::json_nullable<T, sub_type>;
 					return daw::traits::identity<type>{ };
 				} else if constexpr( concepts::is_container_v<T> ) {
@@ -492,13 +537,13 @@ namespace daw::json {
 				}
 			}
 
-			template<typename T>
-			using json_deduced_type =
-			  typename DAW_TYPEOF( json_deduced_type_impl<T>( ) )::type;
+			template<typename T, typename AllowRawString = std::true_type>
+			using json_deduced_type = typename DAW_TYPEOF(
+			  json_deduced_type_impl<T, AllowRawString>( ) )::type;
 
-			template<typename T>
+			template<typename T, typename AllowRawString = std::true_type>
 			DAW_CPP20_CONCEPT has_json_deduced_type_v =
-			  not std::is_same_v<json_deduced_type<T>,
+			  not std::is_same_v<json_deduced_type<T, AllowRawString>,
 			                     missing_json_data_contract_for_or_unknown_type<T>>;
 
 			template<typename... Ts>

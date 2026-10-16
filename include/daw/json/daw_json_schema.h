@@ -167,7 +167,8 @@ namespace daw::json {
 
 			template<typename JsonMember, bool is_root = false, typename WritableType>
 			constexpr WritableType
-			to_json_schema( ParseTag<JsonParseTypes::StringInsitu>, WritableType out_it ) {
+			to_json_schema( ParseTag<JsonParseTypes::StringInsitu>,
+			                WritableType out_it ) {
 				return to_json_schema<JsonMember, is_root>(
 				  ParseTag<JsonParseTypes::StringEscaped>{ }, out_it );
 			}
@@ -358,7 +359,9 @@ namespace daw::json {
 						seen[Idx] = true;
 					}
 
-					out_it.write( "\"", JsonMember::name, "\":", out_it.space );
+					out_it.put( '"' );
+					out_it = encode_name( out_it, JsonMember::name );
+					out_it.write( "\":", out_it.space );
 					out_it = to_json_schema<JsonMember>(
 					  ParseTag<JsonMember::expected_type>{ }, out_it );
 					if constexpr( Idx + 1 < sizeof...( JsonMembers ) ) {
@@ -388,7 +391,7 @@ namespace daw::json {
 						}
 						out_it.next_member( );
 						out_it.put( '"' );
-						out_it = utils::copy_to_iterator( out_it, JsonMember::name );
+						out_it = encode_name( out_it, JsonMember::name );
 						out_it.put( '"' );
 					}
 					return out_it;
@@ -404,10 +407,15 @@ namespace daw::json {
 							is_first = false;
 						}
 						out_it.next_member( );
-						out_it.write( "\"", JsonMember::name, "\":", out_it.space, "[" );
+						out_it.put( '"' );
+						out_it = encode_name( out_it, JsonMember::name );
+						out_it.put( '"' );
 						out_it.add_indent( );
 						out_it.next_member( );
-						out_it.write( "\"", dependent_member_t<JsonMember>::name, "\"" );
+						out_it.put( '"' );
+						out_it =
+						  encode_name( out_it, dependent_member_t<JsonMember>::name );
+						out_it.put( '"' );
 						out_it.del_indent( );
 						out_it.next_member( );
 						out_it.put( ']' );

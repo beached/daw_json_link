@@ -582,14 +582,13 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename Writer, typename Name>
-			DAW_ATTRIB_INLINE constexpr void encode_name( Writer &it,
-			                                              Name const &name ) {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr Writer
+			encode_name( Writer it, Name const &name ) {
 				if constexpr( Writer::allow_escaped_names ) {
-					it.put( '"' );
-					it = utils::copy_to_iterator<true>( it, name );
-					it.write( "\":", it.space );
+					return utils::copy_to_iterator<true>( it, name );
 				} else {
-					it.write( '"', name, "\":", it.space );
+					it.write( name );
+					return it;
 				}
 			}
 
@@ -1352,7 +1351,9 @@ namespace daw::json {
 					it.add_indent( );
 					it.next_member( );
 					// Append Key Name
-					it = encode_name( it, key_t::name );
+					it.put( '"' );
+					it = json_details::encode_name( it, key_t::name );
+					it.write( "\":", it.space );
 					// Append Key Value
 					it = to_daw_json_string<key_t, key_t::expected_type>(
 					  it, json_get_key( *first ) );
@@ -1360,7 +1361,9 @@ namespace daw::json {
 					it.put( ',' );
 					// Append Value Name
 					it.next_member( );
-					it = encode_name( it, value_t::name );
+					it.put( '"' );
+					it = json_details::encode_name( it, value_t::name );
+					it.write( "\":", it.space );
 					// Append Value Value
 					it = to_daw_json_string<value_t, value_t::expected_type>(
 					  it, json_get_value( *first ) );
@@ -1489,13 +1492,16 @@ namespace daw::json {
 				it.next_member( );
 				it.put( '"' );
 				auto name = path_item.current;
+
 				while( not name.empty( ) ) {
-					if( name.front( ) == '\\' ) {
-						name.remove_prefix( );
-						daw_json_ensure( not name.empty( ), ErrorReason::OutputError );
+					auto const segment = name.pop_front_until( '\\', daw::nodiscard );
+					it = encode_name( it, segment );
+					if( name.empty( ) ) {
+						break;
 					}
-					it.put( name.front( ) );
 					name.remove_prefix( );
+					daw_json_ensure( not name.empty( ), ErrorReason::OutputError );
+					it = encode_name( it, name.pop_front( 1 ) );
 				}
 				it.write( "\":", it.space );
 
@@ -1673,7 +1679,9 @@ namespace daw::json {
 					}
 					it.next_member( );
 					is_first = false;
-					encode_name( it, dependent_member::name );
+					it.write( '"' );
+					it = encode_name( it, dependent_member::name );
+					it.write( "\":", it.space );
 
 					if constexpr( has_switcher_v<base_member_t> ) {
 						it = member_to_string<dependent_member>(
@@ -1722,7 +1730,9 @@ namespace daw::json {
 				}
 				it.next_member( );
 				is_first = false;
-				encode_name( it, JsonMember::name );
+				it.put( '"' );
+				it = json_details::encode_name( it, JsonMember::name );
+				it.write( "\":", it.space );
 
 				it = member_to_string<JsonMember>( std::move( it ), get<pos>( tp ) );
 			}
