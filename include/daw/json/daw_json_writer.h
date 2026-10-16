@@ -101,27 +101,38 @@ namespace daw::json {
 
 			template<typename JsonClass = use_default, typename T>
 			constexpr void do_write_value( T const &value ) {
-				using json_class_t =
-				  json_details::json_serialize_deduced_type<JsonClass, T>;
-				prepare_value( );
-				if constexpr( std::is_pointer_v<std::remove_reference_t<T>> ) {
-					if( not value ) {
+				if constexpr( json_details::is_char_pointer_v<T> ) {
+					// Same as to_json: a nul terminated string, nullptr is null.  An
+					// explicit JsonClass is given the string_view
+					if( value == nullptr ) {
+						prepare_value( );
 						m_writer.write( "null" );
+						m_is_first = false;
 					} else {
-						if constexpr( std::is_convertible_v<T, char const *> ) {
-							m_writer = json_details::member_to_string<
-							  json_string_raw_no_name<daw::string_view>>(
-							  m_writer, daw::string_view( value ) );
+						do_write_value<JsonClass>( daw::string_view( value ) );
+					}
+				} else if constexpr( json_details::is_char_array_v<T> ) {
+					// Same as to_json: exclude the trailing nul.  An explicit JsonClass
+					// is given the string_view
+					do_write_value<JsonClass>(
+					  daw::string_view( value, std::extent_v<T> - 1U ) );
+				} else {
+					using json_class_t =
+					  json_details::json_serialize_deduced_type<JsonClass, T>;
+					prepare_value( );
+					if constexpr( std::is_pointer_v<std::remove_reference_t<T>> ) {
+						if( not value ) {
+							m_writer.write( "null" );
 						} else {
 							m_writer =
 							  json_details::member_to_string<json_class_t>( m_writer, value );
 						}
+					} else {
+						m_writer =
+						  json_details::member_to_string<json_class_t>( m_writer, value );
 					}
-				} else {
-					m_writer =
-					  json_details::member_to_string<json_class_t>( m_writer, value );
+					m_is_first = false;
 				}
-				m_is_first = false;
 			}
 
 		public:
@@ -279,21 +290,6 @@ namespace daw::json {
 				close_array( );
 			}
 
-			template<typename JsonClass = use_default, std::size_t N>
-			constexpr void write_value( char const ( &str )[N] ) {
-				daw_json_ensure(
-				  m_current_state !=
-				      json_writer_details::json_writer_states::json_writer_object or
-				    m_is_key_written,
-				  ErrorReason::OutputError );
-				daw_json_ensure(
-				  m_current_state !=
-				      json_writer_details::json_writer_states::json_writer_nothing or
-				    m_is_first,
-				  ErrorReason::OutputError );
-				do_write_value<JsonClass>( daw::string_view( str, N - 1 ) );
-			}
-
 			constexpr void add_key( daw::string_view name ) {
 				if( m_is_key_written ) {
 					write_value( nullptr );
@@ -337,13 +333,6 @@ namespace daw::json {
 				open_array( );
 				write_array_values( value, value2, values... );
 				close_array( );
-			}
-
-			template<typename JsonClass = use_default, std::size_t N>
-			constexpr void write_key_value( daw::string_view name,
-			                                char const ( &str )[N] ) {
-				add_key( name );
-				write_value<JsonClass>( daw::string_view( str, N - 1 ) );
 			}
 
 			// Must be in array state
@@ -433,6 +422,17 @@ namespace daw::json {
 		public:
 			template<typename JsonClass = use_default, typename T>
 			constexpr void write_string( T const &value ) {
+				if constexpr( json_details::is_char_pointer_v<T> or
+				              json_details::is_char_array_v<T> ) {
+					write_value<JsonClass>( value );
+				} else {
+					write_string_impl<JsonClass>( value );
+				}
+			}
+
+		private:
+			template<typename JsonClass, typename T>
+			constexpr void write_string_impl( T const &value ) {
 				using JsonMember =
 				  json_writer_details::json_write_value_class_t<JsonClass, T>;
 				DAW_CPP23_STATIC_LOCAL constexpr JsonBaseParseTypes json_base_type =
@@ -452,12 +452,8 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonClass = use_default, std::size_t N>
-			constexpr void write_string( char const ( &str )[N] ) {
-				write_value<JsonClass>( daw::string_view( str, N - 1 ) );
-			}
-
 #if defined( DAW_JSON_HAS_REFLECTION )
+		public:
 			constexpr void write_enum_string( daw::EnumType auto e ) {
 				write_string( refl_details::enum_to_string( e ) );
 			}
@@ -466,8 +462,9 @@ namespace daw::json {
 			/// enumerator a number of the underlying type
 			template<json_options_t NumberOptions = number_opts_def>
 			constexpr void write_enum_string_or_number( daw::EnumType auto e ) {
-				write_value<refl_details::enum_string_or_number<decltype( e ),
-				                                                NumberOptions>>( e );
+				write_value<
+				  refl_details::enum_string_or_number<decltype( e ), NumberOptions>>(
+				  e );
 			}
 #endif
 		};

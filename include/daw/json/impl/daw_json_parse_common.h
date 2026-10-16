@@ -141,6 +141,16 @@ namespace daw::json {
 				static constexpr bool type_map_found = true;
 			};
 
+			/// @brief When serializing, a char is a one character string.  signed
+			/// char and unsigned char are distinct types and remain numbers.
+			template<>
+			struct json_deduced_type_map<char, std::false_type> {
+				static constexpr bool is_null = false;
+				static constexpr auto parse_type = JsonParseTypes::StringInsitu;
+
+				static constexpr bool type_map_found = true;
+			};
+
 			template<typename AllowRawString>
 			struct json_deduced_type_map<std::string, AllowRawString> {
 				static constexpr bool is_null = false;
@@ -518,6 +528,12 @@ namespace daw::json {
 			inline constexpr bool is_json_class_map_v =
 			  has_json_data_contract_trait_v<T> and
 			  is_json_class_map_v<json_data_contract_trait_t<T>>;
+
+			/// @brief char *, char const * - a nul terminated string
+			template<typename T>
+			inline constexpr bool is_char_pointer_v =
+			  std::is_pointer_v<T> and
+			  std::is_same_v<std::remove_cv_t<std::remove_pointer_t<T>>, char>;
 
 			/// @brief char[N], char const[N] - a string literal or buffer
 			template<typename T>

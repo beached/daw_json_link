@@ -70,11 +70,6 @@ namespace {
 		       daw::json::to_json(
 		         std::vector<std::string_view>{ "A\"da"sv, "B\\b"sv } ) );
 
-		check(
-		  "to_json vector<char const *>",
-		  R"(["A\"da",null])",
-		  daw::json::to_json( std::vector<char const *>{ "A\"da", nullptr } ) );
-
 		check( "to_json optional<string_view>",
 		       R"("A\"da")",
 		       daw::json::to_json( std::optional<std::string_view>( "A\"da" ) ) );

@@ -382,7 +382,7 @@ namespace daw::json {
 							if constexpr( WritableType::restricted_string_output ==
 							              options::RestrictedStringOutput::
 							                ErrorInvalidUTF8 ) {
-								daw_json_error( true, ErrorReason::InvalidStringHighASCII );
+								daw_json_error( true, ErrorReason::InvalidUTFCodepoint );
 							} else {
 								cp_first = it_t( std::next( cp_first.base( ) ) );
 							}
@@ -497,7 +497,7 @@ namespace daw::json {
 							if constexpr( WritableType::restricted_string_output ==
 							              options::RestrictedStringOutput::
 							                ErrorInvalidUTF8 ) {
-								daw_json_error( true, ErrorReason::InvalidStringHighASCII );
+								daw_json_error( true, ErrorReason::InvalidUTFCodepoint );
 							} else {
 								first = it_t( std::next( first.base( ) ) );
 							}
@@ -1010,8 +1010,10 @@ namespace daw::json {
 				if constexpr( is_char_array_v<parse_to_t> ) {
 					// Exclude the trailing nul, same as json_writer's literal overloads
 					return to_json_string_string_escaped<JsonMember>(
-					  it,
-					  daw::string_view( value, std::extent_v<parse_to_t> - 1U ) );
+					  it, daw::string_view( value, std::extent_v<parse_to_t> - 1U ) );
+				} else if constexpr( std::is_same_v<parse_to_t, char> ) {
+					return to_json_string_string_escaped<JsonMember>(
+					  it, daw::string_view( &value, 1U ) );
 				} else {
 					it.put( '"' );
 					it = utils::copy_to_iterator<escape_output_v<JsonMember> !=
@@ -1202,7 +1204,7 @@ namespace daw::json {
 				daw::empty_t const expander[]{
 				  ( to_daw_json_string_help( daw::constant_v<Is> ),
 				    daw::empty_t{ } )...,
-				  daw::empty_t{ } };
+				  daw::empty_t{} };
 				(void)expander;
 
 				return it;
