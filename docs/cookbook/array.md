@@ -288,3 +288,32 @@ structure must be acyclic.
 ### Pointer like arrays
 
 For dealing with pointer like arrays(T *, has element_type type alias) see [int_ptr_test](../../tests/src/int_ptr_test.cpp)
+
+## Serializing C arrays and strings with to_json_array
+
+`to_json_array` writes its argument as a JSON array. C arrays are accepted
+along with containers. A `char` array is treated as a `std::string_view` of
+length `N - 1`, so each character is written as a one character string.
+Pointers have no length and are a compile error; pass a container or a
+`daw::span` instead.
+
+Given
+
+```c++
+char buffer[] = "Hi\"";
+int ints[3] = { 1, 2, 3 };
+std::vector<char const *> ptrs{ "A\"da", nullptr };
+```
+
+| Expression                                                   | Output             |
+|--------------------------------------------------------------|--------------------|
+| `to_json_array( "Hi\"" )`                                    | `["H","i","\""]`   |
+| `to_json_array( buffer )`                                    | `["H","i","\""]`   |
+| `to_json_array( "Hi\""sv )`                                  | `["H","i","\""]`   |
+| `to_json_array( ints )`                                      | `[1,2,3]`          |
+| `to_json_array( std::vector<std::string_view>{ "A\"da" } )`  | `["A\"da"]`        |
+| `to_json_array( ptrs )`                                      | `[65,null]`        |
+| `to_json_array( ptr )` with `char const *ptr`                | compile error: pointers have no length |
+
+As with `to_json`, character pointers inside a container are deduced as a
+nullable `char`. See [Strings](strings.md#serializing-strings-without-a-mapping).

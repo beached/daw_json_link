@@ -151,3 +151,87 @@ namespace daw::json {
   };
 }
 ```
+
+## Serializing strings without a mapping
+
+`to_json`, `to_json_array`, and `json_writer` can serialize values that have no
+`json_data_contract`. Because these values did not come from parsing, string
+values are always escaped. A `std::string_view` is deduced as a raw string only
+inside a `json_data_contract`, where it holds the still-escaped text from the
+parsed document (see [Mapping Deduction](mapping_deduction.md)).
+
+Character types are handled before deduction:
+
+* `char *` and `char const *` are nul terminated strings. `nullptr` is written as `null`.
+* `char[N]` and `char const[N]`, including string literals, are strings of length `N - 1`.
+* `char` is a one character string. `signed char` and `unsigned char`, including
+  `std::int8_t` and `std::uint8_t`, are distinct types and remain numbers.
+
+Given
+
+```c++
+char buffer[] = "Hi\"";
+char const *ptr = "A\"da";
+char const *null_ptr = nullptr;
+std::vector<char const *> ptrs{ "A\"da", nullptr };
+```
+
+| Expression                                                                  | Output               |
+|-----------------------------------------------------------------------------|----------------------|
+| `to_json( "A\"da" )`                                                        | `"A\"da"`            |
+| `to_json( buffer )`                                                         | `"Hi\""`             |
+| `to_json( ptr )`                                                            | `"A\"da"`            |
+| `to_json( null_ptr )`                                                       | `null`               |
+| `to_json( "A\"da"s )`                                                       | `"A\"da"`            |
+| `to_json( "A\"da"sv )`                                                      | `"A\"da"`            |
+| `to_json( 'x' )`                                                            | `"x"`                |
+| `to_json( std::int8_t{ 65 } )`                                              | `65`                 |
+| `to_json( std::uint8_t{ 65 } )`                                             | `65`                 |
+| `to_json( std::optional<std::string_view>( "A\"da" ) )`                     | `"A\"da"`            |
+| `to_json( std::vector<std::string_view>{ "A\"da", "B\\b" } )`               | `["A\"da","B\\b"]`   |
+| `to_json( std::map<std::string_view, std::string_view>{ { "na\"me", "A\"da" } } )` | `{"na\"me":"A\"da"}` |
+| `to_json( std::tuple<int, std::string_view>{ 1, "A\"da" } )`                | `[1,"A\"da"]`        |
+| `to_json( std::vector<char>{ 'a', 'b' } )`                                  | `["a","b"]`          |
+| `to_json( ptrs )`                                                           | `[65,null]`          |
+
+Character pointers are only converted when passed directly. Inside a container
+they are deduced as a nullable `char`, so `to_json( ptrs )` writes the first
+character's code. Use a container of `std::string_view` instead, or write the
+elements with `json_writer::write_array_values`.
+
+### Already escaped values
+
+Passing an explicit raw mapping writes the value as-is. The value must already
+be valid, escaped JSON string content.
+
+```c++
+using raw = json_string_raw_no_name<daw::string_view>;
+```
+
+| Expression                      | Output    |
+|---------------------------------|-----------|
+| `to_json<raw>( R"(A\"da)"sv )`  | `"A\"da"` |
+| `to_json<raw>( R"(A\"da)" )`    | `"A\"da"` |
+
+A `std::string_view` member of a `json_data_contract` is also raw. Given a
+contract mapping `json_link<"value", std::string_view>` for `Member`,
+`to_json( Member{ R"(A\"da)" } )` writes `{"value":"A\"da"}`. Likewise a `char`
+member of a contract, `json_link<"c", char>`, remains a number:
+`to_json( CharMember{ 'z' } )` writes `{"c":122}`.
+
+### Invalid UTF-8
+
+With the default `RestrictedStringOutput::ErrorInvalidUTF8` output option,
+valid UTF-8 is written unchanged and invalid UTF-8 is an error.
+
+| Expression                     | Output                                               |
+|--------------------------------|------------------------------------------------------|
+| `to_json( "caf\xC3\xA9"sv )`   | `"café"`                                             |
+| `to_json( "\xC3"sv )`          | throws `json_exception` with `ErrorReason::InvalidUTFCodepoint` |
+
+A lone byte above `0x7F` is not a complete UTF-8 character, so `to_json( char( 0xC3 ) )`
+also throws.
+
+See [Arrays](array.md#serializing-c-arrays-and-strings-with-to_json_array) for
+`to_json_array` and [Incremental JSON Writer](json_writer.md#strings-characters-and-character-pointers)
+for `json_writer`.
