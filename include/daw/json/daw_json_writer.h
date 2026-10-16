@@ -27,11 +27,8 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_writer_details {
 			template<typename JsonClass, typename Value>
-			using json_write_value_class_t = typename daw::conditional_t<
-			  std::is_same_v<use_default, JsonClass>,
-			  json_details::ident_trait<json_details::json_deduced_type, Value>,
-			  json_details::ident_trait<json_details::json_deduced_type,
-			                            JsonClass>>::type;
+			using json_write_value_class_t =
+			  json_details::json_serialize_deduced_type<JsonClass, Value>;
 
 			enum class json_writer_states : std::uint8_t {
 				/**
@@ -104,11 +101,8 @@ namespace daw::json {
 
 			template<typename JsonClass = use_default, typename T>
 			constexpr void do_write_value( T const &value ) {
-				using json_class_t = typename daw::conditional_t<
-				  std::is_same_v<use_default, JsonClass>,
-				  json_details::ident_trait<json_details::json_deduced_type, T>,
-				  json_details::ident_trait<json_details::json_deduced_type,
-				                            JsonClass>>::type;
+				using json_class_t =
+				  json_details::json_serialize_deduced_type<JsonClass, T>;
 				prepare_value( );
 				if constexpr( std::is_pointer_v<std::remove_reference_t<T>> ) {
 					if( not value ) {
@@ -425,7 +419,8 @@ namespace daw::json {
 		private:
 			template<typename T>
 			DAW_CPP20_CX_ALLOC void write_string_class( T const &value ) {
-				using json_class_t = json_details::json_deduced_type<T>;
+				using json_class_t =
+				  json_details::json_serialize_deduced_type<use_default, T>;
 				auto tmp = std::string{ };
 				auto tmp_iterator =
 				  json_details::make_output_iterator<PolicyFlags...>( tmp );

@@ -340,6 +340,45 @@ namespace daw::json {
 			                                 JsonParseTypes::Real>;
 
 			template<typename T, typename AllowRawString = std::true_type>
+			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_deduced_type_impl( ) noexcept;
+
+			template<typename T, typename AllowRawString>
+			struct deduced_element {
+				using type =
+				  typename decltype( json_deduced_type_impl<T,
+				                                            AllowRawString>( ) )::type;
+			};
+
+			/// @brief The element type passed to a deduced container/tuple mapping.
+			/// The mapping types deduce their elements with raw strings allowed, so
+			/// when they are not the element is deduced here and passed as a JSON
+			/// type.  When they are, T is passed as is so the mapping is unchanged.
+			template<typename T, typename AllowRawString>
+			using deduced_element_t =
+			  typename daw::conditional_t<AllowRawString::value,
+			                              daw::traits::identity<T>,
+			                              deduced_element<T, AllowRawString>>::type;
+
+			template<typename Tuple, typename AllowRawString,
+			         typename = std::make_index_sequence<std::tuple_size_v<Tuple>>>
+			struct deduced_tuple_types;
+
+			template<typename Tuple, typename AllowRawString, std::size_t... Is>
+			struct deduced_tuple_types<Tuple, AllowRawString,
+			                           std::index_sequence<Is...>> {
+				using type = std::tuple<deduced_element_t<
+				  daw::remove_cvref_t<std::tuple_element_t<Is, Tuple>>,
+				  AllowRawString>...>;
+			};
+
+			/// @brief The tuple types list passed to a deduced json_tuple, see
+			/// deduced_element_t
+			template<typename Tuple, typename AllowRawString>
+			using deduced_tuple_types_t = typename daw::conditional_t<
+			  AllowRawString::value, daw::traits::identity<use_default>,
+			  deduced_tuple_types<Tuple, AllowRawString>>::type;
+
+			template<typename T, typename AllowRawString = std::true_type>
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_link_quick_map( ) noexcept {
 				if constexpr( is_a_json_type_v<T> ) {
 					return json_link_quick_map_type<T>{ };
@@ -379,9 +418,10 @@ namespace daw::json {
 					                     JsonParseTypes::StringInsitu ) {
 						if constexpr( is_null::value ) {
 							return json_link_quick_map_type<
-							  json_base::json_string_null<T>>{ };
+							  json_base::json_string_insitu_null<T>>{ };
 						} else {
-							return json_link_quick_map_type<json_base::json_string<T>>{ };
+							return json_link_quick_map_type<
+							  json_base::json_string_insitu<T>>{ };
 						}
 					} else if constexpr( parse_type::value == JsonParseTypes::Bool ) {
 						if constexpr( is_null::value ) {
@@ -398,32 +438,42 @@ namespace daw::json {
 						}
 					} else if constexpr( parse_type::value == JsonParseTypes::Tuple ) {
 						if constexpr( is_null::value ) {
-							return json_link_quick_map_type<json_base::json_tuple_null<T>>{ };
+							using tp_t = json_details::unwrapped_t<T>;
+							return json_link_quick_map_type<json_base::json_tuple_null<
+							  T,
+							  deduced_tuple_types_t<tp_t, AllowRawString>>>{ };
 						} else {
-							return json_link_quick_map_type<json_base::json_tuple<T>>{ };
+							return json_link_quick_map_type<json_base::json_tuple<
+							  T,
+							  deduced_tuple_types_t<T, AllowRawString>>>{ };
 						}
 					} else if constexpr( parse_type::value == JsonParseTypes::KeyValue ) {
 						if constexpr( is_null::value ) {
 							using b_t = typename mapped_type_t::type;
-							using k_t = typename b_t::key;
-							using v_t = typename b_t::value;
+							using k_t = deduced_element_t<typename b_t::key, AllowRawString>;
+							using v_t =
+							  deduced_element_t<typename b_t::value, AllowRawString>;
 							return json_link_quick_map_type<
 							  json_base::json_key_value_null<T, v_t, k_t>>{ };
 						} else {
-							using k_t = typename mapped_type_t::key;
-							using v_t = typename mapped_type_t::value;
+							using k_t =
+							  deduced_element_t<typename mapped_type_t::key, AllowRawString>;
+							using v_t = deduced_element_t<typename mapped_type_t::value,
+							                              AllowRawString>;
 							return json_link_quick_map_type<
 							  json_base::json_key_value<T, v_t, k_t>>{ };
 						}
 					} else if constexpr( parse_type::value == JsonParseTypes::Array ) {
 						if constexpr( is_null::value ) {
 							using b_t = typename mapped_type_t::type;
-							using v_t = typename b_t::value;
+							using v_t =
+							  deduced_element_t<typename b_t::value, AllowRawString>;
 							return json_link_quick_map_type<json_base::json_nullable<
 							  T,
 							  json_base::json_array<v_t, json_details::unwrapped_t<T>>>>{ };
 						} else {
-							using v_t = typename mapped_type_t::value;
+							using v_t = deduced_element_t<typename mapped_type_t::value,
+							                              AllowRawString>;
 							return json_link_quick_map_type<json_base::json_array<v_t, T>>{ };
 						}
 #if defined( DAW_JSON_HAS_REFLECTION )
@@ -469,9 +519,18 @@ namespace daw::json {
 			  has_json_data_contract_trait_v<T> and
 			  is_json_class_map_v<json_data_contract_trait_t<T>>;
 
-			template<typename T, typename AllowRawString = std::true_type>
+			/// @brief char[N], char const[N] - a string literal or buffer
+			template<typename T>
+			inline constexpr bool is_char_array_v =
+			  std::rank_v<T> == 1 and
+			  std::is_same_v<std::remove_cv_t<std::remove_extent_t<T>>, char>;
+
+			template<typename T, typename AllowRawString>
 			DAW_ATTRIB_INLINE DAW_CONSTEVAL auto json_deduced_type_impl( ) noexcept {
-				if constexpr( is_a_basic_json_value<T> ) {
+				if constexpr( is_char_array_v<T> and not AllowRawString::value ) {
+					return daw::traits::identity<
+					  json_base::json_string_insitu<daw::string_view>>{ };
+				} else if constexpr( is_a_basic_json_value<T> ) {
 					return daw::traits::identity<json_base::json_raw<T>>{ };
 #if defined( DAW_JSON_HAS_REFLECTION )
 				} else if constexpr( refl_details::HasTypeLevelAnnotation<T> ) {
@@ -518,7 +577,9 @@ namespace daw::json {
 					using type = json_base::json_nullable<T, sub_type>;
 					return daw::traits::identity<type>{ };
 				} else if constexpr( concepts::is_container_v<T> ) {
-					using type = json_base::json_array<typename T::value_type, T>;
+					using type = json_base::json_array<
+					  deduced_element_t<typename T::value_type, AllowRawString>,
+					  T>;
 					return daw::traits::identity<type>{ };
 				} else if constexpr( std::is_empty_v<T> and
 				                     std::is_default_constructible_v<T> ) {
@@ -540,6 +601,19 @@ namespace daw::json {
 			template<typename T, typename AllowRawString = std::true_type>
 			using json_deduced_type = typename DAW_TYPEOF(
 			  json_deduced_type_impl<T, AllowRawString>( ) )::type;
+
+			/// @brief The JSON type used by the serialization only interfaces,
+			/// to_json and json_writer.  When JsonClass is use_default or a C++
+			/// type, it is deduced without raw strings as the value did not come
+			/// from parsing.  An explicit JSON type is used as is.
+			template<typename JsonClass, typename Value>
+			using json_serialize_deduced_type = typename daw::conditional_t<
+			  std::is_same_v<use_default, JsonClass>,
+			  ident_trait<json_deduced_type, Value, std::false_type>,
+			  daw::conditional_t<
+			    is_a_json_type_v<JsonClass>,
+			    ident_trait<json_deduced_type, JsonClass>,
+			    ident_trait<json_deduced_type, JsonClass, std::false_type>>>::type;
 
 			template<typename T, typename AllowRawString = std::true_type>
 			DAW_CPP20_CONCEPT has_json_deduced_type_v =

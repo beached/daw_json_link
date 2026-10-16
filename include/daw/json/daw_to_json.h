@@ -56,11 +56,8 @@ namespace daw::json {
 		  Value const &value, WritableType &&it,
 		  options::output_flags_t<PolicyFlags...> ) {
 
-			using json_class_t = typename daw::conditional_t<
-			  std::is_same_v<use_default, JsonClass>,
-			  json_details::ident_trait<json_details::json_deduced_type, Value>,
-			  json_details::ident_trait<json_details::json_deduced_type,
-			                            JsonClass>>::type;
+			using json_class_t =
+			  json_details::json_serialize_deduced_type<JsonClass, Value>;
 
 			using output_t = daw::rvalue_to_value_t<WritableType>;
 			if constexpr( std::is_pointer_v<daw::remove_cvref_t<WritableType>> ) {
@@ -135,11 +132,8 @@ namespace daw::json {
 			while( first != last ) {
 				(void)[&out_it]( auto &&v ) {
 					using v_type = DAW_TYPEOF( v );
-					using JsonMember = typename daw::conditional_t<
-					  std::is_same_v<JsonElement, use_default>,
-					  json_details::ident_trait<json_details::json_deduced_type, v_type>,
-					  json_details::ident_trait<json_details::json_deduced_type,
-					                            JsonElement>>::type;
+					using JsonMember =
+					  json_details::json_serialize_deduced_type<JsonElement, v_type>;
 
 					static_assert(
 					  not std::is_same_v<

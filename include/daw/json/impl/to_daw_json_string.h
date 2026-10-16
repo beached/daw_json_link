@@ -1007,13 +1007,20 @@ namespace daw::json {
 			[[nodiscard]] static constexpr WriteableType
 			to_json_string_string_escaped( WriteableType it,
 			                               parse_to_t const &value ) {
-				it.put( '"' );
-				it = utils::copy_to_iterator<escape_output_v<JsonMember> !=
-				                               options::EscapeValidUTF8::AssumeValid,
-				                             JsonMember::eight_bit_mode,
-				                             true>( it, value );
-				it.put( '"' );
-				return it;
+				if constexpr( is_char_array_v<parse_to_t> ) {
+					// Exclude the trailing nul, same as json_writer's literal overloads
+					return to_json_string_string_escaped<JsonMember>(
+					  it,
+					  daw::string_view( value, std::extent_v<parse_to_t> - 1U ) );
+				} else {
+					it.put( '"' );
+					it = utils::copy_to_iterator<escape_output_v<JsonMember> !=
+					                               options::EscapeValidUTF8::AssumeValid,
+					                             JsonMember::eight_bit_mode,
+					                             true>( it, value );
+					it.put( '"' );
+					return it;
+				}
 			}
 
 			template<typename T>
