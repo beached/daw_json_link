@@ -75,13 +75,14 @@ namespace daw::json {
 				}
 
 				//******************************
-				daw_json_assert_weak(
-				  cp < 0xDC00U or cp > 0xDFFFU, ErrorReason::InvalidUTFEscape,
-				  parse_state ); // Lone/unpaired low surrogate
+				daw_json_assert_weak( cp < 0xDC00U or cp > 0xDFFFU,
+				                      ErrorReason::InvalidUTFEscape,
+				                      parse_state ); // Lone/unpaired low surrogate
 				if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 					cp = ( cp - 0xD800U ) * 0x400U;
 					daw_json_assert_weak(
-					  *first == '\\', ErrorReason::InvalidUTFEscape,
+					  *first == '\\',
+					  ErrorReason::InvalidUTFEscape,
 					  parse_state ); // High surrogate must be followed by \\u
 					++first;
 					daw_json_assert_weak(
@@ -158,13 +159,14 @@ namespace daw::json {
 					parse_state.first = input_pointer( parse_state.first, first.get( ) );
 					return;
 				}
-				daw_json_assert_weak(
-				  cp < 0xDC00U or cp > 0xDFFFU, ErrorReason::InvalidUTFEscape,
-				  parse_state ); // Lone/unpaired low surrogate
+				daw_json_assert_weak( cp < 0xDC00U or cp > 0xDFFFU,
+				                      ErrorReason::InvalidUTFEscape,
+				                      parse_state ); // Lone/unpaired low surrogate
 				if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 					cp = ( cp - 0xD800U ) * 0x400U;
 					daw_json_assert_weak(
-					  *first == '\\', ErrorReason::InvalidUTFEscape,
+					  *first == '\\',
+					  ErrorReason::InvalidUTFEscape,
 					  parse_state ); // High surrogate must be followed by \\u
 					++first;
 					daw_json_assert_weak(
@@ -366,7 +368,8 @@ namespace daw::json {
 							// Every legal escape character (", \, /, b, f, n, r, t, u) is
 							// handled by an explicit case above; anything else following a
 							// backslash is not a valid JSON escape.
-							daw_json_assert_weak( false, ErrorReason::InvalidString,
+							daw_json_assert_weak( parse_state.front( ) != '"',
+							                      ErrorReason::InvalidString,
 							                      parse_state );
 							*it++ = parse_state.front( );
 							parse_state.remove_prefix( );
