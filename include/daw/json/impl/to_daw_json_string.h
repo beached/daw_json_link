@@ -608,7 +608,7 @@ namespace daw::json {
 				/// The member's name as it is written between the quotes, encoded at
 				/// compile time, followed by a nul
 				template<typename JsonMember>
-				DAW_CONSTEVAL auto encode_member_name( ) {
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto encode_member_name( ) {
 					// TODO use reflection if there
 					constexpr std::size_t len = [] {
 						// \u escapes are at most 6 chars per byte of the name
@@ -643,7 +643,7 @@ namespace daw::json {
 				};
 
 				template<JSONNAMETYPE Name>
-				DAW_CONSTEVAL auto encode_json_name( ) {
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto encode_json_name( ) {
 					return encode_member_name<fake_member<Name>>( );
 				}
 			} // namespace enc_name_impl
@@ -1272,7 +1272,7 @@ namespace daw::json {
 				daw::empty_t const expander[]{
 				  ( to_daw_json_string_help( daw::constant_v<Is> ),
 				    daw::empty_t{ } )...,
-				  daw::empty_t{ } };
+				  daw::empty_t{} };
 				(void)expander;
 
 				return it;
