@@ -64,14 +64,16 @@ daw_ensure_error( bool, StringView &&msg ) {
 }
 #endif
 
-#define test_assert( Bool, Msg )                                              \
-	if( DAW_UNLIKELY( not( Bool ) ) ) {                                         \
-		DAW_UNLIKELY_BRANCH                                                       \
-		daw_static_warn_if(                                                       \
-		  not( Bool ), "Ensure will always fail: daw_ensure(" #Bool "): " #Msg ); \
-		::daw_ensure_error( !!( Bool ), Msg );                                    \
-	}                                                                           \
-	while( false )
+#define test_assert( Bool, Msg )                                       \
+	do {                                                                 \
+		if( DAW_UNLIKELY( not( Bool ) ) ) {                                \
+			DAW_UNLIKELY_BRANCH                                              \
+			daw_static_warn_if( not( Bool ),                                 \
+			                    "Ensure will always fail: daw_ensure(" #Bool \
+			                    "): " #Msg );                                \
+			::daw_ensure_error( !!( Bool ), Msg );                           \
+		}                                                                  \
+	} while( false )
 
 DAW_ATTRIB_NOINLINE inline void
 display_exception( daw::json::json_exception const &jex,
