@@ -138,6 +138,19 @@ endif()
 
 add_library( ${PROJECT_NAME} INTERFACE )
 add_library( daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME} )
+
+option( DAW_JSON_NO_LESS_SAFE_STRING_WRITER "Define: string_writer grows its string with resize( ), zero filling it, instead of leaving the new bytes uninitialized with resize_and_overwrite" OFF )
+if( DAW_JSON_NO_LESS_SAFE_STRING_WRITER )
+	message( STATUS "DAW_JSON_NO_LESS_SAFE_STRING_WRITER=ON: string_writer zero fills when it grows" )
+	# On the target so that projects using json_link get it too
+	target_compile_definitions( ${PROJECT_NAME} INTERFACE DAW_JSON_NO_LESS_SAFE_STRING_WRITER )
+endif()
+
+option( DAW_JSON_SIMD_MAX_256 "Define: std::simd vectors are at most 256 bits, so AVX-512 builds use 256-bit registers. Can help on CPUs that lower their clock for 512-bit instructions" OFF )
+if( DAW_JSON_SIMD_MAX_256 )
+	message( STATUS "DAW_JSON_SIMD_MAX_256=ON: std::simd vectors are at most 256 bits" )
+	target_compile_definitions( ${PROJECT_NAME} INTERFACE DAW_JSON_SIMD_MAX_256 )
+endif()
 add_library( daw::json_link ALIAS ${PROJECT_NAME} )
 if( NOT DAW_USE_PACKAGE_MANAGEMENT )
 	target_link_libraries( ${PROJECT_NAME} INTERFACE daw::daw-header-libraries daw::daw-utf-range )

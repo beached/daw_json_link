@@ -1768,6 +1768,33 @@ namespace daw::json {
 				}
 			}
 
+			/// Passed in place of the visited member names when no name can be
+			/// written twice: the class has no dependent members and no two
+			/// members share a name
+			struct no_visited_members_t {};
+
+			/// True when two of the members have the same name. Decided at compile
+			/// time, so a class without them does not track the names it has
+			/// written
+			template<typename... JsonMembers>
+			constexpr bool has_repeated_member_names( ) {
+				if constexpr( sizeof...( JsonMembers ) < 2 ) {
+					return false;
+				} else {
+					daw::string_view const names[] = { daw::string_view(
+					  std::data( JsonMembers::name ),
+					  std::size( JsonMembers::name ) )... };
+					for( std::size_t n = 0; n < sizeof...( JsonMembers ); ++n ) {
+						for( std::size_t m = n + 1; m < sizeof...( JsonMembers ); ++m ) {
+							if( names[n] == names[m] ) {
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+			}
+
 			template<std::size_t pos, typename JsonMember, typename WriteableType,
 			         json_options_t SerializationOptions, typename Tuple,
 			         typename Value, typename Visited>
@@ -1775,15 +1802,19 @@ namespace daw::json {
 			  bool &is_first,
 			  serialization_policy<WriteableType, SerializationOptions> &it,
 			  Tuple const &tp, Value const &, Visited &visited_members ) {
-				DAW_CPP23_STATIC_LOCAL constexpr auto json_member_name =
-				  daw::string_view( std::data( JsonMember::name ),
-				                    std::size( JsonMember::name ) );
-				if( daw::algorithm::contains( std::data( visited_members ),
-				                              daw::data_end( visited_members ),
-				                              json_member_name ) ) {
-					return;
+				if constexpr( std::is_same_v<Visited, no_visited_members_t> ) {
+					(void)visited_members;
+				} else {
+					DAW_CPP23_STATIC_LOCAL constexpr auto json_member_name =
+					  daw::string_view( std::data( JsonMember::name ),
+					                    std::size( JsonMember::name ) );
+					if( daw::algorithm::contains( std::data( visited_members ),
+					                              daw::data_end( visited_members ),
+					                              json_member_name ) ) {
+						return;
+					}
+					visited_members.push_back( json_member_name );
 				}
-				visited_members.push_back( json_member_name );
 				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
 				if constexpr( is_json_nullable_v<JsonMember> ) {
 					if constexpr( JsonMember::nullable == JsonNullable::Nullable ) {

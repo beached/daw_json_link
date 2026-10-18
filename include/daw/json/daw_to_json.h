@@ -25,6 +25,7 @@
 #include <optional>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -94,9 +95,9 @@ namespace daw::json {
 		DAW_CPP20_CX_ALLOC std::string
 		to_json( Value const &value,
 		         options::output_flags_t<PolicyFlags...> flgs ) {
-			std::string result{ };
-			result.reserve( 4096 );
-			(void)to_json<JsonClass>( value, result, flgs );
+			auto out = string_writer( 4096 );
+			(void)to_json<JsonClass>( value, out, flgs );
+			auto result = std::move( out ).finish( );
 			result.shrink_to_fit( );
 			return result;
 		}
@@ -202,9 +203,9 @@ namespace daw::json {
 		to_json_array( Container const &c,
 		               options::output_flags_t<PolicyFlags...> flgs ) {
 			static_assert( not std::is_same_v<std::string, JsonElement> );
-			auto result = std::string{ };
-			result.reserve( 4096 );
-			(void)to_json_array<JsonElement>( c, result, flgs );
+			auto out = string_writer( 4096 );
+			(void)to_json_array<JsonElement>( c, out, flgs );
+			auto result = std::move( out ).finish( );
 			result.shrink_to_fit( );
 			return result;
 		}

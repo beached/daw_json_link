@@ -49,9 +49,29 @@
 #define DAW_JSON_HAS_SIMD 1
 #define DAW_JSON_SIMD_CONSTEXPR constexpr
 
+#if defined( DAW_JSON_SIMD_MAX_256 )
+// vec<T> is at most 256 bits, so a build with AVX-512 enabled stays in 256-bit
+// registers. 512-bit instructions lower the clock on some CPUs, mostly older
+// Xeons; where that costs less than the wider blocks save, as on Tiger Lake
+// and Zen 4, leave this undefined. Narrower native widths are kept
+namespace daw::simd {
+	using namespace std::simd;
+
+	template<typename T>
+	inline constexpr int max_256_size_v =
+	  static_cast<int>( std::simd::vec<T>::size( ) ) <
+	      static_cast<int>( 32 / sizeof( T ) )
+	    ? static_cast<int>( std::simd::vec<T>::size( ) )
+	    : static_cast<int>( 32 / sizeof( T ) );
+
+	template<typename T, int N = max_256_size_v<T>>
+	using vec = std::simd::vec<T, N>;
+} // namespace daw::simd
+#else
 namespace daw {
 	namespace simd = std::simd;
 }
+#endif
 
 #elif defined( DAW_JSON_HAS_NEON_SIMD )
 

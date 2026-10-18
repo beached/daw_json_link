@@ -86,7 +86,11 @@ namespace daw::json {
 					daw_json_ensure( not out.empty( ),
 					                 daw::json::ErrorReason::OutputError );
 					*out.data( ) = static_cast<CharT>( c );
-					out.remove_prefix( 1 );
+					if constexpr( writeable_output_details::has_remove_prefix_v<T> ) {
+						out.remove_prefix( 1 );
+					} else {
+						out = out.subspan( 1 );
+					}
 				}
 			};
 
