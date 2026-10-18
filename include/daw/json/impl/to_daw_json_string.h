@@ -618,7 +618,7 @@ namespace daw::json {
 					struct result_t {
 						char buff[len + 1];
 
-						[[nodiscard]] DAW_CONSTEVAL static std::size_t size( ) {
+						[[nodiscard]] constexpr static std::size_t size( ) {
 							return len;
 						}
 						[[nodiscard]] constexpr char const *data( ) const {
