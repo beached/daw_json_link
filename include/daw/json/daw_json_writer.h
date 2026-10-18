@@ -290,6 +290,22 @@ namespace daw::json {
 				close_array( );
 			}
 
+			template<JSONNAMETYPE Name>
+			constexpr void add_static_key( ) {
+				if( m_is_key_written ) {
+					write_value( nullptr );
+				}
+				daw_json_ensure(
+				  m_current_state ==
+				    json_writer_details::json_writer_states::json_writer_object,
+				  ErrorReason::OutputError );
+
+				write_item_prefix( );
+				m_writer.write(
+				  '"', json_details::encode_json_name_v<Name>, "\":", m_writer.space );
+				m_is_key_written = true;
+			}
+
 			constexpr void add_key( daw::string_view name ) {
 				if( m_is_key_written ) {
 					write_value( nullptr );
@@ -300,9 +316,13 @@ namespace daw::json {
 				  ErrorReason::OutputError );
 
 				write_item_prefix( );
-				m_writer.put( '"' );
-				m_writer = json_details::encode_name( m_writer, name );
-				m_writer.write( "\":", m_writer.space );
+				if constexpr( iterator_t::allow_escaped_names ) {
+					m_writer.put( '"' );
+					m_writer = json_details::encode_name( m_writer, name );
+					m_writer.write( "\":", m_writer.space );
+				} else {
+					m_writer.write( '"', name, "\":", m_writer.space );
+				}
 				m_is_key_written = true;
 			}
 
@@ -330,6 +350,36 @@ namespace daw::json {
 			constexpr void write_key_value( daw::string_view name, T const &value,
 			                                T2 const &value2, Ts const &...values ) {
 				add_key( name );
+				open_array( );
+				write_array_values( value, value2, values... );
+				close_array( );
+			}
+			//***
+			template<JSONNAMETYPE Name>
+			constexpr void write_static_key_value( std::nullptr_t ) {
+				add_static_key<Name>( );
+				write_null( );
+			}
+
+			template<JSONNAMETYPE Name, typename JsonClass = use_default, typename T>
+			constexpr void
+			write_static_key_value( std::initializer_list<T> const &values ) {
+				add_static_key<Name>( );
+				open_array( );
+				write_array_values<JsonClass>( values );
+				close_array( );
+			}
+
+			template<JSONNAMETYPE Name, typename JsonClass = use_default, typename T>
+			constexpr void write_static_key_value( T const &value ) {
+				add_static_key<Name>( );
+				write_value<JsonClass>( value );
+			}
+
+			template<JSONNAMETYPE Name, typename T, typename T2, typename... Ts>
+			constexpr void write_static_key_value( T const &value, T2 const &value2,
+			                                       Ts const &...values ) {
+				add_static_key<Name>( );
 				open_array( );
 				write_array_values( value, value2, values... );
 				close_array( );

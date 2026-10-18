@@ -583,14 +583,77 @@ namespace daw::json {
 		namespace json_details {
 			template<typename Writer, typename Name>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr Writer
-			encode_name( Writer it, Name const &name ) {
+			encode_name( Writer it, Name &&name ) {
 				if constexpr( Writer::allow_escaped_names ) {
-					return utils::copy_to_iterator<true>( it, name );
+					return utils::copy_to_iterator<true>( it, DAW_FWD( name ) );
 				} else {
 					it.write( name );
 					return it;
 				}
 			}
+
+			namespace enc_name_impl {
+				/// Write name to buf through a serialization_policy, escaping it when
+				/// do_escape is true.  Returns the number of chars written
+				template<bool do_escape, typename Name>
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t
+				encode_name_to_buffer( char *buf, Name const &name ) {
+					char *ptr = buf;
+					// Copies of the policy share ptr, so it is where the writes ended
+					(void)utils::copy_to_iterator<do_escape>(
+					  serialization_policy<char *>( ptr ), name );
+					return static_cast<std::size_t>( ptr - buf );
+				}
+
+				/// The member's name as it is written between the quotes, encoded at
+				/// compile time, followed by a nul
+				template<typename JsonMember>
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto encode_member_name( ) {
+					// TODO use reflection if there
+					constexpr std::size_t len = [] {
+						// \u escapes are at most 6 chars per byte of the name
+						auto r = std::array<char, JsonMember::name.size( ) * 6U>{ };
+						return encode_name_to_buffer<true>( r.data( ), JsonMember::name );
+					}( );
+					struct result_t {
+						char buff[len + 1];
+
+						[[nodiscard]] constexpr static std::size_t size( ) {
+							return len;
+						}
+						[[nodiscard]] constexpr char const *data( ) const {
+							return buff;
+						}
+						[[nodiscard]] constexpr char const *c_str( ) const {
+							return buff;
+						}
+						[[nodiscard]] explicit constexpr
+						operator daw::string_view( ) const {
+							return daw::string_view( data( ), size( ), zero_terminated );
+						}
+					};
+					result_t result{ };
+					(void)encode_name_to_buffer<true>( result.buff, JsonMember::name );
+					return result;
+				}
+
+				template<JSONNAMETYPE Name>
+				struct fake_member {
+					static constexpr daw::string_view name = Name;
+				};
+
+				template<JSONNAMETYPE Name>
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr auto encode_json_name( ) {
+					return encode_member_name<fake_member<Name>>( );
+				}
+			} // namespace enc_name_impl
+			template<typename JsonMember>
+			inline constexpr auto encode_member_name_v =
+			  enc_name_impl::encode_member_name<JsonMember>( );
+
+			template<JSONNAMETYPE Name>
+			inline constexpr auto encode_json_name_v =
+			  enc_name_impl::encode_json_name<Name>( );
 
 			template<typename JsonMember, JsonParseTypes Tag, typename WriteableType,
 			         typename parse_to_t>
@@ -1365,9 +1428,7 @@ namespace daw::json {
 					it.add_indent( );
 					it.next_member( );
 					// Append Key Name
-					it.put( '"' );
-					it = json_details::encode_name( it, key_t::name );
-					it.write( "\":", it.space );
+					it.write( '"', encode_member_name_v<key_t>, "\":", it.space );
 					// Append Key Value
 					it = to_daw_json_string<key_t, key_t::expected_type>(
 					  it, json_get_key( *first ) );
@@ -1375,9 +1436,7 @@ namespace daw::json {
 					it.put( ',' );
 					// Append Value Name
 					it.next_member( );
-					it.put( '"' );
-					it = json_details::encode_name( it, value_t::name );
-					it.write( "\":", it.space );
+					it.write( '"', encode_member_name_v<value_t>, "\":", it.space );
 					// Append Value Value
 					it = to_daw_json_string<value_t, value_t::expected_type>(
 					  it, json_get_value( *first ) );
@@ -1693,9 +1752,8 @@ namespace daw::json {
 					}
 					it.next_member( );
 					is_first = false;
-					it.write( '"' );
-					it = encode_name( it, dependent_member::name );
-					it.write( "\":", it.space );
+					it.write(
+					  '"', encode_member_name_v<dependent_member>, "\":", it.space );
 
 					if constexpr( has_switcher_v<base_member_t> ) {
 						it = member_to_string<dependent_member>(
@@ -1744,9 +1802,7 @@ namespace daw::json {
 				}
 				it.next_member( );
 				is_first = false;
-				it.put( '"' );
-				it = json_details::encode_name( it, JsonMember::name );
-				it.write( "\":", it.space );
+				it.write( '"', encode_member_name_v<JsonMember>, "\":", it.space );
 
 				it = member_to_string<JsonMember>( std::move( it ), get<pos>( tp ) );
 			}

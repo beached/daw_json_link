@@ -16,6 +16,7 @@
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_not_null.h>
+#include <daw/daw_static_warn_if.h>
 
 #include <cstddef>
 #include <daw/stdinc/move_fwd_exch.h>
@@ -182,52 +183,60 @@ namespace daw::json {
 
 /// @brief Ensure that Bool is true. If false pass rest of args to
 /// daw_json_error
-#define daw_json_ensure( Bool, ... )              \
-	do {                                            \
-		if( DAW_UNLIKELY( not( Bool ) ) ) {           \
-			daw_json_error( not( Bool ), __VA_ARGS__ ); \
-		}                                             \
+#define daw_json_ensure( Bool, ... )                                       \
+	do {                                                                     \
+		if( DAW_UNLIKELY( not( Bool ) ) ) {                                    \
+			daw_static_warn_if( not( Bool ),                                     \
+			                    "Error handler will always be called: " #Bool ); \
+			daw_json_error( not( Bool ), __VA_ARGS__ );                          \
+		}                                                                      \
 	} while( false )
 
 /// @brief Assert that Bool is true when in Checked Input mode If false pass
 /// rest of args to daw_json_error
 #if defined( DAW_HAS_IF_CONSTEVAL )
-#define daw_json_assert_weak( Bool, ... )                  \
-	do {                                                     \
-		if consteval {                                         \
-			if( DAW_UNLIKELY( not( Bool ) ) ) {                  \
-				daw_json_error( not( Bool ), __VA_ARGS__ );        \
-			}                                                    \
-		} else {                                               \
-			if constexpr( not ParseState::is_unchecked_input ) { \
-				if( DAW_UNLIKELY( not( Bool ) ) ) {                \
-					daw_json_error( not( Bool ), __VA_ARGS__ );      \
-				}                                                  \
-			}                                                    \
-		}                                                      \
+#define daw_json_assert_weak( Bool, ... )                                      \
+	do {                                                                         \
+		if consteval {                                                             \
+			if( DAW_UNLIKELY( not( Bool ) ) ) {                                      \
+				daw_json_error( not( Bool ), __VA_ARGS__ );                            \
+			}                                                                        \
+		} else {                                                                   \
+			if constexpr( not ParseState::is_unchecked_input ) {                     \
+				if( DAW_UNLIKELY( not( Bool ) ) ) {                                    \
+					daw_static_warn_if( not( Bool ),                                     \
+					                    "Error handler will always be called: " #Bool ); \
+					daw_json_error( not( Bool ), __VA_ARGS__ );                          \
+				}                                                                      \
+			}                                                                        \
+		}                                                                          \
 	} while( false )
 #elif defined( DAW_HAS_IS_CONSTANT_EVALUATED )
-#define daw_json_assert_weak( Bool, ... )                  \
-	do {                                                     \
-		if( DAW_IS_CONSTANT_EVALUATED( ) ) {                   \
-			if( DAW_UNLIKELY( not( Bool ) ) ) {                  \
-				daw_json_error( not( Bool ), __VA_ARGS__ );        \
-			}                                                    \
-		} else {                                               \
-			if constexpr( not ParseState::is_unchecked_input ) { \
-				if( DAW_UNLIKELY( not( Bool ) ) ) {                \
-					daw_json_error( not( Bool ), __VA_ARGS__ );      \
-				}                                                  \
-			}                                                    \
-		}                                                      \
+#define daw_json_assert_weak( Bool, ... )                                      \
+	do {                                                                         \
+		if( DAW_IS_CONSTANT_EVALUATED( ) ) {                                       \
+			if( DAW_UNLIKELY( not( Bool ) ) ) {                                      \
+				daw_json_error( not( Bool ), __VA_ARGS__ );                            \
+			}                                                                        \
+		} else {                                                                   \
+			if constexpr( not ParseState::is_unchecked_input ) {                     \
+				if( DAW_UNLIKELY( not( Bool ) ) ) {                                    \
+					daw_static_warn_if( not( Bool ),                                     \
+					                    "Error handler will always be called: " #Bool ); \
+					daw_json_error( not( Bool ), __VA_ARGS__ );                          \
+				}                                                                      \
+			}                                                                        \
+		}                                                                          \
 	} while( false )
 #else
-#define daw_json_assert_weak( Bool, ... )                \
-	do {                                                   \
-		if constexpr( not ParseState::is_unchecked_input ) { \
-			if( DAW_UNLIKELY( not( Bool ) ) ) {                \
-				daw_json_error( not( Bool ), __VA_ARGS__ );      \
-			}                                                  \
-		}                                                    \
+#define daw_json_assert_weak( Bool, ... )                                    \
+	do {                                                                       \
+		if constexpr( not ParseState::is_unchecked_input ) {                     \
+			if( DAW_UNLIKELY( not( Bool ) ) ) {                                    \
+				daw_static_warn_if( not( Bool ),                                     \
+				                    "Error handler will always be called: " #Bool ); \
+				daw_json_error( not( Bool ), __VA_ARGS__ );                          \
+			}                                                                      \
+		}                                                                        \
 	} while( false )
 #endif
