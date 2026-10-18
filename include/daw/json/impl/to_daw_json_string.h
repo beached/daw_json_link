@@ -596,8 +596,8 @@ namespace daw::json {
 				/// Write name to buf through a serialization_policy, escaping it when
 				/// do_escape is true.  Returns the number of chars written
 				template<bool do_escape, typename Name>
-				DAW_CONSTEVAL std::size_t encode_name_to_buffer( char *buf,
-				                                                 Name const &name ) {
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t
+				encode_name_to_buffer( char *buf, Name const &name ) {
 					char *ptr = buf;
 					// Copies of the policy share ptr, so it is where the writes ended
 					(void)utils::copy_to_iterator<do_escape>(
