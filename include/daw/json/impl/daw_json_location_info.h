@@ -18,7 +18,6 @@
 #include <daw/daw_logic.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
-#include <daw/daw_uint_buffer.h>
 
 #include <cstddef>
 #include <daw/stdinc/data_access.h>
@@ -29,34 +28,11 @@
 #include <iostream>
 #endif
 
-namespace daw {
-	/// @brief Member names that fit are packed into this type, see
-	/// json_details::pack_name
-	using json_name_hash_t = daw::UInt64;
-} // namespace daw
-
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			/// @brief Names that fit are packed into this, byte for byte
-			inline constexpr std::size_t packed_name_size = sizeof( json_name_hash_t );
-
-			/// @brief Pack a name of up to packed_name_size bytes into an integer.
-			/// Packed values of names with the same size are equal only when the
-			/// names are.  Longer names are not packed, and are compared with
-			/// names_equal
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_name_hash_t
-			pack_name( daw::string_view name ) {
-				auto result = json_name_hash_t{ };
-				if( std::size( name ) <= packed_name_size ) {
-					for( char const c : name ) {
-						result <<= 8U;
-						result |= static_cast<unsigned char>( c );
-					}
-				}
-				return result;
-			}
-
+			/// @brief Exact name comparison.  The size check rejects most
+			/// candidates, so only names of equal size are compared
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
 			names_equal( daw::string_view lhs, daw::string_view rhs ) {
 				return std::size( lhs ) == std::size( rhs ) and
@@ -103,8 +79,6 @@ namespace daw::json {
 				using value_type = location_info_t<Iterator>;
 				using reference = value_type &;
 				using const_reference = value_type const &;
-				/// pack_name of each name, 0 for those too long to pack
-				json_name_hash_t packed_names[MemberCount];
 				value_type names[MemberCount];
 
 				constexpr const_reference operator[]( std::size_t idx ) const {
@@ -130,20 +104,8 @@ namespace daw::json {
 #else
 					constexpr std::size_t first_pos = start_pos;
 #endif
-					// Names too long to pack are compared in full
-					if( std::size( key ) > packed_name_size ) {
-						for( std::size_t n = first_pos; n < MemberCount; ++n ) {
-							if( names_equal( key, names[n].name ) ) {
-								return n;
-							}
-						}
-						return MemberCount;
-					}
-					// Packed names with the same size are exact
-					auto const packed = pack_name( key );
 					for( std::size_t n = first_pos; n < MemberCount; ++n ) {
-						if( packed_names[n] == packed and
-						    names[n].name.size( ) == key.size( ) ) {
+						if( names_equal( key, names[n].name ) ) {
 							return n;
 						}
 					}
@@ -157,7 +119,6 @@ namespace daw::json {
 			make_locations_info( ) {
 				return locations_info_t<sizeof...( JsonMembers ),
 				                        typename ParseState::iterator>{
-				  /*packed_names*/ { pack_name( JsonMembers::name )... },
 				  /*names*/ { location_info_t<typename ParseState::iterator>{ JsonMembers::name }... } };
 			}
 

@@ -20,7 +20,6 @@
 #include <daw/daw_enable_requires.h>
 #include <daw/daw_move.h>
 #include <daw/daw_string_view.h>
-#include <daw/daw_uint_buffer.h>
 
 #include <cstddef>
 #include <string_view>
@@ -38,30 +37,15 @@ namespace daw::json {
 
 			public:
 				daw::string_view name;
-				json_name_hash_t hash_value;
 				basic_json_value_iterator<PolicyFlags, Allocator> location;
 
 				explicit constexpr basic_stateful_json_value_state(
 				  daw::string_view Name,
 				  basic_json_value_iterator<PolicyFlags, Allocator> val )
 				  : name( Name )
-				  , hash_value( pack_name( Name ) )
 				  , location( std::move( val ) ) {}
 
 				[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
-					return names_equal( name, Name );
-				}
-
-				/// @param hash pack_name( Name )
-				[[nodiscard]] constexpr bool is_match( daw::string_view Name,
-				                                       json_name_hash_t hash ) const {
-					if( std::size( Name ) != std::size( name ) ) {
-						return false;
-					}
-					if( std::size( Name ) <= packed_name_size ) {
-						// Packed, so equal is exact
-						return hash == hash_value;
-					}
 					return names_equal( name, Name );
 				}
 			};
@@ -69,11 +53,9 @@ namespace daw::json {
 
 		struct json_member_name {
 			daw::string_view name;
-			json_name_hash_t hash_value;
 
 			constexpr json_member_name( std::string_view Name )
-			  : name( std::data( Name ), std::size( Name ) )
-			  , hash_value( json_details::pack_name( name ) ) {}
+			  : name( std::data( Name ), std::size( Name ) ) {}
 		};
 
 		/**
@@ -101,7 +83,7 @@ namespace daw::json {
 				std::size_t pos = 0;
 				std::size_t const Sz = std::size( m_locs );
 				for( ; pos < Sz; ++pos ) {
-					if( m_locs[pos].is_match( member.name, member.hash_value ) ) {
+					if( m_locs[pos].is_match( member.name ) ) {
 						return pos;
 					}
 				}
