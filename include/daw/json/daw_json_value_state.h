@@ -11,16 +11,15 @@
 #include "daw/json/impl/version.h"
 
 #include "daw/json/impl/daw_json_arrow_proxy.h"
+#include "daw/json/impl/daw_json_location_info.h"
 #include "daw/json/impl/daw_json_parse_class.h"
 #include "daw/json/impl/daw_json_parse_name.h"
 #include "daw/json/impl/daw_json_value.h"
-#include "daw/json/impl/daw_murmur3.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_enable_requires.h>
 #include <daw/daw_move.h>
 #include <daw/daw_string_view.h>
-#include <daw/daw_uint_buffer.h>
 
 #include <cstddef>
 #include <string_view>
@@ -38,38 +37,25 @@ namespace daw::json {
 
 			public:
 				daw::string_view name;
-				json_name_hash_t hash_value;
 				basic_json_value_iterator<PolicyFlags, Allocator> location;
 
 				explicit constexpr basic_stateful_json_value_state(
 				  daw::string_view Name,
 				  basic_json_value_iterator<PolicyFlags, Allocator> val )
 				  : name( Name )
-				  , hash_value(
-				      daw::name_hash<ParseState::expect_long_strings>( Name ) )
 				  , location( std::move( val ) ) {}
 
 				[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
-					return name == Name;
-				}
-
-				[[nodiscard]] constexpr bool is_match( daw::string_view Name,
-				                                       json_name_hash_t hash ) const {
-					if( hash != hash_value ) {
-						return false;
-					}
-					return name == Name;
+					return names_equal( name, Name );
 				}
 			};
 		} // namespace json_details
 
 		struct json_member_name {
 			daw::string_view name;
-			json_name_hash_t hash_value;
 
 			constexpr json_member_name( std::string_view Name )
-			  : name( std::data( Name ), std::size( Name ) )
-			  , hash_value( daw::name_hash<false>( name ) ) {}
+			  : name( std::data( Name ), std::size( Name ) ) {}
 		};
 
 		/**
@@ -97,7 +83,7 @@ namespace daw::json {
 				std::size_t pos = 0;
 				std::size_t const Sz = std::size( m_locs );
 				for( ; pos < Sz; ++pos ) {
-					if( m_locs[pos].is_match( member.name, member.hash_value ) ) {
+					if( m_locs[pos].is_match( member.name ) ) {
 						return pos;
 					}
 				}

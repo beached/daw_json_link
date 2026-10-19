@@ -213,8 +213,7 @@ namespace daw::json {
 						auto const name = daw::string_view(
 						  name_first, static_cast<std::size_t>( name_last - name_first ) );
 						auto const name_pos =
-						  locations.template find_name<ParseState::expect_long_strings, 0>(
-						    name );
+						  locations.template find_name<0>( name );
 						if constexpr( must_exist ) {
 							daw_json_assert_weak( name_pos < locations.size( ),
 							                      ErrorReason::UnknownMember,

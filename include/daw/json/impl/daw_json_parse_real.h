@@ -106,7 +106,7 @@ namespace daw::json {
 				                                                    : 22;
 
 				/// Accumulate a run of digits into value, 8 at a time when possible
-				template<typename Accumulator, typename Iterator>
+				template<bool SkipEndCheck, typename Accumulator, typename Iterator>
 				[[nodiscard]] DAW_ATTRIB_INLINE constexpr Iterator
 				parse_digit_run( Iterator first, Iterator const last,
 				                 Accumulator &value ) {
@@ -116,7 +116,7 @@ namespace daw::json {
 						          static_cast<std::uint64_t>( parse_8_digits( first ) ) );
 						first += 8;
 					}
-					while( first < last ) {
+					while( SkipEndCheck or first < last ) {
 						auto const digit = parse_digit( *first );
 						if( digit >= 10U ) {
 							break;
@@ -266,12 +266,6 @@ namespace daw::json {
 			parse_real_single_pass( ParseState &parse_state ) {
 				namespace sp = single_pass_details;
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
-				daw_json_assert_weak(
-				  parse_state.has_more( ) and
-				    parse_policy_details::is_number_start( parse_state.front( ) ),
-				  ErrorReason::InvalidNumberStart,
-				  parse_state );
-
 				using iterator_t = typename ParseState::iterator;
 				constexpr bool skip_end_check = ParseState::is_zero_terminated_string or
 				                                ParseState::is_unchecked_input;
@@ -283,6 +277,9 @@ namespace daw::json {
 				  std::conditional_t<integer_accumulator, std::uint64_t, Result>;
 
 				iterator_t const number_first = parse_state.first;
+				// The number start, at least one whole digit and no leading zeros,
+				// e.g. "-", "-.1" and "01" are invalid.  The caller checked that
+				// there is data and that it starts a number
 				auto const sign =
 				  parse_policy_details::validate_signed_first( parse_state );
 				iterator_t first = parse_state.first;
@@ -290,23 +287,13 @@ namespace daw::json {
 
 				accumulator_t mantissa = accumulator_t( );
 				iterator_t const whole_first = first;
-				first = sp::parse_digit_run( first, last, mantissa );
+				first = sp::parse_digit_run<skip_end_check>( first, last, mantissa );
 				iterator_t const whole_last = first;
-				// JSON requires at least one whole digit, e.g. "-" and "-.1" are
-				// invalid, and no leading zeros.  validate_signed_first only checks
-				// the leading zero when there is no '-'
-				daw_json_assert_weak( whole_first < whole_last,
-				                      ErrorReason::InvalidNumber,
-				                      parse_state.copy( whole_first ) );
-				daw_json_assert_weak( *whole_first != '0' or
-				                        whole_last - whole_first == 1,
-				                      ErrorReason::InvalidNumberStart,
-				                      parse_state.copy( whole_first ) );
 				iterator_t fract_first = first;
 				if( ( skip_end_check or first < last ) and *first == '.' ) {
 					++first;
 					fract_first = first;
-					first = sp::parse_digit_run( first, last, mantissa );
+					first = sp::parse_digit_run<skip_end_check>( first, last, mantissa );
 					// and at least one digit after the decimal point, e.g. "1." is
 					// invalid
 					daw_json_assert_weak( fract_first < first,
@@ -329,14 +316,15 @@ namespace daw::json {
 						[[fallthrough]];
 					case '+':
 						++first;
-						daw_json_assert_weak( first < last and parse_digit( *first ) < 10U,
+						daw_json_assert_weak( ( skip_end_check or first < last ) and
+						                        parse_digit( *first ) < 10U,
 						                      ErrorReason::InvalidNumber );
 						break;
 					default:
 						daw_json_assert_weak( parse_policy_details::is_number( *first ),
 						                      ErrorReason::InvalidNumber );
 					}
-					while( first < last ) {
+					while( skip_end_check or first < last ) {
 						auto const digit = parse_digit( *first );
 						if( digit >= 10U ) {
 							break;

@@ -57,6 +57,10 @@ struct MalformedDoubleHolder {
 	double v;
 };
 
+struct MalformedIntHolder {
+	std::int64_t v;
+};
+
 namespace daw::json {
 	template<>
 	struct json_data_contract<NumberX> {
@@ -75,6 +79,16 @@ namespace daw::json {
 #else
 		static constexpr char const v[] = "v";
 		using type = json_member_list<json_number<v, double>>;
+#endif
+	};
+
+	template<>
+	struct json_data_contract<MalformedIntHolder> {
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
+		using type = json_member_list<json_number<"v", std::int64_t>>;
+#else
+		static constexpr char const v[] = "v";
+		using type = json_member_list<json_number<v, std::int64_t>>;
 #endif
 	};
 } // namespace daw::json
@@ -2088,6 +2102,7 @@ int main( ) {
 			static constexpr std::string_view malformed_numbers[] = {
 			  "",     "-",     ".",    "-.1",   "1.", "1e",   "1e+", "1e-",
 			  "--1",  "+1",    "00",   "01",    "1..2", "1e2e3", "1.2x3",
+			  "-00",  "-01",   "-a",
 			};
 			auto const rejects = []( auto &&parse ) {
 				try {
@@ -2117,8 +2132,36 @@ int main( ) {
 					                  "Accepted malformed object-member number: " +
 					                    std::string( number ) );
 				}
+
+				// Signed integers share the sign and leading zero validation
+				if( not rejects( [=] { (void)from_json<std::int64_t>( number ); } ) ) {
+					daw_ensure_error( true,
+					                  "Accepted malformed standalone integer: " +
+					                    std::string( number ) );
+				}
+				if( not rejects(
+				      [&] { (void)from_json_array<std::int64_t>( array ); } ) ) {
+					daw_ensure_error( true,
+					                  "Accepted malformed array integer: " +
+					                    std::string( number ) );
+				}
+				if( not rejects(
+				      [&] { (void)from_json<MalformedIntHolder>( object ); } ) ) {
+					daw_ensure_error( true,
+					                  "Accepted malformed object-member integer: " +
+					                    std::string( number ) );
+				}
 			}
 #endif
+			// A '-' followed by a valid number
+			daw_ensure( from_json<std::int64_t>( "-0"sv ) == 0 );
+			daw_ensure( from_json<std::int64_t>( "-1"sv ) == -1 );
+			daw_ensure( from_json<std::int64_t>( "-10"sv ) == -10 );
+			daw_ensure( from_json_array<std::int64_t>( "[-0,-1,-10]"sv ) ==
+			            std::vector<std::int64_t>{ 0, -1, -10 } );
+			daw_ensure( std::signbit( from_json<double>( "-0"sv ) ) );
+			daw_ensure( from_json<double>( "-0.5"sv ) == -0.5 );
+			daw_ensure( from_json<double>( "-10e1"sv ) == -100.0 );
 
 			auto const huge_positive_exponent = "1e" + std::string( 2000, '9' );
 			daw_ensure( from_json<double>( huge_positive_exponent ) ==

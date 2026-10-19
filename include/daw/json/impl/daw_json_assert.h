@@ -240,3 +240,19 @@ namespace daw::json {
 		}                                                                        \
 	} while( false )
 #endif
+
+#if defined( DEBUG ) or not defined( NDEBUG )
+#define daw_json_dbg_ensure( Bool, ... )                                   \
+	do {                                                                     \
+		if( DAW_UNLIKELY( not( Bool ) ) ) {                                    \
+			daw_static_warn_if( not( Bool ),                                     \
+			                    "Error handler will always be called: " #Bool ); \
+			daw_json_error( not( Bool ), __VA_ARGS__ );                          \
+		}                                                                      \
+	} while( false )
+
+#else
+#define daw_json_dbg_ensure( ... ) \
+	do {                             \
+	} while( false )
+#endif

@@ -110,10 +110,8 @@ namespace daw::json {
 				enum class IEEE754Precise : unsigned { no, yes }; // 1bit
 
 				///
-				///@brief If the hashes of all members being looked are unique, the
-				/// lookup
-				/// of names as they are found in the document stops at hash checking by
-				/// default.  You can force a full string check by setting to yes.
+				///@brief No longer has an effect, member names are always matched
+				/// exactly.  Kept so that existing code compiles
 				///
 				/// default: no
 				///

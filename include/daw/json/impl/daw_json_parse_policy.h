@@ -84,7 +84,7 @@ namespace daw::json {
 			  options::AllowEscapedNames::yes;
 
 			/***
-			 * see options::ForceFullNameCheck
+			 * see options::ForceFullNameCheck, no longer has an effect
 			 */
 			static constexpr bool force_name_equal_check =
 			  json_details::get_bits_for<options::ForceFullNameCheck>(

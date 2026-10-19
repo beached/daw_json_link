@@ -85,8 +85,9 @@ namespace daw::json {
 			}
 
 			/***
-			 * Validate that this is a valid number start(e.g. not leading zero when
-			 * not zero)
+			 * Validate that this is a valid number start, an optional '-' then
+			 * 1-9 or a 0 that is not followed by a digit.  When checked, callers
+			 * can rely on at least one whole digit and no leading zero
 			 * @return sign value
 			 */
 			template<typename ParseState>
@@ -95,18 +96,30 @@ namespace daw::json {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
-				auto const c = parse_state.front( );
-				if( c == '-' ) {
-					parse_state.remove_prefix( );
-					return -1;
-				}
 				if constexpr( ParseState::is_unchecked_input ) {
+					auto const c = parse_state.front( );
+					if( c == '-' ) {
+						parse_state.remove_prefix( );
+						return -1;
+					}
 					if( DAW_LIKELY( c >= '0' ) and DAW_LIKELY( c <= '9' ) ) {
 						return 1;
 					}
 				} else {
+					int sign = 1;
+					if( parse_state.front( ) == '-' ) {
+						parse_state.remove_prefix( );
+						sign = -1;
+						// A digit must follow, e.g. "-" and "-.5" are invalid
+						daw_json_assert_weak( ( ParseState::is_zero_terminated_string or
+						                        parse_state.has_more( ) ) and
+						                        is_number( parse_state.front( ) ),
+						                      ErrorReason::InvalidNumber,
+						                      parse_state );
+					}
+					auto const c = parse_state.front( );
 					if( c >= '1' and c <= '9' ) {
-						return 1;
+						return sign;
 					}
 					if( DAW_LIKELY( c == '0' ) ) {
 						if( parse_state.size( ) > 1 ) {
@@ -117,7 +130,7 @@ namespace daw::json {
 							daw_json_assert_weak(
 							  tst >= 10U, ErrorReason::InvalidNumberStart, parse_state );
 						}
-						return 1;
+						return sign;
 					}
 				}
 				daw_json_error( true, ErrorReason::InvalidNumberStart, parse_state );
