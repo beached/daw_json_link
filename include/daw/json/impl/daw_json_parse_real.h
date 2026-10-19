@@ -242,8 +242,11 @@ namespace daw::json {
 						}
 						return parse_with_strtod<Result>( number_first, number_last );
 					}
-				} else if constexpr( daw::digits<Result> > daw::digits<double> ) {
-					// The double table is only accurate to double's precision
+				} else if constexpr( std::numeric_limits<Result>::radix != 2 or
+				                     daw::digits<Result> > daw::digits<double> ) {
+					// The double table is only accurate to double's precision.  digits
+					// counts in the type's radix, so decimal types, e.g. one with 34
+					// decimal digits, take this path too; their powers of ten are exact
 					return static_cast<Result>( sign ) *
 					       power10_wide( static_cast<Result>( mantissa ), exponent );
 				} else {

@@ -229,7 +229,7 @@ namespace daw::json {
 				// Overflowing to infinity is not allowed in a constant expression, so
 				// check before multiplying and return the overflow value directly
 				bool overflowed = false;
-				auto const scale = [&]( Result value, Result const &power ) {
+				auto const scale = [&]( Result value, Result const &power ) -> Result {
 					if( negative ) {
 						return value / power;
 					}
@@ -481,19 +481,45 @@ namespace daw::json {
 				using other_float128_t = float128_t;
 #endif
 
+#if defined( __STDCPP_FLOAT128_T__ )
+				template<typename F>
+				inline constexpr bool is_std_float128_v =
+				  std::is_same_v<F, std::float128_t>;
+#else
+				template<typename F>
+				inline constexpr bool is_std_float128_v = false;
+#endif
+
+				/// Built in floating point types may convert through either binary128
+				/// type.  Class types only convert through std::float128_t, the
+				/// standard type that libraries implement conversions for.  Others can
+				/// report a conversion that does not instantiate, e.g. Boost
+				/// multiprecision with __float128 on clang
+				template<typename Result, typename F>
+				inline constexpr bool converts_from_v =
+				  std::is_floating_point_v<F> and std::is_constructible_v<Result, F> and
+				  ( std::is_floating_point_v<Result> or is_std_float128_v<F> );
+
+				template<typename Result, typename F>
+				inline constexpr bool converts_to_v =
+				  std::is_floating_point_v<F> and std::is_constructible_v<F, Result> and
+				  ( std::is_floating_point_v<Result> or is_std_float128_v<F> );
+
 				template<typename Result>
 				inline constexpr bool converts_from_float128_v =
-				  std::is_constructible_v<Result, float128_t> or
-				  std::is_constructible_v<Result, other_float128_t>;
+				  converts_from_v<Result, float128_t> or
+				  converts_from_v<Result, other_float128_t>;
 
 				template<typename Result>
 				inline constexpr bool converts_to_float128_v =
-				  std::is_constructible_v<float128_t, Result> or
-				  std::is_constructible_v<other_float128_t, Result>;
+				  converts_to_v<Result, float128_t> or
+				  converts_to_v<Result, other_float128_t>;
 
 				/// Result is scaled in binary128 when it is a binary type wider than
 				/// double but no wider than binary128 in precision or exponent range,
-				/// and converts to and from binary128
+				/// and converts to and from binary128.  One extra binade at the bottom
+				/// is allowed for types without subnormals, e.g. Boost's
+				/// cpp_bin_float_quad; results there go through binary128 subnormals
 				template<typename Result>
 				inline constexpr bool uses_float128_v =
 				  ( std::numeric_limits<Result>::radix == 2 ) and
@@ -503,12 +529,12 @@ namespace daw::json {
 				  ( std::numeric_limits<Result>::max_exponent <=
 				    float128_max_exponent ) and
 				  ( std::numeric_limits<Result>::min_exponent >=
-				    float128_min_exponent ) and
+				    float128_min_exponent - 1 ) and
 				  converts_from_float128_v<Result> and converts_to_float128_v<Result>;
 
 				template<typename Result>
 				[[nodiscard]] constexpr float128_t to_float128( Result const &value ) {
-					if constexpr( std::is_constructible_v<float128_t, Result> ) {
+					if constexpr( converts_to_v<Result, float128_t> ) {
 						return static_cast<float128_t>( value );
 					} else {
 						return static_cast<float128_t>(
@@ -518,7 +544,7 @@ namespace daw::json {
 
 				template<typename Result>
 				[[nodiscard]] constexpr Result from_float128( float128_t value ) {
-					if constexpr( std::is_constructible_v<Result, float128_t> ) {
+					if constexpr( converts_from_v<Result, float128_t> ) {
 						return static_cast<Result>( value );
 					} else {
 						return static_cast<Result>(
