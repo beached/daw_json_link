@@ -578,12 +578,6 @@ add_test( NAME optional_variant_test COMMAND optional_variant_test ./optional_va
 add_dependencies( ci_tests optional_variant_test )
 add_dependencies( full optional_variant_test )
 
-add_executable( daw_murmur3_test src/daw_murmur3_test.cpp )
-target_link_libraries( daw_murmur3_test PRIVATE json_test )
-add_test( NAME daw_murmur3_test COMMAND daw_murmur3_test )
-add_dependencies( ci_tests daw_murmur3_test )
-add_dependencies( full daw_murmur3_test )
-
 if( DAW_JSON_FULL_TESTS )
 	add_executable( apache_builds_test src/apache_builds_test.cpp )
 	add_test( NAME apache_builds_test COMMAND apache_builds_test ./apache_builds.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )

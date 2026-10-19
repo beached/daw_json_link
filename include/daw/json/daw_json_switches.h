@@ -181,16 +181,6 @@
 #define DAW_JSON_BUGFIX_MSVC_KNOWN_LOC_ICE_003
 #endif
 
-/// This is in addition to the parse policy.  Always do a full name match
-/// instead of sometimes relying on the hash.  This was enabled in MSVC due to
-/// an issue that should be rechecked
-#if not defined( NDEBUG ) or defined( DEBUG ) or \
-  defined( DAW_JSON_PARSER_DIAGNOSTICS ) or defined( DAW_HAS_MSVC )
-#if not defined( DAW_JSON_ALWAYS_FULL_NAME_MATCH )
-#define DAW_JSON_ALWAYS_FULL_NAME_MATCH
-#endif
-#endif
-
 // Allows pack expansions with get<Is> without separate methods.  This should
 // improve symbol sizes
 #if defined( __cpp_generic_lambdas )

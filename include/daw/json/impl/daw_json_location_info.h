@@ -12,28 +12,59 @@
 
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_find_result.h"
-#include "daw/json/impl/daw_murmur3.h"
 
-#include <daw/algorithms/daw_algorithm_adjacent_find.h>
 #include <daw/daw_consteval.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_logic.h>
-#include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
 
 #include <cstddef>
 #include <daw/stdinc/data_access.h>
+#include <string>
 
 #if defined( DAW_JSON_PARSER_DIAGNOSTICS )
 #include <cmath>
 #include <iostream>
 #endif
 
+namespace daw {
+	/// @brief Member names that fit are packed into this type, see
+	/// json_details::pack_name
+	using json_name_hash_t = daw::UInt64;
+} // namespace daw
+
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+			/// @brief Names that fit are packed into this, byte for byte
+			inline constexpr std::size_t packed_name_size = sizeof( json_name_hash_t );
+
+			/// @brief Pack a name of up to packed_name_size bytes into an integer.
+			/// Packed values of names with the same size are equal only when the
+			/// names are.  Longer names are not packed, and are compared with
+			/// names_equal
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_name_hash_t
+			pack_name( daw::string_view name ) {
+				auto result = json_name_hash_t{ };
+				if( std::size( name ) <= packed_name_size ) {
+					for( char const c : name ) {
+						result <<= 8U;
+						result |= static_cast<unsigned char>( c );
+					}
+				}
+				return result;
+			}
+
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
+			names_equal( daw::string_view lhs, daw::string_view rhs ) {
+				return std::size( lhs ) == std::size( rhs ) and
+				       std::char_traits<char>::compare( std::data( lhs ),
+				                                        std::data( rhs ),
+				                                        std::size( lhs ) ) == 0;
+			}
+
 			template<typename Iterator = char const *>
 			struct location_info_t {
 				daw::string_view name;
@@ -67,14 +98,13 @@ namespace daw::json {
 			 * Contains an array of member location_info mapped in a json_class
 			 * @tparam MemberCount Number of mapped members from json_class
 			 */
-			template<std::size_t MemberCount, bool DoFullNameMatch = true,
-			         typename Iterator = char const *>
+			template<std::size_t MemberCount, typename Iterator = char const *>
 			struct locations_info_t {
 				using value_type = location_info_t<Iterator>;
 				using reference = value_type &;
 				using const_reference = value_type const &;
-				static constexpr bool do_full_name_match = DoFullNameMatch;
-				json_name_hash_t hashes[MemberCount];
+				/// pack_name of each name, 0 for those too long to pack
+				json_name_hash_t packed_names[MemberCount];
 				value_type names[MemberCount];
 
 				constexpr const_reference operator[]( std::size_t idx ) const {
@@ -91,22 +121,29 @@ namespace daw::json {
 					return MemberCount;
 				}
 
-				template<bool expect_long_strings, std::size_t start_pos>
+				template<std::size_t start_pos>
 				[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t
 				find_name( daw::string_view key ) const {
-					auto const hash = name_hash<expect_long_strings>( key );
 #if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 					(void)start_pos;
-					for( std::size_t n = 0; n < MemberCount; ++n ) {
+					constexpr std::size_t first_pos = 0;
 #else
-					for( std::size_t n = start_pos; n < MemberCount; ++n ) {
+					constexpr std::size_t first_pos = start_pos;
 #endif
-						if( hashes[n] == hash and names[n].name.size( ) == key.size( ) ) {
-							if constexpr( do_full_name_match ) {
-								if( DAW_UNLIKELY( key != names[n].name ) ) {
-									continue;
-								}
+					// Names too long to pack are compared in full
+					if( std::size( key ) > packed_name_size ) {
+						for( std::size_t n = first_pos; n < MemberCount; ++n ) {
+							if( names_equal( key, names[n].name ) ) {
+								return n;
 							}
+						}
+						return MemberCount;
+					}
+					// Packed names with the same size are exact
+					auto const packed = pack_name( key );
+					for( std::size_t n = first_pos; n < MemberCount; ++n ) {
+						if( packed_names[n] == packed and
+						    names[n].name.size( ) == key.size( ) ) {
 							return n;
 						}
 					}
@@ -115,34 +152,12 @@ namespace daw::json {
 			};
 
 			// Should never be called outside a consteval context
-			template<typename... MemberNames>
-			static DAW_CONSTEVAL bool do_hashes_collide( ) {
-				json_name_hash_t hashes[sizeof...( MemberNames )]{
-				  name_hash<false>( MemberNames::name )... };
-
-				daw::sort( std::data( hashes ), daw::data_end( hashes ) );
-				return daw::algorithm::adjacent_find( std::data( hashes ),
-				                                      daw::data_end( hashes ),
-				                                      []( auto l, auto r )
-				                                        DAW_JSON_CPP23_STATIC_CALL_OP {
-					                                        return l == r;
-				                                        } ) != daw::data_end( hashes );
-			}
-
-			// Should never be called outside a consteval context
 			template<typename ParseState, typename... JsonMembers>
 			DAW_ATTRIB_FLATINLINE static DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto
 			make_locations_info( ) {
-#if defined( DAW_JSON_ALWAYS_FULL_NAME_MATCH )
-				using do_full_name_match = std::true_type;
-#else
-				using do_full_name_match =
-				  std::bool_constant<ParseState::force_name_equal_check or
-				                     do_hashes_collide<JsonMembers...>( )>;
-#endif
 				return locations_info_t<sizeof...( JsonMembers ),
-				                        do_full_name_match::value, typename ParseState::iterator>{
-				  /*hashes*/ { daw::name_hash<false>( JsonMembers::name )... },
+				                        typename ParseState::iterator>{
+				  /*packed_names*/ { pack_name( JsonMembers::name )... },
 				  /*names*/ { location_info_t<typename ParseState::iterator>{ JsonMembers::name }... } };
 			}
 
@@ -158,11 +173,10 @@ namespace daw::json {
 			enum class AllMembersMustExist { yes, no };
 
 			template<std::size_t pos, AllMembersMustExist must_exist,
-			         bool from_start = false, std::size_t N, typename ParseState,
-			         bool B>
+			         bool from_start = false, std::size_t N, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr find_result<ParseState>
 			find_class_member( ParseState &parse_state,
-			                   locations_info_t<N, B, typename ParseState::iterator> &locations, bool is_nullable,
+			                   locations_info_t<N, typename ParseState::iterator> &locations, bool is_nullable,
 			                   daw::string_view member_name ) {
 
 				// silencing gcc9 warning as these are selectively used
@@ -185,8 +199,7 @@ namespace daw::json {
 					// parse_name checks if we have more and are quotes
 					auto const name = parse_name( parse_state );
 					auto const name_pos =
-					  locations.template find_name<ParseState::expect_long_strings,
-					                               ( from_start ? 0 : pos )>( name );
+					  locations.template find_name<( from_start ? 0 : pos )>( name );
 					if constexpr( must_exist == AllMembersMustExist::yes ) {
 						daw_json_assert_weak( name_pos < std::size( locations ),
 						                      ErrorReason::UnknownMember,

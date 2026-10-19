@@ -11,10 +11,10 @@
 #include "daw/json/impl/version.h"
 
 #include "daw/json/impl/daw_json_arrow_proxy.h"
+#include "daw/json/impl/daw_json_location_info.h"
 #include "daw/json/impl/daw_json_parse_class.h"
 #include "daw/json/impl/daw_json_parse_name.h"
 #include "daw/json/impl/daw_json_value.h"
-#include "daw/json/impl/daw_murmur3.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_enable_requires.h>
@@ -45,20 +45,24 @@ namespace daw::json {
 				  daw::string_view Name,
 				  basic_json_value_iterator<PolicyFlags, Allocator> val )
 				  : name( Name )
-				  , hash_value(
-				      daw::name_hash<ParseState::expect_long_strings>( Name ) )
+				  , hash_value( pack_name( Name ) )
 				  , location( std::move( val ) ) {}
 
 				[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
-					return name == Name;
+					return names_equal( name, Name );
 				}
 
+				/// @param hash pack_name( Name )
 				[[nodiscard]] constexpr bool is_match( daw::string_view Name,
 				                                       json_name_hash_t hash ) const {
-					if( hash != hash_value ) {
+					if( std::size( Name ) != std::size( name ) ) {
 						return false;
 					}
-					return name == Name;
+					if( std::size( Name ) <= packed_name_size ) {
+						// Packed, so equal is exact
+						return hash == hash_value;
+					}
+					return names_equal( name, Name );
 				}
 			};
 		} // namespace json_details
@@ -69,7 +73,7 @@ namespace daw::json {
 
 			constexpr json_member_name( std::string_view Name )
 			  : name( std::data( Name ), std::size( Name ) )
-			  , hash_value( daw::name_hash<false>( name ) ) {}
+			  , hash_value( json_details::pack_name( name ) ) {}
 		};
 
 		/**
