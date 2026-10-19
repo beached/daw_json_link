@@ -340,6 +340,24 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span><span class="preprocessor">  } while( false )</span></div>
 </div>
 <div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span><span class="preprocessor">#if defined( DEBUG ) or not defined( NDEBUG )</span></div>
+<div class="foldopen" id="foldopen00245" data-start="" data-end="">
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno"><a class="line" href="daw__json__assert_8h.html#a016f343abfeeeb48a039e5f572048528">  245</a></span><span class="preprocessor">#define daw_json_dbg_ensure( Bool, ... )                                   \</span></div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span><span class="preprocessor">  do {                                                                     \</span></div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span><span class="preprocessor">    if( DAW_UNLIKELY( not( Bool ) ) ) {                                    \</span></div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span><span class="preprocessor">      daw_static_warn_if( not( Bool ),                                     \</span></div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span><span class="preprocessor">                          &quot;Error handler will always be called: &quot; #Bool ); \</span></div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span><span class="preprocessor">      daw_json_error( not( Bool ), __VA_ARGS__ );                          \</span></div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span><span class="preprocessor">    }                                                                      \</span></div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span><span class="preprocessor">  } while( false )</span></div>
+</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span><span class="preprocessor">#define daw_json_dbg_ensure( ... ) \</span></div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span><span class="preprocessor">  do {                             \</span></div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span><span class="preprocessor">  } while( false )</span></div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="adaw__json__exception_8h_html"><div class="ttname"><a href="daw__json__exception_8h.html">daw_json_exception.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03_html_abceb530e1f470f1fdeb77b9e0726ea63"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__assert_8h_03.html#abceb530e1f470f1fdeb77b9e0726ea63">daw::json::anonymous_namespace{daw_json_assert.h}::daw_json_error</a></div><div class="ttdeci">DAW_ATTRIB_NOINLINE void daw_json_error(bool b, ErrorReason reason)</div><div class="ttdef"><b>Definition</b> <a href="daw__json__assert_8h_source.html#l00105">daw_json_assert.h:105</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">string_writer grows its string with resize_and_overwrite, leaving the new bytes uninitialized,...</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>

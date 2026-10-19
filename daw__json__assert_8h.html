@@ -113,6 +113,8 @@ Macros</h2></td></tr>
 <tr class="memitem:a728389a742b837d2170f62d34d78ddf4" id="r_a728389a742b837d2170f62d34d78ddf4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(Bool, ...)</td></tr>
 <tr class="memdesc:a728389a742b837d2170f62d34d78ddf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error.  <br /></td></tr>
 <tr class="separator:a728389a742b837d2170f62d34d78ddf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a016f343abfeeeb48a039e5f572048528" id="r_a016f343abfeeeb48a039e5f572048528"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a016f343abfeeeb48a039e5f572048528">daw_json_dbg_ensure</a>(Bool, ...)</td></tr>
+<tr class="separator:a016f343abfeeeb48a039e5f572048528"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa08d5b456f511ea5d387f849f8764643" id="r_aa08d5b456f511ea5d387f849f8764643"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>(Bool, ...)</td></tr>
 <tr class="memdesc:aa08d5b456f511ea5d387f849f8764643"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure that Bool is true. If false pass rest of args to daw_json_error.  <br /></td></tr>
 <tr class="separator:aa08d5b456f511ea5d387f849f8764643"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -190,6 +192,43 @@ Variables</h2></td></tr>
 <p>Assert that Bool is true when in Checked Input mode If false pass rest of args to daw_json_error. </p>
 
 <p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00232">232</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
+
+</div>
+</div>
+<a id="a016f343abfeeeb48a039e5f572048528" name="a016f343abfeeeb48a039e5f572048528"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a016f343abfeeeb48a039e5f572048528">&#9670;&#160;</a></span>daw_json_dbg_ensure</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define daw_json_dbg_ensure</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Bool, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">do</span> {                                                                     \</div>
+<div class="line">    if( DAW_UNLIKELY( not( Bool ) ) ) {                                    \</div>
+<div class="line">      daw_static_warn_if( not( Bool ),                                     \</div>
+<div class="line">                          <span class="stringliteral">&quot;Error handler will always be called: &quot;</span> #Bool ); \</div>
+<div class="line">      daw_json_error( not( Bool ), __VA_ARGS__ );                          \</div>
+<div class="line">    }                                                                      \</div>
+<div class="line">  } <span class="keywordflow">while</span>( <span class="keyword">false</span> )</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="daw__json__assert_8h_source.html#l00245">245</a> of file <a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>.</p>
 
 </div>
 </div>
