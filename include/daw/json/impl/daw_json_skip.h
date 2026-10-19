@@ -80,8 +80,7 @@ namespace daw::json {
 			[[nodiscard]] static constexpr ParseState
 			skip_true( ParseState &parse_state ) {
 				auto result = parse_state;
-				if constexpr( ( ParseState::is_zero_terminated_string or
-				                ParseState::is_unchecked_input ) ) {
+				if constexpr( ParseState::is_unchecked_input ) {
 					parse_state.remove_prefix( 4 );
 				} else {
 					parse_state.remove_prefix( );
@@ -104,8 +103,7 @@ namespace daw::json {
 			[[nodiscard]] static constexpr ParseState
 			skip_false( ParseState &parse_state ) {
 				auto result = parse_state;
-				if constexpr( ( ParseState::is_zero_terminated_string or
-				                ParseState::is_unchecked_input ) ) {
+				if constexpr( ParseState::is_unchecked_input ) {
 					parse_state.remove_prefix( 5 );
 				} else {
 					parse_state.remove_prefix( );
@@ -127,8 +125,7 @@ namespace daw::json {
 			template<typename ParseState>
 			[[nodiscard]] static constexpr ParseState
 			skip_null( ParseState &parse_state ) {
-				if constexpr( ( ParseState::is_zero_terminated_string or
-				                ParseState::is_unchecked_input ) ) {
+				if constexpr( ParseState::is_unchecked_input ) {
 					parse_state.remove_prefix( 4 );
 				} else {
 					parse_state.remove_prefix( );
@@ -207,9 +204,7 @@ namespace daw::json {
 
 				if( DAW_LIKELY( first < last ) ) {
 					DAW_LIKELY_BRANCH
-					first =
-					  skip_digits<( ParseState::is_zero_terminated_string or
-					                ParseState::is_unchecked_input )>( first, last );
+					first = skip_digits<ParseState::is_unchecked_input>( first, last );
 				}
 
 				char const *decimal = nullptr;
