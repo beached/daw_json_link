@@ -77,6 +77,18 @@ namespace daw::json {
 				}
 			}
 
+			/// @brief A comment can directly follow a value, skip it before
+			/// checking for the end of the value.  Without comments the end check
+			/// already accepts whitespace
+			template<typename ParseState>
+			DAW_ATTRIB_INLINE constexpr void
+			skip_comments_after_value( ParseState &parse_state ) {
+				if constexpr( not std::is_same_v<typename ParseState::CommentPolicy,
+				                                 NoCommentSkippingPolicy> ) {
+					parse_state.trim_left( );
+				}
+			}
+
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
 			[[nodiscard]] constexpr json_result_t<JsonMember>
 			parse_value_real( ParseState &parse_state ) {
@@ -109,6 +121,7 @@ namespace daw::json {
 								                      ErrorReason::InvalidNumber,
 								                      parse_state );
 							} else {
+								skip_comments_after_value( parse_state );
 								daw_json_assert_weak( parse_state.empty( ) or
 								                        parse_policy_details::at_end_of_item(
 								                          parse_state.front( ) ),
@@ -133,6 +146,7 @@ namespace daw::json {
 								                      ErrorReason::InvalidNumber,
 								                      parse_state );
 							} else {
+								skip_comments_after_value( parse_state );
 								daw_json_assert_weak( parse_state.empty( ) or
 								                        parse_policy_details::at_end_of_item(
 								                          parse_state.front( ) ),
@@ -170,6 +184,7 @@ namespace daw::json {
 							skip_quote_when_literal_as_string<JsonMember::literal_as_string,
 							                                  true>( parse_state );
 						}
+						skip_comments_after_value( parse_state );
 						daw_json_assert_weak(
 						  parse_state.empty( ) or
 						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
@@ -286,6 +301,7 @@ namespace daw::json {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string,
 						                                  true>( parse_state );
 					}
+					skip_comments_after_value( parse_state );
 					daw_json_assert_weak(
 					  not parse_state.has_more( ) or
 					    parse_policy_details::at_end_of_item( parse_state.front( ) ),
@@ -347,12 +363,13 @@ namespace daw::json {
 					}
 					if( parse_state.starts_with( "null" ) ) {
 						parse_state.remove_prefix( 4 );
+						// Trim first, a comment can directly follow the literal
+						parse_state.trim_left_checked( );
 						daw_json_assert_weak(
 						  not parse_state.has_more( ) or
 						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
 						  ErrorReason::InvalidLiteral,
 						  parse_state );
-						parse_state.trim_left_checked( );
 						return construct_empty( );
 					}
 					using parse_to_t = json_result_t<base_member_type>;

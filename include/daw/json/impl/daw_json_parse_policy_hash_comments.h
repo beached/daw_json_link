@@ -44,7 +44,10 @@ namespace daw::json {
 				while( parse_state.has_more( ) and parse_state.front( ) == '#' ) {
 					parse_state.remove_prefix( );
 					parse_state.template move_to_next_of_checked<'\n'>( );
-					if( parse_state.front( ) == '\n' ) {
+					// The last line may not end with a newline
+					if( ( ParseState::is_zero_terminated_string or
+					      parse_state.has_more( ) ) and
+					    parse_state.front( ) == '\n' ) {
 						parse_state.remove_prefix( );
 					}
 				}
@@ -77,6 +80,8 @@ namespace daw::json {
 				skip_comments_unchecked( parse_state );
 				while( parse_state.is_space_unchecked( ) ) {
 					parse_state.remove_prefix( );
+					// Comments can follow whitespace
+					skip_comments_unchecked( parse_state );
 				}
 			}
 
@@ -90,14 +95,14 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_to_next_of( ParseState &parse_state ) {
 				skip_comments( parse_state );
-
-				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData,
-				                      parse_state );
-				while( not parse_policy_details::in<keys...>( parse_state.front( ) ) ) {
+				while( true ) {
+					// Check before reading front( ), skip_comments can reach the end
 					daw_json_assert_weak( parse_state.has_more( ),
 					                      ErrorReason::UnexpectedEndOfData,
 					                      parse_state );
+					if( parse_policy_details::in<keys...>( parse_state.front( ) ) ) {
+						break;
+					}
 					parse_state.remove_prefix( );
 					skip_comments( parse_state );
 				}

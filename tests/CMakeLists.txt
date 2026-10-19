@@ -605,6 +605,12 @@ add_test( NAME apache_builds_hash_comments_test COMMAND apache_builds_hash_comme
 add_dependencies( ci_tests apache_builds_hash_comments_test )
 add_dependencies( full apache_builds_hash_comments_test )
 
+add_executable( cpp_comment_skip_test src/cpp_comment_skip_test.cpp )
+target_link_libraries( cpp_comment_skip_test PRIVATE json_test )
+add_test( NAME cpp_comment_skip_test COMMAND cpp_comment_skip_test )
+add_dependencies( ci_tests cpp_comment_skip_test )
+add_dependencies( full cpp_comment_skip_test )
+
 add_executable( cookbook_dates1_test src/cookbook_dates1_test.cpp )
 target_link_libraries( cookbook_dates1_test PRIVATE json_test )
 add_test( NAME cookbook_dates1_test COMMAND cookbook_dates1_test ./cookbook_dates1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )

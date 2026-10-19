@@ -45,7 +45,7 @@ namespace daw::json {
 								parse_state.remove_prefix( );
 								break;
 							}
-							parse_state.remove_prefix( );
+							// front( ) may be the '*' of the closing "*/", e.g. "**/"
 						}
 						break;
 					default:
@@ -58,7 +58,10 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			skip_comments_checked( ParseState &parse_state ) {
 				while( parse_state.has_more( ) and parse_state.front( ) == '/' ) {
-					if( not parse_state.has_more( ) ) {
+					// A comment needs a second character, a lone '/' is left for the
+					// parser to reject
+					if( not ParseState::is_zero_terminated_string and
+					    parse_state.size( ) < 2 ) {
 						return;
 					}
 					switch( *( parse_state.first + 1 ) ) {
@@ -81,7 +84,7 @@ namespace daw::json {
 								parse_state.remove_prefix( );
 								break;
 							}
-							parse_state.remove_prefix( );
+							// front( ) may be the '*' of the closing "*/", e.g. "**/"
 						}
 						break;
 					default:
@@ -117,6 +120,8 @@ namespace daw::json {
 				skip_comments_unchecked( parse_state );
 				while( parse_state.is_space_unchecked( ) ) {
 					parse_state.remove_prefix( );
+					// Comments can follow whitespace
+					skip_comments_unchecked( parse_state );
 				}
 			}
 
@@ -130,13 +135,14 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_to_next_of( ParseState &parse_state ) {
 				skip_comments( parse_state );
-				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData,
-				                      parse_state );
-				while( not parse_policy_details::in<keys...>( parse_state.front( ) ) ) {
+				while( true ) {
+					// Check before reading front( ), skip_comments can reach the end
 					daw_json_assert_weak( parse_state.has_more( ),
 					                      ErrorReason::UnexpectedEndOfData,
 					                      parse_state );
+					if( parse_policy_details::in<keys...>( parse_state.front( ) ) ) {
+						break;
+					}
 					parse_state.remove_prefix( );
 					skip_comments( parse_state );
 				}
@@ -233,13 +239,21 @@ namespace daw::json {
 							break;
 						case '*':
 							++ptr_first;
-							while( ( ptr_last - ptr_first ) >= 3 and *ptr_first != '*' and
-							       *std::next( ptr_first ) != '/' ) {
+							// Find the closing */
+							while( ( ptr_last - ptr_first ) >= 2 and
+							       not( *ptr_first == '*' and
+							            *std::next( ptr_first ) == '/' ) ) {
 								++ptr_first;
 							}
+							daw_json_ensure( ( ptr_last - ptr_first ) >= 2,
+							                 ErrorReason::UnexpectedEndOfData,
+							                 parse_state );
+							// Onto the '/', the increment below moves past it
+							++ptr_first;
 							break;
 						default:
-							++ptr_first;
+							// Not a comment, look at this character as usual
+							continue;
 						}
 						break;
 					}
@@ -333,13 +347,17 @@ namespace daw::json {
 							break;
 						case '*':
 							++ptr_first;
-							while( *ptr_first != '*' and
-							       *std::next( ptr_first ) != '/' ) {
+							// Find the closing */
+							while( not( *ptr_first == '*' and
+							            *std::next( ptr_first ) == '/' ) ) {
 								++ptr_first;
 							}
+							// Onto the '/', the increment below moves past it
+							++ptr_first;
 							break;
 						default:
-							++ptr_first;
+							// Not a comment, look at this character as usual
+							continue;
 						}
 						break;
 					}
