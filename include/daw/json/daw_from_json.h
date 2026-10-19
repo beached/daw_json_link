@@ -478,6 +478,17 @@ namespace daw::json {
 			                     DefaultParsePolicy,
 			                     ParsePolicy>;
 			auto const old_parse_state = value.get_raw_state( );
+			// A default constructed json_value, or one from a failed find_member,
+			// has no data.  The parsers require a non-null range
+			if constexpr( json_details::is_json_nullable_v<json_member> ) {
+				if( old_parse_state.is_null( ) ) {
+					return json_details::construct_nullable_empty<
+					  json_details::json_constructor_t<json_member>>( );
+				}
+			} else {
+				daw_json_ensure( not old_parse_state.is_null( ),
+				                 ErrorReason::EmptyJSONDocument );
+			}
 			auto parse_state = ParseState( old_parse_state.first,
 			                               old_parse_state.last,
 			                               old_parse_state.class_first,

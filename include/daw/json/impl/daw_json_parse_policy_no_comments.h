@@ -35,9 +35,11 @@ namespace daw::json {
 			trim_left_checked( ParseState &parse_state ) {
 				if constexpr( not ParseState::minified_document ) {
 					// SIMD here was much slower, most JSON has very minimal whitespace
-					auto first =
-					  daw::not_null<typename ParseState::iterator>( parse_state.first );
-					auto const last = daw::not_null<char const *>( parse_state.last );
+					auto first = parse_state.first;
+					auto const last = parse_state.last;
+					// A null range is a logic error, not bad input
+					daw_json_dbg_ensure( first != nullptr and last != nullptr,
+					                     ErrorReason::InvalidNull );
 
 					// only used when not zero terminated string and gcc9 warns
 					(void)last;
@@ -58,7 +60,7 @@ namespace daw::json {
 							++first;
 						}
 					}
-					parse_state.first = json_details::input_pointer( parse_state.first, first.get( ) );
+					parse_state.first = first;
 				}
 			}
 
@@ -66,15 +68,16 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_unchecked( ParseState &parse_state ) {
 				if constexpr( not ParseState::minified_document ) {
-					auto first = daw::not_null<typename ParseState::iterator>(
-					  daw::never_null, parse_state.first );
+					auto first = parse_state.first;
+					// A null range is a logic error, not bad input
+					daw_json_dbg_ensure( first != nullptr, ErrorReason::InvalidNull );
 					while( DAW_UNLIKELY(
 					  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 					    1U ) <= 0x1F ) ) {
 
 						++first;
 					}
-					parse_state.first = json_details::input_pointer( parse_state.first, first.get( ) );
+					parse_state.first = first;
 				}
 			}
 

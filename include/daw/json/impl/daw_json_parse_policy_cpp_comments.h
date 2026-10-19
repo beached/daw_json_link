@@ -160,8 +160,11 @@ namespace daw::json {
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				auto ptr_first = daw::not_null( parse_state.first );
-				auto const ptr_last = daw::not_null( parse_state.last );
+				auto ptr_first = parse_state.first;
+				auto const ptr_last = parse_state.last;
+				// A null range is a logic error, not bad input
+				daw_json_dbg_ensure( ptr_first != nullptr and ptr_last != nullptr,
+				                     ErrorReason::InvalidNull );
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
 				}
@@ -175,18 +178,14 @@ namespace daw::json {
 						break;
 					case '"':
 						++ptr_first;
-						if constexpr( std::is_same_v<char *,
-						                             typename ParseState::iterator> ) {
-							auto skip_ptr = json_details::mem_skip_until_end_of_string<
-							  ParseState::is_unchecked_input,
-							  typename ParseState::exec_tag_t>( ptr_first.get( ),
-							                                    ptr_last.get( ) );
-							ptr_first += skip_ptr - ptr_first.get( );
-						} else {
-							ptr_first = json_details::mem_skip_until_end_of_string<
-							  ParseState::is_unchecked_input,
-							  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
-						}
+						// ptr_first is past an opening quote, so it is not null
+						ptr_first += json_details::mem_skip_until_end_of_string<
+						               ParseState::is_unchecked_input,
+						               typename ParseState::exec_tag_t>(
+						               daw::not_null<char const *>( daw::never_null, ptr_first ),
+						               daw::not_null<char const *>( daw::never_null, ptr_last ) )
+						               .get( ) -
+						             ptr_first;
 						daw_json_ensure( ptr_first < ptr_last,
 						                 ErrorReason::UnexpectedEndOfData,
 						                 parse_state );
@@ -235,7 +234,7 @@ namespace daw::json {
 						case '*':
 							++ptr_first;
 							while( ( ptr_last - ptr_first ) >= 3 and *ptr_first != '*' and
-							       *std::next( ptr_first.get( ) ) != '/' ) {
+							       *std::next( ptr_first ) != '/' ) {
 								++ptr_first;
 							}
 							break;
@@ -273,9 +272,11 @@ namespace daw::json {
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				auto ptr_first = daw::not_null( daw::never_null, parse_state.first );
-				auto const ptr_last =
-				  daw::not_null( daw::never_null, parse_state.last );
+				auto ptr_first = parse_state.first;
+				auto const ptr_last = parse_state.last;
+				// A null range is a logic error, not bad input
+				daw_json_dbg_ensure( ptr_first != nullptr and ptr_last != nullptr,
+				                     ErrorReason::InvalidNull );
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}
@@ -286,18 +287,14 @@ namespace daw::json {
 						break;
 					case '"':
 						++ptr_first;
-						if constexpr( std::is_same_v<char *,
-						                             typename ParseState::iterator> ) {
-							auto skip_ptr = json_details::mem_skip_until_end_of_string<
-							  ParseState::is_unchecked_input,
-							  typename ParseState::exec_tag_t>( ptr_first.get( ),
-							                                    ptr_last.get( ) );
-							ptr_first += skip_ptr - ptr_first.get( );
-						} else {
-							ptr_first = json_details::mem_skip_until_end_of_string<
-							  ParseState::is_unchecked_input,
-							  typename ParseState::exec_tag_t>( ptr_first, ptr_last );
-						}
+						// ptr_first is past an opening quote, so it is not null
+						ptr_first += json_details::mem_skip_until_end_of_string<
+						               ParseState::is_unchecked_input,
+						               typename ParseState::exec_tag_t>(
+						               daw::not_null<char const *>( daw::never_null, ptr_first ),
+						               daw::not_null<char const *>( daw::never_null, ptr_last ) )
+						               .get( ) -
+						             ptr_first;
 						break;
 					case ',':
 						if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
@@ -337,7 +334,7 @@ namespace daw::json {
 						case '*':
 							++ptr_first;
 							while( *ptr_first != '*' and
-							       *std::next( ptr_first.get( ) ) != '/' ) {
+							       *std::next( ptr_first ) != '/' ) {
 								++ptr_first;
 							}
 							break;

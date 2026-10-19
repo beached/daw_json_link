@@ -240,3 +240,9 @@ namespace daw::json {
 		}                                                                        \
 	} while( false )
 #endif
+
+#if defined( DEBUG ) or not defined( NDEBUG )
+#define daw_json_dbg_ensure( ... ) daw_json_ensure( __VA_ARGS__ )
+#else
+#define daw_json_dbg_ensure( ... )
+#endif
