@@ -50,6 +50,15 @@ namespace daw::json {
 			template<typename T>
 			assign_on_dtor( T const &, T const & ) -> assign_on_dtor<T>;
 
+			template<typename ParseState>
+			[[nodiscard]] constexpr zstring_policy_t<ParseState>
+			to_zstring_state( ParseState const &state ) {
+				return zstring_policy_t<ParseState>( state.first,
+				                                      state.last,
+				                                      state.class_first,
+				                                      state.class_last,
+				                                      state.counter );
+			}
 		} // namespace json_details
 		/***
 		 * Iterator for iterating over JSON array's
@@ -93,11 +102,27 @@ namespace daw::json {
 			 */
 			mutable char const *m_can_skip = nullptr;
 
+			static constexpr bool can_use_zstring =
+			  json_details::can_use_runtime_zstring_v<ParseState, daw::string_view>;
+
+			/// The source data was zero terminated, parse with a zstring state
+			bool m_is_zstring = false;
+
+			template<typename State>
+			[[nodiscard]] constexpr value_type parse_current( State tmp ) const {
+				auto const run_after_parse =
+				  json_details::assign_on_dtor{ m_can_skip, tmp.first };
+				(void)run_after_parse;
+				return json_details::
+				  parse_value<element_type, false, element_type::expected_type>( tmp );
+			}
+
 		public:
 			explicit json_array_iterator_t( ) = default;
 
 			explicit constexpr json_array_iterator_t( daw::string_view jd )
-			  : m_state( ParseState( std::data( jd ), daw::data_end( jd ) ) ) {
+			  : m_state( ParseState( std::data( jd ), daw::data_end( jd ) ) )
+			  , m_is_zstring( json_details::is_runtime_zstring<ParseState>( jd ) ) {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
@@ -112,7 +137,8 @@ namespace daw::json {
 
 			explicit constexpr json_array_iterator_t( daw::string_view jd,
 			                                          daw::string_view start_path )
-			  : m_state( get_range( jd, start_path ) ) {
+			  : m_state( get_range( jd, start_path ) )
+			  , m_is_zstring( json_details::is_runtime_zstring<ParseState>( jd ) ) {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
@@ -143,13 +169,12 @@ namespace daw::json {
 				                      ErrorReason::UnexpectedEndOfData,
 				                      m_state );
 
-				auto tmp = m_state;
-
-				auto const run_after_parse =
-				  json_details::assign_on_dtor{ m_can_skip, tmp.first };
-				(void)run_after_parse;
-				return json_details::
-				  parse_value<element_type, false, element_type::expected_type>( tmp );
+				if constexpr( can_use_zstring ) {
+					if( m_is_zstring ) {
+						return parse_current( json_details::to_zstring_state( m_state ) );
+					}
+				}
+				return parse_current( m_state );
 			}
 
 			/// @brief A dereferencable value proxy holding the result of operator*
@@ -169,25 +194,40 @@ namespace daw::json {
 				daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 				                      ErrorReason::UnexpectedEndOfData,
 				                      m_state );
-				if( m_can_skip ) {
-					m_state.first = m_can_skip;
-					m_can_skip = nullptr;
-				} else {
-					(void)json_details::skip_known_value<element_type>( m_state );
+				if constexpr( can_use_zstring ) {
+					if( m_is_zstring ) {
+						auto state = json_details::to_zstring_state( m_state );
+						move_next( state );
+						m_state.first = state.first;
+						return *this;
+					}
 				}
-				m_state.trim_left( );
-				daw_json_assert_weak( m_state.has_more( ) and
-				                        m_state.is_at_next_array_element( ),
-				                      ErrorReason::UnexpectedEndOfData,
-				                      m_state );
-
-				m_state.move_next_member_or_end( );
-				m_state.trim_left( );
-				daw_json_assert_weak(
-				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
-
+				move_next( m_state );
 				return *this;
 			}
+
+		private:
+			template<typename State>
+			constexpr void move_next( State &state ) {
+				if( m_can_skip ) {
+					state.first = m_can_skip;
+					m_can_skip = nullptr;
+				} else {
+					(void)json_details::skip_known_value<element_type>( state );
+				}
+				state.trim_left( );
+				daw_json_assert_weak( state.has_more( ) and
+				                        state.is_at_next_array_element( ),
+				                      ErrorReason::UnexpectedEndOfData,
+				                      state );
+
+				state.move_next_member_or_end( );
+				state.trim_left( );
+				daw_json_assert_weak(
+				  state.has_more( ), ErrorReason::UnexpectedEndOfData, state );
+			}
+
+		public:
 
 			///
 			/// @brief Move the parse state to the next element
@@ -282,11 +322,18 @@ namespace daw::json {
 		private:
 			mutable ParseState m_state = ParseState( );
 
+			static constexpr bool can_use_zstring =
+			  json_details::can_use_runtime_zstring_v<ParseState, daw::string_view>;
+
+			/// The source data was zero terminated, parse with a zstring state
+			bool m_is_zstring = false;
+
 		public:
 			explicit json_array_iterator_once( ) = default;
 
 			explicit constexpr json_array_iterator_once( daw::string_view jd )
-			  : m_state( ParseState( std::data( jd ), daw::data_end( jd ) ) ) {
+			  : m_state( ParseState( std::data( jd ), daw::data_end( jd ) ) )
+			  , m_is_zstring( json_details::is_runtime_zstring<ParseState>( jd ) ) {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
@@ -301,7 +348,8 @@ namespace daw::json {
 
 			explicit constexpr json_array_iterator_once( daw::string_view jd,
 			                                             daw::string_view start_path )
-			  : m_state( get_range( jd, start_path ) ) {
+			  : m_state( get_range( jd, start_path ) )
+			  , m_is_zstring( json_details::is_runtime_zstring<ParseState>( jd ) ) {
 
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
@@ -322,6 +370,17 @@ namespace daw::json {
 				                      ErrorReason::UnexpectedEndOfData,
 				                      m_state );
 
+				if constexpr( can_use_zstring ) {
+					if( m_is_zstring ) {
+						auto state = json_details::to_zstring_state( m_state );
+						auto const run_after_parse =
+						  json_details::assign_on_dtor{ m_state.first, state.first };
+						(void)run_after_parse;
+						return json_details::
+						  parse_value<element_type, false, element_type::expected_type>(
+						    state );
+					}
+				}
 				return json_details::
 				  parse_value<element_type, false, element_type::expected_type>(
 				    m_state );
@@ -336,7 +395,17 @@ namespace daw::json {
 				                        m_state.is_at_next_array_element( ),
 				                      ErrorReason::UnexpectedEndOfData,
 				                      m_state );
-				m_state.move_next_member_or_end( );
+				if constexpr( can_use_zstring ) {
+					if( m_is_zstring ) {
+						auto state = json_details::to_zstring_state( m_state );
+						state.move_next_member_or_end( );
+						m_state.first = state.first;
+					} else {
+						m_state.move_next_member_or_end( );
+					}
+				} else {
+					m_state.move_next_member_or_end( );
+				}
 				daw_json_assert_weak(
 				  m_state.has_more( ), ErrorReason::UnexpectedEndOfData, m_state );
 				return *this;

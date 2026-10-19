@@ -12,6 +12,7 @@
 
 #include "daw/json/concepts/daw_nullable_value.h"
 #include "daw/json/daw_json_data_contract.h"
+#include "daw/json/daw_json_parse_options.h"
 #include "daw/json/impl/daw_json_default_constuctor.h"
 #include "daw/json/impl/daw_json_enums.h"
 #include "daw/json/impl/daw_json_link_types_aggregate.h"
@@ -24,6 +25,7 @@
 #include <daw/daw_cpp20_concept.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_move.h>
+#include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/impl/daw_make_trait.h>
 
@@ -250,6 +252,30 @@ namespace daw::json {
 			using apply_zstring_policy_option_t = daw::conditional_t<
 			  is_zero_terminated_string_v<daw::remove_cvref_t<String>>,
 			  apply_policy_option_t<ParsePolicy, Option>, ParsePolicy>;
+
+			/// A daw::string_view knows at runtime if it is zero terminated.  The
+			/// zero terminated policy only changes how bounds are checked, so it is
+			/// only worth a runtime choice when ParsePolicy checks bounds
+			template<typename ParsePolicy, typename String>
+			inline constexpr bool can_use_runtime_zstring_v =
+			  daw::sv2::is_daw_string_view<String> and
+			  not ParsePolicy::is_zero_terminated_string and
+			  not ParsePolicy::is_unchecked_input and not ParsePolicy::has_allocator;
+
+			template<typename ParsePolicy>
+			using zstring_policy_t =
+			  apply_policy_option_t<ParsePolicy, options::ZeroTerminatedString::yes>;
+
+			/// @brief Can json_data be parsed with zstring_policy_t<ParsePolicy>
+			template<typename ParsePolicy, typename String>
+			[[nodiscard]] constexpr bool is_runtime_zstring( String const &json_data ) {
+				if constexpr( can_use_runtime_zstring_v<ParsePolicy, String> ) {
+					return json_data.is_zero_terminated( ) == daw::ZeroTerminated::Yes;
+				} else {
+					(void)json_data;
+					return false;
+				}
+			}
 
 			template<typename String>
 			inline constexpr bool is_mutable_string_v =

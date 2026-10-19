@@ -52,6 +52,18 @@ namespace daw::json {
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
 
+			/// A daw::string_view knows at runtime if it is zero terminated
+			if constexpr( json_details::can_use_runtime_zstring_v<ParsePolicy,
+			                                                      String> ) {
+				if( json_details::is_runtime_zstring<ParsePolicy>( json_data ) ) {
+					constexpr auto zstring_flags =
+					  options::parse_flags<PolicyFlags...,
+					                       options::ZeroTerminatedString::yes>;
+					return from_json<JsonMember, KnownBounds>(
+					  DAW_FWD( json_data ), zstring_flags );
+				}
+			}
+
 			/// If the string is known to have a trailing zero, allow optimization on
 			/// that
 			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
@@ -162,6 +174,18 @@ namespace daw::json {
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
 
+			/// A daw::string_view knows at runtime if it is zero terminated
+			if constexpr( json_details::can_use_runtime_zstring_v<ParsePolicy,
+			                                                      String> ) {
+				if( json_details::is_runtime_zstring<ParsePolicy>( json_data ) ) {
+					constexpr auto zstring_flags =
+					  options::parse_flags<PolicyFlags...,
+					                       options::ZeroTerminatedString::yes>;
+					return from_json_alloc<JsonMember, KnownBounds>(
+					  DAW_FWD( json_data ), alloc, zstring_flags );
+				}
+			}
+
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
 			using ParseState = json_details::apply_zstring_policy_option_t<
@@ -239,6 +263,18 @@ namespace daw::json {
 
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
+
+			/// A daw::string_view knows at runtime if it is zero terminated
+			if constexpr( json_details::can_use_runtime_zstring_v<ParsePolicy,
+			                                                      String> ) {
+				if( json_details::is_runtime_zstring<ParsePolicy>( json_data ) ) {
+					constexpr auto zstring_flags =
+					  options::parse_flags<PolicyFlags...,
+					                       options::ZeroTerminatedString::yes>;
+					return from_json<JsonMember, KnownBounds>(
+					  DAW_FWD( json_data ), member_path, zstring_flags );
+				}
+			}
 
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
@@ -340,6 +376,18 @@ namespace daw::json {
 
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
+
+			/// A daw::string_view knows at runtime if it is zero terminated
+			if constexpr( json_details::can_use_runtime_zstring_v<ParsePolicy,
+			                                                      String> ) {
+				if( json_details::is_runtime_zstring<ParsePolicy>( json_data ) ) {
+					constexpr auto zstring_flags =
+					  options::parse_flags<PolicyFlags...,
+					                       options::ZeroTerminatedString::yes>;
+					return from_json_alloc<JsonMember, KnownBounds>(
+					  DAW_FWD( json_data ), member_path, alloc, zstring_flags );
+				}
+			}
 
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
@@ -563,6 +611,18 @@ namespace daw::json {
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
 
+			/// A daw::string_view knows at runtime if it is zero terminated
+			if constexpr( json_details::can_use_runtime_zstring_v<ParsePolicy,
+			                                                      String> ) {
+				if( json_details::is_runtime_zstring<ParsePolicy>( json_data ) ) {
+					constexpr auto zstring_flags =
+					  options::parse_flags<PolicyFlags...,
+					                       options::ZeroTerminatedString::yes>;
+					return from_json_array<JsonElement, Container, Constructor, KnownBounds>(
+					  DAW_FWD( json_data ), zstring_flags );
+				}
+			}
+
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
 			using policy_zstring_t = json_details::apply_zstring_policy_option_t<
@@ -661,6 +721,18 @@ namespace daw::json {
 
 			using ParsePolicy =
 			  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
+
+			/// A daw::string_view knows at runtime if it is zero terminated
+			if constexpr( json_details::can_use_runtime_zstring_v<ParsePolicy,
+			                                                      String> ) {
+				if( json_details::is_runtime_zstring<ParsePolicy>( json_data ) ) {
+					constexpr auto zstring_flags =
+					  options::parse_flags<PolicyFlags...,
+					                       options::ZeroTerminatedString::yes>;
+					return from_json_array<JsonElement, Container, Constructor, KnownBounds>(
+					  DAW_FWD( json_data ), member_path, zstring_flags );
+				}
+			}
 
 			/// @brief If the string is known to have a trailing zero, allow
 			/// optimization on that
