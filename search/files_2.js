@@ -105,5 +105,6 @@ var searchData=
   ['daw_5fwritable_5foutput_5fdetails_2eh_102',['daw_writable_output_details.h',['../daw__writable__output__details_8h.html',1,'']]],
   ['daw_5fwritable_5foutput_5ffwd_2eh_103',['daw_writable_output_fwd.h',['../daw__writable__output__fwd_8h.html',1,'']]],
   ['daw_5fwritable_5foutput_5fostream_2eh_104',['daw_writable_output_ostream.h',['../daw__writable__output__ostream_8h.html',1,'']]],
-  ['docs_2fcookbook_2freadme_2emd_105',['readme.md',['../docs_2cookbook_2readme_8md.html',1,'']]]
+  ['daw_5fwritable_5foutput_5fstring_5fwriter_2eh_105',['daw_writable_output_string_writer.h',['../daw__writable__output__string__writer_8h.html',1,'']]],
+  ['docs_2fcookbook_2freadme_2emd_106',['readme.md',['../docs_2cookbook_2readme_8md.html',1,'']]]
 ];

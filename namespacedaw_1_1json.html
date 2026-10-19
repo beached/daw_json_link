@@ -85,7 +85,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Customization point traits.  
+<p><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__writable__output__string__writer_8h_03_1_1string__writer.html" title="A writable output that serializes into a std::string. The string&#39;s own output trait resizes it on eve...">string_writer</a> grows its string with resize_and_overwrite, leaving the new bytes uninitialized, when the standard library has it. That skips zero filling memory that is overwritten right away, but the bytes past what was written are never initialized, which resize_and_overwrite's precondition does not allow. Define DAW_JSON_NO_LESS_SAFE_STRING_WRITER to grow with resize( ) instead  
 <a href="namespacedaw_1_1json.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -253,6 +253,8 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03" id="r_namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03.html">anonymous_namespace{daw_writable_output_fwd.h}</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__ostream_8h_03" id="r_namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__ostream_8h_03"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__ostream_8h_03.html">anonymous_namespace{daw_writable_output_ostream.h}</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__string__writer_8h_03" id="r_namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__string__writer_8h_03"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__string__writer_8h_03.html">anonymous_namespace{daw_writable_output_string_writer.h}</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedaw_1_1json_1_1anonymous__namespace_02power__of__five__128__table_8h_03" id="r_namespacedaw_1_1json_1_1anonymous__namespace_02power__of__five__128__table_8h_03"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02power__of__five__128__table_8h_03.html">anonymous_namespace{power_of_five_128_table.h}</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -448,6 +450,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html">serialization_policy</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__exec__modes_8h_03_1_1simd__exec__tag.html">simd_exec_tag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__writable__output__string__writer_8h_03_1_1string__writer.html">string_writer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A writable output that serializes into a std::string. The string's own output trait resizes it on every write; this keeps spare room and only grows the string when it runs out, so a write is a size check and a copy. <a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__writable__output__string__writer_8h_03_1_1string__writer.html#acc02f68c5e3a9966cc691ba50ee2da4e" title="The text written. Shrinking the string neither fills nor reallocates it.">finish( )</a> cuts the string to what was written.  <a href="classdaw_1_1json_1_1anonymous__namespace_02daw__writable__output__string__writer_8h_03_1_1string__writer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03_1_1tuple__elements__pack.html">tuple_elements_pack</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allow tuple like types to be used in <a class="el" href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__link__types_8h_03_1_1json__tuple.html">json_tuple</a>.  <a href="structdaw_1_1json_1_1anonymous__namespace_02daw__json__traits_8h_03_1_1tuple__elements__pack.html#details">More...</a><br /></td></tr>
@@ -1212,7 +1217,8 @@ Variables</h2></td></tr>
 <tr class="separator:a384b28defa2d7b2359769252a5917c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Customization point traits. </p>
+<div class="textblock"><p><a class="el" href="classdaw_1_1json_1_1anonymous__namespace_02daw__writable__output__string__writer_8h_03_1_1string__writer.html" title="A writable output that serializes into a std::string. The string&#39;s own output trait resizes it on eve...">string_writer</a> grows its string with resize_and_overwrite, leaving the new bytes uninitialized, when the standard library has it. That skips zero filling memory that is overwritten right away, but the bytes past what was written are never initialized, which resize_and_overwrite's precondition does not allow. Define DAW_JSON_NO_LESS_SAFE_STRING_WRITER to grow with resize( ) instead </p>
+<p>Customization point traits. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
 <a id="a0821395b3cf887226f5ffe4365209664" name="a0821395b3cf887226f5ffe4365209664"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0821395b3cf887226f5ffe4365209664">&#9670;&#160;</a></span>daw_json_error_handler_t</h2>

@@ -108,7 +108,7 @@ Basic class mapping</h1>
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">}</div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">string_writer grows its string with resize_and_overwrite, leaving the new bytes uninitialized,...</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
 </div><!-- fragment --><p>The above <code>json_data_contract</code> trait maps the JSON members to the constructor of <code>MyClass1</code> in the order specified. The arguments of type <code>std::string, int, bool</code> will be passed.</p>
 <h1><a class="anchor" id="autotoc_md15"></a>
 Empty classes</h1>
@@ -119,7 +119,7 @@ Empty classes</h1>
 <div class="line"><span class="keyword">auto</span> value = daw::json::from_json&lt;EmptyClass&gt;( <span class="stringliteral">&quot;{}&quot;</span> );</div>
 <div class="line"><span class="keyword">auto</span> json = <a class="code hl_function" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::to_json</a>( value );</div>
 <div class="line"><span class="comment">// json == &quot;{}&quot;</span></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00095">daw_to_json.h:95</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03_html_a5f6ea38246217a2dfc5fafe865901d44"><div class="ttname"><a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__to__json_8h_03.html#a5f6ea38246217a2dfc5fafe865901d44">daw::json::anonymous_namespace{daw_to_json.h}::to_json</a></div><div class="ttdeci">DAW_CPP20_CX_ALLOC std::string to_json(Value const &amp;value, options::output_flags_t&lt; PolicyFlags... &gt; flgs)</div><div class="ttdef"><b>Definition</b> <a href="daw__to__json_8h_source.html#l00096">daw_to_json.h:96</a></div></div>
 </div><!-- fragment --><p>If an empty class has an explicit <code>json_data_contract</code>, that mapping is used instead. The automatic empty-object mapping is only a fallback. This allows an empty class to be used wherever an unnamed mapping can be deduced, such as an array element or variant alternative.</p>
 <h1><a class="anchor" id="autotoc_md16"></a>
 Class as a member</h1>

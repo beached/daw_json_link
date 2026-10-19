@@ -113,50 +113,63 @@ $(document).ready(function() { init_codefold(0); });
 <div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__fp__fallback_8h_03.html">   29</a></span>  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code hl_define" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">namespace </span>json_details {</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Real&gt;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>      DAW_ATTRIB_NOINLINE [[nodiscard]] Real</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>      parse_with_strtod( daw::not_null&lt;char const *&gt; first,</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                         daw::not_null&lt;char const *&gt; last ) {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">static_assert</span>( std::is_floating_point_v&lt;Real&gt;,</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                       <span class="stringliteral">&quot;Unexpected type passed to parse_with_strtod&quot;</span> );</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#if defined( DAW_JSON_USE_STRTOD )</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        (void)last;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordtype">char</span> **end = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, float&gt; ) {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( std::strtof( first, end ) );</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span>( std::is_same_v&lt;Real, double&gt; ) {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( std::strtod( first, end ) );</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( std::strtold( first, end ) );</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        }</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        Real result;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">auto</span> fc_res = std::from_chars( first, last, result );</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">if</span>( fc_res.ec == std::errc::result_out_of_range ) {</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>          <span class="comment">// from_chars reports the same error for overflow and underflow.</span></div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>          <span class="comment">// Retry this cold path with a bounded, null-terminated token so</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>          <span class="comment">// subnormal values are not incorrectly returned as infinity.</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>          <span class="keyword">auto</span> <span class="keyword">const</span> token = std::string( first.get( ), last.get( ) );</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, float&gt; ) {</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">return</span> std::strtof( token.c_str( ), <span class="keyword">nullptr</span> );</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, double&gt; ) {</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keywordflow">return</span> std::strtod( token.c_str( ), <span class="keyword">nullptr</span> );</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">return</span> std::strtold( token.c_str( ), <span class="keyword">nullptr</span> );</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>          }</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        }</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <a class="code hl_define" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( fc_res.ec == std::errc( ),</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                         ErrorReason::InvalidNumber );</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>      }</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Real, <span class="keyword">typename</span> = <span class="keywordtype">void</span>&gt;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> has_precise_fallback_v =</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        std::is_same_v&lt;Real, float&gt; or std::is_same_v&lt;Real, double&gt; or</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        std::is_same_v&lt;Real, long double&gt;;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#if not defined( DAW_JSON_USE_STRTOD )</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Real&gt;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>      <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> has_precise_fallback_v&lt;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        Real, std::void_t&lt;<span class="keyword">decltype</span>( std::from_chars(</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                std::declval&lt;char const *&gt;( ), std::declval&lt;char const *&gt;( ),</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                std::declval&lt;Real &amp;&gt;( ) ) )&gt;&gt; = std::is_floating_point_v&lt;Real&gt;;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Real&gt;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>      DAW_ATTRIB_NOINLINE [[nodiscard]] Real</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>      parse_with_strtod( daw::not_null&lt;char const *&gt; first,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                         daw::not_null&lt;char const *&gt; last ) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">static_assert</span>( std::is_floating_point_v&lt;Real&gt;,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                       <span class="stringliteral">&quot;Unexpected type passed to parse_with_strtod&quot;</span> );</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">#if defined( DAW_JSON_USE_STRTOD )</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        (void)last;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordtype">char</span> **end = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, float&gt; ) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( std::strtof( first, end ) );</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, double&gt; ) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( std::strtod( first, end ) );</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>          <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( std::strtold( first, end ) );</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        Real result;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keyword">auto</span> fc_res = std::from_chars( first, last, result );</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">if</span>( fc_res.ec == std::errc::result_out_of_range ) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>          <span class="comment">// from_chars reports the same error for overflow and underflow.</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>          <span class="comment">// Retry this cold path with a bounded, null-terminated token so</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>          <span class="comment">// subnormal values are not incorrectly returned as infinity.</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>          <span class="keyword">auto</span> <span class="keyword">const</span> token = std::string( first.get( ), last.get( ) );</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>          <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, float&gt; ) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">return</span> std::strtof( token.c_str( ), <span class="keyword">nullptr</span> );</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span>( std::is_same_v&lt;Real, double&gt; ) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">return</span> std::strtod( token.c_str( ), <span class="keyword">nullptr</span> );</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>Real<span class="keyword">&gt;</span>( std::strtold( token.c_str( ), <span class="keyword">nullptr</span> ) );</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>          }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <a class="code hl_define" href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a>( fc_res.ec == std::errc( ),</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                         ErrorReason::InvalidNumber );</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>      }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_aa08d5b456f511ea5d387f849f8764643"><div class="ttname"><a href="daw__json__assert_8h.html#aa08d5b456f511ea5d387f849f8764643">daw_json_ensure</a></div><div class="ttdeci">#define daw_json_ensure(Bool,...)</div><div class="ttdoc">Ensure that Bool is true. If false pass rest of args to daw_json_error.</div><div class="ttdef"><b>Definition</b> <a href="daw__json__assert_8h_source.html#l00186">daw_json_assert.h:186</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">Customization point traits.</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">string_writer grows its string with resize_and_overwrite, leaving the new bytes uninitialized,...</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdoc">The version string used in namespace definitions. Must be a valid namespace name.</div><div class="ttdef"><b>Definition</b> <a href="version_8h_source.html#l00020">version.h:20</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
