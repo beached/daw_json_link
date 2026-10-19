@@ -27,25 +27,32 @@
 
 // These come from build system and must be defined
 #if not defined( SOURCE_CONTROL_REVISION )
-#error "SOURCE_CONTROL_REVSION must be defined"
+#warning "SOURCE_CONTROL_REVSION must be defined"
+#define SOURCE_CONTROL_REVISION "unknown"
 #endif
 #if not defined( PROCESSOR_DESCRIPTION )
-#error "PROCESSOR_DESCRIPTION must be defined"
+#warning "PROCESSOR_DESCRIPTION must be defined"
+#define PROCESSOR_DESCRIPTION "unknown"
 #endif
 #if not defined( OS_NAME )
-#error "OS_NAME must be defined"
+#warning "OS_NAME must be defined"
+#define OS_NAME "unknown"
 #endif
 #if not defined( OS_RELEASE )
-#error "OS_RELEASE must be defined"
+#warning "OS_RELEASE must be defined"
+#define OS_RELEASE "unknown"
 #endif
 #if not defined( OS_VERSION )
-#error "OS_VERSION must be defined"
+#warning "OS_VERSION must be defined"
+#define OS_VERSION "unknown"
 #endif
 #if not defined( OS_PLATFORM )
-#error "OS_PLATFORM must be defined"
+#warning "OS_PLATFORM must be defined"
+#define OS_PLATFORM "unknown"
 #endif
 #if not defined( BUILD_TYPE )
-#error "BUILD_TYPE must be defined"
+#warning "BUILD_TYPE must be defined"
+#define BUILD_TYPE "unknown"
 #endif
 
 inline constexpr auto CheckedPolicy =
