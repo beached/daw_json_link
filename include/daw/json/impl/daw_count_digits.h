@@ -35,8 +35,8 @@ namespace daw::json {
 			count_4digits( daw::not_null<char const *> first, Predicate pred ) {
 				daw::simple_array<daw::UInt8, 4> const buff{ pred( first[3] ),
 				                                             pred( first[2] ),
-				                                             pred( first[2] ),
-				                                             pred( first[1] ) };
+				                                             pred( first[1] ),
+				                                             pred( first[0] ) };
 				auto const v = DAW_BIT_CAST( std::uint32_t, buff );
 				if( v != 0 ) {
 					auto result = daw::cxmath::count_leading_zeroes( v );
