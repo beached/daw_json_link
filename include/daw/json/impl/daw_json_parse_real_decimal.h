@@ -19,6 +19,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 namespace daw::json {
@@ -321,8 +322,6 @@ namespace daw::json {
 			[[nodiscard]] constexpr Real
 			parse_json_real_exact( bool negative, daw::not_null<char const *> first,
 			                       daw::not_null<char const *> last ) {
-				static_assert( std::is_same_v<Real, float> or
-				               std::is_same_v<Real, double> );
 				using format = eisellemire_details::binary_format<Real>;
 				auto decimal = decimal_details::parse_json_decimal( first, last );
 
@@ -330,10 +329,13 @@ namespace daw::json {
 					return decimal_details::pack_real<Real>( negative, 0, 0 );
 				}
 
-				DAW_CPP23_STATIC_LOCAL constexpr std::int32_t
-				  smallest_decimal_point = std::is_same_v<Real, double> ? -324 : -45;
+				// Below rounds to zero, above is infinity.  e.g. -324/310 for double
+				// and -45/40 for float
+				DAW_CPP23_STATIC_LOCAL constexpr std::int32_t smallest_decimal_point =
+				  std::numeric_limits<Real>::min_exponent10 -
+				  std::numeric_limits<Real>::digits10 - 2;
 				DAW_CPP23_STATIC_LOCAL constexpr std::int32_t largest_decimal_point =
-				  std::is_same_v<Real, double> ? 310 : 40;
+				  std::numeric_limits<Real>::max_exponent10 + 2;
 				if( decimal.decimal_point < smallest_decimal_point ) {
 					return decimal_details::pack_real<Real>( negative, 0, 0 );
 				}

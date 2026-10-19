@@ -100,12 +100,12 @@ namespace daw::json {
 				enum class AllowEscapedNames : unsigned { no, yes }; // 1bit
 
 				///
-				///@note Testing
-				///@brief Use precise IEEE754 parsing of real numbers.  The default is
-				/// no,
-				/// and results is much faster parsing with very small errors of 0-2ulp.
+				///@brief Use precise IEEE754 parsing of real numbers.  When yes, float
+				/// and double are correctly rounded using Eisel-Lemire, with a fallback
+				/// for the rare cases it cannot resolve.  When no, parsing is faster
+				/// but results can have small errors of 0-2ulp.
 				///
-				/// default: no
+				/// default: yes
 				///
 				enum class IEEE754Precise : unsigned { no, yes }; // 1bit
 

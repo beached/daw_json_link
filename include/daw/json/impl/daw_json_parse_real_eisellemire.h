@@ -47,8 +47,29 @@ namespace daw::json {
 					return true;
 				}
 
+				/// The IEEE754 layout of Real.  This general version only has what
+				/// parse_json_real_exact needs, the float and double specializations
+				/// below add what Eisel-Lemire needs.
 				template<typename Real>
-				struct binary_format;
+				struct binary_format {
+					static_assert( std::numeric_limits<Real>::is_iec559 and
+					                 std::numeric_limits<Real>::radix == 2,
+					               "Only IEEE754 binary formats are supported" );
+					using uint_type = std::conditional_t<
+					  sizeof( Real ) == 2, std::uint16_t,
+					  std::conditional_t<sizeof( Real ) == 4, std::uint32_t,
+					                     std::uint64_t>>;
+					static_assert( sizeof( Real ) == sizeof( uint_type ),
+					               "Formats wider than 64 bits are not supported" );
+					static constexpr std::int32_t mantissa_bits =
+					  std::numeric_limits<Real>::digits - 1;
+					static constexpr std::int32_t exponent_bias =
+					  std::numeric_limits<Real>::max_exponent - 1;
+					static constexpr std::int32_t infinite_power =
+					  2 * std::numeric_limits<Real>::max_exponent - 1;
+					static constexpr std::int32_t sign_bit =
+					  static_cast<std::int32_t>( sizeof( Real ) * 8U - 1U );
+				};
 
 				template<>
 				struct binary_format<double> {
@@ -164,6 +185,43 @@ namespace daw::json {
 			    daw::digits<double> and
 			  std::numeric_limits<long double>::max_exponent ==
 			    std::numeric_limits<double>::max_exponent;
+
+			namespace eisellemire_details {
+				template<typename Real, typename Format>
+				inline constexpr bool has_same_format_v =
+				  std::numeric_limits<Real>::is_iec559 and
+				  std::numeric_limits<Real>::radix == 2 and
+				  std::numeric_limits<Real>::digits ==
+				    std::numeric_limits<Format>::digits and
+				  std::numeric_limits<Real>::max_exponent ==
+				    std::numeric_limits<Format>::max_exponent and
+				  std::numeric_limits<Real>::min_exponent ==
+				    std::numeric_limits<Format>::min_exponent;
+
+				template<typename Real, bool = std::is_floating_point_v<Real>>
+				struct lemire_compute {
+					using type = void;
+				};
+
+				template<typename Real>
+				struct lemire_compute<Real, true> {
+					using type = std::conditional_t<
+					  has_same_format_v<Real, float>, float,
+					  std::conditional_t<has_same_format_v<Real, double>, double, void>>;
+				};
+			} // namespace eisellemire_details
+
+			/// @brief float or double when Real is a std floating point type with
+			/// the binary32 or binary64 format (e.g. std::float32_t, std::float64_t,
+			/// or a long double that is the same as double), otherwise void.
+			/// Eisel-Lemire computes in this type and converts to Real without loss.
+			template<typename Real>
+			using lemire_compute_t =
+			  typename eisellemire_details::lemire_compute<Real>::type;
+
+			template<typename Real>
+			inline constexpr bool is_lemire_capable_v =
+			  not std::is_void_v<lemire_compute_t<Real>>;
 
 			/// Convert the exact decimal value
 			///   (-1 if negative else 1) * significant_digits * 10^exponent

@@ -20,6 +20,8 @@
 #include "daw/json/impl/daw_json_skip.h"
 #include "daw/json/impl/daw_json_type_options.h"
 
+#include <daw/daw_arith_traits.h>
+#include <daw/daw_bit_cast.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_not_null.h>
@@ -34,219 +36,29 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<bool skip_end_check, typename Unsigned>
-			DAW_ATTRIB_FLATINLINE constexpr void
-			parse_digits_until_last( daw::not_null<char const *> first,
-			                         daw::not_null<char const *> const last,
-			                         Unsigned &DAW_RESTRICT v ) {
-				auto value = v;
-				while( last - first >= 16 ) {
-					value *= static_cast<Unsigned>( 10'000'000'000'000'000ULL );
-					value += static_cast<Unsigned>( parse_16_digits( first ) );
-					first += 16;
-				}
-				if( last - first >= 8 ) {
-					value *= static_cast<Unsigned>( 100'000'000U );
-					value += static_cast<Unsigned>( parse_8_digits( first ) );
-					first += 8;
-				}
-				if constexpr( skip_end_check ) {
-					auto dig = parse_digit( *first );
-					while( dig < 10U ) {
-						value *= 10U;
-						value += dig;
-						++first;
-						dig = parse_digit( *first );
-					}
-				} else {
-					while( DAW_LIKELY( first < last ) ) {
-						value *= 10U;
-						value += parse_digit( *first );
-						++first;
-					}
-				}
-				v = value;
-			}
+			/// @brief std floating point types narrower than float, e.g.
+			/// std::float16_t and std::bfloat16_t.  These are parsed as float and
+			/// then narrowed.
+			template<typename Real, bool = std::is_floating_point_v<Real>>
+			inline constexpr bool is_narrow_real_v = false;
 
-			template<typename Unsigned>
-			constexpr std::size_t count_digits( Unsigned value ) {
-				if( DAW_LIKELY( value == 0 ) ) {
-					DAW_LIKELY_BRANCH
-					return 0;
-				}
-				if constexpr( sizeof( Unsigned ) <= sizeof( std::uint64_t ) ) {
-					if( value >= 10000000000000000000ULL ) {
-						return 20;
-					}
-					if( value >= 1000000000000000000ULL ) {
-						return 19;
-					}
-					if( value >= 100000000000000000ULL ) {
-						return 18;
-					}
-					if( value >= 10000000000000000ULL ) {
-						return 17;
-					}
-					if( value >= 1000000000000000ULL ) {
-						return 16;
-					}
-					if( value >= 100000000000000ULL ) {
-						return 15;
-					}
-					if( value >= 10000000000000ULL ) {
-						return 14;
-					}
-					if( value >= 1000000000000ULL ) {
-						return 13;
-					}
-					if( value >= 100000000000ULL ) {
-						return 12;
-					}
-					if( value >= 10000000000ULL ) {
-						return 11;
-					}
-					if( value >= 1000000000ULL ) {
-						return 10;
-					}
-					if( value >= 100000000ULL ) {
-						return 9;
-					}
-					if( value >= 10000000ULL ) {
-						return 8;
-					}
-					if( value >= 1000000ULL ) {
-						return 7;
-					}
-					if( value >= 100000ULL ) {
-						return 6;
-					}
-					if( value >= 10000ULL ) {
-						return 5;
-					}
-					if( value >= 1000ULL ) {
-						return 4;
-					}
-					if( value >= 100ULL ) {
-						return 3;
-					}
-					if( value >= 10ULL ) {
-						return 2;
-					}
-					return 1;
-				} else {
-					std::size_t count = 1;
-					value /= Unsigned{ 10U };
-					while( value > 0 ) {
-						++count;
-						value /= Unsigned{ 10U };
-					}
-					return count;
-				}
-			}
+			template<typename Real>
+			inline constexpr bool is_narrow_real_v<Real, true> =
+			  std::numeric_limits<Real>::is_iec559 and
+			  std::numeric_limits<Real>::radix == 2 and
+			  std::numeric_limits<Real>::digits <
+			    std::numeric_limits<float>::digits and
+			  std::numeric_limits<Real>::max_exponent <=
+			    std::numeric_limits<float>::max_exponent and
+			  std::numeric_limits<Real>::min_exponent >=
+			    std::numeric_limits<float>::min_exponent;
 
-			template<typename iterator, typename Unsigned>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr daw::not_null<iterator>
-			parse_digits_while_number( daw::not_null<iterator> first,
-			                           daw::not_null<iterator> const last,
-			                           Unsigned &DAW_RESTRICT v,
-			                           std::size_t sig_dig_in_use ) {
-
-				if( DAW_UNLIKELY( first >= last ) ) {
-					DAW_UNLIKELY_BRANCH
-					return first;
-				}
-				auto const last_pos =
-				  (std::min)( { std::distance( first, last ),
-				                static_cast<std::ptrdiff_t>( daw::digits10<Unsigned> -
-				                                             sig_dig_in_use ) } );
-				daw::not_null const new_last = std::next( first.get( ), last_pos );
-
-				auto value = v;
-				if( new_last - first >= 8 and
-				    is_made_of_eight_digits_cx( first.get( ) ) ) {
-					value *= static_cast<Unsigned>( 100'000'000U );
-					value += static_cast<Unsigned>( parse_8_digits( first.get( ) ) );
-					first += 8;
-				}
-
-				unsigned dig = 10U;
-				if( first < new_last ) {
-					do {
-						dig = parse_digit( *first );
-						if( dig >= 10U ) {
-							break;
-						}
-						value *= 10U;
-						value += dig;
-						++first;
-					} while( first < new_last );
-				}
-				while( first < last ) {
-					dig = parse_digit( *first );
-					if( dig >= 10U ) {
-						break;
-					}
-					++first;
-				}
-				v = value;
-				return first;
-			}
-
-			/// @brief Check if we have more significant digits that can be stored
-			/// in the type, usually uint64_t
-			template<typename ParseState, typename Result,
-			         typename max_storage_digits>
-			[[nodiscard]] constexpr bool should_use_fallback(
-			  [[maybe_unused]] daw::not_null<char const *> whole_first,
-			  [[maybe_unused]] daw::not_null<char const *> const whole_last,
-			  [[maybe_unused]] char const *fract_first,
-			  [[maybe_unused]] char const *fract_last ) {
-				if constexpr( std::is_floating_point_v<Result> and
-				              ParseState::precise_ieee754 ) {
-					return DAW_UNLIKELY(
-					  ( ( whole_last - whole_first ) +
-					    ( fract_first ? fract_last - fract_first : 0 ) ) >
-					  max_storage_digits::value );
-				} else {
-					return false;
-				}
-			}
-
-			inline constexpr std::size_t eisellemire_max_digits = 19;
-
-			template<typename Signed>
-			[[nodiscard]] constexpr bool
-			append_discarded_digits( char const *first, char const *last,
-			                         std::uint64_t &significant_digits,
-			                         Signed &exponent ) {
-				if( first == nullptr or first == last ) {
-					return false;
-				}
-
-				auto retained_digits = count_digits( significant_digits );
-				bool discarded_nonzero = false;
-				while( first < last ) {
-					auto const digit = parse_digit( *first );
-					if( digit >= 10U ) {
-						break;
-					}
-					++first;
-					if( retained_digits < eisellemire_max_digits ) {
-						significant_digits =
-						  significant_digits * std::uint64_t{ 10 } + digit;
-						// Leading zeroes do not consume significant-digit capacity.
-						if( significant_digits != 0 ) {
-							++retained_digits;
-						}
-						if( exponent > daw::lowest_value<Signed> ) {
-							--exponent;
-						}
-					} else {
-						discarded_nonzero |= digit != 0;
-					}
-				}
-				return discarded_nonzero;
-			}
+			/// @brief Types that IEEE754Precise::yes can correctly round.  Others,
+			/// such as user defined types, use the general path
+			template<typename Real>
+			inline constexpr bool is_precise_real_v =
+			  std::is_floating_point_v<Real> and not is_narrow_real_v<Real> and
+			  ( is_lemire_capable_v<Real> or has_precise_fallback_v<Real> );
 
 			template<typename Result, typename Signed>
 			[[nodiscard]] constexpr Result parse_truncated_lemire(
@@ -271,227 +83,109 @@ namespace daw::json {
 				  negative, number_first, number_last );
 			}
 
-			template<typename Result, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr Result
-			parse_real_known( ParseState &parse_state ) {
-				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
-				daw_json_assert_weak(
-				  parse_state.has_more( ) and
-				    parse_policy_details::is_number_start( parse_state.front( ) ),
-				  ErrorReason::InvalidNumberStart,
-				  parse_state );
+			namespace single_pass_details {
+				/// Significant decimal digits that always fit in a std::uint64_t
+				inline constexpr std::ptrdiff_t max_u64_digits = 19;
 
-				daw::not_null<char const *> whole_first = parse_state.first;
-				char const *whole_last = parse_state.class_first
-				                           ? parse_state.class_first
-				                           : parse_state.class_last;
-				char const *fract_first =
-				  parse_state.class_first ? parse_state.class_first + 1 : nullptr;
-				char const *fract_last = parse_state.class_last;
-				char const *exp_first =
-				  parse_state.class_last ? parse_state.class_last + 1 : nullptr;
-				daw::not_null<char const *> const exp_last = parse_state.last;
+				/// The explicit exponent stops growing here.  Anything this large is
+				/// already 0 or infinity for every supported type, and it keeps the
+				/// exponent arithmetic from overflowing
+				inline constexpr std::int64_t max_explicit_exponent = 0x1000'0000;
 
-				if( parse_state.class_first == nullptr ) {
-					if( parse_state.class_last == nullptr ) {
-						whole_last = parse_state.last;
-					} else {
-						whole_last = parse_state.class_last;
+				/// Largest |exponent| where 10^exponent is exact in Result, so that
+				/// mantissa * 10^exponent is a single correctly rounded operation
+				template<typename Result>
+				inline constexpr std::int64_t max_exact_power10 =
+				  std::is_same_v<Result, long double> and
+				      std::numeric_limits<long double>::digits == 113
+				    ? 48
+				  : std::is_same_v<Result, long double> and
+				      std::numeric_limits<long double>::digits == 64
+				    ? 27
+				  : std::is_same_v<lemire_compute_t<Result>, float> ? 10
+				                                                    : 22;
+
+				/// Accumulate a run of digits into value, 8 at a time when possible
+				template<typename Accumulator, typename Iterator>
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr Iterator
+				parse_digit_run( Iterator first, Iterator const last,
+				                 Accumulator &value ) {
+					while( last - first >= 8 and is_made_of_eight_digits_cx( first ) ) {
+						value = value * static_cast<Accumulator>( 100'000'000U ) +
+						        static_cast<Accumulator>(
+						          static_cast<std::uint64_t>( parse_8_digits( first ) ) );
+						first += 8;
 					}
-				} else if( parse_state.class_last == nullptr ) {
-					fract_last = parse_state.last;
-				}
-				char const *const all_whole_last = whole_last;
-				char const *const all_fract_first = fract_first;
-				char const *const all_fract_last = fract_last;
-
-				using max_storage_digits = daw::constant<static_cast<std::ptrdiff_t>(
-				  daw::digits10<std::uint64_t> )>;
-
-				Result const sign = [&] {
-					if( *whole_first == '-' ) {
-						++whole_first;
-						return static_cast<Result>( -1.0 );
-					}
-					return static_cast<Result>( 1.0 );
-				}( );
-
-				bool use_fallback =
-				  should_use_fallback<ParseState, Result, max_storage_digits>(
-				    whole_first, whole_last, fract_first, fract_last );
-
-				using max_exponent = daw::constant<static_cast<std::ptrdiff_t>(
-				  daw::max_digits10<Result> + 1 )>;
-				using unsigned_t =
-				  daw::conditional_t<max_storage_digits::value >= max_exponent::value,
-				                     std::uint64_t,
-				                     Result>;
-
-				using signed_t =
-				  typename daw::conditional_t<std::is_floating_point_v<unsigned_t>,
-				                              daw::traits::identity<unsigned_t>,
-				                              std::make_signed<unsigned_t>>::type;
-				std::intmax_t whole_exponent_available = whole_last - whole_first;
-				std::intmax_t fract_exponent_available =
-				  fract_first ? fract_last - fract_first : 0;
-				signed_t exponent = 0;
-
-				if( whole_exponent_available > max_exponent::value ) {
-					whole_last = whole_first + max_exponent::value;
-					whole_exponent_available -= max_exponent::value;
-					fract_exponent_available = 0;
-					fract_first = nullptr;
-					exponent = whole_exponent_available;
-				} else {
-					whole_exponent_available =
-					  max_exponent::value - whole_exponent_available;
-					if constexpr( ParseState::precise_ieee754 ) {
-						use_fallback |= DAW_UNLIKELY( fract_exponent_available >
-						                              whole_exponent_available );
-					}
-					if( whole_exponent_available < fract_exponent_available ) {
-						fract_exponent_available = whole_exponent_available;
-					}
-					exponent = -fract_exponent_available;
-					fract_last = fract_first + fract_exponent_available;
-				}
-
-				unsigned_t significant_digits = 0;
-				parse_digits_until_last<( ParseState::is_zero_terminated_string or
-				                          ParseState::is_unchecked_input )>(
-				  whole_first, whole_last, significant_digits );
-				if( fract_first ) {
-					parse_digits_until_last<( ParseState::is_zero_terminated_string or
-					                          ParseState::is_unchecked_input )>(
-					  fract_first, fract_last, significant_digits );
-				}
-
-				if( exp_first and ( exp_last - exp_first ) > 0 ) {
-					signed_t const exp_sign = [&] {
-						switch( *exp_first ) {
-						case '-':
-							++exp_first;
-							daw_json_assert_weak( exp_first < exp_last and
-							                        parse_digit( *exp_first ) < 10U,
-							                      ErrorReason::InvalidNumber );
-							return -1;
-						case '+':
-							++exp_first;
-							daw_json_assert_weak( exp_first < exp_last and
-							                        parse_digit( *exp_first ) < 10U,
-							                      ErrorReason::InvalidNumber );
-							return 1;
-						default:
-							daw_json_assert_weak( parse_digit( *exp_first ) < 10U,
-							                      ErrorReason::InvalidNumber );
-							return 1;
+					while( first < last ) {
+						auto const digit = parse_digit( *first );
+						if( digit >= 10U ) {
+							break;
 						}
-					}( );
-					exponent += to_signed(
-					  [&] {
-						  unsigned_t exp_result = 0;
-						  if constexpr( ParseState::is_zero_terminated_string ) {
-							  auto dig = parse_digit( *exp_first );
-							  while( dig < 10U ) {
-								  ++exp_first;
-								  exp_result *= 10U;
-								  exp_result += dig;
-								  dig = parse_digit( *exp_first );
-							  }
-						  } else {
-							  if( exp_first < exp_last ) {
-								  auto dig = parse_digit( *exp_first );
-								  do {
-									  if( dig >= 10U ) {
-										  break;
-									  }
-									  ++exp_first;
-									  exp_result *= 10U;
-									  exp_result += dig;
-									  if( exp_first >= exp_last ) {
-										  break;
-									  }
-									  dig = parse_digit( *exp_first );
-								  } while( true );
-							  }
-						  }
-						  return exp_result;
-					  }( ),
-					  exp_sign );
-				}
-				if constexpr( std::is_floating_point_v<Result> and
-				              ParseState::precise_ieee754 ) {
-					// On std floating point types, check for conditions that cannot be
-					// precisely calculated using the normal method and use the fallback
-					// method(usually strtod/from_chars).  long double that shares
-					// double's size/precision/exponent range (e.g. MSVC) is computed
-					// as double instead, since Eisel-Lemire only supports
-					// binary32/binary64.
-					DAW_CPP23_STATIC_LOCAL constexpr bool is_lemire_capable =
-					  std::is_same_v<Result, float> or std::is_same_v<Result, double> or
-					  is_double_sized_long_double_v<Result>;
-					DAW_CPP23_STATIC_LOCAL constexpr bool is_extended_long_double =
-					  std::is_same_v<Result, long double> and not is_lemire_capable;
-					DAW_CPP23_STATIC_LOCAL constexpr bool is_80bit_long_double_v =
-					  std::is_same_v<Result, long double> and
-					  std::numeric_limits<long double>::digits == 64;
-
-					DAW_CPP23_STATIC_LOCAL constexpr bool is_128bit_long_double_v =
-					  std::is_same_v<Result, long double> and
-					  std::numeric_limits<long double>::digits == 113;
-
-					// Extended long double (80-bit) can exactly represent 10^k for
-					// |k| <= 27 (5^27 < 2^64); Eisel-Lemire types are limited to 22.
-					DAW_CPP23_STATIC_LOCAL constexpr int pow10_threshold =
-					  is_80bit_long_double_v    ? 27
-					  : is_128bit_long_double_v ? 48
-					                            : 22;
-					use_fallback |= exponent > pow10_threshold;
-					use_fallback |= exponent < -pow10_threshold;
-					if constexpr( is_lemire_capable ) {
-						use_fallback |= significant_digits >
-						                ( std::uint64_t{ 1 } << daw::digits<Result> );
+						value = value * static_cast<Accumulator>( 10U ) +
+						        static_cast<Accumulator>( digit );
+						++first;
 					}
-					if( DAW_UNLIKELY( use_fallback ) ) {
-						if constexpr( is_lemire_capable ) {
-							bool discarded_nonzero = append_discarded_digits(
-							  whole_last, all_whole_last, significant_digits, exponent );
-							if( all_fract_first != nullptr ) {
-								auto const *discarded_fract_first =
-								  fract_first == nullptr ? all_fract_first : fract_last;
-								discarded_nonzero |=
-								  append_discarded_digits( discarded_fract_first,
-								                           all_fract_last,
-								                           significant_digits,
-								                           exponent );
-							}
-							using compute_t =
-							  std::conditional_t<std::is_same_v<Result, long double>,
-							                     double,
-							                     Result>;
-							return static_cast<Result>(
-							  parse_truncated_lemire<compute_t>( sign < Result{ 0 },
-							                                     exponent,
-							                                     significant_digits,
-							                                     discarded_nonzero,
-							                                     parse_state.first,
-							                                     parse_state.last ) );
+					return first;
+				}
+
+				struct significand_t {
+					std::uint64_t mantissa = 0;
+					/// value is mantissa * 10^exponent, before the explicit exponent
+					std::int64_t exponent = 0;
+					std::ptrdiff_t significant_digits = 0;
+					bool discarded_nonzero = false;
+				};
+
+				/// Rescan a number with more than 19 digits.  Leading zeros do not
+				/// count, and only the first 19 significant digits are kept.
+				template<typename Iterator>
+				[[nodiscard]] constexpr significand_t
+				parse_long_significand( Iterator whole_first, Iterator const whole_last,
+				                        Iterator fract_first,
+				                        Iterator const fract_last ) {
+					significand_t result{ };
+					bool seen_nonzero = false;
+					for( ; whole_first < whole_last; ++whole_first ) {
+						auto const digit = parse_digit( *whole_first );
+						seen_nonzero |= digit != 0;
+						if( not seen_nonzero ) {
+							continue;
+						}
+						++result.significant_digits;
+						if( result.significant_digits <= max_u64_digits ) {
+							result.mantissa = result.mantissa * 10U + digit;
 						} else {
-							static_assert( is_extended_long_double );
-							return json_details::parse_with_strtod<Result>(
-							  parse_state.first, parse_state.last );
+							++result.exponent;
+							result.discarded_nonzero |= digit != 0;
 						}
 					}
+					for( ; fract_first < fract_last; ++fract_first ) {
+						auto const digit = parse_digit( *fract_first );
+						seen_nonzero |= digit != 0;
+						if( not seen_nonzero ) {
+							--result.exponent;
+							continue;
+						}
+						++result.significant_digits;
+						if( result.significant_digits <= max_u64_digits ) {
+							result.mantissa = result.mantissa * 10U + digit;
+							--result.exponent;
+						} else {
+							result.discarded_nonzero |= digit != 0;
+						}
+					}
+					return result;
 				}
-				return sign *
-				       power10<Result>( ParseState::exec_tag,
-				                        static_cast<Result>( significant_digits ),
-				                        exponent );
-			}
+			} // namespace single_pass_details
 
+			/// @brief Parse a JSON number in one pass over the characters.  The
+			/// digits, decimal point and exponent are each scanned once, then the
+			/// value is finished by the fast power10 path, Eisel-Lemire, or the
+			/// exact fallback.  parse_state.first is left at the end of the number.
 			template<typename Result, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr Result
-			parse_real_unknown( ParseState &parse_state ) {
+			[[nodiscard]] constexpr Result
+			parse_real_single_pass( ParseState &parse_state ) {
+				namespace sp = single_pass_details;
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 				daw_json_assert_weak(
 				  parse_state.has_more( ) and
@@ -500,272 +194,206 @@ namespace daw::json {
 				  parse_state );
 
 				using iterator_t = typename ParseState::iterator;
-				[[maybe_unused]] daw::not_null<iterator_t> const orig_first =
-				  parse_state.first;
+				constexpr bool skip_end_check = ParseState::is_zero_terminated_string or
+				                                ParseState::is_unchecked_input;
+				// Types with more precision than 19 digits accumulate in Result so
+				// that user types like multiprecision decimals keep every digit
+				constexpr bool integer_accumulator =
+				  sp::max_u64_digits >= daw::max_digits10<Result> + 1;
+				using accumulator_t =
+				  std::conditional_t<integer_accumulator, std::uint64_t, Result>;
 
+				iterator_t const number_first = parse_state.first;
 				auto const sign =
 				  parse_policy_details::validate_signed_first( parse_state );
+				iterator_t first = parse_state.first;
+				iterator_t const last = parse_state.last;
 
-				using max_storage_digits = daw::constant<static_cast<std::int64_t>(
-				  daw::digits10<std::uint64_t> )>;
-				using max_exponent = daw::constant<static_cast<std::int64_t>(
-				  daw::max_digits10<Result> + 1 )>;
-				using unsigned_t =
-				  daw::conditional_t<max_storage_digits::value >= max_exponent::value,
-				                     std::uint64_t,
-				                     Result>;
-				using signed_t =
-				  daw::conditional_t<max_storage_digits::value >= max_exponent::value,
-				                     std::int64_t,
-				                     Result>;
-
-				daw::not_null<iterator_t> first = parse_state.first;
-				daw::not_null<iterator_t> const last = parse_state.last;
-				daw::not_null<iterator_t> const whole_last =
-				  parse_state.first +
-				  (std::min)( { parse_state.last - parse_state.first,
-				                static_cast<std::ptrdiff_t>( max_exponent::value ) } );
-
-				unsigned_t significant_digits = 0;
-				iterator_t discarded_whole_first = nullptr;
-				iterator_t discarded_whole_last = nullptr;
-				iterator_t discarded_fract_first = nullptr;
-				iterator_t discarded_fract_last = nullptr;
-				daw::not_null<iterator_t> last_char =
-				  parse_digits_while_number<iterator_t>(
-				  first.get( ), whole_last.get( ), significant_digits, 0 );
-				auto const parsed_whole_digit_count = last_char - parse_state.first;
-				auto const stored_whole_digit_count = [&] {
-					if( significant_digits == 0 ) {
-						return std::size_t{ 0 };
-					}
-					auto first_nonzero = parse_state.first;
-					while( *first_nonzero == '0' ) {
-						++first_nonzero;
-					}
-					return static_cast<std::size_t>( last_char - first_nonzero );
-				}( );
-				bool use_strtod =
-				  std::is_floating_point_v<Result> and ParseState::precise_ieee754 and
-				  DAW_UNLIKELY( parsed_whole_digit_count > max_storage_digits::value );
-				signed_t exponent_p1 = [&] {
-					if( DAW_UNLIKELY( last_char >= whole_last ) ) {
-						if constexpr( std::is_floating_point_v<Result> and
-						              ParseState::precise_ieee754 ) {
-							use_strtod = true;
-						}
-						// We have sig digits we cannot parse because there isn't enough
-						// room in a std::uint64_t
-						daw::not_null<iterator_t> ptr =
-						  skip_digits<( ParseState::is_zero_terminated_string or
-						                ParseState::is_unchecked_input )>( last_char,
-						                                                   last );
-						discarded_whole_first = last_char.get( );
-						discarded_whole_last = ptr.get( );
-						auto const diff = ptr - last_char;
-
-						last_char = ptr;
-						if( significant_digits == 0 ) {
-							return signed_t{ 0 };
-						}
-						return static_cast<signed_t>( diff );
-					}
-					return signed_t{ 0 };
-				}( );
-
-				first = last_char;
-				if( ( ParseState::is_zero_terminated_string or
-				      ParseState::is_unchecked_input or
-				      DAW_LIKELY( first < parse_state.last ) ) and
-				    *first == '.' ) {
+				accumulator_t mantissa = accumulator_t( );
+				iterator_t const whole_first = first;
+				first = sp::parse_digit_run( first, last, mantissa );
+				iterator_t const whole_last = first;
+				// JSON requires at least one whole digit, e.g. "-" and "-.1" are
+				// invalid, and no leading zeros.  validate_signed_first only checks
+				// the leading zero when there is no '-'
+				daw_json_assert_weak( whole_first < whole_last,
+				                      ErrorReason::InvalidNumber,
+				                      parse_state.copy( whole_first ) );
+				daw_json_assert_weak( *whole_first != '0' or
+				                        whole_last - whole_first == 1,
+				                      ErrorReason::InvalidNumberStart,
+				                      parse_state.copy( whole_first ) );
+				iterator_t fract_first = first;
+				if( ( skip_end_check or first < last ) and *first == '.' ) {
 					++first;
-					if( exponent_p1 != 0 ) {
-						if( first < parse_state.last ) {
-							auto const discarded_first = first;
-							first =
-							  skip_digits<( ParseState::is_zero_terminated_string or
-							                ParseState::is_unchecked_input )>( first, last );
-							discarded_fract_first = discarded_first.get( );
-							discarded_fract_last = first.get( );
-						}
-					} else {
-						daw::not_null<iterator_t> fract_last =
-						  first + (std::min)( parse_state.last - first,
-						                      static_cast<std::ptrdiff_t>(
-						                        max_exponent::value -
-						                        ( first - parse_state.first ) ) );
+					fract_first = first;
+					first = sp::parse_digit_run( first, last, mantissa );
+					// and at least one digit after the decimal point, e.g. "1." is
+					// invalid
+					daw_json_assert_weak( fract_first < first,
+					                      ErrorReason::InvalidNumber,
+					                      parse_state.copy( first ) );
+				}
+				iterator_t const fract_last = first;
 
-						last_char =
-						  parse_digits_while_number<iterator_t>( first.get( ),
-						                                       fract_last.get( ),
-						                                       significant_digits,
-						                                       stored_whole_digit_count );
-						// Only count the digits actually stored in significant_digits;
-						// parse_digits_while_number skips overflow digits up to last_char
-						// but those must not adjust the decimal-point exponent.
-						auto const fract_stored_cap = static_cast<std::ptrdiff_t>(
-						  daw::digits10<unsigned_t> - stored_whole_digit_count );
-						exponent_p1 -= static_cast<signed_t>(
-						  (std::min)( { last_char - first, fract_stored_cap } ) );
-						if constexpr( std::is_floating_point_v<Result> and
-						              ParseState::precise_ieee754 ) {
-							// If we silently dropped fractional digits, the power10 result
-							// may be incorrectly rounded — fall back to strtod.
-							use_strtod |= ( last_char - first ) > fract_stored_cap;
+				std::int64_t explicit_exponent = 0;
+				if( ( skip_end_check or first < last ) and
+				    ( ( *first | 0x20 ) == 'e' ) ) {
+					++first;
+					daw_json_assert_weak( skip_end_check or first < last,
+					                      ErrorReason::UnexpectedEndOfData,
+					                      parse_state.copy( first ) );
+					bool negative_exponent = false;
+					switch( *first ) {
+					case '-':
+						negative_exponent = true;
+						[[fallthrough]];
+					case '+':
+						++first;
+						daw_json_assert_weak( first < last and parse_digit( *first ) < 10U,
+						                      ErrorReason::InvalidNumber );
+						break;
+					default:
+						daw_json_assert_weak( parse_policy_details::is_number( *first ),
+						                      ErrorReason::InvalidNumber );
+					}
+					while( first < last ) {
+						auto const digit = parse_digit( *first );
+						if( digit >= 10U ) {
+							break;
 						}
-						first = last_char;
-						if( daw::nsc_and( first >= fract_last, first < last ) ) {
-							auto new_first =
-							  skip_digits<( ParseState::is_zero_terminated_string or
-							                ParseState::is_unchecked_input )>( first, last );
-							discarded_fract_first = first.get( );
-							discarded_fract_last = new_first.get( );
-							if constexpr( std::is_floating_point_v<Result> and
-							              ParseState::precise_ieee754 ) {
-								use_strtod |= new_first > first;
-							}
-							first = new_first;
+						if( explicit_exponent < sp::max_explicit_exponent ) {
+							explicit_exponent = explicit_exponent * 10 + digit;
 						}
+						++first;
+					}
+					if( negative_exponent ) {
+						explicit_exponent = -explicit_exponent;
 					}
 				}
-
-				signed_t const exponent_p2 = [&] {
-					if( ( ParseState::is_unchecked_input or first < parse_state.last ) and
-					    ( ( *first | 0x20 ) == 'e' ) ) {
-						++first;
-						signed_t const exp_sign = [&] {
-							daw_json_assert_weak( ( ParseState::is_zero_terminated_string or
-							                        first < parse_state.last ),
-							                      ErrorReason::UnexpectedEndOfData,
-							                      parse_state.copy( first ) );
-							switch( *first ) {
-							case '+':
-								++first;
-								daw_json_assert_weak( ( first < parse_state.last ) and
-								                        ( parse_digit( *first ) < 10U ),
-								                      ErrorReason::InvalidNumber );
-								return signed_t{ 1 };
-							case '-':
-								++first;
-								daw_json_assert_weak( first < parse_state.last and
-								                        parse_digit( *first ) < 10U,
-								                      ErrorReason::InvalidNumber );
-								return signed_t{ -1 };
-							default:
-								daw_json_assert_weak( parse_policy_details::is_number( *first ),
-								                      ErrorReason::InvalidNumber );
-								return signed_t{ 1 };
-							}
-						}( );
-						daw_json_assert_weak( first < parse_state.last,
-						                      ErrorReason::UnexpectedEndOfData,
-						                      parse_state );
-						unsigned_t exp_tmp = 0;
-						last_char = parse_digits_while_number( first, last, exp_tmp, 0 );
-						first = last_char;
-						return to_signed( exp_tmp, exp_sign );
-					}
-					return signed_t{ 0 };
-				}( );
-				auto exponent = [&] {
-					if constexpr( ParseState::is_unchecked_input or
-					              not std::is_floating_point_v<Result> ) {
-						return exponent_p1 + exponent_p2;
-					} else {
-						if( bool const matching_signs =
-						      ( ( exponent_p1 < 0 ) == ( exponent_p2 < 0 ) );
-						    not matching_signs ) {
-
-							return exponent_p1 + exponent_p2;
-						}
-						signed_t const s = exponent_p1 < 0 ? signed_t{ -1 } : signed_t{ 1 };
-						if( s < 0 ) {
-							if( DAW_UNLIKELY( ( daw::lowest_value<signed_t> - exponent_p1 ) >
-							                  exponent_p2 ) ) {
-								// We don't have inf, but we can just saturate it to min as it
-								// will be 0 anyways for the other result
-								return daw::lowest_value<signed_t>;
-							}
-							return exponent_p1 + exponent_p2;
-						}
-						auto const r = static_cast<unsigned_t>( exponent_p1 ) +
-						               static_cast<unsigned_t>( exponent_p2 );
-						if( DAW_UNLIKELY(
-						      r > static_cast<unsigned_t>( daw::max_value<signed_t> ) ) ) {
-							return daw::max_value<signed_t>;
-						}
-						return static_cast<signed_t>( r );
-					}
-				}( );
 				parse_state.first = first;
 
-				if constexpr( std::is_floating_point_v<Result> and
-				              ParseState::precise_ieee754 ) {
-					// long double that shares double's size/precision/exponent range
-					// (e.g. MSVC) is computed as double instead, since Eisel-Lemire
-					// only supports binary32/binary64.
-					DAW_CPP23_STATIC_LOCAL constexpr bool is_lemire_capable =
-					  std::is_same_v<Result, float> or std::is_same_v<Result, double> or
-					  is_double_sized_long_double_v<Result>;
-					DAW_CPP23_STATIC_LOCAL constexpr bool is_80bit_long_double_v =
-					  std::is_same_v<Result, long double> and
-					  std::numeric_limits<long double>::digits == 64;
-					DAW_CPP23_STATIC_LOCAL constexpr bool is_128bit_long_double_v =
-					  std::is_same_v<Result, long double> and
-					  std::numeric_limits<long double>::digits == 113;
-
-					DAW_CPP23_STATIC_LOCAL constexpr int pow10_threshold =
-					  is_80bit_long_double_v    ? 27
-					  : is_128bit_long_double_v ? 48
-					                            : 22;
-					use_strtod |= DAW_UNLIKELY( exponent > pow10_threshold );
-					use_strtod |= DAW_UNLIKELY( exponent < -pow10_threshold );
-					if constexpr( is_lemire_capable ) {
-						use_strtod |= DAW_UNLIKELY(
-						  significant_digits > (std::uint64_t{ 1 } << daw::digits<Result>));
-					}
-					if( DAW_UNLIKELY( use_strtod ) ) {
-						if constexpr( is_lemire_capable ) {
-							bool discarded_nonzero =
-							  append_discarded_digits( discarded_whole_first,
-							                           discarded_whole_last,
-							                           significant_digits,
-							                           exponent );
-							discarded_nonzero |=
-							  append_discarded_digits( discarded_fract_first,
-							                           discarded_fract_last,
-							                           significant_digits,
-							                           exponent );
-							using compute_t =
-							  std::conditional_t<std::is_same_v<Result, long double>,
-							                     double,
-							                     Result>;
-							return static_cast<Result>(
-							  parse_truncated_lemire<compute_t>( sign < 0,
-							                                     exponent,
-							                                     significant_digits,
-							                                     discarded_nonzero,
-							                                     orig_first.get( ),
-							                                     first.get( ) ) );
-						} else {
-							static_assert( std::is_same_v<Result, long double> );
-							return json_details::parse_with_strtod<Result>( orig_first.get( ),
-							                                                first.get( ) );
-						}
+				auto const fract_digits = fract_last - fract_first;
+				auto const digit_count = ( whole_last - whole_first ) + fract_digits;
+				std::int64_t exponent =
+				  explicit_exponent - static_cast<std::int64_t>( fract_digits );
+				std::ptrdiff_t significant_digits = digit_count;
+				bool discarded_nonzero = false;
+				if( DAW_UNLIKELY( digit_count > sp::max_u64_digits ) ) {
+					auto const sig = sp::parse_long_significand(
+					  whole_first, whole_last, fract_first, fract_last );
+					significant_digits = sig.significant_digits;
+					if constexpr( integer_accumulator ) {
+						// The accumulator wrapped, use the first 19 significant digits
+						mantissa = sig.mantissa;
+						exponent = explicit_exponent + sig.exponent;
+						discarded_nonzero = sig.discarded_nonzero;
 					}
 				}
-				return static_cast<Result>( sign ) *
-				       power10<Result>( ParseState::exec_tag,
-				                        static_cast<Result>( significant_digits ),
-				                        exponent );
+
+				if constexpr( is_precise_real_v<Result> and
+				              ParseState::precise_ieee754 ) {
+					if constexpr( is_lemire_capable_v<Result> ) {
+						static_assert( integer_accumulator );
+						using compute_t = lemire_compute_t<Result>;
+						if( DAW_LIKELY( significant_digits <= sp::max_u64_digits and
+						                mantissa <= ( std::uint64_t{ 1 }
+						                              << daw::digits<compute_t> ) and
+						                exponent <= sp::max_exact_power10<Result> and
+						                exponent >= -sp::max_exact_power10<Result> ) ) {
+							return static_cast<Result>( sign ) *
+							       power10<Result>( ParseState::exec_tag,
+							                        static_cast<Result>( mantissa ),
+							                        exponent );
+						}
+						return static_cast<Result>(
+						  parse_truncated_lemire<compute_t>( sign < 0,
+						                                     exponent,
+						                                     mantissa,
+						                                     discarded_nonzero,
+						                                     number_first,
+						                                     first ) );
+					} else {
+						// Exact when the digits fit and 10^exponent is exact in Result
+						if( DAW_LIKELY( significant_digits <= sp::max_u64_digits and
+						                exponent <= sp::max_exact_power10<Result> and
+						                exponent >= -sp::max_exact_power10<Result> ) ) {
+							return static_cast<Result>( sign ) *
+							       power10<Result>( ParseState::exec_tag,
+							                        static_cast<Result>( mantissa ),
+							                        exponent );
+						}
+						return parse_with_strtod<Result>( number_first, first );
+					}
+				} else {
+					return static_cast<Result>( sign ) *
+					       power10<Result>( ParseState::exec_tag,
+					                        static_cast<Result>( mantissa ),
+					                        exponent );
+				}
+			}
+
+			template<typename Result, bool KnownRange, typename ParseState>
+			[[nodiscard]] constexpr Result parse_real( ParseState &parse_state );
+
+			/// @brief True when f is exactly halfway between two values of the
+			/// narrower Result.  f is already rounded, so the exact value may have
+			/// been on either side and narrowing f could double round.
+			template<typename Result>
+			[[nodiscard]] constexpr bool is_halfway_for_narrowing( float f ) {
+				auto const bits = DAW_BIT_CAST( std::uint32_t, f );
+				auto const biased_exponent =
+				  static_cast<std::int32_t>( ( bits >> 23U ) & 0xFFU );
+				if( biased_exponent == 0xFF ) {
+					return false;
+				}
+				std::uint32_t mantissa = bits & 0x7F'FFFFU;
+				std::int32_t exponent = -126;
+				if( biased_exponent != 0 ) {
+					mantissa |= 0x80'0000U;
+					exponent = biased_exponent - 127;
+				}
+				// Bits of f below the precision of Result, more when the value is in
+				// the subnormal range of Result
+				DAW_CPP23_STATIC_LOCAL constexpr std::int32_t result_min_exponent =
+				  std::numeric_limits<Result>::min_exponent - 1;
+				std::int32_t dropped_bits = std::numeric_limits<float>::digits -
+				                            std::numeric_limits<Result>::digits;
+				if( exponent < result_min_exponent ) {
+					dropped_bits += result_min_exponent - exponent;
+				}
+				if( dropped_bits > std::numeric_limits<float>::digits ) {
+					return false;
+				}
+				auto const half = std::uint32_t{ 1 }
+				                  << static_cast<std::uint32_t>( dropped_bits - 1 );
+				return ( mantissa & ( ( half << 1U ) - 1U ) ) == half;
+			}
+
+			template<typename Result, bool KnownRange, typename ParseState>
+			[[nodiscard]] constexpr Result
+			parse_narrow_real( ParseState &parse_state ) {
+				daw::not_null<char const *> const number_first = parse_state.first;
+				float const f = parse_real<float, KnownRange>( parse_state );
+				if constexpr( ParseState::precise_ieee754 ) {
+					if( DAW_UNLIKELY( is_halfway_for_narrowing<Result>( f ) ) ) {
+						auto const number_last =
+						  KnownRange ? parse_state.last : parse_state.first;
+						return json_details::parse_json_real_exact<Result>(
+						  f < 0.0f, number_first, number_last );
+					}
+				}
+				return static_cast<Result>( f );
 			}
 
 			template<typename Result, bool KnownRange, typename ParseState>
 			[[nodiscard]] constexpr Result parse_real( ParseState &parse_state ) {
-				if constexpr( KnownRange ) {
-					return parse_real_known<Result>( parse_state );
+				if constexpr( is_narrow_real_v<Result> ) {
+					return parse_narrow_real<Result, KnownRange>( parse_state );
 				} else {
-					return parse_real_unknown<Result>( parse_state );
+					// With known bounds parse_state.last is the end of the number,
+					// otherwise it is the end of the document
+					return parse_real_single_pass<Result>( parse_state );
 				}
 			}
 		} // namespace json_details

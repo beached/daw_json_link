@@ -31,6 +31,7 @@
 #include <map>
 #include <optional>
 #include <random>
+#include <string>
 #include <string_view>
 #include <tuple>
 #include <vector>
@@ -52,6 +53,10 @@ struct NumberX {
 	int x;
 };
 
+struct MalformedDoubleHolder {
+	double v;
+};
+
 namespace daw::json {
 	template<>
 	struct json_data_contract<NumberX> {
@@ -60,6 +65,16 @@ namespace daw::json {
 #else
 		static constexpr char const x[] = "x";
 		using type = json_member_list<json_number<x, int>>;
+#endif
+	};
+
+	template<>
+	struct json_data_contract<MalformedDoubleHolder> {
+#if defined( DAW_JSON_CNTTP_JSON_NAME )
+		using type = json_member_list<json_number<"v", double>>;
+#else
+		static constexpr char const v[] = "v";
+		using type = json_member_list<json_number<v, double>>;
 #endif
 	};
 } // namespace daw::json
@@ -2068,6 +2083,62 @@ int main( ) {
 				auto const r = from_json<double>( tvalue.str );
 				daw_ensure( r == tvalue.expected );
 			}
+
+#if defined( DAW_USE_EXCEPTIONS )
+			static constexpr std::string_view malformed_numbers[] = {
+			  "",     "-",     ".",    "-.1",   "1.", "1e",   "1e+", "1e-",
+			  "--1",  "+1",    "00",   "01",    "1..2", "1e2e3", "1.2x3",
+			};
+			auto const rejects = []( auto &&parse ) {
+				try {
+					parse( );
+				} catch( json_exception const & ) { return true; }
+				return false;
+			};
+			for( auto const number : malformed_numbers ) {
+				if( not rejects( [=] { (void)from_json<double>( number ); } ) ) {
+					daw_ensure_error(
+					  true,
+					  "Accepted malformed standalone number: " + std::string( number ) );
+				}
+
+				auto const array = "[" + std::string( number ) + ",0]";
+				if( not rejects( [&] { (void)from_json_array<double>( array ); } ) ) {
+					daw_ensure_error( true,
+					                  "Accepted malformed array number: " +
+					                    std::string( number ) );
+				}
+
+				auto const object =
+				  R"({"v":)" + std::string( number ) + R"(,"x":0})";
+				if( not rejects(
+				      [&] { (void)from_json<MalformedDoubleHolder>( object ); } ) ) {
+					daw_ensure_error( true,
+					                  "Accepted malformed object-member number: " +
+					                    std::string( number ) );
+				}
+			}
+#endif
+
+			auto const huge_positive_exponent = "1e" + std::string( 2000, '9' );
+			daw_ensure( from_json<double>( huge_positive_exponent ) ==
+			            std::numeric_limits<double>::infinity( ) );
+			auto const huge_negative_exponent =
+			  "1e-" + std::string( 2000, '9' );
+			daw_ensure( from_json<double>( huge_negative_exponent ) == 0.0 );
+			auto const long_zero_padded_exponent =
+			  "1e" + std::string( 2000, '0' ) + "1";
+			daw_ensure( from_json<double>( long_zero_padded_exponent ) == 10.0 );
+
+			auto long_significand = std::string(
+			  "1.00000000000000011102230246251565404236316680908203125" );
+			long_significand.append( 800, '0' );
+			long_significand += '1';
+			daw_ensure( from_json<double>( long_significand ) ==
+			            0x1.0000000000001p+0 );
+
+			auto const long_fraction = "0." + std::string( 2000, '0' ) + "1";
+			daw_ensure( from_json<double>( long_fraction ) == 0.0 );
 		}
 #if defined( LLONG_MIN )
 		{

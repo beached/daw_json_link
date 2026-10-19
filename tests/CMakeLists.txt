@@ -783,6 +783,12 @@ add_test( NAME long_double_test COMMAND long_double_test )
 add_dependencies( ci_tests long_double_test )
 add_dependencies( full long_double_test )
 
+add_executable( extended_float_types_test src/extended_float_types_test.cpp )
+target_link_libraries( extended_float_types_test PRIVATE json_test )
+add_test( NAME extended_float_types_test COMMAND extended_float_types_test )
+add_dependencies( ci_tests extended_float_types_test )
+add_dependencies( full extended_float_types_test )
+
 add_executable( json_event_parser_max_depth_test
                  src/json_event_parser_max_depth_test.cpp )
 target_link_libraries( json_event_parser_max_depth_test PRIVATE json_test )
