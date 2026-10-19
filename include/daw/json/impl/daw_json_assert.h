@@ -242,7 +242,7 @@ namespace daw::json {
 #endif
 
 #if defined( DEBUG ) or not defined( NDEBUG )
-#define daw_json_dbg_ensure( ... )                                         \
+#define daw_json_dbg_ensure( Bool, ... )                                   \
 	do {                                                                     \
 		if( DAW_UNLIKELY( not( Bool ) ) ) {                                    \
 			daw_static_warn_if( not( Bool ),                                     \
