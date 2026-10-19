@@ -36,14 +36,19 @@ struct doc_t {
 namespace daw::json {
 	template<>
 	struct json_data_contract<inner_t> {
-		using type = json_member_list<json_string<"s">, json_array<"v", int>>;
+		static constexpr char s[] = "s";
+		static constexpr char v[] = "v";
+		using type = json_member_list<json_string<s>, json_array<v, int>>;
 	};
 
 	template<>
 	struct json_data_contract<doc_t> {
+		static constexpr char first[] = "first";
+		static constexpr char inner[] = "inner";
+		static constexpr char arr[] = "arr";
 		using type =
-		  json_member_list<json_number<"first", int>, json_class<"inner", inner_t>,
-		                   json_array<"arr", int>>;
+		  json_member_list<json_number<first, int>, json_class<inner, inner_t>,
+		                   json_array<arr, int>>;
 	};
 } // namespace daw::json
 
@@ -73,7 +78,7 @@ bool parses( std::string const &json_data ) {
 }
 
 // "inner" and "arr" come before "first", so both are skipped and stored
-#define CPP_DOC( Comment ) \
+#define CPP_DOC( Comment )                                        \
 	"{ \"inner\": { " Comment " \"s\": \"q\", \"v\": [ 1, " Comment \
 	" 2 ] }, \"arr\": [ 3, " Comment " 4 ], \"first\": 7 }"
 
@@ -81,19 +86,19 @@ template<auto... PolicyFlags>
 void test_cpp( ) {
 	using options::PolicyCommentTypes;
 	// Line comments in skipped items
-	test_assert( ( parses<PolicyCommentTypes::cpp, PolicyFlags...>(
-	               CPP_DOC( "// x\n" ) ) ),
-	             "cpp: line comment in skipped item" );
+	test_assert(
+	  ( parses<PolicyCommentTypes::cpp, PolicyFlags...>( CPP_DOC( "// x\n" ) ) ),
+	  "cpp: line comment in skipped item" );
 	test_assert( ( parses<PolicyCommentTypes::cpp, PolicyFlags...>(
 	               CPP_DOC( "// } ] \" \n" ) ) ),
 	             "cpp: line comment with brackets and quote in skipped item" );
 	// Block comments in skipped items
-	test_assert( ( parses<PolicyCommentTypes::cpp, PolicyFlags...>(
-	               CPP_DOC( "/* x */" ) ) ),
-	             "cpp: block comment in skipped item" );
-	test_assert( ( parses<PolicyCommentTypes::cpp, PolicyFlags...>(
-	               CPP_DOC( "/**/" ) ) ),
-	             "cpp: empty block comment in skipped item" );
+	test_assert(
+	  ( parses<PolicyCommentTypes::cpp, PolicyFlags...>( CPP_DOC( "/* x */" ) ) ),
+	  "cpp: block comment in skipped item" );
+	test_assert(
+	  ( parses<PolicyCommentTypes::cpp, PolicyFlags...>( CPP_DOC( "/**/" ) ) ),
+	  "cpp: empty block comment in skipped item" );
 	test_assert( ( parses<PolicyCommentTypes::cpp, PolicyFlags...>(
 	               CPP_DOC( "/* } ] \" */" ) ) ),
 	             "cpp: block comment with brackets and quote in skipped item" );
@@ -107,21 +112,22 @@ void test_cpp( ) {
 	test_assert( ( parses<PolicyCommentTypes::cpp, PolicyFlags...>(
 	               CPP_DOC( "/* a **/" ) ) ),
 	             "cpp: block comment ending in **/ in skipped item" );
-	test_assert( ( parses<PolicyCommentTypes::cpp, PolicyFlags...>(
-	               CPP_DOC( "/***/" ) ) ),
-	             "cpp: block comment /***/ in skipped item" );
-	test_assert( ( parses<PolicyCommentTypes::cpp, PolicyFlags...>(
-	               "{ /* a **/ \"inner\": { \"s\": \"q\", \"v\": [ 1, /***/ 2 ] }, "
-	               "\"arr\": [ 3, 4 ], \"first\": 7 }" ) ),
-	             "cpp: block comment ending in **/" );
+	test_assert(
+	  ( parses<PolicyCommentTypes::cpp, PolicyFlags...>( CPP_DOC( "/***/" ) ) ),
+	  "cpp: block comment /***/ in skipped item" );
+	test_assert(
+	  ( parses<PolicyCommentTypes::cpp, PolicyFlags...>(
+	    "{ /* a **/ \"inner\": { \"s\": \"q\", \"v\": [ 1, /***/ 2 ] }, "
+	    "\"arr\": [ 3, 4 ], \"first\": 7 }" ) ),
+	  "cpp: block comment ending in **/" );
 }
 
 template<auto... PolicyFlags>
 void test_hash( ) {
 	using options::PolicyCommentTypes;
-	test_assert( ( parses<PolicyCommentTypes::hash, PolicyFlags...>(
-	               CPP_DOC( "# x\n" ) ) ),
-	             "hash: comment in skipped item" );
+	test_assert(
+	  ( parses<PolicyCommentTypes::hash, PolicyFlags...>( CPP_DOC( "# x\n" ) ) ),
+	  "hash: comment in skipped item" );
 	test_assert( ( parses<PolicyCommentTypes::hash, PolicyFlags...>(
 	               CPP_DOC( "# } ] \" \n" ) ) ),
 	             "hash: comment with brackets and quote in skipped item" );
@@ -169,18 +175,18 @@ void test_end_of_data( ) {
 	               "[1,/***/2]", ints{ 1, 2 } ) ),
 	             "cpp: block comment /***/ without a trailing zero" );
 	// Truncated documents
-	test_assert( ( rejects_unterminated<ints, PolicyCommentTypes::hash>(
-	               "[1,#x" ) ),
-	             "hash: truncated after comment" );
-	test_assert( ( rejects_unterminated<ints, PolicyCommentTypes::cpp>(
-	               "[1,/" ) ),
-	             "cpp: truncated after '/'" );
-	test_assert( ( rejects_unterminated<ints, PolicyCommentTypes::cpp>(
-	               "[1,/*x" ) ),
-	             "cpp: truncated inside block comment" );
-	test_assert( ( rejects_unterminated<ints, PolicyCommentTypes::cpp>(
-	               "[1,/x2]" ) ),
-	             "cpp: '/' that does not start a comment" );
+	test_assert(
+	  ( rejects_unterminated<ints, PolicyCommentTypes::hash>( "[1,#x" ) ),
+	  "hash: truncated after comment" );
+	test_assert(
+	  ( rejects_unterminated<ints, PolicyCommentTypes::cpp>( "[1,/" ) ),
+	  "cpp: truncated after '/'" );
+	test_assert(
+	  ( rejects_unterminated<ints, PolicyCommentTypes::cpp>( "[1,/*x" ) ),
+	  "cpp: truncated inside block comment" );
+	test_assert(
+	  ( rejects_unterminated<ints, PolicyCommentTypes::cpp>( "[1,/x2]" ) ),
+	  "cpp: '/' that does not start a comment" );
 }
 
 // A comment directly after a null literal
@@ -189,18 +195,18 @@ void test_null_literal( ) {
 	using options::PolicyCommentTypes;
 	using opt_ints = std::vector<std::optional<int>>;
 	auto const expected = opt_ints{ std::nullopt, 1 };
-	test_assert( ( parses_unterminated<opt_ints, PolicyCommentTypes::cpp,
-	                                   PolicyFlags...>( "[null/*x*/,1]",
-	                                                    expected ) ),
-	             "cpp: block comment after null" );
-	test_assert( ( parses_unterminated<opt_ints, PolicyCommentTypes::cpp,
-	                                   PolicyFlags...>( "[null//x\n,1]",
-	                                                    expected ) ),
-	             "cpp: line comment after null" );
-	test_assert( ( parses_unterminated<opt_ints, PolicyCommentTypes::hash,
-	                                   PolicyFlags...>( "[null#x\n,1]",
-	                                                    expected ) ),
-	             "hash: comment after null" );
+	test_assert(
+	  ( parses_unterminated<opt_ints, PolicyCommentTypes::cpp, PolicyFlags...>(
+	    "[null/*x*/,1]", expected ) ),
+	  "cpp: block comment after null" );
+	test_assert(
+	  ( parses_unterminated<opt_ints, PolicyCommentTypes::cpp, PolicyFlags...>(
+	    "[null//x\n,1]", expected ) ),
+	  "cpp: line comment after null" );
+	test_assert(
+	  ( parses_unterminated<opt_ints, PolicyCommentTypes::hash, PolicyFlags...>(
+	    "[null#x\n,1]", expected ) ),
+	  "hash: comment after null" );
 }
 
 // A comment directly after a number
@@ -209,47 +215,50 @@ void test_number( ) {
 	using options::PolicyCommentTypes;
 	using reals = std::vector<double>;
 	using uints = std::vector<unsigned>;
-	test_assert( ( parses_unterminated<reals, PolicyCommentTypes::cpp,
-	                                   PolicyFlags...>( "[1.5/*x*/,2]",
-	                                                    reals{ 1.5, 2.0 } ) ),
-	             "cpp: block comment after real" );
-	test_assert( ( parses_unterminated<reals, PolicyCommentTypes::cpp,
-	                                   PolicyFlags...>( "[1,2.5//x\n]",
-	                                                    reals{ 1.0, 2.5 } ) ),
-	             "cpp: line comment after last real" );
-	test_assert( ( parses_unterminated<reals, PolicyCommentTypes::hash,
-	                                   PolicyFlags...>( "[1.5#x\n,2]",
-	                                                    reals{ 1.5, 2.0 } ) ),
-	             "hash: comment after real" );
-	test_assert( ( parses_unterminated<uints, PolicyCommentTypes::cpp,
-	                                   PolicyFlags...>( "[1/*x*/,2]",
-	                                                    uints{ 1, 2 } ) ),
-	             "cpp: block comment after unsigned" );
-	test_assert( ( parses_unterminated<uints, PolicyCommentTypes::hash,
-	                                   PolicyFlags...>( "[1#x\n,2]",
-	                                                    uints{ 1, 2 } ) ),
-	             "hash: comment after unsigned" );
+	test_assert(
+	  ( parses_unterminated<reals, PolicyCommentTypes::cpp, PolicyFlags...>(
+	    "[1.5/*x*/,2]", reals{ 1.5, 2.0 } ) ),
+	  "cpp: block comment after real" );
+	test_assert(
+	  ( parses_unterminated<reals, PolicyCommentTypes::cpp, PolicyFlags...>(
+	    "[1,2.5//x\n]", reals{ 1.0, 2.5 } ) ),
+	  "cpp: line comment after last real" );
+	test_assert(
+	  ( parses_unterminated<reals, PolicyCommentTypes::hash, PolicyFlags...>(
+	    "[1.5#x\n,2]", reals{ 1.5, 2.0 } ) ),
+	  "hash: comment after real" );
+	test_assert(
+	  ( parses_unterminated<uints, PolicyCommentTypes::cpp, PolicyFlags...>(
+	    "[1/*x*/,2]", uints{ 1, 2 } ) ),
+	  "cpp: block comment after unsigned" );
+	test_assert(
+	  ( parses_unterminated<uints, PolicyCommentTypes::hash, PolicyFlags...>(
+	    "[1#x\n,2]", uints{ 1, 2 } ) ),
+	  "hash: comment after unsigned" );
 }
 
 // A comment directly after a quoted NaN or Infinity
+template<auto... PolicyFlags>
+auto test_nan_inf_parse( std::string_view json_data ) {
+	using nan_inf_t =
+	  json_number_no_name<double,
+	                      options::number_opt(
+	                        options::LiteralAsStringOpt::Maybe,
+	                        options::JsonNumberErrors::AllowNanInf )>;
+	auto const buffer = std::vector<char>( json_data.begin( ), json_data.end( ) );
+	return from_json_array<nan_inf_t>(
+	  std::string_view( buffer.data( ), buffer.size( ) ),
+	  options::parse_flags<PolicyFlags...> );
+}
+
 void test_nan_inf( ) {
 	using options::PolicyCommentTypes;
-	using nan_inf_t = json_number_no_name<
-	  double, options::number_opt( options::LiteralAsStringOpt::Maybe,
-	                               options::JsonNumberErrors::AllowNanInf )>;
-	auto const parse = []<auto... PolicyFlags>( std::string_view json_data ) {
-		auto const buffer =
-		  std::vector<char>( json_data.begin( ), json_data.end( ) );
-		return from_json_array<nan_inf_t>(
-		  std::string_view( buffer.data( ), buffer.size( ) ),
-		  options::parse_flags<PolicyFlags...> );
-	};
-	auto const nan = parse.template operator( )<PolicyCommentTypes::cpp>(
-	  R"(["NaN"/*x*/,1])" );
+	auto const nan =
+	  test_nan_inf_parse<PolicyCommentTypes::cpp>( R"(["NaN"/*x*/,1])" );
 	test_assert( nan.size( ) == 2 and std::isnan( nan[0] ) and nan[1] == 1.0,
 	             "cpp: block comment after \"NaN\"" );
-	auto const inf = parse.template operator( )<PolicyCommentTypes::hash>(
-	  "[\"-Infinity\"#x\n,1]" );
+	auto const inf =
+	  test_nan_inf_parse<PolicyCommentTypes::hash>( "[\"-Infinity\"#x\n,1]" );
 	test_assert( inf.size( ) == 2 and std::isinf( inf[0] ) and inf[0] < 0.0 and
 	               inf[1] == 1.0,
 	             "hash: comment after \"-Infinity\"" );
@@ -262,10 +271,9 @@ int main( )
 #endif
 {
 	// Block comments outside of skipped items already work
-	daw_ensure(
-	  parses<options::PolicyCommentTypes::cpp>(
-	    "{ /* x */ \"inner\": { \"s\": \"q\", \"v\": [ 1, 2 ] }, \"arr\": [ 3, 4 "
-	    "], /* y */ \"first\": 7 }" ) );
+	daw_ensure( parses<options::PolicyCommentTypes::cpp>(
+	  "{ /* x */ \"inner\": { \"s\": \"q\", \"v\": [ 1, 2 ] }, \"arr\": [ 3, 4 "
+	  "], /* y */ \"first\": 7 }" ) );
 
 	test_hash( );
 	test_hash<options::CheckedParseMode::no>( );
@@ -278,14 +286,14 @@ int main( )
 	test_number( );
 	test_number<options::CheckedParseMode::no>( );
 	test_nan_inf( );
-	test_assert( ( rejects_unterminated<std::vector<double>,
-	                                    options::PolicyCommentTypes::cpp>(
-	               "[1.5x,2]" ) ),
-	             "cpp: invalid characters after real" );
-	test_assert( ( rejects_unterminated<std::vector<std::optional<int>>,
-	                                    options::PolicyCommentTypes::cpp>(
-	               "[nullx,1]" ) ),
-	             "cpp: invalid literal after null" );
+	test_assert(
+	  ( rejects_unterminated<std::vector<double>,
+	                         options::PolicyCommentTypes::cpp>( "[1.5x,2]" ) ),
+	  "cpp: invalid characters after real" );
+	test_assert(
+	  ( rejects_unterminated<std::vector<std::optional<int>>,
+	                         options::PolicyCommentTypes::cpp>( "[nullx,1]" ) ),
+	  "cpp: invalid literal after null" );
 #endif
 }
 #if defined( DAW_USE_EXCEPTIONS )
