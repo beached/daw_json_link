@@ -25,10 +25,6 @@
 #include <daw/daw_not_null.h>
 #include <daw/daw_unreachable.h>
 
-#if defined( DAW_CX_BIT_CAST )
-#include "daw_count_digits.h"
-#endif
-
 #include <iterator>
 
 namespace daw::json {
