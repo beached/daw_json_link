@@ -60,6 +60,16 @@ namespace daw::json {
 			                      std::declval<T &>( ).empty( ) ),
 			            (void)( *std::declval<T &>( ).data( ) =
 			                      std::declval<CharT>( ) ) );
+			// std::span has only subspan; daw::span and string views also have
+			// remove_prefix
+			template<typename T>
+			using remove_prefix_test =
+			  decltype( std::declval<T &>( ).remove_prefix( std::size_t{ 1 } ) );
+
+			template<typename T>
+			DAW_CPP20_CONCEPT has_remove_prefix_v =
+			  daw::is_detected_v<remove_prefix_test, T>;
+
 			template<typename T, typename CharT>
 			DAW_CPP20_CONCEPT is_span_like_range_v =
 			  daw::is_detected_v<span_like_range_test, T, CharT> and

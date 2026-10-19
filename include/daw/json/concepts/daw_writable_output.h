@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_writable_output_basics.h"
+#include "daw_writable_output_string_writer.h"
 
 #if not defined( DAW_JSON_NO_DEFAULT_OSTREAM_WRITER )
 #include "daw_writable_output_ostream.h"

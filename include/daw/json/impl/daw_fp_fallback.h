@@ -28,6 +28,20 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+			/// @brief True when parse_with_strtod can correctly round to Real
+			template<typename Real, typename = void>
+			inline constexpr bool has_precise_fallback_v =
+			  std::is_same_v<Real, float> or std::is_same_v<Real, double> or
+			  std::is_same_v<Real, long double>;
+
+#if not defined( DAW_JSON_USE_STRTOD )
+			template<typename Real>
+			inline constexpr bool has_precise_fallback_v<
+			  Real, std::void_t<decltype( std::from_chars(
+			          std::declval<char const *>( ), std::declval<char const *>( ),
+			          std::declval<Real &>( ) ) )>> = std::is_floating_point_v<Real>;
+#endif
+
 			/// @brief When normal FP parsing cannot handle the value, this method
 			/// used as a fallback for std floating point types.  For others, it
 			/// provides either a customization point or will call the overload found
@@ -43,7 +57,7 @@ namespace daw::json {
 				char **end = nullptr;
 				if constexpr( std::is_same_v<Real, float> ) {
 					return static_cast<Real>( std::strtof( first, end ) );
-				} else if( std::is_same_v<Real, double> ) {
+				} else if constexpr( std::is_same_v<Real, double> ) {
 					return static_cast<Real>( std::strtod( first, end ) );
 				} else {
 					return static_cast<Real>( std::strtold( first, end ) );
@@ -61,7 +75,7 @@ namespace daw::json {
 					} else if constexpr( std::is_same_v<Real, double> ) {
 						return std::strtod( token.c_str( ), nullptr );
 					} else {
-						return std::strtold( token.c_str( ), nullptr );
+						return static_cast<Real>( std::strtold( token.c_str( ), nullptr ) );
 					}
 				}
 				daw_json_ensure( fc_res.ec == std::errc( ),

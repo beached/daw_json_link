@@ -14,11 +14,17 @@
 #include "daw/json/impl/daw_json_parse_real_eisellemire.h"
 
 #include <daw/daw_arith_traits.h>
+#include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_likely.h>
 
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <limits>
+#if defined( DAW_JSON_HAS_FLOAT128 ) and defined( __STDCPP_FLOAT128_T__ )
+#include <stdfloat>
+#endif
 #include <type_traits>
 
 namespace daw::json {
@@ -154,6 +160,425 @@ namespace daw::json {
 				}
 				return static_cast<Result>( result ) *
 				       static_cast<Result>( dpow10_tbl[static_cast<std::size_t>( p )] );
+			}
+
+			namespace power10_details {
+				/// Largest power of ten that is exact as a double, 5^22 < 2^53
+				inline constexpr std::uint32_t max_exact_double_power10 = 22;
+
+				/// 10^n computed in Result.  Only the first 23 entries of the double
+				/// table are exact, so larger powers are 10^(n % 22) * (10^22)^(n / 22)
+				/// with the second part by repeated squaring.  Every intermediate
+				/// value is a power of ten no larger than 10^n, so the result is exact
+				/// whenever 10^n is representable in Result, e.g. up to 10^48 for
+				/// binary128 and always for decimal types.  Otherwise each multiply
+				/// adds at most half an ulp of Result.
+				template<typename Result>
+				[[nodiscard]] constexpr Result power10_value( std::uint32_t n ) {
+					auto power =
+					  static_cast<Result>( dpow10_tbl[n % max_exact_double_power10] );
+					auto q = n / max_exact_double_power10;
+					if( q != 0 ) {
+						auto base =
+						  static_cast<Result>( dpow10_tbl[max_exact_double_power10] );
+						while( true ) {
+							if( ( q & 1U ) != 0 ) {
+								power = power * base;
+							}
+							q >>= 1U;
+							if( q == 0 ) {
+								break;
+							}
+							base = base * base;
+						}
+					}
+					return power;
+				}
+			} // namespace power10_details
+
+			/// @brief result * 10^p computed in Result, for when the double table
+			/// cannot do it precisely: user defined types with more precision than
+			/// double, and constant evaluation of extended floating point types where
+			/// from_chars is not available.  It needs no allocation, no non-constexpr
+			/// pow, and no table beyond the exact part of the double table.  Negative
+			/// exponents divide by 10^-p, which can be exact, rather than multiplying
+			/// by 10^p, which never is in binary.  result must not be negative; the
+			/// parsers apply the sign afterwards.
+			template<typename Result>
+			[[nodiscard]] constexpr Result power10_by_squaring( Result result,
+			                                                    std::int64_t p ) {
+				using limits = std::numeric_limits<Result>;
+				// Apply at most 10^chunk at a time so the power itself cannot overflow
+				// when result * 10^p is still representable
+				DAW_CPP23_STATIC_LOCAL constexpr std::uint32_t chunk =
+				  limits::max_exponent10 > 0
+				    ? static_cast<std::uint32_t>( limits::max_exponent10 )
+				    : power10_details::max_exact_double_power10;
+				// After this many chunks any finite result is already 0 or infinity
+				DAW_CPP23_STATIC_LOCAL constexpr std::uint64_t max_chunks =
+				  static_cast<std::uint64_t>(
+				    ( limits::max_exponent10 - limits::min_exponent10 ) > 0
+				      ? ( limits::max_exponent10 - limits::min_exponent10 )
+				      : 0 ) /
+				    chunk +
+				  2U;
+
+				bool const negative = p < 0;
+				auto n = negative ? std::uint64_t{ 0 } - static_cast<std::uint64_t>( p )
+				                  : static_cast<std::uint64_t>( p );
+				// Overflowing to infinity is not allowed in a constant expression, so
+				// check before multiplying and return the overflow value directly
+				bool overflowed = false;
+				auto const scale = [&]( Result value, Result const &power ) -> Result {
+					if( negative ) {
+						return value / power;
+					}
+					if( DAW_UNLIKELY( value > limits::max( ) / power ) ) {
+						overflowed = true;
+						if constexpr( limits::has_infinity ) {
+							return limits::infinity( );
+						} else {
+							return limits::max( );
+						}
+					}
+					return value * power;
+				};
+				if( DAW_UNLIKELY( n > chunk ) ) {
+					auto const chunk_power =
+					  power10_details::power10_value<Result>( chunk );
+					std::uint64_t chunks = 0;
+					while( n > chunk and chunks < max_chunks ) {
+						result = scale( result, chunk_power );
+						if( overflowed ) {
+							return result;
+						}
+						n -= chunk;
+						++chunks;
+					}
+					if( n > chunk ) {
+						n = chunk;
+					}
+				}
+				return scale( result,
+				              power10_details::power10_value<Result>(
+				                static_cast<std::uint32_t>( n ) ) );
+			}
+
+#if defined( DAW_JSON_HAS_FLOAT128 )
+				namespace power10_details {
+					inline constexpr int float128_max_exponent = 16384;
+					inline constexpr int float128_min_exponent = -16381;
+#if defined( __STDCPP_FLOAT128_T__ )
+					using float128_t = std::float128_t;
+#else
+				using float128_t = __float128;
+#endif
+				inline constexpr int float128_digits = 113;
+
+				/// (sig_hi * 2^64 + sig_lo) * 2^exp2, exactly.  This lets the table be
+				/// written without a literal suffix, as std::float128_t and __float128
+				/// do not share one
+				[[nodiscard]] constexpr float128_t make_float128( bool negative,
+				                                                  std::uint64_t sig_hi,
+				                                                  std::uint64_t sig_lo,
+				                                                  int exp2 ) {
+					auto value = static_cast<float128_t>( sig_hi ) *
+					               static_cast<float128_t>( 18446744073709551616.0 ) +
+					             static_cast<float128_t>( sig_lo );
+					auto base = static_cast<float128_t>( exp2 < 0 ? 0.5 : 2.0 );
+					auto n = static_cast<unsigned>( exp2 < 0 ? -exp2 : exp2 );
+					while( n != 0 ) {
+						if( ( n & 1U ) != 0 ) {
+							value = value * base;
+						}
+						n >>= 1U;
+						if( n != 0 ) {
+							base = base * base;
+						}
+					}
+					return negative ? -value : value;
+				}
+
+				/// A float128 value plus its rounding error, about 226 bits
+				struct float128_pair {
+					float128_t hi;
+					float128_t lo;
+				};
+
+				/// The exact error of the rounded product p = a * b.  A hardware fma
+				/// when there is one, otherwise Dekker's product
+				[[nodiscard]] constexpr float128_t
+				product_error( float128_t a, float128_t b,
+				               [[maybe_unused]] float128_t p ) {
+#if defined( __FP_FAST_FMAF128 )
+					// Only with a hardware fma.  Without one, e.g. x86-64, fmaf128 is
+					// done in software and is slower than the product below
+					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+#if defined( __STDCPP_FLOAT128_T__ )
+						return std::fma( a, b, -p );
+#elif DAW_HAS_BUILTIN( __builtin_fmaf128 )
+						return __builtin_fmaf128( a, b, -p );
+#endif
+					}
+#endif
+					// Veltkamp split, 2^57 + 1 for a 113 bit significand.  Large
+					// operands are scaled down first so the split cannot overflow;
+					// scaling by a power of two is exact
+					DAW_CPP23_STATIC_LOCAL constexpr auto splitter =
+					  static_cast<float128_t>( std::uint64_t{ 144115188075855873ULL } );
+					DAW_CPP23_STATIC_LOCAL constexpr float128_t big =
+					  make_float128( false, 0, 1, 16000 );
+					DAW_CPP23_STATIC_LOCAL constexpr float128_t down =
+					  make_float128( false, 0, 1, -80 );
+					DAW_CPP23_STATIC_LOCAL constexpr float128_t up =
+					  make_float128( false, 0, 1, 80 );
+					auto scale = static_cast<float128_t>( 1 );
+					if( a > big or a < -big ) {
+						a = a * down;
+						scale = scale * up;
+					}
+					if( b > big or b < -big ) {
+						b = b * down;
+						scale = scale * up;
+					}
+					auto const split = []( float128_t x ) {
+						auto const c = splitter * x;
+						auto const hi = c - ( c - x );
+						return float128_pair{ hi, x - hi };
+					};
+					auto const sa = split( a );
+					auto const sb = split( b );
+					auto const scaled_p = a * b;
+					return ( ( ( ( sa.hi * sb.hi - scaled_p ) + sa.hi * sb.lo ) +
+					           sa.lo * sb.hi ) +
+					         sa.lo * sb.lo ) *
+					       scale;
+				}
+
+				[[nodiscard]] constexpr float128_pair multiply( float128_pair a,
+				                                                float128_pair b ) {
+					auto const p = a.hi * b.hi;
+					auto const e =
+					  product_error( a.hi, b.hi, p ) + ( a.hi * b.lo + a.lo * b.hi );
+					auto const s = p + e;
+					return { s, e - ( s - p ) };
+				}
+
+				[[nodiscard]] constexpr float128_pair divide( float128_pair a,
+				                                              float128_pair b ) {
+					auto const q1 = a.hi / b.hi;
+					auto const p = q1 * b.hi;
+					auto const r =
+					  ( ( a.hi - p ) - product_error( q1, b.hi, p ) + a.lo ) - q1 * b.lo;
+					auto const q2 = r / b.hi;
+					auto const s = q1 + q2;
+					return { s, q2 - ( s - q1 ) };
+				}
+
+				/// 10^(16 * 2^k) = hi + lo for k = 0..8, from exact integer arithmetic.
+				/// 10^16 and 10^32 are exact in binary128
+				inline constexpr float128_t power10_hi[] = {
+				  static_cast<float128_t>( 1e16 ),
+				  static_cast<float128_t>( 1e16 ) * static_cast<float128_t>( 1e16 ),
+				  make_float128( false, 0x184f03e93ff9f, 0x4daa797ed6e38ed6, 100 ),
+				  make_float128( false, 0x127748f9301d3, 0x19bf8cde66d86d62, 313 ),
+				  make_float128( false, 0x154fdd7f73bf3, 0xbd1bbb77203731fe, 738 ),
+				  make_float128( false, 0x1c633415d4c1d, 0x238d98cab8a978a1, 1588 ),
+				  make_float128( false, 0x192eceb0d02ea, 0x182eca1a7a51e317, 3289 ),
+				  make_float128( false, 0x13d1676bb8a7a, 0xbbc94e9a519c6536, 6691 ),
+				  make_float128( false, 0x188c0a4051441, 0x2f3592982a7f0095, 13494 ) };
+				inline constexpr float128_t power10_lo[] = {
+				  static_cast<float128_t>( 0 ),
+				  static_cast<float128_t>( 0 ),
+				  make_float128( false, 0x12fda87c04000, 0x0000000000000000, -14 ),
+				  make_float128( false, 0x1370234f3fd7b, 0x08dd390bc3c54e3f, 194 ),
+				  make_float128( true, 0x15487ae1b340c, 0x21d06755187f3801, 623 ),
+				  make_float128( true, 0x1383b1cd3e33f, 0x17659a2dee9638ae, 1474 ),
+				  make_float128( true, 0x1798d6ca33bec, 0x56db2781485a496c, 3175 ),
+				  make_float128( true, 0x18d6cae734220, 0xa0e7e584475598ea, 6577 ),
+				  make_float128( true, 0x1ab6cd44f026d, 0xdd8eecc1151841b6, 13380 ) };
+
+				/// 10^n as hi + lo, for n < 8192
+				[[nodiscard]] constexpr float128_pair power10_pair( std::uint32_t n ) {
+					auto power =
+					  float128_pair{ static_cast<float128_t>( dpow10_tbl[n & 15U] ),
+					                 static_cast<float128_t>( 0 ) };
+					auto bits = n >> 4U;
+					for( std::size_t k = 0; bits != 0; ++k, bits >>= 1U ) {
+						if( ( bits & 1U ) != 0 ) {
+							power = multiply( power, { power10_hi[k], power10_lo[k] } );
+						}
+					}
+					return power;
+				}
+
+				/// value * 10^p with a single rounding at the end.  value must not
+				/// be negative.  Returns false when the result overflows, as that is
+				/// not allowed in a constant expression
+				[[nodiscard]] constexpr bool scale_float128( float128_t &value,
+				                                             std::int64_t p ) {
+					// 10^4932 is the largest power below the binary128 maximum
+					DAW_CPP23_STATIC_LOCAL constexpr std::uint32_t chunk = 4932;
+					DAW_CPP23_STATIC_LOCAL constexpr float128_t max_value = make_float128(
+					  false, 0x1ffffffffffff, 0xffffffffffffffff, 16383 - 112 );
+					bool const negative = p < 0;
+					auto n = negative
+					           ? std::uint64_t{ 0 } - static_cast<std::uint64_t>( p )
+					           : static_cast<std::uint64_t>( p );
+					// 10^n is exact in binary128 up to 10^48, but the double table is
+					// only exact up to 10^22, so 10^22 * 10^22 bounds this.  A single
+					// multiply or divide by an exact power is correctly rounded
+					if( n <= 44 ) {
+						auto const power =
+						  n <= 22 ? static_cast<float128_t>( dpow10_tbl[n] )
+						          : static_cast<float128_t>( dpow10_tbl[22] ) *
+						              static_cast<float128_t>( dpow10_tbl[n - 22] );
+						if( negative ) {
+							value = value / power;
+							return true;
+						}
+						if( value > max_value / power ) {
+							return false;
+						}
+						value = value * power;
+						return true;
+					}
+					auto v = float128_pair{ value, static_cast<float128_t>( 0 ) };
+					auto const apply = [&]( float128_pair const &power ) {
+						if( negative ) {
+							v = divide( v, power );
+							return true;
+						}
+						if( v.hi > max_value / power.hi ) {
+							return false;
+						}
+						v = multiply( v, power );
+						return true;
+					};
+					// Three chunks take any finite value past the binary128 range
+					for( int chunks = 0; n > chunk and chunks < 3; ++chunks ) {
+						if( not apply( power10_pair( chunk ) ) ) {
+							return false;
+						}
+						n -= chunk;
+					}
+					if( n > chunk ) {
+						n = chunk;
+					}
+					if( not apply( power10_pair( static_cast<std::uint32_t>( n ) ) ) ) {
+						return false;
+					}
+					value = v.hi + v.lo;
+					return true;
+				}
+
+#if defined( __STDCPP_FLOAT128_T__ ) and defined( __SIZEOF_FLOAT128__ )
+				/// std::float128_t and __float128 are both binary128 but distinct
+				/// types, and an explicit conversion to one will not convert on to the
+				/// other, so a Result may convert with either
+				using other_float128_t = __float128;
+#else
+				using other_float128_t = float128_t;
+#endif
+
+#if defined( __STDCPP_FLOAT128_T__ )
+				template<typename F>
+				inline constexpr bool is_std_float128_v =
+				  std::is_same_v<F, std::float128_t>;
+#else
+				template<typename F>
+				inline constexpr bool is_std_float128_v = false;
+#endif
+
+				/// Built in floating point types may convert through either binary128
+				/// type.  Class types only convert through std::float128_t, the
+				/// standard type that libraries implement conversions for.  Others can
+				/// report a conversion that does not instantiate, e.g. Boost
+				/// multiprecision with __float128 on clang
+				template<typename Result, typename F>
+				inline constexpr bool converts_from_v =
+				  std::is_floating_point_v<F> and std::is_constructible_v<Result, F> and
+				  ( std::is_floating_point_v<Result> or is_std_float128_v<F> );
+
+				template<typename Result, typename F>
+				inline constexpr bool converts_to_v =
+				  std::is_floating_point_v<F> and std::is_constructible_v<F, Result> and
+				  ( std::is_floating_point_v<Result> or is_std_float128_v<F> );
+
+				template<typename Result>
+				inline constexpr bool converts_from_float128_v =
+				  converts_from_v<Result, float128_t> or
+				  converts_from_v<Result, other_float128_t>;
+
+				template<typename Result>
+				inline constexpr bool converts_to_float128_v =
+				  converts_to_v<Result, float128_t> or
+				  converts_to_v<Result, other_float128_t>;
+
+				/// Result is scaled in binary128 when it is a binary type wider than
+				/// double but no wider than binary128 in precision or exponent range,
+				/// and converts to and from binary128.  One extra binade at the bottom
+				/// is allowed for types without subnormals, e.g. Boost's
+				/// cpp_bin_float_quad; results there go through binary128 subnormals
+				template<typename Result>
+				inline constexpr bool uses_float128_v =
+				  ( std::numeric_limits<Result>::radix == 2 ) and
+				  ( std::numeric_limits<Result>::digits >
+				    std::numeric_limits<double>::digits ) and
+				  ( std::numeric_limits<Result>::digits <= float128_digits ) and
+				  ( std::numeric_limits<Result>::max_exponent <=
+				    float128_max_exponent ) and
+				  ( std::numeric_limits<Result>::min_exponent >=
+				    float128_min_exponent - 1 ) and
+				  converts_from_float128_v<Result> and converts_to_float128_v<Result>;
+
+				template<typename Result>
+				[[nodiscard]] constexpr float128_t to_float128( Result const &value ) {
+					if constexpr( converts_to_v<Result, float128_t> ) {
+						return static_cast<float128_t>( value );
+					} else {
+						return static_cast<float128_t>(
+						  static_cast<other_float128_t>( value ) );
+					}
+				}
+
+				template<typename Result>
+				[[nodiscard]] constexpr Result from_float128( float128_t value ) {
+					if constexpr( converts_from_v<Result, float128_t> ) {
+						return static_cast<Result>( value );
+					} else {
+						return static_cast<Result>(
+						  static_cast<other_float128_t>( value ) );
+					}
+				}
+			} // namespace power10_details
+#endif
+
+			/// @brief result * 10^p for types wider than double, which the double
+			/// table cannot scale precisely.  Uses the binary128 hi + lo table when
+			/// available and Result converts to and from binary128, otherwise
+			/// power10_by_squaring.  result must not be negative.
+			template<typename Result>
+			[[nodiscard]] constexpr Result power10_wide( Result result,
+			                                             std::int64_t p ) {
+#if defined( DAW_JSON_HAS_FLOAT128 )
+				if constexpr( power10_details::uses_float128_v<Result> ) {
+					auto value = power10_details::to_float128( result );
+					if( DAW_LIKELY( power10_details::scale_float128( value, p ) ) ) {
+						return power10_details::from_float128<Result>( value );
+					}
+					using limits = std::numeric_limits<Result>;
+					if constexpr( limits::has_infinity ) {
+						return limits::infinity( );
+					} else {
+						return limits::max( );
+					}
+				} else {
+					return power10_by_squaring( result, p );
+				}
+#else
+				return power10_by_squaring( result, p );
+#endif
 			}
 
 			template<typename Result, typename Unsigned>

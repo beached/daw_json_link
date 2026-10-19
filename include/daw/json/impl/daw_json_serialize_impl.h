@@ -103,8 +103,16 @@ namespace daw::json {
 				                ( static_cast<std::size_t>(
 				                    has_dependent_member_v<JsonMembers> ) +
 				                  ... + 0 )>;
-				auto visited_members =
-				  basic_array_t<daw::string_view, visit_size::value>{ };
+				// The names written so far are only needed to skip a name that was
+				// already written, which can only happen with dependent members or
+				// with two members of the same name
+				constexpr bool track_visited =
+				  visit_size::value != sizeof...( JsonMembers ) or
+				  has_repeated_member_names<JsonMembers...>( );
+				auto visited_members = daw::conditional_t<
+				  track_visited,
+				  basic_array_t<daw::string_view, visit_size::value>,
+				  no_visited_members_t>{ };
 
 				// Tag Members, if any.  Putting them ahead means we can parse this
 				// faster in the future

@@ -783,6 +783,12 @@ add_test( NAME long_double_test COMMAND long_double_test )
 add_dependencies( ci_tests long_double_test )
 add_dependencies( full long_double_test )
 
+add_executable( extended_float_types_test src/extended_float_types_test.cpp )
+target_link_libraries( extended_float_types_test PRIVATE json_test )
+add_test( NAME extended_float_types_test COMMAND extended_float_types_test )
+add_dependencies( ci_tests extended_float_types_test )
+add_dependencies( full extended_float_types_test )
+
 add_executable( json_event_parser_max_depth_test
                  src/json_event_parser_max_depth_test.cpp )
 target_link_libraries( json_event_parser_max_depth_test PRIVATE json_test )
@@ -1379,6 +1385,39 @@ target_link_libraries( serialize_string_simd_test PRIVATE json_test )
 add_test( NAME serialize_string_simd_test COMMAND serialize_string_simd_test )
 add_dependencies( ci_tests serialize_string_simd_test )
 add_dependencies( full serialize_string_simd_test )
+
+add_executable( visited_members_test src/visited_members_test.cpp )
+target_link_libraries( visited_members_test PRIVATE json_test )
+add_test( NAME visited_members_test COMMAND visited_members_test )
+add_dependencies( ci_tests visited_members_test )
+add_dependencies( full visited_members_test )
+
+add_executable( string_writer_test src/string_writer_test.cpp )
+target_link_libraries( string_writer_test PRIVATE json_test )
+add_test( NAME string_writer_test COMMAND string_writer_test )
+add_dependencies( ci_tests string_writer_test )
+add_dependencies( full string_writer_test )
+
+add_executable( span_output_test src/span_output_test.cpp )
+target_link_libraries( span_output_test PRIVATE json_test )
+add_test( NAME span_output_test COMMAND span_output_test )
+add_dependencies( ci_tests span_output_test )
+add_dependencies( full span_output_test )
+
+# The same tests with std::simd capped at 256 bits
+add_executable( serialize_string_simd_max_256_test src/serialize_string_simd_test.cpp )
+target_compile_definitions( serialize_string_simd_max_256_test PRIVATE DAW_JSON_SIMD_MAX_256 )
+target_link_libraries( serialize_string_simd_max_256_test PRIVATE json_test )
+add_test( NAME serialize_string_simd_max_256_test COMMAND serialize_string_simd_max_256_test )
+add_dependencies( ci_tests serialize_string_simd_max_256_test )
+add_dependencies( full serialize_string_simd_max_256_test )
+
+add_executable( parse_string_simd_max_256_test src/parse_string_simd_test.cpp )
+target_compile_definitions( parse_string_simd_max_256_test PRIVATE DAW_JSON_SIMD_MAX_256 )
+target_link_libraries( parse_string_simd_max_256_test PRIVATE json_test )
+add_test( NAME parse_string_simd_max_256_test COMMAND parse_string_simd_max_256_test )
+add_dependencies( ci_tests parse_string_simd_max_256_test )
+add_dependencies( full parse_string_simd_max_256_test )
 
 add_executable( parse_string_simd_test src/parse_string_simd_test.cpp )
 target_link_libraries( parse_string_simd_test PRIVATE json_test )

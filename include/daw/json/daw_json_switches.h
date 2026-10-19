@@ -149,6 +149,17 @@
 #define DAW_JSON_HAS_BUILTIN_UADD
 #endif
 
+// DAW_JSON_HAS_FLOAT128 enables a binary128 power of ten table used when
+// scaling real numbers of types wider than double, e.g. user defined types
+// convertible to and from std::float128_t/__float128.  It is detected when one
+// of those types is available, and can be defined by the user.  Define
+// DAW_JSON_NO_FLOAT128 to disable it
+#if not defined( DAW_JSON_HAS_FLOAT128 ) and not defined( DAW_JSON_NO_FLOAT128 )
+#if defined( __STDCPP_FLOAT128_T__ ) or defined( __SIZEOF_FLOAT128__ )
+#define DAW_JSON_HAS_FLOAT128
+#endif
+#endif
+
 // DAW_JSON_BUGFIX_FROM_JSON_001
 // Defined for MSVC as it has been ICE'ing on daw_json_ensure in from_json
 #if defined( DAW_HAS_MSVC )
