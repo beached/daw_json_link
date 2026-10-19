@@ -1041,6 +1041,12 @@ add_test( test_json_iterator_test test_json_iterator )
 add_dependencies( ci_tests test_json_iterator )
 add_dependencies( full test_json_iterator )
 
+add_executable( runtime_zstring_test src/runtime_zstring_test.cpp )
+target_link_libraries( runtime_zstring_test PRIVATE json_test )
+add_test( runtime_zstring_test runtime_zstring_test )
+add_dependencies( ci_tests runtime_zstring_test )
+add_dependencies( full runtime_zstring_test )
+
 add_executable( test_json_sized_array src/test_json_sized_array.cpp )
 target_link_libraries( test_json_sized_array PRIVATE json_test )
 add_test( test_json_sized_array_test test_json_sized_array )
