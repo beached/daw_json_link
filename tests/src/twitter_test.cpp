@@ -125,10 +125,9 @@ inline namespace {
 		  sz,
 		  "twitter bench(hash comments)",
 		  [&twitter_result]( auto f1 ) {
-			  twitter_result =
-			    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
-			  daw::do_not_optimize( twitter_result,
-			                        parse_flags<ExecMode, PolicyCommentTypes::hash> );
+			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
+			    f1, parse_flags<ExecMode, PolicyCommentTypes::hash> );
+			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
 		daw::do_not_optimize( twitter_result );
@@ -189,10 +188,7 @@ inline namespace {
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t>(
 			    f1,
-			    parse_flags<ExecMode,
-			                CheckedParseMode::no,
-			                PolicyCommentTypes::cpp,
-			                AllowEscapedNames::yes> );
+			    parse_flags<ExecMode, CheckedParseMode::no, AllowEscapedNames::yes> );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
