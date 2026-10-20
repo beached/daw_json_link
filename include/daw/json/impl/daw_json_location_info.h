@@ -12,6 +12,7 @@
 
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_find_result.h"
+#include "daw/json/impl/daw_json_parse_name.h"
 
 #include <daw/daw_consteval.h>
 #include <daw/daw_likely.h>
@@ -133,6 +134,22 @@ namespace daw::json {
 			 */
 			enum class AllMembersMustExist { yes, no };
 
+			/// @brief Does the input start with the quoted expected name.  A name
+			/// ending in a backslash is left to parse_name as the quote after it
+			/// would be escaped
+			template<typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr bool
+			match_expected_name( ParseState const &parse_state,
+			                     daw::string_view expected ) {
+				auto const sz = std::size( expected );
+				return parse_state.size( ) > sz + 1U and
+				       parse_state.first[0] == '"' and
+				       parse_state.first[sz + 1U] == '"' and
+				       ( sz == 0 or expected[sz - 1U] != '\\' ) and
+				       std::char_traits<char>::compare(
+				         parse_state.first + 1, std::data( expected ), sz ) == 0;
+			}
+
 			template<std::size_t pos, AllMembersMustExist must_exist,
 			         bool from_start = false, std::size_t N, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr find_result<ParseState>
@@ -156,11 +173,23 @@ namespace daw::json {
 				while( nsc_and(
 				  locations[pos].missing( ),
 				  ( not parse_state.empty( ) and parse_state.front( ) != '}' ) ) ) {
-					// TODO: fully unescape name
-					// parse_name checks if we have more and are quotes
-					auto const name = parse_name( parse_state );
-					auto const name_pos =
-					  locations.template find_name<( from_start ? 0 : pos )>( name );
+					// Members usually arrive in mapped order, so try the expected name
+					// first.  Its size is known, so only the closing quote needs
+					// checking and the name does not need to be scanned
+					// name_pos is initialized for C++17 constexpr, the store is elided
+					std::size_t name_pos = std::size( locations );
+					if( auto const expected = locations[pos].name;
+					    match_expected_name( parse_state, expected ) ) {
+						parse_state.remove_prefix( std::size( expected ) + 2U );
+						name::name_parser::trim_end_of_name( parse_state );
+						name_pos = pos;
+					} else {
+						// TODO: fully unescape name
+						// parse_name checks if we have more and are quotes
+						auto const name = parse_name( parse_state );
+						name_pos =
+						  locations.template find_name<( from_start ? 0 : pos )>( name );
+					}
 					if constexpr( must_exist == AllMembersMustExist::yes ) {
 						daw_json_assert_weak( name_pos < std::size( locations ),
 						                      ErrorReason::UnknownMember,
