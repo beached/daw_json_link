@@ -96,8 +96,12 @@ namespace daw::json {
 					}
 				}
 #endif
-				constexpr explicit json_parse_array_iterator( parse_state_t &r )
-				  : base{ &r } {
+				/// @param size_hint expected element count, 0 when unknown.  Only used
+				/// to reserve, the elements are still parsed until the closing bracket
+				constexpr explicit json_parse_array_iterator( parse_state_t &r,
+				                                              std::size_t size_hint = 0 )
+				  : base{ &r }
+				  , m_size_hint( size_hint ) {
 					if( DAW_UNLIKELY( base::parse_state->front( ) == ']' ) ) {
 						if constexpr( not KnownBounds ) {
 							// Cleanup at end of value
@@ -185,6 +189,15 @@ namespace daw::json {
 					return not( lhs == rhs );
 				}
 
+				/// @brief Elements to reserve: the count when known, otherwise the
+				/// policy's ArrayReserve amount
+				[[nodiscard]] constexpr std::size_t size_hint( ) const {
+					if( m_size_hint != 0 ) {
+						return m_size_hint;
+					}
+					return ParseState::array_reserve_amount;
+				}
+
 				constexpr json_parse_array_iterator &begin( ) {
 					return *this;
 				}
@@ -192,7 +205,76 @@ namespace daw::json {
 				constexpr json_parse_array_iterator end( ) const {
 					return { };
 				}
+
+			private:
+				std::size_t m_size_hint = 0;
 			};
+
+#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+			/// @brief End of an array whose element count is known from skipping
+			/// it earlier.  With json_parse_array_counted_iterator it is a sized
+			/// sentinel, so std::from_range allocates once
+			struct json_parse_array_sized_end {};
+
+			/// @brief Array iterator that also tracks how many elements remain.
+			/// The end is still found by the parser, the count only sizes the
+			/// allocation
+			template<typename Iterator>
+			struct json_parse_array_counted_iterator {
+				using iterator_concept = std::input_iterator_tag;
+				using iterator_category = std::input_iterator_tag;
+				using value_type = typename Iterator::value_type;
+				using reference = typename Iterator::reference;
+				using difference_type = std::ptrdiff_t;
+
+				Iterator m_iterator{ };
+				difference_type m_remaining = 0;
+
+				json_parse_array_counted_iterator( ) = default;
+
+				explicit constexpr json_parse_array_counted_iterator(
+				  Iterator it, difference_type count )
+				  : m_iterator( std::move( it ) )
+				  , m_remaining( count ) {}
+
+				DAW_ATTRIB_INLINE constexpr reference operator*( ) {
+					return *m_iterator;
+				}
+
+				DAW_ATTRIB_INLINE constexpr reference operator*( ) const {
+					return *m_iterator;
+				}
+
+				DAW_ATTRIB_INLINE constexpr json_parse_array_counted_iterator &
+				operator++( ) {
+					++m_iterator;
+					--m_remaining;
+					return *this;
+				}
+
+				DAW_ATTRIB_INLINE constexpr void operator++( int ) {
+					(void)operator++( );
+				}
+
+				friend constexpr bool
+				operator==( json_parse_array_counted_iterator const &it,
+				            json_parse_array_sized_end ) {
+					return it.m_iterator == Iterator( );
+				}
+
+				friend constexpr difference_type
+				operator-( json_parse_array_sized_end,
+				           json_parse_array_counted_iterator const &it ) {
+					return it.m_remaining;
+				}
+
+				friend constexpr difference_type
+				operator-( json_parse_array_counted_iterator const &it,
+				           json_parse_array_sized_end ) {
+					return -it.m_remaining;
+				}
+			};
+#endif
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

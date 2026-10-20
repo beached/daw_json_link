@@ -1191,6 +1191,12 @@ add_test( NAME issue_357_test_test COMMAND issue_357_test )
 add_dependencies( ci_tests issue_357_test )
 add_dependencies( full issue_357_test )
 
+add_executable( array_size_hint_test src/array_size_hint_test.cpp )
+target_link_libraries( array_size_hint_test json_test )
+add_test( NAME array_size_hint_test COMMAND array_size_hint_test )
+add_dependencies( ci_tests array_size_hint_test )
+add_dependencies( full array_size_hint_test )
+
 add_executable( issue_359_test src/issue_359_test.cpp )
 target_link_libraries( issue_359_test json_test )
 add_test( NAME issue_359_test_test COMMAND issue_359_test )

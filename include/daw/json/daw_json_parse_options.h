@@ -162,6 +162,20 @@ namespace daw::json {
 				/// default: no
 				///
 				enum class ExcludeSpecialEscapes : unsigned { no, yes }; // 1bit
+
+				///
+				/// @brief Elements to reserve up front for arrays parsed into
+				/// std::vector when their size is not known.  Arrays that were
+				/// skipped before being parsed reserve their exact size instead.
+				///
+				/// default: none
+				///
+				enum class ArrayReserve : unsigned {
+					none,
+					elements_128,
+					elements_512,
+					elements_1024
+				}; // 4bits
 			} // namespace parser_options
 		} // namespace options
 	} // namespace DAW_JSON_VER

@@ -187,7 +187,12 @@ namespace daw::json {
 					                      parse_state );
 					parse_state.remove_prefix( );
 				} else {
-					(void)parse_state.skip_class( );
+					// Usually every member has been parsed and we are at the end
+					if( parse_state.has_more( ) and parse_state.front( ) == '}' ) {
+						parse_state.remove_prefix( );
+					} else {
+						(void)parse_state.skip_class( );
+					}
 					// Yes this must be checked.  We maybe at the end of document. After
 					// the 2nd try, give up
 				}

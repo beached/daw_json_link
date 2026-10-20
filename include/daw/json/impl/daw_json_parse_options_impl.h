@@ -150,6 +150,14 @@ namespace daw::json {
 			  default_json_option_value<options::ExpectLongNames> =
 			    options::ExpectLongNames::no;
 
+			template<>
+			inline constexpr unsigned json_option_bits_width<options::ArrayReserve> =
+			  4;
+
+			template<>
+			inline constexpr auto default_json_option_value<options::ArrayReserve> =
+			  options::ArrayReserve::none;
+
 			/*
 			template<>
 			inline constexpr unsigned
@@ -177,7 +185,7 @@ namespace daw::json {
 			  options::IEEE754Precise, options::ForceFullNameCheck,
 			  options::MinifiedDocument, options::UseExactMappingsByDefault,
 			  options::MustVerifyEndOfDataIsValid, options::ExcludeSpecialEscapes,
-			  options::ExpectLongNames>::type;
+			  options::ExpectLongNames, options::ArrayReserve>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =

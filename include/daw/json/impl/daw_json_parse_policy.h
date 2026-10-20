@@ -140,6 +140,23 @@ namespace daw::json {
 			  json_details::get_bits_for<options::ExpectLongNames>( PolicyFlags ) ==
 			  options::ExpectLongNames::yes;
 
+			/// @brief Elements to reserve for arrays of unknown size, see
+			/// options::ArrayReserve
+			static constexpr std::size_t array_reserve_amount = [] {
+				switch( json_details::get_bits_for<options::ArrayReserve>(
+				  PolicyFlags ) ) {
+				case options::ArrayReserve::none:
+					return std::size_t{ 0 };
+				case options::ArrayReserve::elements_128:
+					return std::size_t{ 128 };
+				case options::ArrayReserve::elements_512:
+					return std::size_t{ 512 };
+				case options::ArrayReserve::elements_1024:
+					return std::size_t{ 1024 };
+				}
+				return std::size_t{ 0 };
+			}( );
+
 			using CommentPolicy =
 			  switch_t<json_details::get_bits_for<options::PolicyCommentTypes,
 			                                      std::size_t>( PolicyFlags ),
