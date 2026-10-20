@@ -1339,6 +1339,7 @@ namespace daw::json {
 			inline constexpr std::size_t estimated_json_width_v = [] {
 				using value_t = json_result_t<JsonElement>;
 				constexpr auto type = JsonElement::expected_type;
+				(void)type;
 				if constexpr( type == JsonParseTypes::Signed ) {
 					// digits and the sign
 					return static_cast<std::size_t>( daw::digits10<value_t> ) + 2U;
