@@ -1871,6 +1871,109 @@ namespace daw::json {
 				}
 			}
 
+			/// Write `significand * 10^exponent` in fixed notation.  The
+			/// significand's digits are converted once, filling backwards from
+			/// its known length, then copied out around the decimal point.  This
+			/// needs no division by a runtime power of ten and keeps the leading
+			/// zeroes of the fraction, so they need not be counted.
+			///
+			///   whole_dig > 0   ddd.ddd      digits split at whole_dig
+			///   whole_dig <= 0  0.000ddd     -whole_dig zeroes after the point
+			///   exponent >= 0   ddd000       exponent zeroes, ".0" in Decimal mode
+			///
+			/// `decimal_places` pads the fraction with zeroes when Precision is set
+			/// in Decimal mode.
+			template<options::FPOutputFormat fp_output_format, unsigned Precision,
+			         typename UInt, typename WriteableType>
+			constexpr WriteableType
+			write_fixed_notation( WriteableType out_it, UInt significand,
+			                      std::int32_t exponent, unsigned digit_values,
+			                      unsigned decimal_places ) {
+				static_assert( daw::is_unsigned_v<UInt> );
+				// Large enough for the digits of any unsigned 64bit significand
+				char digits[24]{ };
+				char *const digits_last = digits + digit_values;
+				{
+					char *ptr = digits_last;
+					while( significand >= 100U ) {
+						auto const tmp = static_cast<std::size_t>( significand % 100U );
+						significand /= 100U;
+						ptr -= 2;
+						// digits100 holds each pair low digit first
+						ptr[0] = digits100[tmp][1];
+						ptr[1] = digits100[tmp][0];
+					}
+					if( significand >= 10U ) {
+						ptr -= 2;
+						ptr[0] = digits100[static_cast<std::size_t>( significand )][1];
+						ptr[1] = digits100[static_cast<std::size_t>( significand )][0];
+					} else {
+						*--ptr = static_cast<char>( '0' + static_cast<char>( significand ) );
+					}
+				}
+				auto const put_zeros = [&]( std::size_t count ) {
+					constexpr char zeros[] = "00000000000000000000000000000000";
+					constexpr std::size_t zeros_size = sizeof( zeros ) - 1U;
+					while( count > zeros_size ) {
+						out_it.copy_buffer( zeros, zeros + zeros_size );
+						count -= zeros_size;
+					}
+					out_it.copy_buffer( zeros, zeros + count );
+				};
+				auto const pad_fraction = [&] {
+					if constexpr( Precision != daw::max_value<unsigned> ) {
+						auto const fraction_digits = static_cast<unsigned>( -exponent );
+						if( fraction_digits < decimal_places ) {
+							put_zeros( decimal_places - fraction_digits );
+						}
+					}
+				};
+
+				if( exponent >= 0 ) {
+					out_it.copy_buffer( digits, digits_last );
+					put_zeros( static_cast<std::size_t>( exponent ) );
+					if constexpr( fp_output_format == options::FPOutputFormat::Decimal ) {
+						if constexpr( Precision == daw::max_value<unsigned> ) {
+							out_it.write( ".0" );
+						} else {
+							if( decimal_places != 0 ) {
+								out_it.put( '.' );
+								put_zeros( decimal_places );
+							}
+						}
+					}
+					return out_it;
+				}
+				auto const whole_dig = static_cast<std::int32_t>( digit_values ) + exponent;
+				if( whole_dig <= 0 ) {
+					out_it.write( "0." );
+					put_zeros( static_cast<std::size_t>( -whole_dig ) );
+					out_it.copy_buffer( digits, digits_last );
+					pad_fraction( );
+					return out_it;
+				}
+				char const *const point = digits + whole_dig;
+				out_it.copy_buffer( digits, point );
+				out_it.put( '.' );
+				out_it.copy_buffer( point, digits_last );
+				pad_fraction( );
+				return out_it;
+			}
+
+			/// Auto is the default and mostly takes the scientific path for
+			/// arbitrary values.  Inlining the fixed path there made gcc optimize
+			/// the rest of to_chars less well, so keep it out of line
+			template<options::FPOutputFormat fp_output_format, unsigned Precision,
+			         typename UInt, typename WriteableType>
+			DAW_ATTRIB_NOINLINE constexpr WriteableType
+			write_fixed_notation_noinline( WriteableType out_it, UInt significand,
+			                               std::int32_t exponent,
+			                               unsigned digit_values,
+			                               unsigned decimal_places ) {
+				return write_fixed_notation<fp_output_format, Precision>(
+				  out_it, significand, exponent, digit_values, decimal_places );
+			}
+
 			/// Convert a finite floating-point value to JSON number text.
 			///
 			/// Dragonbox first produces an unsigned decimal representation where
@@ -2009,9 +2112,6 @@ namespace daw::json {
 				  daw::jkj::dragonbox::to_chars_detail::decimal_length(
 				    dec.significand );
 
-				auto whole_dig =
-				  static_cast<std::int32_t>( digit_values ) + dec.exponent;
-
 				auto const br = [&] {
 					if constexpr( std::is_same_v<Real, float> ) {
 						return daw::jkj::dragonbox::ieee754_bits( value );
@@ -2076,6 +2176,8 @@ namespace daw::json {
 					return out_it;
 				} else if constexpr( fp_output_format ==
 				                     options::FPOutputFormat::Auto ) {
+					auto const whole_dig =
+					  static_cast<std::int32_t>( digit_values ) + dec.exponent;
 					if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
 						char buff[50]{ };
 						char *ptr = buff;
@@ -2085,73 +2187,15 @@ namespace daw::json {
 						return out_it;
 					}
 				}
-				if( dec.exponent < 0 ) {
-					if( whole_dig < 0 ) {
-						out_it.write( "0." );
-						do {
-							out_it.put( '0' );
-							++whole_dig;
-						} while( whole_dig < 0 );
-						out_it = utils::integer_to_string( out_it, dec.significand );
-						if constexpr( Precision != daw::max_value<unsigned> ) {
-							for( auto n = static_cast<unsigned>( -dec.exponent );
-							     n < decimal_places;
-							     ++n ) {
-								out_it.put( '0' );
-							}
-						}
-						return out_it;
-					}
-					// TODO allow for decimal output for all
-					auto const p1pow =
-					  daw::cxmath::pow10( static_cast<std::size_t>( -dec.exponent ) );
-					auto const p1val = dec.significand / p1pow;
-					out_it = utils::integer_to_string( out_it, p1val );
-					if( p1pow == 1 ) {
-						return out_it;
-					}
-					out_it.put( '.' );
-					auto const p2val = dec.significand - ( p1val * p1pow );
-					// ensure we account for leading zeros
-					{
-						auto const l10_p1val = daw::cxmath::count_digits( p1val );
-						auto const l10_p2val = daw::cxmath::count_digits( p2val );
-						auto const extra_zeros =
-						  static_cast<int>( digit_values ) - ( l10_p2val + l10_p1val );
-						for( int n = 0; n < extra_zeros; ++n ) {
-							out_it.put( '0' );
-						}
-					}
-					out_it = utils::integer_to_string( out_it, p2val );
-					if constexpr( Precision != daw::max_value<unsigned> ) {
-						for( auto n = static_cast<unsigned>( -dec.exponent );
-						     n < decimal_places;
-						     ++n ) {
-							out_it.put( '0' );
-						}
-					}
-					return out_it;
+				if constexpr( fp_output_format == options::FPOutputFormat::Auto ) {
+					return write_fixed_notation_noinline<fp_output_format, Precision>(
+					  out_it, dec.significand, dec.exponent, digit_values,
+					  decimal_places );
+				} else {
+					return write_fixed_notation<fp_output_format, Precision>(
+					  out_it, dec.significand, dec.exponent, digit_values,
+					  decimal_places );
 				}
-				out_it = utils::integer_to_string( out_it, dec.significand );
-
-				while( dec.exponent > 0 ) {
-					out_it.put( '0' );
-					--dec.exponent;
-				}
-				if( fp_output_format == options::FPOutputFormat::Decimal ) {
-					if constexpr( Precision == daw::max_value<unsigned> ) {
-						out_it.put( '.' );
-						out_it.put( '0' );
-					} else {
-						if( decimal_places != 0 ) {
-							out_it.put( '.' );
-							for( unsigned n = 0; n < decimal_places; ++n ) {
-								out_it.put( '0' );
-							}
-						}
-					}
-				}
-				return out_it;
 			}
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
