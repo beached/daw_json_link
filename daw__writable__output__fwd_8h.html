@@ -84,6 +84,9 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="version_8h_source.html">daw/json/impl/version.h</a>&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
 </div>
 <p><a href="daw__writable__output__fwd_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -111,12 +114,20 @@ Functions</h2></td></tr>
 <tr class="memitem:a2c5f65a3b3fcfdb334cdd53e1efb67f3" id="r_a2c5f65a3b3fcfdb334cdd53e1efb67f3"><td class="memTemplParams" colspan="2">template&lt;typename WritableOutput , typename CharT &gt; </td></tr>
 <tr class="memitem:a2c5f65a3b3fcfdb334cdd53e1efb67f3"><td class="memTemplItemLeft" align="right" valign="top">constexpr WritableOutput &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03.html#a2c5f65a3b3fcfdb334cdd53e1efb67f3">daw::json::anonymous_namespace{daw_writable_output_fwd.h}::put_output</a> (WritableOutput &amp;out, CharT c)</td></tr>
 <tr class="separator:a2c5f65a3b3fcfdb334cdd53e1efb67f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86d22cd560e1d4109e562a59789f5c40" id="r_a86d22cd560e1d4109e562a59789f5c40"><td class="memTemplParams" colspan="2">template&lt;typename WritableOutput &gt; </td></tr>
+<tr class="memitem:a86d22cd560e1d4109e562a59789f5c40"><td class="memTemplItemLeft" align="right" valign="top">constexpr WritableOutput &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03.html#a86d22cd560e1d4109e562a59789f5c40">daw::json::anonymous_namespace{daw_writable_output_fwd.h}::reserve_output</a> (WritableOutput &amp;out, std::size_t n)</td></tr>
+<tr class="memdesc:a86d22cd560e1d4109e562a59789f5c40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hint that about n more bytes will be written. Outputs without a reserve ignore it, and writes still check their own room.  <br /></td></tr>
+<tr class="separator:a86d22cd560e1d4109e562a59789f5c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38f107ef1fc17f1ecb0eeabdba13409f" id="r_a38f107ef1fc17f1ecb0eeabdba13409f"><td class="memTemplParams" colspan="2">template&lt;typename WritableOutput , typename... StringViews&gt; </td></tr>
 <tr class="memitem:a38f107ef1fc17f1ecb0eeabdba13409f"><td class="memTemplItemLeft" align="right" valign="top">constexpr WritableOutput &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03.html#a38f107ef1fc17f1ecb0eeabdba13409f">daw::json::anonymous_namespace{daw_writable_output_fwd.h}::write_output</a> (WritableOutput &amp;out, StringViews const &amp;...svs)</td></tr>
 <tr class="separator:a38f107ef1fc17f1ecb0eeabdba13409f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
+<tr class="memitem:acd6569db240421ed5d8067c042ed8eee" id="r_acd6569db240421ed5d8067c042ed8eee"><td class="memTemplParams" colspan="2">template&lt;typename WritableOutput , typename  = void&gt; </td></tr>
+<tr class="memitem:acd6569db240421ed5d8067c042ed8eee"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03_1_1concepts.html#acd6569db240421ed5d8067c042ed8eee">daw::json::anonymous_namespace{daw_writable_output_fwd.h}::concepts::has_output_reserve_v</a> = false</td></tr>
+<tr class="memdesc:acd6569db240421ed5d8067c042ed8eee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writable outputs may optionally have a static reserve( T &amp;, std::size_t ) to make room for that many more bytes.  <br /></td></tr>
+<tr class="separator:acd6569db240421ed5d8067c042ed8eee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb13dc08915783d58ab653fa5e5d2539" id="r_abb13dc08915783d58ab653fa5e5d2539"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:abb13dc08915783d58ab653fa5e5d2539"><td class="memTemplItemLeft" align="right" valign="top">DAW_CPP20_CONCEPT&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03_1_1concepts.html#abb13dc08915783d58ab653fa5e5d2539">daw::json::anonymous_namespace{daw_writable_output_fwd.h}::concepts::is_writable_output_type_v</a></td></tr>
 <tr class="separator:abb13dc08915783d58ab653fa5e5d2539"><td class="memSeparator" colspan="2">&#160;</td></tr>

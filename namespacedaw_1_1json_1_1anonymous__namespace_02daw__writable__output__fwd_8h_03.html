@@ -91,6 +91,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a2c5f65a3b3fcfdb334cdd53e1efb67f3" id="r_a2c5f65a3b3fcfdb334cdd53e1efb67f3"><td class="memTemplParams" colspan="2">template&lt;typename WritableOutput , typename CharT &gt; </td></tr>
 <tr class="memitem:a2c5f65a3b3fcfdb334cdd53e1efb67f3"><td class="memTemplItemLeft" align="right" valign="top">constexpr WritableOutput &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03.html#a2c5f65a3b3fcfdb334cdd53e1efb67f3">put_output</a> (WritableOutput &amp;out, CharT c)</td></tr>
 <tr class="separator:a2c5f65a3b3fcfdb334cdd53e1efb67f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86d22cd560e1d4109e562a59789f5c40" id="r_a86d22cd560e1d4109e562a59789f5c40"><td class="memTemplParams" colspan="2">template&lt;typename WritableOutput &gt; </td></tr>
+<tr class="memitem:a86d22cd560e1d4109e562a59789f5c40"><td class="memTemplItemLeft" align="right" valign="top">constexpr WritableOutput &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03.html#a86d22cd560e1d4109e562a59789f5c40">reserve_output</a> (WritableOutput &amp;out, std::size_t n)</td></tr>
+<tr class="memdesc:a86d22cd560e1d4109e562a59789f5c40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hint that about n more bytes will be written. Outputs without a reserve ignore it, and writes still check their own room.  <br /></td></tr>
+<tr class="separator:a86d22cd560e1d4109e562a59789f5c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38f107ef1fc17f1ecb0eeabdba13409f" id="r_a38f107ef1fc17f1ecb0eeabdba13409f"><td class="memTemplParams" colspan="2">template&lt;typename WritableOutput , typename... StringViews&gt; </td></tr>
 <tr class="memitem:a38f107ef1fc17f1ecb0eeabdba13409f"><td class="memTemplItemLeft" align="right" valign="top">constexpr WritableOutput &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__writable__output__fwd_8h_03.html#a38f107ef1fc17f1ecb0eeabdba13409f">write_output</a> (WritableOutput &amp;out, StringViews const &amp;...svs)</td></tr>
 <tr class="separator:a38f107ef1fc17f1ecb0eeabdba13409f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -132,7 +136,49 @@ template&lt;typename WritableOutput , typename CharT &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__writable__output__fwd_8h_source.html#l00040">40</a> of file <a class="el" href="daw__writable__output__fwd_8h_source.html">daw_writable_output_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__writable__output__fwd_8h_source.html#l00044">44</a> of file <a class="el" href="daw__writable__output__fwd_8h_source.html">daw_writable_output_fwd.h</a>.</p>
+
+</div>
+</div>
+<a id="a86d22cd560e1d4109e562a59789f5c40" name="a86d22cd560e1d4109e562a59789f5c40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86d22cd560e1d4109e562a59789f5c40">&#9670;&#160;</a></span>reserve_output()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename WritableOutput &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr WritableOutput &amp; daw::json::anonymous_namespace{daw_writable_output_fwd.h}::reserve_output </td>
+          <td>(</td>
+          <td class="paramtype">WritableOutput &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Hint that about n more bytes will be written. Outputs without a reserve ignore it, and writes still check their own room. </p>
+
+<p class="definition">Definition at line <a class="el" href="daw__writable__output__fwd_8h_source.html#l00065">65</a> of file <a class="el" href="daw__writable__output__fwd_8h_source.html">daw_writable_output_fwd.h</a>.</p>
 
 </div>
 </div>
@@ -172,7 +218,7 @@ template&lt;typename WritableOutput , typename... StringViews&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="daw__writable__output__fwd_8h_source.html#l00033">33</a> of file <a class="el" href="daw__writable__output__fwd_8h_source.html">daw_writable_output_fwd.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="daw__writable__output__fwd_8h_source.html#l00037">37</a> of file <a class="el" href="daw__writable__output__fwd_8h_source.html">daw_writable_output_fwd.h</a>.</p>
 
 </div>
 </div>
