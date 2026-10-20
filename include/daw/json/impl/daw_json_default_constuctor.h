@@ -36,6 +36,21 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool is_std_allocator_v<std::allocator<T>> = true;
+
+			/// @brief Element count hint from an array iterator, 0 when unknown.
+			/// It is only a hint for reserving, never a trusted size
+			template<typename Iterator>
+			DAW_ATTRIB_INLINE constexpr auto array_size_hint( Iterator const &it,
+			                                                  int )
+			  -> decltype( static_cast<std::size_t>( it.size_hint( ) ) ) {
+				return static_cast<std::size_t>( it.size_hint( ) );
+			}
+
+			template<typename Iterator>
+			DAW_ATTRIB_INLINE constexpr std::size_t
+			array_size_hint( Iterator const &, long ) {
+				return 0;
+			}
 		} // namespace json_details
 
 		/// @brief Default constructor type for std::array and allows (Iterator,
@@ -88,6 +103,15 @@ namespace daw::json {
 
 #if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
 		namespace json_details {
+			/// @brief The std::vector default constructor builds with
+			/// std::from_range, so it accepts an iterator and a sized sentinel
+			template<typename>
+			inline constexpr bool is_vector_default_constructor_v = false;
+
+			template<typename T, typename Alloc>
+			inline constexpr bool is_vector_default_constructor_v<
+			  default_constructor<std::vector<T, Alloc>>> = true;
+
 			template<typename F, typename L>
 			struct iter_range_t {
 				F first;
@@ -105,13 +129,21 @@ namespace daw::json {
 				[[nodiscard]] constexpr L end( ) const noexcept {
 					return last;
 				}
+
+				/// ranges::size only uses end - begin for forward iterators, so an
+				/// input iterator with a sized sentinel needs this to be a sized_range
+				[[nodiscard]] constexpr std::size_t size( ) const
+				  requires( std::sized_sentinel_for<L, F> ) {
+					return static_cast<std::size_t>( last - first );
+				}
 			};
 			template<typename F, typename L>
 			iter_range_t( F, L ) -> iter_range_t<F, L>;
 		} // namespace json_details
 
-		/// @brief Default constructor type for std::vector.  It will reserve up
-		/// front for non-random iterators
+		/// @brief Default constructor type for std::vector.  For non-random
+		/// iterators it reserves the known element count, or the ArrayReserve
+		/// parse option when the count is unknown
 		template<typename T, typename Alloc>
 		struct default_constructor<std::vector<T, Alloc>> {
 			DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING
@@ -135,11 +167,12 @@ namespace daw::json {
 					  json_details::iter_range_t{ std::move( first ), std::move( last ) },
 					  alloc );
 				} else {
-					using reserve_amount = daw::constant<
-					  ( 4096U / sizeof( T ) ) == 0 ? 1 : ( 4096U / sizeof( T ) )>;
 					auto result = std::vector<T, Alloc>( alloc );
-					// Lets use a WAG and go for a 4k page size
-					result.reserve( reserve_amount::value );
+					// The known element count, or the ArrayReserve parse option
+					if( auto const hint = json_details::array_size_hint( first, 0 );
+					    hint != 0 ) {
+						result.reserve( hint );
+					}
 					result.assign_range( json_details::iter_range_t{
 					  std::move( first ), std::move( last ) } );
 					return result;
@@ -149,8 +182,9 @@ namespace daw::json {
 		};
 
 #else
-		/// @brief Default constructor type for std::vector.  It will reserve up
-		/// front for non-random iterators
+		/// @brief Default constructor type for std::vector.  For non-random
+		/// iterators it reserves the known element count, or the ArrayReserve
+		/// parse option when the count is unknown
 		template<typename T, typename Alloc>
 		struct default_constructor<std::vector<T, Alloc>> {
 			DAW_JSON_CPP23_STATIC_CALL_OP_DISABLE_WARNING
@@ -174,10 +208,12 @@ namespace daw::json {
 					return std::vector<T, Alloc>(
 					  std::move( first ), std::move( last ), alloc );
 				} else {
-					using reserve_amount = daw::constant<4096U / ( sizeof( T ) * 8U )>;
 					auto result = std::vector<T, Alloc>( alloc );
-					// Lets use a WAG and go for a 4k page size
-					result.reserve( reserve_amount::value );
+					// The known element count, or the ArrayReserve parse option
+					if( auto const hint = json_details::array_size_hint( first, 0 );
+					    hint != 0 ) {
+						result.reserve( hint );
+					}
 					result.assign( std::move( first ), std::move( last ) );
 					return result;
 				}

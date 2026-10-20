@@ -745,8 +745,44 @@ namespace daw::json {
 				                            ParseState,
 				                            can_be_random_iterator_v<KnownBounds>>;
 				using constructor_t = json_constructor_t<JsonMember>;
+#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+				if constexpr( KnownBounds and
+				              is_vector_default_constructor_v<constructor_t> ) {
+					// A counter above 0 only comes from skipping this array, so it is
+					// the exact top level comma count.  Known bounds without a skip,
+					// e.g. from_json<T, true>, leave it at 0
+					if( parse_state.counter > 0 ) {
+						using counted_iterator_t =
+						  json_parse_array_counted_iterator<iterator_t>;
+						static_assert( std::ranges::sized_range<
+						               iter_range_t<counted_iterator_t,
+						                            json_parse_array_sized_end>> );
+						return construct_value<json_result_t<JsonMember>, constructor_t>(
+						  parse_state,
+						  counted_iterator_t(
+						    iterator_t( parse_state ),
+						    static_cast<std::ptrdiff_t>( parse_state.counter + 1U ) ),
+						  json_parse_array_sized_end{ } );
+					}
+				}
+#endif
+				auto size_hint = std::size_t{ 0 };
+				if constexpr( KnownBounds ) {
+					// When the array was skipped earlier, counter holds its top level
+					// comma count.  It is only a hint, as a caller can pass known bounds
+					// without having skipped it.  Each element needs at least one
+					// character and a separator, so the bytes left bound it
+					if( parse_state.has_more( ) and parse_state.front( ) != ']' ) {
+						auto const max_elements =
+						  static_cast<std::size_t>( parse_state.last - parse_state.first ) /
+						  2U;
+						size_hint = parse_state.counter < max_elements
+						              ? parse_state.counter + 1U
+						              : max_elements;
+					}
+				}
 				return construct_value<json_result_t<JsonMember>, constructor_t>(
-				  parse_state, iterator_t( parse_state ), iterator_t( ) );
+				  parse_state, iterator_t( parse_state, size_hint ), iterator_t( ) );
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>

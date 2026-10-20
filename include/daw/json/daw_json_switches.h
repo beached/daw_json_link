@@ -276,7 +276,7 @@
 #endif
 
 #if defined( __cpp_lib_containers_ranges )
-#if __cpp_lib_containers_ranges > 202202L
+#if __cpp_lib_containers_ranges >= 202202L
 #define DAW_JSON_HAS_CPP23_RANGE_CTOR
 #endif
 #endif

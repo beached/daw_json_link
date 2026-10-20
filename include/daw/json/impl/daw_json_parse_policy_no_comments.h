@@ -155,8 +155,11 @@ namespace daw::json {
 				using SecRight = daw::constant<SecLeft::value == '{' ? '}' : ']'>;
 
 				// Not checking for Left as it is required to be skipped already
-				auto ptr_first = daw::not_null<char const *>( parse_state.first );
-				auto const ptr_last = daw::not_null<char const *>( parse_state.last );
+				char const *ptr_first = parse_state.first;
+				char const *const ptr_last = parse_state.last;
+				// A null range is a logic error, not bad input
+				daw_json_dbg_ensure( ptr_first != nullptr and ptr_last != nullptr,
+				                     ErrorReason::InvalidNull );
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return parse_state;
 				}
@@ -198,9 +201,9 @@ namespace daw::json {
 							daw_json_ensure( second_bracket_count == 0,
 							                 ErrorReason::InvalidBracketing,
 							                 parse_state );
-							result.last = json_details::input_pointer( result.first, ptr_first.get( ) );
+							result.last = json_details::input_pointer( result.first, ptr_first );
 							result.counter = cnt;
-							parse_state.first = json_details::input_pointer( parse_state.first, ptr_first.get( ) );
+							parse_state.first = json_details::input_pointer( parse_state.first, ptr_first );
 							return result;
 						}
 						break;
@@ -219,9 +222,9 @@ namespace daw::json {
 				                 parse_state );
 				// We include the close primary bracket in the range so that subsequent
 				// parsers have a terminator inside their range
-				result.last = json_details::input_pointer( result.first, ptr_first.get( ) );
+				result.last = json_details::input_pointer( result.first, ptr_first );
 				result.counter = cnt;
-				parse_state.first = json_details::input_pointer( parse_state.first, ptr_first.get( ) );
+				parse_state.first = json_details::input_pointer( parse_state.first, ptr_first );
 				return result;
 			}
 
@@ -240,8 +243,11 @@ namespace daw::json {
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				auto ptr_first = daw::not_null<char const *>( parse_state.first );
-				auto const ptr_last = daw::not_null<char const *>( parse_state.last );
+				char const *ptr_first = parse_state.first;
+				char const *const ptr_last = parse_state.last;
+				// A null range is a logic error, not bad input
+				daw_json_dbg_ensure( ptr_first != nullptr and ptr_last != nullptr,
+				                     ErrorReason::InvalidNull );
 
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
@@ -272,9 +278,9 @@ namespace daw::json {
 							++ptr_first;
 							// We include the close primary bracket in the range so that
 							// subsequent parsers have a terminator inside their range
-							result.last = json_details::input_pointer( result.first, ptr_first.get( ) );
+							result.last = json_details::input_pointer( result.first, ptr_first );
 							result.counter = cnt;
-							parse_state.first = json_details::input_pointer( parse_state.first, ptr_first.get( ) );
+							parse_state.first = json_details::input_pointer( parse_state.first, ptr_first );
 							return result;
 						}
 						break;
