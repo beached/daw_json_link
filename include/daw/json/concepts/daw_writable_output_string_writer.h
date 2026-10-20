@@ -15,8 +15,10 @@
 #include "daw/json/daw_json_switches.h"
 
 #include <daw/cpp_20.h>
+#include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_is_constant_evaluated.h>
+#include <daw/daw_likely.h>
 #include <daw/daw_string_view.h>
 
 #include <algorithm>
@@ -46,8 +48,12 @@ namespace daw::json {
 			std::string m_str{ };
 			std::size_t m_size = 0;
 
-			DAW_CPP20_CX_ALLOC void grow( std::size_t needed ) {
-				auto const n = ( std::max )( m_str.size( ) * 2, needed );
+			/// Out of line so the room check in reserve( ) stays small enough to
+			/// inline into every put and write.  Starting from the string's own
+			/// capacity means small outputs stay in the SSO buffer
+			DAW_ATTRIB_NOINLINE DAW_CPP20_CX_ALLOC2 void grow( std::size_t needed ) {
+				auto const n = ( std::max )(
+				  { m_str.size( ) * 2, m_str.capacity( ), needed } );
 #if defined( DAW_JSON_STRING_WRITER_SKIPS_ZERO_FILL )
 				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
 					m_str.resize_and_overwrite(
@@ -69,24 +75,25 @@ namespace daw::json {
 			}
 
 			/// @brief Room for n more bytes; commit( ) them once written
-			[[nodiscard]] DAW_CPP20_CX_ALLOC char *reserve( std::size_t n ) {
-				if( m_str.size( ) - m_size < n ) {
+			[[nodiscard]] DAW_ATTRIB_INLINE DAW_CPP20_CX_ALLOC2 char *
+			reserve( std::size_t n ) {
+				if( DAW_UNLIKELY( m_str.size( ) - m_size < n ) ) {
 					grow( m_size + n );
 				}
 				return m_str.data( ) + m_size;
 			}
 
-			DAW_CPP20_CX_ALLOC void commit( std::size_t n ) {
+			DAW_ATTRIB_INLINE DAW_CPP20_CX_ALLOC2 void commit( std::size_t n ) {
 				m_size += n;
 			}
 
-			DAW_CPP20_CX_ALLOC void write( daw::string_view text ) {
+			DAW_ATTRIB_INLINE DAW_CPP20_CX_ALLOC2 void write( daw::string_view text ) {
 				(void)concepts::writeable_output_details::copy_to_buffer(
 				  reserve( text.size( ) ), text );
 				commit( text.size( ) );
 			}
 
-			DAW_CPP20_CX_ALLOC void put( char c ) {
+			DAW_ATTRIB_INLINE DAW_CPP20_CX_ALLOC2 void put( char c ) {
 				*reserve( 1 ) = c;
 				commit( 1 );
 			}
@@ -131,6 +138,12 @@ namespace daw::json {
 
 				static DAW_CPP20_CX_ALLOC void put( string_writer &out, char c ) {
 					out.put( c );
+				}
+
+				/// Room for at least n more bytes
+				static DAW_CPP20_CX_ALLOC void reserve( string_writer &out,
+				                                        std::size_t n ) {
+					(void)out.reserve( n );
 				}
 			};
 		} // namespace concepts

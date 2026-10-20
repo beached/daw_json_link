@@ -16,7 +16,10 @@
 #include <daw/daw_character_traits.h>
 #include <daw/daw_string_view.h>
 
+#include <cstddef>
 #include <cstdio>
+#include <type_traits>
+#include <utility>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -36,6 +39,16 @@ namespace daw::json {
 				}
 				return buff + source.size( );
 			}
+
+			/// Containers that can report capacity and reserve ahead of writes
+			template<typename T, typename = void>
+			inline constexpr bool has_capacity_reserve_v = false;
+
+			template<typename T>
+			inline constexpr bool has_capacity_reserve_v<
+			  T, std::void_t<decltype( std::declval<T &>( ).capacity( ) ),
+			                 decltype( std::declval<T &>( ).reserve(
+			                   std::size_t{ } ) )>> = true;
 
 			template<typename T>
 			DAW_CPP20_CONCEPT is_byte_type_v =

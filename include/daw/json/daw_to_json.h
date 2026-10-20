@@ -95,11 +95,9 @@ namespace daw::json {
 		DAW_CPP20_CX_ALLOC std::string
 		to_json( Value const &value,
 		         options::output_flags_t<PolicyFlags...> flgs ) {
-			auto out = string_writer( 4096 );
+			auto out = string_writer( );
 			(void)to_json<JsonClass>( value, out, flgs );
-			auto result = std::move( out ).finish( );
-			result.shrink_to_fit( );
-			return result;
+			return std::move( out ).finish( );
 		}
 
 		namespace json_details {
@@ -159,6 +157,10 @@ namespace daw::json {
 
 				auto out_it =
 				  json_details::make_output_iterator<PolicyFlags...>( DAW_FWD( it ) );
+				json_details::reserve_array_output<
+				  json_details::json_serialize_deduced_type<
+				    JsonElement, daw::remove_cvref_t<decltype( *std::begin( c ) )>>>(
+				  out_it, c );
 				out_it.put( '[' );
 				out_it.add_indent( );
 				// Not const & as some types(vector<bool>::const_reference are not ref
@@ -203,11 +205,9 @@ namespace daw::json {
 		to_json_array( Container const &c,
 		               options::output_flags_t<PolicyFlags...> flgs ) {
 			static_assert( not std::is_same_v<std::string, JsonElement> );
-			auto out = string_writer( 4096 );
+			auto out = string_writer( );
 			(void)to_json_array<JsonElement>( c, out, flgs );
-			auto result = std::move( out ).finish( );
-			result.shrink_to_fit( );
-			return result;
+			return std::move( out ).finish( );
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

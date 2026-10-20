@@ -126,6 +126,19 @@ namespace daw::json {
 				static constexpr void put( Container &out, char c ) {
 					out.push_back( static_cast<CharT>( c ) );
 				}
+
+				/// Room for at least n more elements.  Grows geometrically so that
+				/// repeated hints do not reallocate on every call
+				static constexpr void reserve( Container &out, std::size_t n ) {
+					if constexpr( writeable_output_details::has_capacity_reserve_v<
+					                Container> ) {
+						auto const needed = out.size( ) + n;
+						if( out.capacity( ) < needed ) {
+							auto const doubled = out.capacity( ) * 2;
+							out.reserve( needed < doubled ? doubled : needed );
+						}
+					}
+				}
 			};
 
 			/// @brief Specialization for output iterators
