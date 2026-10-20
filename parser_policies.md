@@ -92,3 +92,24 @@ measured 5% in some minified documents). This option is incompatible with commen
 ### Default
 
 * 'no'
+## `ArrayReserve`
+
+How many elements to reserve up front when parsing a JSON array into a `std::vector` whose size is not known yet.
+Reserving avoids the first few reallocations as the vector grows, at the cost of unused capacity for small arrays. The
+amount is in elements, not bytes, and applies to every such array in the parse.
+
+When an array was skipped before being parsed, e.g. a member that appears out of order in the document, its element
+count is already known and exactly that many are reserved instead.
+
+This only affects the default constructor for `std::vector`. Custom constructors are not changed.
+
+### Values
+
+* `none` - Do not reserve, the vector grows as elements are parsed
+* `elements_128` - Reserve 128 elements
+* `elements_512` - Reserve 512 elements
+* `elements_1024` - Reserve 1024 elements
+
+### Default
+
+* `none`

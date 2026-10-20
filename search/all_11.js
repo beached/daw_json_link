@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['json_0',['json',['../md_docs_2cookbook_2inserting__extracting__raw__json.html',1,'Inserting and Extracting Raw JSON'],['../md_docs_2cookbook_2unknown__types__and__raw__parsing.html#autotoc_md215',1,'RAW JSON']]],
-  ['json_20data_1',['Unknown JSON Data',['../md_docs_2cookbook_2unknown__types__and__raw__parsing.html#autotoc_md213',1,'']]],
+  ['json_0',['json',['../md_docs_2cookbook_2inserting__extracting__raw__json.html',1,'Inserting and Extracting Raw JSON'],['../md_docs_2cookbook_2unknown__types__and__raw__parsing.html#autotoc_md218',1,'RAW JSON']]],
+  ['json_20data_1',['Unknown JSON Data',['../md_docs_2cookbook_2unknown__types__and__raw__parsing.html#autotoc_md216',1,'']]],
   ['json_20library_2',['Interoperating with another JSON library',['../md_docs_2cookbook_2inserting__extracting__raw__json.html#autotoc_md44',1,'']]],
   ['json_20lines_3',['json lines',['../md_docs_2cookbook_2json__lines.html#autotoc_md57',1,'Parsing JSON Lines'],['../md_docs_2cookbook_2json__lines.html#autotoc_md58',1,'Serializing to JSON Lines']]],
   ['json_20lines_20support_4',['JSON Lines Support',['../md_docs_2cookbook_2json__lines.html',1,'']]],
@@ -9,7 +9,7 @@ var searchData=
   ['json_20numbers_20eg_20real_20numbers_6',['Default, full parsing of JSON numbers (eg real numbers).',['../md_docs_2cookbook_2numbers.html#autotoc_md148',1,'']]],
   ['json_20path_7',['Parsing at a JSON path',['../md_docs_2cookbook_2json__apply.html#autotoc_md52',1,'']]],
   ['json_20schema_8',['Exporting JSON Schema',['../md_docs_2cookbook_2json__schema.html',1,'']]],
-  ['json_20serialization_20and_20parsing_20in_20c_9',['Fast JSON serialization and parsing in C++',['../index.html#autotoc_md223',1,'']]],
+  ['json_20serialization_20and_20parsing_20in_20c_9',['Fast JSON serialization and parsing in C++',['../index.html#autotoc_md226',1,'']]],
   ['json_20text_10',['Storing raw JSON text',['../md_docs_2cookbook_2inserting__extracting__raw__json.html#autotoc_md43',1,'']]],
   ['json_20type_11',['Writing Values with an Explicit JSON Type',['../md_docs_2cookbook_2json__writer.html#autotoc_md68',1,'']]],
   ['json_20value_12',['json value',['../md_docs_2cookbook_2custom__types.html#autotoc_md29',1,'Accepting any JSON value'],['../md_docs_2cookbook_2json__value.html',1,'Json Value']]],

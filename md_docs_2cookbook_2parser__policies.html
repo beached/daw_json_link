@@ -158,6 +158,24 @@ Default</h2>
 <ul>
 <li>'no' </li>
 </ul>
+<h1><a class="anchor" id="autotoc_md187"></a>
+&lt;tt&gt;ArrayReserve&lt;/tt&gt;</h1>
+<p>How many elements to reserve up front when parsing a JSON array into a <code>std::vector</code> whose size is not known yet. Reserving avoids the first few reallocations as the vector grows, at the cost of unused capacity for small arrays. The amount is in elements, not bytes, and applies to every such array in the parse.</p>
+<p>When an array was skipped before being parsed, e.g. a member that appears out of order in the document, its element count is already known and exactly that many are reserved instead.</p>
+<p>This only affects the default constructor for <code>std::vector</code>. Custom constructors are not changed.</p>
+<h2><a class="anchor" id="autotoc_md188"></a>
+Values</h2>
+<ul>
+<li><code>none</code> - Do not reserve, the vector grows as elements are parsed</li>
+<li><code>elements_128</code> - Reserve 128 elements</li>
+<li><code>elements_512</code> - Reserve 512 elements</li>
+<li><code>elements_1024</code> - Reserve 1024 elements</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md189"></a>
+Default</h2>
+<ul>
+<li><code>none</code> </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

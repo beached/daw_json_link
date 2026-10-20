@@ -73,8 +73,8 @@ $(function() {
   <div class="headertitle"><div class="title">Strings</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md202"></a>JSON natively encodes strings. There are two options for mapping them to C++ data structures, fully processed and raw strings. Raw strings only find the end of the string and do not change the underlying values.</p>
-<h1><a class="anchor" id="autotoc_md203"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md205"></a>JSON natively encodes strings. There are two options for mapping them to C++ data structures, fully processed and raw strings. Raw strings only find the end of the string and do not change the underlying values.</p>
+<h1><a class="anchor" id="autotoc_md206"></a>
 Escaped</h1>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;uris&quot;: [</div>
@@ -121,7 +121,7 @@ Escaped</h1>
 <div class="line">  };</div>
 <div class="line">}</div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdoc">string_writer grows its string with resize_and_overwrite, leaving the new bytes uninitialized,...</div><div class="ttdef"><b>Definition</b> <a href="daw__container__traits_8h_source.html#l00024">daw_container_traits.h:24</a></div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md204"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md207"></a>
 Trusted, already-escaped strings</h1>
 <p>By default, <code>json_string</code> validates UTF-8 and escapes the value during serialization. When an application can guarantee that a value is valid UTF-8 and is already escaped as JSON string content, the <code>EscapeValidUTF8::AssumeValid</code> mapping option writes those bytes directly:</p>
 <div class="fragment"><div class="line"> ++</div>
@@ -156,7 +156,7 @@ application must establish that it is already escaped before serializing it.
 The default &lt;tt&gt;EscapeValidUTF8::Validate&lt;/tt&gt; behavior should be used whenever that
 guarantee is unavailable.
 
-@section autotoc_md205 Raw strings
+@section autotoc_md208 Raw strings
 Raw strings are useful where we don't want to process the strings, we know they will never be escaped, or we do not require processing.  A raw string, is also simpler in that it only requires a constructor that requires a pointer and size, like &lt;tt&gt;std::string_view&lt;/tt&gt; or &lt;tt&gt;std::string&lt;/tt&gt;.  &lt;br&gt;
 @icode{json} 
 {
@@ -211,7 +211,7 @@ namespace daw::json {
 }
 @endicode 
 
-@section autotoc_md206 Serializing strings without a mapping
+@section autotoc_md209 Serializing strings without a mapping
 
 &lt;tt&gt;to_json&lt;/tt&gt;, &lt;tt&gt;to_json_array&lt;/tt&gt;, and &lt;tt&gt;json_writer&lt;/tt&gt; can serialize values that have no
 &lt;tt&gt;json_data_contract&lt;/tt&gt;. Because these values did not come from parsing, string
@@ -264,7 +264,7 @@ std::vector&lt;char const *&gt; ptrs{ "A"da", nullptr };
 <p><code></code></p>
 <p><code>Character pointers are only converted when passed directly. Inside a container they are deduced as a nullable <code>char</code>, so <code>to_json( ptrs )</code> writes the first character's code.</code></p>
 <p><code></code></p>
-<h2><a class="anchor" id="autotoc_md207"></a>
+<h2><a class="anchor" id="autotoc_md210"></a>
 Containers of character pointers</h2>
 <p><code></code></p>
 <p><code>To write a container of character pointers as strings, map the element explicitly as a nullable string. A <code>nullptr</code> element is written as <code>null</code>.</code></p>
@@ -309,7 +309,7 @@ Containers of character pointers</h2>
 <p><code><code>to_json( Names{ ptrs } )</code> writes <code>{"names":["A\"da",null]}</code>. This mapping is serialization only: <code>from_json&lt;Names&gt;</code> does not compile, as a <code>char const *</code> cannot be constructed from a parsed string.</code></p>
 <p><code>Alternatively, use a container of <code>std::string_view</code> or write the elements with <code>json_writer::write_array_values</code>.</code></p>
 <p><code></code></p>
-<h2><a class="anchor" id="autotoc_md208"></a>
+<h2><a class="anchor" id="autotoc_md211"></a>
 Already escaped values</h2>
 <p><code></code></p>
 <p><code>Passing an explicit raw mapping writes the value as-is. The value must already be valid, escaped JSON string content.</code></p>
@@ -327,7 +327,7 @@ Already escaped values</h2>
 <p></code></p>
 <p><code>A <code>std::string_view</code> member of a <code>json_data_contract</code> is also raw. Given a contract mapping <code>json_link&lt;"value", std::string_view&gt;</code> for <code>Member</code>, <code>to_json( Member{ R"(A\"da)" } )</code> writes <code>{"value":"A\"da"}</code>. Likewise a <code>char</code> member of a contract, <code>json_link&lt;"c", char&gt;</code>, remains a number: &lsquo;to_json( CharMember{ 'z&rsquo; } )<code>writes</code>{"c":122}`.</code></p>
 <p><code></code></p>
-<h2><a class="anchor" id="autotoc_md209"></a>
+<h2><a class="anchor" id="autotoc_md212"></a>
 Invalid UTF-8</h2>
 <p><code></code></p>
 <p><code>With the default <code>RestrictedStringOutput::ErrorInvalidUTF8</code> output option, valid UTF-8 is written unchanged and invalid UTF-8 is an error.</code></p>

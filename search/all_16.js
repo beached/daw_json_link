@@ -3,7 +3,7 @@ var searchData=
   ['object_0',['Writing an Object',['../md_docs_2cookbook_2json__writer.html#autotoc_md64',1,'']]],
   ['objects_20and_20arrays_1',['Nesting Objects and Arrays',['../md_docs_2cookbook_2json__writer.html#autotoc_md66',1,'']]],
   ['of_20a_20class_2',['Array of a class',['../md_docs_2cookbook_2array.html#autotoc_md5',1,'']]],
-  ['of_20character_20pointers_3',['Containers of character pointers',['../md_docs_2cookbook_2strings.html#autotoc_md207',1,'']]],
+  ['of_20character_20pointers_3',['Containers of character pointers',['../md_docs_2cookbook_2strings.html#autotoc_md210',1,'']]],
   ['of_20date_4',['This is currently out of date',['../md_docs_2cookbook_2automated__code__generation.html#autotoc_md12',1,'']]],
   ['of_20int_5',['Simple Array of int',['../md_docs_2cookbook_2array.html#autotoc_md4',1,'']]],
   ['of_20json_20numbers_20eg_20real_20numbers_6',['Default, full parsing of JSON numbers (eg real numbers).',['../md_docs_2cookbook_2numbers.html#autotoc_md148',1,'']]],
@@ -40,5 +40,5 @@ var searchData=
   ['output_5ftrailing_5fcomma_37',['output_trailing_comma',['../structdaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__policy_8h_03_1_1serialization__policy.html#a40b853fb5708a354842834999f6cb474',1,'daw::json::anonymous_namespace{daw_json_serialize_policy.h}::serialization_policy']]],
   ['outputtrailingcomma_38',['outputtrailingcomma',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a6875a82efccb97d4ad043c4c905e3f21',1,'daw::json::anonymous_namespace{daw_json_serialize_options.h}::options::serialize_options::OutputTrailingComma'],['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__serialize__options_8h_03_1_1options_1_1serialize__options.html#a6875a82efccb97d4ad043c4c905e3f21',1,'daw::json::anonymous_namespace{daw_json_serialize_options.h}::options::OutputTrailingComma']]],
   ['outputtrailingcomma_20tt_39',['&lt;tt&gt;OutputTrailingComma&lt;/tt&gt;',['../md_docs_2cookbook_2output__options.html#autotoc_md166',1,'']]],
-  ['overriding_20a_20member_20mapping_40',['Overriding a member mapping',['../md_docs_2cookbook_2reflection.html#autotoc_md196',1,'']]]
+  ['overriding_20a_20member_20mapping_40',['Overriding a member mapping',['../md_docs_2cookbook_2reflection.html#autotoc_md199',1,'']]]
 ];

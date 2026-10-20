@@ -4,7 +4,7 @@ var searchData=
   ['understanding_20_5fnull_20and_20_5fno_5fname_20variants_1',['Understanding _null and _no_name Variants',['../md_docs_2cookbook_2mapping__overview.html#autotoc_md104',1,'']]],
   ['unix_20time_20encoding_2',['Unix time encoding',['../md_docs_2cookbook_2dates.html#autotoc_md34',1,'']]],
   ['unknown_3',['Unknown',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__enums_8h_03.html#a7450e9320c653f81c31714a390d56674a88183b946cc5f0e8c96b2e66e1c74a7e',1,'daw::json::anonymous_namespace{daw_json_enums.h}']]],
-  ['unknown_20json_20data_4',['Unknown JSON Data',['../md_docs_2cookbook_2unknown__types__and__raw__parsing.html#autotoc_md213',1,'']]],
+  ['unknown_20json_20data_4',['Unknown JSON Data',['../md_docs_2cookbook_2unknown__types__and__raw__parsing.html#autotoc_md216',1,'']]],
   ['unknown_20types_20and_20delayed_20parsing_5',['Unknown Types and Delayed Parsing',['../md_docs_2cookbook_2unknown__types__and__raw__parsing.html',1,'']]],
   ['unknown_5ftypes_5fand_5fraw_5fparsing_2emd_6',['unknown_types_and_raw_parsing.md',['../unknown__types__and__raw__parsing_8md.html',1,'']]],
   ['unnamed_20mappings_20end_20in_20tt_20_5fno_5fname_20tt_7',['Unnamed mappings end in &lt;tt&gt;_no_name&lt;/tt&gt;',['../md_docs_2cookbook_2mapping__overview.html#autotoc_md106',1,'']]],
@@ -19,5 +19,5 @@ var searchData=
   ['useexactmappingsbydefault_16',['useexactmappingsbydefault',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#afa1fb40f999b16e1946c916fe64c4e81',1,'daw::json::anonymous_namespace{daw_json_parse_options.h}::options::UseExactMappingsByDefault'],['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#afa1fb40f999b16e1946c916fe64c4e81',1,'daw::json::anonymous_namespace{daw_json_parse_options.h}::options::parser_options::UseExactMappingsByDefault']]],
   ['useexactmappingsbydefault_20tt_17',['&lt;tt&gt;UseExactMappingsByDefault&lt;/tt&gt;',['../md_docs_2cookbook_2parser__policies.html#autotoc_md185',1,'']]],
   ['uses_18',['Typical uses',['../md_docs_2cookbook_2json__apply.html#autotoc_md55',1,'']]],
-  ['utf_208_19',['Invalid UTF-8',['../md_docs_2cookbook_2strings.html#autotoc_md209',1,'']]]
+  ['utf_208_19',['Invalid UTF-8',['../md_docs_2cookbook_2strings.html#autotoc_md212',1,'']]]
 ];

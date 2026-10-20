@@ -23,6 +23,6 @@ var searchData=
   ['bool_5fopts_20',['bool_opts',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03.html#aa8df6925d2d4c4db683e80753389a20d',1,'daw::json::bool_opts'],['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03.html#aa8df6925d2d4c4db683e80753389a20d',1,'daw::json::anonymous_namespace{daw_json_type_options.h}::bool_opts']]],
   ['bool_5fopts_5fdef_21',['bool_opts_def',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03.html#abcb8e37a50a4af984694c50a44c5ca5d',1,'daw::json::bool_opts_def'],['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03.html#abcb8e37a50a4af984694c50a44c5ca5d',1,'daw::json::anonymous_namespace{daw_json_type_options.h}::bool_opts_def']]],
   ['bool_5fopts_5ft_22',['bool_opts_t',['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03.html#a9fc4a59b61a558d6dcd8d394a77f16b6',1,'daw::json::anonymous_namespace{daw_json_type_options.h}::bool_opts_t'],['../namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__type__options_8h_03.html#a9fc4a59b61a558d6dcd8d394a77f16b6',1,'daw::json::bool_opts_t']]],
-  ['boost_20describe_20adapter_23',['Boost.Describe adapter',['../md_docs_2cookbook_2reflection.html#autotoc_md201',1,'']]],
-  ['boost_20pfr_20adapter_24',['Boost.PFR adapter',['../md_docs_2cookbook_2reflection.html#autotoc_md200',1,'']]]
+  ['boost_20describe_20adapter_23',['Boost.Describe adapter',['../md_docs_2cookbook_2reflection.html#autotoc_md204',1,'']]],
+  ['boost_20pfr_20adapter_24',['Boost.PFR adapter',['../md_docs_2cookbook_2reflection.html#autotoc_md203',1,'']]]
 ];

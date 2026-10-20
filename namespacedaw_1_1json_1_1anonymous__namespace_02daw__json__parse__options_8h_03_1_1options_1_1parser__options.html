@@ -94,6 +94,13 @@ Enumerations</h2></td></tr>
 , <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a3ff5724fb63c942ed9f3cba49b5f5690aa6105c0a611b41b08f1209506350279e">yes</a>
  }</td></tr>
 <tr class="separator:a3ff5724fb63c942ed9f3cba49b5f5690"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4903a2804324ae0920485f8a8f86f96" id="r_af4903a2804324ae0920485f8a8f86f96"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#af4903a2804324ae0920485f8a8f86f96">ArrayReserve</a> : unsigned { <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#af4903a2804324ae0920485f8a8f86f96a334c4a4c42fdb79d7ebc3e73b517e6f8">none</a>
+, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#af4903a2804324ae0920485f8a8f86f96abca9940de3e64493d352bbb4f95ffd9b">elements_128</a>
+, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#af4903a2804324ae0920485f8a8f86f96acfe882633e08a4c57e3d06877e88f5b5">elements_512</a>
+, <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#af4903a2804324ae0920485f8a8f86f96a344ba3d3819a3a44260eecaa90153d9f">elements_1024</a>
+ }</td></tr>
+<tr class="memdesc:af4903a2804324ae0920485f8a8f86f96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Elements to reserve up front for arrays parsed into std::vector when their size is not known. Arrays that were skipped before being parsed reserve their exact size instead.  <a href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#af4903a2804324ae0920485f8a8f86f96">More...</a><br /></td></tr>
+<tr class="separator:af4903a2804324ae0920485f8a8f86f96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16aa08aaa4dc960f3ddeff2cb7d05b13" id="r_a16aa08aaa4dc960f3ddeff2cb7d05b13"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a16aa08aaa4dc960f3ddeff2cb7d05b13">CheckedParseMode</a> : unsigned { <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a16aa08aaa4dc960f3ddeff2cb7d05b13aa6105c0a611b41b08f1209506350279e">yes</a>
 , <a class="el" href="namespacedaw_1_1json_1_1anonymous__namespace_02daw__json__parse__options_8h_03_1_1options_1_1parser__options.html#a16aa08aaa4dc960f3ddeff2cb7d05b13a7fa3b767c460b54a2be4d49030b349c7">no</a>
  }</td></tr>
@@ -219,6 +226,39 @@ Enumerations</h2></td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00053">53</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
+
+</div>
+</div>
+<a id="af4903a2804324ae0920485f8a8f86f96" name="af4903a2804324ae0920485f8a8f86f96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4903a2804324ae0920485f8a8f86f96">&#9670;&#160;</a></span>ArrayReserve</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class daw::json::anonymous_namespace{daw_json_parse_options.h}::options::parser_options::ArrayReserve : unsigned</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Elements to reserve up front for arrays parsed into std::vector when their size is not known. Arrays that were skipped before being parsed reserve their exact size instead. </p>
+<p>default: none </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af4903a2804324ae0920485f8a8f86f96a334c4a4c42fdb79d7ebc3e73b517e6f8" name="af4903a2804324ae0920485f8a8f86f96a334c4a4c42fdb79d7ebc3e73b517e6f8"></a>none&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af4903a2804324ae0920485f8a8f86f96abca9940de3e64493d352bbb4f95ffd9b" name="af4903a2804324ae0920485f8a8f86f96abca9940de3e64493d352bbb4f95ffd9b"></a>elements_128&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af4903a2804324ae0920485f8a8f86f96acfe882633e08a4c57e3d06877e88f5b5" name="af4903a2804324ae0920485f8a8f86f96acfe882633e08a4c57e3d06877e88f5b5"></a>elements_512&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af4903a2804324ae0920485f8a8f86f96a344ba3d3819a3a44260eecaa90153d9f" name="af4903a2804324ae0920485f8a8f86f96a344ba3d3819a3a44260eecaa90153d9f"></a>elements_1024&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="daw__json__parse__options_8h_source.html#l00173">173</a> of file <a class="el" href="daw__json__parse__options_8h_source.html">daw_json_parse_options.h</a>.</p>
 
 </div>
 </div>
