@@ -1044,6 +1044,9 @@ namespace daw::json {
 		} // namespace utils
 
 		namespace json_details {
+			DAW_JSON_MAKE_REQ_TRAIT( has_std_size_v,
+			                         std::size( std::declval<T const &>( ) ) );
+
 			template<typename JsonMember, typename WriteableType, typename parse_to_t>
 			[[nodiscard]] static constexpr WriteableType
 			to_json_string_string_raw( WriteableType it, parse_to_t const &value ) {
@@ -1053,6 +1056,7 @@ namespace daw::json {
 				  "Value must be convertible to specialized type in "
 				  "json_data_contract" );
 
+				it.reserve( std::size( value ) + 2U );
 				it.put( '"' );
 				if( std::size( value ) > 0U ) {
 					it = utils::copy_to_iterator<false, JsonMember::eight_bit_mode>(
@@ -1083,6 +1087,10 @@ namespace daw::json {
 					return to_json_string_string_escaped<JsonMember>(
 					  it, daw::string_view( &value, 1U ) );
 				} else {
+					if constexpr( has_std_size_v<parse_to_t> ) {
+						// Escapes can make it longer, then the writes regrow
+						it.reserve( std::size( value ) + 2U );
+					}
 					it.put( '"' );
 					it = utils::copy_to_iterator<escape_output_v<JsonMember> !=
 					                               options::EscapeValidUTF8::AssumeValid,
@@ -1324,6 +1332,77 @@ namespace daw::json {
 				return it;
 			}
 
+			/// @brief Estimated serialized size of one element, without its
+			/// separator, or 0 when it cannot be known up front.  Only used to
+			/// hint the output how much room to reserve
+			template<typename JsonElement>
+			inline constexpr std::size_t estimated_json_width_v = [] {
+				using value_t = json_result_t<JsonElement>;
+				constexpr auto type = JsonElement::expected_type;
+				(void)type;
+				if constexpr( type == JsonParseTypes::Signed ) {
+					// digits and the sign
+					return static_cast<std::size_t>( daw::digits10<value_t> ) + 2U;
+				} else if constexpr( type == JsonParseTypes::Unsigned ) {
+					return static_cast<std::size_t>( daw::digits10<value_t> ) + 1U;
+				} else if constexpr( type == JsonParseTypes::Real ) {
+					// The longest shortest representations, e.g. -1.2345678e-38 and
+					// -1.2345678901234567e-308
+					if constexpr( std::is_same_v<value_t, float> ) {
+						return std::size_t{ 16 };
+					} else if constexpr( std::is_same_v<value_t, double> ) {
+						return std::size_t{ 24 };
+					} else {
+						return std::size_t{ 0 };
+					}
+				} else if constexpr( type == JsonParseTypes::Bool ) {
+					return std::size_t{ 5 };
+				} else if constexpr( type == JsonParseTypes::Null ) {
+					constexpr auto inner =
+					  estimated_json_width_v<typename JsonElement::member_type>;
+					// This is only used for array elements, and a null element is
+					// always written as null whether or not it is NullVisible, which
+					// only decides if a class member is left out.  So it is the
+					// larger of null and the value
+					if constexpr( inner != 0 ) {
+						return inner > 4U ? inner : std::size_t{ 4 };
+					} else {
+						return inner;
+					}
+				} else {
+					return std::size_t{ 0 };
+				}
+			}( );
+
+			/// @brief Hint the output with the size of an array whose elements
+			/// have a known or bounded size: numbers, bools and strings.  Writes
+			/// still check their own room, so a short estimate only regrows
+			template<typename JsonElement, typename Container, typename WriteableType>
+			DAW_ATTRIB_INLINE constexpr void
+			reserve_array_output( WriteableType &it, Container const &c ) {
+				if constexpr( has_std_size_v<Container> ) {
+					constexpr auto width = estimated_json_width_v<JsonElement>;
+					if constexpr( width != 0 ) {
+						// each element and its separator, then the brackets
+						it.reserve( std::size( c ) * ( width + 1U ) + 2U );
+					} else if constexpr( JsonElement::expected_type ==
+					                       JsonParseTypes::StringRaw or
+					                     JsonElement::expected_type ==
+					                       JsonParseTypes::StringEscaped ) {
+						using element_t =
+						  daw::remove_cvref_t<decltype( *std::begin( c ) )>;
+						if constexpr( has_std_size_v<element_t> ) {
+							// the quotes and separator of each, then the brackets
+							auto total = std::size_t{ 2 };
+							for( auto const &e : c ) {
+								total += std::size( e ) + 3U;
+							}
+							it.reserve( total );
+						}
+					}
+				}
+			}
+
 			DAW_JSON_MAKE_REQ_TRAIT(
 			  is_view_like_v, ( (void)( std::begin( std::declval<T &>( ) ) ),
 			                    (void)( std::end( std::declval<T &>( ) ) ),
@@ -1357,6 +1436,7 @@ namespace daw::json {
 					  "Container like type, but std::span like types work too" );
 				}
 
+				reserve_array_output<typename JsonMember::json_element_t>( it, value );
 				it.put( '[' );
 				it.add_indent( );
 				auto first = std::begin( value );

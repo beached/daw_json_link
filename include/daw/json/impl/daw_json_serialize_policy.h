@@ -173,6 +173,12 @@ namespace daw::json {
 				put_output( *m_writable, c );
 			}
 
+			/// @brief Hint that about n more bytes will be written.  Outputs that
+			/// cannot use it ignore it
+			DAW_ATTRIB_INLINE constexpr void reserve( std::size_t n ) {
+				reserve_output( *m_writable, n );
+			}
+
 			DAW_ATTRIB_INLINE constexpr serialization_policy &operator=( char c ) {
 				put_output( *m_writable, c );
 				return *this;

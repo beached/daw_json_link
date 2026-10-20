@@ -33,7 +33,7 @@ namespace daw::json {
 		static inline constexpr char const topicIds[] = "topicIds";
 		using type = json_member_list<
 		  json_number<id, std::int64_t>,
-		  json_string_raw_null<logo, std::string_view>,
+		  json_string_raw_null<logo, std::optional<std::string_view>>,
 		  json_string_raw<name, std::string_view>,
 		  json_array<subTopicIds, std::int64_t, daw::citm::Vector<std::int64_t>>,
 		  json_array<topicIds, std::int64_t, daw::citm::Vector<std::int64_t>>>;
@@ -99,7 +99,7 @@ namespace daw::json {
 		static inline constexpr char const venueCode[] = "venueCode";
 		using type = json_member_list<
 		  json_number<eventId, std::int64_t>, json_number<id, std::int64_t>,
-		  json_string_raw_null<logo, std::string_view>,
+		  json_string_raw_null<logo, std::optional<std::string_view>>,
 		  json_array<prices, daw::citm::prices_element_t,
 		             daw::citm::Vector<daw::citm::prices_element_t>>,
 		  json_array<seatCategories, daw::citm::seatCategories_element_t,

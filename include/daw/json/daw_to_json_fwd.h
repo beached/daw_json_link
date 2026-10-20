@@ -66,7 +66,7 @@ namespace daw::json {
 		DAW_REQUIRES(
 		  concepts::is_writable_output_type_v<daw::remove_cvref_t<WritableType>> )
 		constexpr daw::rvalue_to_value_t<WritableType> to_json(
-		  Value const &value, WritableType &&it = std::string{ },
+		  Value const &value, WritableType &&it,
 		  options::output_flags_t<PolicyFlags...> = options::output_flags<> );
 
 		/// @brief Serialize a value to JSON.  Some types(std::string, string_view,
@@ -80,7 +80,8 @@ namespace daw::json {
 		template<typename JsonClass = use_default, typename Value,
 		         auto... PolicyFlags>
 		DAW_CPP20_CX_ALLOC std::string
-		to_json( Value const &value, options::output_flags_t<PolicyFlags...> );
+		to_json( Value const &value,
+		         options::output_flags_t<PolicyFlags...> = options::output_flags<> );
 
 		/**
 		 * Serialize a container to JSON.  This convenience method allows for easier
