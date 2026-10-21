@@ -46,6 +46,7 @@ namespace daw::json {
 
 					if constexpr( ParseState::is_zero_terminated_string ) {
 						// Ensure that zero terminator isn't included in skipable value
+						DAW_ASSUME( first );
 						while( DAW_UNLIKELY(
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 						    1U ) <= 0x1FU ) ) {

@@ -84,11 +84,7 @@ int main( int argc, char **argv )
 #if not defined( NDEBUG )
 	std::cout << "non-debug run\n";
 #endif
-	test<daw::json::options::ExecModeTypes::compile_time>( sv_numbers );
-	test<daw::json::options::ExecModeTypes::runtime>( sv_numbers );
-#if defined( DAW_ALLOW_SSE42 )
-	test<daw::json::options::ExecModeTypes::simd>( sv_numbers );
-#endif
+	test<daw::json::options::ExecModeTypes::default_mode>( sv_numbers );
 }
 #if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {

@@ -110,6 +110,7 @@
 
 // Allow experimental SIMD paths, if available
 // by defining DAW_ALLOW_SSE42 and using the parser policy ExecModeType simd
+// This flag is not necessary any longer.
 #if not defined( DAW_JSON_NO_SSE42 )
 #if defined( __SSE4_2__ ) or defined( __AVX__ ) or defined( __AVX2__ )
 #if not defined( DAW_ALLOW_SSE42 )

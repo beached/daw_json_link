@@ -19,6 +19,8 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		// These are used when the system cannot doesn't have is_constexpr or if
+		// consteval or a builtin prior to C++20.
 		struct default_exec_tag {
 			static constexpr std::string_view name = "default_mode";
 		};
@@ -28,16 +30,10 @@ namespace daw::json {
 		struct runtime_exec_tag : constexpr_exec_tag {
 			static constexpr std::string_view name = "runtime";
 		};
-#if defined( DAW_ALLOW_SSE42 )
-		struct sse42_exec_tag : runtime_exec_tag {
-			static constexpr std::string_view name = "sse4.2";
-		};
-		using simd_exec_tag = sse42_exec_tag;
-#else
 		struct simd_exec_tag : runtime_exec_tag {
 			static constexpr std::string_view name = "simd";
 		};
-#endif
+		using sse42_exec_tag [[deprecated( "use simd_exec_tag" )]] = simd_exec_tag;
 
 		namespace json_details {
 			/// The exec tags exist for compilers that cannot detect constant
