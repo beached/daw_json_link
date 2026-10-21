@@ -499,14 +499,14 @@ namespace daw::json {
 		 */
 		template<typename... JsonElements>
 		struct json_variant_type_list {
-			using i_am_variant_type_list = void;
+			using i_am_a_json_variant_type_list = void;
 			using element_map_t =
 			  fwd_pack<json_details::json_deduced_type<JsonElements>...>;
 		};
 
 		namespace json_details {
 			DAW_MAKE_REQ_TRAIT_TYPE( is_variant_type_list_v,
-			                         T::i_am_variant_type_list );
+			                         T::i_am_a_json_variant_type_list );
 		}
 		/** Link to a JSON array
 		 * @tparam Name name of JSON member to link to
@@ -711,7 +711,7 @@ namespace daw::json {
 
 			template<typename... Ts>
 			struct missing_default_type_mapping {
-				using i_am_variant_type_list = void;
+				using i_am_a_json_variant_type_list = void;
 			};
 
 			/// Allow specialization of variant like types to extract the alternative

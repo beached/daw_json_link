@@ -241,7 +241,7 @@ namespace daw::json {
 		 */
 		template<std::size_t Index, typename JsonMember>
 		struct json_tuple_member {
-			using i_am_an_ordered_member = void;
+			using i_am_a_json_ordered_member = void;
 			using i_am_a_json_type = void;
 			static constexpr std::size_t member_index = Index;
 			static_assert(
@@ -358,7 +358,7 @@ namespace daw::json {
 		template<typename TagMember, typename Switcher, typename... JsonClasses>
 		struct json_submember_tagged_variant {
 			using i_am_a_json_member_list = void;
-			using i_am_a_submember_tagged_variant = void;
+			using i_am_a_json_submember_tagged_variant = void;
 
 			/**
 			 * Serialize a C++ class to JSON data
@@ -1472,7 +1472,7 @@ namespace daw::json {
 			         typename JsonElements, typename Constructor>
 			struct json_tagged_variant {
 				using i_am_a_json_type = void;
-				using i_am_a_tagged_variant = void;
+				using i_am_a_json_tagged_variant = void;
 
 				using json_elements = typename daw::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,
@@ -2100,7 +2100,7 @@ namespace daw::json {
 			         typename Constructor = use_default>
 			struct json_intrusive_variant {
 				using i_am_a_json_type = void;
-				using i_am_a_tagged_variant = void;
+				using i_am_a_json_tagged_variant = void;
 
 				using json_elements = typename daw::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,

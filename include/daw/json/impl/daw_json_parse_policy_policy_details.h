@@ -163,8 +163,9 @@ namespace daw::json {
 			/// Numbers follow the JSON grammar, with a leading '+' and leading
 			/// zeros also allowed when ParseState::allow_leading_zero_plus is set.
 			/// A token has to end at the end of the data, whitespace, a structural
-			/// character or a quote
-			template<typename ParseState>
+			/// character, a quote or, when CommentStart is not '\0', the start of a
+			/// comment
+			template<char CommentStart = '\0', typename ParseState>
 			[[nodiscard]] constexpr char const *
 			skip_scalar_token_checked( char const *first, char const *const last,
 			                           ParseState const &parse_state ) {
@@ -246,6 +247,11 @@ namespace daw::json {
 					case '"':
 						break;
 					default:
+						if constexpr( CommentStart != '\0' ) {
+							if( *first == CommentStart ) {
+								break;
+							}
+						}
 						daw_json_ensure(
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 						    1U ) <= 0x1FU,

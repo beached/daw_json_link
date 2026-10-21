@@ -311,9 +311,25 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
+			/// @brief Parses a JsonMember value with parse_value
+			template<typename JsonMember>
+			struct value_parser {
+				template<bool KnownBounds, typename ParseState>
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result_t<JsonMember>
+				parse( ParseState &parse_state ) const {
+					return parse_value<JsonMember,
+					                   KnownBounds,
+					                   JsonMember::expected_type>( parse_state );
+				}
+			};
+
+			/// @param base_parser parses the value when it is not null
+			template<
+			  typename JsonMember, bool KnownBounds, typename ParseState,
+			  typename BaseParser = value_parser<typename JsonMember::member_type>>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr json_result_t<JsonMember>
-			parse_value_null( ParseState &parse_state ) {
+			parse_value_null( ParseState &parse_state,
+			                  BaseParser const &base_parser = BaseParser{ } ) {
 
 				using constructor_t = json_constructor_t<JsonMember>;
 				auto const construct_empty = [&] {
@@ -337,10 +353,7 @@ namespace daw::json {
 						return construct_empty( );
 					}
 					return construct_value<base_member_type, constructor_t>(
-					  parse_state,
-					  parse_value<base_member_type,
-					              true,
-					              base_member_type::expected_type>( parse_state ) );
+					  parse_state, base_parser.template parse<true>( parse_state ) );
 				} else if constexpr( ParseState::is_unchecked_input ) {
 					if( not parse_state.has_more( ) or
 					    parse_state.is_at_token_after_value( ) ) {
@@ -352,10 +365,7 @@ namespace daw::json {
 						return construct_empty( );
 					}
 					return construct_value<base_member_type, constructor_t>(
-					  parse_state,
-					  parse_value<base_member_type,
-					              false,
-					              base_member_type::expected_type>( parse_state ) );
+					  parse_state, base_parser.template parse<false>( parse_state ) );
 				} else {
 					if( parse_state.is_null( ) or not parse_state.has_more( ) or
 					    parse_state.is_at_token_after_value( ) ) {
@@ -384,15 +394,10 @@ namespace daw::json {
 						  parse_state,
 						  concepts::construct_nullable_with_pointer,
 						  new parse_to_t{
-						    parse_value<base_member_type,
-						                false,
-						                base_member_type::expected_type>( parse_state ) } );
+						    base_parser.template parse<false>( parse_state ) } );
 					} else {
 						return construct_value<base_member_type, constructor_t>(
-						  parse_state,
-						  parse_value<base_member_type,
-						              false,
-						              base_member_type::expected_type>( parse_state ) );
+						  parse_state, base_parser.template parse<false>( parse_state ) );
 					}
 				}
 			}
@@ -785,21 +790,11 @@ namespace daw::json {
 				  parse_state, iterator_t( parse_state, size_hint ), iterator_t( ) );
 			}
 
-			template<typename JsonMember, bool KnownBounds, typename ParseState>
+			/// @brief Parse a sized array whose size sz was already found
+			template<typename JsonMember, bool KnownBounds, typename ParseState,
+			         typename Size>
 			[[nodiscard]] static constexpr json_result_t<JsonMember>
-			parse_value_sz_array( ParseState &parse_state ) {
-
-				using size_member = dependent_member_t<JsonMember>;
-
-				auto [parse_state2, is_found] = find_range<ParseState>(
-				  ParseState( parse_state.class_first, parse_state.last ),
-				  size_member::name );
-
-				daw_json_ensure(
-				  is_found, ErrorReason::TagMemberNotFound, parse_state );
-				auto const sz =
-				  parse_value<size_member, false, size_member::expected_type>(
-				    parse_state2 );
+			parse_value_sz_array_sized( ParseState &parse_state, Size const sz ) {
 
 				if constexpr( KnownBounds and ParseState::is_unchecked_input ) {
 					// We have the requested size and the actual size.  Let's see if they
@@ -826,6 +821,52 @@ namespace daw::json {
 				  iterator_t( ),
 				  static_cast<std::size_t>( sz ) );
 			}
+
+			template<typename JsonMember, bool KnownBounds, typename ParseState>
+			[[nodiscard]] static constexpr json_result_t<JsonMember>
+			parse_value_sz_array( ParseState &parse_state ) {
+
+				using size_member = dependent_member_t<JsonMember>;
+
+				// The class is read again to find the size, nothing is decoded in
+				// place
+				using size_state_t = typename ParseState::without_string_mutation_type;
+				auto [parse_state2, is_found] = find_range<size_state_t>(
+				  size_state_t( parse_state.class_first, parse_state.last ),
+				  size_member::name );
+
+				daw_json_ensure(
+				  is_found,
+				  missing_member( std::string_view( std::data( size_member::name ),
+				                                    std::size( size_member::name ) ) ),
+				  parse_state );
+				return parse_value_sz_array_sized<JsonMember, KnownBounds>(
+				  parse_state,
+				  parse_value<size_member, false, size_member::expected_type>(
+				    parse_state2 ) );
+			}
+
+			/// @brief Parses a sized array, also when nullable.  get_size gives the
+			/// size and is only called when there is a value to parse
+			template<typename JsonMember, typename GetSize>
+			struct sized_array_parser {
+				GetSize get_size;
+
+				template<bool KnownBounds, typename ParseState>
+				[[nodiscard]] constexpr json_result_t<JsonMember>
+				parse( ParseState &parse_state ) const {
+					if constexpr( daw::is_detected_v<json_nullable_member_type_t,
+					                                 JsonMember> ) {
+						return parse_value_null<JsonMember, KnownBounds>(
+						  parse_state,
+						  sized_array_parser<json_nullable_member_type_t<JsonMember>,
+						                     GetSize>{ get_size } );
+					} else {
+						return parse_value_sz_array_sized<JsonMember, KnownBounds>(
+						  parse_state, get_size( ) );
+					}
+				}
+			};
 
 			template<JsonBaseParseTypes BPT, typename JsonMembers, bool KnownBounds,
 			         typename ParseState>
@@ -902,22 +943,24 @@ namespace daw::json {
 			}
 
 			template<typename Result, typename TypeList, std::size_t pos = 0,
-			         typename ParseState>
+			         bool KnownBounds = false, typename ParseState>
 			DAW_ATTRIB_INLINE constexpr Result
 			parse_visit( std::size_t idx, ParseState &parse_state ) {
 				if( idx == pos ) {
 					using JsonMember = pack_element_t<pos, TypeList>;
 					if constexpr( std::is_same_v<json_result_t<JsonMember>, Result> ) {
-						return parse_value<JsonMember, false, JsonMember::expected_type>(
-						  parse_state );
+						return parse_value<JsonMember,
+						                   KnownBounds,
+						                   JsonMember::expected_type>( parse_state );
 					} else {
 						return Result{
-						  parse_value<JsonMember, false, JsonMember::expected_type>(
+						  parse_value<JsonMember, KnownBounds, JsonMember::expected_type>(
 						    parse_state ) };
 					}
 				}
 				if constexpr( pos + 1 < pack_size_v<TypeList> ) {
-					return parse_visit<Result, TypeList, pos + 1>( idx, parse_state );
+					return parse_visit<Result, TypeList, pos + 1, KnownBounds>(
+					  idx, parse_state );
 				} else {
 					if constexpr( ParseState::is_unchecked_input ) {
 						DAW_UNREACHABLE( );
@@ -934,10 +977,12 @@ namespace daw::json {
 				using class_wrapper_t = typename JsonMember::tag_member_class_wrapper;
 
 				using switcher_t = typename JsonMember::switcher;
-				auto parse_state2 = ParseState( parse_state.class_first,
-				                                parse_state.class_last,
-				                                parse_state.class_first,
-				                                parse_state.class_last );
+				// The class is read again to find the tag, nothing is decoded in place
+				auto parse_state2 = typename ParseState::without_string_mutation_type(
+				  parse_state.class_first,
+				  parse_state.class_last,
+				  parse_state.class_first,
+				  parse_state.class_last );
 				if constexpr( is_an_ordered_member_v<tag_member> ) {
 					// This is an ordered class, class must start with '['
 					daw_json_assert_weak( parse_state2.is_opening_bracket_checked( ),
@@ -967,6 +1012,31 @@ namespace daw::json {
 				  index, parse_state );
 			}
 
+			/// @brief Parses a tagged variant, also when nullable.  get_index gives
+			/// the alternative and is only called when there is a value to parse
+			template<typename JsonMember, typename GetIndex>
+			struct tagged_variant_parser {
+				GetIndex get_index;
+
+				template<bool KnownBounds, typename ParseState>
+				[[nodiscard]] constexpr json_result_t<JsonMember>
+				parse( ParseState &parse_state ) const {
+					if constexpr( daw::is_detected_v<json_nullable_member_type_t,
+					                                 JsonMember> ) {
+						return parse_value_null<JsonMember, KnownBounds>(
+						  parse_state,
+						  tagged_variant_parser<json_nullable_member_type_t<JsonMember>,
+						                        GetIndex>{ get_index } );
+					} else {
+						return parse_visit<
+						  json_result_t<JsonMember>,
+						  typename JsonMember::json_elements::element_map_t,
+						  0,
+						  KnownBounds>( get_index( ), parse_state );
+					}
+				}
+			};
+
 			template<typename JsonMember, typename ParseState>
 			[[nodiscard]] constexpr json_result_t<JsonMember>
 			parse_value_variant_intrusive( ParseState &parse_state ) {
@@ -974,7 +1044,9 @@ namespace daw::json {
 					using tag_submember = typename JsonMember::tag_submember;
 					using class_wrapper_t =
 					  typename JsonMember::tag_submember_class_wrapper;
-					auto parse_state2 = parse_state;
+					// The class is parsed again after its tag, so the tag is not
+					// decoded in place
+					auto parse_state2 = parse_state.without_string_mutation( );
 					using switcher_t = typename JsonMember::switcher;
 					if constexpr( is_an_ordered_member_v<tag_submember> ) {
 						return switcher_t{ }( std::get<0>(

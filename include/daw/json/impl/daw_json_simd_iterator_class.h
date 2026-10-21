@@ -163,6 +163,14 @@ namespace daw::json {
 
 			template<typename... JsonMembers>
 			struct simd_class_parser<json_member_list<JsonMembers...>> {
+				// Members are parsed from the positions found by one scan of the
+				// class, the members they depend on are not looked up
+				static_assert( not( has_class_dependent_v<JsonMembers> or ... ),
+				               "json_simd_block_iterator does not support members that "
+				               "depend on another member, like tagged variants and "
+				               "sized arrays.  Use json_array_iterator for these "
+				               "classes" );
+
 				template<typename ParseState>
 				using locations_type =
 				  decltype( make_locations_info<ParseState, JsonMembers...>( ) );

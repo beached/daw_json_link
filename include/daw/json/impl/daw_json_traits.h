@@ -192,7 +192,7 @@ namespace daw::json {
 			/// Checks if the type has opted into being an ordered member map(like
 			/// tuple)
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT( is_an_ordered_member_v,
-			                                    T::i_am_an_ordered_member );
+			                                    T::i_am_a_json_ordered_member );
 
 			template<typename T>
 			using is_an_ordered_member =
@@ -421,7 +421,7 @@ namespace daw::json {
 			using literal_json_type_as_string = typename JsonMember::as_string;
 
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT( is_deduced_empty_class_v,
-			                                    T::i_am_a_deduced_empty_class );
+			                                    T::i_am_a_json_deduced_empty_class );
 
 			template<typename T>
 			struct ensure_mapped {

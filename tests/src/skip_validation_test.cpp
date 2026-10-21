@@ -18,10 +18,21 @@
 #include <random>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #if defined( DAW_USE_EXCEPTIONS )
 struct A {
 	int a;
+};
+
+// The mapped member is a string or an array, their parsers do not look at
+// what follows the value
+struct StringMember {
+	std::string a;
+};
+
+struct ArrayMember {
+	std::vector<int> a;
 };
 
 namespace daw::json {
@@ -29,6 +40,18 @@ namespace daw::json {
 	struct json_data_contract<A> {
 		static constexpr char const a[] = "a";
 		using type = json_member_list<json_number<a, int>>;
+	};
+
+	template<>
+	struct json_data_contract<StringMember> {
+		static constexpr char const a[] = "a";
+		using type = json_member_list<json_string<a>>;
+	};
+
+	template<>
+	struct json_data_contract<ArrayMember> {
+		static constexpr char const a[] = "a";
+		using type = json_member_list<json_array<a, int>>;
 	};
 } // namespace daw::json
 
@@ -107,6 +130,18 @@ namespace {
 		                                       : "expected an error: " ) +
 		               std::string( json ) );
 	}
+
+	template<typename T>
+	void check_parse_as( std::string_view json, bool should_parse ) {
+		bool parsed = true;
+		try {
+			(void)from_json<T>( json );
+		} catch( json_exception const & ) { parsed = false; }
+		test_assert( parsed == should_parse,
+		             std::string( should_parse ? "expected to parse: "
+		                                       : "expected an error: " ) +
+		               std::string( json ) );
+	}
 } // namespace
 
 int main( ) {
@@ -163,6 +198,44 @@ int main( ) {
 		check_parse( json, true );
 		check_parse<options::AllowLeadingZeroPlus::no>( json, false );
 	}
+
+	// After the mapped members, the rest of the class is a comma separated list
+	// of members
+	check_parse( R"({"a":1, xyz "b":2})", false );
+	check_parse( R"({"a":1, xyz})", false );
+	check_parse( R"({"a":1,,"b":2})", false );
+	check_parse( R"({"a":1,"b":2,})", true );
+	check_parse_as<StringMember>( R"({"a":"x" "b":1})", false );
+	check_parse_as<StringMember>( R"({"a":"x" xyz})", false );
+	check_parse_as<StringMember>( R"({"a":"x",,"b":1})", false );
+	check_parse_as<StringMember>( R"({"a":"x"})", true );
+	check_parse_as<StringMember>( R"({"a":"x" , "b":[1]})", true );
+	check_parse_as<StringMember>( R"({"a":"x"])", false );
+	check_parse_as<ArrayMember>( R"({"a":[1] "b":1})", false );
+	check_parse_as<ArrayMember>( R"({"a":[1] xyz})", false );
+	check_parse_as<ArrayMember>( R"({"a":[1],"b":{"c":2}})", true );
+
+	// Skipped classes and arrays are checked the same way when comments are
+	// allowed, and comments can be where whitespace can
+	using options::PolicyCommentTypes;
+	check_parse<PolicyCommentTypes::cpp>( R"({"b":[1 2],"a":1})", false );
+	check_parse<PolicyCommentTypes::cpp>( R"({"b":[{]},"a":1})", false );
+	check_parse<PolicyCommentTypes::cpp>( R"({"b":{"x" 1},"a":1})", false );
+	check_parse<PolicyCommentTypes::cpp>( R"({"b":[tru],"a":1})", false );
+	check_parse<PolicyCommentTypes::cpp>( R"({"b":[1 /x],"a":1})", false );
+	check_parse<PolicyCommentTypes::cpp>( R"({"b":[1,/*c],"a":1})", false );
+	check_parse<PolicyCommentTypes::cpp>( R"({"b":[1,/*c*/2],"a":1})", true );
+	check_parse<PolicyCommentTypes::cpp>( "{\"b\":[1/*c*/,2]//x\n,\"a\":1}",
+	                                      true );
+	check_parse<PolicyCommentTypes::cpp>( R"({"b":{"x"/*c*/:/*d*/1},"a":1})",
+	                                      true );
+	check_parse<PolicyCommentTypes::cpp>( R"({"b":["/*s*/"],"a":1})", true );
+	check_parse<PolicyCommentTypes::hash>( R"({"b":[1 2],"a":1})", false );
+	check_parse<PolicyCommentTypes::hash>( R"({"b":[{]},"a":1})", false );
+	check_parse<PolicyCommentTypes::hash>( "{\"b\":[1 #c\n2],\"a\":1}", false );
+	check_parse<PolicyCommentTypes::hash>( "{\"b\":[1, #c\n2],\"a\":1}", true );
+	check_parse<PolicyCommentTypes::hash>( "{\"b\":[1#c\n,2],\"a\":1}", true );
+	check_parse<PolicyCommentTypes::hash>( R"({"b":["#s"],"a":1})", true );
 
 	// Starting at the bracket and part way through, as the class and array
 	// cleanups do

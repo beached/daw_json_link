@@ -238,7 +238,10 @@ namespace daw::json {
 
 				static_assert(
 				  not is_insitu or ParseState::allow_string_mutation,
-				  "In-situ strings can only be parsed from writable input documents" );
+				  "In-situ strings can only be parsed from writable input documents.  "
+				  "Members that other members depend on, like the tag of a variant or "
+				  "the size of a sized array, are always parsed without string "
+				  "mutation, so they cannot be in-situ strings" );
 				static_assert( not is_insitu or
 				                 std::is_same_v<typename ParseState::iterator, char *>,
 				               "In-situ strings require a mutable character buffer" );

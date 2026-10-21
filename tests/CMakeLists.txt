@@ -1410,6 +1410,12 @@ add_test( NAME skip_validation_test COMMAND skip_validation_test )
 add_dependencies( ci_tests skip_validation_test )
 add_dependencies( full skip_validation_test )
 
+add_executable( dependent_member_order_test src/dependent_member_order_test.cpp )
+target_link_libraries( dependent_member_order_test PRIVATE json_test )
+add_test( NAME dependent_member_order_test COMMAND dependent_member_order_test )
+add_dependencies( ci_tests dependent_member_order_test )
+add_dependencies( full dependent_member_order_test )
+
 add_executable( string_writer_test src/string_writer_test.cpp )
 target_link_libraries( string_writer_test PRIVATE json_test )
 add_test( NAME string_writer_test COMMAND string_writer_test )

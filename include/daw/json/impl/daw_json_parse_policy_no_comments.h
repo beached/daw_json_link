@@ -29,128 +29,31 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		struct NoCommentSkippingPolicy {
-			template<typename ParseState>
-			DAW_ATTRIB_FLATINLINE static constexpr void
-			trim_left_checked( ParseState &parse_state ) {
-				if constexpr( not ParseState::minified_document ) {
-					// SIMD here was much slower, most JSON has very minimal whitespace
-					auto first = parse_state.first;
-					auto const last = parse_state.last;
-					// A null range is a logic error, not bad input
-					daw_json_dbg_ensure( first != nullptr and last != nullptr,
-					                     ErrorReason::InvalidNull );
+		namespace json_details {
+			/// @brief For documents without comments
+			struct no_comment_skipper {
+				/// The character a comment starts with, none
+				static constexpr char comment_start = '\0';
 
-					// only used when not zero terminated string and gcc9 warns
-					(void)last;
-
-					if constexpr( ParseState::is_zero_terminated_string ) {
-						// Ensure that zero terminator isn't included in skipable value
-						DAW_ASSUME( first );
-						while( DAW_UNLIKELY(
-						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-						    1U ) <= 0x1FU ) ) {
-
-							++first;
-						}
-					} else {
-						while(
-						  DAW_LIKELY( first < last ) and
-						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-						    1U ) <= 0x1FU ) {
-							++first;
-						}
-					}
-					parse_state.first = first;
+				/// The end of the comment at first, or first when there is none
+				template<typename ParseState>
+				[[nodiscard]] static constexpr char const *
+				skip( char const *first, char const *, ParseState const & ) {
+					return first;
 				}
-			}
-
-			template<typename ParseState>
-			DAW_ATTRIB_FLATINLINE static constexpr void
-			trim_left_unchecked( ParseState &parse_state ) {
-				if constexpr( not ParseState::minified_document ) {
-					auto first = parse_state.first;
-					// A null range is a logic error, not bad input
-					daw_json_dbg_ensure( first != nullptr, ErrorReason::InvalidNull );
-					while( DAW_UNLIKELY(
-					  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-					    1U ) <= 0x1F ) ) {
-
-						++first;
-					}
-					parse_state.first = first;
-				}
-			}
-
-			template<typename ParseState>
-			DAW_ATTRIB_FLATINLINE static constexpr void
-			move_next_member_unchecked( ParseState &parse_state ) {
-				auto pf = daw::not_null<char const *>( daw::never_null, parse_state.first );
-				auto pl = daw::not_null<char const *>( daw::never_null, parse_state.last );
-				auto const position =
-				  json_details::memchr_unchecked<'"',
-				                                 typename ParseState::exec_tag_t,
-				                                 ParseState::expect_long_strings>( pf,
-				                                                                   pl );
-				parse_state.first = json_details::input_pointer( parse_state.first, position.get( ) );
-			}
-
-			template<char... keys, typename ParseState>
-			DAW_ATTRIB_FLATINLINE static constexpr void
-			move_to_next_of( ParseState &parse_state ) {
-				static_assert( sizeof...( keys ) > 0 );
-				static_assert( sizeof...( keys ) <= 16 );
-
-				if( not json_details::use_constexpr_exec_mode<
-				      typename ParseState::exec_tag_t>( ) ) {
-					auto pf = daw::not_null<char const *>{ parse_state.first };
-					auto pl = daw::not_null<char const *>{ parse_state.last };
-					auto const position =
-					  json_details::mempbrk<ParseState::is_unchecked_input,
-					                        typename ParseState::exec_tag_t,
-					                        ParseState::expect_long_strings,
-					                        keys...>( pf, pl );
-					parse_state.first = json_details::input_pointer( parse_state.first, position.get( ) );
-				} else {
-					auto first = daw::not_null<char const *>( parse_state.first );
-					auto const last = daw::not_null<char const *>( parse_state.last );
-
-					// silencing gcc9 unused warning.  last is used inside if constexpr
-					// blocks
-					(void)last;
-
-					if( ParseState::is_zero_terminated_string ) {
-						daw_json_assert_weak( first < last and *first != '\0',
-						                      ErrorReason::UnexpectedEndOfData,
-						                      parse_state );
-						while( not parse_policy_details::in<keys...>( *first ) ) {
-							++first;
-						}
-						daw_json_assert_weak(
-						  *first != '\0', ErrorReason::UnexpectedEndOfData, parse_state );
-					} else {
-						daw_json_assert_weak(
-						  first < last, ErrorReason::UnexpectedEndOfData, parse_state );
-						while( not parse_policy_details::in<keys...>( *first ) ) {
-							++first;
-							daw_json_assert_weak(
-							  first < last, ErrorReason::UnexpectedEndOfData, parse_state );
-						}
-					}
-					parse_state.first = json_details::input_pointer( parse_state.first, first.get( ) );
-				}
-			}
+			};
 
 			/// Skip the JSON class or array at parse_state.first and check that it
 			/// is structurally valid: brackets close in order, members are a name, a
 			/// colon and a value, and values are separated by commas.  Trailing
 			/// commas are allowed.  Literals and numbers are checked by
-			/// skip_scalar_token_checked.  This must accept and reject the same
-			/// documents as skip_bracketed_item_simd_validated
-			template<json_details::SkipBracketedType BracketedType,
+			/// skip_scalar_token_checked.  Comments are skipped like whitespace by
+			/// CommentSkipper.  Without comments this must accept and reject the
+			/// same documents as skip_bracketed_item_simd_validated
+			template<SkipBracketedType BracketedType, typename CommentSkipper,
 			         typename ParseState>
-			DAW_ATTRIB_FLATTEN static constexpr ParseState
-			skip_bracketed_item_checked( ParseState &parse_state ) {
+			DAW_ATTRIB_FLATTEN constexpr ParseState
+			skip_bracketed_item_validated( ParseState &parse_state ) {
 				DAW_CPP23_STATIC_LOCAL constexpr bool is_class =
 				  BracketedType == json_details::SkipBracketedType::Class;
 				// What may come next at the current depth
@@ -273,6 +176,14 @@ namespace daw::json {
 						if( is_whitespace( c ) ) {
 							break;
 						}
+						if constexpr( CommentSkipper::comment_start != '\0' ) {
+							auto const after_comment =
+							  CommentSkipper::skip( ptr_first, ptr_last, parse_state );
+							if( after_comment != ptr_first ) {
+								ptr_first = after_comment;
+								continue;
+							}
+						}
 						// The start of a literal or number
 						daw_json_ensure( value_allowed,
 						                 state == name_or_end
@@ -280,7 +191,8 @@ namespace daw::json {
 						                   : ErrorReason::ExpectedTokenNotFound,
 						                 parse_state );
 						state = comma_or_end;
-						ptr_first = parse_policy_details::skip_scalar_token_checked(
+						ptr_first = parse_policy_details::skip_scalar_token_checked<
+						  CommentSkipper::comment_start>(
 						  ptr_first, ptr_last, parse_state );
 						continue;
 					}
@@ -289,6 +201,136 @@ namespace daw::json {
 				}
 				// Data ended before the item was closed
 				daw_json_error( true, ErrorReason::InvalidBracketing, parse_state );
+			}
+
+		} // namespace json_details
+
+		struct NoCommentSkippingPolicy {
+			template<typename ParseState>
+			DAW_ATTRIB_FLATINLINE static constexpr void
+			trim_left_checked( ParseState &parse_state ) {
+				if constexpr( not ParseState::minified_document ) {
+					// SIMD here was much slower, most JSON has very minimal whitespace
+					auto first = parse_state.first;
+					auto const last = parse_state.last;
+					// A null range is a logic error, not bad input
+					daw_json_dbg_ensure( first != nullptr and last != nullptr,
+					                     ErrorReason::InvalidNull );
+
+					// only used when not zero terminated string and gcc9 warns
+					(void)last;
+
+					if constexpr( ParseState::is_zero_terminated_string ) {
+						// Ensure that zero terminator isn't included in skipable value
+						DAW_ASSUME( first );
+						while( DAW_UNLIKELY(
+						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
+						    1U ) <= 0x1FU ) ) {
+
+							++first;
+						}
+					} else {
+						while(
+						  DAW_LIKELY( first < last ) and
+						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
+						    1U ) <= 0x1FU ) {
+							++first;
+						}
+					}
+					parse_state.first = first;
+				}
+			}
+
+			template<typename ParseState>
+			DAW_ATTRIB_FLATINLINE static constexpr void
+			trim_left_unchecked( ParseState &parse_state ) {
+				if constexpr( not ParseState::minified_document ) {
+					auto first = parse_state.first;
+					// A null range is a logic error, not bad input
+					daw_json_dbg_ensure( first != nullptr, ErrorReason::InvalidNull );
+					while( DAW_UNLIKELY(
+					  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
+					    1U ) <= 0x1F ) ) {
+
+						++first;
+					}
+					parse_state.first = first;
+				}
+			}
+
+			template<typename ParseState>
+			DAW_ATTRIB_FLATINLINE static constexpr void
+			move_next_member_unchecked( ParseState &parse_state ) {
+				auto pf =
+				  daw::not_null<char const *>( daw::never_null, parse_state.first );
+				auto pl =
+				  daw::not_null<char const *>( daw::never_null, parse_state.last );
+				auto const position =
+				  json_details::memchr_unchecked<'"',
+				                                 typename ParseState::exec_tag_t,
+				                                 ParseState::expect_long_strings>( pf,
+				                                                                   pl );
+				parse_state.first =
+				  json_details::input_pointer( parse_state.first, position.get( ) );
+			}
+
+			template<char... keys, typename ParseState>
+			DAW_ATTRIB_FLATINLINE static constexpr void
+			move_to_next_of( ParseState &parse_state ) {
+				static_assert( sizeof...( keys ) > 0 );
+				static_assert( sizeof...( keys ) <= 16 );
+
+				if( not json_details::use_constexpr_exec_mode<
+				      typename ParseState::exec_tag_t>( ) ) {
+					auto pf = daw::not_null<char const *>{ parse_state.first };
+					auto pl = daw::not_null<char const *>{ parse_state.last };
+					auto const position =
+					  json_details::mempbrk<ParseState::is_unchecked_input,
+					                        typename ParseState::exec_tag_t,
+					                        ParseState::expect_long_strings,
+					                        keys...>( pf, pl );
+					parse_state.first =
+					  json_details::input_pointer( parse_state.first, position.get( ) );
+				} else {
+					auto first = daw::not_null<char const *>( parse_state.first );
+					auto const last = daw::not_null<char const *>( parse_state.last );
+
+					// silencing gcc9 unused warning.  last is used inside if constexpr
+					// blocks
+					(void)last;
+
+					if( ParseState::is_zero_terminated_string ) {
+						daw_json_assert_weak( first < last and *first != '\0',
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
+						while( not parse_policy_details::in<keys...>( *first ) ) {
+							++first;
+						}
+						daw_json_assert_weak(
+						  *first != '\0', ErrorReason::UnexpectedEndOfData, parse_state );
+					} else {
+						daw_json_assert_weak(
+						  first < last, ErrorReason::UnexpectedEndOfData, parse_state );
+						while( not parse_policy_details::in<keys...>( *first ) ) {
+							++first;
+							daw_json_assert_weak(
+							  first < last, ErrorReason::UnexpectedEndOfData, parse_state );
+						}
+					}
+					parse_state.first =
+					  json_details::input_pointer( parse_state.first, first.get( ) );
+				}
+			}
+
+			/// Skip the JSON class or array at parse_state.first and check that it
+			/// is structurally valid, see json_details::skip_bracketed_item_validated
+			template<json_details::SkipBracketedType BracketedType,
+			         typename ParseState>
+			DAW_ATTRIB_INLINE static constexpr ParseState
+			skip_bracketed_item_checked( ParseState &parse_state ) {
+				return json_details::skip_bracketed_item_validated<
+				  BracketedType,
+				  json_details::no_comment_skipper>( parse_state );
 			}
 
 			template<json_details::SkipBracketedType BracketedType,

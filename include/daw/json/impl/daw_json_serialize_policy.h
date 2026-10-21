@@ -60,7 +60,7 @@ namespace daw::json {
 			static_assert(
 			  concepts::is_writable_output_type_v<WritableType>,
 			  "Output type does not have a writeable_output_trait specialization" );
-			using i_am_a_serialization_policy = void;
+			using i_am_a_json_serialization_policy = void;
 			WritableType *m_writable;
 
 			DAW_ATTRIB_INLINE static DAW_CONSTEVAL json_options_t policy_flags( ) {
