@@ -178,6 +178,15 @@ namespace daw::json {
 			  default_json_option_value<options::ExcludeSpecialEscapes> =
 			    options::ExcludeSpecialEscapes::no;
 
+			template<>
+			inline constexpr unsigned
+			  json_option_bits_width<options::AllowLeadingZeroPlus> = 1;
+
+			template<>
+			inline constexpr auto
+			  default_json_option_value<options::AllowLeadingZeroPlus> =
+			    options::AllowLeadingZeroPlus::yes;
+
 			using policy_list = typename option_list_impl<
 			  options::ExecModeTypes, options::ZeroTerminatedString,
 			  options::AllowStringMutation, options::PolicyCommentTypes,
@@ -185,7 +194,8 @@ namespace daw::json {
 			  options::IEEE754Precise, options::ForceFullNameCheck,
 			  options::MinifiedDocument, options::UseExactMappingsByDefault,
 			  options::MustVerifyEndOfDataIsValid, options::ExcludeSpecialEscapes,
-			  options::ExpectLongNames, options::ArrayReserve>::type;
+			  options::ExpectLongNames, options::ArrayReserve,
+			  options::AllowLeadingZeroPlus>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =

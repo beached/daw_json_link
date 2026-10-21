@@ -101,7 +101,7 @@ int main( ) {
 	},{
     "uid":2,
     "factive":1,
-		"id":"b1"
+		"id":"b1",
     "volts":110
 	}]
 }

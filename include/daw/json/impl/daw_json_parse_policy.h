@@ -125,8 +125,12 @@ namespace daw::json {
 			  json_details::get_bits_for<options::ExcludeSpecialEscapes>(
 			    PolicyFlags ) == options::ExcludeSpecialEscapes::yes;
 
-			/// @brief Allow numbers with leading zeros and pluses when parsing
-			static constexpr bool allow_leading_zero_plus = true;
+			/***
+			 * See options::AllowLeadingZeroPlus
+			 */
+			static constexpr bool allow_leading_zero_plus =
+			  json_details::get_bits_for<options::AllowLeadingZeroPlus>(
+			    PolicyFlags ) == options::AllowLeadingZeroPlus::yes;
 
 			static constexpr bool use_exact_mappings_by_default =
 			  json_details::get_bits_for<options::UseExactMappingsByDefault>(
@@ -434,10 +438,6 @@ namespace daw::json {
 				return CommentPolicy::trim_left_unchecked( *this );
 			}
 
-			[[nodiscard]] constexpr bool is_literal_end( ) const {
-				return CommentPolicy::is_literal_end( *first );
-			}
-
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
 			is_space_unchecked( ) const {
 				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
@@ -499,6 +499,24 @@ namespace daw::json {
 				}
 			}
 
+			/// Like move_next_member_or_end, when a value has just been skipped.
+			/// Without a comma the value has to be the last in its class or array
+			DAW_ATTRIB_INLINE constexpr void move_next_member_or_end_after_value( ) {
+				if constexpr( is_unchecked_input ) {
+					move_next_member_or_end_unchecked( );
+				} else {
+					trim_left_checked( );
+					if( DAW_LIKELY( first < last ) and *first == ',' ) {
+						++first;
+						trim_left( );
+						return;
+					}
+					daw_json_ensure( empty( ) or *first == '}' or *first == ']',
+					                 ErrorReason::ExpectedTokenNotFound,
+					                 *this );
+				}
+			}
+
 			DAW_ATTRIB_INLINE constexpr void move_next_member( ) {
 				if constexpr( is_unchecked_input ) {
 					CommentPolicy::move_next_member_unchecked( *this );
@@ -539,20 +557,22 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy skip_class( ) {
-#if defined( DAW_JSON_HAS_STD_SIMD )
+#if defined( DAW_JSON_HAS_SIMD )
+				// SIMD is slower than the scalar skip during constant evaluation
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
-					return json_details::skip_bracketed_item_simd<
-					  json_details::SkipBracketedType::Class>( *this );
-				} else
-#elif defined( DAW_JSON_HAS_SIMD )
-				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
-					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
-						return json_details::skip_bracketed_item_simd<
-						  json_details::SkipBracketedType::Class>( *this );
+					if( not json_details::use_constexpr_exec_mode<exec_tag_t>( ) and
+					    json_details::use_simd_exec_mode<exec_tag_t>( ) ) {
+						if constexpr( is_unchecked_input ) {
+							return json_details::skip_bracketed_item_simd<
+							  json_details::SkipBracketedType::Class>( *this );
+						} else {
+							return json_details::skip_bracketed_item_simd_validated<
+							  json_details::SkipBracketedType::Class>( *this );
+						}
 					}
 				}
 #endif
-				  if constexpr( is_unchecked_input ) {
+				if constexpr( is_unchecked_input ) {
 					return skip_bracketed_item_unchecked<
 					  json_details::SkipBracketedType::Class>( );
 				} else {
@@ -562,20 +582,22 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy skip_array( ) {
-#if defined( DAW_JSON_HAS_STD_SIMD )
+#if defined( DAW_JSON_HAS_SIMD )
+				// SIMD is slower than the scalar skip during constant evaluation
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
-					return json_details::skip_bracketed_item_simd<
-					  json_details::SkipBracketedType::Array>( *this );
-				} else
-#elif defined( DAW_JSON_HAS_SIMD )
-				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
-					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
-						return json_details::skip_bracketed_item_simd<
-						  json_details::SkipBracketedType::Array>( *this );
+					if( not json_details::use_constexpr_exec_mode<exec_tag_t>( ) and
+					    json_details::use_simd_exec_mode<exec_tag_t>( ) ) {
+						if constexpr( is_unchecked_input ) {
+							return json_details::skip_bracketed_item_simd<
+							  json_details::SkipBracketedType::Array>( *this );
+						} else {
+							return json_details::skip_bracketed_item_simd_validated<
+							  json_details::SkipBracketedType::Array>( *this );
+						}
 					}
 				}
 #endif
-				  if constexpr( is_unchecked_input ) {
+				if constexpr( is_unchecked_input ) {
 					return skip_bracketed_item_unchecked<
 					  json_details::SkipBracketedType::Array>( );
 				} else {

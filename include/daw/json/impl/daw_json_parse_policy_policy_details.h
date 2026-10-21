@@ -13,6 +13,8 @@
 #include "daw_json_assert.h"
 
 #include <daw/daw_attributes.h>
+
+#include <cstddef>
 #include <type_traits>
 
 namespace daw::json {
@@ -154,6 +156,104 @@ namespace daw::json {
 					return true;
 				}
 				return false;
+			}
+
+			/// Check the literal or number that starts at first and return its
+			/// end.  The bracket skips use this for the scalars they pass over.
+			/// Numbers follow the JSON grammar, with a leading '+' and leading
+			/// zeros also allowed when ParseState::allow_leading_zero_plus is set.
+			/// A token has to end at the end of the data, whitespace, a structural
+			/// character or a quote
+			template<typename ParseState>
+			[[nodiscard]] constexpr char const *
+			skip_scalar_token_checked( char const *first, char const *const last,
+			                           ParseState const &parse_state ) {
+				auto const literal =
+				  [&]( char const *word, std::ptrdiff_t size, ErrorReason reason ) {
+					  bool matches = last - first >= size;
+					  for( std::ptrdiff_t n = 1; matches and n < size; ++n ) {
+						  matches = first[n] == word[n];
+					  }
+					  daw_json_ensure( matches, reason, parse_state );
+					  first += size;
+				  };
+				auto const digits = [&] {
+					auto const start = first;
+					while( first < last and is_number( *first ) ) {
+						++first;
+					}
+					return first != start;
+				};
+
+				switch( *first ) {
+				case 't':
+					literal( "true", 4, ErrorReason::InvalidTrue );
+					break;
+				case 'f':
+					literal( "false", 5, ErrorReason::InvalidFalse );
+					break;
+				case 'n':
+					literal( "null", 4, ErrorReason::InvalidNull );
+					break;
+				default:
+					if constexpr( ParseState::allow_leading_zero_plus ) {
+						daw_json_ensure( *first == '-' or *first == '+' or
+						                   is_number( *first ),
+						                 ErrorReason::InvalidStartOfValue,
+						                 parse_state );
+						if( *first == '-' or *first == '+' ) {
+							++first;
+						}
+						daw_json_ensure(
+						  digits( ), ErrorReason::InvalidNumberStart, parse_state );
+					} else {
+						daw_json_ensure( *first == '-' or is_number( *first ),
+						                 ErrorReason::InvalidStartOfValue,
+						                 parse_state );
+						if( *first == '-' ) {
+							++first;
+						}
+						if( first < last and *first == '0' ) {
+							++first;
+						} else {
+							daw_json_ensure(
+							  digits( ), ErrorReason::InvalidNumberStart, parse_state );
+						}
+					}
+					if( first < last and *first == '.' ) {
+						++first;
+						daw_json_ensure(
+						  digits( ), ErrorReason::InvalidNumber, parse_state );
+					}
+					if( first < last and ( *first == 'e' or *first == 'E' ) ) {
+						++first;
+						if( first < last and ( *first == '+' or *first == '-' ) ) {
+							++first;
+						}
+						daw_json_ensure(
+						  digits( ), ErrorReason::InvalidNumber, parse_state );
+					}
+					break;
+				}
+				if( first < last ) {
+					switch( *first ) {
+					case '{':
+					case '}':
+					case '[':
+					case ']':
+					case ',':
+					case ':':
+					case '"':
+						break;
+					default:
+						daw_json_ensure(
+						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
+						    1U ) <= 0x1FU,
+						  ErrorReason::InvalidEndOfValue,
+						  parse_state );
+					}
+				}
+				return first;
 			}
 		} // namespace parse_policy_details
 	} // namespace DAW_JSON_VER

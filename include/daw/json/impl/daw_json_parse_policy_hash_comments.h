@@ -108,10 +108,6 @@ namespace daw::json {
 				}
 			}
 
-			DAW_ATTRIB_FLATINLINE static constexpr bool is_literal_end( char c ) {
-				return c == '\0' or c == ',' or c == ']' or c == '}' or c == '#';
-			}
-
 			template<json_details::SkipBracketedType BracketedType,
 			         typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState

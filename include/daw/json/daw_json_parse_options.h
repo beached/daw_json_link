@@ -176,6 +176,16 @@ namespace daw::json {
 					elements_512,
 					elements_1024
 				}; // 4bits
+
+				///
+				/// @brief Allow skipped numbers to start with a '+' and to have
+				/// leading zeros, e.g. +1 and 007.  These are not valid JSON.  This
+				/// applies to members that are not mapped and to the contents of
+				/// skipped classes and arrays, mapped numbers are always checked
+				///
+				/// default: yes
+				///
+				enum class AllowLeadingZeroPlus : unsigned { no, yes }; // 1bit
 			} // namespace parser_options
 		} // namespace options
 	} // namespace DAW_JSON_VER

@@ -218,7 +218,7 @@ namespace daw::json {
 						(void)json_details::parse_name( m_state );
 					}
 					(void)json_details::skip_value( m_state );
-					m_state.move_next_member_or_end( );
+					m_state.move_next_member_or_end_after_value( );
 				}
 				return *this;
 			}

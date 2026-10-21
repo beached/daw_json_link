@@ -113,3 +113,18 @@ This only affects the default constructor for `std::vector`. Custom constructors
 ### Default
 
 * `none`
+
+## `AllowLeadingZeroPlus`
+
+Accept skipped numbers that start with a `+` or have leading zeros in their whole part, e.g. `+1`, `007` and
+`-00.5`. These are not valid JSON. Skipped numbers are those of members that are not mapped and those inside skipped
+classes and arrays. Mapped numbers always follow the JSON grammar.
+
+### Values
+
+* `yes` - A leading `+` and leading zeros are allowed in skipped numbers
+* `no` - Skipped numbers follow the JSON grammar
+
+### Default
+
+* `yes`

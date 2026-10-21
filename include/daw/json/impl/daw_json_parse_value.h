@@ -1035,7 +1035,7 @@ namespace daw::json {
 					while( ( current_position < desired_position ) &
 					       ( skip_check_end::value or parse_state.front( ) != ']' ) ) {
 						(void)skip_value( parse_state );
-						parse_state.move_next_member_or_end( );
+						parse_state.move_next_member_or_end_after_value( );
 						++current_position;
 						daw_json_assert_weak( parse_state.has_more( ),
 						                      ErrorReason::UnexpectedEndOfData,
@@ -1095,7 +1095,7 @@ namespace daw::json {
 						if( current != daw::data_end( parse_locations ) ) {
 							current->state = state;
 						}
-						parse_state.move_next_member_or_end( );
+						parse_state.move_next_member_or_end_after_value( );
 						++current_position;
 						daw_json_assert_weak( parse_state.has_more( ),
 						                      ErrorReason::UnexpectedEndOfData,

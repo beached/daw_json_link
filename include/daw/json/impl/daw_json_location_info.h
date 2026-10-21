@@ -201,7 +201,7 @@ namespace daw::json {
 						if( name_pos >= std::size( locations ) ) {
 							// This is not a member we are concerned with
 							(void)skip_value( parse_state );
-							parse_state.move_next_member_or_end( );
+							parse_state.move_next_member_or_end_after_value( );
 							continue;
 						}
 					}
@@ -235,7 +235,7 @@ namespace daw::json {
 								parse_state.move_next_member_or_end( );
 							}
 						} else {
-							parse_state.move_next_member_or_end( );
+							parse_state.move_next_member_or_end_after_value( );
 						}
 					}
 				}
