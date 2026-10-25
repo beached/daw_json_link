@@ -157,6 +157,7 @@ namespace daw::json {
 					carry_state carry;
 				};
 
+				template<bool TrackStringMetadata = true>
 				[[nodiscard]] DAW_ATTRIB_INLINE static classified_block
 				classify_block( char const *first, std::size_t count,
 				                carry_state carry ) {
@@ -240,21 +241,21 @@ namespace daw::json {
 
 					auto const open_quotes = quote_bits & in_string_bits;
 
-					auto const close_quotes = quote_bits & ~in_string_bits;
+					auto close_quotes = std::uint64_t{ 0 };
+					auto escaped_closes = std::uint64_t{ 0 };
+					if constexpr( TrackStringMetadata ) {
+						close_quotes = quote_bits & ~in_string_bits;
 
-					// Adding a string's first bit carries through its bytes up to the
-					// first backslash, or to its closing quote when there is none
-					auto const clean_bytes = in_string_bits & ~backslash_bits;
-
-					auto const string_starts =
-					  open_quotes |
-					  ( carry.in_string and carry.string_clean ? std::uint64_t{ 1 } : 0 );
-
-					auto const carried = clean_bytes + string_starts;
-
-					auto const escaped_closes = close_quotes & ~carried;
-
-					carry.string_clean = carried < clean_bytes;
+						// Adding a string's first bit carries through its bytes up to the
+						// first backslash, or to its closing quote when there is none
+						auto const clean_bytes = in_string_bits & ~backslash_bits;
+						auto const string_starts =
+						  open_quotes |
+						  ( carry.in_string and carry.string_clean ? std::uint64_t{ 1 } : 0 );
+						auto const carried = clean_bytes + string_starts;
+						escaped_closes = close_quotes & ~carried;
+						carry.string_clean = carried < clean_bytes;
+					}
 					carry.in_string = last_bit( in_string_bits, count );
 					carry.in_token = last_bit( token, count );
 
@@ -308,16 +309,14 @@ namespace daw::json {
 				explicit constexpr lexer_cursor( char const *last ) noexcept
 				  : m_last( last ) {}
 
-				/// Build the ordered structural offsets for a complete range. Opening
-				/// and closing quotes both occupy an entry. The metadata entry for an
-				/// opening quote records whether its string contains an escape, other
-				/// entries are left 0.  A scalar ends before the next entry, with only
-				/// whitespace between.  offsets and metadata each need room for
-				/// doc.size( ) + structural_index_padding entries.
-				template<typename Offsets, typename Metadata>
+				/// Build the ordered structural offsets for a complete range. Strings
+				/// occupy one entry at their opening quote. A scalar or string ends before
+				/// the next entry, with only whitespace between. offsets[token_count] is
+				/// a document-end sentinel and offsets needs room for doc.size( ) plus
+				/// structural_index_padding entries.
+				template<typename Offsets>
 				[[nodiscard]] static inline structural_index_result
-				build_structural_index( std::string_view const doc, Offsets &&offsets,
-				                        Metadata &&metadata ) {
+				build_structural_index( std::string_view const doc, Offsets &&offsets ) {
 					auto carry = carry_state{ };
 					auto token_count = std::uint32_t{ 0 };
 					auto const doc_sz = doc.size( );
@@ -325,17 +324,16 @@ namespace daw::json {
 					     block_offset += block_size ) {
 						auto const remaining = doc.size( ) - block_offset;
 						auto const count = remaining < block_size ? remaining : block_size;
-						auto const classified =
-						  classify_block( doc.data( ) + block_offset, count, carry );
-						auto const offsets_mask = classified.events | classified.closes;
+						auto const classified = classify_block<false>(
+						  doc.data( ) + block_offset, count, carry );
+						auto const offsets_mask = classified.events;
 						auto const index_offset =
 						  static_cast<std::uint32_t>( block_offset );
-						auto const block_first = token_count;
 
 						// Eight stores at a time, without branches on the kind of entry,
 						// so the loop exit is predictable.  Stores past the block's
 						// entries land in the padding or are overwritten by the next
-						// block.  An opening quote is left clean and fixed up below
+						// block.
 						auto const entry_count = static_cast<std::uint32_t>(
 						  daw::cxmath::popcount( offsets_mask ) );
 						auto offset_bits = offsets_mask;
@@ -346,32 +344,16 @@ namespace daw::json {
 								  index_offset +
 								  daw::cxmath::count_trailing_zeros(
 								    offset_bits | ( std::uint64_t{ 1 } << 63U ) );
-								metadata[entry + n] = 0;
 								offset_bits = daw::cxmath::blsr( offset_bits );
 							}
 						}
 						token_count += entry_count;
-
-						// The entry of an opening quote is the number of entries in the
-						// block before its closing quote, less one
-						auto escaped_bits = classified.escaped_closes;
-						while( escaped_bits != 0 ) {
-							auto const bit = escaped_bits & ( ~escaped_bits + 1U );
-							metadata[block_first +
-							         static_cast<std::uint32_t>(
-							           daw::cxmath::popcount( offsets_mask & ( bit - 1U ) ) ) -
-							         1U] = 1U;
-							escaped_bits = daw::cxmath::blsr( escaped_bits );
-						}
 						carry = classified.carry;
 					}
+					offsets[token_count] = static_cast<std::uint32_t>( doc_sz );
 					if constexpr( not std::is_pointer_v<
 					                std::remove_reference_t<Offsets>> ) {
 						offsets.set_size( token_count );
-					}
-					if constexpr( not std::is_pointer_v<
-					                std::remove_reference_t<Metadata>> ) {
-						metadata.set_size( token_count );
 					}
 					return structural_index_result{ token_count, carry.in_string };
 				}

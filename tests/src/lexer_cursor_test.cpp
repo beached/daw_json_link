@@ -234,44 +234,19 @@ namespace {
 		auto const capacity =
 		  doc.size( ) + lexer_cursor::structural_index_padding;
 		auto offsets = std::vector<std::uint32_t>( capacity );
-		auto metadata = std::vector<std::uint32_t>( capacity, ~std::uint32_t{ 0 } );
 		auto const result = lexer_cursor::build_structural_index(
-		  std::string_view( data, doc.size( ) ), offsets.data( ), metadata.data( ) );
+		  std::string_view( data, doc.size( ) ), offsets.data( ) );
 
 		auto expected_offsets = std::vector<std::size_t>{ };
 		for( auto const &event : ref.events ) {
 			expected_offsets.push_back( event.pos );
-			if( event.close != no_close ) {
-				expected_offsets.push_back( event.close );
-			}
 		}
 		std::sort( expected_offsets.begin( ), expected_offsets.end( ) );
 		daw_ensure( result.size == expected_offsets.size( ) );
 		for( std::size_t n = 0; n < expected_offsets.size( ); ++n ) {
 			daw_ensure( offsets[n] == expected_offsets[n] );
 		}
-		for( auto const &event : ref.events ) {
-			if( event.is_string ) {
-				if( event.close != no_close ) {
-					auto const opening = std::lower_bound(
-					  expected_offsets.begin( ), expected_offsets.end( ), event.pos );
-					auto const token = static_cast<std::size_t>(
-					  opening - expected_offsets.begin( ) );
-					daw_ensure(
-					  metadata[token] == static_cast<std::uint32_t>( event.escaped ) );
-				}
-				continue;
-			}
-			if( is_structural( doc[event.pos] ) ) {
-				continue;
-			}
-			// A scalar has no metadata, it ends before the next entry
-			auto const scalar = std::lower_bound(
-			  expected_offsets.begin( ), expected_offsets.end( ), event.pos );
-			auto const token = static_cast<std::size_t>(
-			  scalar - expected_offsets.begin( ) );
-			daw_ensure( metadata[token] == 0 );
-		}
+		daw_ensure( offsets[result.size] == doc.size( ) );
 		daw_ensure( result.in_string == ref.ends_in_string );
 	}
 

@@ -102,29 +102,30 @@ namespace daw::json {
 				unique_array_t &operator=( unique_array_t const & ) = delete;
 
 				[[nodiscard]] inline T &operator[]( std::size_t idx ) noexcept {
+					daw_dbg_ensure( m_size < m_capacity );
 					return m_data[idx];
 				}
 
 				[[nodiscard]] inline T const &
 				operator[]( std::size_t idx ) const noexcept {
+					daw_dbg_ensure( m_size < m_capacity );
 					return m_data[idx];
 				}
 
 				template<typename... Args>
 				inline T &construct_at( std::size_t idx, Args &&...args ) {
+					daw_dbg_ensure( m_size < m_capacity );
 					return *std::construct_at(
 					  m_data + static_cast<std::ptrdiff_t>( idx ), DAW_FWD( args )... );
 				}
 
 				template<typename U>
 				inline T &push_back( U &&value ) {
-					daw_dbg_ensure( m_size < m_capacity );
 					return construct_at( m_size++, DAW_FWD( value ) );
 				}
 
 				template<typename... Args>
 				inline T &emplace_back( Args &&...args ) {
-					daw_dbg_ensure( m_size < m_capacity );
 					return construct_at( m_size++, DAW_FWD( args )... );
 				}
 
@@ -147,10 +148,9 @@ namespace daw::json {
 			};
 			struct structural_index {
 				std::string_view doc;
-				// Opening containers store the token after their close, closing
-				// containers store their immediate value count, and opening string
-				// quotes record whether the string contains an escape.  Scalars have
-				// no metadata, they end before the next entry.
+				// Opening containers store the token after their close and closing
+				// containers store their immediate value count. Scalars and strings
+				// have no metadata; they end before the next entry.
 				unique_array_t<index_type> entries;
 				unique_array_t<index_type> meta_data;
 
@@ -181,11 +181,11 @@ namespace daw::json {
 				[[nodiscard]] inline char const *
 				byte_end( location loc ) const noexcept {
 					auto const kind = *get( loc.first );
-					if( kind == '{' or kind == '[' or kind == '"' ) {
+					if( kind == '{' or kind == '[' ) {
 						return get( loc.last - 1 ) + 1;
 					}
 					// The next entry, whitespace may come before it
-					return loc.last < size( ) ? get( loc.last ) : daw::data_end( doc );
+					return get( loc.last );
 				}
 
 				[[nodiscard]] inline location_info_t<>
@@ -193,20 +193,6 @@ namespace daw::json {
 					location_info_t<> result;
 					result.first = get( loc.first );
 					result.last = byte_end( loc );
-					if( *result.first == '"' ) {
-						result.counter =
-						  metadata( loc.first ) == 0 ? static_cast<std::size_t>( -1 ) : 0;
-					}
-					return result;
-				}
-
-				[[nodiscard]] inline location_info_t<>
-				string_bounds( location loc ) const noexcept {
-					location_info_t<> result;
-					result.first = get( loc.first );
-					result.last = get( loc.first + 1 ) + 1;
-					result.counter =
-					  metadata( loc.first ) == 0 ? static_cast<std::size_t>( -1 ) : 0;
 					return result;
 				}
 			};
@@ -218,14 +204,15 @@ namespace daw::json {
 				daw_json_error( true, reason, State( position, last ) );
 			}
 
-			// Build a minified structural view. Strings occupy two entries (their
-			// opening and closing quotes); all other entries are structural
+			// Build a minified structural view. Strings occupy one entry at their
+			// opening quote; all other entries are structural
 			// characters or scalar starts. A scalar ends before the next entry.
 			// Scalar validation stays lazy.
 			template<typename ParseState>
 			inline structural_index build_index(
 			  std::string_view doc,
 			  daw::not_null<std::pmr::memory_resource *> memory_resource ) {
+
 				if( DAW_UNLIKELY( doc.size( ) > daw::max_value<index_type> ) ) {
 					DAW_UNLIKELY_BRANCH
 					index_error<ParseState>(
@@ -235,12 +222,17 @@ namespace daw::json {
 				// maximum possible entry count. Allocate each table once.
 				auto const capacity =
 				  doc.size( ) + lexer_cursor::structural_index_padding;
+
 				auto result = structural_index{
 				  doc,
 				  unique_array_t<index_type>( memory_resource, capacity ),
 				  unique_array_t<index_type>( memory_resource, capacity ) };
-				auto const built = lexer_cursor::build_structural_index(
-				  doc, result.entries, result.meta_data );
+
+				auto const built =
+				  lexer_cursor::build_structural_index( doc, result.entries );
+
+				result.meta_data.set_size( built.size );
+
 				if( DAW_UNLIKELY( built.in_string ) ) {
 					DAW_UNLIKELY_BRANCH
 					index_error<ParseState>( doc.data( ),
@@ -259,9 +251,6 @@ namespace daw::json {
 			inline location value_range( structural_index const &index,
 			                             index_type token ) noexcept {
 				auto const kind = *index[token];
-				if( kind == '"' ) {
-					return { token, static_cast<index_type>( token + 2 ), 0 };
-				}
 				if( kind != '{' and kind != '[' ) {
 					return { token, static_cast<index_type>( token + 1 ), 0 };
 				}
@@ -330,7 +319,7 @@ namespace daw::json {
 						                    daw::data_end( index.doc ),
 						                    ErrorReason::InvalidStartOfValue );
 					case '"':
-						pos = static_cast<index_type>( pos + 2 );
+						++pos;
 						break;
 					case '{':
 					case '[': {
@@ -388,14 +377,14 @@ namespace daw::json {
 							}
 							break;
 						}
-						if( DAW_UNLIKELY( current != '"' or pos + 2 >= index.size( ) or
-						                  *index[pos + 2] != ':' ) ) {
+						if( DAW_UNLIKELY( current != '"' or pos + 1 >= index.size( ) or
+						                  *index[pos + 1] != ':' ) ) {
 							DAW_UNLIKELY_BRANCH
 							index_error<State>( index[pos],
 							                    daw::data_end( index.doc ),
 							                    ErrorReason::MissingMemberNameOrEndOfClass );
 						}
-						pos = static_cast<index_type>( pos + 3 );
+						pos = static_cast<index_type>( pos + 2 );
 						container.state = container_state::object_value;
 						break;
 					case container_state::object_value:
@@ -547,12 +536,21 @@ namespace daw::json {
 			}
 
 			template<typename State>
-			inline daw::string_view read_member_name( reader<State> &r ) noexcept {
+			inline daw::string_view read_member_name( reader<State> &r ) {
 				auto const first = r.index[r.position];
-				auto const last = r.index[r.position + 1];
-				r.position = static_cast<index_type>( r.position + 3 );
+				auto const colon = r.index[r.position + 1];
+				auto last = colon;
+				while( last > first and
+				       static_cast<unsigned char>( last[-1] ) - 1U < 0x20U ) {
+					--last;
+				}
+				if( DAW_UNLIKELY( last <= first + 1 or last[-1] != '"' ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, first, ErrorReason::InvalidMemberName );
+				}
+				r.position = static_cast<index_type>( r.position + 2 );
 				return daw::string_view( first + 1,
-				                         static_cast<std::size_t>( last - first - 1 ) );
+				                         static_cast<std::size_t>( last - first - 2 ) );
 			}
 
 			// Name has fixed length at each instantiation, allowing the compiler
@@ -630,7 +628,8 @@ namespace daw::json {
 			inline bool literal( location_info_t<> const &loc, char const *value,
 			                     std::size_t length ) {
 				auto const size = static_cast<std::size_t>( loc.last - loc.first );
-				return size >= length and std::memcmp( loc.first, value, length ) == 0 and
+				return size >= length and
+				       std::memcmp( loc.first, value, length ) == 0 and
 				       ( size == length or
 				         static_cast<unsigned char>( loc.first[length] ) - 1U < 0x20U );
 			}
@@ -853,12 +852,12 @@ namespace daw::json {
 				}
 			}
 
-			template<typename JsonMember, typename State>
+			template<typename JsonMember, typename ParseState>
 			inline json_result_t<JsonMember>
-			read_location( location const &loc, reader<State> const &parent ) {
+			read_location( location const &loc, reader<ParseState> const &parent ) {
 				DAW_CPP23_STATIC_LOCAL constexpr auto type = JsonMember::expected_type;
 				if constexpr( type == JsonParseTypes::Null ) {
-					auto state = State( );
+					auto state = ParseState( );
 					if( not loc.missing( ) ) {
 						auto const first = parent.index[loc.first];
 						if( *first == 'n' ) {
@@ -868,12 +867,12 @@ namespace daw::json {
 								error_at( parent, bounds.first, ErrorReason::InvalidNull );
 							}
 						} else {
-							state = State( first, parent.last );
+							state = ParseState( first, parent.last );
 						}
 					}
 					return parse_value_null<JsonMember, true>(
 					  state,
-					  nullable_parser<typename JsonMember::member_type, State>{
+					  nullable_parser<typename JsonMember::member_type, ParseState>{
 					    loc, parent } );
 				} else {
 					if( DAW_UNLIKELY( loc.missing( ) ) ) {
@@ -892,7 +891,7 @@ namespace daw::json {
 						  std::make_index_sequence<std::tuple_size_v<
 						    typename tuple_members<JsonMember>::types>>{ } );
 					} else if constexpr( type == JsonParseTypes::Array ) {
-						auto r = reader<State>( parent.index, loc );
+						auto r = reader<ParseState>( parent.index, loc );
 						auto const event = r.peek( );
 						if( DAW_UNLIKELY( event == nullptr or *event != '[' ) ) {
 							DAW_UNLIKELY_BRANCH
@@ -901,7 +900,7 @@ namespace daw::json {
 						r.pop( );
 						auto state = r.state_at( event );
 						using iterator =
-						  array_iterator<typename JsonMember::json_element_t, State>;
+						  array_iterator<typename JsonMember::json_element_t, ParseState>;
 						return construct_value<json_result_t<JsonMember>,
 						                       json_constructor_t<JsonMember>>(
 						  state, iterator( r, loc.count ), iterator( ) );
@@ -912,22 +911,16 @@ namespace daw::json {
 							DAW_UNLIKELY_BRANCH
 							error_at( parent, first, ErrorReason::InvalidString );
 						}
-						auto bounds = parent.index.string_bounds( loc );
-						auto state = State( bounds.first,
-						                    bounds.last,
-						                    bounds.class_first,
-						                    bounds.class_last,
-						                    bounds.counter );
-						++state.first;
-						--state.last;
-						return parse_value<JsonMember, true, type>( state );
+						auto const bounds = parent.index.bounds( loc );
+						auto state = ParseState( bounds.first, bounds.last );
+						return parse_value<JsonMember, false, type>( state );
 					} else {
 						auto bounds = parent.index.bounds( loc );
-						auto state = State( bounds.first,
-						                    bounds.last,
-						                    bounds.class_first,
-						                    bounds.class_last,
-						                    bounds.counter );
+						auto state = ParseState( bounds.first,
+						                         bounds.last,
+						                         bounds.class_first,
+						                         bounds.class_last,
+						                         bounds.counter );
 						if constexpr( unquoted_scalar<JsonMember>( ) ) {
 							// The bounds end at the next entry, not the number, so the
 							// parsers that find the end are used
@@ -952,7 +945,8 @@ namespace daw::json {
 				auto index = build_index<ParseState>( doc, memory_resource );
 				auto const loc = prepare_root<ParseState>( index );
 				if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
-					if( loc.last != index.size( ) ) {
+					if( DAW_UNLIKELY( loc.last != index.size( ) ) ) {
+						DAW_UNLIKELY_BRANCH
 						index_error<ParseState>( index[loc.last],
 						                         daw::data_end( index.doc ),
 						                         ErrorReason::InvalidEndOfValue );
