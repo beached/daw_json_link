@@ -11,6 +11,7 @@
 #include "daw/json/impl/version.h"
 
 #include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_lexer_cursor.h"
 #include "daw/json/impl/daw_json_parse_policy_policy_details.h"
 #include "daw/json/impl/daw_json_simd.h"
 
@@ -28,55 +29,19 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			namespace skip_bracketed_item_simd_details {
-				using simd_type = daw::simd::vec<char>;
+				using lexer_cursor_details::last_bit;
+				using lexer_cursor_details::low_bits;
+				using lexer_cursor_details::one_of;
+				using lexer_cursor_details::prefix_xor;
+				using lexer_cursor_details::simd_type;
+				using lexer_cursor_details::splat;
 				static constexpr std::size_t block_size =
-				  static_cast<std::size_t>( simd_type::size( ) );
-				static_assert( block_size <= 64 );
-
-				[[nodiscard]] constexpr std::uint64_t
-				low_bits( std::size_t count ) noexcept {
-					return count == 64 ? ~std::uint64_t{ 0 }
-					                   : ( std::uint64_t{ 1 } << count ) - 1;
-				}
-
-				[[nodiscard]] constexpr std::uint64_t
-				prefix_xor( std::uint64_t bits ) noexcept {
-					bits ^= bits << 1U;
-					bits ^= bits << 2U;
-					bits ^= bits << 4U;
-					bits ^= bits << 8U;
-					bits ^= bits << 16U;
-					bits ^= bits << 32U;
-					return bits;
-				}
-
-				[[nodiscard]] constexpr bool last_bit( std::uint64_t bits,
-				                                       std::size_t count ) noexcept {
-					return count != 0 and
-					       ( ( bits >> ( count - 1U ) ) & std::uint64_t{ 1 } ) != 0;
-				}
-
-				[[nodiscard]]
-#if defined( DAW_JSON_HAS_STD_SIMD )
-				consteval
-#else
-				DAW_ATTRIB_INLINE
-#endif
-				  simd_type splat( char value ) noexcept {
-					return simd_type( value );
-				}
-
-				template<char... Values>
-				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR auto one_of( simd_type value ) {
-					return ( ( value == splat( Values ) ) | ... );
-				}
-
+				  lexer_cursor_details::simd_size;
 				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR simd_type
 				load( char const *first, std::size_t count ) {
-					if( count == block_size ) {
+					if( count == block_size )
 						return daw::simd::unchecked_load<simd_type>(
 						  daw::span( first, block_size ) );
-					}
 					return daw::simd::partial_load<simd_type>(
 					  daw::span( first, count ) );
 				}
@@ -150,8 +115,8 @@ namespace daw::json {
 					              valid_bits;
 					while( events != 0 ) {
 						auto const lane =
-						  static_cast<std::size_t>(
-						    daw::cxmath::count_trailing_zeros( static_cast<std::uint64_t>( events ) ) );
+						  static_cast<std::size_t>( daw::cxmath::count_trailing_zeros(
+						    static_cast<std::uint64_t>( events ) ) );
 						switch( ptr_first[lane] ) {
 						case ',':
 							if( ( primary_depth == 1 ) & ( secondary_depth == 0 ) ) {
@@ -185,7 +150,7 @@ namespace daw::json {
 						default:
 							DAW_UNREACHABLE( );
 						}
-						events &= events - 1U;
+						events = daw::cxmath::blsr( events );
 					}
 					ptr_first += lane_count;
 				}
@@ -252,7 +217,8 @@ namespace daw::json {
 					  static_cast<std::size_t>( ptr_last - ptr_first );
 					auto const lane_count =
 					  remaining < block_size ? remaining : block_size;
-					auto const input = load( ptr_first, lane_count );
+					auto const input =
+					  lexer_cursor_details::load( ptr_first, lane_count );
 					auto const valid_bits = low_bits( lane_count );
 					auto const backslash_bits =
 					  ( input == splat( '\\' ) ).to_ullong( ) & valid_bits;
@@ -279,12 +245,12 @@ namespace daw::json {
 					in_string = last_bit( in_string_bits, lane_count );
 
 					auto const outside = ~( in_string_bits | quote_bits ) & valid_bits;
-					auto const structural =
-					  one_of<'{', '}', '[', ']', ',', ':'>( input ).to_ullong( ) &
-					  outside & ~escaped_bits;
 					auto const whitespace =
 					  ( ( input >= splat( '\x01' ) ) & ( input <= splat( '\x20' ) ) )
 					    .to_ullong( );
+					auto const structural =
+					  lexer_cursor_details::structural_candidates( input ).to_ullong( ) &
+					  outside & ~escaped_bits & ~whitespace;
 					// Bytes of literals and numbers, an event is raised at the start of
 					// each run
 					auto const token = outside & ~structural & ~whitespace;
@@ -383,7 +349,7 @@ namespace daw::json {
 							  ptr_first + lane, ptr_last, parse_state );
 							break;
 						}
-						events &= events - 1U;
+						events = daw::cxmath::blsr( events );
 					}
 					ptr_first += lane_count;
 				}

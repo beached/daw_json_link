@@ -367,10 +367,17 @@ namespace daw::json {
 					return construct_value<base_member_type, constructor_t>(
 					  parse_state, base_parser.template parse<false>( parse_state ) );
 				} else {
-					if( parse_state.is_null( ) or not parse_state.has_more( ) or
-					    parse_state.is_at_token_after_value( ) ) {
+					if( parse_state.is_null( ) ) {
 						return construct_empty( );
 					}
+					// The member is there, so it has a value.  A missing member is
+					// the null state above
+					daw_json_assert_weak( parse_state.has_more( ),
+					                      ErrorReason::UnexpectedEndOfData,
+					                      parse_state );
+					daw_json_assert_weak( not parse_state.is_at_token_after_value( ),
+					                      ErrorReason::InvalidStartOfValue,
+					                      parse_state );
 					if( parse_state.starts_with( "null" ) ) {
 						parse_state.remove_prefix( 4 );
 						// Trim first, a comment can directly follow the literal
@@ -759,9 +766,9 @@ namespace daw::json {
 					if( parse_state.counter > 0 ) {
 						using counted_iterator_t =
 						  json_parse_array_counted_iterator<iterator_t>;
-						static_assert( std::ranges::sized_range<
-						               iter_range_t<counted_iterator_t,
-						                            json_parse_array_sized_end>> );
+						static_assert(
+						  std::ranges::sized_range<
+						    iter_range_t<counted_iterator_t, json_parse_array_sized_end>> );
 						return construct_value<json_result_t<JsonMember>, constructor_t>(
 						  parse_state,
 						  counted_iterator_t(

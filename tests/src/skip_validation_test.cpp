@@ -288,8 +288,30 @@ int main( ) {
 
 	// Random JSON like pieces, every outcome has to match
 	constexpr std::string_view pieces[] = {
-	  "{", "}", "[", "]", ",", ":", "\"",   "\\",  " ",     "\t",  "1",
-	  "0", "-", ".", "e", "+", "a", "true", "tru", "false", "null" };
+	  "{",
+	  "}",
+	  "[",
+	  "]",
+	  ",",
+	  ":",
+	  "\"",
+	  "\\",
+	  " ",
+	  "\t",
+	  "1",
+	  "0",
+	  "-",
+	  ".",
+	  "e",
+	  "+",
+	  "a",
+	  "true",
+	  "tru",
+	  "false",
+	  "null",
+	  // The control characters that match a structural by their low four bits
+	  "\x0c",
+	  "\x1a" };
 	auto engine = std::mt19937( 7 );
 	auto pick =
 	  std::uniform_int_distribution<std::size_t>( 0, std::size( pieces ) - 1U );

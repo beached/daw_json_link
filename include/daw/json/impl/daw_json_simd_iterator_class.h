@@ -118,7 +118,7 @@ namespace daw::json {
 						while( structural_offsets != 0U ) {
 							auto const lane = static_cast<std::size_t>(
 							  daw::cxmath::count_trailing_zeros( structural_offsets ) );
-							structural_offsets &= structural_offsets - 1U;
+							structural_offsets = daw::cxmath::blsr( structural_offsets );
 							auto const result = block_data + lane;
 							if( result >= minimum ) {
 								return result;
@@ -207,9 +207,8 @@ namespace daw::json {
 					auto after_comma = false;
 
 					while( event != nullptr and *event != '}' ) {
-						daw_json_assert_weak( *event == '"',
-						                      ErrorReason::InvalidMemberName,
-						                      parse_state );
+						daw_json_assert_weak(
+						  *event == '"', ErrorReason::InvalidMemberName, parse_state );
 						auto const name_first = event + 1;
 						auto name_last = structural_state.next( name_first );
 						while( name_last != nullptr and *name_last == '\\' ) {
@@ -220,8 +219,7 @@ namespace daw::json {
 						                      parse_state );
 						auto const name = daw::string_view(
 						  name_first, static_cast<std::size_t>( name_last - name_first ) );
-						auto const name_pos =
-						  locations.template find_name<0>( name );
+						auto const name_pos = locations.template find_name<0>( name );
 						if constexpr( must_exist ) {
 							daw_json_assert_weak( name_pos < locations.size( ),
 							                      ErrorReason::UnknownMember,
@@ -333,8 +331,7 @@ namespace daw::json {
 						daw_json_assert_weak( delimiter != nullptr,
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
-						auto const value_last =
-						  trim_value_right( value_first, delimiter );
+						auto const value_last = trim_value_right( value_first, delimiter );
 						daw_json_assert_weak( value_first < value_last,
 						                      ErrorReason::InvalidStartOfValue,
 						                      parse_state );
@@ -365,8 +362,8 @@ namespace daw::json {
 
 						if( name_pos < locations.size( ) and
 						    locations[name_pos].missing( ) ) {
-							auto location_state = ParseState(
-							  value_first, value_last, class_first, class_last );
+							auto location_state =
+							  ParseState( value_first, value_last, class_first, class_last );
 							switch( *value_first ) {
 							case '"':
 								daw_json_assert_weak( string_last != nullptr and
@@ -378,7 +375,8 @@ namespace daw::json {
 								location_state.counter =
 								  first_escape == nullptr
 								    ? static_cast<std::size_t>( -1 )
-								    : static_cast<std::size_t>( first_escape - ( value_first + 1 ) );
+								    : static_cast<std::size_t>( first_escape -
+								                                ( value_first + 1 ) );
 								break;
 							case 't':
 								location_state.counter = 1U;
@@ -405,20 +403,16 @@ namespace daw::json {
 						}
 
 						after_comma = *delimiter == ',';
-						event = after_comma
-						          ? structural_state.next( delimiter + 1 )
-						          : delimiter;
+						event =
+						  after_comma ? structural_state.next( delimiter + 1 ) : delimiter;
 					}
 
-					daw_json_assert_weak( event != nullptr,
-					                      ErrorReason::UnexpectedEndOfData,
-					                      parse_state );
-					daw_json_assert_weak( not after_comma,
-					                      ErrorReason::TrailingComma,
-					                      parse_state );
-					daw_json_assert_weak( *event == '}',
-					                      ErrorReason::InvalidEndOfValue,
-					                      parse_state );
+					daw_json_assert_weak(
+					  event != nullptr, ErrorReason::UnexpectedEndOfData, parse_state );
+					daw_json_assert_weak(
+					  not after_comma, ErrorReason::TrailingComma, parse_state );
+					daw_json_assert_weak(
+					  *event == '}', ErrorReason::InvalidEndOfValue, parse_state );
 					auto const class_end = event + 1;
 					parse_state.first = class_end;
 					parse_state.trim_left_checked( );
@@ -439,8 +433,9 @@ namespace daw::json {
 						}
 					}( );
 					if( member_state.is_null( ) ) {
-						// A stored null and a missing member intentionally use the same null
-						// location representation.  Preserve nullable/missing-member handling.
+						// A stored null and a missing member intentionally use the same
+						// null location representation.  Preserve nullable/missing-member
+						// handling.
 						return parse_class_member_impl<JsonMember, false>(
 						  parse_state, find_result<ParseState>{ member_state, true } );
 					}
@@ -550,9 +545,8 @@ namespace daw::json {
 								event = structural_state.next( event + 1 );
 							}
 						}
-						daw_json_assert_weak( event != nullptr,
-						                      ErrorReason::UnexpectedEndOfData,
-						                      parse_state );
+						daw_json_assert_weak(
+						  event != nullptr, ErrorReason::UnexpectedEndOfData, parse_state );
 					}
 					auto const class_end = event + 1;
 					parse_state.first = class_end;

@@ -177,13 +177,27 @@ namespace daw::json {
 				daw::not_null<char const *> first = parse_state.first;
 				daw::not_null<char const *> const last = parse_state.last;
 				uresult_t result = uresult_t( );
+				// The bounds may come from a skip, which takes any number, so a
+				// fraction or exponent is caught here
+				constexpr bool check_digits = not ParseState::is_unchecked_input;
 
 				while( last - first >= 16 ) {
+					if constexpr( check_digits ) {
+						daw_json_ensure( is_made_of_eight_digits_cx( first ) and
+						                   is_made_of_eight_digits_cx( first + 8 ),
+						                 ErrorReason::InvalidNumber,
+						                 parse_state );
+					}
 					result *= static_cast<uresult_t>( 10'000'000'000'000'000ULL );
 					result += static_cast<uresult_t>( parse_16_digits( first ) );
 					first += 16;
 				}
 				if( last - first >= 8 ) {
+					if constexpr( check_digits ) {
+						daw_json_ensure( is_made_of_eight_digits_cx( first ),
+						                 ErrorReason::InvalidNumber,
+						                 parse_state );
+					}
 					result *= static_cast<uresult_t>( 100'000'000ULL );
 					result += static_cast<uresult_t>( parse_8_digits( first ) );
 					first += 8;
@@ -196,10 +210,19 @@ namespace daw::json {
 						++first;
 						dig = parse_digit( *first );
 					}
+					if constexpr( check_digits ) {
+						daw_json_ensure(
+						  first >= last, ErrorReason::InvalidNumber, parse_state );
+					}
 				} else {
 					while( first < last ) {
+						auto const dig = parse_digit( *first );
+						if constexpr( check_digits ) {
+							daw_json_ensure(
+							  dig < 10U, ErrorReason::InvalidNumber, parse_state );
+						}
 						result *= 10U;
-						result += parse_digit( *first );
+						result += dig;
 						++first;
 					}
 				}

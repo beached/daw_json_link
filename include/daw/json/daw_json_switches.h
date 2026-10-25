@@ -16,13 +16,9 @@
 #include <daw/daw_is_detected.h>
 #include <daw/stdinc/enable_if.h>
 
-/// DAW_NO_FLATTEN disables any flatten attributes in code.  This is disabled in
-/// GCC by default as it cannot handle it
-#if defined( DAW_HAS_GCC ) and not defined( DAW_JSON_FLATTEN )
-#if not defined( DAW_NO_FLATTEN )
-#define DAW_NO_FLATTEN
-#endif
-#endif
+// Define DAW_NO_FLATTEN or DAW_NO_FORCED_INLINE to opt out of the
+// corresponding attributes. CI uses these switches to bound compile cost.
+// Client builds leave the attributes enabled, including on GCC.
 
 // Does json_link throw itself.  Other things like constructors for the user
 // types may.

@@ -124,7 +124,7 @@ namespace daw::json {
 								  daw::cxmath::count_trailing_zeros( validation_starts ) );
 								validate_boolean( block.data + lane,
 								                  ( values & std::uint64_t{ 1 } ) != 0 );
-								validation_starts &= validation_starts - 1U;
+								validation_starts = daw::cxmath::blsr( validation_starts );
 								values >>= 1U;
 							}
 						}

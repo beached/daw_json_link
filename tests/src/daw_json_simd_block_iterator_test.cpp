@@ -995,15 +995,6 @@ namespace {
 } // namespace
 
 int main( ) {
-#if defined( DAW_JSON_HAS_STD_SIMD )
-	static_assert( test_constexpr_number_iterator( ) );
-	static_assert( test_constexpr_integer_iterators( ) );
-	static_assert( test_constexpr_bool_iterator( ) );
-	static_assert( test_constexpr_string_iterator( ) );
-	static_assert( test_constexpr_raw_string_iterator( ) );
-	static_assert( test_constexpr_custom_constructors( ) );
-	static_assert( test_constexpr_classifiers( ) );
-#else
 	daw_ensure( test_constexpr_number_iterator( ) );
 	daw_ensure( test_constexpr_integer_iterators( ) );
 	daw_ensure( test_constexpr_bool_iterator( ) );
@@ -1011,7 +1002,6 @@ int main( ) {
 	daw_ensure( test_constexpr_raw_string_iterator( ) );
 	daw_ensure( test_constexpr_custom_constructors( ) );
 	daw_ensure( test_constexpr_classifiers( ) );
-#endif
 
 	static_assert( std::is_same_v<iterator::reference, iterator::value_type> );
 	static_assert( std::is_same_v<iterator::value_type, double> );
@@ -1023,7 +1013,9 @@ int main( ) {
 	static_assert( sizeof( unsigned_iterator ) == sizeof( signed_iterator ) );
 	static_assert( block::block_size > 0U );
 	static_assert( block::block_size <= 64U );
-#if defined( DAW_JSON_HAS_AVX2_SIMD ) and not defined( DAW_JSON_HAS_STD_SIMD )
+#if defined( DAW_JSON_HAS_AVX512_SIMD )
+	static_assert( block::block_size == 64U );
+#elif defined( DAW_JSON_HAS_AVX2_SIMD )
 	static_assert( block::block_size == 32U );
 #endif
 	static_assert( sizeof( daw::json::json_details::integer_span ) * 2U ==

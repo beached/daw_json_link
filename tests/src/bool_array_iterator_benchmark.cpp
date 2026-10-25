@@ -109,7 +109,7 @@ int main( int argc, char **argv ) {
 
 int main( ) {
 	std::cerr
-	  << "This benchmark requires a standard library with <simd> support.\n";
+	  << "This benchmark requires a supported daw::simd backend.\n";
 	return EXIT_FAILURE;
 }
 

@@ -23,6 +23,8 @@ namespace daw::json {
 				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
 				using classifier_type =
 				  simd_json_classifier<JsonBaseParseTypes::String, CharT>;
+				using block_type = simd_json_block<JsonBaseParseTypes::String, CharT>;
+				static constexpr std::size_t block_size = block_type::block_size;
 
 			public:
 				using json_member = JsonMember;
@@ -38,8 +40,9 @@ namespace daw::json {
 				char const *m_current_end = nullptr;
 				char const *m_current_escape = nullptr;
 				char const *m_block_data = nullptr;
-				std::uint64_t m_value_starts = 0;
-				std::uint64_t m_string_ends = 0;
+				std::array<std::uint8_t, block_size> m_quote_offsets{ };
+				std::size_t m_quote_index = 0;
+				std::size_t m_quote_count = 0;
 				std::uint64_t m_escape_characters = 0;
 				simd_json_classifier_state m_state{ };
 				simd_array_grammar_state m_grammar_state{ };
@@ -58,14 +61,16 @@ namespace daw::json {
 					auto const block = classifier_type::template classify_string<
 					  not ParseState::is_unchecked_input>( m_first, remaining, m_state );
 					m_block_data = block.data;
-					m_value_starts = block.string_start;
-					m_string_ends = block.string_end;
+					m_quote_index = 0;
+					m_quote_count = daw::simd::flatten_mask(
+					  block.string_start | block.string_end, m_quote_offsets.data( ) );
 					m_escape_characters = block.escape_characters;
 					if constexpr( not ParseState::is_unchecked_input ) {
-						auto const unexpected_starts = block.scalar_start & ~m_value_starts;
+						auto const unexpected_starts =
+						  block.scalar_start & ~block.string_start;
 						if( unexpected_starts != 0 ) {
-							auto const lane = static_cast<std::size_t>(
-							  daw::cxmath::count_trailing_zeros( unexpected_starts ) );
+							auto const lane =
+							  daw::simd::count_trailing_zeros( unexpected_starts );
 							auto error_state = ParseState( block.data + lane, m_last );
 							daw_json_error( true, ErrorReason::InvalidString, error_state );
 						}
@@ -85,7 +90,7 @@ namespace daw::json {
 				}
 
 				constexpr void move_to_next_value( ) {
-					while( m_value_starts == 0 ) {
+					while( m_quote_index == m_quote_count ) {
 						if( not classify_next_block( ) ) {
 							m_current = nullptr;
 							m_current_end = nullptr;
@@ -94,25 +99,23 @@ namespace daw::json {
 						}
 					}
 
-					auto const lane = static_cast<std::size_t>(
-					  daw::cxmath::count_trailing_zeros( m_value_starts ) );
-					m_value_starts &= m_value_starts - 1U;
+					auto const lane =
+					  static_cast<std::size_t>( m_quote_offsets[m_quote_index++] );
 					m_current = m_block_data + lane;
 					m_current_escape = nullptr;
 
 					auto first_lane = lane + 1U;
 					while( true ) {
-						if( m_string_ends != 0 ) {
-							auto const end_lane = static_cast<std::size_t>(
-							  daw::cxmath::count_trailing_zeros( m_string_ends ) );
+						if( m_quote_index != m_quote_count ) {
+							auto const end_lane =
+							  static_cast<std::size_t>( m_quote_offsets[m_quote_index++] );
 							auto const escapes = m_escape_characters &
 							                     simd_details::low_bits( end_lane ) &
 							                     ~simd_details::low_bits( first_lane );
 							if( m_current_escape == nullptr and escapes != 0 ) {
 								m_current_escape =
-								  m_block_data + daw::cxmath::count_trailing_zeros( escapes );
+								  m_block_data + daw::simd::count_trailing_zeros( escapes );
 							}
-							m_string_ends &= m_string_ends - 1U;
 							m_current_end = m_block_data + end_lane;
 							return;
 						}
@@ -121,7 +124,7 @@ namespace daw::json {
 						  m_escape_characters & ~simd_details::low_bits( first_lane );
 						if( m_current_escape == nullptr and escapes != 0 ) {
 							m_current_escape =
-							  m_block_data + daw::cxmath::count_trailing_zeros( escapes );
+							  m_block_data + daw::simd::count_trailing_zeros( escapes );
 						}
 						if( not classify_next_block( ) ) {
 							auto error_state = ParseState( m_current, m_last );

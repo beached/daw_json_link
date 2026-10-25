@@ -9,6 +9,7 @@
 #pragma once
 
 #include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_cxmath.h>
 
 #define DAW_JSON_HAS_SSE42_SIMD 1
 
@@ -40,10 +41,49 @@ namespace daw::simd_impl::sse42 {
 		}
 
 		[[nodiscard]] friend mask operator!( mask value ) noexcept {
-			return mask( _mm_xor_si128( value.m_value,
-			                             _mm_set1_epi8( static_cast<char>( 0xFF ) ) ) );
+			return mask( _mm_xor_si128(
+			  value.m_value, _mm_set1_epi8( static_cast<char>( 0xFF ) ) ) );
 		}
 	};
+
+	[[nodiscard]] inline std::uint64_t compress_mask( mask value ) noexcept {
+		return value.to_ullong( );
+	}
+
+	[[nodiscard]] inline mask decompress_mask( std::uint64_t bits ) noexcept {
+		auto const bytes = _mm_shuffle_epi8(
+		  _mm_set1_epi32( static_cast<std::int32_t>( bits ) ),
+		  _mm_set_epi64x( 0x0101010101010101LL, 0x0000000000000000LL ) );
+		auto const bit_values =
+		  _mm_set1_epi64x( static_cast<long long>( 0x8040201008040201ULL ) );
+		return mask(
+		  _mm_cmpeq_epi8( _mm_and_si128( bytes, bit_values ), bit_values ) );
+	}
+
+	/// value must contain at least one set bit.
+	[[nodiscard]] inline std::size_t
+	count_trailing_zeros( std::uint64_t value ) noexcept {
+		return static_cast<std::size_t>(
+		  daw::cxmath::count_trailing_zeros( value ) );
+	}
+
+	/// value must contain at least one set lane.
+	[[nodiscard]] inline std::size_t count_trailing_zeros( mask value ) noexcept {
+		return count_trailing_zeros( compress_mask( value ) );
+	}
+
+	/// Writes the set lane numbers in ascending order and returns their count.
+	[[nodiscard]] inline std::size_t
+	flatten_mask( std::uint64_t bits, std::uint8_t *output ) noexcept {
+		auto count = std::size_t{ 0 };
+		bits &= 0xFFFFULL;
+		while( bits != 0 ) {
+			output[count++] =
+			  static_cast<std::uint8_t>( count_trailing_zeros( bits ) );
+			bits = daw::cxmath::blsr( bits );
+		}
+		return count;
+	}
 
 	template<typename T, std::size_t /*MaximumSize*/ = 16U>
 	class vec {
@@ -68,8 +108,7 @@ namespace daw::simd_impl::sse42 {
 		  : m_value( value ) {}
 
 		[[nodiscard]] static __m128i order_bytes( __m128i value ) noexcept {
-			return _mm_xor_si128( value,
-			                        _mm_set1_epi8( static_cast<char>( 0x80 ) ) );
+			return _mm_xor_si128( value, _mm_set1_epi8( static_cast<char>( 0x80 ) ) );
 		}
 
 	public:
@@ -91,14 +130,30 @@ namespace daw::simd_impl::sse42 {
 			auto const ordered_lhs = order_bytes( lhs.m_value );
 			auto const ordered_rhs = order_bytes( rhs.m_value );
 			return mask( _mm_or_si128( _mm_cmpgt_epi8( ordered_lhs, ordered_rhs ),
-			                             _mm_cmpeq_epi8( lhs.m_value, rhs.m_value ) ) );
+			                           _mm_cmpeq_epi8( lhs.m_value, rhs.m_value ) ) );
 		}
 
 		[[nodiscard]] friend mask operator<=( vec lhs, vec rhs ) noexcept {
 			auto const ordered_lhs = order_bytes( lhs.m_value );
 			auto const ordered_rhs = order_bytes( rhs.m_value );
 			return mask( _mm_or_si128( _mm_cmpgt_epi8( ordered_rhs, ordered_lhs ),
-			                             _mm_cmpeq_epi8( lhs.m_value, rhs.m_value ) ) );
+			                           _mm_cmpeq_epi8( lhs.m_value, rhs.m_value ) ) );
+		}
+
+		[[nodiscard]] friend vec operator|( vec lhs, vec rhs ) noexcept {
+			return vec( _mm_or_si128( lhs.m_value, rhs.m_value ) );
+		}
+
+		[[nodiscard]] friend vec operator&( vec lhs, vec rhs ) noexcept {
+			return vec( _mm_and_si128( lhs.m_value, rhs.m_value ) );
+		}
+
+		/// Lane n is table[lane n & 0x0F], see daw::simd_impl::lookup16
+		[[nodiscard]] vec lookup16( value_type const *table ) const noexcept {
+			auto const indices = _mm_and_si128( m_value, _mm_set1_epi8( 0x0F ) );
+			return vec( _mm_shuffle_epi8(
+			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( table ) ),
+			  indices ) );
 		}
 	};
 

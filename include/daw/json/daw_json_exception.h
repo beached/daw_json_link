@@ -92,7 +92,8 @@ namespace daw::json {
 			TrailingComma,
 			AttemptToCallOpStarOnConstIterator,
 			MaxDepthExceeded,
-			CouldNotFindEnumeratorForValue
+			CouldNotFindEnumeratorForValue,
+			DocumentTooLarge
 		};
 
 		constexpr std::string_view reason_message( ErrorReason er ) {
@@ -151,6 +152,8 @@ namespace daw::json {
 				return "Infinity encountered while serializing to JSON Number literal"sv;
 			case ErrorReason::NumberOutOfRange:
 				return "Number is outside of the representable range"sv;
+			case ErrorReason::DocumentTooLarge:
+				return "JSON document is too large for the parser"sv;
 			case ErrorReason::EmptyJSONDocument:
 				return "Attempt to parse an empty JSON document"sv;
 			case ErrorReason::EmptyJSONPath:

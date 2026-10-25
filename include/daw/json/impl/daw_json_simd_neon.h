@@ -9,6 +9,7 @@
 #pragma once
 
 #include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_cxmath.h>
 
 #define DAW_JSON_HAS_NEON_SIMD 1
 
@@ -60,8 +61,7 @@ namespace daw::simd_impl::neon {
 		}
 
 		[[nodiscard]] std::uint64_t to_ullong_sparse( ) const noexcept {
-			auto reduced =
-			  vorr_u8( vget_low_u8( m_value ), vget_high_u8( m_value ) );
+			auto reduced = vorr_u8( vget_low_u8( m_value ), vget_high_u8( m_value ) );
 			reduced = vpmax_u8( reduced, reduced );
 			reduced = vpmax_u8( reduced, reduced );
 			reduced = vpmax_u8( reduced, reduced );
@@ -83,6 +83,59 @@ namespace daw::simd_impl::neon {
 			return mask( vmvnq_u8( value.m_value ) );
 		}
 	};
+
+	[[nodiscard]] inline std::uint64_t compress_mask( mask value ) noexcept {
+		return value.to_ullong( );
+	}
+
+	[[nodiscard]] inline mask decompress_mask( std::uint64_t bits ) noexcept {
+		alignas( 16 ) static constexpr std::uint8_t bit_values[16] = { 0x01,
+		                                                               0x02,
+		                                                               0x04,
+		                                                               0x08,
+		                                                               0x10,
+		                                                               0x20,
+		                                                               0x40,
+		                                                               0x80,
+		                                                               0x01,
+		                                                               0x02,
+		                                                               0x04,
+		                                                               0x08,
+		                                                               0x10,
+		                                                               0x20,
+		                                                               0x40,
+		                                                               0x80 };
+		auto const bytes =
+		  vcombine_u8( vdup_n_u8( static_cast<std::uint8_t>( bits ) ),
+		               vdup_n_u8( static_cast<std::uint8_t>( bits >> 8U ) ) );
+		auto const values = vld1q_u8( bit_values );
+		return mask( vceqq_u8( vandq_u8( bytes, values ), values ) );
+	}
+
+	/// value must contain at least one set bit.
+	[[nodiscard]] inline std::size_t
+	count_trailing_zeros( std::uint64_t value ) noexcept {
+		return static_cast<std::size_t>(
+		  daw::cxmath::count_trailing_zeros( value ) );
+	}
+
+	/// value must contain at least one set lane.
+	[[nodiscard]] inline std::size_t count_trailing_zeros( mask value ) noexcept {
+		return count_trailing_zeros( compress_mask( value ) );
+	}
+
+	/// Writes the set lane numbers in ascending order and returns their count.
+	[[nodiscard]] inline std::size_t
+	flatten_mask( std::uint64_t bits, std::uint8_t *output ) noexcept {
+		auto count = std::size_t{ 0 };
+		bits &= 0xFFFFULL;
+		while( bits != 0 ) {
+			output[count++] =
+			  static_cast<std::uint8_t>( count_trailing_zeros( bits ) );
+			bits = daw::cxmath::blsr( bits );
+		}
+		return count;
+	}
 
 	template<typename T, std::size_t /*MaximumSize*/ = 16U>
 	class vec {
@@ -127,6 +180,29 @@ namespace daw::simd_impl::neon {
 
 		[[nodiscard]] friend mask operator<=( vec lhs, vec rhs ) noexcept {
 			return mask( vcleq_u8( lhs.m_value, rhs.m_value ) );
+		}
+
+		[[nodiscard]] friend vec operator|( vec lhs, vec rhs ) noexcept {
+			return vec( vorrq_u8( lhs.m_value, rhs.m_value ) );
+		}
+
+		[[nodiscard]] friend vec operator&( vec lhs, vec rhs ) noexcept {
+			return vec( vandq_u8( lhs.m_value, rhs.m_value ) );
+		}
+
+		/// Lane n is table[lane n & 0x0F], see daw::simd_impl::lookup16
+		[[nodiscard]] vec lookup16( value_type const *table ) const noexcept {
+			auto const indices = vandq_u8( m_value, vdupq_n_u8( 0x0F ) );
+			auto const entries =
+			  vld1q_u8( reinterpret_cast<std::uint8_t const *>( table ) );
+#if defined( __aarch64__ )
+			return vec( vqtbl1q_u8( entries, indices ) );
+#else
+			auto const halves =
+			  uint8x8x2_t{ { vget_low_u8( entries ), vget_high_u8( entries ) } };
+			return vec( vcombine_u8( vtbl2_u8( halves, vget_low_u8( indices ) ),
+			                         vtbl2_u8( halves, vget_high_u8( indices ) ) ) );
+#endif
 		}
 	};
 

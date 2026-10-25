@@ -38,16 +38,7 @@ namespace daw::json {
 				return { result.data( ), result.size( ) };
 			}
 
-			[[nodiscard]] constexpr std::uint64_t
-			prefix_xor( std::uint64_t bits ) noexcept {
-				bits ^= bits << 1U;
-				bits ^= bits << 2U;
-				bits ^= bits << 4U;
-				bits ^= bits << 8U;
-				bits ^= bits << 16U;
-				bits ^= bits << 32U;
-				return bits;
-			}
+			using daw::simd_impl::prefix_xor;
 
 			[[nodiscard]] constexpr std::uint64_t
 			low_bits( std::size_t count ) noexcept {
@@ -63,12 +54,7 @@ namespace daw::json {
 
 			template<typename simd_type>
 			[[nodiscard]]
-#if defined( DAW_JSON_HAS_STD_SIMD )
-			consteval
-#else
-			DAW_ATTRIB_INLINE
-#endif
-			  simd_type splat( char value ) noexcept {
+			DAW_ATTRIB_INLINE simd_type splat( char value ) noexcept {
 				return simd_type(
 				  static_cast<typename simd_type::value_type>( value ) );
 			}
@@ -165,7 +151,7 @@ namespace daw::json {
 						state.previous_event_was_value = true;
 						state.saw_value = true;
 					}
-					events &= events - 1U;
+					events = daw::cxmath::blsr( events );
 				}
 			}
 
@@ -432,7 +418,7 @@ namespace daw::json {
 						} else {
 							append_number_span( pending_integer_span{ first + lane }, lane );
 						}
-						starts &= starts - 1U;
+						starts = daw::cxmath::blsr( starts );
 					}
 					return result;
 				}

@@ -75,7 +75,7 @@ namespace daw::json {
 						return;
 					case '0':
 						if( parse_state.size( ) > 1 ) {
-							daw_json_ensure( is_number( *( parse_state.first + 1 ) ),
+							daw_json_ensure( not is_number( *( parse_state.first + 1 ) ),
 							                 ErrorReason::InvalidNumberStart,
 							                 parse_state );
 						}

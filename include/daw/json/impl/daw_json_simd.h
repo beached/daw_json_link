@@ -14,72 +14,49 @@
 
 #include "daw/json/impl/version.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <type_traits>
 
-#if defined( __BMI2__ ) and ( defined( __x86_64__ ) or defined( _M_X64 ) )
+#if defined( __x86_64__ ) or defined( _M_X64 ) or defined( __i386__ ) or \
+  defined( _M_IX86 )
 #include <immintrin.h>
-#endif
-
-#if __has_include( <simd> )
-#include <simd>
-#endif
-
-#if defined( __cpp_lib_simd ) or defined( __glibcxx_simd )
-
-#define DAW_JSON_HAS_STD_SIMD 1
-
+#elif defined( __aarch64__ ) and defined( __ARM_FEATURE_AES )
+#include <arm_neon.h>
 #endif
 
 #if ( defined( __ARM_NEON ) or defined( __ARM_NEON__ ) )
 #include "daw/json/impl/daw_json_simd_neon.h"
 #endif
 
-#if defined( __AVX2__ ) or defined( _M_AVX2 )
+#if ( defined( __AVX512F__ ) and defined( __AVX512BW__ ) ) or \
+  defined( _M_AVX512 )
+#include "daw/json/impl/daw_json_simd_avx512.h"
+#elif defined( __AVX2__ ) or defined( _M_AVX2 )
 #include "daw/json/impl/daw_json_simd_avx2.h"
 #elif defined( __SSE4_2__ ) or defined( __AVX__ ) or defined( _M_X64 ) or \
   ( defined( _M_IX86_FP ) and _M_IX86_FP >= 2 )
 #include "daw/json/impl/daw_json_simd_sse42.h"
 #endif
 
-#if defined( DAW_JSON_HAS_STD_SIMD )
-
-#define DAW_JSON_HAS_SIMD 1
-#define DAW_JSON_SIMD_CONSTEXPR constexpr
-
-#if defined( DAW_JSON_SIMD_MAX_256 )
-// vec<T> is at most 256 bits, so a build with AVX-512 enabled stays in 256-bit
-// registers. 512-bit instructions lower the clock on some CPUs, mostly older
-// Xeons; where that costs less than the wider blocks save, as on Tiger Lake
-// and Zen 4, leave this undefined. Narrower native widths are kept
-namespace daw::simd {
-	using namespace std::simd;
-
-	template<typename T>
-	inline constexpr int max_256_size_v =
-	  static_cast<int>( std::simd::vec<T>::size( ) ) <
-	      static_cast<int>( 32 / sizeof( T ) )
-	    ? static_cast<int>( std::simd::vec<T>::size( ) )
-	    : static_cast<int>( 32 / sizeof( T ) );
-
-	template<typename T, int N = max_256_size_v<T>>
-	using vec = std::simd::vec<T, N>;
-} // namespace daw::simd
-#else
-namespace daw {
-	namespace simd = std::simd;
-}
-#endif
-
-#elif defined( DAW_JSON_HAS_NEON_SIMD )
+#if defined( DAW_JSON_HAS_NEON_SIMD )
 
 #define DAW_JSON_HAS_SIMD 1
 #define DAW_JSON_SIMD_CONSTEXPR inline
 
 namespace daw {
 	namespace simd = simd_impl::neon;
+}
+
+#elif defined( DAW_JSON_HAS_AVX512_SIMD )
+
+#define DAW_JSON_HAS_SIMD 1
+#define DAW_JSON_SIMD_CONSTEXPR inline
+
+namespace daw {
+	namespace simd = simd_impl::avx512;
 }
 
 #elif defined( DAW_JSON_HAS_AVX2_SIMD )
@@ -124,7 +101,7 @@ namespace daw::simd_impl {
 			if( ( values & selected_bit ) != 0 ) {
 				result |= output_bit;
 			}
-			selection &= selection - 1U;
+			selection = daw::cxmath::blsr( selection );
 			output_bit <<= 1U;
 		}
 		return result;
@@ -133,8 +110,7 @@ namespace daw::simd_impl {
 	/**
 	 * Accept the SIMD mask itself.  Keeping this overload in simd_impl lets the
 	 * DAW backends add native-mask overloads without exposing their register
-	 * types to JSON code.  Standard SIMD deliberately uses its public mask
-	 * conversion because it has no portable native-register accessor.
+	 * types to JSON code.
 	 */
 	template<typename Mask,
 	         std::enable_if_t<not std::is_integral_v<Mask>, int> = 0>
@@ -149,6 +125,48 @@ namespace daw::simd_impl {
 	compress_bits( Mask values, Mask selection ) noexcept {
 		return compress_bits( values.to_ullong( ), selection.to_ullong( ) );
 	}
+
+	/**
+	 * Bit n of the result is the xor of bits 0 through n.  With the quotes of
+	 * a block it marks the bytes inside of strings.  A carry-less multiply by
+	 * all ones where the target has one, a shift ladder otherwise.
+	 */
+	[[nodiscard]] constexpr std::uint64_t
+	prefix_xor( std::uint64_t bits ) noexcept {
+#if defined( __PCLMUL__ ) and ( defined( __x86_64__ ) or defined( _M_X64 ) )
+		if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+			auto const product = _mm_clmulepi64_si128(
+			  _mm_set_epi64x( 0, static_cast<long long>( bits ) ),
+			  _mm_set1_epi8( static_cast<char>( 0xFF ) ),
+			  0 );
+			return static_cast<std::uint64_t>( _mm_cvtsi128_si64( product ) );
+		}
+#elif defined( __aarch64__ ) and defined( __ARM_FEATURE_AES )
+		if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+			return vgetq_lane_u64(
+			  vreinterpretq_u64_p128( vmull_p64( bits, ~std::uint64_t{ 0 } ) ), 0 );
+		}
+#endif
+		bits ^= bits << 1U;
+		bits ^= bits << 2U;
+		bits ^= bits << 4U;
+		bits ^= bits << 8U;
+		bits ^= bits << 16U;
+		bits ^= bits << 32U;
+		return bits;
+	}
+
+	/**
+	 * Lane n of the result is table[values[n] & 0x0F], a lookup of each byte
+	 * by its low four bits as pshufb and tbl do.  Byte classes are tested with
+	 * a lookup and a compare instead of a compare for each character.
+	 */
+	template<typename Simd>
+	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR Simd lookup16(
+	  std::array<typename Simd::value_type, 16> const &table, Simd values ) {
+
+		return values.lookup16( table.data( ) );
+	}
 } // namespace daw::simd_impl
 
 // Scans load whole aligned blocks, which can extend past either end of the
@@ -159,7 +177,7 @@ namespace daw::simd_impl {
 #if defined( __SANITIZE_ADDRESS__ ) or defined( __SANITIZE_HWADDRESS__ )
 #define DAW_JSON_SIMD_SAFE_ALIGNED_LOADS 1
 #elif defined( __has_feature )
-#if __has_feature( address_sanitizer ) or                \
+#if __has_feature( address_sanitizer ) or \
   __has_feature( hwaddress_sanitizer ) or __has_feature( memory_sanitizer )
 #define DAW_JSON_SIMD_SAFE_ALIGNED_LOADS 1
 #endif
@@ -186,7 +204,8 @@ namespace daw::json {
 				                  ? last_addr
 				                  : block_addr + block_size;
 				std::memcpy( buff + ( lo - block_addr ),
-				             reinterpret_cast<void const *>( lo ), hi - lo );
+				             reinterpret_cast<void const *>( lo ),
+				             hi - lo );
 				value_t const *const ptr = buff;
 #else
 				auto const *const ptr = reinterpret_cast<value_t const *>( block_addr );

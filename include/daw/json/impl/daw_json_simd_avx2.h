@@ -9,6 +9,7 @@
 #pragma once
 
 #include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_cxmath.h>
 
 #define DAW_JSON_HAS_AVX2_SIMD 1
 
@@ -45,6 +46,48 @@ namespace daw::simd_impl::avx2 {
 		}
 	};
 
+	[[nodiscard]] inline std::uint64_t compress_mask( mask value ) noexcept {
+		return value.to_ullong( );
+	}
+
+	[[nodiscard]] inline mask decompress_mask( std::uint64_t bits ) noexcept {
+		auto const bytes = _mm256_shuffle_epi8(
+		  _mm256_set1_epi32( static_cast<std::int32_t>( bits ) ),
+		  _mm256_setr_epi64x( 0x0000000000000000LL,
+		                      0x0101010101010101LL,
+		                      0x0202020202020202LL,
+		                      0x0303030303030303LL ) );
+		auto const bit_values =
+		  _mm256_set1_epi64x( static_cast<long long>( 0x8040201008040201ULL ) );
+		return mask(
+		  _mm256_cmpeq_epi8( _mm256_and_si256( bytes, bit_values ), bit_values ) );
+	}
+
+	/// value must contain at least one set bit.
+	[[nodiscard]] inline std::size_t
+	count_trailing_zeros( std::uint64_t value ) noexcept {
+		return static_cast<std::size_t>(
+		  daw::cxmath::count_trailing_zeros( value ) );
+	}
+
+	/// value must contain at least one set lane.
+	[[nodiscard]] inline std::size_t count_trailing_zeros( mask value ) noexcept {
+		return count_trailing_zeros( compress_mask( value ) );
+	}
+
+	/// Writes the set lane numbers in ascending order and returns their count.
+	[[nodiscard]] inline std::size_t
+	flatten_mask( std::uint64_t bits, std::uint8_t *output ) noexcept {
+		auto count = std::size_t{ 0 };
+		bits &= 0xFFFFFFFFULL;
+		while( bits != 0 ) {
+			output[count++] =
+			  static_cast<std::uint8_t>( count_trailing_zeros( bits ) );
+			bits = daw::cxmath::blsr( bits );
+		}
+		return count;
+	}
+
 	template<typename T, std::size_t /*MaximumSize*/ = 32U>
 	class vec {
 		static_assert( sizeof( T ) == 1,
@@ -68,8 +111,8 @@ namespace daw::simd_impl::avx2 {
 		  : m_value( value ) {}
 
 		[[nodiscard]] static __m256i order_bytes( __m256i value ) noexcept {
-			return _mm256_xor_si256(
-			  value, _mm256_set1_epi8( static_cast<char>( 0x80 ) ) );
+			return _mm256_xor_si256( value,
+			                         _mm256_set1_epi8( static_cast<char>( 0x80 ) ) );
 		}
 
 	public:
@@ -90,17 +133,35 @@ namespace daw::simd_impl::avx2 {
 		[[nodiscard]] friend mask operator>=( vec lhs, vec rhs ) noexcept {
 			auto const ordered_lhs = order_bytes( lhs.m_value );
 			auto const ordered_rhs = order_bytes( rhs.m_value );
-			return mask( _mm256_or_si256(
-			  _mm256_cmpgt_epi8( ordered_lhs, ordered_rhs ),
-			  _mm256_cmpeq_epi8( lhs.m_value, rhs.m_value ) ) );
+			return mask(
+			  _mm256_or_si256( _mm256_cmpgt_epi8( ordered_lhs, ordered_rhs ),
+			                   _mm256_cmpeq_epi8( lhs.m_value, rhs.m_value ) ) );
 		}
 
 		[[nodiscard]] friend mask operator<=( vec lhs, vec rhs ) noexcept {
 			auto const ordered_lhs = order_bytes( lhs.m_value );
 			auto const ordered_rhs = order_bytes( rhs.m_value );
-			return mask( _mm256_or_si256(
-			  _mm256_cmpgt_epi8( ordered_rhs, ordered_lhs ),
-			  _mm256_cmpeq_epi8( lhs.m_value, rhs.m_value ) ) );
+			return mask(
+			  _mm256_or_si256( _mm256_cmpgt_epi8( ordered_rhs, ordered_lhs ),
+			                   _mm256_cmpeq_epi8( lhs.m_value, rhs.m_value ) ) );
+		}
+
+		[[nodiscard]] friend vec operator|( vec lhs, vec rhs ) noexcept {
+			return vec( _mm256_or_si256( lhs.m_value, rhs.m_value ) );
+		}
+
+		[[nodiscard]] friend vec operator&( vec lhs, vec rhs ) noexcept {
+			return vec( _mm256_and_si256( lhs.m_value, rhs.m_value ) );
+		}
+
+		/// Lane n is table[lane n & 0x0F], see daw::simd_impl::lookup16
+		[[nodiscard]] vec lookup16( value_type const *table ) const noexcept {
+			auto const indices =
+			  _mm256_and_si256( m_value, _mm256_set1_epi8( 0x0F ) );
+			return vec(
+			  _mm256_shuffle_epi8( _mm256_broadcastsi128_si256( _mm_loadu_si128(
+			                         reinterpret_cast<__m128i const *>( table ) ) ),
+			                       indices ) );
 		}
 	};
 
