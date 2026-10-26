@@ -13,7 +13,7 @@
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_lexer_cursor.h"
 #include "daw/json/impl/daw_json_parse_policy_policy_details.h"
-#include "daw/json/impl/daw_json_simd.h"
+#include "daw/simd/daw_simd.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_cxmath.h>
@@ -24,7 +24,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
@@ -37,8 +37,8 @@ namespace daw::json {
 				using lexer_cursor_details::splat;
 				static constexpr std::size_t block_size =
 				  lexer_cursor_details::simd_size;
-				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR simd_type
-				load( char const *first, std::size_t count ) {
+				[[nodiscard]] DAW_SIMD_CONSTEXPR simd_type load( char const *first,
+				                                                 std::size_t count ) {
 					if( count == block_size )
 						return daw::simd::unchecked_load<simd_type>(
 						  daw::span( first, block_size ) );
@@ -50,7 +50,7 @@ namespace daw::json {
 			/// Skip the JSON class or array at parse_state.first using SIMD to
 			/// classify each block.
 			template<SkipBracketedType BracketedType, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN DAW_JSON_SIMD_CONSTEXPR ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATTEN DAW_SIMD_CONSTEXPR ParseState
 			skip_bracketed_item_simd( ParseState &parse_state ) {
 				DAW_CPP23_STATIC_LOCAL constexpr char primary_left =
 				  BracketedType == SkipBracketedType::Class ? '{' : '[';
@@ -175,7 +175,7 @@ namespace daw::json {
 			/// allowed.  Literals and numbers are checked by
 			/// skip_scalar_token_checked
 			template<SkipBracketedType BracketedType, typename ParseState>
-			[[nodiscard]] DAW_ATTRIB_FLATTEN DAW_JSON_SIMD_CONSTEXPR ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATTEN DAW_SIMD_CONSTEXPR ParseState
 			skip_bracketed_item_simd_validated( ParseState &parse_state ) {
 				DAW_CPP23_STATIC_LOCAL constexpr bool is_class =
 				  BracketedType == SkipBracketedType::Class;

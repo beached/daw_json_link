@@ -11,7 +11,7 @@
 #include "daw/json/impl/daw_json_simd_iterator_common.h"
 #include "daw/json/impl/version.h"
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 
 #include "daw/json/daw_json_link_types.h"
 #include "daw/json/impl/daw_json_location_info.h"
@@ -59,7 +59,7 @@ namespace daw::json {
 				}
 
 			private:
-				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool classify_next_block( ) {
+				[[nodiscard]] DAW_SIMD_CONSTEXPR bool classify_next_block( ) {
 					if( next_block == nullptr or next_block >= last ) {
 						return false;
 					}
@@ -112,7 +112,7 @@ namespace daw::json {
 				}
 
 			public:
-				[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR char const *
+				[[nodiscard]] DAW_SIMD_CONSTEXPR char const *
 				next( char const *minimum ) {
 					while( true ) {
 						while( structural_offsets != 0U ) {
@@ -182,7 +182,7 @@ namespace daw::json {
 				}
 
 				template<typename JsonClass, typename ParseState>
-				[[nodiscard]] static DAW_JSON_SIMD_CONSTEXPR char const *
+				[[nodiscard]] static DAW_SIMD_CONSTEXPR char const *
 				scan_class( ParseState &parse_state,
 				            locations_type<ParseState> &locations,
 				            simd_class_structural_state &structural_state ) {
@@ -490,7 +490,7 @@ namespace daw::json {
 				}
 
 				template<typename JsonClass, typename ParseState>
-				[[nodiscard]] static DAW_JSON_SIMD_CONSTEXPR char const *
+				[[nodiscard]] static DAW_SIMD_CONSTEXPR char const *
 				scan_class( ParseState &parse_state, empty_locations &,
 				            simd_class_structural_state &structural_state ) {
 					using result_t = json_result_t<JsonClass>;

@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 namespace {
 	using daw::json::json_details::lexer_cursor;
 

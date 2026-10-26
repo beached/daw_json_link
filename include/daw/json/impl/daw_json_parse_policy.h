@@ -577,7 +577,7 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy skip_class( ) {
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 				// SIMD is slower than the scalar skip during constant evaluation
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
 					if( not json_details::use_constexpr_exec_mode<exec_tag_t>( ) and
@@ -602,7 +602,7 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy skip_array( ) {
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 				// SIMD is slower than the scalar skip during constant evaluation
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
 					if( not json_details::use_constexpr_exec_mode<exec_tag_t>( ) and

@@ -71,13 +71,13 @@ int main( int argc, char **argv ) {
 		return 1;
 	}
 	std::cout << __VERSION__ << " backend=";
-#if defined( DAW_JSON_HAS_AVX512_SIMD )
+#if defined( DAW_HAS_AVX512_SIMD )
 	std::cout << "AVX-512 shim";
-#elif defined( DAW_JSON_HAS_AVX2_SIMD )
+#elif defined( DAW_HAS_AVX2_SIMD )
 	std::cout << "AVX2 shim";
-#elif defined( DAW_JSON_HAS_NEON_SIMD )
+#elif defined( DAW_HAS_NEON_SIMD )
 	std::cout << "NEON";
-#elif defined( DAW_JSON_HAS_SSE42_SIMD )
+#elif defined( DAW_HAS_SSE42_SIMD )
 	std::cout << "SSE4.2 shim";
 #else
 	std::cout << "scalar";

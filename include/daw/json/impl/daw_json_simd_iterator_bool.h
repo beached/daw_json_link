@@ -10,7 +10,7 @@
 
 #include "daw/json/impl/daw_json_simd_iterator_common.h"
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

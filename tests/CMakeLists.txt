@@ -1456,12 +1456,6 @@ add_test( NAME lexer_cursor_test COMMAND lexer_cursor_test )
 add_dependencies( ci_tests lexer_cursor_test )
 add_dependencies( full lexer_cursor_test )
 
-add_executable( simd_additions_test src/simd_additions_test.cpp )
-target_link_libraries( simd_additions_test PRIVATE json_test )
-add_test( NAME simd_additions_test COMMAND simd_additions_test )
-add_dependencies( ci_tests simd_additions_test )
-add_dependencies( full simd_additions_test )
-
 
 set( DAW_JSON_HEADER_SELF_CONTAINMENT_TESTS
 		 daw_from_json

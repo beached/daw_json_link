@@ -5,9 +5,9 @@
 #include "daw/json/daw_json_link.h"
 #include "daw/json/impl/daw_json_from_json_simd.h"
 
-#if DAW_CPP_VERSION >= 202002L and         \
-  ( defined( DAW_JSON_HAS_AVX512_SIMD ) or \
-    defined( DAW_JSON_HAS_AVX2_SIMD ) or defined( DAW_JSON_HAS_NEON_SIMD ) )
+#if DAW_CPP_VERSION >= 202002L and                                    \
+  ( defined( DAW_HAS_AVX512_SIMD ) or defined( DAW_HAS_AVX2_SIMD ) or \
+    defined( DAW_HAS_NEON_SIMD ) )
 #define DAW_JSON_HAS_FROM_JSON_SIMD 1
 #endif
 

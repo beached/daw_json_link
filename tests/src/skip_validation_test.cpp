@@ -85,7 +85,7 @@ namespace {
 
 	template<SkipBracketedType Type, typename policy_t>
 	skip_outcome simd_skip( std::string_view json ) {
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 		auto state = policy_t( json.data( ), json.data( ) + json.size( ) );
 		try {
 			auto const r =

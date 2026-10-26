@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "daw/json/impl/daw_json_simd.h"
 #include "daw/json/impl/version.h"
+#include "daw/simd/daw_simd.h"
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 
 #include "daw/json/impl/daw_json_simd_iterator_bool.h"
 #include "daw/json/impl/daw_json_simd_iterator_class.h"

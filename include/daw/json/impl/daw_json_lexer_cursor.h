@@ -10,7 +10,7 @@
 
 #include "daw/json/impl/version.h"
 
-#include "daw/json/impl/daw_json_simd.h"
+#include "daw/simd/daw_simd.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_cxmath.h>
@@ -24,7 +24,7 @@
 #include <string_view>
 #include <type_traits>
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <utility>
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details::simd_parse {

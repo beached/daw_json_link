@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "daw/json/impl/daw_json_simd.h"
 #include "daw/json/impl/version.h"
+#include "daw/simd/daw_simd.h"
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 #include "daw/json/impl/daw_json_parse_value.h"
 
 #include <daw/daw_span.h>
@@ -25,6 +25,30 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			struct number_span {
+				char const *first = nullptr;
+				char const *last = nullptr;
+				char const *decimal_point = nullptr;
+				char const *exponent_marker = nullptr;
+			};
+
+			struct pending_number_span {
+				char const *first = nullptr;
+				char const *decimal_point = nullptr;
+				char const *exponent_marker = nullptr;
+			};
+
+			struct integer_span {
+				char const *first = nullptr;
+				char const *last = nullptr;
+			};
+
+			struct pending_integer_span {
+				char const *first = nullptr;
+			};
+		} // namespace json_details
+
 		namespace json_details::simd_details {
 			template<typename ParseState>
 			[[nodiscard]] constexpr std::string_view
@@ -60,14 +84,14 @@ namespace daw::json {
 			}
 
 			template<auto... values, typename simd_type>
-			[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR auto one_of( simd_type value ) {
+			[[nodiscard]] DAW_SIMD_CONSTEXPR auto one_of( simd_type value ) {
 				return ( ( value == splat<simd_type>( values ) ) | ... );
 			}
 
 			template<typename simd_type, std::size_t block_size, typename CharT,
 			         typename Chr>
-			[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR simd_type
-			load( Chr const *first, std::size_t count ) {
+			[[nodiscard]] DAW_SIMD_CONSTEXPR simd_type load( Chr const *first,
+			                                                 std::size_t count ) {
 				static constexpr auto flags = [] {
 					if constexpr( std::is_same_v<CharT, Chr> ) {
 						return daw::simd::flag_default;
@@ -238,13 +262,13 @@ namespace daw::json {
 			public:
 				using state_type = simd_json_classifier_state;
 
-				static DAW_JSON_SIMD_CONSTEXPR auto is_whitespace( simd_type input ) {
+				static DAW_SIMD_CONSTEXPR auto is_whitespace( simd_type input ) {
 					return simd_details::one_of<' ', '\t', '\n', '\r'>( input );
 				}
 
 				template<JsonParseTypes NumberType, bool ValidateStart = true,
 				         std::size_t NumberSpanCapacity>
-				[[nodiscard]] static DAW_JSON_SIMD_CONSTEXPR block_type classify_number(
+				[[nodiscard]] static DAW_SIMD_CONSTEXPR block_type classify_number(
 				  char const *first, std::size_t count, state_type &state,
 				  std::array<typename simd_number_span_types<NumberType>::span,
 				             NumberSpanCapacity> &number_spans,
@@ -424,7 +448,7 @@ namespace daw::json {
 				}
 
 				template<bool ValidateStart = true>
-				[[nodiscard]] static DAW_JSON_SIMD_CONSTEXPR block_type classify_bool(
+				[[nodiscard]] static DAW_SIMD_CONSTEXPR block_type classify_bool(
 				  char const *first, std::size_t count, state_type &state ) {
 					static_assert( ExpectedType == JsonBaseParseTypes::Bool );
 					count = count < block_size ? count : block_size;
@@ -477,7 +501,7 @@ namespace daw::json {
 				}
 
 				template<bool ValidateStart = true>
-				[[nodiscard]] static DAW_JSON_SIMD_CONSTEXPR block_type classify_string(
+				[[nodiscard]] static DAW_SIMD_CONSTEXPR block_type classify_string(
 				  char const *first, std::size_t count, state_type &state ) {
 					count = count < block_size ? count : block_size;
 					auto const input =

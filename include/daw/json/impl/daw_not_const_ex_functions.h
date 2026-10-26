@@ -12,7 +12,7 @@
 
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_exec_modes.h"
-#include "daw/json/impl/daw_json_simd.h"
+#include "daw/simd/daw_simd.h"
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>
@@ -48,7 +48,7 @@ namespace daw::json {
 				return *( ptr - 2 ) != '\\';
 			}
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 #if not defined( DAW_HAS_MSVC_LIKE )
 			constexpr
 #else
@@ -141,15 +141,15 @@ namespace daw::json {
 				if( block_addr >= last_addr ) {
 					return last;
 				}
-				key_positions &= find_keys(
-				  load_aligned_block<char_simd_t>( block_addr, first_addr, last_addr ) );
+				key_positions &= find_keys( daw::simd::load_aligned_block<char_simd_t>(
+				  block_addr, first_addr, last_addr ) );
 				while( key_positions == 0 ) {
 					block_addr += char_simd_size;
 					if( block_addr >= last_addr ) {
 						return last;
 					}
-					key_positions = find_keys(
-					  load_aligned_block<char_simd_t>( block_addr, first_addr, last_addr ) );
+					key_positions = find_keys( daw::simd::load_aligned_block<char_simd_t>(
+					  block_addr, first_addr, last_addr ) );
 				}
 				auto const hit_addr =
 				  block_addr +
@@ -258,9 +258,10 @@ namespace daw::json {
 					lead_shift = static_cast<unsigned>( first_addr - block_addr );
 				}
 				while( block_addr < last_addr ) {
-					if( scan(
-					      load_aligned_block<char_simd_t>( block_addr, first_addr, last_addr ),
-					      block_addr, lead_shift ) ) {
+					if( scan( daw::simd::load_aligned_block<char_simd_t>(
+					            block_addr, first_addr, last_addr ),
+					          block_addr,
+					          lead_shift ) ) {
 						return result;
 					}
 					block_addr += char_simd_size;
@@ -319,7 +320,7 @@ namespace daw::json {
 			mem_move_to_next_of( daw::not_null<char const *> first,
 			                     daw::not_null<char const *> last ) {
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 				if( use_simd_exec_mode<ExecTag>( ) ) {
 					return mem_move_to_next_of_simd<is_unchecked_input, keys...>( first,
 					                                                              last );
@@ -413,7 +414,7 @@ namespace daw::json {
 					return mem_skip_until_end_of_string_constexpr<is_unchecked_input>(
 					  first, last );
 				}
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 				if( use_simd_exec_mode<ExecTag>( ) ) {
 					return mem_skip_until_end_of_string_simd<is_unchecked_input>( first,
 					                                                              last );
@@ -464,7 +465,7 @@ namespace daw::json {
 			mem_skip_until_end_of_string( daw::not_null<char const *> first,
 			                              daw::not_null<char const *> const last,
 			                              std::ptrdiff_t &first_escape ) {
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 				if( use_simd_exec_mode<ExecTag>( ) ) {
 					return mem_skip_until_end_of_string_simd<is_unchecked_input>(
 					  first, last, first_escape );
