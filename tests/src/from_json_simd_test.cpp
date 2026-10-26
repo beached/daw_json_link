@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <variant>
 #include <vector>
 #if defined( DAW_JSON_HAS_FROM_JSON_SIMD )
 struct scan_string_length {
@@ -35,6 +36,34 @@ struct scan_record {
 	std::optional<double> value;
 	std::vector<std::tuple<double, double>> points;
 };
+using scan_variant_t = std::variant<int, std::string, bool, std::vector<int>>;
+struct scan_variant_holder {
+	scan_variant_t value;
+	std::vector<scan_variant_t> values;
+};
+struct scan_kv_array {
+	std::map<std::string, int> pairs;
+};
+struct scan_raw_holder {
+	daw::json::json_value raw;
+	int n;
+};
+struct scan_insitu_holder {
+	std::string_view name;
+	std::vector<std::string_view> tags;
+};
+#if defined( DAW_JSON_HAS_REFLECTION )
+// No annotations, so these deduce to json_reflected_class as from_json does
+struct scan_reflected_inner {
+	int a;
+	std::string b;
+};
+struct scan_reflected {
+	int id;
+	std::vector<scan_reflected_inner> items;
+	std::optional<double> value;
+};
+#endif
 inline std::vector<int> scan_construction_log;
 template<int Tag>
 struct scan_tracked_number {
@@ -230,6 +259,31 @@ namespace daw::json {
 		static auto to_json_data( scan_record const &v ) {
 			return std::tie( v.id, v.value, v.points );
 		}
+	};
+	template<>
+	struct json_data_contract<scan_variant_holder> {
+		static constexpr char value[] = "value", values[] = "values";
+		using type = json_member_list<
+		  json_variant<value, scan_variant_t>,
+		  json_array<values, json_variant_no_name<scan_variant_t>>>;
+	};
+	template<>
+	struct json_data_contract<scan_kv_array> {
+		static constexpr char pairs[] = "pairs";
+		using type =
+		  json_member_list<json_key_value_array<pairs, std::map<std::string, int>>>;
+	};
+	template<>
+	struct json_data_contract<scan_raw_holder> {
+		static constexpr char raw[] = "raw", n[] = "n";
+		using type = json_member_list<json_raw<raw>, json_number<n, int>>;
+	};
+	template<>
+	struct json_data_contract<scan_insitu_holder> {
+		static constexpr char name[] = "name", tags[] = "tags";
+		using type =
+		  json_member_list<json_string_insitu<name>,
+		                   json_array<tags, json_string_insitu_no_name<>>>;
 	};
 } // namespace daw::json
 void check( bool v ) {
@@ -543,6 +597,118 @@ int main( ) {
 	// continue to use the bounded number parser.
 	char const bounded_number[] = { '4', '2' };
 	check( from_json_simd<int>( daw::string_view( bounded_number, 2 ) ) == 42 );
+
+	namespace sp = daw::json::json_details::simd_parse;
+	using daw::json::json_details::json_deduced_type;
+
+	// A json_variant picks its alternative from the first byte of the value
+	static_assert(
+	  sp::forward_supported<json_deduced_type<scan_variant_holder>>( ) );
+	for( std::string const variant_doc :
+	     { R"({"value":5,"values":["a\"b",true,[1,2],-3,[]]})",
+	       R"({"values":[],"value":"x"})",
+	       R"({"value":[7,],"values":[false,]})" } ) {
+		auto const simd = from_json_simd<scan_variant_holder>( variant_doc );
+		auto const scalar =
+		  daw::json::from_json<scan_variant_holder>( variant_doc );
+		check( simd.value == scalar.value );
+		check( simd.values == scalar.values );
+	}
+	check( std::get<std::string>( from_json_simd<scan_variant_holder>(
+	                                R"({"value":"a\nb","values":[]})" )
+	                                .value ) == "a\nb" );
+	reject<scan_variant_holder>( R"({"value":{},"values":[]})" );
+	reject<scan_variant_holder>( R"({"value":null,"values":[]})" );
+	reject<scan_variant_holder>( R"({"value":1,"values":[1 2]})" );
+
+	// The elements of a json_key_value_array are key and value classes
+	static_assert( sp::forward_supported<json_deduced_type<scan_kv_array>>( ) );
+	for( std::string const kv_doc :
+	     { R"({"pairs":[{"key":"a","value":1},{"value":2,"key":"b\"c"}]})",
+	       R"({"pairs":[]})",
+	       R"({"pairs":[{"key":"a","extra":[1],"value":1,},]})" } ) {
+		check( from_json_simd<scan_kv_array>( kv_doc ).pairs ==
+		       daw::json::from_json<scan_kv_array>( kv_doc ).pairs );
+	}
+	check(
+	  from_json_simd<scan_kv_array>( R"({"pairs":[{"value":2,"key":"b\"c"}]})" )
+	    .pairs.at( "b\"c" ) == 2 );
+	reject<scan_kv_array>( R"({"pairs":[{"key":"a"}]})" );
+	reject<scan_kv_array>( R"({"pairs":[{"key":"a","value":1} {}]})" );
+	reject<scan_kv_array>( R"({"pairs":{"key":"a","value":1}})" );
+
+	// A json_raw member is parsed, so it is given and checked as from_json
+	// does
+	static_assert( sp::forward_supported<json_deduced_type<scan_raw_holder>>( ) );
+	for( auto const &[raw_doc, raw_text] :
+	     { std::pair<std::string, std::string_view>{
+	         R"({"raw": {"a":[1,{}]} , "n":1})", R"({"a":[1,{}]})" },
+	       { R"({"n":2,"raw":12 })", "12" },
+	       { R"({"raw":"x\"y"	,"n":3})", R"("x\"y")" },
+	       { R"({"n":4,"raw":[true, null]})", "[true, null]" } } ) {
+		auto const simd = from_json_simd<scan_raw_holder>( raw_doc );
+		auto const scalar = daw::json::from_json<scan_raw_holder>( raw_doc );
+		check( simd.raw.get_raw_json_document( ) == raw_text );
+		check( simd.raw.get_raw_json_document( ) ==
+		       scalar.raw.get_raw_json_document( ) );
+		check( simd.raw.get_string_view( ) == scalar.raw.get_string_view( ) );
+		check( simd.n == scalar.n );
+	}
+	// Unlike a skipped member, the value is checked without StrictSkipChecks
+	reject<scan_raw_holder>( R"({"raw":[1,{]},"n":1})" );
+	reject<scan_raw_holder>( R"({"raw":[tru],"n":1})" );
+	reject<scan_raw_holder>( R"({"raw":{"a" 1},"n":1})" );
+
+	// In-situ strings are decoded into the writable document
+	using daw::json::experimental::from_json_simd_insitu;
+	static_assert(
+	  sp::forward_supported<json_deduced_type<scan_insitu_holder>>( ) );
+	{
+		std::string insitu_doc =
+		  R"({"tags":["plain","a\tb","\u00e9\"",""],"name":"x\\y\n"})";
+		std::string scalar_doc = insitu_doc;
+		auto const simd = from_json_simd_insitu<scan_insitu_holder>( insitu_doc );
+		auto const scalar =
+		  daw::json::from_json_insitu<scan_insitu_holder>( scalar_doc );
+		check( simd.name == "x\\y\n" and simd.name == scalar.name );
+		check( simd.tags == scalar.tags );
+		check( ( simd.tags == std::vector<std::string_view>{
+		                        "plain", "a\tb", "\u00e9\"", "" } ) );
+		// The results borrow from the document
+		check( simd.name.data( ) >= insitu_doc.data( ) and
+		       simd.name.data( ) < insitu_doc.data( ) + insitu_doc.size( ) );
+		std::string unterminated = R"({"name":"q","tags":["r"]})";
+		auto view = daw::span<char>( unterminated.data( ), unterminated.size( ) );
+		auto const from_span = from_json_simd_insitu<scan_insitu_holder>( view );
+		check( from_span.name == "q" and from_span.tags.at( 0 ) == "r" );
+		bool caught = false;
+		try {
+			std::string bad = R"({"name":"q","tags":["r" "s"]})";
+			(void)from_json_simd_insitu<scan_insitu_holder>( bad );
+		} catch( daw::json::json_exception const & ) { caught = true; }
+		check( caught );
+	}
+
+#if defined( DAW_JSON_HAS_REFLECTION )
+	// Reflected classes go forward with the member links from_json uses
+	static_assert( json_deduced_type<scan_reflected>::expected_type ==
+	               daw::json::JsonParseTypes::ReflectedClass );
+	static_assert( sp::forward_supported<json_deduced_type<scan_reflected>>( ) );
+	for( std::string const reflected_doc :
+	     { R"({"items":[{"b":"q","a":1},{"a":2,"b":"r\"s"}],"id":9,"value":1.5})",
+	       R"({"id":1,"items":[]})" } ) {
+		auto const simd = from_json_simd<scan_reflected>( reflected_doc );
+		auto const scalar = daw::json::from_json<scan_reflected>( reflected_doc );
+		check( simd.id == scalar.id and simd.value == scalar.value );
+		check( simd.items.size( ) == scalar.items.size( ) );
+		for( std::size_t n = 0; n < simd.items.size( ); ++n ) {
+			check( simd.items[n].a == scalar.items[n].a and
+			       simd.items[n].b == scalar.items[n].b );
+		}
+	}
+	reject<scan_reflected>( R"({"items":[{"b":"q"}],"id":9})" );
+	reject<scan_reflected>( R"({"items":[],"id":"9"})" );
+#endif
 }
 
 #else

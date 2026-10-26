@@ -1323,16 +1323,25 @@ namespace daw::json {
 				using parse_to_t = T;
 
 				static constexpr auto expected_type = JsonParseTypes::ReflectedClass;
-				using constructor_t = use_default;
+				using constructor_t = default_constructor<T>;
 
 				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_reflected_class<NewName, T>;
 
+				static constexpr std::size_t member_count =
+				  refl_details::get_non_ignored_reflectible_members<T>( ).size( );
+
+				/// The member links parse_to_class parses with
+				using json_member_list_t =
+				  typename decltype( []<std::size_t... Idx>(
+				                       std::index_sequence<Idx...> ) {
+					  return daw::traits::identity<
+					    json_member_list<refl_details::get_member_link_t<T, Idx>...>>{ };
+				  }( std::make_index_sequence<member_count>{ } ) )::type;
+
 				[[nodiscard]] static constexpr T parse_to_class( auto &parse_state ) {
-					static constexpr auto member_count =
-					  refl_details::get_non_ignored_reflectible_members<T>( ).size( );
 					return [&]<std::size_t... Idx>( std::index_sequence<Idx...> seq ) {
 						return json_details::parse_json_reflected_class<
 						  json_reflected_class,

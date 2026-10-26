@@ -8,6 +8,8 @@
 #include "daw/json/impl/daw_json_parse_policy.h"
 #include "daw/json/impl/daw_json_parse_value.h"
 
+#include <daw/daw_span.h>
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -29,7 +31,6 @@ namespace daw::json {
 			inline constexpr bool policy_supports_simd_v =
 			  std::is_same_v<typename ParseState::CommentPolicy,
 			                 NoCommentSkippingPolicy> and
-			  not ParseState::allow_string_mutation and
 			  not ParseState::has_allocator and not ParseState::allow_escaped_names;
 
 			template<typename T>
@@ -161,7 +162,8 @@ namespace daw::json {
 			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 			index_error( char const *position, char const *last,
 			             ErrorReason reason ) {
-				daw_json_error( true, reason, State( position, last ) );
+				using error_state = typename State::without_string_mutation_type;
+				daw_json_error( true, reason, error_state( position, last ) );
 			}
 
 			// Build a minified structural view. Strings occupy one entry at their
@@ -206,46 +208,57 @@ namespace daw::json {
 			// A forward cursor over the immutable structural entries. A consumer owns
 			// the grammar for its mapped type and leaves position at the first event
 			// after its value.  The entries and document are held by value, so an
-			// entry is one load from the reader instead of a chain through the index
+			// entry is one load from the reader instead of a chain through the index.
+			// The document is the policy's iterator, so a policy allowing string
+			// mutation can decode in-situ strings in place.  The index is complete
+			// before any value is read and a decoded string never grows, so the
+			// entries after it stay valid
 			template<typename ParseState>
 			struct reader {
-				char const *document;
+				using iterator = typename ParseState::iterator;
+
+				struct byte_bounds {
+					iterator first;
+					iterator last;
+				};
+
+				iterator document;
 				index_type const *entries;
 				index_type size;
-				char const *last;
+				iterator last;
 				index_type position = 0;
 				bool source_is_zero_terminated = false;
 
-				explicit inline reader( structural_index const &input,
+				explicit inline reader( structural_index const &input, iterator doc,
 				                        bool is_zero_terminated = false )
-				  : document( input.doc.data( ) )
+				  : document( doc )
 				  , entries( input.entries.data( ) )
 				  , size( input.size( ) )
-				  , last( input[input.size( )] )
+				  , last( doc + input.entries[input.size( )] )
 				  , source_is_zero_terminated( is_zero_terminated ) {}
 
-				[[nodiscard]] DAW_ATTRIB_INLINE char const *
+				[[nodiscard]] DAW_ATTRIB_INLINE iterator
 				operator[]( index_type token ) const noexcept {
 					return document + entries[token];
 				}
 
 				/// A token's first byte and the first byte of the entry after it
-				[[nodiscard]] DAW_ATTRIB_INLINE structural_index::byte_bounds
+				[[nodiscard]] DAW_ATTRIB_INLINE byte_bounds
 				bounds( index_type token ) const noexcept {
 					return { ( *this )[token],
 					         ( *this )[static_cast<index_type>( token + 1 )] };
 				}
 
-				[[nodiscard]] static inline ParseState state_at( char const *f,
-				                                                 char const *l ) {
+				[[nodiscard]] static inline ParseState state_at( iterator f,
+				                                                 iterator l ) {
 					return ParseState( f, l );
 				}
 
-				[[nodiscard]] DAW_ATTRIB_INLINE char const *peek( ) const noexcept {
+				[[nodiscard]] DAW_ATTRIB_INLINE iterator peek( ) const noexcept {
 					return position < size ? ( *this )[position] : nullptr;
 				}
 
-				[[nodiscard]] DAW_ATTRIB_INLINE char const *end( ) const noexcept {
+				[[nodiscard]] DAW_ATTRIB_INLINE iterator end( ) const noexcept {
 					return last;
 				}
 
@@ -254,25 +267,30 @@ namespace daw::json {
 				}
 			};
 
+			/// Errors only report a position, so they are given without mutation
+			template<typename ParseState>
+			[[nodiscard]] inline auto error_state_at( reader<ParseState> const &r,
+			                                          char const *position ) {
+				using error_state = typename ParseState::without_string_mutation_type;
+				return error_state( position == nullptr ? r.end( ) : position,
+				                    r.end( ) );
+			}
+
 			template<typename ParseState>
 			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 			error_at( reader<ParseState> const &r, char const *position,
 			          ErrorReason reason ) {
-				daw_json_error(
-				  true,
-				  reason,
-				  r.state_at( position == nullptr ? r.end( ) : position, r.end( ) ) );
+				daw_json_error( true, reason, error_state_at( r, position ) );
 			}
 
 			template<typename ParseState>
 			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 			missing_member_at( reader<ParseState> const &r, char const *position,
 			                   daw::string_view name ) {
-				daw_json_error(
-				  true,
-				  missing_member(
-				    std::string_view( std::data( name ), std::size( name ) ) ),
-				  r.state_at( position == nullptr ? r.end( ) : position, r.end( ) ) );
+				daw_json_error( true,
+				                missing_member( std::string_view( std::data( name ),
+				                                                  std::size( name ) ) ),
+				                error_state_at( r, position ) );
 			}
 
 			/// The members of a json_member_list mapping
@@ -296,10 +314,10 @@ namespace daw::json {
 			};
 
 			template<typename JsonMember>
-			struct class_members<JsonMember, std::void_t<json_data_contract_trait_t<
-			                                   typename JsonMember::wrapped_type>>>
-			  : member_list_of<
-			      json_data_contract_trait_t<typename JsonMember::wrapped_type>> {};
+			struct class_members<JsonMember,
+			                     std::void_t<typename JsonMember::wrapped_type,
+			                                 json_class_member_list_t<JsonMember>>>
+			  : member_list_of<json_class_member_list_t<JsonMember>> {};
 
 			/// A class whose json_data_contract is a json_type_alias, it parses as
 			/// the member it aliases and is constructed from that result.
@@ -328,7 +346,7 @@ namespace daw::json {
 			/// Independent json_member_list mappings can be consumed in input order.
 			template<typename JsonMember>
 			[[nodiscard]] DAW_CONSTEVAL bool is_walkable_class( ) {
-				if constexpr( JsonMember::expected_type != JsonParseTypes::Class ) {
+				if constexpr( not is_json_class_mapping_v<JsonMember> ) {
 					return false;
 				} else if constexpr( not class_members<JsonMember>::value ) {
 					return false;
@@ -552,6 +570,16 @@ namespace daw::json {
 				  ... );
 			}
 
+			template<typename... Alternatives>
+			DAW_CONSTEVAL bool
+			forward_variant_alternatives( fwd_pack<Alternatives...> const * ) {
+				return ( forward_supported<Alternatives>( ) and ... );
+			}
+
+			template<typename JsonMember>
+			using variant_alternatives_t =
+			  typename JsonMember::json_elements::element_map_t;
+
 			template<typename JsonMember>
 			DAW_CONSTEVAL bool forward_supported( ) {
 				constexpr auto type = JsonMember::expected_type;
@@ -563,7 +591,13 @@ namespace daw::json {
 					using members = typename tuple_members<JsonMember>::types;
 					return forward_tuple_members<members>(
 					  std::make_index_sequence<std::tuple_size_v<members>>{ } );
-				} else if constexpr( type == JsonParseTypes::Class ) {
+				} else if constexpr( type == JsonParseTypes::Variant ) {
+					return forward_variant_alternatives(
+					  static_cast<variant_alternatives_t<JsonMember> const *>(
+					    nullptr ) );
+				} else if constexpr( type == JsonParseTypes::KeyValueArray ) {
+					return forward_supported<typename JsonMember::json_class_t>( );
+				} else if constexpr( is_json_class_mapping_v<JsonMember> ) {
 					if constexpr( is_type_alias_class_v<JsonMember> ) {
 						return forward_supported<aliased_member_t<JsonMember>>( );
 					} else if constexpr( not is_walkable_class<JsonMember>( ) ) {
@@ -585,7 +619,10 @@ namespace daw::json {
 					       type == JsonParseTypes::Bool or
 					       type == JsonParseTypes::StringRaw or
 					       type == JsonParseTypes::StringEscaped or
-					       type == JsonParseTypes::Date or type == JsonParseTypes::Custom;
+					       type == JsonParseTypes::StringInsitu or
+					       type == JsonParseTypes::Date or
+					       type == JsonParseTypes::Custom or
+					       type == JsonParseTypes::Unknown;
 				}
 			}
 
@@ -975,6 +1012,120 @@ namespace daw::json {
 				  state, iterator( r ), iterator( ) );
 			}
 
+			/// The elements of a json_key_value_array as key/value pairs.  Each
+			/// element is the key and value class json_parse_kv_array_iterator
+			/// parses, so its members may come in either order
+			template<typename Member, typename State>
+			struct forward_kv_array_iterator
+			  : forward_array_iterator<typename Member::json_class_t, State> {
+				using base =
+				  forward_array_iterator<typename Member::json_class_t, State>;
+				using value_type =
+				  std::pair<json_result_t<typename Member::json_key_t> const,
+				            json_result_t<typename Member::json_value_t>>;
+				using reference = value_type;
+				using pointer = arrow_proxy<value_type>;
+
+				using base::base;
+
+				value_type operator*( ) const {
+					auto kv = base::operator*( );
+					return value_type( std::get<0>( std::move( kv.members ) ),
+					                   std::get<1>( std::move( kv.members ) ) );
+				}
+
+				forward_kv_array_iterator &operator++( ) {
+					(void)base::operator++( );
+					return *this;
+				}
+
+				void operator++( int ) {
+					(void)operator++( );
+				}
+			};
+
+			template<typename Member, typename State>
+			inline json_result_t<Member> consume_kv_array( reader<State> &r ) {
+				using Constructor = json_constructor_t<Member>;
+				auto const opening = r.peek( );
+				if( DAW_UNLIKELY( opening == nullptr or *opening != '[' ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at(
+					  r, opening, ErrorReason::ExpectedKeyValueArrayToStartWithBracket );
+				}
+				r.pop( );
+				auto state = r.state_at( opening, r.end( ) );
+				using iterator = forward_kv_array_iterator<Member, State>;
+				return construct_value<json_result_t<Member>, Constructor>(
+				  state, iterator( r ), iterator( ) );
+			}
+
+			/// As parse_value_variant does, the alternative is chosen by the first
+			/// byte of the value
+			template<JsonBaseParseTypes BPT, typename Member, typename State>
+			inline json_result_t<Member> consume_variant_value( reader<State> &r ) {
+				using alternatives = variant_alternatives_t<Member>;
+				constexpr auto idx = static_cast<std::size_t>(
+				  Member::base_map::base_map[static_cast<std::int_fast8_t>( BPT )] );
+				if constexpr( idx < pack_size_v<alternatives> ) {
+					return consume_value<pack_element_t<idx, alternatives>>( r );
+				} else {
+					error_at( r, r.peek( ), ErrorReason::UnexpectedJSONVariantType );
+				}
+			}
+
+			template<typename Member, typename State>
+			inline json_result_t<Member> consume_variant( reader<State> &r ) {
+				auto const first = r.peek( );
+				if( DAW_UNLIKELY( first == nullptr ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, first, ErrorReason::UnexpectedEndOfData );
+				}
+				switch( *first ) {
+				case '{':
+					return consume_variant_value<JsonBaseParseTypes::Class, Member>( r );
+				case '[':
+					return consume_variant_value<JsonBaseParseTypes::Array, Member>( r );
+				case 't':
+				case 'f':
+					return consume_variant_value<JsonBaseParseTypes::Bool, Member>( r );
+				case '"':
+					return consume_variant_value<JsonBaseParseTypes::String, Member>( r );
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+				case '+':
+				case '-':
+					return consume_variant_value<JsonBaseParseTypes::Number, Member>( r );
+				}
+				error_at( r, first, ErrorReason::InvalidStartOfValue );
+			}
+
+			/// A json_raw/json_value is parsed, not skipped, so as
+			/// parse_value_unknown does, the scalar skip checks the value and gives
+			/// its bytes.  The index skip only moves the reader past it
+			template<typename Member, typename State>
+			inline json_result_t<Member> consume_raw( reader<State> &r ) {
+				using Constructor = json_constructor_t<Member>;
+				auto const first = r.peek( );
+				if( DAW_UNLIKELY( first == nullptr ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, first, ErrorReason::UnexpectedEndOfData );
+				}
+				auto state = r.state_at( first, r.end( ) );
+				auto value = skip_value<true>( state );
+				skip_indexed_value( r );
+				return construct_value<json_result_t<Member>, Constructor>(
+				  state, std::data( value ), std::size( value ) );
+			}
+
 #if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 			template<typename Members, typename Slots, typename State,
 			         std::size_t... Is>
@@ -1202,7 +1353,7 @@ namespace daw::json {
 					return construct_value<JsonMember,
 					                       daw::construct_a_t<json_result_t<JsonMember>>>(
 					  state, std::move( value ) );
-				} else if constexpr( type == JsonParseTypes::Class ) {
+				} else if constexpr( is_json_class_mapping_v<JsonMember> ) {
 					using members = class_members<JsonMember>;
 					return consume_class<JsonMember>(
 					  r, std::make_index_sequence<members::size>{ } );
@@ -1210,7 +1361,12 @@ namespace daw::json {
 					return consume_array<JsonMember>( r );
 				} else if constexpr( type == JsonParseTypes::KeyValue ) {
 					return consume_kv<JsonMember>( r );
-
+				} else if constexpr( type == JsonParseTypes::KeyValueArray ) {
+					return consume_kv_array<JsonMember>( r );
+				} else if constexpr( type == JsonParseTypes::Variant ) {
+					return consume_variant<JsonMember>( r );
+				} else if constexpr( type == JsonParseTypes::Unknown ) {
+					return consume_raw<JsonMember>( r );
 				} else {
 					if( DAW_UNLIKELY( r.peek( ) == nullptr ) ) {
 						DAW_UNLIKELY_BRANCH
@@ -1233,14 +1389,15 @@ namespace daw::json {
 					}
 					auto state = ParseState( bounds.first, bounds.last );
 					if constexpr( type == JsonParseTypes::StringRaw or
-					              type == JsonParseTypes::StringEscaped ) {
+					              type == JsonParseTypes::StringEscaped or
+					              type == JsonParseTypes::StringInsitu ) {
 						daw_json_assert_weak( *state.first == '"',
 						                      ErrorReason::InvalidString );
 						++state.first;
 						do {
 							--state.last;
 						} while( *state.last != '"' );
-						if constexpr( type == JsonParseTypes::StringEscaped ) {
+						if constexpr( type != JsonParseTypes::StringRaw ) {
 							auto const slash = static_cast<char const *>( std::memchr(
 							  +state.first,
 							  '\\',
@@ -1257,8 +1414,14 @@ namespace daw::json {
 				}
 			}
 
+			/// The document, writable when the policy allows string mutation
+			template<typename ParseState>
+			using document_span_t =
+			  daw::span<std::remove_pointer_t<typename ParseState::iterator>>;
+
 			template<typename JsonMember, typename ParseState>
-			inline json_result_t<JsonMember> scalar_fallback( std::string_view doc ) {
+			inline json_result_t<JsonMember>
+			scalar_fallback( document_span_t<ParseState> doc ) {
 				auto state = ParseState( doc.data( ), daw::data_end( doc ) );
 				DAW_ASSUME( state.first != nullptr );
 				DAW_ASSUME( state.last != nullptr );
@@ -1279,17 +1442,20 @@ namespace daw::json {
 
 			template<typename JsonMember, typename ParseState>
 			inline json_result_t<JsonMember> from_json_simd_impl(
-			  std::string_view doc,
+			  document_span_t<ParseState> doc,
 			  daw::not_null<std::pmr::memory_resource *> memory_resource ) {
-				if constexpr( not forward_supported<JsonMember>( ) ) {
+				// A root json_raw/json_value would only be given the whole document
+				if constexpr( not forward_supported<JsonMember>( ) or
+				              JsonMember::expected_type == JsonParseTypes::Unknown ) {
 					return scalar_fallback<JsonMember, ParseState>( doc );
 				} else {
 					using indexed_state = json_details::apply_policy_option_t<
 					  ParseState,
 					  options::ZeroTerminatedString::no>;
-					auto index = build_index<indexed_state>( doc, memory_resource );
+					auto index = build_index<indexed_state>(
+					  std::string_view( doc.data( ), doc.size( ) ), memory_resource );
 					auto r = reader<indexed_state>(
-					  index, ParseState::is_zero_terminated_string );
+					  index, doc.data( ), ParseState::is_zero_terminated_string );
 					auto result = consume_value<JsonMember>( r );
 					if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 						if( DAW_UNLIKELY( r.position != index.size( ) ) ) {
