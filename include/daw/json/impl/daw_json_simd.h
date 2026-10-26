@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_span.h>
@@ -154,6 +155,72 @@ namespace daw::simd_impl {
 		bits ^= bits << 16U;
 		bits ^= bits << 32U;
 		return bits;
+	}
+
+#if defined( __AVX512VBMI2__ )
+	namespace flatten_bits_details {
+		alignas( 64 ) inline constexpr std::uint8_t lane_numbers[64] = {
+		  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15,
+		  16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+		  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+		  48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63 };
+	} // namespace flatten_bits_details
+#endif
+
+	/// flatten_bits writes within this many entries of output
+	inline constexpr std::size_t flatten_bits_capacity = 64U;
+
+	/**
+	 * Writes base + n for each set bit n of bits, lowest bit first, and returns
+	 * their count.  output must have room for flatten_bits_capacity entries,
+	 * those past the count have unspecified values.  Not stopping at the count
+	 * keeps the stores free of branches on it.  With the event bits of a block
+	 * and its offset this lists the event positions.  A byte compress of the
+	 * lane numbers where the target has one, groups of eight set bits
+	 * otherwise.
+	 */
+	DAW_ATTRIB_INLINE std::size_t flatten_bits( std::uint64_t bits,
+	                                            std::uint32_t base,
+	                                            std::uint32_t *output ) noexcept {
+		auto const count =
+		  static_cast<std::size_t>( daw::cxmath::popcount( bits ) );
+#if defined( __AVX512VBMI2__ )
+		auto const packed = _mm512_maskz_compress_epi8(
+		  static_cast<__mmask64>( bits ),
+		  _mm512_load_si512( flatten_bits_details::lane_numbers ) );
+		auto const offset = _mm512_set1_epi32( static_cast<int>( base ) );
+		auto const store = [&]( std::size_t quarter, __m128i lanes ) {
+			_mm512_storeu_si512(
+			  output + 16U * quarter,
+			  _mm512_add_epi32( _mm512_cvtepu8_epi32( lanes ), offset ) );
+		};
+		store( 0, _mm512_castsi512_si128( packed ) );
+		// Blocks rarely have more than 16 events, sparse ones should not pay
+		// for the other stores
+		if( count > 16U ) {
+			store( 1, _mm512_extracti32x4_epi32( packed, 1 ) );
+			store( 2, _mm512_extracti32x4_epi32( packed, 2 ) );
+			store( 3, _mm512_extracti32x4_epi32( packed, 3 ) );
+		}
+#else
+		// The top bit keeps the trailing zero count defined once bits runs out
+		for( std::size_t entry = 0; entry < count; entry += 8U ) {
+			for( std::size_t n = 0; n < 8U; ++n ) {
+				auto lane =
+				  static_cast<std::uint32_t>( daw::cxmath::count_trailing_zeros(
+				    bits | ( std::uint64_t{ 1 } << 63U ) ) );
+#if defined( __clang__ )
+				// Otherwise clang combines the stores into vector code emulating the
+				// trailing zero count, which is slower than the scalar count.  It
+				// emits no instructions.
+				__asm__( "" : "+r"( lane ) );
+#endif
+				output[entry + n] = base + lane;
+				bits = daw::cxmath::blsr( bits );
+			}
+		}
+#endif
+		return count;
 	}
 
 	/**

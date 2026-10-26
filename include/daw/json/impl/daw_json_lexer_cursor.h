@@ -115,7 +115,8 @@ namespace daw::json {
 				static constexpr std::size_t block_size = 64U;
 				static constexpr std::size_t block_count = 4U;
 				/// build_structural_index writes up to this many entries past the last
-				static constexpr std::size_t structural_index_padding = 8U;
+				static constexpr std::size_t structural_index_padding =
+				  daw::simd_impl::flatten_bits_capacity;
 
 				struct structural_index_result {
 					std::uint32_t size;
@@ -326,28 +327,11 @@ namespace daw::json {
 						auto const count = remaining < block_size ? remaining : block_size;
 						auto const classified = classify_block<false>(
 						  doc.data( ) + block_offset, count, carry );
-						auto const offsets_mask = classified.events;
-						auto const index_offset =
-						  static_cast<std::uint32_t>( block_offset );
-
-						// Eight stores at a time, without branches on the kind of entry,
-						// so the loop exit is predictable.  Stores past the block's
-						// entries land in the padding or are overwritten by the next
-						// block.
-						auto const entry_count = static_cast<std::uint32_t>(
-						  daw::cxmath::popcount( offsets_mask ) );
-						auto offset_bits = offsets_mask;
-						for( auto entry = token_count; entry < token_count + entry_count;
-						     entry += 8U ) {
-							for( std::uint32_t n = 0; n < 8U; ++n ) {
-								offsets[entry + n] =
-								  index_offset +
-								  daw::cxmath::count_trailing_zeros(
-								    offset_bits | ( std::uint64_t{ 1 } << 63U ) );
-								offset_bits = daw::cxmath::blsr( offset_bits );
-							}
-						}
-						token_count += entry_count;
+						token_count +=
+						  static_cast<std::uint32_t>( daw::simd_impl::flatten_bits(
+						    classified.events,
+						    static_cast<std::uint32_t>( block_offset ),
+						    &offsets[token_count] ) );
 						carry = classified.carry;
 					}
 					offsets[token_count] = static_cast<std::uint32_t>( doc_sz );

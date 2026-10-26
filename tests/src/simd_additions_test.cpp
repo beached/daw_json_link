@@ -6,8 +6,9 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 // Checks the operations daw::simd_impl adds to the SIMD backends against
-// scalar references: prefix_xor, whichever instruction implements it,
-// mask compression/decompression, and lookup16 on every byte value.
+// scalar references: prefix_xor and flatten_bits, whichever instruction
+// implements them, mask compression/decompression, and lookup16 on every byte
+// value.
 
 #include "defines.h"
 
@@ -46,6 +47,60 @@ namespace {
 				daw_ensure_error( true,
 				                  "prefix_xor differs for " + std::to_string( bits ) );
 			}
+		}
+	}
+
+	void check_flatten_bits( std::uint64_t bits, std::uint32_t base ) {
+		// Entries past count are unspecified, past the capacity are untouched
+		constexpr auto guard = std::uint32_t{ 0xDEAD'BEEFU };
+		std::array<std::uint32_t, daw::simd_impl::flatten_bits_capacity + 16U>
+		  output{ };
+		output.fill( guard );
+		auto const count =
+		  daw::simd_impl::flatten_bits( bits, base, output.data( ) );
+		daw_ensure( count ==
+		            static_cast<std::size_t>( daw::cxmath::popcount( bits ) ) );
+		auto remaining = bits;
+		for( std::size_t n = 0; n < count; ++n ) {
+			auto const expected =
+			  base + static_cast<std::uint32_t>(
+			           daw::cxmath::count_trailing_zeros( remaining ) );
+			if( output[n] != expected ) {
+				daw_ensure_error( true,
+				                  "flatten_bits differs for " + std::to_string( bits ) +
+				                    " at entry " + std::to_string( n ) );
+			}
+			remaining = daw::cxmath::blsr( remaining );
+		}
+		for( auto n = daw::simd_impl::flatten_bits_capacity; n < output.size( );
+		     ++n ) {
+			if( output[n] != guard ) {
+				daw_ensure_error( true,
+				                  "flatten_bits wrote past its capacity for " +
+				                    std::to_string( bits ) );
+			}
+		}
+	}
+
+	template<typename Rng>
+	void check_flatten_bits( Rng &rng ) {
+		check_flatten_bits( 0, 5U );
+		check_flatten_bits( ~std::uint64_t{ 0 }, 0U );
+		check_flatten_bits( ~std::uint64_t{ 0 }, 0xFFFF'FFC0U );
+		check_flatten_bits( std::uint64_t{ 1 } << 63U, 64U );
+		for( unsigned n = 0; n <= 64U; ++n ) {
+			// Every count, which selects how many of the stores are made
+			check_flatten_bits( n == 64U ? ~std::uint64_t{ 0 }
+			                             : ( std::uint64_t{ 1 } << n ) - 1U,
+			                    n * 64U );
+		}
+		auto base = std::uniform_int_distribution<std::uint32_t>( );
+		for( int n = 0; n < 100'000; ++n ) {
+			// Sparse, dense and uniform masks
+			auto const bits = rng( );
+			check_flatten_bits( bits, base( rng ) );
+			check_flatten_bits( bits & rng( ) & rng( ), base( rng ) );
+			check_flatten_bits( bits | rng( ), base( rng ) );
 		}
 	}
 
@@ -126,6 +181,7 @@ namespace {
 int main( ) {
 	auto rng = std::mt19937_64( 0x5eed );
 	check_prefix_xor( rng );
+	check_flatten_bits( rng );
 	check_mask_conversion( rng );
 	check_lookup16( rng );
 }
