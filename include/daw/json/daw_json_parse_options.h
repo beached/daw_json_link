@@ -186,6 +186,20 @@ namespace daw::json {
 				/// default: yes
 				///
 				enum class AllowLeadingZeroPlus : unsigned { no, yes }; // 1bit
+
+				///
+				/// @brief How the SIMD parsers, from_json_simd and
+				/// json_simd_block_iterator, check the classes and arrays they skip.
+				/// With no, like simdjson's On-Demand, only the depth is counted: {
+				/// and [ add one, } and ] take one away.  With yes, the bracket
+				/// kinds, member names, colons and commas are checked too, and
+				/// nesting is limited to DAW_JSON_STRICT_SKIP_MAX_DEPTH (1024 by
+				/// default).  The spelling of skipped strings, numbers and literals is
+				/// not checked either way
+				///
+				/// default: no
+				///
+				enum class StrictSkipChecks : unsigned { no, yes }; // 1bit
 			} // namespace parser_options
 		} // namespace options
 	} // namespace DAW_JSON_VER

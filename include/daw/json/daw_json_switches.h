@@ -115,6 +115,11 @@
 #endif
 #endif
 
+// The deepest nesting the SIMD parsers skip with options::StrictSkipChecks::yes
+#if not defined( DAW_JSON_STRICT_SKIP_MAX_DEPTH )
+#define DAW_JSON_STRICT_SKIP_MAX_DEPTH 1024
+#endif
+
 // Use strtod instead of from_chars when avialable by defining
 // DAW_JSON_USE_STRTOD
 #if defined( __cpp_lib_to_chars )

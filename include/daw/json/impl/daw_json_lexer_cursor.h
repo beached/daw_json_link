@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "daw/json/daw_json_switches.h"
 #include "daw/json/impl/version.h"
 
 #include "daw/simd/daw_simd.h"
@@ -84,11 +85,11 @@ namespace daw::json {
 
 				[[nodiscard]] DAW_ATTRIB_INLINE vector_classes
 				classify_vector( simd_type input_vec ) {
-					return vector_classes{
-					  input_vec == splat( '\\' ),
-					  input_vec == splat( '"' ),
-					  structural_candidates( input_vec ),
-					  ( input_vec >= splat( '\x01' ) ) & ( input_vec <= splat( '\x20' ) ) };
+					return vector_classes{ input_vec == splat( '\\' ),
+					                       input_vec == splat( '"' ),
+					                       structural_candidates( input_vec ),
+					                       ( input_vec >= splat( '\x01' ) ) &
+					                         ( input_vec <= splat( '\x20' ) ) };
 				}
 
 				/// A bit per byte of a 64 byte block for each class
@@ -132,6 +133,42 @@ namespace daw::json {
 					  daw::span<char const>( buffer, simd_size ) );
 				}
 			} // namespace lexer_cursor_details
+
+			/// The kinds of the open brackets of a skip with
+			/// options::StrictSkipChecks::yes, a bit for each that is set for a
+			/// class.  At most DAW_JSON_STRICT_SKIP_MAX_DEPTH brackets are open
+			class strict_skip_brackets {
+				static constexpr std::size_t max_depth =
+				  DAW_JSON_STRICT_SKIP_MAX_DEPTH;
+				static_assert( max_depth > 0U );
+
+				std::uint64_t m_kinds[( max_depth + 63U ) / 64U] = { };
+				std::size_t m_depth = 0;
+
+			public:
+				/// false when max_depth brackets are open already
+				[[nodiscard]] DAW_ATTRIB_INLINE bool push( bool is_class ) {
+					if( m_depth == max_depth ) {
+						return false;
+					}
+					auto &kinds = m_kinds[m_depth / 64U];
+					auto const bit = std::uint64_t{ 1 } << ( m_depth % 64U );
+					kinds = is_class ? ( kinds | bit ) : ( kinds & ~bit );
+					++m_depth;
+					return true;
+				}
+
+				/// Whether the innermost open bracket is a class.  One must be open
+				[[nodiscard]] DAW_ATTRIB_INLINE bool in_class( ) const {
+					auto const top = m_depth - 1U;
+					return ( ( m_kinds[top / 64U] >> ( top % 64U ) ) & 1U ) != 0U;
+				}
+
+				/// Close the innermost bracket, returning whether none are left open
+				[[nodiscard]] DAW_ATTRIB_INLINE bool pop( ) {
+					return --m_depth == 0U;
+				}
+			};
 
 			/// Stage 1 of parsing.  Each 64 byte block is classified once and the
 			/// positions the parser needs are handed out in order: the structural
@@ -231,9 +268,9 @@ namespace daw::json {
 							  if( offset >= count ) {
 								  return splat( '\0' );
 							  }
-							  return load( first + offset, count - offset < simd_size
-							                                 ? count - offset
-							                                 : simd_size );
+							  return load( first + offset,
+							               count - offset < simd_size ? count - offset
+							                                          : simd_size );
 						  },
 						  vectors );
 					}
@@ -280,8 +317,7 @@ namespace daw::json {
 					auto const token = outside & ~structural & ~whitespace_bits;
 
 					auto const token_start =
-					  token &
-					  ~( ( token << 1U ) | carry.in_token );
+					  token & ~( ( token << 1U ) | carry.in_token );
 
 					auto const open_quotes = quote_bits & in_string_bits;
 
@@ -294,8 +330,7 @@ namespace daw::json {
 						// first backslash, or to its closing quote when there is none
 						auto const clean_bytes = in_string_bits & ~backslash_bits;
 						auto const string_starts =
-						  open_quotes |
-						  ( carry.in_string & carry.string_clean );
+						  open_quotes | ( carry.in_string & carry.string_clean );
 						auto const carried = clean_bytes + string_starts;
 						escaped_closes = close_quotes & ~carried;
 						carry.string_clean = carried < clean_bytes ? 1U : 0U;
@@ -369,13 +404,14 @@ namespace daw::json {
 				  : m_last( last ) {}
 
 				/// Build the ordered structural offsets for a complete range. Strings
-				/// occupy one entry at their opening quote. A scalar or string ends before
-				/// the next entry, with only whitespace between. offsets[token_count] is
-				/// a document-end sentinel and offsets needs room for doc.size( ) plus
-				/// structural_index_padding entries.
+				/// occupy one entry at their opening quote. A scalar or string ends
+				/// before the next entry, with only whitespace between.
+				/// offsets[token_count] is a document-end sentinel and offsets needs
+				/// room for doc.size( ) plus structural_index_padding entries.
 				template<typename Offsets>
 				[[nodiscard]] static inline structural_index_result
-				build_structural_index( std::string_view const doc, Offsets &&offsets ) {
+				build_structural_index( std::string_view const doc,
+				                        Offsets &&offsets ) {
 					auto carry = carry_state{ };
 					auto token_count = std::uint32_t{ 0 };
 					auto const doc_sz = doc.size( );
@@ -404,12 +440,44 @@ namespace daw::json {
 					return structural_index_result{ token_count, carry.in_string != 0 };
 				}
 
+				/// The state carried from one chunk to the next by
+				/// build_structural_chunk.  A value initialized one starts outside of a
+				/// string
+				using chunk_carry = carry_state;
+
+				/// Write the structural offsets of [first, first + count), relative to
+				/// first, like build_structural_index does for a whole document.  carry
+				/// continues from the previous chunk, so a range can be indexed a chunk
+				/// at a time.  count is a multiple of block_size except for the last
+				/// chunk.  offsets needs room for count plus structural_index_padding
+				/// entries, and no sentinel is written
+				[[nodiscard]] static inline std::uint32_t
+				build_structural_chunk( char const *first, std::size_t count,
+				                        chunk_carry &carry, std::uint32_t *offsets ) {
+					auto token_count = std::uint32_t{ 0 };
+					auto const full_end = count - count % block_size;
+					auto block_offset = std::size_t{ 0 };
+					for( ; block_offset < full_end; block_offset += block_size ) {
+						token_count += index_block(
+						  first, block_offset, block_size, carry, &offsets[token_count] );
+					}
+					if( block_offset < count ) {
+						token_count += index_block( first,
+						                            block_offset,
+						                            count - block_offset,
+						                            carry,
+						                            &offsets[token_count] );
+					}
+					return token_count;
+				}
+
 				/// The first event at or after first, whatever was popped before.
 				/// nullptr when there is none before the end of the data
 				[[nodiscard]] inline char const *peek( char const *first ) {
 					using lexer_cursor_details::low_bits;
 					if( DAW_LIKELY( m_loaded_blocks != 0 and first >= m_first and
 					                first < m_loaded_last ) ) {
+						DAW_LIKELY_BRANCH;
 						auto const position = static_cast<std::size_t>( first - m_first );
 						m_block = position / block_size;
 						m_events =

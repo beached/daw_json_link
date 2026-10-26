@@ -328,14 +328,23 @@ int main( ) {
 	       R"({"id":1,"points":[],"unknown":"unterminated})" } ) {
 		reject<scan_record>( bad );
 	}
-	// Structural validation covers skipped values before typed parsing.
+	// Skipped values only have their depth counted by default, the structure is
+	// checked with options::StrictSkipChecks::yes
 	for( auto const &bad : { R"({"unknown":{"a" 1},"id":2,"points":[]})",
 	                         R"({"unknown":[1 2],"id":2,"points":[]})",
 	                         R"({"unknown":[,1],"id":2,"points":[]})",
-	                         R"({"unknown":{1:2},"id":2,"points":[]})",
-	                         R"({"unknown":[1,],"id":2 "points":[]})" } ) {
-		reject<scan_record>( bad );
+	                         R"({"unknown":{1:2},"id":2,"points":[]})" } ) {
+		check( from_json_simd<scan_record>( bad ).id == 2 );
+		bool strict_rejected = false;
+		try {
+			(void)from_json_simd<scan_record>(
+			  bad,
+			  daw::json::options::parse_flags<
+			    daw::json::options::StrictSkipChecks::yes> );
+		} catch( daw::json::json_exception const & ) { strict_rejected = true; }
+		check( strict_rejected );
 	}
+	reject<scan_record>( R"({"unknown":[1,],"id":2 "points":[]})" );
 	bool end_rejected = false;
 	try {
 		(void)from_json_simd<int>(
@@ -388,6 +397,43 @@ int main( ) {
 	check( from_json_simd<std::vector<std::vector<int>>>(
 	         "[[1,2],[],[3]]" )[2][0] == 3 );
 	reject<std::vector<int>>( "[1 2]" );
+	// By default, like simdjson's On-Demand, a skipped class or array only has
+	// its depth counted.  options::StrictSkipChecks::yes checks its structure
+	// too, nesting at most DAW_JSON_STRICT_SKIP_MAX_DEPTH deep.  Neither recurses,
+	// so deep input cannot overflow the stack
+	auto const strict = daw::json::options::parse_flags<
+	  daw::json::options::StrictSkipChecks::yes>;
+	auto const strict_rejects = [&]( std::string const &text ) {
+		try {
+			(void)from_json_simd<scan_record>( text, strict );
+		} catch( daw::json::json_exception const & ) { return true; }
+		return false;
+	};
+	auto const nested_skip = []( std::size_t depth, char const *inner ) {
+		return R"({"id":4,"points":[],"o":)" + std::string( depth, '[' ) + inner +
+		       std::string( depth, ']' ) + "}";
+	};
+	check( from_json_simd<scan_record>( nested_skip( 1'000'000, "" ) ).id == 4 );
+	reject<scan_record>( R"({"id":4,"points":[],"o":)" +
+	                     std::string( 1'000'000, '[' ) + "}" );
+	check( from_json_simd<scan_record>(
+	         nested_skip( DAW_JSON_STRICT_SKIP_MAX_DEPTH, "" ), strict )
+	         .id == 4 );
+	check( strict_rejects( nested_skip( DAW_JSON_STRICT_SKIP_MAX_DEPTH + 1, "" ) ) );
+	for( auto const &balanced :
+	     { nested_skip( 3, "1 2" ),
+	       std::string( R"({"id":4,"points":[],"o":[[[}]]})" ),
+	       std::string( R"({"id":4,"points":[],"o":{"a":[1}}})" ),
+	       std::string( R"({"id":4,"points":[],"o":{"a" 1}})" ) } ) {
+		check( from_json_simd<scan_record>( balanced ).id == 4 );
+		check( strict_rejects( balanced ) );
+	}
+	for( auto const &unspelled :
+	     { R"({"id":4,"o":{"a":[tru,-,{"b":nul},],},"points":[]})",
+	       R"({"id":4,"o":x,"points":[]})" } ) {
+		check( from_json_simd<scan_record>( unspelled ).id == 4 );
+		check( from_json_simd<scan_record>( unspelled, strict ).id == 4 );
+	}
 	reject<std::vector<int>>( "[1,2" );
 	for( auto padding : { 0, 55, 63, 64, 250, 255, 256, 511 } ) {
 		std::string pad( static_cast<std::size_t>( padding ), 'x' );

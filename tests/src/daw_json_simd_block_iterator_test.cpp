@@ -6,6 +6,9 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
+#include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
 #include <daw/json/daw_json_simd_iterator.h>
 
@@ -13,8 +16,10 @@
 
 #if defined( DAW_HAS_SIMD )
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
 #include <initializer_list>
 #include <optional>
 #include <string>
@@ -42,6 +47,12 @@ struct simd_iterator_container_value {
 
 struct simd_iterator_real_value {
 	double value;
+};
+
+struct simd_iterator_point {
+	double x;
+	double y;
+	double z;
 };
 
 namespace daw::json {
@@ -81,6 +92,16 @@ namespace daw::json {
 	struct json_data_contract<simd_iterator_real_value> {
 		static constexpr char const value[] = "value";
 		using type = json_member_list<json_number<value, double>>;
+	};
+
+	template<>
+	struct json_data_contract<simd_iterator_point> {
+		static constexpr char const x[] = "x";
+		static constexpr char const y[] = "y";
+		static constexpr char const z[] = "z";
+		using type = json_member_list<json_number<x, double>,
+		                              json_number<y, double>,
+		                              json_number<z, double>>;
 	};
 } // namespace daw::json
 
@@ -132,6 +153,13 @@ namespace {
 	  daw::json::json_class_no_name<simd_iterator_container_value>>;
 	using real_class_iterator = daw::json::json_simd_block_iterator<
 	  daw::json::json_class_no_name<simd_iterator_real_value>>;
+	using point_iterator = daw::json::json_simd_block_iterator<
+	  daw::json::json_class_no_name<simd_iterator_point>>;
+	using strict_point_iterator = daw::json::json_simd_block_iterator<
+	  daw::json::json_class_no_name<simd_iterator_point>, char,
+	  daw::json::options::StrictSkipChecks::yes>;
+	using scalar_point_iterator = daw::json::json_array_iterator<
+	  daw::json::json_class_no_name<simd_iterator_point>>;
 
 	struct parsed_number {
 		double value;
@@ -929,15 +957,12 @@ namespace {
 		} catch( daw::json::json_exception const & ) { rejected_non_class = true; }
 		daw_ensure( rejected_non_class );
 
-		auto rejected_trailing_comma = false;
-		try {
-			auto trailing = class_iterator(
-			  R"json([{"id":1,"text":"value","enabled":true},])json" );
-			++trailing;
-		} catch( daw::json::json_exception const & ) {
-			rejected_trailing_comma = true;
-		}
-		daw_ensure( rejected_trailing_comma );
+		// Trailing commas are accepted, like the scalar parser does
+		auto trailing = class_iterator(
+		  R"json([{"id":1,"text":"value","enabled":true,"child":{"value":1},},])json" );
+		daw_ensure( ( *trailing ).id == 1 );
+		++trailing;
+		daw_ensure( trailing == trailing.end( ) );
 
 		auto rejected_missing_member = false;
 		try {
@@ -985,6 +1010,150 @@ namespace {
 #endif
 	}
 
+
+	/// "A count sum" when the whole array is accepted, "R" when rejected
+	template<typename Iterator>
+	[[nodiscard]] std::string summarize_points( std::string_view document ) {
+#if defined( DAW_USE_EXCEPTIONS )
+		try {
+#endif
+			auto count = 0;
+			auto sum = 0.0;
+			for( auto const point : Iterator( document ) ) {
+				sum += point.x + 3.0 * point.y + 7.0 * point.z;
+				++count;
+			}
+			char buffer[64];
+			(void)std::snprintf( buffer, sizeof( buffer ), "A %d %.17g", count, sum );
+			return buffer;
+#if defined( DAW_USE_EXCEPTIONS )
+		} catch( daw::json::json_exception const & ) { return "R"; }
+#endif
+	}
+
+	/// With options::StrictSkipChecks::yes the class iterator accepts and
+	/// rejects what json_array_iterator does, except that the strings, numbers
+	/// and literals of skipped members are not checked.  By default, like
+	/// simdjson's On-Demand, only the depth of a skipped class or array is
+	/// counted.  Members come in any order
+	void test_class_iterator_matches_scalar( ) {
+		constexpr std::string_view documents[] = {
+		  R"json([{"x":1,"y":2,"z":3}])json",
+		  R"json([{"z":0.25,"name":"a\"b}","x":1,"opts":{"1":[1,true,null,{"k":[]}]},"y":2}])json",
+		  R"json([ { "y" : 4 , "x" : 5 , "z" : 6 , "o" : [ "]" , false ] } ])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[[[[{"a":[1,{"b":"}"}]}]]]]}])json",
+		  R"json([{"x":1,"y":2,"z":3,},])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a":1,}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[1,]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":01}])json",
+		  R"json([{"x":1 "y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3,"n":"a" "o":1}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a" 1}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[1 2]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[,1]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{,}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a":}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{1:2}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a":1]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":1 2}])json",
+		  R"json([{"x":1x2,"y":2,"z":3}])json",
+		  R"json([{"x":1 2,"y":2,"z":3}])json",
+		  R"json([{"x":1.,"y":2,"z":3}])json",
+		  R"json([{"x":"1","y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2}])json",
+		  R"json([{"x":1,"y":2,"z":3},,{"x":1,"y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3}{"x":1,"y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":"unterminated}])json",
+		};
+		for( auto const document : documents ) {
+			auto const scalar = summarize_points<scalar_point_iterator>( document );
+			auto const simd = summarize_points<strict_point_iterator>( document );
+			if( scalar != simd ) {
+				daw_ensure_error( true,
+				                  "SIMD class iterator differs from json_array_iterator on " +
+				                    std::string( document ) + " scalar: " + scalar +
+				                    " simd: " + simd );
+			}
+		}
+
+		// The spelling of a skipped string, number or literal is not checked
+		constexpr std::string_view structurally_valid[] = {
+		  R"json([{"x":1,"y":2,"z":3,"o":[nulll]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":tru}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":-}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":x}])json",
+		  R"json([{"o":1.2.3,"x":1,"y":2,"z":3}])json",
+		  R"json([{"o":{"a":[+1,{"b":nul}]},"x":1,"y":2,"z":3}])json",
+		  R"json([{"x\"":1,"x":1,"y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3,"a\"b":{}}])json",
+		};
+		for( auto const document : structurally_valid ) {
+			daw_ensure( summarize_points<point_iterator>( document ) == "A 1 28" );
+			daw_ensure( summarize_points<strict_point_iterator>( document ) ==
+			            "A 1 28" );
+		}
+
+		// By default only the depth of a skipped class or array is counted
+		constexpr std::string_view balanced[] = {
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a" 1}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[1 2]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[,1]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{,}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{1:2}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a":1]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[[[}]]}])json",
+		};
+		for( auto const document : balanced ) {
+			daw_ensure( summarize_points<point_iterator>( document ) == "A 1 28" );
+			daw_ensure( summarize_points<strict_point_iterator>( document ) == "R" );
+		}
+		daw_ensure( summarize_points<point_iterator>(
+		              R"json([{"x":1,"y":2,"z":3,"o":[[]}])json" ) == "R" );
+
+		// Only strict skips limit the depth, to DAW_JSON_STRICT_SKIP_MAX_DEPTH
+		auto const nested = []( std::size_t depth ) {
+			return R"json([{"x":1,"y":2,"z":3,"o":)json" +
+			       std::string( depth, '[' ) + std::string( depth, ']' ) + "}]";
+		};
+		daw_ensure( summarize_points<point_iterator>( nested( 100'000 ) ) ==
+		            "A 1 28" );
+		daw_ensure( summarize_points<strict_point_iterator>( nested(
+		              DAW_JSON_STRICT_SKIP_MAX_DEPTH ) ) == "A 1 28" );
+		daw_ensure( summarize_points<strict_point_iterator>( nested(
+		              DAW_JSON_STRICT_SKIP_MAX_DEPTH + 1 ) ) == "R" );
+
+		// A kostya style document found by its path, searched with find_if
+		auto document = std::string{ R"json({"info":"x","coordinates":[)json" };
+		for( int n = 0; n < 200; ++n ) {
+			if( n != 0 ) {
+				document += ",\n";
+			}
+			auto const v = std::to_string( n );
+			if( n % 2 == 0 ) {
+				document += R"json({"z":3,"name":"n )json" + v +
+				            R"json(","x":)json" + v +
+				            R"json(,"opts":{"1":[1,true]},"y":2.5})json";
+			} else {
+				document += R"json({ "y" : 2.5 , "x" : )json" + v +
+				            R"json( , "z" : 3 })json";
+			}
+		}
+		document += R"json(],"after":1})json";
+		using path_iterator = point_iterator;
+		auto found =
+		  std::find_if( path_iterator( document, "coordinates" ),
+		                path_iterator::end( ),
+		                []( simd_iterator_point const &p ) { return p.x == 151.0; } );
+		daw_ensure( found != path_iterator::end( ) );
+		daw_ensure( ( *found ).y == 2.5 and ( *found ).z == 3.0 );
+		++found;
+		daw_ensure( ( *found ).x == 152.0 );
+		daw_ensure( std::count_if( path_iterator( document, "coordinates" ),
+		                           path_iterator::end( ),
+		                           []( simd_iterator_point const &p ) {
+			                           return p.z == 3.0;
+		                           } ) == 200 );
+	}
 } // namespace
 
 int main( ) {
@@ -1044,6 +1213,7 @@ int main( ) {
 #endif
 	test_separate_base_type_paths( );
 	test_class_iterator( );
+	test_class_iterator_matches_scalar( );
 }
 
 #else

@@ -132,6 +132,13 @@ namespace daw::json {
 			  json_details::get_bits_for<options::AllowLeadingZeroPlus>(
 			    PolicyFlags ) == options::AllowLeadingZeroPlus::yes;
 
+			/***
+			 * See options::StrictSkipChecks
+			 */
+			static constexpr bool strict_skip_checks =
+			  json_details::get_bits_for<options::StrictSkipChecks>( PolicyFlags ) ==
+			  options::StrictSkipChecks::yes;
+
 			static constexpr bool use_exact_mappings_by_default =
 			  json_details::get_bits_for<options::UseExactMappingsByDefault>(
 			    PolicyFlags ) == options::UseExactMappingsByDefault::yes;

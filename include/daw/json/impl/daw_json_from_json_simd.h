@@ -613,6 +613,13 @@ namespace daw::json {
 				                         static_cast<std::size_t>( last - first - 2 ) );
 			}
 
+			/// Skip a value.  By default, like simdjson's On-Demand, a class or
+			/// array only has its depth counted: { and [ add one, } and ] take one
+			/// away.  With options::StrictSkipChecks::yes the bracket kinds, member
+			/// names, colons and commas are checked too, nesting at most
+			/// DAW_JSON_STRICT_SKIP_MAX_DEPTH deep.  A string, number or literal is
+			/// one entry and its spelling is not checked.  Both are loops, so deep
+			/// input cannot exhaust the stack
 			template<typename State>
 			inline void skip_indexed_value( reader<State> &r ) {
 				auto event = r.peek( );
@@ -621,37 +628,67 @@ namespace daw::json {
 					DAW_UNLIKELY_BRANCH
 					error_at( r, event, ErrorReason::InvalidStartOfValue );
 				}
-				if( *event != '{' and *event != '[' ) {
-					r.pop( );
-					return;
-				}
-				auto const close = static_cast<char>( *event == '{' ? '}' : ']' );
-				auto const object = *event == '{';
 				r.pop( );
-				event = r.peek( );
-				if( event != nullptr and *event == close ) {
-					r.pop( );
+				if( *event != '{' and *event != '[' ) {
 					return;
 				}
-				for( ;; ) {
-					if( object ) {
-						(void)consume_member_name( r );
-					}
-					skip_indexed_value( r );
-					event = r.peek( );
-					if( event != nullptr and *event == close ) {
+				if constexpr( not State::strict_skip_checks ) {
+					auto depth = std::size_t{ 1 };
+					while( depth != 0U ) {
+						event = r.peek( );
+						if( DAW_UNLIKELY( event == nullptr ) ) {
+							DAW_UNLIKELY_BRANCH
+							error_at( r, event, ErrorReason::UnexpectedEndOfData );
+						}
 						r.pop( );
-						return;
+						if( *event == '{' or *event == '[' ) {
+							++depth;
+						} else if( *event == '}' or *event == ']' ) {
+							--depth;
+						}
 					}
-					if( DAW_UNLIKELY( event == nullptr or *event != ',' ) ) {
-						DAW_UNLIKELY_BRANCH
-						error_at( r, event, ErrorReason::InvalidEndOfValue );
-					}
-					r.pop( );
-					event = r.peek( );
-					if( event != nullptr and *event == close ) {
+				} else {
+					auto brackets = strict_skip_brackets{ };
+					(void)brackets.push( *event == '{' );
+					// After an opening bracket or a comma, where the close may come
+					auto item_start = true;
+					for( ;; ) {
+						event = r.peek( );
+						auto const in_class = brackets.in_class( );
+						if( event != nullptr and *event == ( in_class ? '}' : ']' ) ) {
+							r.pop( );
+							if( brackets.pop( ) ) {
+								return;
+							}
+							item_start = false;
+							continue;
+						}
+						if( not item_start ) {
+							if( DAW_UNLIKELY( event == nullptr or *event != ',' ) ) {
+								DAW_UNLIKELY_BRANCH
+								error_at( r, event, ErrorReason::InvalidEndOfValue );
+							}
+							r.pop( );
+							item_start = true;
+							continue;
+						}
+						if( in_class ) {
+							(void)consume_member_name( r );
+							event = r.peek( );
+						}
+						if( DAW_UNLIKELY( event == nullptr or *event == ',' or
+						                  *event == ':' or *event == '}' or
+						                  *event == ']' ) ) {
+							DAW_UNLIKELY_BRANCH
+							error_at( r, event, ErrorReason::InvalidStartOfValue );
+						}
 						r.pop( );
-						return;
+						item_start = *event == '{' or *event == '[';
+						if( item_start and
+						    DAW_UNLIKELY( not brackets.push( *event == '{' ) ) ) {
+							DAW_UNLIKELY_BRANCH
+							error_at( r, event, ErrorReason::MaxDepthExceeded );
+						}
 					}
 				}
 			}
