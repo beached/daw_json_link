@@ -205,17 +205,36 @@ namespace daw::json {
 
 			// A forward cursor over the immutable structural entries. A consumer owns
 			// the grammar for its mapped type and leaves position at the first event
-			// after its value.
+			// after its value.  The entries and document are held by value, so an
+			// entry is one load from the reader instead of a chain through the index
 			template<typename ParseState>
 			struct reader {
-				structural_index const &index;
+				char const *document;
+				index_type const *entries;
+				index_type size;
+				char const *last;
 				index_type position = 0;
 				bool source_is_zero_terminated = false;
 
 				explicit inline reader( structural_index const &input,
 				                        bool is_zero_terminated = false )
-				  : index( input )
+				  : document( input.doc.data( ) )
+				  , entries( input.entries.data( ) )
+				  , size( input.size( ) )
+				  , last( input[input.size( )] )
 				  , source_is_zero_terminated( is_zero_terminated ) {}
+
+				[[nodiscard]] DAW_ATTRIB_INLINE char const *
+				operator[]( index_type token ) const noexcept {
+					return document + entries[token];
+				}
+
+				/// A token's first byte and the first byte of the entry after it
+				[[nodiscard]] DAW_ATTRIB_INLINE structural_index::byte_bounds
+				bounds( index_type token ) const noexcept {
+					return { ( *this )[token],
+					         ( *this )[static_cast<index_type>( token + 1 )] };
+				}
 
 				[[nodiscard]] inline ParseState state_at( char const *first,
 				                                          char const *last ) const {
@@ -223,11 +242,11 @@ namespace daw::json {
 				}
 
 				[[nodiscard]] DAW_ATTRIB_INLINE char const *peek( ) const noexcept {
-					return position < index.size( ) ? index[position] : nullptr;
+					return position < size ? ( *this )[position] : nullptr;
 				}
 
 				[[nodiscard]] DAW_ATTRIB_INLINE char const *end( ) const noexcept {
-					return index[index.size( )];
+					return last;
 				}
 
 				DAW_ATTRIB_INLINE void pop( ) noexcept {
@@ -373,6 +392,9 @@ namespace daw::json {
 			  : tuple_list_of<
 			      json_data_contract_trait_t<typename Member::wrapped_type>> {};
 
+#if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
+			// MSVC does not always evaluate a braced list in order, so tuples keep
+			// their members in slots and positions are left to the scalar parser
 			template<typename Members, std::size_t... Is>
 			DAW_CONSTEVAL bool independent_tuple( std::index_sequence<Is...> ) {
 				return (
@@ -380,6 +402,42 @@ namespace daw::json {
 				    not has_class_dependent_v<std::tuple_element_t<Is, Members>> ) and
 				  ... );
 			}
+#else
+			template<typename Members, std::size_t I>
+			DAW_CONSTEVAL std::size_t tuple_position( );
+
+			/// The array position just after the tuple member before I
+			template<typename Members, std::size_t I>
+			DAW_CONSTEVAL std::size_t tuple_start( ) {
+				if constexpr( I == 0 ) {
+					return 0;
+				} else {
+					return tuple_position<Members, I - 1>( ) + 1;
+				}
+			}
+
+			/// The array position of the tuple member at I.  A json_tuple_member
+			/// gives its own, the others follow the member before them
+			template<typename Members, std::size_t I>
+			DAW_CONSTEVAL std::size_t tuple_position( ) {
+				using member = std::tuple_element_t<I, Members>;
+				if constexpr( is_an_ordered_member_v<member> ) {
+					return member::member_index;
+				} else {
+					return tuple_start<Members, I>( );
+				}
+			}
+
+			/// The members are read in order, so their positions must increase
+			template<typename Members, std::size_t... Is>
+			DAW_CONSTEVAL bool independent_tuple( std::index_sequence<Is...> ) {
+				return ( ( not has_class_dependent_v<ordered_member_subtype_t<
+				             std::tuple_element_t<Is, Members>>> and
+				           tuple_position<Members, Is>( ) >=
+				             tuple_start<Members, Is>( ) ) and
+				         ... );
+			}
+#endif
 
 			template<typename Member>
 			DAW_CONSTEVAL bool is_walkable_tuple( ) {
@@ -462,9 +520,11 @@ namespace daw::json {
 			auto make_class_slots( std::index_sequence<Is...> ) -> value_slots<
 			  json_result_t<without_name<typename Members::template member<Is>>>...>;
 
+#if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 			template<typename Members, std::size_t... Is>
 			auto make_tuple_slots( std::index_sequence<Is...> )
 			  -> value_slots<json_result_t<std::tuple_element_t<Is, Members>>...>;
+#endif
 
 			template<typename JsonMember>
 			DAW_CONSTEVAL bool forward_supported( );
@@ -486,9 +546,8 @@ namespace daw::json {
 
 			template<typename Members, std::size_t... Is>
 			DAW_CONSTEVAL bool forward_tuple_members( std::index_sequence<Is...> ) {
-				return ( ( is_storable_result_v<
-				             json_result_t<std::tuple_element_t<Is, Members>>> and
-				           forward_supported<std::tuple_element_t<Is, Members>>( ) ) and
+				return ( forward_supported<
+				           ordered_member_subtype_t<std::tuple_element_t<Is, Members>>>( ) and
 				         ... );
 			}
 
@@ -533,12 +592,12 @@ namespace daw::json {
 			inline daw::string_view consume_member_name( reader<State> &r ) {
 				auto const first = r.peek( );
 				if( DAW_UNLIKELY( first == nullptr or *first != '"' or
-				                  r.position + 1 >= r.index.size( ) or
-				                  *r.index[r.position + 1] != ':' ) ) {
+				                  r.position + 1 >= r.size or
+				                  *r[r.position + 1] != ':' ) ) {
 					DAW_UNLIKELY_BRANCH
 					error_at( r, first, ErrorReason::MissingMemberNameOrEndOfClass );
 				}
-				auto const colon = r.index[r.position + 1];
+				auto const colon = r[r.position + 1];
 				auto last = colon;
 				while( last > first and
 				       static_cast<unsigned char>( last[-1] ) - 1U < 0x20U ) {
@@ -878,6 +937,7 @@ namespace daw::json {
 				  state, iterator( r ), iterator( ) );
 			}
 
+#if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 			template<typename Members, typename Slots, typename State,
 			         std::size_t... Is>
 			inline void consume_tuple_member( std::size_t member, reader<State> &r,
@@ -963,6 +1023,109 @@ namespace daw::json {
 					  state, fwd_pack{ slots.template take<Is>( )... } );
 				}
 			}
+#else
+			/// Where the elements of a tuple are read from
+			struct tuple_cursor {
+				char const *opening;
+				bool closed = false;
+			};
+
+			/// Move past the separator after a tuple element, closing the tuple at
+			/// its ']'.  A trailing comma is accepted
+			template<typename State>
+			inline void end_tuple_element( reader<State> &r, tuple_cursor &c ) {
+				auto event = r.peek( );
+				if( event != nullptr and *event == ']' ) {
+					r.pop( );
+					c.closed = true;
+					return;
+				}
+				if( DAW_UNLIKELY( event == nullptr or *event != ',' ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, event, ErrorReason::InvalidEndOfValue );
+				}
+				r.pop( );
+				event = r.peek( );
+				if( event != nullptr and *event == ']' ) {
+					r.pop( );
+					c.closed = true;
+				}
+			}
+
+			/// The tuple member at I after skipping the elements before its
+			/// position.  A missing element is null when nullable, otherwise it is
+			/// reported at the opening bracket of its tuple
+			template<typename Members, std::size_t I, typename State>
+			inline json_result_t<
+			  ordered_member_subtype_t<std::tuple_element_t<I, Members>>>
+			consume_tuple_element( reader<State> &r, tuple_cursor &c ) {
+				using value =
+				  ordered_member_subtype_t<std::tuple_element_t<I, Members>>;
+				for( auto n = tuple_start<Members, I>( );
+				     n < tuple_position<Members, I>( ) and not c.closed;
+				     ++n ) {
+					skip_indexed_value( r );
+					end_tuple_element( r, c );
+				}
+				if( c.closed ) {
+					if constexpr( is_json_nullable_v<value> ) {
+						auto state = State( );
+						return parse_value_null<value, true>( state );
+					} else {
+						error_at( r, c.opening, ErrorReason::UnexpectedEndOfData );
+					}
+				}
+				auto result = consume_value<value>( r );
+				end_tuple_element( r, c );
+				return result;
+			}
+
+			/// Skip the elements past the last member, which exact mappings reject
+			template<typename T, typename State>
+			inline void finish_tuple( reader<State> &r, tuple_cursor &c ) {
+				while( not c.closed ) {
+					if constexpr( all_json_members_must_exist_v<T, State> ) {
+						error_at( r, r.peek( ), ErrorReason::UnknownMember );
+					}
+					skip_indexed_value( r );
+					end_tuple_element( r, c );
+				}
+			}
+
+			/// The members are read in mapping order, which is array order, straight
+			/// into the result's construction.  The elements of a braced list are
+			/// evaluated in order
+			template<typename Member, typename State, std::size_t... Is>
+			inline json_result_t<Member>
+			consume_tuple( reader<State> &r, std::index_sequence<Is...> ) {
+				using members = typename tuple_members<Member>::types;
+				using T = json_base_type_t<Member>;
+				using Constructor = json_constructor_t<Member>;
+				auto const opening = r.peek( );
+				if( DAW_UNLIKELY( opening == nullptr or *opening != '[' ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, opening, ErrorReason::InvalidArrayStart );
+				}
+				r.pop( );
+				auto c = tuple_cursor{ opening };
+				if( auto const first_event = r.peek( );
+				    first_event != nullptr and *first_event == ']' ) {
+					r.pop( );
+					c.closed = true;
+				}
+				if constexpr( should_construct_explicitly_v<Constructor, T, State> ) {
+					auto result = T{ consume_tuple_element<members, Is>( r, c )... };
+					finish_tuple<T>( r, c );
+					return result;
+				} else {
+					auto state = r.state_at( opening, r.end( ) );
+					auto result = construct_value_tp<T, Constructor>(
+					  state, fwd_pack{ consume_tuple_element<members, Is>( r, c )... } );
+					finish_tuple<T>( r, c );
+					return result;
+				}
+			}
+#endif
 
 			template<typename JsonMember, typename ParseState>
 			inline json_result_t<JsonMember> consume_value( reader<ParseState> &r ) {
@@ -975,7 +1138,7 @@ namespace daw::json {
 					}
 					if( *first == 'n' ) {
 						auto const token = r.position++;
-						auto bounds = r.index.bounds( token );
+						auto bounds = r.bounds( token );
 						auto state = ParseState( bounds.first, bounds.last );
 						return parse_value<JsonMember, false, type>( state );
 					}
@@ -1016,7 +1179,7 @@ namespace daw::json {
 						error_at( r, nullptr, ErrorReason::UnexpectedEndOfData );
 					}
 					auto const token = r.position++;
-					auto bounds = r.index.bounds( token );
+					auto bounds = r.bounds( token );
 					if constexpr( type == JsonParseTypes::Real or
 					              type == JsonParseTypes::Signed or
 					              type == JsonParseTypes::Unsigned ) {

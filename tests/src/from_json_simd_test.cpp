@@ -5,6 +5,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 #if defined( DAW_JSON_HAS_FROM_JSON_SIMD )
@@ -19,6 +20,11 @@ struct scan_nullable_point {
 };
 struct scan_ordered_point {
 	int y;
+};
+struct scan_gapped_point {
+	int a;
+	int b;
+	std::optional<int> c;
 };
 struct scan_exact_point {
 	double x;
@@ -198,6 +204,13 @@ namespace daw::json {
 		static auto to_json_data( scan_nullable_point const &v ) {
 			return std::tie( v.x, v.y );
 		}
+	};
+	template<>
+	struct json_data_contract<scan_gapped_point> {
+		// Positions 0, 3 and 5, with elements to skip between them
+		using type = json_tuple_member_list<
+		  int, json_tuple_member<3, int>,
+		  json_tuple_member<5, json_number_null_no_name<std::optional<int>>>>;
 	};
 	template<>
 	struct json_data_contract<scan_exact_point> {
@@ -394,6 +407,32 @@ int main( ) {
 	check( !t.y );
 	check( std::get<0>( from_json_simd<std::tuple<int, int>>( "[1,2,3]" ) ) ==
 	       1 );
+
+	// Tuple members with positions are read in order, skipping the elements
+	// between them, the same as the scalar parser
+#if not defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
+	static_assert( daw::json::json_details::simd_parse::forward_supported<
+	               daw::json::json_details::json_deduced_type<scan_gapped_point>>( ) );
+	static_assert( daw::json::json_details::simd_parse::forward_supported<
+	               daw::json::json_details::json_deduced_type<scan_ordered_point>>( ) );
+#endif
+	for( std::string_view const doc :
+	     { R"([1,[2,[]],{"x":3},4])", "[1,2,3,4,5,6]", "[1,2,3,4,5,6,7,[8]]",
+	       "[1,2,3,4,]", "[1,2,3,4,5,null]" } ) {
+		auto const simd = from_json_simd<scan_gapped_point>( doc );
+		auto const scalar = daw::json::from_json<scan_gapped_point>( doc );
+		check( simd.a == scalar.a and simd.b == scalar.b and simd.c == scalar.c );
+	}
+	check( from_json_simd<scan_gapped_point>( "[1,2,3,4]" ).b == 4 );
+	check( not from_json_simd<scan_gapped_point>( "[1,2,3,4]" ).c );
+	check( from_json_simd<scan_gapped_point>( "[1,2,3,4,5,6]" ).c == 6 );
+#if not defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
+	reject_at<scan_gapped_point>( "[1,2]", 0 );
+	reject_at<std::vector<scan_gapped_point>>( "[[1,2,3,4],[1,2,3]]", 11 );
+#endif
+	reject<scan_gapped_point>( "[1,2,3 4]" );
+	reject<scan_ordered_point>( "[9]" );
+	reject<scan_ordered_point>( "[]" );
 
 	// json_key_value members are read from the index rather than falling back
 	static_assert( daw::json::json_details::simd_parse::forward_supported<
