@@ -28,12 +28,12 @@ void bench( char const *name, char const *path, int batches, int runs ) {
 		daw::do_not_optimize( v );
 	};
 	auto scan = [&] {
-		auto v = daw::json::from_json_simd<T>( data );
+		auto v = daw::json::experimental::from_json_simd<T>( data );
 		daw::do_not_optimize( v );
 	};
 	auto a = daw::json::from_json<T>( data );
 	if( daw::json::to_json( a ) !=
-	    daw::json::to_json( daw::json::from_json_simd<T>( data ) ) )
+	    daw::json::to_json( daw::json::experimental::from_json_simd<T>( data ) ) )
 		std::abort( );
 	for( int n = 0; n < batches; ++n ) {
 		std::cout << name << " batch " << n + 1 << '/' << batches << '\n';

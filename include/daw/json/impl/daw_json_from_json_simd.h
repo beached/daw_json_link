@@ -5,22 +5,19 @@
 #include "daw/json/impl/daw_json_arrow_proxy.h"
 #include "daw/json/impl/daw_json_assert.h"
 #include "daw/json/impl/daw_json_lexer_cursor.h"
-#include "daw/json/impl/daw_json_location_info.h"
 #include "daw/json/impl/daw_json_parse_policy.h"
 #include "daw/json/impl/daw_json_parse_value.h"
-#include "daw/json/impl/daw_json_skip.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <iterator>
-#include <limits>
 #include <memory>
 #include <memory_resource>
 #include <tuple>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #if defined( DAW_JSON_HAS_SIMD )
 namespace daw::json {
@@ -34,21 +31,6 @@ namespace daw::json {
 			                 NoCommentSkippingPolicy> and
 			  not ParseState::allow_string_mutation and
 			  not ParseState::has_allocator and not ParseState::allow_escaped_names;
-
-			// Logical positions in an immutable structural table. Missing members
-			// have no range; byte bounds are derived only when a leaf parser needs
-			// them.
-			struct location {
-				static constexpr index_type absent = daw::max_value<index_type>;
-				index_type first = absent;
-				index_type last = 0;
-				index_type count = 0;
-
-				[[nodiscard]] bool missing( ) const noexcept {
-					return first == absent;
-				}
-			};
-			static_assert( sizeof( location ) == 3U * sizeof( index_type ) );
 
 			template<typename T>
 			class unique_array_t {
@@ -147,15 +129,15 @@ namespace daw::json {
 				}
 			};
 			struct structural_index {
+				struct byte_bounds {
+					char const *first;
+					char const *last;
+				};
+
 				std::string_view doc;
-				// Opening containers store the token after their close and closing
-				// containers store their immediate value count. Scalars and strings
-				// have no metadata; they end before the next entry.
 				unique_array_t<index_type> entries;
-				unique_array_t<index_type> meta_data;
 
 				[[nodiscard]] inline index_type size( ) const noexcept {
-					daw_dbg_ensure( entries.size( ) == meta_data.size( ) );
 					return static_cast<index_type>( entries.size( ) );
 				}
 
@@ -169,31 +151,9 @@ namespace daw::json {
 					return doc.data( ) + entries[token];
 				}
 
-				[[nodiscard]] inline index_type &metadata( index_type token ) noexcept {
-					return meta_data[token];
-				}
-
-				[[nodiscard]] inline index_type
-				metadata( index_type token ) const noexcept {
-					return meta_data[token];
-				}
-
-				[[nodiscard]] inline char const *
-				byte_end( location loc ) const noexcept {
-					auto const kind = *get( loc.first );
-					if( kind == '{' or kind == '[' ) {
-						return get( loc.last - 1 ) + 1;
-					}
-					// The next entry, whitespace may come before it
-					return get( loc.last );
-				}
-
-				[[nodiscard]] inline location_info_t<>
-				bounds( location loc ) const noexcept {
-					location_info_t<> result;
-					result.first = get( loc.first );
-					result.last = byte_end( loc );
-					return result;
+				[[nodiscard]] inline byte_bounds
+				bounds( index_type token ) const noexcept {
+					return { get( token ), get( static_cast<index_type>( token + 1 ) ) };
 				}
 			};
 
@@ -219,19 +179,15 @@ namespace daw::json {
 					  doc.data( ), daw::data_end( doc ), ErrorReason::DocumentTooLarge );
 				}
 				// Every offset names a distinct input byte, so document_size is the
-				// maximum possible entry count. Allocate each table once.
+				// maximum possible entry count. Allocate the table once.
 				auto const capacity =
 				  doc.size( ) + lexer_cursor::structural_index_padding;
 
 				auto result = structural_index{
-				  doc,
-				  unique_array_t<index_type>( memory_resource, capacity ),
-				  unique_array_t<index_type>( memory_resource, capacity ) };
+				  doc, unique_array_t<index_type>( memory_resource, capacity ) };
 
 				auto const built =
 				  lexer_cursor::build_structural_index( doc, result.entries );
-
-				result.meta_data.set_size( built.size );
 
 				if( DAW_UNLIKELY( built.in_string ) ) {
 					DAW_UNLIKELY_BRANCH
@@ -247,196 +203,31 @@ namespace daw::json {
 				return result;
 			}
 
-			template<typename State>
-			inline location value_range( structural_index const &index,
-			                             index_type token ) noexcept {
-				auto const kind = *index[token];
-				if( kind != '{' and kind != '[' ) {
-					return { token, static_cast<index_type>( token + 1 ), 0 };
-				}
-				auto const end = index.metadata( token );
-				return { token, end, index.metadata( end - 1 ) };
-			}
-
-			template<typename State>
-			inline location prepare_root( structural_index &index ) {
-				auto const kind = *index[0];
-				if( DAW_UNLIKELY( kind != '{' and kind != '[' ) ) {
-					DAW_UNLIKELY_BRANCH
-					return value_range<State>( index, 0 );
-				}
-
-				enum class container_state : std::uint8_t {
-					array_value_or_end,
-					array_comma_or_end,
-					object_name_or_end,
-					object_value,
-					object_comma_or_end
-				};
-
-				struct open_container {
-					index_type token;
-					index_type count;
-					char close;
-					container_state state;
-				};
-
-				auto containers = std::vector<open_container>{ };
-				containers.reserve( 64 );
-				containers.push_back( { 0,
-				                        0,
-				                        static_cast<char>( kind == '{' ? '}' : ']' ),
-				                        kind == '{'
-				                          ? container_state::object_name_or_end
-				                          : container_state::array_value_or_end } );
-
-				auto pos = index_type{ 1 };
-				auto close_container = [&]( char current ) -> location {
-					auto const opening = containers.back( );
-					if( DAW_UNLIKELY( opening.close != current ) ) {
-						DAW_UNLIKELY_BRANCH
-						index_error<State>( index[pos],
-						                    daw::data_end( index.doc ),
-						                    ErrorReason::InvalidBracketing );
-					}
-					containers.pop_back( );
-					index.metadata( opening.token ) = static_cast<index_type>( pos + 1 );
-					index.metadata( pos ) = opening.count;
-					++pos;
-					return { opening.token, pos, opening.count };
-				};
-
-				auto take_structural_value = [&]( open_container &container ) {
-					++container.count;
-					auto const current = *index[pos];
-					switch( current ) {
-					case ',':
-					case ':':
-					case '}':
-					case ']':
-						DAW_UNLIKELY_BRANCH
-						index_error<State>( index[pos],
-						                    daw::data_end( index.doc ),
-						                    ErrorReason::InvalidStartOfValue );
-					case '"':
-						++pos;
-						break;
-					case '{':
-					case '[': {
-						auto const opening = pos++;
-						containers.push_back(
-						  { opening,
-						    0,
-						    static_cast<char>( current == '{' ? '}' : ']' ),
-						    current == '{' ? container_state::object_name_or_end
-						                   : container_state::array_value_or_end } );
-					} //
-					break;
-					default:
-						++pos;
-						break;
-					}
-				};
-
-				while( pos < index.size( ) ) {
-					auto &container = containers.back( );
-					auto const current = *index[pos];
-					switch( container.state ) {
-					case container_state::array_value_or_end:
-						if( current == container.close ) {
-							auto const result = close_container( current );
-							if( containers.empty( ) ) {
-								return result;
-							}
-						} else {
-							container.state = container_state::array_comma_or_end;
-							take_structural_value( container );
-						}
-						break;
-					case container_state::array_comma_or_end:
-						if( current == ',' ) {
-							container.state = container_state::array_value_or_end;
-							++pos;
-						} else if( current == container.close ) {
-							auto const result = close_container( current );
-							if( containers.empty( ) ) {
-								return result;
-							}
-						} else {
-							DAW_UNLIKELY_BRANCH
-							index_error<State>( index[pos],
-							                    daw::data_end( index.doc ),
-							                    ErrorReason::InvalidEndOfValue );
-						}
-						break;
-					case container_state::object_name_or_end:
-						if( current == container.close ) {
-							auto const result = close_container( current );
-							if( containers.empty( ) ) {
-								return result;
-							}
-							break;
-						}
-						if( DAW_UNLIKELY( current != '"' or pos + 1 >= index.size( ) or
-						                  *index[pos + 1] != ':' ) ) {
-							DAW_UNLIKELY_BRANCH
-							index_error<State>( index[pos],
-							                    daw::data_end( index.doc ),
-							                    ErrorReason::MissingMemberNameOrEndOfClass );
-						}
-						pos = static_cast<index_type>( pos + 2 );
-						container.state = container_state::object_value;
-						break;
-					case container_state::object_value:
-						container.state = container_state::object_comma_or_end;
-						take_structural_value( container );
-						break;
-					case container_state::object_comma_or_end:
-						if( current == ',' ) {
-							container.state = container_state::object_name_or_end;
-							++pos;
-						} else if( current == container.close ) {
-							auto const result = close_container( current );
-							if( containers.empty( ) ) {
-								return result;
-							}
-						} else {
-							index_error<State>( index[pos],
-							                    daw::data_end( index.doc ),
-							                    ErrorReason::InvalidEndOfValue );
-						}
-						break;
-					default:
-						break;
-					}
-				}
-				DAW_UNLIKELY_BRANCH
-				index_error<State>( std::data( index.doc ),
-				                    daw::data_end( index.doc ),
-				                    ErrorReason::UnexpectedEndOfData );
-			}
-
-			// A view over shared structural entries. Deferred parsing never creates a
-			// lexer cursor and cannot invalidate a parent's table or continuation.
+			// A forward cursor over the immutable structural entries. A consumer owns
+			// the grammar for its mapped type and leaves position at the first event
+			// after its value.
 			template<typename ParseState>
 			struct reader {
 				structural_index const &index;
-				location range;
-				index_type position;
-				char const *last;
+				index_type position = 0;
+				bool source_is_zero_terminated = false;
 
-				explicit inline reader( structural_index const &input, location value )
+				explicit inline reader( structural_index const &input,
+				                        bool is_zero_terminated = false )
 				  : index( input )
-				  , range( value )
-				  , position( value.first )
-				  , last( input.byte_end( value ) ) {}
+				  , source_is_zero_terminated( is_zero_terminated ) {}
 
-				[[nodiscard]] inline ParseState state_at( char const *first ) const {
+				[[nodiscard]] inline ParseState state_at( char const *first,
+				                                          char const *last ) const {
 					return ParseState( first, last );
 				}
 
 				[[nodiscard]] DAW_ATTRIB_INLINE char const *peek( ) const noexcept {
-					return position < range.last ? index[position] : nullptr;
+					return position < index.size( ) ? index[position] : nullptr;
+				}
+
+				[[nodiscard]] DAW_ATTRIB_INLINE char const *end( ) const noexcept {
+					return index[index.size( )];
 				}
 
 				DAW_ATTRIB_INLINE void pop( ) noexcept {
@@ -449,24 +240,20 @@ namespace daw::json {
 			error_at( reader<ParseState> const &r, char const *position,
 			          ErrorReason reason ) {
 				daw_json_error(
-				  true, reason, r.state_at( position == nullptr ? r.last : position ) );
+				  true,
+				  reason,
+				  r.state_at( position == nullptr ? r.end( ) : position, r.end( ) ) );
 			}
 
 			template<typename ParseState>
 			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 			missing_member_at( reader<ParseState> const &r, char const *position,
 			                   daw::string_view name ) {
-				daw_json_error( true,
-				                missing_member( std::string_view( std::data( name ),
-				                                                  std::size( name ) ) ),
-				                r.state_at( position == nullptr ? r.last : position ) );
-			}
-
-			template<typename State>
-			inline location take_value( reader<State> &r ) noexcept {
-				auto const result = value_range<State>( r.index, r.position );
-				r.position = result.last;
-				return result;
+				daw_json_error(
+				  true,
+				  missing_member(
+				    std::string_view( std::data( name ), std::size( name ) ) ),
+				  r.state_at( position == nullptr ? r.end( ) : position, r.end( ) ) );
 			}
 
 			/// The members of a json_member_list mapping
@@ -503,8 +290,7 @@ namespace daw::json {
 				  ... );
 			}
 
-			/// Independent json_member_list mappings can be constructed from
-			/// saved member locations.
+			/// Independent json_member_list mappings can be consumed in input order.
 			template<typename JsonMember>
 			[[nodiscard]] DAW_CONSTEVAL bool is_walkable_class( ) {
 				if constexpr( JsonMember::expected_type != JsonParseTypes::Class ) {
@@ -518,39 +304,6 @@ namespace daw::json {
 					return walkable_members<members>(
 					  std::make_index_sequence<members::size>{ } );
 				}
-			}
-
-			/// A number or bool that is never in quotes, its value is one event
-			template<typename JsonMember>
-			[[nodiscard]] DAW_CONSTEVAL bool unquoted_scalar( ) {
-				constexpr JsonParseTypes type = JsonMember::expected_type;
-				if constexpr( type == JsonParseTypes::Real or
-				              type == JsonParseTypes::Signed or
-				              type == JsonParseTypes::Unsigned or
-				              type == JsonParseTypes::Bool ) {
-					return JsonMember::literal_as_string ==
-					       options::LiteralAsStringOpt::Never;
-				} else {
-					return false;
-				}
-			}
-
-			template<typename State>
-			inline daw::string_view read_member_name( reader<State> &r ) {
-				auto const first = r.index[r.position];
-				auto const colon = r.index[r.position + 1];
-				auto last = colon;
-				while( last > first and
-				       static_cast<unsigned char>( last[-1] ) - 1U < 0x20U ) {
-					--last;
-				}
-				if( DAW_UNLIKELY( last <= first + 1 or last[-1] != '"' ) ) {
-					DAW_UNLIKELY_BRANCH
-					error_at( r, first, ErrorReason::InvalidMemberName );
-				}
-				r.position = static_cast<index_type>( r.position + 2 );
-				return daw::string_view( first + 1,
-				                         static_cast<std::size_t>( last - first - 2 ) );
 			}
 
 			// Name has fixed length at each instantiation, allowing the compiler
@@ -623,36 +376,209 @@ namespace daw::json {
 				}
 			}
 
-			// A scalar's bounds end at the next entry, so only whitespace may follow
-			// the literal
-			inline bool literal( location_info_t<> const &loc, char const *value,
-			                     std::size_t length ) {
-				auto const size = static_cast<std::size_t>( loc.last - loc.first );
-				return size >= length and
-				       std::memcmp( loc.first, value, length ) == 0 and
-				       ( size == length or
-				         static_cast<unsigned char>( loc.first[length] ) - 1U < 0x20U );
-			}
+			template<typename JsonMember, typename ParseState>
+			inline json_result_t<JsonMember> consume_value( reader<ParseState> &r );
 
-			template<typename Member, typename State>
-			inline json_result_t<Member> read_location( location const &,
-			                                            reader<State> const & );
+			template<typename T>
+			struct raw_value_slot {
+				alignas( T ) std::byte storage[sizeof( T )];
 
-			template<typename Member, typename State>
-			struct nullable_parser {
-				location const &loc;
-				reader<State> const &r;
-				template<bool, typename OtherState>
-				json_result_t<Member> parse( OtherState & ) const {
-					return read_location<Member>( loc, r );
+				[[nodiscard]] T *get( ) noexcept {
+					return std::launder( reinterpret_cast<T *>( storage ) );
 				}
 			};
 
-			template<typename Members, typename State, std::size_t... Is>
-			inline std::size_t find_member( daw::string_view name,
-			                                std::size_t expected,
-			                                std::index_sequence<Is...> ) {
-				// Preserve the expected-name path during the up-front scan.
+			template<typename... Ts>
+			class value_slots {
+				static constexpr std::size_t count = sizeof...( Ts );
+				std::tuple<raw_value_slot<Ts>...> m_slots;
+				std::array<std::uint64_t, ( count + 63U ) / 64U> m_built{ };
+
+				template<std::size_t I>
+				using value_t = std::tuple_element_t<I, std::tuple<Ts...>>;
+
+				template<std::size_t... Is>
+				void destroy_all( std::index_sequence<Is...> ) noexcept {
+					( ( built<Is>( )
+					      ? ( std::destroy_at( std::get<Is>( m_slots ).get( ) ), void( ) )
+					      : void( ) ),
+					  ... );
+				}
+
+			public:
+				value_slots( ) = default;
+				value_slots( value_slots const & ) = delete;
+				value_slots &operator=( value_slots const & ) = delete;
+
+				~value_slots( ) {
+					destroy_all( std::index_sequence_for<Ts...>{ } );
+				}
+
+				template<std::size_t I>
+				[[nodiscard]] bool built( ) const noexcept {
+					return built( I );
+				}
+
+				[[nodiscard]] bool built( std::size_t index ) const noexcept {
+					return ( m_built[index / 64U] &
+					         ( std::uint64_t{ 1 } << ( index % 64U ) ) ) != 0;
+				}
+
+				template<std::size_t I, typename U>
+				void emplace( U &&value ) {
+					auto const bit = std::uint64_t{ 1 } << ( I % 64U );
+					auto &word = m_built[I / 64U];
+					if( ( word & bit ) != 0 ) {
+						std::destroy_at( std::get<I>( m_slots ).get( ) );
+						word &= ~bit;
+					}
+					std::construct_at( std::get<I>( m_slots ).get( ), DAW_FWD( value ) );
+					word |= bit;
+				}
+
+				template<std::size_t I>
+				[[nodiscard]] value_t<I> &&take( ) noexcept {
+					return std::move( *std::get<I>( m_slots ).get( ) );
+				}
+			};
+
+			template<typename Members, std::size_t... Is>
+			auto make_class_slots( std::index_sequence<Is...> ) -> value_slots<
+			  json_result_t<without_name<typename Members::template member<Is>>>...>;
+
+			template<typename Members, std::size_t... Is>
+			auto make_tuple_slots( std::index_sequence<Is...> )
+			  -> value_slots<json_result_t<std::tuple_element_t<Is, Members>>...>;
+
+			template<typename JsonMember>
+			DAW_CONSTEVAL bool forward_supported( );
+
+			template<typename T>
+			inline constexpr bool is_storable_result_v =
+			  std::is_object_v<T> and std::is_move_constructible_v<T> and
+			  std::is_destructible_v<T>;
+
+			template<typename Members, std::size_t... Is>
+			DAW_CONSTEVAL bool forward_class_members( std::index_sequence<Is...> ) {
+				return (
+				  ( is_storable_result_v<json_result_t<
+				      without_name<typename Members::template member<Is>>>> and
+				    forward_supported<
+				      without_name<typename Members::template member<Is>>>( ) ) and
+				  ... );
+			}
+
+			template<typename Members, std::size_t... Is>
+			DAW_CONSTEVAL bool forward_tuple_members( std::index_sequence<Is...> ) {
+				return ( ( is_storable_result_v<
+				             json_result_t<std::tuple_element_t<Is, Members>>> and
+				           forward_supported<std::tuple_element_t<Is, Members>>( ) ) and
+				         ... );
+			}
+
+			template<typename JsonMember>
+			DAW_CONSTEVAL bool forward_supported( ) {
+				constexpr auto type = JsonMember::expected_type;
+				if constexpr( not is_storable_result_v<json_result_t<JsonMember>> ) {
+					return false;
+				} else if constexpr( type == JsonParseTypes::Null ) {
+					return forward_supported<typename JsonMember::member_type>( );
+				} else if constexpr( is_walkable_tuple<JsonMember>( ) ) {
+					using members = typename tuple_members<JsonMember>::types;
+					return forward_tuple_members<members>(
+					  std::make_index_sequence<std::tuple_size_v<members>>{ } );
+				} else if constexpr( type == JsonParseTypes::Class ) {
+					if constexpr( not is_walkable_class<JsonMember>( ) ) {
+						return false;
+					} else {
+						using members = class_members<JsonMember>;
+						return forward_class_members<members>(
+						  std::make_index_sequence<members::size>{ } );
+					}
+				} else if constexpr( type == JsonParseTypes::Array ) {
+					return forward_supported<typename JsonMember::json_element_t>( );
+				} else {
+					return type == JsonParseTypes::Real or
+					       type == JsonParseTypes::Signed or
+					       type == JsonParseTypes::Unsigned or
+					       type == JsonParseTypes::Bool or
+					       type == JsonParseTypes::StringRaw or
+					       type == JsonParseTypes::StringEscaped or
+					       type == JsonParseTypes::Date or type == JsonParseTypes::Custom;
+				}
+			}
+
+			template<typename State>
+			inline daw::string_view consume_member_name( reader<State> &r ) {
+				auto const first = r.peek( );
+				if( DAW_UNLIKELY( first == nullptr or *first != '"' or
+				                  r.position + 1 >= r.index.size( ) or
+				                  *r.index[r.position + 1] != ':' ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, first, ErrorReason::MissingMemberNameOrEndOfClass );
+				}
+				auto const colon = r.index[r.position + 1];
+				auto last = colon;
+				while( last > first and
+				       static_cast<unsigned char>( last[-1] ) - 1U < 0x20U ) {
+					--last;
+				}
+				if( DAW_UNLIKELY( last <= first + 1 or last[-1] != '"' ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, first, ErrorReason::InvalidMemberName );
+				}
+				r.position = static_cast<index_type>( r.position + 2 );
+				return daw::string_view( first + 1,
+				                         static_cast<std::size_t>( last - first - 2 ) );
+			}
+
+			template<typename State>
+			inline void skip_indexed_value( reader<State> &r ) {
+				auto event = r.peek( );
+				if( DAW_UNLIKELY( event == nullptr or *event == ',' or *event == ':' or
+				                  *event == '}' or *event == ']' ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, event, ErrorReason::InvalidStartOfValue );
+				}
+				if( *event != '{' and *event != '[' ) {
+					r.pop( );
+					return;
+				}
+				auto const close = static_cast<char>( *event == '{' ? '}' : ']' );
+				auto const object = *event == '{';
+				r.pop( );
+				event = r.peek( );
+				if( event != nullptr and *event == close ) {
+					r.pop( );
+					return;
+				}
+				for( ;; ) {
+					if( object ) {
+						(void)consume_member_name( r );
+					}
+					skip_indexed_value( r );
+					event = r.peek( );
+					if( event != nullptr and *event == close ) {
+						r.pop( );
+						return;
+					}
+					if( DAW_UNLIKELY( event == nullptr or *event != ',' ) ) {
+						DAW_UNLIKELY_BRANCH
+						error_at( r, event, ErrorReason::InvalidEndOfValue );
+					}
+					r.pop( );
+					event = r.peek( );
+					if( event != nullptr and *event == close ) {
+						r.pop( );
+						return;
+					}
+				}
+			}
+
+			template<typename Members, std::size_t... Is>
+			inline std::size_t find_forward_member( daw::string_view name,
+			                                        std::size_t expected,
+			                                        std::index_sequence<Is...> ) {
 				std::size_t found = Members::size;
 				(void)( ( expected == Is and
 				              matches_member<typename Members::template member<Is>>(
@@ -667,328 +593,362 @@ namespace daw::json {
 				return found;
 			}
 
-			template<std::size_t Index, typename Members, typename State,
-			         std::size_t N>
-			inline json_result_t<
-			  without_name<typename Members::template member<Index>>>
-			read_member( std::array<location, N> const &locations,
-			             reader<State> const &r ) {
-				using member = typename Members::template member<Index>;
+			template<typename Members, typename Slots, typename State,
+			         std::size_t... Is>
+			inline void consume_class_member( std::size_t member, reader<State> &r,
+			                                  Slots &slots,
+			                                  std::index_sequence<Is...> ) {
+				(void)( ( member == Is
+				            ? ( slots.template emplace<Is>(
+				                  consume_value<without_name<
+				                    typename Members::template member<Is>>>( r ) ),
+				                true )
+				            : false ) or
+				        ... );
+			}
+
+			// A missing member is reported at the opening brace of its class
+			template<std::size_t I, typename Members, typename Slots, typename State>
+			inline void finish_class_slot( Slots &slots, reader<State> const &r,
+			                               char const *opening ) {
+				using member = typename Members::template member<I>;
 				using value = without_name<member>;
-				if constexpr( not is_json_nullable_v<value> ) {
-					if( DAW_UNLIKELY( locations[Index].missing( ) ) ) {
-						DAW_UNLIKELY_BRANCH
-						missing_member_at( r,
-						                   r.last,
-						                   daw::string_view( std::data( member::name ),
-						                                     std::size( member::name ) ) );
-					}
+				if( slots.template built<I>( ) ) {
+					return;
 				}
-				return read_location<value>( locations[Index], r );
+				if constexpr( is_json_nullable_v<value> ) {
+					auto state = State( );
+					slots.template emplace<I>( parse_value_null<value, true>( state ) );
+				} else {
+					missing_member_at( r,
+					                   opening,
+					                   daw::string_view( std::data( member::name ),
+					                                     std::size( member::name ) ) );
+				}
 			}
 
 			template<typename Member, typename State, std::size_t... Is>
-			inline json_result_t<Member> read_class( location const &loc,
-			                                         reader<State> const &parent,
-			                                         std::index_sequence<Is...> ) {
+			inline json_result_t<Member>
+			consume_class( reader<State> &r, std::index_sequence<Is...> indices ) {
 				using members = class_members<Member>;
 				using T = json_result_t<Member>;
 				using Constructor = json_constructor_t<Member>;
+				using slots_t = decltype( make_class_slots<members>( indices ) );
 				DAW_CPP23_STATIC_LOCAL constexpr bool exact =
 				  all_json_members_must_exist_v<T, State>;
-				auto r = reader<State>( parent.index, loc );
-				auto event = r.peek( );
-				if( DAW_UNLIKELY( event == nullptr or *event != '{' ) ) {
+				auto const opening = r.peek( );
+				if( DAW_UNLIKELY( opening == nullptr or *opening != '{' ) ) {
 					DAW_UNLIKELY_BRANCH
-					error_at( r, event, ErrorReason::InvalidClassStart );
+					error_at( r, opening, ErrorReason::InvalidClassStart );
 				}
 				r.pop( );
-				auto locations = std::array<location, members::size>{ };
-				std::size_t expected = 0;
-				for( auto member_number = index_type{ 0 }; member_number < loc.count;
-				     ++member_number ) {
-					event = r.peek( );
-					auto const name = read_member_name( r );
-					auto const found = find_member<members, State>(
-					  name, expected, std::index_sequence<Is...>{ } );
-					if constexpr( exact ) {
-						if( DAW_UNLIKELY( found == members::size or
-						                  not locations[found].missing( ) ) ) {
+				auto slots = slots_t{ };
+				auto expected = std::size_t{ 0 };
+				if( auto first_event = r.peek( );
+				    first_event != nullptr and *first_event == '}' ) {
+					r.pop( );
+				} else {
+					for( ;; ) {
+						auto const name_event = r.peek( );
+						auto const name = consume_member_name( r );
+						auto const found =
+						  find_forward_member<members>( name, expected, indices );
+						if constexpr( exact ) {
+							if( DAW_UNLIKELY( found == members::size or
+							                  slots.built( found ) ) ) {
+								DAW_UNLIKELY_BRANCH
+								error_at( r, name_event, ErrorReason::UnknownMember );
+							}
+						}
+						if( found < members::size ) {
+							consume_class_member<members>( found, r, slots, indices );
+							expected = found + 1;
+						} else {
+							skip_indexed_value( r );
+						}
+						auto event = r.peek( );
+						if( event != nullptr and *event == '}' ) {
+							r.pop( );
+							break;
+						}
+						if( DAW_UNLIKELY( event == nullptr or *event != ',' ) ) {
 							DAW_UNLIKELY_BRANCH
-							error_at( r, event, ErrorReason::UnknownMember );
+							error_at( r, event, ErrorReason::InvalidEndOfValue );
+						}
+						r.pop( );
+						event = r.peek( );
+						if( event != nullptr and *event == '}' ) {
+							r.pop( );
+							break;
 						}
 					}
-					auto const current_loc = take_value( r );
-					if( found < members::size ) {
-						locations[found] = current_loc;
-						expected = found + 1;
-					}
-					if( member_number + 1 < loc.count ) {
-						r.pop( );
-					}
 				}
+				( finish_class_slot<Is, members>( slots, r, opening ), ... );
+				auto state =
+				  r.state_at( opening, r.peek( ) == nullptr ? r.end( ) : r.peek( ) );
 				if constexpr( should_construct_explicitly_v<Constructor, T, State> ) {
-					return T{ read_member<Is, members>( locations, r )... };
+					return T{ slots.template take<Is>( )... };
 				} else {
-					auto state = r.state_at( r.index[loc.first] );
 					return construct_value_tp<T, Constructor>(
-					  state, fwd_pack{ read_member<Is, members>( locations, r )... } );
+					  state, fwd_pack{ slots.template take<Is>( )... } );
 				}
 			}
 
-			#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
-			struct array_sized_end {};
-			#endif
-
-			template<typename Element, typename State, bool KnownBounds = false>
-			struct array_iterator {
-			#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
-				// Keep the iterator single-pass and expose the count through its sentinel.
-				using iterator_concept = std::input_iterator_tag;
+			template<typename Element, typename State>
+			struct forward_array_iterator {
 				using iterator_category = std::input_iterator_tag;
-			#else
-				// Legacy containers use the category only to select their allocation path.
-				// operator- supplies the exact count without advancing either iterator.
-				using iterator_category = std::conditional_t<
-				  KnownBounds, std::random_access_iterator_tag, std::input_iterator_tag>;
-			#endif
+				using iterator_concept = std::input_iterator_tag;
 				using value_type = json_result_t<Element>;
 				using reference = value_type;
 				using pointer = arrow_proxy<value_type>;
 				using difference_type = std::ptrdiff_t;
-				using size_type = std::size_t;
 				reader<State> *r = nullptr;
-				location value;
-				std::size_t remaining = 0;
 
-				array_iterator( ) = default;
-
-				inline explicit array_iterator( reader<State> &input, std::size_t hint )
-				  : r( &input )
-				  , remaining( hint ) {
-					if( remaining == 0 ) {
+				forward_array_iterator( ) = default;
+				explicit forward_array_iterator( reader<State> &input )
+				  : r( &input ) {
+					if( auto event = r->peek( ); event != nullptr and *event == ']' ) {
+						r->pop( );
 						r = nullptr;
-					} else {
-						value = take_value( *r );
 					}
 				}
 
-				inline value_type operator*( ) const {
-					return read_location<Element>( value, *r );
+				value_type operator*( ) const {
+					return consume_value<Element>( *r );
 				}
 
-				inline value_type operator*( ) {
-					return read_location<Element>( value, *r );
-				}
-
-				inline array_iterator &operator++( ) {
-					if( --remaining == 0 ) {
-						r = nullptr;
-					} else {
+				forward_array_iterator &operator++( ) {
+					auto event = r->peek( );
+					if( event != nullptr and *event == ']' ) {
 						r->pop( );
-						value = take_value( *r );
+						r = nullptr;
+						return *this;
+					}
+					if( DAW_UNLIKELY( event == nullptr or *event != ',' ) ) {
+						DAW_UNLIKELY_BRANCH
+						error_at( *r, event, ErrorReason::InvalidEndOfValue );
+					}
+					r->pop( );
+					event = r->peek( );
+					if( event != nullptr and *event == ']' ) {
+						r->pop( );
+						r = nullptr;
 					}
 					return *this;
 				}
 
-				inline void operator++( int ) {
+				void operator++( int ) {
 					(void)operator++( );
 				}
 
-				[[nodiscard]] DAW_ATTRIB_INLINE std::size_t size_hint( ) const {
-					return remaining;
+				[[nodiscard]] std::size_t size_hint( ) const noexcept {
+					return State::array_reserve_amount;
 				}
 
-				[[nodiscard]] DAW_ATTRIB_INLINE bool
-				operator==( array_iterator const &rhs ) const {
-					return r == rhs.r;
+				friend bool operator==( forward_array_iterator const &lhs,
+				                        forward_array_iterator const &rhs ) {
+					return lhs.r == rhs.r;
 				}
-
-				[[nodiscard]] DAW_ATTRIB_INLINE bool
-				operator!=( array_iterator const &rhs ) const {
-					return r != rhs.r;
-				}
-
-				template<bool B = KnownBounds,
-				         std::enable_if_t<B, int> = 0>
-				friend inline difference_type operator-( array_iterator const &lhs,
-				                                         array_iterator const &rhs ) {
-					return static_cast<difference_type>( rhs.remaining ) -
-					       static_cast<difference_type>( lhs.remaining );
-				}
-
-			#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
-				template<bool B = KnownBounds,
-				         std::enable_if_t<B, int> = 0>
-				friend inline bool operator==( array_iterator const &it,
-				                               array_sized_end ) {
-					return it.r == nullptr;
-				}
-
-				template<bool B = KnownBounds,
-				         std::enable_if_t<B, int> = 0>
-				friend inline difference_type operator-( array_sized_end,
-				                                         array_iterator const &it ) {
-					return static_cast<difference_type>( it.remaining );
-				}
-
-				template<bool B = KnownBounds,
-				         std::enable_if_t<B, int> = 0>
-				friend inline difference_type operator-( array_iterator const &it,
-				                                         array_sized_end ) {
-					return -static_cast<difference_type>( it.remaining );
-				}
-			#endif
 			};
 
-			template<std::size_t Index, typename Members, typename State,
-			         std::size_t N>
-			inline json_result_t<std::tuple_element_t<Index, Members>>
-			read_tuple_member( std::array<location, N> const &values,
-			                   reader<State> const &r ) {
-				return read_location<std::tuple_element_t<Index, Members>>(
-				  values[Index], r );
+			template<typename Member, typename State>
+			inline json_result_t<Member> consume_array( reader<State> &r ) {
+				using Constructor = json_constructor_t<Member>;
+				auto const opening = r.peek( );
+				if( DAW_UNLIKELY( opening == nullptr or *opening != '[' ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, opening, ErrorReason::InvalidArrayStart );
+				}
+				r.pop( );
+				auto state = r.state_at( opening, r.end( ) );
+				using iterator =
+				  forward_array_iterator<typename Member::json_element_t, State>;
+				return construct_value<json_result_t<Member>, Constructor>(
+				  state, iterator( r ), iterator( ) );
+			}
+
+			template<typename Members, typename Slots, typename State,
+			         std::size_t... Is>
+			inline void consume_tuple_member( std::size_t member, reader<State> &r,
+			                                  Slots &slots,
+			                                  std::index_sequence<Is...> ) {
+				(void)( ( member == Is
+				            ? ( slots.template emplace<Is>(
+				                  consume_value<std::tuple_element_t<Is, Members>>(
+				                    r ) ),
+				                true )
+				            : false ) or
+				        ... );
+			}
+
+			// A missing element is reported at the opening bracket of its tuple
+			template<std::size_t I, typename Members, typename Slots, typename State>
+			inline void finish_tuple_slot( Slots &slots, reader<State> const &r,
+			                               char const *opening ) {
+				using value = std::tuple_element_t<I, Members>;
+				if( slots.template built<I>( ) ) {
+					return;
+				}
+				if constexpr( is_json_nullable_v<value> ) {
+					auto state = State( );
+					slots.template emplace<I>( parse_value_null<value, true>( state ) );
+				} else {
+					error_at( r, opening, ErrorReason::UnexpectedEndOfData );
+				}
 			}
 
 			template<typename Member, typename State, std::size_t... Is>
-			inline json_result_t<Member> read_tuple( location const &loc,
-			                                         reader<State> const &parent,
-			                                         std::index_sequence<Is...> ) {
+			inline json_result_t<Member>
+			consume_tuple( reader<State> &r, std::index_sequence<Is...> indices ) {
 				using members = typename tuple_members<Member>::types;
 				using T = json_base_type_t<Member>;
 				using Constructor = json_constructor_t<Member>;
-				auto r = reader<State>( parent.index, loc );
-				auto event = r.peek( );
-				if( event == nullptr or *event != '[' ) {
-					error_at( r, event, ErrorReason::InvalidArrayStart );
+				using slots_t = decltype( make_tuple_slots<members>( indices ) );
+				auto const opening = r.peek( );
+				if( DAW_UNLIKELY( opening == nullptr or *opening != '[' ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, opening, ErrorReason::InvalidArrayStart );
 				}
 				r.pop( );
-				std::array<location, sizeof...( Is )> values{ };
-				auto captured = index_type{ 0 };
-				auto capture = [&]( auto index ) {
-					constexpr auto I = decltype( index )::value;
-					if( I >= loc.count ) {
-						return;
-					}
-					values[I] = take_value( r );
-					++captured;
-					if( captured < loc.count ) {
+				auto slots = slots_t{ };
+				auto member = std::size_t{ 0 };
+				if( auto first_event = r.peek( );
+				    first_event != nullptr and *first_event == ']' ) {
+					r.pop( );
+				} else {
+					for( ;; ++member ) {
+						if( member < sizeof...( Is ) ) {
+							consume_tuple_member<members>( member, r, slots, indices );
+						} else {
+							if constexpr( all_json_members_must_exist_v<T, State> ) {
+								error_at( r, r.peek( ), ErrorReason::UnknownMember );
+							}
+							skip_indexed_value( r );
+						}
+						auto event = r.peek( );
+						if( event != nullptr and *event == ']' ) {
+							r.pop( );
+							break;
+						}
+						if( DAW_UNLIKELY( event == nullptr or *event != ',' ) ) {
+							DAW_UNLIKELY_BRANCH
+							error_at( r, event, ErrorReason::InvalidEndOfValue );
+						}
 						r.pop( );
-					}
-				};
-				( capture( daw::constant_v<Is> ), ... );
-				while( captured < loc.count ) {
-					if constexpr( all_json_members_must_exist_v<T, State> ) {
-						error_at( r, r.peek( ), ErrorReason::UnknownMember );
-					}
-					(void)take_value( r );
-					++captured;
-					if( captured < loc.count ) {
-						r.pop( );
+						event = r.peek( );
+						if( event != nullptr and *event == ']' ) {
+							r.pop( );
+							break;
+						}
 					}
 				}
+				( finish_tuple_slot<Is, members>( slots, r, opening ), ... );
+				auto state =
+				  r.state_at( opening, r.peek( ) == nullptr ? r.end( ) : r.peek( ) );
 				if constexpr( should_construct_explicitly_v<Constructor, T, State> ) {
-					return T{ read_tuple_member<Is, members>( values, r )... };
+					return T{ slots.template take<Is>( )... };
 				} else {
-					auto state = r.state_at( r.index[loc.first] );
 					return construct_value_tp<T, Constructor>(
-					  state, fwd_pack{ read_tuple_member<Is, members>( values, r )... } );
+					  state, fwd_pack{ slots.template take<Is>( )... } );
 				}
 			}
 
 			template<typename JsonMember, typename ParseState>
-			inline json_result_t<JsonMember>
-			read_location( location const &loc, reader<ParseState> const &parent ) {
-				DAW_CPP23_STATIC_LOCAL constexpr auto type = JsonMember::expected_type;
+			inline json_result_t<JsonMember> consume_value( reader<ParseState> &r ) {
+				constexpr auto type = JsonMember::expected_type;
 				if constexpr( type == JsonParseTypes::Null ) {
-					auto state = ParseState( );
-					if( not loc.missing( ) ) {
-						auto const first = parent.index[loc.first];
-						if( *first == 'n' ) {
-							auto const bounds = parent.index.bounds( loc );
-							if( DAW_UNLIKELY( not literal( bounds, "null", 4 ) ) ) {
-								DAW_UNLIKELY_BRANCH
-								error_at( parent, bounds.first, ErrorReason::InvalidNull );
-							}
-						} else {
-							state = ParseState( first, parent.last );
-						}
-					}
-					return parse_value_null<JsonMember, true>(
-					  state,
-					  nullable_parser<typename JsonMember::member_type, ParseState>{
-					    loc, parent } );
-				} else {
-					if( DAW_UNLIKELY( loc.missing( ) ) ) {
+					auto const first = r.peek( );
+					if( DAW_UNLIKELY( first == nullptr ) ) {
 						DAW_UNLIKELY_BRANCH
-						error_at( parent, parent.last, ErrorReason::UnexpectedEndOfData );
+						error_at( r, first, ErrorReason::UnexpectedEndOfData );
 					}
-					if constexpr( is_walkable_class<JsonMember>( ) ) {
-						return read_class<JsonMember>(
-						  loc,
-						  parent,
-						  std::make_index_sequence<class_members<JsonMember>::size>{ } );
-					} else if constexpr( is_walkable_tuple<JsonMember>( ) ) {
-						return read_tuple<JsonMember>(
-						  loc,
-						  parent,
-						  std::make_index_sequence<std::tuple_size_v<
-						    typename tuple_members<JsonMember>::types>>{ } );
-					} else if constexpr( type == JsonParseTypes::Array ) {
-						auto r = reader<ParseState>( parent.index, loc );
-						auto const event = r.peek( );
-						if( DAW_UNLIKELY( event == nullptr or *event != '[' ) ) {
-							DAW_UNLIKELY_BRANCH
-							error_at( r, event, ErrorReason::InvalidArrayStart );
-						}
-						r.pop( );
-						auto state = r.state_at( event );
-						using iterator = array_iterator<
-						  typename JsonMember::json_element_t, ParseState, true>;
-					#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
-						return construct_value<json_result_t<JsonMember>,
-						                       json_constructor_t<JsonMember>>(
-						  state, iterator( r, loc.count ), array_sized_end{ } );
-					#else
-						return construct_value<json_result_t<JsonMember>,
-						                       json_constructor_t<JsonMember>>(
-						  state, iterator( r, loc.count ), iterator( ) );
-					#endif
-					} else if constexpr( type == JsonParseTypes::StringRaw or
-					                     type == JsonParseTypes::StringEscaped ) {
-						auto const first = parent.index[loc.first];
-						if( DAW_UNLIKELY( *first != '"' ) ) {
-							DAW_UNLIKELY_BRANCH
-							error_at( parent, first, ErrorReason::InvalidString );
-						}
-						auto const bounds = parent.index.bounds( loc );
+					if( *first == 'n' ) {
+						auto const token = r.position++;
+						auto bounds = r.index.bounds( token );
 						auto state = ParseState( bounds.first, bounds.last );
-						// Move last to double quote
+						return parse_value<JsonMember, false, type>( state );
+					}
+					using base_member = typename JsonMember::member_type;
+					using constructor = json_constructor_t<JsonMember>;
+					auto value = consume_value<base_member>( r );
+					auto state =
+					  r.state_at( first, r.peek( ) == nullptr ? r.end( ) : r.peek( ) );
+					return construct_value<base_member, constructor>(
+					  state, std::move( value ) );
+				} else if constexpr( is_walkable_tuple<JsonMember>( ) ) {
+					using members = typename tuple_members<JsonMember>::types;
+					return consume_tuple<JsonMember>(
+					  r, std::make_index_sequence<std::tuple_size_v<members>>{ } );
+				} else if constexpr( type == JsonParseTypes::Class ) {
+					using members = class_members<JsonMember>;
+					return consume_class<JsonMember>(
+					  r, std::make_index_sequence<members::size>{ } );
+				} else if constexpr( type == JsonParseTypes::Array ) {
+					return consume_array<JsonMember>( r );
+
+				} else {
+					if( DAW_UNLIKELY( r.peek( ) == nullptr ) ) {
+						DAW_UNLIKELY_BRANCH
+						error_at( r, nullptr, ErrorReason::UnexpectedEndOfData );
+					}
+					auto const token = r.position++;
+					auto bounds = r.index.bounds( token );
+					if constexpr( type == JsonParseTypes::Real or
+					              type == JsonParseTypes::Signed or
+					              type == JsonParseTypes::Unsigned ) {
+						// A number in a container is followed by a structural byte, so
+						// the zero-terminated policy can scan until that non-digit without
+						// checking the token bound on every character. A root number may
+						// end at the document sentinel and still needs bounded parsing.
+						if( bounds.last != r.end( ) or r.source_is_zero_terminated ) {
+							using number_state = json_details::zstring_policy_t<ParseState>;
+							auto state = number_state( bounds.first, bounds.last );
+							return parse_value<JsonMember, false, type>( state );
+						}
+					}
+					auto state = ParseState( bounds.first, bounds.last );
+					if constexpr( type == JsonParseTypes::StringRaw or
+					              type == JsonParseTypes::StringEscaped ) {
+						daw_json_assert_weak( *state.first == '"',
+						                      ErrorReason::InvalidString );
+						++state.first;
 						do {
 							--state.last;
 						} while( *state.last != '"' );
-						++state.first;
+						if constexpr( type == JsonParseTypes::StringEscaped ) {
+							auto const slash = static_cast<char const *>( std::memchr(
+							  +state.first,
+							  '\\',
+							  static_cast<std::size_t>( state.last - state.first ) ) );
+							state.counter =
+							  slash == nullptr
+							    ? static_cast<std::size_t>( -1 )
+							    : static_cast<std::size_t>( slash - state.first );
+						}
 						return parse_value<JsonMember, true, type>( state );
 					} else {
-						auto bounds = parent.index.bounds( loc );
-						auto state = ParseState( bounds.first,
-						                         bounds.last,
-						                         bounds.class_first,
-						                         bounds.class_last,
-						                         bounds.counter );
-						if constexpr( unquoted_scalar<JsonMember>( ) ) {
-							// The bounds end at the next entry, not the number, so the
-							// parsers that find the end are used
-							return parse_value<JsonMember, false, type>( state );
-						} else {
-							// Dependent mappings, custom converters and key/value mappings
-							// retain the existing bounded parser and its required class
-							// context.
-							state.class_first = bounds.first;
-							state.class_last = bounds.last;
-							return parse_value<JsonMember, false, type>( state );
-						}
+						return parse_value<JsonMember, false, type>( state );
 					}
+				}
+			}
+
+			template<typename JsonMember, typename ParseState>
+			inline json_result_t<JsonMember> scalar_fallback( std::string_view doc ) {
+				auto state = ParseState( doc.data( ), daw::data_end( doc ) );
+				DAW_ASSUME( state.first != nullptr );
+				DAW_ASSUME( state.last != nullptr );
+				DAW_ASSUME( state.class_first != nullptr );
+				DAW_ASSUME( state.class_last != nullptr );
+				if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
+					auto result =
+					  parse_value<JsonMember, false, JsonMember::expected_type>( state );
+					state.trim_left( );
+					daw_json_ensure(
+					  state.empty( ), ErrorReason::InvalidEndOfValue, state );
+					return result;
+				} else {
+					return parse_value<JsonMember, false, JsonMember::expected_type>(
+					  state );
 				}
 			}
 
@@ -996,19 +956,24 @@ namespace daw::json {
 			inline json_result_t<JsonMember> from_json_simd_impl(
 			  std::string_view doc,
 			  daw::not_null<std::pmr::memory_resource *> memory_resource ) {
-
-				auto index = build_index<ParseState>( doc, memory_resource );
-				auto const loc = prepare_root<ParseState>( index );
-				if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
-					if( DAW_UNLIKELY( loc.last != index.size( ) ) ) {
-						DAW_UNLIKELY_BRANCH
-						index_error<ParseState>( index[loc.last],
-						                         daw::data_end( index.doc ),
-						                         ErrorReason::InvalidEndOfValue );
+				if constexpr( not forward_supported<JsonMember>( ) ) {
+					return scalar_fallback<JsonMember, ParseState>( doc );
+				} else {
+					using indexed_state = json_details::apply_policy_option_t<
+					  ParseState,
+					  options::ZeroTerminatedString::no>;
+					auto index = build_index<indexed_state>( doc, memory_resource );
+					auto r = reader<indexed_state>(
+					  index, ParseState::is_zero_terminated_string );
+					auto result = consume_value<JsonMember>( r );
+					if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
+						if( DAW_UNLIKELY( r.position != index.size( ) ) ) {
+							DAW_UNLIKELY_BRANCH
+							error_at( r, r.peek( ), ErrorReason::InvalidEndOfValue );
+						}
 					}
+					return result;
 				}
-				auto const r = reader<ParseState>( index, loc );
-				return read_location<JsonMember>( loc, r );
 			}
 		} // namespace json_details::simd_parse
 	} // namespace DAW_JSON_VER

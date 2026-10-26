@@ -63,6 +63,39 @@ struct scan_pinned_outer {
 	scan_pinned child;
 	int tail;
 };
+struct scan_lifetime {
+	inline static int live = 0;
+	int value;
+	explicit scan_lifetime( int v )
+	  : value( v ) {
+		++live;
+	}
+	scan_lifetime( scan_lifetime &&other ) noexcept
+	  : value( other.value ) {
+		++live;
+	}
+	scan_lifetime( scan_lifetime const & ) = delete;
+	~scan_lifetime( ) {
+		--live;
+	}
+};
+struct scan_lifetime_converter {
+	scan_lifetime operator( )( std::string_view value ) const {
+		return scan_lifetime( value.empty( ) ? 0 : value.front( ) - '0' );
+	}
+};
+struct scan_throwing_record {
+	scan_lifetime first;
+	scan_lifetime second;
+};
+struct scan_throwing_builder {
+	scan_throwing_record operator( )( scan_lifetime first,
+	                                  scan_lifetime second ) const {
+		(void)first;
+		(void)second;
+		throw 42;
+	}
+};
 static_assert( not std::is_aggregate_v<scan_constructed> );
 static_assert( daw::json::is_pinned_type_v<scan_pinned_outer> );
 
@@ -91,6 +124,18 @@ namespace daw::json {
 		static constexpr char child[] = "child", tail[] = "tail";
 		using type =
 		  json_member_list<json_class<child, scan_pinned>, json_number<tail, int>>;
+	};
+	template<>
+	struct json_data_contract<scan_throwing_record> {
+		using constructor_t = scan_throwing_builder;
+		static constexpr char first[] = "first", second[] = "second";
+		using type = json_member_list<
+		  json_custom<first, scan_lifetime, scan_lifetime_converter, use_default,
+		              options::json_custom_opt(
+		                options::JsonCustomTypes::Literal )>,
+		  json_custom<second, scan_lifetime, scan_lifetime_converter, use_default,
+		              options::json_custom_opt(
+		                options::JsonCustomTypes::Literal )>>;
 	};
 
 	template<>
@@ -130,16 +175,26 @@ template<class T>
 void reject( std::string const &text ) {
 	bool caught = false;
 	try {
-		(void)daw::json::from_json_simd<T>( text );
+		(void)daw::json::experimental::from_json_simd<T>( text );
 	} catch( daw::json::json_exception const & ) { caught = true; }
+	check( caught );
+}
+template<class T>
+void reject_at( std::string const &text, std::size_t offset ) {
+	bool caught = false;
+	try {
+		(void)daw::json::experimental::from_json_simd<T>( text );
+	} catch( daw::json::json_exception const &je ) {
+		caught = je.parse_location( ) == text.data( ) + offset;
+	}
 	check( caught );
 }
 
 int main( ) {
-	using daw::json::from_json_simd;
+	using daw::json::experimental::from_json_simd;
 	check( from_json_simd<scan_ordered_point>( "[9,7]" ).y == 7 );
-	// The existing mapping controls parse order and selects a custom result
-	// constructor, even when JSON keys arrive in the opposite order.
+	// Members are parsed as they are encountered, then passed to the result
+	// constructor in mapping order.
 	constexpr char constructed_doc[] =
 	  R"({"second":2,"unknown":{"a":[1,2]},"first":1})";
 	scan_construction_log.clear( );
@@ -149,13 +204,30 @@ int main( ) {
 	scan_construction_log.clear( );
 	auto const constructed = from_json_simd<scan_constructed>( constructed_doc );
 	check( constructed.sum( ) == constructed_scalar.sum( ) );
-	check( ( scan_construction_log == std::vector<int>{ 1, 2, 3 } ) );
+	check( ( scan_construction_log == std::vector<int>{ 2, 1, 3 } ) );
 	auto const pinned =
 	  from_json_simd<scan_pinned_outer>( R"({"tail":9,"child":{"value":7}})" );
 	check( pinned.child.value == 7 and pinned.tail == 9 );
 	auto const scalar_pinned = daw::json::from_json<scan_pinned_outer>(
 	  R"({"tail":9,"child":{"value":7}})" );
 	check( scalar_pinned.child.value == pinned.child.value );
+
+	// Every constructed slot is destroyed when later grammar or result
+	// construction throws.
+	scan_lifetime::live = 0;
+	reject<scan_throwing_record>( R"({"first":1 "second":2})" );
+	check( scan_lifetime::live == 0 );
+	bool constructor_threw = false;
+	try {
+		(void)from_json_simd<scan_throwing_record>( R"({"second":2,"first":1})" );
+	} catch( int value ) { constructor_threw = value == 42; }
+	check( constructor_threw and scan_lifetime::live == 0 );
+
+	// A missing member or tuple element is reported at the opening of the
+	// value it belongs to
+	reject_at<std::vector<scan_record>>(
+	  R"([{"id":1,"points":[]}, {"points":[]}])", 23 );
+	reject_at<scan_record>( R"({"id":1,"points":[[1,2],[3]]})", 24 );
 
 	// Index growth must not invalidate token ranges retained for parent scopes.
 	std::string many = "[";
@@ -269,6 +341,19 @@ int main( ) {
 	check( !t.y );
 	check( std::get<0>( from_json_simd<std::tuple<int, int>>( "[1,2,3]" ) ) ==
 	       1 );
+
+	// Preserve daw::string_view's runtime zero-termination information when
+	// selecting the SIMD parse policy.
+	std::string const zero_terminated_numbers = "[10,20,30]";
+	auto const zero_terminated_view = daw::string_view( zero_terminated_numbers );
+	check( zero_terminated_view.is_zero_terminated( ) ==
+	       daw::ZeroTerminated::Yes );
+	check( from_json_simd<std::vector<int>>( zero_terminated_view )[2] == 30 );
+
+	// A root number can end exactly at a non-terminated view's bound and must
+	// continue to use the bounded number parser.
+	char const bounded_number[] = { '4', '2' };
+	check( from_json_simd<int>( daw::string_view( bounded_number, 2 ) ) == 42 );
 }
 
 #else

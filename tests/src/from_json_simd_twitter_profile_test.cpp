@@ -22,7 +22,8 @@ int main( int argc, char **argv ) {
 	    : std::size_t{ 1 };
 	for( auto n = std::size_t{ 0 }; n < repetitions; ++n ) {
 		auto result =
-		  daw::json::from_json_simd<daw::twitter::twitter_object_t>( document );
+		  daw::json::experimental::from_json_simd<daw::twitter::twitter_object_t>(
+		    document );
 		daw::do_not_optimize( result );
 	}
 #else

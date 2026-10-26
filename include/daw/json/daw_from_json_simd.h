@@ -14,55 +14,52 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 #if defined( DAW_JSON_HAS_FROM_JSON_SIMD )
-		/// Experimental shared-index parser. Skipped values receive
-		/// structural, not full lexical, validation. See
-		/// reflection_json_parser_design.md.
-		template<typename JsonMember, typename String, auto... Flags>
-		DAW_ATTRIB_NOINLINE [[nodiscard]] auto
-		from_json_simd( String &&document,
-		                options::parse_flags_t<Flags...> = { } ) {
-			using State = BasicParsePolicy<options::parse_flags_t<Flags...>::value>;
-			static_assert( json_details::simd_parse::policy_supports_simd_v<State> );
-			static_assert( json_details::is_string_view_like_v<String> );
-			daw_json_ensure( std::size( document ) != 0,
-			                 ErrorReason::EmptyJSONDocument );
-			auto doc =
-			  std::string_view( std::data( document ), std::size( document ) );
-			if( doc[doc.size( ) - 1] == '\0' ) {
-				doc.remove_suffix( 1 );
-			}
-			using member = json_details::json_deduced_type<JsonMember>;
-			daw::not_null memory_resource = std::pmr::new_delete_resource( );
-			return json_details::simd_parse::from_json_simd_impl<member, State>(
-			  doc, memory_resource );
-		}
 
-		template<typename JsonMember, typename String, auto... Flags>
-		DAW_ATTRIB_NOINLINE [[nodiscard]] auto
-		from_json_simd( String &&document,
-		                daw::not_null<std::pmr::memory_resource *> memory_resource,
-		                options::parse_flags_t<Flags...> = { } ) {
-			using ParseState =
-			  BasicParsePolicy<options::parse_flags_t<Flags...>::value>;
-			static_assert(
-			  json_details::simd_parse::policy_supports_simd_v<ParseState> );
-			static_assert( json_details::is_string_view_like_v<String> );
-			daw_json_ensure( std::size( document ) != 0,
-			                 ErrorReason::EmptyJSONDocument );
-			auto doc =
-			  std::string_view( std::data( document ), std::size( document ) );
-			// account for c-arrays
-			if( doc[doc.size( ) - 1] == '\0' ) {
-				doc.remove_suffix( 1 );
+		namespace experimental {
+			template<typename JsonMember, typename String, auto... PolicyFlags>
+			DAW_ATTRIB_NOINLINE [[nodiscard]] auto from_json_simd(
+			  String &&document,
+			  daw::not_null<std::pmr::memory_resource *> memory_resource,
+			  options::parse_flags_t<PolicyFlags...> = { } ) {
+				static_assert( json_details::has_json_deduced_type_v<JsonMember>,
+				               "The type passed to from_json_simd does not have a "
+				               "json_data_contract and one cannot be deduced" );
+				using member = json_details::json_deduced_type<JsonMember>;
+				auto doc = daw::string_view( DAW_FWD( document ) );
+				daw_json_ensure( not doc.empty( ), ErrorReason::EmptyJSONDocument );
+				if( doc.is_zero_terminated( ) ) {
+					using ParseState = BasicParsePolicy<
+					  options::parse_flags_t<PolicyFlags...,
+					                         options::ZeroTerminatedString::yes>::value>;
+					static_assert(
+					  json_details::simd_parse::policy_supports_simd_v<ParseState> );
+					return json_details::simd_parse::from_json_simd_impl<member,
+					                                                     ParseState>(
+					  std::string_view( doc ), memory_resource );
+				}
+				using ParseState =
+				  BasicParsePolicy<options::parse_flags_t<PolicyFlags...>::value>;
+				static_assert(
+				  json_details::simd_parse::policy_supports_simd_v<ParseState> );
+				return json_details::simd_parse::from_json_simd_impl<member,
+				                                                     ParseState>(
+				  std::string_view( doc ), memory_resource );
 			}
-			static_assert( json_details::has_json_deduced_type_v<JsonMember>,
-			               "The type passed to from_json_simd does not have a "
-			               "json_data_contract and one cannot be deduced" );
-			using member = json_details::json_deduced_type<JsonMember>;
 
-			return json_details::simd_parse::from_json_simd_impl<member, ParseState>(
-			  doc, memory_resource );
-		}
+			/// Experimental shared-index parser. Skipped values receive
+			/// structural, not full lexical, validation. See
+			/// reflection_json_parser_design.md.
+			template<typename JsonMember, typename String, auto... PolicyFlags>
+			DAW_ATTRIB_NOINLINE [[nodiscard]] auto from_json_simd(
+			  String &&document,
+			  options::parse_flags_t<PolicyFlags...> policy_flags = { } ) {
+
+				daw::not_null memory_resource = std::pmr::new_delete_resource( );
+				return from_json_simd<JsonMember>(
+				  DAW_FWD( document ), memory_resource, policy_flags );
+			}
+		} // namespace experimental
+
 #endif
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
