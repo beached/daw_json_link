@@ -736,9 +736,22 @@ namespace daw::json {
 				}
 			}
 
-			template<typename Element, typename State>
+			#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+			struct array_sized_end {};
+			#endif
+
+			template<typename Element, typename State, bool KnownBounds = false>
 			struct array_iterator {
+			#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+				// Keep the iterator single-pass and expose the count through its sentinel.
+				using iterator_concept = std::input_iterator_tag;
 				using iterator_category = std::input_iterator_tag;
+			#else
+				// Legacy containers use the category only to select their allocation path.
+				// operator- supplies the exact count without advancing either iterator.
+				using iterator_category = std::conditional_t<
+				  KnownBounds, std::random_access_iterator_tag, std::input_iterator_tag>;
+			#endif
 				using value_type = json_result_t<Element>;
 				using reference = value_type;
 				using pointer = arrow_proxy<value_type>;
@@ -795,6 +808,37 @@ namespace daw::json {
 				operator!=( array_iterator const &rhs ) const {
 					return r != rhs.r;
 				}
+
+				template<bool B = KnownBounds,
+				         std::enable_if_t<B, int> = 0>
+				friend inline difference_type operator-( array_iterator const &lhs,
+				                                         array_iterator const &rhs ) {
+					return static_cast<difference_type>( rhs.remaining ) -
+					       static_cast<difference_type>( lhs.remaining );
+				}
+
+			#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+				template<bool B = KnownBounds,
+				         std::enable_if_t<B, int> = 0>
+				friend inline bool operator==( array_iterator const &it,
+				                               array_sized_end ) {
+					return it.r == nullptr;
+				}
+
+				template<bool B = KnownBounds,
+				         std::enable_if_t<B, int> = 0>
+				friend inline difference_type operator-( array_sized_end,
+				                                         array_iterator const &it ) {
+					return static_cast<difference_type>( it.remaining );
+				}
+
+				template<bool B = KnownBounds,
+				         std::enable_if_t<B, int> = 0>
+				friend inline difference_type operator-( array_iterator const &it,
+				                                         array_sized_end ) {
+					return -static_cast<difference_type>( it.remaining );
+				}
+			#endif
 			};
 
 			template<std::size_t Index, typename Members, typename State,
@@ -899,11 +943,17 @@ namespace daw::json {
 						}
 						r.pop( );
 						auto state = r.state_at( event );
-						using iterator =
-						  array_iterator<typename JsonMember::json_element_t, ParseState>;
+						using iterator = array_iterator<
+						  typename JsonMember::json_element_t, ParseState, true>;
+					#if defined( DAW_JSON_HAS_CPP23_RANGE_CTOR )
+						return construct_value<json_result_t<JsonMember>,
+						                       json_constructor_t<JsonMember>>(
+						  state, iterator( r, loc.count ), array_sized_end{ } );
+					#else
 						return construct_value<json_result_t<JsonMember>,
 						                       json_constructor_t<JsonMember>>(
 						  state, iterator( r, loc.count ), iterator( ) );
+					#endif
 					} else if constexpr( type == JsonParseTypes::StringRaw or
 					                     type == JsonParseTypes::StringEscaped ) {
 						auto const first = parent.index[loc.first];
@@ -913,7 +963,12 @@ namespace daw::json {
 						}
 						auto const bounds = parent.index.bounds( loc );
 						auto state = ParseState( bounds.first, bounds.last );
-						return parse_value<JsonMember, false, type>( state );
+						// Move last to double quote
+						do {
+							--state.last;
+						} while( *state.last != '"' );
+						++state.first;
+						return parse_value<JsonMember, true, type>( state );
 					} else {
 						auto bounds = parent.index.bounds( loc );
 						auto state = ParseState( bounds.first,

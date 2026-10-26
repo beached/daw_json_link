@@ -3,16 +3,17 @@
 
 // Compare the existing parser and explicit SIMD parser using the shared
 // harness.
-// #include "apache_builds_json.h"
-// #include "citm_test_json.h"
-// #include "geojson_json.h"
-// #include "gsoc.h"
+#include "apache_builds_json.h"
+#include "citm_test_json.h"
 #include "daw_json_benchmark.h"
+#include "geojson_json.h"
+#include "gsoc.h"
 #include "twitter_test_json.h"
 
 #include "daw/json/daw_from_json_simd.h"
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_parse_args.h>
 #include <daw/daw_read_file.h>
 
 #include <cstdlib>
@@ -57,16 +58,18 @@ void bench( char const *name, char const *path, int batches, int runs ) {
 }
 
 int main( int argc, char **argv ) {
-	if( argc < 6 ) {
-		std::cerr << "Usage: " << argv[0]
+	auto args = daw::Arguments( argc, argv );
+	if( args.size(  ) < 5 ) {
+		std::cerr << "Usage: " << args.program_name( )
 		          << " twitter.json citm_catalog.json gsoc-2018.json canada.json "
-		             "apache_builds.json [batches=9] [runs=20]\n";
+		             "apache_builds.json [batches=2] [runs=2]\n";
 		return 1;
 	}
-	int batches = argc > 6 ? std::atoi( argv[6] ) : 9;
-	int runs = argc > 7 ? std::atoi( argv[7] ) : 20;
-	if( batches < 3 || runs < 1 )
+	auto batches = args.get_argument( "batches" ).as_int( ).value_or( 2 );
+	auto runs = args.get_argument( "runs" ).as_int( ).value_or( 2 );
+	if( batches < 1 || runs < 1 ) {
 		return 1;
+	}
 	std::cout << __VERSION__ << " backend=";
 #if defined( DAW_JSON_HAS_AVX512_SIMD )
 	std::cout << "AVX-512 shim";
@@ -81,11 +84,9 @@ int main( int argc, char **argv ) {
 #endif
 	std::cout << " batches=" << batches << " requested runs=" << runs << '\n';
 	bench<daw::twitter::twitter_object_t>( "twitter", argv[1], batches, runs );
-	/*
 	bench<daw::citm::citm_object_t>( "citm", argv[2], batches, runs );
 	bench<daw::gsoc::gsoc_object_t>( "gsoc", argv[3], batches, runs );
 	bench<daw::geojson::FeatureCollection>( "canada", argv[4], batches, runs );
 	bench<apache_builds::apache_builds>(
 	  "apache_builds", argv[5], batches, runs );
-	  */
 }
