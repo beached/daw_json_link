@@ -23,6 +23,7 @@
 #include <limits>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
 #if defined( DAW_HAS_SIMD )
 
@@ -43,10 +44,10 @@ namespace daw::json {
 
 				using daw::simd_impl::prefix_xor;
 
-				[[nodiscard]] constexpr bool last_bit( std::uint64_t bits,
-				                                       std::size_t count ) noexcept {
-					return count != 0 and
-					       ( ( bits >> ( count - 1U ) ) & std::uint64_t{ 1 } ) != 0;
+				[[nodiscard]] constexpr std::uint64_t
+				last_bit( std::uint64_t bits, std::size_t count ) noexcept {
+					return count == 0 ? 0
+					                  : ( bits >> ( count - 1U ) ) & std::uint64_t{ 1 };
 				}
 
 				[[nodiscard]]
@@ -68,6 +69,52 @@ namespace daw::json {
 					  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ':', '{', ',', '}', 0, 0 };
 					return daw::simd_impl::lookup16( table, input_vec ) ==
 					       ( input_vec | splat( '\x20' ) );
+				}
+
+				using mask_type = typename simd_type::mask_type;
+				static constexpr std::size_t vector_count = 64U / simd_size;
+
+				/// The candidate bytes of each class in one vector
+				struct vector_classes {
+					mask_type backslash;
+					mask_type quote;
+					mask_type structural;
+					mask_type whitespace;
+				};
+
+				[[nodiscard]] DAW_ATTRIB_INLINE vector_classes
+				classify_vector( simd_type input_vec ) {
+					return vector_classes{
+					  input_vec == splat( '\\' ),
+					  input_vec == splat( '"' ),
+					  structural_candidates( input_vec ),
+					  ( input_vec >= splat( '\x01' ) ) & ( input_vec <= splat( '\x20' ) ) };
+				}
+
+				/// A bit per byte of a 64 byte block for each class
+				struct block_classes {
+					std::uint64_t backslash;
+					std::uint64_t quote;
+					std::uint64_t structural;
+					std::uint64_t whitespace;
+				};
+
+				/// Classify the vectors load_vector( offset ) of a block.  The masks of
+				/// a class are packed together, which on NEON is a quarter of the
+				/// instructions of a to_ullong for each vector
+				template<typename LoadVector, std::size_t... Is>
+				[[nodiscard]] DAW_ATTRIB_INLINE block_classes
+				classify_vectors( LoadVector load_vector, std::index_sequence<Is...> ) {
+					auto const classes = std::array<vector_classes, vector_count>{
+					  classify_vector( load_vector( Is * simd_size ) )... };
+					auto const pack = [&]( mask_type vector_classes::*cls ) {
+						return daw::simd::pack_masks(
+						  std::array<mask_type, vector_count>{ ( classes[Is].*cls )... } );
+					};
+					return block_classes{ pack( &vector_classes::backslash ),
+					                      pack( &vector_classes::quote ),
+					                      pack( &vector_classes::structural ),
+					                      pack( &vector_classes::whitespace ) };
 				}
 
 				// Copy the tail to a zeroed block so loads stay within the input.
@@ -142,11 +189,13 @@ namespace daw::json {
 				// The string carried in has had no backslash
 				bool m_string_clean = false;
 
+				// Each carry is 0 or 1.  Bools let clang pack the carries into one
+				// register, which chains every carry of the next block on all of them
 				struct carry_state {
-					bool in_string = false;
-					bool escaped = false;
-					bool in_token = false;
-					bool string_clean = false;
+					std::uint64_t in_string = 0;
+					std::uint64_t escaped = 0;
+					std::uint64_t in_token = 0;
+					std::uint64_t string_clean = 0;
 				};
 
 				struct classified_block {
@@ -164,47 +213,41 @@ namespace daw::json {
 				                carry_state carry ) {
 					using namespace lexer_cursor_details;
 
-					auto backslash_bits = std::uint64_t{ 0 };
-					auto raw_quote_bits = std::uint64_t{ 0 };
-					auto raw_structural_bits = std::uint64_t{ 0 };
-					auto whitespace_bits = std::uint64_t{ 0 };
-					auto const add_vector = [&]( simd_type const &input_vec,
-					                             std::size_t offset,
-					                             std::uint64_t lane_bits ) {
-						auto const bits_of = [&]( auto const &mask ) {
-							return ( mask.to_ullong( ) & lane_bits ) << offset;
-						};
-						backslash_bits |= bits_of( input_vec == splat( '\\' ) );
-						raw_quote_bits |= bits_of( input_vec == splat( '"' ) );
-						raw_structural_bits |= bits_of( structural_candidates( input_vec ) );
-						whitespace_bits |= bits_of( ( input_vec >= splat( '\x01' ) ) &
-						                            ( input_vec <= splat( '\x20' ) ) );
-					};
+					constexpr auto vectors = std::make_index_sequence<vector_count>{ };
+					auto classes = block_classes{ };
 					if( DAW_LIKELY( count == block_size ) ) {
 						// A full block, the trip count and lanes are known
-						for( std::size_t offset = 0; offset < block_size;
-						     offset += simd_size ) {
-							add_vector( daw::simd::unchecked_load<simd_type>(
-							              daw::span( first + offset, simd_size ) ),
-							            offset,
-							            ~std::uint64_t{ 0 } );
-						}
+						classes = classify_vectors(
+						  [&]( std::size_t offset ) {
+							  return daw::simd::unchecked_load<simd_type>(
+							    daw::span( first + offset, simd_size ) );
+						  },
+						  vectors );
 					} else {
-						for( std::size_t offset = 0; offset < count; offset += simd_size ) {
-							auto const lane_count =
-							  count - offset < simd_size ? count - offset : simd_size;
-							add_vector( load( first + offset, lane_count ),
-							            offset,
-							            low_bits( lane_count ) );
-						}
+						// The zeroed lanes past count are in no class, valid_bits
+						// removes them anyway
+						classes = classify_vectors(
+						  [&]( std::size_t offset ) {
+							  if( offset >= count ) {
+								  return splat( '\0' );
+							  }
+							  return load( first + offset, count - offset < simd_size
+							                                 ? count - offset
+							                                 : simd_size );
+						  },
+						  vectors );
 					}
 
 					auto const valid_bits = low_bits( count );
+					auto const backslash_bits = classes.backslash & valid_bits;
+					auto const raw_quote_bits = classes.quote & valid_bits;
+					auto const raw_structural_bits = classes.structural & valid_bits;
+					auto const whitespace_bits = classes.whitespace & valid_bits;
 
 					DAW_CPP23_STATIC_LOCAL constexpr std::uint64_t odd_bits =
 					  0xAAAAAAAAAAAAAAAAULL;
 
-					auto const previous_escaped = carry.escaped ? std::uint64_t{ 1 } : 0;
+					auto const previous_escaped = carry.escaped;
 
 					auto const potential_escape = backslash_bits & ~previous_escaped;
 
@@ -226,7 +269,7 @@ namespace daw::json {
 					// The opening quote and the bytes of a string, not its closing quote
 					auto const in_string_bits =
 					  ( prefix_xor( quote_bits ) ^
-					    ( carry.in_string ? valid_bits : std::uint64_t{ 0 } ) ) &
+					    ( valid_bits & ( std::uint64_t{ 0 } - carry.in_string ) ) ) &
 					  valid_bits;
 
 					auto const outside = ~( in_string_bits | quote_bits ) & valid_bits;
@@ -238,7 +281,7 @@ namespace daw::json {
 
 					auto const token_start =
 					  token &
-					  ~( ( token << 1U ) | ( carry.in_token ? std::uint64_t{ 1 } : 0 ) );
+					  ~( ( token << 1U ) | carry.in_token );
 
 					auto const open_quotes = quote_bits & in_string_bits;
 
@@ -252,10 +295,10 @@ namespace daw::json {
 						auto const clean_bytes = in_string_bits & ~backslash_bits;
 						auto const string_starts =
 						  open_quotes |
-						  ( carry.in_string and carry.string_clean ? std::uint64_t{ 1 } : 0 );
+						  ( carry.in_string & carry.string_clean );
 						auto const carried = clean_bytes + string_starts;
 						escaped_closes = close_quotes & ~carried;
-						carry.string_clean = carried < clean_bytes;
+						carry.string_clean = carried < clean_bytes ? 1U : 0U;
 					}
 					carry.in_string = last_bit( in_string_bits, count );
 					carry.in_token = last_bit( token, count );
@@ -286,10 +329,10 @@ namespace daw::json {
 					m_block_events[m_loaded_blocks] = classified.events;
 					m_close_quotes[m_loaded_blocks] = classified.closes;
 					m_escaped_closes[m_loaded_blocks] = classified.escaped_closes;
-					m_in_string = classified.carry.in_string;
-					m_escaped = classified.carry.escaped;
-					m_in_token = classified.carry.in_token;
-					m_string_clean = classified.carry.string_clean;
+					m_in_string = classified.carry.in_string != 0;
+					m_escaped = classified.carry.escaped != 0;
+					m_in_token = classified.carry.in_token != 0;
+					m_string_clean = classified.carry.string_clean != 0;
 					m_loaded_last += count;
 					m_block = m_loaded_blocks++;
 					m_events = m_block_events[m_block];
@@ -304,6 +347,21 @@ namespace daw::json {
 					m_loaded_last = first;
 					m_loaded_blocks = 0;
 					classify_next( );
+				}
+
+				/// Write the events of the block at block_offset as offsets from first,
+				/// returning how many were written
+				DAW_ATTRIB_INLINE static std::uint32_t
+				index_block( char const *first, std::size_t block_offset,
+				             std::size_t count, carry_state &carry,
+				             std::uint32_t *offsets ) {
+					auto const classified =
+					  classify_block<false>( first + block_offset, count, carry );
+					carry = classified.carry;
+					return static_cast<std::uint32_t>( daw::simd_impl::flatten_bits(
+					  classified.events,
+					  static_cast<std::uint32_t>( block_offset ),
+					  offsets ) );
 				}
 
 			public:
@@ -321,25 +379,29 @@ namespace daw::json {
 					auto carry = carry_state{ };
 					auto token_count = std::uint32_t{ 0 };
 					auto const doc_sz = doc.size( );
-					for( std::size_t block_offset = 0; block_offset < doc_sz;
-					     block_offset += block_size ) {
-						auto const remaining = doc.size( ) - block_offset;
-						auto const count = remaining < block_size ? remaining : block_size;
-						auto const classified = classify_block<false>(
-						  doc.data( ) + block_offset, count, carry );
-						token_count +=
-						  static_cast<std::uint32_t>( daw::simd_impl::flatten_bits(
-						    classified.events,
-						    static_cast<std::uint32_t>( block_offset ),
-						    &offsets[token_count] ) );
-						carry = classified.carry;
+					// Full blocks have a constant count, so the carries are the top bits
+					auto const full_end = doc_sz - doc_sz % block_size;
+					auto block_offset = std::size_t{ 0 };
+					for( ; block_offset < full_end; block_offset += block_size ) {
+						token_count += index_block( doc.data( ),
+						                            block_offset,
+						                            block_size,
+						                            carry,
+						                            &offsets[token_count] );
+					}
+					if( block_offset < doc_sz ) {
+						token_count += index_block( doc.data( ),
+						                            block_offset,
+						                            doc_sz - block_offset,
+						                            carry,
+						                            &offsets[token_count] );
 					}
 					offsets[token_count] = static_cast<std::uint32_t>( doc_sz );
 					if constexpr( not std::is_pointer_v<
 					                std::remove_reference_t<Offsets>> ) {
 						offsets.set_size( token_count );
 					}
-					return structural_index_result{ token_count, carry.in_string };
+					return structural_index_result{ token_count, carry.in_string != 0 };
 				}
 
 				/// The first event at or after first, whatever was popped before.
