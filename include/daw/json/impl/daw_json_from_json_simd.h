@@ -282,6 +282,22 @@ namespace daw::json {
 			  : member_list_of<
 			      json_data_contract_trait_t<typename JsonMember::wrapped_type>> {};
 
+			/// A class whose json_data_contract is a json_type_alias, it parses as
+			/// the member it aliases and is constructed from that result.
+			template<typename JsonMember, typename = void>
+			inline constexpr bool is_type_alias_class_v = false;
+
+			template<typename JsonMember>
+			inline constexpr bool is_type_alias_class_v<
+			  JsonMember, std::void_t<json_data_contract_trait_t<
+			                typename JsonMember::wrapped_type>>> =
+			  is_a_json_map_alias_v<
+			    json_data_contract_trait_t<typename JsonMember::wrapped_type>>;
+
+			template<typename JsonMember>
+			using aliased_member_t = typename json_data_contract_trait_t<
+			  typename JsonMember::wrapped_type>::json_member;
+
 			template<typename Members, std::size_t... Is>
 			[[nodiscard]] inline constexpr bool
 			walkable_members( std::index_sequence<Is...> ) {
@@ -488,7 +504,9 @@ namespace daw::json {
 					return forward_tuple_members<members>(
 					  std::make_index_sequence<std::tuple_size_v<members>>{ } );
 				} else if constexpr( type == JsonParseTypes::Class ) {
-					if constexpr( not is_walkable_class<JsonMember>( ) ) {
+					if constexpr( is_type_alias_class_v<JsonMember> ) {
+						return forward_supported<aliased_member_t<JsonMember>>( );
+					} else if constexpr( not is_walkable_class<JsonMember>( ) ) {
 						return false;
 					} else {
 						using members = class_members<JsonMember>;
@@ -497,6 +515,9 @@ namespace daw::json {
 					}
 				} else if constexpr( type == JsonParseTypes::Array ) {
 					return forward_supported<typename JsonMember::json_element_t>( );
+				} else if constexpr( type == JsonParseTypes::KeyValue ) {
+					return forward_supported<typename JsonMember::json_key_t>( ) and
+					       forward_supported<typename JsonMember::json_element_t>( );
 				} else {
 					return type == JsonParseTypes::Real or
 					       type == JsonParseTypes::Signed or
@@ -751,6 +772,81 @@ namespace daw::json {
 				}
 			};
 
+			/// The members of a json_key_value object as key/value pairs, read from
+			/// the index in document order.  The reader starts after the opening
+			/// brace.  Each key goes through consume_value as its own token, so
+			/// escaped and literal as string keys are parsed as they are elsewhere.
+			template<typename Member, typename State>
+			struct forward_kv_iterator {
+				using key_t = typename Member::json_key_t;
+				using value_t = typename Member::json_element_t;
+				using iterator_category = std::input_iterator_tag;
+				using iterator_concept = std::input_iterator_tag;
+				using value_type =
+				  kv_class_iter_impl::container_value_type_or<Member,
+				                                              json_base_type_t<Member>>;
+				using reference = value_type;
+				using pointer = arrow_proxy<value_type>;
+				using difference_type = std::ptrdiff_t;
+				reader<State> *r = nullptr;
+
+				forward_kv_iterator( ) = default;
+				explicit forward_kv_iterator( reader<State> &input )
+				  : r( &input ) {
+					if( auto event = r->peek( ); event != nullptr and *event == '}' ) {
+						r->pop( );
+						r = nullptr;
+					}
+				}
+
+				value_type operator*( ) const {
+					auto const name = r->peek( );
+					if( DAW_UNLIKELY( name == nullptr or *name != '"' ) ) {
+						DAW_UNLIKELY_BRANCH
+						error_at( *r, name, ErrorReason::MissingMemberNameOrEndOfClass );
+					}
+					auto key = consume_value<key_t>( *r );
+					auto const colon = r->peek( );
+					if( DAW_UNLIKELY( colon == nullptr or *colon != ':' ) ) {
+						DAW_UNLIKELY_BRANCH
+						error_at( *r, name, ErrorReason::InvalidMemberName );
+					}
+					r->pop( );
+					return json_class_constructor<value_type,
+					                              default_constructor<value_type>>(
+					  std::move( key ), consume_value<value_t>( *r ) );
+				}
+
+				forward_kv_iterator &operator++( ) {
+					auto event = r->peek( );
+					if( event != nullptr and *event == '}' ) {
+						r->pop( );
+						r = nullptr;
+						return *this;
+					}
+					if( DAW_UNLIKELY( event == nullptr or *event != ',' ) ) {
+						DAW_UNLIKELY_BRANCH
+						error_at( *r, event, ErrorReason::InvalidEndOfValue );
+					}
+					r->pop( );
+					event = r->peek( );
+					if( event != nullptr and *event == '}' ) {
+						r->pop( );
+						r = nullptr;
+					}
+					return *this;
+				}
+
+				void operator++( int ) {
+					(void)operator++( );
+				}
+
+				friend bool operator==( forward_kv_iterator const &lhs,
+				                        forward_kv_iterator const &rhs ) {
+					return lhs.r == rhs.r;
+				}
+			};
+
 			template<typename Member, typename State>
 			inline json_result_t<Member> consume_array( reader<State> &r ) {
 				using Constructor = json_constructor_t<Member>;
@@ -763,6 +859,21 @@ namespace daw::json {
 				auto state = r.state_at( opening, r.end( ) );
 				using iterator =
 				  forward_array_iterator<typename Member::json_element_t, State>;
+				return construct_value<json_result_t<Member>, Constructor>(
+				  state, iterator( r ), iterator( ) );
+			}
+
+			template<typename Member, typename State>
+			inline json_result_t<Member> consume_kv( reader<State> &r ) {
+				using Constructor = json_constructor_t<Member>;
+				auto const opening = r.peek( );
+				if( DAW_UNLIKELY( opening == nullptr or *opening != '{' ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, opening, ErrorReason::ExpectedKeyValueToStartWithBrace );
+				}
+				r.pop( );
+				auto state = r.state_at( opening, r.end( ) );
+				using iterator = forward_kv_iterator<Member, State>;
 				return construct_value<json_result_t<Member>, Constructor>(
 				  state, iterator( r ), iterator( ) );
 			}
@@ -879,12 +990,25 @@ namespace daw::json {
 					using members = typename tuple_members<JsonMember>::types;
 					return consume_tuple<JsonMember>(
 					  r, std::make_index_sequence<std::tuple_size_v<members>>{ } );
+				} else if constexpr( type == JsonParseTypes::Class and
+				                     is_type_alias_class_v<JsonMember> ) {
+					// As json_type_alias::parse_to_class does, construct the result
+					// from the aliased member's
+					auto const first = r.peek( );
+					auto value = consume_value<aliased_member_t<JsonMember>>( r );
+					auto state =
+					  r.state_at( first, r.peek( ) == nullptr ? r.end( ) : r.peek( ) );
+					return construct_value<JsonMember,
+					                       daw::construct_a_t<json_result_t<JsonMember>>>(
+					  state, std::move( value ) );
 				} else if constexpr( type == JsonParseTypes::Class ) {
 					using members = class_members<JsonMember>;
 					return consume_class<JsonMember>(
 					  r, std::make_index_sequence<members::size>{ } );
 				} else if constexpr( type == JsonParseTypes::Array ) {
 					return consume_array<JsonMember>( r );
+				} else if constexpr( type == JsonParseTypes::KeyValue ) {
+					return consume_kv<JsonMember>( r );
 
 				} else {
 					if( DAW_UNLIKELY( r.peek( ) == nullptr ) ) {

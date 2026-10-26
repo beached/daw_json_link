@@ -2,6 +2,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 #include <cstdlib>
 #include <daw/json/daw_from_json_simd.h>
+#include <map>
 #include <optional>
 #include <string>
 #include <tuple>
@@ -96,10 +97,62 @@ struct scan_throwing_builder {
 		throw 42;
 	}
 };
+struct scan_maps {
+	std::map<std::string, int> by_name;
+	std::map<std::int64_t, std::string> by_id;
+};
+struct scan_meters {
+	int value;
+};
+struct scan_samples {
+	std::vector<int> values;
+};
+struct scan_ids {
+	std::map<std::uint64_t, int> ids;
+};
+struct scan_aliases {
+	scan_meters meters;
+	scan_samples samples;
+	scan_ids ids;
+};
 static_assert( not std::is_aggregate_v<scan_constructed> );
 static_assert( daw::json::is_pinned_type_v<scan_pinned_outer> );
 
 namespace daw::json {
+	template<>
+	struct json_data_contract<scan_maps> {
+		static constexpr char by_name[] = "by_name", by_id[] = "by_id";
+		using type = json_member_list<
+		  json_key_value<by_name, std::map<std::string, int>, int>,
+		  json_key_value<by_id, std::map<std::int64_t, std::string>, std::string,
+		                 json_number_no_name<
+		                   std::int64_t, options::number_opt(
+		                                   options::LiteralAsStringOpt::Always )>>>;
+	};
+	template<>
+	struct json_data_contract<scan_meters> {
+		using type = json_type_alias<json_number_no_name<int>>;
+	};
+	template<>
+	struct json_data_contract<scan_samples> {
+		using type = json_type_alias<json_array_no_name<int>>;
+	};
+	template<>
+	struct json_data_contract<scan_ids> {
+		using type = json_type_alias<json_key_value_no_name<
+		  std::map<std::uint64_t, int>, int,
+		  json_number_no_name<std::uint64_t,
+		                      options::number_opt(
+		                        options::LiteralAsStringOpt::Always )>>>;
+	};
+	template<>
+	struct json_data_contract<scan_aliases> {
+		static constexpr char meters[] = "meters", samples[] = "samples",
+		                      ids[] = "ids";
+		using type = json_member_list<json_class<meters, scan_meters>,
+		                              json_class<samples, scan_samples>,
+		                              json_class<ids, scan_ids>>;
+	};
 	template<>
 	struct json_data_contract<scan_ordered_point> {
 		using type = json_tuple_member_list<json_tuple_member<1, int>>;
@@ -341,6 +394,57 @@ int main( ) {
 	check( !t.y );
 	check( std::get<0>( from_json_simd<std::tuple<int, int>>( "[1,2,3]" ) ) ==
 	       1 );
+
+	// json_key_value members are read from the index rather than falling back
+	static_assert( daw::json::json_details::simd_parse::forward_supported<
+	               daw::json::json_details::json_deduced_type<scan_maps>>( ) );
+	for( std::string const maps_doc :
+	     { R"({"by_name":{"a":1,"b\"c":2,"a":3},"by_id":{"7":"x","-3":"y\n"}})",
+	       R"({"by_name":{},"by_id":{}})",
+	       R"({"by_id":{"1":"z",},"by_name":{"q":4}})" } ) {
+		auto const maps = from_json_simd<scan_maps>( maps_doc );
+		auto const scalar_maps = daw::json::from_json<scan_maps>( maps_doc );
+		check( maps.by_name == scalar_maps.by_name );
+		check( maps.by_id == scalar_maps.by_id );
+	}
+	check(
+	  from_json_simd<scan_maps>( R"({"by_name":{"b\"c":2},"by_id":{"-3":"y"}})" )
+	    .by_name.at( "b\"c" ) == 2 );
+	check( from_json_simd<scan_maps>( R"({"by_name":{},"by_id":{"-3":"y"}})" )
+	         .by_id.at( -3 ) == "y" );
+	reject<scan_maps>( R"({"by_name":{"a" 1},"by_id":{}})" );
+	reject<scan_maps>( R"({"by_name":{"a":1 "b":2},"by_id":{}})" );
+	reject<scan_maps>( R"({"by_name":{1:1},"by_id":{}})" );
+	reject<scan_maps>( R"({"by_name":{},"by_id":{"x":"y"}})" );
+	reject<scan_maps>( R"({"by_name":[],"by_id":{}})" );
+
+	// A json_type_alias goes forward when the member it aliases does
+	{
+		namespace sp = daw::json::json_details::simd_parse;
+		using daw::json::json_details::json_deduced_type;
+		static_assert( sp::forward_supported<json_deduced_type<scan_meters>>( ) );
+		static_assert( sp::forward_supported<json_deduced_type<scan_samples>>( ) );
+		static_assert( sp::forward_supported<json_deduced_type<scan_ids>>( ) );
+		static_assert( sp::forward_supported<json_deduced_type<scan_aliases>>( ) );
+	}
+	check( from_json_simd<scan_meters>( "42" ).value == 42 );
+	check( ( from_json_simd<scan_samples>( "[3,1,2]" ).values ==
+	         std::vector<int>{ 3, 1, 2 } ) );
+	check( from_json_simd<scan_ids>( R"({"18446744073709551615":1,"0":2})" )
+	         .ids.at( 18446744073709551615ULL ) == 1 );
+	for( std::string const aliases_doc :
+	     { R"({"meters":5,"samples":[1,2],"ids":{"9":3,"4":5}})",
+	       R"({"ids":{},"samples":[],"meters":-1})" } ) {
+		auto const aliases = from_json_simd<scan_aliases>( aliases_doc );
+		auto const scalar_aliases =
+		  daw::json::from_json<scan_aliases>( aliases_doc );
+		check( aliases.meters.value == scalar_aliases.meters.value );
+		check( aliases.samples.values == scalar_aliases.samples.values );
+		check( aliases.ids.ids == scalar_aliases.ids.ids );
+	}
+	reject<scan_meters>( R"("42")" );
+	reject<scan_samples>( R"({"values":[1]})" );
+	reject<scan_ids>( R"({"x":1})" );
 
 	// Preserve daw::string_view's runtime zero-termination information when
 	// selecting the SIMD parse policy.
