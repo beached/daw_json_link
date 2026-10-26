@@ -236,9 +236,9 @@ namespace daw::json {
 					         ( *this )[static_cast<index_type>( token + 1 )] };
 				}
 
-				[[nodiscard]] inline ParseState state_at( char const *first,
-				                                          char const *last ) const {
-					return ParseState( first, last );
+				[[nodiscard]] static inline ParseState state_at( char const *f,
+				                                                 char const *l ) {
+					return ParseState( f, l );
 				}
 
 				[[nodiscard]] DAW_ATTRIB_INLINE char const *peek( ) const noexcept {
@@ -431,11 +431,11 @@ namespace daw::json {
 			/// The members are read in order, so their positions must increase
 			template<typename Members, std::size_t... Is>
 			DAW_CONSTEVAL bool independent_tuple( std::index_sequence<Is...> ) {
-				return ( ( not has_class_dependent_v<ordered_member_subtype_t<
-				             std::tuple_element_t<Is, Members>>> and
-				           tuple_position<Members, Is>( ) >=
-				             tuple_start<Members, Is>( ) ) and
-				         ... );
+				return (
+				  ( not has_class_dependent_v<
+				      ordered_member_subtype_t<std::tuple_element_t<Is, Members>>> and
+				    tuple_position<Members, Is>( ) >= tuple_start<Members, Is>( ) ) and
+				  ... );
 			}
 #endif
 
@@ -546,9 +546,10 @@ namespace daw::json {
 
 			template<typename Members, std::size_t... Is>
 			DAW_CONSTEVAL bool forward_tuple_members( std::index_sequence<Is...> ) {
-				return ( forward_supported<
-				           ordered_member_subtype_t<std::tuple_element_t<Is, Members>>>( ) and
-				         ... );
+				return (
+				  forward_supported<
+				    ordered_member_subtype_t<std::tuple_element_t<Is, Members>>>( ) and
+				  ... );
 			}
 
 			template<typename JsonMember>
@@ -1096,8 +1097,8 @@ namespace daw::json {
 			/// into the result's construction.  The elements of a braced list are
 			/// evaluated in order
 			template<typename Member, typename State, std::size_t... Is>
-			inline json_result_t<Member>
-			consume_tuple( reader<State> &r, std::index_sequence<Is...> ) {
+			inline json_result_t<Member> consume_tuple( reader<State> &r,
+			                                            std::index_sequence<Is...> ) {
 				using members = typename tuple_members<Member>::types;
 				using T = json_base_type_t<Member>;
 				using Constructor = json_constructor_t<Member>;
