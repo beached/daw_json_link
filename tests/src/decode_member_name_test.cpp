@@ -11,6 +11,9 @@
 #include "defines.h"
 
 #include <daw/json/daw_json_link.h>
+#if DAW_CPP_VERSION >= 202002L
+#include <daw/json/daw_from_json_simd.h>
+#endif
 
 #include <string>
 #include <string_view>
@@ -169,23 +172,37 @@ namespace {
 		  escaped_names_flags ) );
 	}
 
-	void parse_escaped_names( ) {
-		DAW_CONSTEXPR bool in_order = parse_escaped_in_order( );
-		daw_ensure( in_order );
+	struct scalar_parser {
+		template<typename T, typename Flags>
+		T parse( std::string_view json, Flags flags ) const {
+			return daw::json::from_json<T>( json, flags );
+		}
+	};
 
+#if defined( DAW_JSON_HAS_FROM_JSON_SIMD )
+	struct simd_parser {
+		template<typename T, typename Flags>
+		T parse( std::string_view json, Flags flags ) const {
+			return daw::json::experimental::from_json_simd<T>( json, flags );
+		}
+	};
+#endif
+
+	template<typename Parser>
+	void parse_escaped_names( Parser parser ) {
 		// The names as written still match
-		daw_ensure( is_1234( daw::json::from_json<EscapedNames>(
+		daw_ensure( is_1234( parser.template parse<EscapedNames>(
 		  "{\"a\\\"b\":1,\"c\\\\d\":2,\"\xc3\xa9\":3,\"plain\":4}",
 		  escaped_names_flags ) ) );
 
 		// Out of order with unknown members.  The second unknown name decodes
 		// to more chars than the longest mapped name
-		daw_ensure( is_1234( daw::json::from_json<EscapedNames>(
+		daw_ensure( is_1234( parser.template parse<EscapedNames>(
 		  R"({"plain":4,"x\ny":0,"\u00e9":3,"\u0061\u0061\u0061\u0061\u0061\u0061":0,"c\\d":2,"a\"b":1})",
 		  escaped_names_flags ) ) );
 
 		// Exact mappings with the decoded names
-		daw_ensure( is_1234( daw::json::from_json<EscapedNames>(
+		daw_ensure( is_1234( parser.template parse<EscapedNames>(
 		  R"({"c\\d":2,"a\"b":1,"plain":4,"\u00E9":3})",
 		  exact_escaped_names_flags ) ) );
 
@@ -195,26 +212,26 @@ namespace {
 		  daw::json::options::output_flags<
 		    daw::json::options::AllowEscapedNames::yes> );
 		daw_ensure( is_1234(
-		  daw::json::from_json<EscapedNames>( json, escaped_names_flags ) ) );
+		  parser.template parse<EscapedNames>( json, escaped_names_flags ) ) );
 
 		// The tag is found before and after the value it is for
-		auto const tag_first = daw::json::from_json<EscapedTag>(
+		auto const tag_first = parser.template parse<EscapedTag>(
 		  R"({"t\"ag":1,"value":"str"})", escaped_names_flags );
 		daw_ensure( std::get<1>( tag_first.value ) == "str" );
-		auto const tag_last = daw::json::from_json<EscapedTag>(
+		auto const tag_last = parser.template parse<EscapedTag>(
 		  R"({"value":42,"t\u0022ag":0})", escaped_names_flags );
 		daw_ensure( std::get<0>( tag_last.value ) == 42 );
 	}
 
 #if defined( DAW_USE_EXCEPTIONS )
-	template<typename T>
-	daw::json::ErrorReason parse_error( std::string_view json,
+	template<typename T, typename Parser>
+	daw::json::ErrorReason parse_error( Parser parser, std::string_view json,
 	                                     bool exact = false ) {
 		try {
 			if( exact ) {
-				(void)daw::json::from_json<T>( json, exact_escaped_names_flags );
+				(void)parser.template parse<T>( json, exact_escaped_names_flags );
 			} else {
-				(void)daw::json::from_json<T>( json, escaped_names_flags );
+				(void)parser.template parse<T>( json, escaped_names_flags );
 			}
 		} catch( daw::json::json_exception const &ex ) {
 			return ex.reason_type( );
@@ -222,23 +239,28 @@ namespace {
 		return daw::json::ErrorReason::Unknown;
 	}
 
-	void reject_escaped_names( ) {
+	template<typename Parser>
+	void reject_escaped_names( Parser parser ) {
 		// Unknown members are errors with exact mappings, whether or not they
 		// fit in the buffer
 		daw_ensure(
 		  parse_error<EscapedNames>(
+		    parser,
 		    R"({"a\"b":1,"c\\d":2,"\u00e9":3,"plain":4,"x\ny":0})", true ) ==
 		  daw::json::ErrorReason::UnknownMember );
 		daw_ensure(
 		  parse_error<EscapedNames>(
+		    parser,
 		    R"({"\u0061\u0061\u0061\u0061\u0061\u0061":0,"a\"b":1,"c\\d":2,"\u00e9":3,"plain":4})",
 		    true ) == daw::json::ErrorReason::UnknownMember );
 
 		// Invalid escapes and unpaired surrogates in names
 		daw_ensure( parse_error<EscapedNames>(
+		              parser,
 		              R"({"a\"b":1,"c\\d":2,"\ud800":3,"plain":4})" ) !=
 		            daw::json::ErrorReason::Unknown );
 		daw_ensure( parse_error<EscapedNames>(
+		              parser,
 		              R"({"a\"b":1,"c\\d":2,"\u00e9":3,"pl\qain":4})" ) !=
 		            daw::json::ErrorReason::Unknown );
 	}
@@ -321,7 +343,12 @@ int main( )
 	daw_ensure( does_not_fit<8, unchecked_policy_t>( R"(\ud83d)" ) );
 	daw_ensure( does_not_fit<8, unchecked_policy_t>( R"(a\)" ) );
 
-	parse_escaped_names( );
+	DAW_CONSTEXPR bool in_order = parse_escaped_in_order( );
+	daw_ensure( in_order );
+	parse_escaped_names( scalar_parser{ } );
+#if defined( DAW_JSON_HAS_FROM_JSON_SIMD )
+	parse_escaped_names( simd_parser{ } );
+#endif
 	json_pair_decoded_name( );
 
 #if defined( DAW_USE_EXCEPTIONS )
@@ -334,7 +361,10 @@ int main( )
 	daw_ensure( is_rejected( R"(\ud83d)" ) );
 	daw_ensure( is_rejected( R"(\ud83dabcdef)" ) );
 	daw_ensure( is_rejected( R"(\ud83d\u0061)" ) );
-	reject_escaped_names( );
+	reject_escaped_names( scalar_parser{ } );
+#if defined( DAW_JSON_HAS_FROM_JSON_SIMD )
+	reject_escaped_names( simd_parser{ } );
+#endif
 	reject_invalid_escapes( );
 #endif
 }

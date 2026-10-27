@@ -31,7 +31,7 @@ namespace daw::json {
 			inline constexpr bool policy_supports_simd_v =
 			  std::is_same_v<typename ParseState::CommentPolicy,
 			                 NoCommentSkippingPolicy> and
-			  not ParseState::has_allocator and not ParseState::allow_escaped_names;
+			  not ParseState::has_allocator;
 
 			template<typename T>
 			class unique_array_t {
@@ -744,6 +744,57 @@ namespace daw::json {
 				return found;
 			}
 
+			/// The size of the longest mapped name.  A decoded member name longer
+			/// than this cannot be any of them
+			template<typename Members, std::size_t... Is>
+			[[nodiscard]] DAW_CONSTEVAL std::size_t
+			longest_member_name( std::index_sequence<Is...> ) {
+				std::size_t result = 0;
+				(void)( ( result = std::size( Members::template member<Is>::name ) >
+				                       result
+				                     ? std::size( Members::template member<Is>::name )
+				                     : result ),
+				        ... );
+				return result;
+			}
+
+			/// The member whose name has escapes in the input.  The mapped names
+			/// are decoded text, so the name is decoded before it is compared, into
+			/// a buffer the size of the longest mapped name
+			template<typename Members, typename State, std::size_t... Is>
+			[[nodiscard]] DAW_ATTRIB_NOINLINE std::size_t
+			find_escaped_forward_member( reader<State> const &r,
+			                             char const *name_event,
+			                             daw::string_view raw, std::size_t expected,
+			                             std::index_sequence<Is...> indices ) {
+				auto buffer = json_details::name::name_buffer<
+				  longest_member_name<Members>( indices )>{ };
+				if( not json_details::name::decode_name(
+				      raw, buffer, error_state_at( r, name_event ) ) ) {
+					// Longer than any mapped name
+					return Members::size;
+				}
+				return find_forward_member<Members>( buffer.view( ), expected, indices );
+			}
+
+			/// The member named raw, decoding it first when names can have escapes
+			/// and it has one
+			template<typename Members, typename State, std::size_t... Is>
+			[[nodiscard]] DAW_ATTRIB_INLINE std::size_t
+			find_named_member( reader<State> const &r, char const *name_event,
+			                   daw::string_view raw, std::size_t expected,
+			                   std::index_sequence<Is...> indices ) {
+				if constexpr( State::allow_escaped_names ) {
+					for( char const c : raw ) {
+						if( c == '\\' ) {
+							return find_escaped_forward_member<Members>(
+							  r, name_event, raw, expected, indices );
+						}
+					}
+				}
+				return find_forward_member<Members>( raw, expected, indices );
+			}
+
 			/// Where the members of a class are.  Values are read in constructor
 			/// order; a member found before its turn has its value's position
 			/// recorded and is skipped, then read when its turn comes
@@ -799,7 +850,8 @@ namespace daw::json {
 				while( not locs.closed and next_member( r, locs ) ) {
 					auto const name_event = r.peek( );
 					auto const name = consume_member_name( r );
-					auto const found = find_forward_member<Members>( name, I, indices );
+					auto const found = find_named_member<Members>(
+					  r, name_event, name, I, indices );
 					bool const known =
 					  found < Members::size and locs.value_at[found] == 0;
 					if constexpr( Exact ) {
@@ -821,11 +873,20 @@ namespace daw::json {
 
 			/// When the next member at the frontier is spelled exactly as Member,
 			/// with only whitespace between its closing quote and the colon, move
-			/// to its value.  Anything else is left to scan_to_member
+			/// to its value.  Anything else is left to scan_to_member.  When names
+			/// are decoded, a name with a char that has to be escaped is never in
+			/// the input as written
 			template<typename Member, typename State, typename Locations>
 			DAW_ATTRIB_INLINE bool at_expected_member( reader<State> &r,
 			                                           Locations &locs ) {
 				constexpr auto size = std::size( Member::name );
+				if constexpr( State::allow_escaped_names and
+				              name_needs_escaping( daw::string_view(
+				                std::data( Member::name ), size ) ) ) {
+					(void)r;
+					(void)locs;
+					return false;
+				}
 				if( locs.closed ) {
 					return false;
 				}
