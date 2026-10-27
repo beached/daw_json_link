@@ -34,10 +34,10 @@ static_assert( DAW_NUM_RUNS > 0 );
 namespace {
 	using namespace daw::json;
 	using scalar_iterator = json_array_iterator<std::string>;
-	using simd_iterator = json_simd_block_iterator<std::string>;
+	using simd_iterator = experimental::json_simd_block_iterator<std::string>;
 	using raw_string = json_string_raw_no_name<std::string_view>;
 	using scalar_raw_iterator = json_array_iterator<raw_string>;
-	using simd_raw_iterator = json_simd_block_iterator<raw_string>;
+	using simd_raw_iterator = experimental::json_simd_block_iterator<raw_string>;
 
 	[[nodiscard]] std::string make_string_array( std::size_t element_count ) {
 		auto result = std::string{ "[" };

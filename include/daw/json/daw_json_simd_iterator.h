@@ -42,7 +42,7 @@ namespace daw::json {
 			        unknown_json_simd_block_iterator_error<JsonMember>>>>>;
 		} // namespace json_details::simd_details
 
-		inline namespace experimental {
+		namespace experimental {
 			/**
 			 * Input iterator over JSON values located using native SIMD-sized
 			 * classified blocks.

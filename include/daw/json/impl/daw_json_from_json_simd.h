@@ -534,10 +534,6 @@ namespace daw::json {
 				}
 			};
 
-			template<typename Members, std::size_t... Is>
-			auto make_class_slots( std::index_sequence<Is...> ) -> value_slots<
-			  json_result_t<without_name<typename Members::template member<Is>>>...>;
-
 #if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 			template<typename Members, std::size_t... Is>
 			auto make_tuple_slots( std::index_sequence<Is...> )
@@ -748,38 +744,169 @@ namespace daw::json {
 				return found;
 			}
 
-			template<typename Members, typename Slots, typename State,
-			         std::size_t... Is>
-			inline void consume_class_member( std::size_t member, reader<State> &r,
-			                                  Slots &slots,
-			                                  std::index_sequence<Is...> ) {
-				(void)( ( member == Is
-				            ? ( slots.template emplace<Is>(
-				                  consume_value<without_name<
-				                    typename Members::template member<Is>>>( r ) ),
-				                true )
-				            : false ) or
-				        ... );
+			/// Where the members of a class are.  Values are read in constructor
+			/// order; a member found before its turn has its value's position
+			/// recorded and is skipped, then read when its turn comes
+			template<std::size_t N, bool Exact>
+			struct class_locations {
+				static constexpr bool exact = Exact;
+				char const *opening;
+				// 0 is never a value's position, as the { comes first
+				std::array<index_type, N> value_at{ };
+				// Just after the last value scanned past, or the {
+				index_type frontier = 0;
+				bool reader_at_frontier = true;
+				bool first = true;
+				bool closed = false;
+			};
+
+			/// Move to the next member name from the frontier, or close the class.
+			/// Returns false when the class is closed
+			template<typename State, typename Locations>
+			DAW_ATTRIB_INLINE bool next_member( reader<State> &r, Locations &locs ) {
+				auto event = r.peek( );
+				if( locs.first ) {
+					locs.first = false;
+				} else {
+					if( event != nullptr and *event == '}' ) {
+						r.pop( );
+						locs.closed = true;
+						return false;
+					}
+					if( DAW_UNLIKELY( event == nullptr or *event != ',' ) ) {
+						DAW_UNLIKELY_BRANCH
+						error_at( r, event, ErrorReason::InvalidEndOfValue );
+					}
+					r.pop( );
+					event = r.peek( );
+				}
+				if( event != nullptr and *event == '}' ) {
+					r.pop( );
+					locs.closed = true;
+					return false;
+				}
+				return true;
+			}
+
+			/// Read member names from the frontier until member I is found,
+			/// recording the others' values and skipping them.  Returns false when
+			/// the class closes first
+			template<typename Members, std::size_t I, bool Exact, typename State,
+			         typename Locations, std::size_t... Is>
+			DAW_ATTRIB_INLINE bool
+			scan_to_member( reader<State> &r, Locations &locs,
+			                std::index_sequence<Is...> indices ) {
+				while( not locs.closed and next_member( r, locs ) ) {
+					auto const name_event = r.peek( );
+					auto const name = consume_member_name( r );
+					auto const found = find_forward_member<Members>( name, I, indices );
+					bool const known =
+					  found < Members::size and locs.value_at[found] == 0;
+					if constexpr( Exact ) {
+						if( DAW_UNLIKELY( not known ) ) {
+							DAW_UNLIKELY_BRANCH
+							error_at( r, name_event, ErrorReason::UnknownMember );
+						}
+					}
+					if( known ) {
+						locs.value_at[found] = r.position;
+						if( found == I ) {
+							return true;
+						}
+					}
+					skip_indexed_value( r );
+				}
+				return false;
+			}
+
+			/// When the next member at the frontier is spelled exactly as Member,
+			/// with only whitespace between its closing quote and the colon, move
+			/// to its value.  Anything else is left to scan_to_member
+			template<typename Member, typename State, typename Locations>
+			DAW_ATTRIB_INLINE bool at_expected_member( reader<State> &r,
+			                                           Locations &locs ) {
+				constexpr auto size = std::size( Member::name );
+				if( locs.closed ) {
+					return false;
+				}
+				auto name = r.position;
+				if( not locs.first ) {
+					auto const comma = r.peek( );
+					if( comma == nullptr or *comma != ',' ) {
+						return false;
+					}
+					++name;
+				}
+				if( name + 1U >= r.size ) {
+					return false;
+				}
+				auto const first = r[name];
+				auto const colon = r[name + 1U];
+				auto last = first + size + 2U;
+				if( colon < last or *first != '"' or first[size + 1U] != '"' or
+				    std::memcmp( first + 1, std::data( Member::name ), size ) != 0 ) {
+					return false;
+				}
+				for( ; last < colon; ++last ) {
+					if( static_cast<unsigned char>( *last ) - 1U >= 0x20U ) {
+						return false;
+					}
+				}
+				locs.first = false;
+				r.position = static_cast<index_type>( name + 2U );
+				return true;
 			}
 
 			// A missing member is reported at the opening brace of its class
-			template<std::size_t I, typename Members, typename Slots, typename State>
-			inline void finish_class_slot( Slots &slots, reader<State> const &r,
-			                               char const *opening ) {
+			template<typename Members, std::size_t I, typename State,
+			         typename Locations, std::size_t... Is>
+			DAW_ATTRIB_INLINE
+			  json_result_t<without_name<typename Members::template member<I>>>
+			  consume_class_member( reader<State> &r, Locations &locs,
+			                        std::index_sequence<Is...> indices ) {
 				using member = typename Members::template member<I>;
 				using value = without_name<member>;
-				if( slots.template built<I>( ) ) {
-					return;
+				if( auto const at = locs.value_at[I]; at != 0 ) {
+					if( locs.reader_at_frontier ) {
+						locs.frontier = r.position;
+						locs.reader_at_frontier = false;
+					}
+					r.position = at;
+					return consume_value<value>( r );
+				}
+				if( not locs.reader_at_frontier ) {
+					r.position = locs.frontier;
+					locs.reader_at_frontier = true;
+				}
+				if( DAW_LIKELY( at_expected_member<member>( r, locs ) ) ) {
+					locs.value_at[I] = r.position;
+					return consume_value<value>( r );
+				}
+				if( DAW_LIKELY( scan_to_member<Members, I, Locations::exact>(
+				      r, locs, indices ) ) ) {
+					return consume_value<value>( r );
 				}
 				if constexpr( is_json_nullable_v<value> ) {
 					auto state = State( );
-					slots.template emplace<I>( parse_value_null<value, true>( state ) );
+					return parse_value_null<value, true>( state );
 				} else {
 					missing_member_at( r,
-					                   opening,
+					                   locs.opening,
 					                   daw::string_view( std::data( member::name ),
 					                                     std::size( member::name ) ) );
 				}
+			}
+
+			/// Check the members after the last one read and move past the }
+			template<typename Members, typename State, typename Locations,
+			         std::size_t... Is>
+			inline void finish_class( reader<State> &r, Locations &locs,
+			                          std::index_sequence<Is...> indices ) {
+				if( not locs.reader_at_frontier ) {
+					r.position = locs.frontier;
+				}
+				(void)scan_to_member<Members, Members::size, Locations::exact>(
+				  r, locs, indices );
 			}
 
 			template<typename Member, typename State, std::size_t... Is>
@@ -788,64 +915,28 @@ namespace daw::json {
 				using members = class_members<Member>;
 				using T = json_result_t<Member>;
 				using Constructor = json_constructor_t<Member>;
-				using slots_t = decltype( make_class_slots<members>( indices ) );
-				DAW_CPP23_STATIC_LOCAL constexpr bool exact =
-				  all_json_members_must_exist_v<T, State>;
 				auto const opening = r.peek( );
 				if( DAW_UNLIKELY( opening == nullptr or *opening != '{' ) ) {
 					DAW_UNLIKELY_BRANCH
 					error_at( r, opening, ErrorReason::InvalidClassStart );
 				}
 				r.pop( );
-				auto slots = slots_t{ };
-				auto expected = std::size_t{ 0 };
-				if( auto first_event = r.peek( );
-				    first_event != nullptr and *first_event == '}' ) {
-					r.pop( );
-				} else {
-					for( ;; ) {
-						auto const name_event = r.peek( );
-						auto const name = consume_member_name( r );
-						auto const found =
-						  find_forward_member<members>( name, expected, indices );
-						if constexpr( exact ) {
-							if( DAW_UNLIKELY( found == members::size or
-							                  slots.built( found ) ) ) {
-								DAW_UNLIKELY_BRANCH
-								error_at( r, name_event, ErrorReason::UnknownMember );
-							}
-						}
-						if( found < members::size ) {
-							consume_class_member<members>( found, r, slots, indices );
-							expected = found + 1;
-						} else {
-							skip_indexed_value( r );
-						}
-						auto event = r.peek( );
-						if( event != nullptr and *event == '}' ) {
-							r.pop( );
-							break;
-						}
-						if( DAW_UNLIKELY( event == nullptr or *event != ',' ) ) {
-							DAW_UNLIKELY_BRANCH
-							error_at( r, event, ErrorReason::InvalidEndOfValue );
-						}
-						r.pop( );
-						event = r.peek( );
-						if( event != nullptr and *event == '}' ) {
-							r.pop( );
-							break;
-						}
-					}
-				}
-				( finish_class_slot<Is, members>( slots, r, opening ), ... );
-				auto state =
-				  r.state_at( opening, r.peek( ) == nullptr ? r.end( ) : r.peek( ) );
+				auto locs =
+				  class_locations<members::size,
+				                  all_json_members_must_exist_v<T, State>>{ opening };
 				if constexpr( should_construct_explicitly_v<Constructor, T, State> ) {
-					return T{ slots.template take<Is>( )... };
+					auto result =
+					  T{ consume_class_member<members, Is>( r, locs, indices )... };
+					finish_class<members>( r, locs, indices );
+					return result;
 				} else {
-					return construct_value_tp<T, Constructor>(
-					  state, fwd_pack{ slots.template take<Is>( )... } );
+					auto state = r.state_at( opening, r.end( ) );
+					auto result = construct_value_tp<T, Constructor>(
+					  state,
+					  fwd_pack{
+					    consume_class_member<members, Is>( r, locs, indices )... } );
+					finish_class<members>( r, locs, indices );
+					return result;
 				}
 			}
 

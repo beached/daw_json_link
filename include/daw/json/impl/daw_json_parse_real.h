@@ -61,7 +61,7 @@ namespace daw::json {
 			  ( is_lemire_capable_v<Real> or has_precise_fallback_v<Real> );
 
 			template<typename Result, typename Signed>
-			[[nodiscard]] constexpr Result parse_truncated_lemire(
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr Result parse_truncated_lemire(
 			  bool negative, Signed exponent, std::uint64_t significant_digits,
 			  bool discarded_nonzero, daw::not_null<char const *> number_first,
 			  daw::not_null<char const *> number_last ) {
@@ -287,7 +287,17 @@ namespace daw::json {
 
 				accumulator_t mantissa = accumulator_t( );
 				iterator_t const whole_first = first;
-				first = sp::parse_digit_run<skip_end_check>( first, last, mantissa );
+				// Whole parts are usually short, often a single 0, so the eight digit
+				// blocks are only used for the fraction
+				while( skip_end_check or first < last ) {
+					auto const digit = parse_digit( *first );
+					if( digit >= 10U ) {
+						break;
+					}
+					mantissa = mantissa * static_cast<accumulator_t>( 10U ) +
+					           static_cast<accumulator_t>( digit );
+					++first;
+				}
 				iterator_t const whole_last = first;
 				iterator_t fract_first = first;
 				if( ( skip_end_check or first < last ) and *first == '.' ) {

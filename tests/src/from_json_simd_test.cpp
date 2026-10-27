@@ -313,8 +313,8 @@ void reject_at( std::string const &text, std::size_t offset ) {
 int main( ) {
 	using daw::json::experimental::from_json_simd;
 	check( from_json_simd<scan_ordered_point>( "[9,7]" ).y == 7 );
-	// Members are parsed as they are encountered, then passed to the result
-	// constructor in mapping order.
+	// Members are parsed in mapping order, as scalar does; one found before
+	// its turn is skipped and read when its turn comes.
 	constexpr char constructed_doc[] =
 	  R"({"second":2,"unknown":{"a":[1,2]},"first":1})";
 	scan_construction_log.clear( );
@@ -324,7 +324,7 @@ int main( ) {
 	scan_construction_log.clear( );
 	auto const constructed = from_json_simd<scan_constructed>( constructed_doc );
 	check( constructed.sum( ) == constructed_scalar.sum( ) );
-	check( ( scan_construction_log == std::vector<int>{ 2, 1, 3 } ) );
+	check( ( scan_construction_log == std::vector<int>{ 1, 2, 3 } ) );
 	auto const pinned =
 	  from_json_simd<scan_pinned_outer>( R"({"tail":9,"child":{"value":7}})" );
 	check( pinned.child.value == 7 and pinned.tail == 9 );

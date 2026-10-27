@@ -35,7 +35,7 @@ static_assert( DAW_NUM_RUNS > 0 );
 namespace {
 	using namespace daw::json;
 	using scalar_iterator = json_array_iterator<double>;
-	using simd_iterator = json_simd_block_iterator<double>;
+	using simd_iterator = experimental::json_simd_block_iterator<double>;
 
 	[[nodiscard]] std::string make_double_array( std::size_t element_count ) {
 		auto result = std::string{ "[" };
