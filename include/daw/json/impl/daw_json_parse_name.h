@@ -68,6 +68,171 @@ namespace daw::json {
 				}
 			} // namespace name::name_parser
 
+			namespace name {
+				/// @brief Receives a decoded member name in a fixed buffer.  A name
+				/// longer than MaxSize cannot be any of the mapped names, so the
+				/// decode stops once the buffer is full
+				template<std::size_t MaxSize>
+				struct name_buffer {
+					char data[MaxSize > 0 ? MaxSize : 1]{ };
+					std::size_t size = 0;
+
+					[[nodiscard]] constexpr bool operator( )( char c ) {
+						if( size == MaxSize ) {
+							return false;
+						}
+						data[size] = c;
+						++size;
+						return true;
+					}
+
+					[[nodiscard]] constexpr daw::string_view view( ) const {
+						return daw::string_view( data, size );
+					}
+				};
+
+				/// @brief Receives a decoded member name in a string, with no limit
+				template<typename String>
+				struct name_string_appender {
+					String *str;
+
+					[[nodiscard]] constexpr bool operator( )( char c ) const {
+						str->push_back( c );
+						return true;
+					}
+				};
+
+				template<typename Appender>
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
+				append_utf8( UInt32 cp, Appender &app ) {
+					if( cp < 0x80U ) {
+						return app( u32toC( cp ) );
+					}
+					if( cp < 0x800U ) {
+						return app( u32toC( ( cp >> 6U ) | 0b1100'0000U ) ) and
+						       app( u32toC( ( cp & 0b0011'1111U ) | 0b1000'0000U ) );
+					}
+					if( cp < 0x10000U ) {
+						return app( u32toC( ( cp >> 12U ) | 0b1110'0000U ) ) and
+						       app( u32toC( ( ( cp >> 6U ) & 0b0011'1111U ) |
+						                    0b1000'0000U ) ) and
+						       app( u32toC( ( cp & 0b0011'1111U ) | 0b1000'0000U ) );
+					}
+					return app( u32toC( ( cp >> 18U ) | 0b1111'0000U ) ) and
+					       app( u32toC( ( ( cp >> 12U ) & 0b0011'1111U ) |
+					                    0b1000'0000U ) ) and
+					       app( u32toC( ( ( cp >> 6U ) & 0b0011'1111U ) |
+					                    0b1000'0000U ) ) and
+					       app( u32toC( ( cp & 0b0011'1111U ) | 0b1000'0000U ) );
+				}
+
+				/// @brief The 4 hex digits of the UTF-16 escape at first
+				template<typename ParseState>
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32
+				parse_utf16_unit( char const *first ) {
+					auto pos = daw::not_null<char const *>( daw::never_null, first + 2 );
+					UInt32 cp =
+					  to_uint32(
+					    byte_from_nibbles<ParseState::is_unchecked_input>( pos ) )
+					  << 8U;
+					cp |= byte_from_nibbles<ParseState::is_unchecked_input>( pos );
+					return cp;
+				}
+
+				/// @brief The char a two char escape stands for, or 0 when c does not
+				/// follow a backslash in JSON.  UTF-16 escapes are decoded separately
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr char escaped_char( char c ) {
+					switch( c ) {
+					case '"':
+					case '\\':
+					case '/':
+						return c;
+					case 'b':
+						return '\b';
+					case 'f':
+						return '\f';
+					case 'n':
+						return '\n';
+					case 'r':
+						return '\r';
+					case 't':
+						return '\t';
+					default:
+						return 0;
+					}
+				}
+
+				/// @brief Decode the escapes in the name between its quotes, raw, and
+				/// give the result to app one char at a time.  Returns false when app
+				/// stops taking chars.  Invalid escapes and unpaired surrogates are
+				/// errors.  With unchecked input, an escape that runs past the end of
+				/// the name stops the decode instead of reading past it
+				template<typename ParseState, typename Appender>
+				[[nodiscard]] constexpr bool
+				decode_name( daw::string_view raw, Appender &app,
+				             ParseState const &parse_state ) {
+					(void)parse_state;
+					char const *first = std::data( raw );
+					char const *const last = daw::data_end( raw );
+					while( first < last ) {
+						if( *first != '\\' ) {
+							if( not app( *first ) ) {
+								return false;
+							}
+							++first;
+							continue;
+						}
+						daw_json_assert_weak(
+						  last - first >= 2, ErrorReason::InvalidString, parse_state );
+						if( last - first < 2 ) {
+							return false;
+						}
+						if( first[1] != 'u' ) {
+							char const c = escaped_char( first[1] );
+							daw_json_assert_weak(
+							  c != 0, ErrorReason::InvalidString, parse_state );
+							if( not app( c ) ) {
+								return false;
+							}
+							first += 2;
+							continue;
+						}
+						daw_json_assert_weak(
+						  last - first >= 6, ErrorReason::InvalidUTFEscape, parse_state );
+						if( last - first < 6 ) {
+							return false;
+						}
+						UInt32 cp = parse_utf16_unit<ParseState>( first );
+						first += 6;
+						daw_json_assert_weak( cp < 0xDC00U or cp > 0xDFFFU,
+						                      ErrorReason::InvalidUTFEscape,
+						                      parse_state ); // Unpaired low surrogate
+						if( 0xD800U <= cp and cp <= 0xDBFFU ) {
+							// A high surrogate must be followed by a low one
+							daw_json_assert_weak( last - first >= 6 and first[0] == '\\' and
+							                        first[1] == 'u',
+							                      ErrorReason::InvalidUTFEscape,
+							                      parse_state );
+							if( last - first < 6 ) {
+								return false;
+							}
+							UInt32 const trailing = parse_utf16_unit<ParseState>( first );
+							first += 6;
+							daw_json_assert_weak( 0xDC00U <= trailing and
+							                        trailing <= 0xDFFFU,
+							                      ErrorReason::InvalidUTFEscape,
+							                      parse_state );
+							cp = 0x10000U + ( ( cp - 0xD800U ) * 0x400U ) +
+							     ( trailing - 0xDC00U );
+						}
+						if( not append_utf8( cp, app ) ) {
+							return false;
+						}
+					}
+					return true;
+				}
+			} // namespace name
+
 			struct pop_json_path_result {
 				daw::string_view current{ };
 				char found_char = 0;

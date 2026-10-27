@@ -31,13 +31,14 @@
 #include <cstddef>
 #include <daw/stdinc/tuple_traits.h>
 #include <optional>
+#include <string>
 #include <string_view>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		/// @brief A name/value pair of string_view/json_value
 		/// @tparam ParseState see IteratorRange
-		template<json_options_t PolicyFlags = json_details::default_policy_flag,
+		template<json_options_t PolicyFlags = json_details::json_value_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_pair {
 			using ParseState =
@@ -45,6 +46,23 @@ namespace daw::json {
 
 			std::optional<std::string_view> name;
 			basic_json_value<PolicyFlags, Allocator> value;
+
+			/// @brief The name with its escapes decoded, or nullopt when the value
+			/// is not a class member.  name is as written in the JSON document.
+			/// Invalid escapes are errors
+			[[nodiscard]] std::optional<std::string> decoded_name( ) const {
+				if( not name ) {
+					return std::nullopt;
+				}
+				auto const raw = daw::string_view( std::data( *name ), std::size( *name ) );
+				auto result = std::string( );
+				result.reserve( std::size( raw ) );
+				auto app =
+				  json_details::name::name_string_appender<std::string>{ &result };
+				(void)json_details::name::decode_name(
+				  raw, app, ParseState( std::data( raw ), daw::data_end( raw ) ) );
+				return result;
+			}
 		};
 
 		template<std::size_t Idx, json_options_t PolicyFlags, typename Allocator>
@@ -113,7 +131,7 @@ namespace daw::json {
 		/// @brief Iterator for iterating over arbitrary JSON members and array
 		/// elements
 		/// @tparam ParseState see IteratorRange
-		template<json_options_t PolicyFlags = json_details::default_policy_flag,
+		template<json_options_t PolicyFlags = json_details::json_value_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_value_iterator {
 			using key_type = std::string_view;
@@ -321,7 +339,7 @@ namespace daw::json {
 
 		template<typename Allocator>
 		basic_json_value_iterator( daw::string_view, Allocator const & )
-		  -> basic_json_value_iterator<daw::json::json_details::default_policy_flag,
+		  -> basic_json_value_iterator<daw::json::json_details::json_value_policy_flag,
 		                               Allocator>;
 
 		template<json_options_t PolicyFlags, typename Allocator>
@@ -331,7 +349,7 @@ namespace daw::json {
 
 		/// @brief a rudimentary range object for holding
 		/// basic_json_value_iterator
-		template<json_options_t PolicyFlags = json_details::default_policy_flag,
+		template<json_options_t PolicyFlags = json_details::json_value_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_value_iterator_range {
 			using iterator = basic_json_value_iterator<PolicyFlags, Allocator>;

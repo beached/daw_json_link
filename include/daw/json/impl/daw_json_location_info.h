@@ -77,6 +77,19 @@ namespace daw::json {
 			/// class to be parsed: the tag of a tagged variant, or the size of a
 			/// sized array.  Also when nullable.  Members given by their position
 			/// in an ordered class are not included
+			/// @brief Is there a char in name that JSON has to escape, so name can
+			/// never be in the input as written
+			[[nodiscard]] DAW_CONSTEVAL bool
+			name_needs_escaping( daw::string_view name ) {
+				for( char const c : name ) {
+					if( c == '"' or c == '\\' or
+					    static_cast<unsigned char>( c ) < 0x20U ) {
+						return true;
+					}
+				}
+				return false;
+			}
+
 			template<typename JsonMember, typename = void>
 			struct class_dependent_member {
 				static constexpr bool value = false;
@@ -155,6 +168,24 @@ namespace daw::json {
 				return result;
 			}
 
+			/// @brief The size of the longest of the mapped and dependent names.  A
+			/// decoded member name longer than this cannot be any of them
+			template<typename... JsonMembers>
+			[[nodiscard]] DAW_CONSTEVAL std::size_t longest_member_name( ) {
+				std::size_t result = 0;
+				auto const add = [&]( daw::string_view name ) {
+					if( std::size( name ) > result ) {
+						result = std::size( name );
+					}
+				};
+				( add( daw::string_view( JsonMembers::name ) ), ... );
+				auto const dependents = make_class_dependent_list<JsonMembers...>( );
+				for( std::size_t n = 0; n < dependents.count; ++n ) {
+					add( dependents.names[n] );
+				}
+				return result;
+			}
+
 			/// @brief The names of a class's mapped members and of the members they
 			/// depend on.  They are known when the class is mapped, so they are not
 			/// stored with the locations
@@ -166,6 +197,9 @@ namespace daw::json {
 				static constexpr auto dependent_list =
 				  make_class_dependent_list<JsonMembers...>( );
 				static constexpr std::size_t dependent_count = dependent_list.count;
+
+				static constexpr std::size_t max_name_size =
+				  longest_member_name<JsonMembers...>( );
 
 				/// The slot of the member that JsonMember depends on
 				template<typename JsonMember>
@@ -308,6 +342,23 @@ namespace daw::json {
 				return true;
 			}
 
+			/// @brief Does a mapped name, or the name of a member one depends on,
+			/// have a char that JSON has to escape
+			template<typename... JsonMembers>
+			[[nodiscard]] DAW_CONSTEVAL bool member_names_need_escaping( ) {
+				if( ( name_needs_escaping( daw::string_view( JsonMembers::name ) ) or
+				      ... ) ) {
+					return true;
+				}
+				auto const dependents = make_class_dependent_list<JsonMembers...>( );
+				for( std::size_t n = 0; n < dependents.count; ++n ) {
+					if( name_needs_escaping( dependents.names[n] ) ) {
+						return true;
+					}
+				}
+				return false;
+			}
+
 			// Should never be called outside a consteval context
 			template<typename ParseState, typename... JsonMembers>
 			DAW_ATTRIB_FLATINLINE static DAW_JSON_MAKE_LOC_INFO_CONSTEVAL auto
@@ -316,6 +367,12 @@ namespace daw::json {
 				               "Each member of a parsed class needs a different name.  "
 				               "Use a Constructor to make more than one value from a "
 				               "member" );
+				static_assert(
+				  ParseState::allow_escaped_names or
+				    not member_names_need_escaping<JsonMembers...>( ),
+				  "A member name has a \", \\ or control char, which JSON input must "
+				  "escape.  Names are only decoded before they are compared when "
+				  "parsing with options::AllowEscapedNames::yes" );
 				return locations_info_t<sizeof...( JsonMembers ),
 				                        typename ParseState::iterator,
 				                        class_member_names<JsonMembers...>>{ };
@@ -334,13 +391,18 @@ namespace daw::json {
 
 			/// @brief Does the input start with the quoted name of member pos.  A
 			/// name ending in a backslash is left to parse_name as the quote after
-			/// it would be escaped
+			/// it would be escaped.  When names are decoded, a name with a char
+			/// that has to be escaped is left to parse_name too
 			template<typename Names, std::size_t pos, typename ParseState>
 			[[nodiscard]] DAW_ATTRIB_INLINE static constexpr bool
 			match_expected_name( ParseState const &parse_state ) {
 				constexpr daw::string_view expected = Names::names[pos];
 				constexpr std::size_t sz = std::size( expected );
-				if constexpr( sz > 0 and expected[sz - 1U] == '\\' ) {
+				constexpr bool never_as_written =
+				  ParseState::allow_escaped_names
+				    ? name_needs_escaping( expected )
+				    : ( sz > 0 and expected[sz - 1U] == '\\' );
+				if constexpr( never_as_written ) {
 					(void)parse_state;
 					return false;
 				} else {
@@ -350,6 +412,42 @@ namespace daw::json {
 					       std::char_traits<char>::compare(
 					         parse_state.first + 1, std::data( expected ), sz ) == 0;
 				}
+			}
+
+			/// @brief The mapped member whose name has escapes in the input.  The
+			/// mapped names are decoded text, so the name is decoded before it is
+			/// compared, into a buffer the size of the longest mapped name
+			template<std::size_t start_pos, typename Locations, typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_NOINLINE constexpr std::size_t
+			find_escaped_name( Locations &locations, daw::string_view raw,
+			                   ParseState const &parse_state ) {
+				using names_t = typename Locations::names_type;
+				auto buffer = name::name_buffer<names_t::max_name_size>{ };
+				if( not name::decode_name( raw, buffer, parse_state ) ) {
+					// Longer than any mapped name
+					return std::size( locations );
+				}
+				locations.record_dependent( buffer.view( ), parse_state.first );
+				return locations.template find_name<start_pos>( buffer.view( ) );
+			}
+
+			/// @brief The position of the mapped member with name, or the member
+			/// count when there is none.  When name is a member that others depend
+			/// on, where its value starts is kept
+			template<std::size_t start_pos, typename Locations, typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr std::size_t
+			find_and_record_name( Locations &locations, daw::string_view name,
+			                      ParseState const &parse_state ) {
+				if constexpr( ParseState::allow_escaped_names ) {
+					for( char const c : name ) {
+						if( c == '\\' ) {
+							return find_escaped_name<start_pos>(
+							  locations, name, parse_state );
+						}
+					}
+				}
+				locations.record_dependent( name, parse_state.first );
+				return locations.template find_name<start_pos>( name );
 			}
 
 			template<std::size_t pos, AllMembersMustExist must_exist,
@@ -389,12 +487,11 @@ namespace daw::json {
 						locations.template record_member_dependent<pos>(
 						  parse_state.first );
 					} else {
-						// TODO: fully unescape name
 						// parse_name checks if we have more and are quotes
 						auto const name = parse_name( parse_state );
 						name_pos =
-						  locations.template find_name<( from_start ? 0 : pos )>( name );
-						locations.record_dependent( name, parse_state.first );
+						  find_and_record_name<( from_start ? 0 : pos )>(
+						    locations, name, parse_state );
 					}
 					if constexpr( must_exist == AllMembersMustExist::yes ) {
 						daw_json_assert_weak( name_pos < std::size( locations ),
@@ -472,8 +569,8 @@ namespace daw::json {
 				  locations.dependent_first[dependent_pos] == nullptr,
 				  ( not parse_state.empty( ) and parse_state.front( ) != '}' ) ) ) {
 					auto const name = parse_name( parse_state );
-					locations.record_dependent( name, parse_state.first );
-					auto const name_pos = locations.template find_name<0>( name );
+					auto const name_pos =
+					  find_and_record_name<0>( locations, name, parse_state );
 					if constexpr( must_exist == AllMembersMustExist::yes ) {
 						daw_json_assert_weak( name_pos < std::size( locations ),
 						                      ErrorReason::UnknownMember,

@@ -1286,6 +1286,12 @@ add_test( NAME issue_496_test COMMAND issue_496_test WORKING_DIRECTORY "${CMAKE_
 add_dependencies( ci_tests issue_496_test )
 add_dependencies( full issue_496_test )
 
+add_executable( decode_member_name_test src/decode_member_name_test.cpp )
+target_link_libraries( decode_member_name_test PRIVATE json_test )
+add_test( NAME decode_member_name_test COMMAND decode_member_name_test )
+add_dependencies( ci_tests decode_member_name_test )
+add_dependencies( full decode_member_name_test )
+
 add_executable( deduced_string_escaping_test src/deduced_string_escaping_test.cpp )
 target_link_libraries( deduced_string_escaping_test PRIVATE json_test )
 add_test( NAME deduced_string_escaping_test COMMAND deduced_string_escaping_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
