@@ -915,6 +915,15 @@ namespace daw::json {
 				using members = class_members<Member>;
 				using T = json_result_t<Member>;
 				using Constructor = json_constructor_t<Member>;
+				static_assert(
+				  State::allow_escaped_names or
+				    not( name_needs_escaping( daw::string_view(
+				           std::data( members::template member<Is>::name ),
+				           std::size( members::template member<Is>::name ) ) ) or
+				         ... ),
+				  "A member name has a \", \\ or control char, which JSON input must "
+				  "escape.  Names are only decoded before they are compared when "
+				  "parsing with options::AllowEscapedNames::yes" );
 				auto const opening = r.peek( );
 				if( DAW_UNLIKELY( opening == nullptr or *opening != '{' ) ) {
 					DAW_UNLIKELY_BRANCH

@@ -29,7 +29,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<json_options_t PolicyFlags = default_policy_flag,
+			template<json_options_t PolicyFlags = json_value_policy_flag,
 			         typename Allocator = NoAllocator>
 			class basic_stateful_json_value_state {
 				using ParseState =
@@ -63,7 +63,7 @@ namespace daw::json {
 		 * costs once
 		 * @tparam ParseState see IteratorRange
 		 */
-		template<json_options_t PolicyFlags = json_details::default_policy_flag,
+		template<json_options_t PolicyFlags = json_details::json_value_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		class basic_stateful_json_value {
 			using ParseState =

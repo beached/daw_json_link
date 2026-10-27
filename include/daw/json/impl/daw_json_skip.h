@@ -198,12 +198,11 @@ namespace daw::json {
 					}
 				}
 
-				if constexpr( not ParseState::is_unchecked_input ) {
-					// A number has digits after its sign
-					daw_json_ensure( first < last and parse_policy_details::is_number( *first ),
-					                 ErrorReason::InvalidNumber,
-					                 parse_state );
-				}
+				// A number has digits after its sign
+				daw_json_assert_weak( first < last and
+				                        parse_policy_details::is_number( *first ),
+				                      ErrorReason::InvalidNumber,
+				                      parse_state );
 				if( DAW_LIKELY( first < last ) ) {
 					DAW_LIKELY_BRANCH
 					first = skip_digits<ParseState::is_unchecked_input>( first, last );
@@ -216,13 +215,11 @@ namespace daw::json {
 				    ( *first == '.' ) ) {
 					decimal = first;
 					++first;
-					if constexpr( not ParseState::is_unchecked_input ) {
-						// and after its decimal point
-						daw_json_ensure(
-						  first < last and parse_policy_details::is_number( *first ),
-						  ErrorReason::InvalidNumber,
-						  parse_state );
-					}
+					// and after its decimal point
+					daw_json_assert_weak( first < last and
+					                        parse_policy_details::is_number( *first ),
+					                      ErrorReason::InvalidNumber,
+					                      parse_state );
 					if( DAW_LIKELY( first < last ) ) {
 						DAW_LIKELY_BRANCH
 						first =

@@ -130,11 +130,9 @@ namespace daw::json {
 							--primary_depth;
 							if( primary_depth == 0 ) {
 								auto const end = ptr_first + lane + 1;
-								if constexpr( not ParseState::is_unchecked_input ) {
-									daw_json_ensure( secondary_depth == 0,
-									                 ErrorReason::InvalidBracketing,
-									                 parse_state );
-								}
+								daw_json_assert_weak( secondary_depth == 0,
+								                      ErrorReason::InvalidBracketing,
+								                      parse_state );
 								result.last = end;
 								result.counter = count;
 								parse_state.first = end;
