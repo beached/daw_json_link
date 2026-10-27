@@ -10,6 +10,67 @@
 #include <variant>
 #include <vector>
 #if defined( DAW_JSON_HAS_FROM_JSON_SIMD )
+void check( bool v ) {
+	if( !v ) {
+		std::abort( );
+	}
+}
+struct scan_fb_point {
+	int x;
+	int y;
+};
+using scan_fb_variant_t = std::variant<int, std::string, scan_fb_point>;
+struct scan_fb_switcher {
+	constexpr std::size_t operator( )( int type ) const {
+		return static_cast<std::size_t>( type );
+	}
+};
+struct scan_fb_sized_vector {
+	std::vector<int> operator( )( ) const {
+		return { };
+	}
+	template<typename Iterator>
+	std::vector<int> operator( )( Iterator first, Iterator last,
+	                              std::size_t size ) const {
+		auto result = std::vector<int>( first, last );
+		check( result.size( ) == size );
+		return result;
+	}
+};
+// The tag is read from another member, so the class goes to the scalar parser
+struct scan_fb_tagged {
+	scan_fb_variant_t value;
+	std::vector<int> values;
+};
+struct scan_fb_v1 {
+	std::string file;
+};
+struct scan_fb_v2 {
+	int n;
+};
+using scan_fb_config = std::variant<scan_fb_v1, scan_fb_v2>;
+struct scan_fb_version_switcher {
+	constexpr std::size_t operator( )( unsigned n ) const {
+		return static_cast<std::size_t>( n - 1U );
+	}
+};
+struct scan_fb_empty {};
+struct scan_fb_any_string {
+	std::string operator( )( std::string_view v ) const {
+		return std::string( v );
+	}
+	std::string operator( )( ) const {
+		return { };
+	}
+};
+// Walked from the index, with the members above parsed by the scalar parser
+struct scan_fb_holder {
+	int id;
+	scan_fb_tagged tagged;
+	std::vector<scan_fb_config> configs;
+	std::vector<scan_fb_empty> empty;
+	std::string any;
+};
 struct scan_string_length {
 	std::size_t operator( )( std::string_view v ) const {
 		return v.size( );
@@ -285,12 +346,50 @@ namespace daw::json {
 		  json_member_list<json_string_insitu<name>,
 		                   json_array<tags, json_string_insitu_no_name<>>>;
 	};
+	template<>
+	struct json_data_contract<scan_fb_point> {
+		static constexpr char x[] = "x", y[] = "y";
+		using type = json_member_list<json_number<x, int>, json_number<y, int>>;
+	};
+	template<>
+	struct json_data_contract<scan_fb_tagged> {
+		static constexpr char value[] = "value", type_mem[] = "type",
+		                      values[] = "values", size[] = "size";
+		using type = json_member_list<
+		  json_tagged_variant<value, scan_fb_variant_t, json_number<type_mem, int>,
+		                      scan_fb_switcher>,
+		  json_sized_array<values, int, json_number<size, std::size_t>,
+		                   std::vector<int>, scan_fb_sized_vector>>;
+	};
+	template<>
+	struct json_data_contract<scan_fb_v1> {
+		static constexpr char file[] = "file";
+		using type = json_member_list<json_string<file>>;
+	};
+	template<>
+	struct json_data_contract<scan_fb_v2> {
+		static constexpr char n[] = "n";
+		using type = json_member_list<json_number<n, int>>;
+	};
+	template<>
+	struct json_data_contract<scan_fb_config> {
+		static constexpr char version[] = "version";
+		using type = json_type_alias<json_intrusive_variant_no_name<
+		  scan_fb_config, json_number<version, unsigned>,
+		  scan_fb_version_switcher>>;
+	};
+	template<>
+	struct json_data_contract<scan_fb_holder> {
+		static constexpr char id[] = "id", tagged[] = "tagged",
+		                      configs[] = "configs", empty[] = "empty",
+		                      any[] = "any";
+		using type = json_member_list<
+		  json_number<id, int>, json_class<tagged, scan_fb_tagged>,
+		  json_array<configs, scan_fb_config>, json_array<empty, scan_fb_empty>,
+		  json_custom<any, std::string, scan_fb_any_string, scan_fb_any_string,
+		              options::json_custom_opt( options::JsonCustomTypes::Any )>>;
+	};
 } // namespace daw::json
-void check( bool v ) {
-	if( !v ) {
-		std::abort( );
-	}
-}
 template<class T>
 void reject( std::string const &text ) {
 	bool caught = false;
@@ -688,6 +787,63 @@ int main( ) {
 		} catch( daw::json::json_exception const & ) { caught = true; }
 		check( caught );
 	}
+
+	// Values that are not walked from the index are given to the scalar parser
+	// within their bounds, while the values around them are walked
+	static_assert( sp::forward_supported<json_deduced_type<scan_fb_holder>>( ) );
+	static_assert( not sp::forward_supported<json_deduced_type<scan_fb_tagged>>( ) );
+	static_assert( not sp::forward_supported<
+	               sp::aliased_member_t<json_deduced_type<scan_fb_config>>>( ) );
+	static_assert( not sp::forward_supported<json_deduced_type<scan_fb_empty>>( ) );
+	for( std::string const fb_doc :
+	     { R"({"id":1,"tagged":{"type":2,"value":{"x":3,"y":4},"size":2,"values":[5,6]},)"
+	       R"("configs":[{"version":1,"file":"a"},{"n":7,"version":2}],)"
+	       R"("empty":[{},{ }],"any":{"a":[1,{"b":2}]}})",
+	       R"({"any" : [1, "]"] ,"empty":[],"configs":[],"id":2,)"
+	       R"("tagged":{"value":"s","values":[],"size":0,"type":1}})",
+	       R"({"id":3,"tagged":{"values":[8],"value":9,"type":0,"size":1},)"
+	       R"("configs":[{"file":"b\"c","version":1}],"empty":[{}],"any":"q"})" } ) {
+		auto const simd = from_json_simd<scan_fb_holder>( fb_doc );
+		auto const scalar = daw::json::from_json<scan_fb_holder>( fb_doc );
+		check( simd.id == scalar.id and simd.any == scalar.any );
+		check( simd.empty.size( ) == scalar.empty.size( ) );
+		check( simd.tagged.values == scalar.tagged.values );
+		check( simd.tagged.value.index( ) == scalar.tagged.value.index( ) );
+		if( auto const *p = std::get_if<scan_fb_point>( &simd.tagged.value ) ) {
+			auto const &q = std::get<scan_fb_point>( scalar.tagged.value );
+			check( p->x == q.x and p->y == q.y );
+		} else if( auto const *str = std::get_if<std::string>( &simd.tagged.value ) ) {
+			check( *str == std::get<std::string>( scalar.tagged.value ) );
+		} else {
+			check( std::get<int>( simd.tagged.value ) ==
+			       std::get<int>( scalar.tagged.value ) );
+		}
+		check( simd.configs.size( ) == scalar.configs.size( ) );
+		for( std::size_t n = 0; n < simd.configs.size( ); ++n ) {
+			check( simd.configs[n].index( ) == scalar.configs[n].index( ) );
+			if( simd.configs[n].index( ) == 0 ) {
+				check( std::get<0>( simd.configs[n] ).file ==
+				       std::get<0>( scalar.configs[n] ).file );
+			} else {
+				check( std::get<1>( simd.configs[n] ).n ==
+				       std::get<1>( scalar.configs[n] ).n );
+			}
+		}
+	}
+	check( from_json_simd<scan_fb_holder>(
+	         R"({"id":1,"tagged":{"type":0,"value":1,"size":0,"values":[]},)"
+	         R"("configs":[],"empty":[],"any":{"a":[1,2]}})" )
+	         .any == R"({"a":[1,2]})" );
+	// The scalar parser reports errors inside its bounds
+	reject<scan_fb_holder>(
+	  R"({"id":1,"tagged":{"type":0,"value":"x","size":0,"values":[]},)"
+	  R"("configs":[],"empty":[],"any":1})" );
+	reject<scan_fb_holder>(
+	  R"({"id":1,"tagged":{"type":0,"value":1,"size":0,"values":[]},)"
+	  R"("configs":[{"version":1,"file":2}],"empty":[],"any":1})" );
+	reject<scan_fb_holder>(
+	  R"({"id":1,"tagged":{"type":0,"value":1,"size":0,"values":[]},)"
+	  R"("configs":[],"empty":[],"any":[1,})" );
 
 #if defined( DAW_JSON_HAS_REFLECTION )
 	// Reflected classes go forward with the member links from_json uses

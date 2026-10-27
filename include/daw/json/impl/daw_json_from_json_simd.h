@@ -548,54 +548,61 @@ namespace daw::json {
 			  std::is_object_v<T> and std::is_move_constructible_v<T> and
 			  std::is_destructible_v<T>;
 
+			/// Members that read another member of their class or tuple, so only
+			/// the scalar parser, given the whole class, can parse them
+			template<typename JsonMember, typename = void>
+			inline constexpr bool needs_parent_v =
+			  JsonMember::expected_type == JsonParseTypes::VariantTagged or
+			  JsonMember::expected_type == JsonParseTypes::SizedArray;
+
+			template<typename JsonMember>
+			inline constexpr bool needs_parent_v<
+			  JsonMember, std::void_t<json_nullable_member_type_t<JsonMember>>> =
+			  needs_parent_v<json_nullable_member_type_t<JsonMember>>;
+
+			template<typename Member>
+			inline constexpr bool walkable_member_v =
+			  is_storable_result_v<json_result_t<Member>> and
+			  not needs_parent_v<Member>;
+
 			template<typename Members, std::size_t... Is>
 			DAW_CONSTEVAL bool forward_class_members( std::index_sequence<Is...> ) {
 				return (
-				  ( is_storable_result_v<json_result_t<
-				      without_name<typename Members::template member<Is>>>> and
-				    forward_supported<
-				      without_name<typename Members::template member<Is>>>( ) ) and
+				  walkable_member_v<
+				    without_name<typename Members::template member<Is>>> and
 				  ... );
 			}
 
 			template<typename Members, std::size_t... Is>
 			DAW_CONSTEVAL bool forward_tuple_members( std::index_sequence<Is...> ) {
-				return (
-				  forward_supported<
-				    ordered_member_subtype_t<std::tuple_element_t<Is, Members>>>( ) and
-				  ... );
-			}
-
-			template<typename... Alternatives>
-			DAW_CONSTEVAL bool
-			forward_variant_alternatives( fwd_pack<Alternatives...> const * ) {
-				return ( forward_supported<Alternatives>( ) and ... );
+				return ( walkable_member_v<
+				           ordered_member_subtype_t<std::tuple_element_t<Is, Members>>> and
+				         ... );
 			}
 
 			template<typename JsonMember>
 			using variant_alternatives_t =
 			  typename JsonMember::json_elements::element_map_t;
 
+			/// Whether this value is walked from the index.  Its members and
+			/// elements are checked when they are consumed, so a value that is not
+			/// is parsed by the scalar parser within its bounds.  See consume_scalar
 			template<typename JsonMember>
 			DAW_CONSTEVAL bool forward_supported( ) {
 				constexpr auto type = JsonMember::expected_type;
 				if constexpr( not is_storable_result_v<json_result_t<JsonMember>> ) {
 					return false;
 				} else if constexpr( type == JsonParseTypes::Null ) {
-					return forward_supported<typename JsonMember::member_type>( );
+					return is_storable_result_v<
+					  json_result_t<typename JsonMember::member_type>>;
 				} else if constexpr( is_walkable_tuple<JsonMember>( ) ) {
 					using members = typename tuple_members<JsonMember>::types;
 					return forward_tuple_members<members>(
 					  std::make_index_sequence<std::tuple_size_v<members>>{ } );
-				} else if constexpr( type == JsonParseTypes::Variant ) {
-					return forward_variant_alternatives(
-					  static_cast<variant_alternatives_t<JsonMember> const *>(
-					    nullptr ) );
-				} else if constexpr( type == JsonParseTypes::KeyValueArray ) {
-					return forward_supported<typename JsonMember::json_class_t>( );
 				} else if constexpr( is_json_class_mapping_v<JsonMember> ) {
 					if constexpr( is_type_alias_class_v<JsonMember> ) {
-						return forward_supported<aliased_member_t<JsonMember>>( );
+						return is_storable_result_v<
+						  json_result_t<aliased_member_t<JsonMember>>>;
 					} else if constexpr( not is_walkable_class<JsonMember>( ) ) {
 						return false;
 					} else {
@@ -603,11 +610,10 @@ namespace daw::json {
 						return forward_class_members<members>(
 						  std::make_index_sequence<members::size>{ } );
 					}
-				} else if constexpr( type == JsonParseTypes::Array ) {
-					return forward_supported<typename JsonMember::json_element_t>( );
-				} else if constexpr( type == JsonParseTypes::KeyValue ) {
-					return forward_supported<typename JsonMember::json_key_t>( ) and
-					       forward_supported<typename JsonMember::json_element_t>( );
+				} else if constexpr( type == JsonParseTypes::Custom ) {
+					// A JsonCustomTypes::Any value may be a class or array
+					return JsonMember::custom_json_type !=
+					       options::JsonCustomTypes::Any;
 				} else {
 					return type == JsonParseTypes::Real or
 					       type == JsonParseTypes::Signed or
@@ -617,7 +623,10 @@ namespace daw::json {
 					       type == JsonParseTypes::StringEscaped or
 					       type == JsonParseTypes::StringInsitu or
 					       type == JsonParseTypes::Date or
-					       type == JsonParseTypes::Custom or
+					       type == JsonParseTypes::Array or
+					       type == JsonParseTypes::KeyValue or
+					       type == JsonParseTypes::KeyValueArray or
+					       type == JsonParseTypes::Variant or
 					       type == JsonParseTypes::Unknown;
 				}
 			}
@@ -652,8 +661,9 @@ namespace daw::json {
 			/// names, colons and commas are checked too, nesting at most
 			/// DAW_JSON_STRICT_SKIP_MAX_DEPTH deep.  A string, number or literal is
 			/// one entry and its spelling is not checked.  Both are loops, so deep
-			/// input cannot exhaust the stack
-			template<typename State>
+			/// input cannot exhaust the stack.  CheckGrammar is false when the value
+			/// is checked after, so only its depth is counted
+			template<bool CheckGrammar = true, typename State>
 			inline void skip_indexed_value( reader<State> &r ) {
 				auto event = r.peek( );
 				if( DAW_UNLIKELY( event == nullptr or *event == ',' or *event == ':' or
@@ -665,7 +675,7 @@ namespace daw::json {
 				if( *event != '{' and *event != '[' ) {
 					return;
 				}
-				if constexpr( not State::strict_skip_checks ) {
+				if constexpr( not( CheckGrammar and State::strict_skip_checks ) ) {
 					auto depth = std::size_t{ 1 };
 					while( depth != 0U ) {
 						event = r.peek( );
@@ -1287,6 +1297,22 @@ namespace daw::json {
 				  state, std::data( value ), std::size( value ) );
 			}
 
+			/// A value that is not walked from the index is given to the scalar
+			/// parser, bounded by the index to the value and the whitespace after
+			/// it.  The scalar parser checks it, so the skip only counts depth
+			template<typename Member, typename State>
+			inline json_result_t<Member> consume_scalar( reader<State> &r ) {
+				auto const first = r.peek( );
+				if( DAW_UNLIKELY( first == nullptr ) ) {
+					DAW_UNLIKELY_BRANCH
+					error_at( r, first, ErrorReason::UnexpectedEndOfData );
+				}
+				skip_indexed_value<false>( r );
+				auto state =
+				  r.state_at( first, r.peek( ) == nullptr ? r.end( ) : r.peek( ) );
+				return parse_value<Member, false, Member::expected_type>( state );
+			}
+
 #if defined( DAW_JSON_BUGFIX_MSVC_EVAL_ORDER_002 )
 			template<typename Members, typename Slots, typename State,
 			         std::size_t... Is>
@@ -1480,7 +1506,9 @@ namespace daw::json {
 			template<typename JsonMember, typename ParseState>
 			inline json_result_t<JsonMember> consume_value( reader<ParseState> &r ) {
 				constexpr auto type = JsonMember::expected_type;
-				if constexpr( type == JsonParseTypes::Null ) {
+				if constexpr( not forward_supported<JsonMember>( ) ) {
+					return consume_scalar<JsonMember>( r );
+				} else if constexpr( type == JsonParseTypes::Null ) {
 					auto const first = r.peek( );
 					if( DAW_UNLIKELY( first == nullptr ) ) {
 						DAW_UNLIKELY_BRANCH
