@@ -15,7 +15,7 @@
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_bit_cast.h>
-#include <daw/daw_not_null.h>
+#include <daw/daw_ensure.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -237,8 +237,8 @@ namespace daw::json {
 				}
 
 				[[nodiscard]] constexpr decimal_sequence
-				parse_json_decimal( daw::not_null<char const *> first,
-				                    daw::not_null<char const *> const last ) {
+				parse_json_decimal( char const *first, char const *const last ) {
+					daw_dbg_ensure( first != nullptr and last != nullptr );
 					decimal_sequence result{ };
 					if( *first == '-' ) {
 						++first;
@@ -273,7 +273,7 @@ namespace daw::json {
 						exponent_first = ++first;
 					}
 					decimal_point = saturating_add(
-					  decimal_point, parse_exponent( exponent_first, last.get( ) ) );
+					  decimal_point, parse_exponent( exponent_first, last ) );
 
 					if( not seen_nonzero ) {
 						result.digit_count = 0;
@@ -320,8 +320,9 @@ namespace daw::json {
 
 			template<typename Real>
 			[[nodiscard]] constexpr Real
-			parse_json_real_exact( bool negative, daw::not_null<char const *> first,
-			                       daw::not_null<char const *> last ) {
+			parse_json_real_exact( bool negative, char const *first,
+			                       char const *last ) {
+				daw_dbg_ensure( first != nullptr and last != nullptr );
 				using format = eisellemire_details::binary_format<Real>;
 				auto decimal = decimal_details::parse_json_decimal( first, last );
 

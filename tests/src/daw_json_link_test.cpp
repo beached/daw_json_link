@@ -897,8 +897,8 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 		daw_ensure( result_bits == test.expected_bits );
 		auto const exact = json_details::parse_json_real_exact<float>(
 		  not test.input.empty( ) and test.input.front( ) == '-',
-		  daw::not_null( test.input.data( ) ),
-		  daw::not_null( test.input.data( ) + test.input.size( ) ) );
+		  test.input.data( ),
+		  test.input.data( ) + test.input.size( ) );
 		daw_ensure( DAW_BIT_CAST( std::uint32_t, exact ) == test.expected_bits );
 	}
 
@@ -935,8 +935,8 @@ DAW_ATTRIB_NOINLINE void test_parse_real_hard_rounding_cases( ) {
 		daw_ensure( DAW_BIT_CAST( std::uint64_t, result ) == test.expected_bits );
 		auto const exact = json_details::parse_json_real_exact<double>(
 		  not test.input.empty( ) and test.input.front( ) == '-',
-		  daw::not_null( test.input.data( ) ),
-		  daw::not_null( test.input.data( ) + test.input.size( ) ) );
+		  test.input.data( ),
+		  test.input.data( ) + test.input.size( ) );
 		daw_ensure( DAW_BIT_CAST( std::uint64_t, exact ) == test.expected_bits );
 	}
 }

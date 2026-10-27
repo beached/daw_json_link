@@ -1436,6 +1436,12 @@ add_test( NAME parse_string_simd_test COMMAND parse_string_simd_test )
 add_dependencies( ci_tests parse_string_simd_test )
 add_dependencies( full parse_string_simd_test )
 
+add_executable( simd_digits_test src/simd_digits_test.cpp )
+target_link_libraries( simd_digits_test PRIVATE json_test )
+add_test( NAME simd_digits_test COMMAND simd_digits_test )
+add_dependencies( ci_tests simd_digits_test )
+add_dependencies( full simd_digits_test )
+
 add_executable( daw_json_writer_mapping_test
 								src/daw_json_writer_mapping_test.cpp )
 target_link_libraries( daw_json_writer_mapping_test json_test )

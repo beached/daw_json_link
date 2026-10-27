@@ -14,6 +14,7 @@
 #include "daw/json/impl/daw_json_exec_modes.h"
 #include "daw/json/impl/daw_json_parse_digit.h"
 #include "daw/json/impl/daw_json_parse_unsigned_int.h"
+#include "daw/json/impl/daw_json_simd_digits.h"
 #include "daw/json/impl/daw_json_type_options.h"
 
 #include <daw/daw_arith_traits.h>
@@ -64,6 +65,11 @@ namespace daw::json {
 			// Constexpr'ified version from
 			// https://kholdstare.github.io/technical/2020/05/26/faster-integer-parsing.html
 			constexpr UInt64 parse_8_digits( daw::not_null<char const *> const str ) {
+#if defined( DAW_HAS_SIMD )
+				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+					return UInt64( simd_parse_8_digits( str.get( ) ) );
+				}
+#endif
 				auto const chunk = daw::to_uint64_buffer( str.get( ) );
 				// 1-byte mask trick (works on 4 pairs of single digits)
 				auto const lower_digits =

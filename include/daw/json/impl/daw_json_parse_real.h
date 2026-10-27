@@ -24,7 +24,7 @@
 #include <daw/daw_bit_cast.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
-#include <daw/daw_not_null.h>
+#include <daw/daw_ensure.h>
 #include <daw/daw_restrict.h>
 #include <daw/daw_utility.h>
 
@@ -63,8 +63,9 @@ namespace daw::json {
 			template<typename Result, typename Signed>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr Result parse_truncated_lemire(
 			  bool negative, Signed exponent, std::uint64_t significant_digits,
-			  bool discarded_nonzero, daw::not_null<char const *> number_first,
-			  daw::not_null<char const *> number_last ) {
+			  bool discarded_nonzero, char const *number_first,
+			  char const *number_last ) {
+				daw_dbg_ensure( number_first != nullptr and number_last != nullptr );
 				auto const lower = json_details::parse_real_eisellemire<Result>(
 				  negative, exponent, significant_digits );
 				if( not discarded_nonzero ) {
@@ -518,12 +519,14 @@ namespace daw::json {
 			template<typename Result, bool KnownRange, typename ParseState>
 			[[nodiscard]] constexpr Result
 			parse_narrow_real( ParseState &parse_state ) {
-				daw::not_null<char const *> const number_first = parse_state.first;
+				char const *const number_first = parse_state.first;
+				daw_dbg_ensure( number_first != nullptr );
 				float const f = parse_real<float, KnownRange>( parse_state );
 				if constexpr( ParseState::precise_ieee754 ) {
 					if( DAW_UNLIKELY( is_halfway_for_narrowing<Result>( f ) ) ) {
 						auto const number_last =
 						  KnownRange ? parse_state.last : parse_state.first;
+						daw_dbg_ensure( number_last != nullptr );
 						return json_details::parse_json_real_exact<Result>(
 						  f < 0.0f, number_first, number_last );
 					}
