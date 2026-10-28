@@ -69,11 +69,14 @@ namespace daw::json {
 		namespace json_details {
 #if defined( DAW_ATTRIB_ENABLE_IF )
 #if defined( DAW_HAS_CPP26_DELETED_REASON )
+			_Pragma( "clang diagnostic push" );
+			_Pragma( "clang diagnostic ignored \"-Wc++26-extensions\"" );
 			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 			handle_error( bool b, json_exception &&jex )
 			  DAW_ATTRIB_ENABLE_IF( __builtin_constant_p( b ) and b,
 			                        "daw_json_ensure check failed" ) =
 			    delete( "daw_json_ensure check failed" );
+			_Pragma( "clang diagnostic pop" );
 #endif
 			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 			handle_error( bool b, json_exception &&jex )

@@ -18,6 +18,7 @@
 #include "daw/json/impl/daw_json_simd_iterator_number.h"
 #include "daw/json/impl/daw_json_simd_iterator_string.h"
 
+#include <string_view>
 #include <type_traits>
 
 namespace daw::json {
@@ -52,6 +53,46 @@ namespace daw::json {
 			using json_simd_block_iterator =
 			  json_details::simd_details::json_simd_block_iterator<
 			    json_details::json_deduced_type<JsonMember>, CharT, PolicyFlags...>;
+
+			/// @brief A range of json_simd_block_iterators
+			/// @tparam JsonElement Type of each element in array
+			template<typename JsonElement, auto... PolicyFlags>
+			struct json_simd_array_range {
+				using ParsePolicy = TryDefaultParsePolicy<BasicParsePolicy<
+				  options::details::make_parse_flags<PolicyFlags...>( ).value>>;
+				using iterator =
+				  json_simd_block_iterator<JsonElement, char, PolicyFlags...>;
+
+			private:
+				iterator m_first{ };
+				iterator m_last{ };
+
+			public:
+				explicit json_simd_array_range( ) = default;
+
+				explicit constexpr json_simd_array_range( daw::string_view jd )
+				  : m_first( std::string_view( jd.data( ), jd.size( ) ) ) {}
+
+				explicit constexpr json_simd_array_range( daw::string_view jd,
+				                                          daw::string_view start_path )
+				  : m_first( std::string_view( jd.data( ), jd.size( ) ), start_path ) {}
+
+				/// @return first item in range
+				[[nodiscard]] constexpr iterator begin( ) const {
+					return m_first;
+				}
+
+				/// @return one past last item in range
+				[[nodiscard]] constexpr iterator end( ) const {
+					return m_last;
+				}
+
+				/// @brief Are there any elements in range
+				/// @return true when begin( ) == end( )
+				[[nodiscard]] constexpr bool empty( ) const {
+					return m_first == m_last;
+				}
+			};
 		} // namespace experimental
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
