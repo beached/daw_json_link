@@ -387,6 +387,92 @@ namespace {
 #endif
 	}
 
+	template<typename JsonElement, auto... PolicyFlags>
+	using simd_range =
+	  daw::json::experimental::json_simd_array_range<JsonElement, PolicyFlags...>;
+
+	[[nodiscard]] DAW_SIMD_CONSTEXPR bool test_constexpr_array_range( ) {
+		auto const values = simd_range<bool>( "[true, false, true]" );
+		auto count = 0;
+		for( bool b : values ) {
+			count += b ? 1 : 0;
+		}
+		return count == 2 and not values.empty( ) and
+		       simd_range<bool>( "[]" ).empty( );
+	}
+
+	void test_array_range( ) {
+		using point = daw::json::json_class_no_name<simd_iterator_point>;
+		using range_t = simd_range<point>;
+		using unchecked_range_t =
+		  simd_range<point, daw::json::options::CheckedParseMode::no>;
+		using scalar_range_t = daw::json::json_array_range<point>;
+		static_assert( std::is_same_v<typename range_t::iterator,
+		                              daw::json::experimental::json_simd_block_iterator<point>> );
+		static_assert( std::is_same_v<typename range_t::ParsePolicy,
+		                              typename scalar_range_t::ParsePolicy> );
+		static_assert( std::is_same_v<typename unchecked_range_t::ParsePolicy,
+		                              typename daw::json::json_array_range<
+		                                point, daw::json::options::CheckedParseMode::no>::ParsePolicy> );
+
+		auto const document = std::string(
+		  R"json({"payload":{"points":[{"x":1,"y":2,"z":3},{"z":6,"name":"n","x":4,"y":5}]},"numbers":[1.5,-2.5],"flags":[true,false,true],"names":["alpha","beta"],"none":[ ]})json" );
+
+		auto simd_points = std::vector<simd_iterator_point>{ };
+		for( auto const &p : range_t( document, "payload.points" ) ) {
+			simd_points.push_back( p );
+		}
+		auto scalar_points = std::vector<simd_iterator_point>{ };
+		for( auto const &p : scalar_range_t( document, "payload.points" ) ) {
+			scalar_points.push_back( p );
+		}
+		daw_ensure( simd_points.size( ) == 2U );
+		daw_ensure( simd_points.size( ) == scalar_points.size( ) );
+		for( std::size_t n = 0; n < simd_points.size( ); ++n ) {
+			daw_ensure( simd_points[n].x == scalar_points[n].x );
+			daw_ensure( simd_points[n].y == scalar_points[n].y );
+			daw_ensure( simd_points[n].z == scalar_points[n].z );
+		}
+		daw_ensure( simd_points[1].x == 4.0 and simd_points[1].z == 6.0 );
+
+		auto sum = 0.0;
+		for( double d : simd_range<double>( document, "numbers" ) ) {
+			sum += d;
+		}
+		daw_ensure( sum == -1.0 );
+
+		auto flags = simd_range<bool>( document, "flags" );
+		daw_ensure( std::count( flags.begin( ), flags.end( ), true ) == 2 );
+
+		auto names = std::string{ };
+		for( auto const &s : simd_range<std::string>( document, "names" ) ) {
+			names += s;
+		}
+		daw_ensure( names == "alphabeta" );
+
+		daw_ensure( range_t( document, "none" ).empty( ) );
+		daw_ensure( not range_t( document, "payload.points" ).empty( ) );
+		daw_ensure( range_t( ).empty( ) );
+		daw_ensure( range_t( ).begin( ) == range_t( ).end( ) );
+
+		auto const root = unchecked_range_t( R"json([{"x":7,"y":8,"z":9}])json" );
+		auto first = root.begin( );
+		daw_ensure( first != root.end( ) );
+		daw_ensure( ( *first ).y == 8.0 );
+		++first;
+		daw_ensure( first == root.end( ) );
+
+#if defined( DAW_USE_EXCEPTIONS )
+		auto rejected_missing_path = false;
+		try {
+			(void)range_t( document, "missing" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_missing_path = true;
+		}
+		daw_ensure( rejected_missing_path );
+#endif
+	}
+
 	[[nodiscard]] DAW_SIMD_CONSTEXPR bool test_constexpr_classifiers( ) {
 		using number_classifier = daw::json::json_details::simd_details::
 		  simd_json_classifier<daw::json::JsonBaseParseTypes::Number, char>;
@@ -1164,6 +1250,7 @@ int main( ) {
 	daw_ensure( test_constexpr_raw_string_iterator( ) );
 	daw_ensure( test_constexpr_custom_constructors( ) );
 	daw_ensure( test_constexpr_classifiers( ) );
+	daw_ensure( test_constexpr_array_range( ) );
 
 	static_assert( std::is_same_v<iterator::reference, iterator::value_type> );
 	static_assert( std::is_same_v<iterator::value_type, double> );
@@ -1214,6 +1301,7 @@ int main( ) {
 	test_separate_base_type_paths( );
 	test_class_iterator( );
 	test_class_iterator_matches_scalar( );
+	test_array_range( );
 }
 
 #else

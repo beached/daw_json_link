@@ -65,8 +65,8 @@ namespace daw::json {
 
 namespace {
 	using point_json = daw::json::json_class_no_name<point_t>;
-	using scalar_iterator = daw::json::json_array_iterator<point_json>;
-	using simd_iterator = daw::json::experimental::json_simd_block_iterator<point_json>;
+	using scalar_range = daw::json::json_array_range<point_json>;
+	using simd_range = daw::json::experimental::json_simd_array_range<point_json>;
 
 	[[nodiscard]] std::string make_point_array( std::size_t element_count ) {
 		auto v = std::vector<point_t>{ };
@@ -84,11 +84,11 @@ namespace {
 		    daw::json::options::SerializationFormat::Pretty> );
 	}
 
-	template<typename Iterator>
+	template<typename Range>
 	[[nodiscard]] constexpr point_t average_points( std::string_view document ) {
 		auto result = point_t{ };
 		auto count = std::size_t{ 0 };
-		for( auto const point : Iterator( document ) ) {
+		for( auto const point : Range( document ) ) {
 			result.x += point.x;
 			result.y += point.y;
 			result.z += point.z;
@@ -104,12 +104,12 @@ namespace {
 	}
 
 	[[nodiscard]] constexpr point_t average_scalar( std::string_view document ) {
-		return average_points<scalar_iterator>( document );
+		return average_points<scalar_range>( document );
 	}
 
 	[[nodiscard]] constexpr point_t
 	average_simd_blocks( std::string_view document ) {
-		return average_points<simd_iterator>( document );
+		return average_points<simd_range>( document );
 	}
 
 	[[nodiscard]] constexpr bool equal( point_t lhs, point_t rhs ) noexcept {
