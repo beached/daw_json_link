@@ -39,7 +39,7 @@ namespace daw::json {
 				[[nodiscard]] constexpr bool
 				try_append_digit( std::uint64_t &value, unsigned digit ) noexcept {
 					DAW_CPP23_STATIC_LOCAL constexpr auto max_value =
-				  daw::max_value<std::uint64_t>;
+					  daw::max_value<std::uint64_t>;
 					if( digit > 9U or value > ( max_value - digit ) / 10U ) {
 						return false;
 					}
@@ -181,8 +181,7 @@ namespace daw::json {
 			inline constexpr bool is_double_sized_long_double_v =
 			  std::is_same_v<Real, long double> and
 			  sizeof( long double ) == sizeof( double ) and
-			  daw::digits<long double> ==
-			    daw::digits<double> and
+			  daw::digits<long double> == daw::digits<double> and
 			  std::numeric_limits<long double>::max_exponent ==
 			    std::numeric_limits<double>::max_exponent;
 
@@ -233,8 +232,11 @@ namespace daw::json {
 			/// compare the conversions of significant_digits and
 			/// significant_digits + 1. If those conversions differ, the caller must
 			/// resolve the result using the original decimal digits.
+			///
+			/// Out of line so the 128 bit multiply and rounding do not add to the
+			/// register pressure of the number parsers that call it.
 			template<typename Real = double>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr Real
+			[[nodiscard]] DAW_ATTRIB_FLATTEN DAW_ATTRIB_NOINLINE constexpr Real
 			parse_real_eisellemire( bool negative, std::int64_t exponent,
 			                        std::uint64_t significant_digits ) noexcept {
 				static_assert( std::is_same_v<Real, float> or

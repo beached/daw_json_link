@@ -98,6 +98,24 @@ namespace daw::json {
 			static_assert( parse_8_digits( "12345678" ) == daw::UInt64{ 1234'5678 },
 			               "8 digit parser does not work on this platform" );
 
+			/// When the 8 characters at ptr are all digits, set value to their
+			/// value and return true
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
+			try_parse_8_digits( daw::not_null<char const *> const ptr,
+			                    std::uint32_t &value ) {
+#if defined( DAW_HAS_SIMD )
+				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+					return simd_try_parse_8_digits( ptr.get( ), value );
+				}
+#endif
+				if( not is_made_of_eight_digits_cx( ptr ) ) {
+					return false;
+				}
+				value = static_cast<std::uint32_t>(
+				  static_cast<std::uint64_t>( parse_8_digits( ptr ) ) );
+				return true;
+			}
+
 			constexpr UInt64
 			parse_16_digits( daw::not_null<char const *> const str ) {
 				auto const upper = parse_8_digits( str );
