@@ -34,8 +34,8 @@ namespace daw::json {
 			inline constexpr bool simd_class_allows_trailing_comma = true;
 
 			/**
-			 * Streaming stage 1 for class iteration.  The input is indexed a chunk at a
-			 * time into a fixed buffer of structural offsets, see
+			 * Streaming stage 1 for class iteration.  The input is indexed a chunk at
+			 * a time into a fixed buffer of structural offsets, see
 			 * lexer_cursor::build_structural_chunk.  The events are the structural
 			 * characters, the opening quote of each string and the first byte of each
 			 * number or literal, so a string or scalar ends before the next event.
@@ -71,7 +71,8 @@ namespace daw::json {
 				/// Index the next chunk that has events.  false at the end of the data
 				DAW_ATTRIB_NOINLINE bool refill( ) {
 					while( next_chunk < last ) {
-						auto const remaining = static_cast<std::size_t>( last - next_chunk );
+						auto const remaining =
+						  static_cast<std::size_t>( last - next_chunk );
 						auto const count = remaining < chunk_size ? remaining : chunk_size;
 						chunk_first = next_chunk;
 						size = lexer_cursor::build_structural_chunk(
@@ -176,7 +177,8 @@ namespace daw::json {
 					auto const delimiter = events.next( );
 					if constexpr( not ParseState::is_unchecked_input ) {
 						auto const value_last = trim_value_right(
-						  value_first, delimiter == nullptr ? parse_state.last : delimiter );
+						  value_first,
+						  delimiter == nullptr ? parse_state.last : delimiter );
 						switch( *value_first ) {
 						case 't':
 							daw_json_assert_weak(
@@ -223,9 +225,9 @@ namespace daw::json {
 					while( true ) {
 						auto const event = events.next( );
 						if( DAW_UNLIKELY( event == nullptr ) ) {
-							daw_json_assert_weak(
+							DAW_UNLIKELY_BRANCH
+							daw_json_error(
 							  false, ErrorReason::UnexpectedEndOfData, value_state );
-							return value_state.last;
 						}
 						auto const c = *event;
 						if( c == '{' or c == '[' ) {
@@ -282,8 +284,7 @@ namespace daw::json {
 						state = expect::separator;
 						switch( c ) {
 						case '{':
-						case '[':
-						{
+						case '[': {
 							auto const pushed = brackets.push( c == '{' );
 							daw_json_assert_weak(
 							  pushed, ErrorReason::MaxDepthExceeded, value_state );
@@ -368,16 +369,14 @@ namespace daw::json {
 						daw_json_assert_weak( colon != nullptr and *colon == ':',
 						                      ErrorReason::InvalidMemberName,
 						                      parse_state );
-						auto const name =
-						  scan_member_name( event + 1, colon, parse_state );
+						auto const name = scan_member_name( event + 1, colon, parse_state );
 						auto const value_first = events.next( );
 						daw_json_assert_weak( value_first != nullptr,
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
 						daw_json_assert_weak( *value_first != ',' and
 						                        *value_first != '}' and
-						                        *value_first != ']' and
-						                        *value_first != ':',
+						                        *value_first != ']' and *value_first != ':',
 						                      ErrorReason::InvalidStartOfValue,
 						                      parse_state );
 
@@ -396,8 +395,9 @@ namespace daw::json {
 							  ParseState( value_first, last, class_first, last ), events );
 						}
 
-						daw_json_assert_weak(
-						  delimiter != nullptr, ErrorReason::UnexpectedEndOfData, parse_state );
+						daw_json_assert_weak( delimiter != nullptr,
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
 						if( *delimiter == '}' ) {
 							event = delimiter;
 							break;

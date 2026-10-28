@@ -138,8 +138,7 @@ namespace daw::json {
 			/// options::StrictSkipChecks::yes, a bit for each that is set for a
 			/// class.  At most DAW_JSON_STRICT_SKIP_MAX_DEPTH brackets are open
 			class strict_skip_brackets {
-				static constexpr std::size_t max_depth =
-				  DAW_JSON_STRICT_SKIP_MAX_DEPTH;
+				static constexpr std::size_t max_depth = DAW_JSON_STRICT_SKIP_MAX_DEPTH;
 				static_assert( max_depth > 0U );
 
 				std::uint64_t m_kinds[( max_depth + 63U ) / 64U] = { };
@@ -338,13 +337,12 @@ namespace daw::json {
 					carry.in_string = last_bit( in_string_bits, count );
 					carry.in_token = last_bit( token, count );
 
-					return classified_block{ .events =
-					                           structural | open_quotes | token_start,
-					                         .closes = close_quotes,
-					                         .escaped_closes = escaped_closes,
-					                         .token_bytes = token,
-					                         .token_starts = token_start,
-					                         .carry = carry };
+					return classified_block{ structural | open_quotes | token_start,
+					                         close_quotes,
+					                         escaped_closes,
+					                         token,
+					                         token_start,
+					                         carry };
 				}
 
 				/// Classify the block at the end of the classified bytes, continuing
