@@ -59,9 +59,6 @@ namespace {
 	using namespace daw::json;
 	using json_details::SkipBracketedType;
 	using default_policy_t = BasicParsePolicy<>;
-	using strict_policy_t = BasicParsePolicy<
-	  options::details::make_parse_flags<options::AllowLeadingZeroPlus::no>( )
-	    .value>;
 
 	struct skip_outcome {
 		std::optional<ErrorReason> error{ };
@@ -115,8 +112,6 @@ namespace {
 	void check_both( std::string_view json ) {
 		check_same<SkipBracketedType::Class, default_policy_t>( json );
 		check_same<SkipBracketedType::Array, default_policy_t>( json );
-		check_same<SkipBracketedType::Class, strict_policy_t>( json );
-		check_same<SkipBracketedType::Array, strict_policy_t>( json );
 	}
 
 	template<auto... PolicyFlags>
@@ -188,16 +183,47 @@ int main( ) {
 	check_parse( R"({"b":[+],"a":1})", false );
 	check_parse( R"({"b":[0x1],"a":1})", false );
 
-	// A leading plus and leading zeros are allowed in skipped numbers unless
-	// AllowLeadingZeroPlus is turned off
-	for( std::string_view json : { R"({"b":[01],"a":1})",
+	// Skipped values are only skipped to find the next member and may never be
+	// parsed, so a leading plus and leading zeros are not checked in skipped
+	// numbers.  The number parsers check them
+	for( std::string_view json : { R"({"b":01,"a":1})",
+	                               R"({"b":-01,"a":1})",
+	                               R"({"b":-00.5e+1,"a":1})",
+	                               R"({"a":1,"b":-01})",
+	                               R"({"a":1,"b":+1})",
+	                               R"({"b":+1,"a":1})",
+	                               R"({"b":-1,"c":+1.5e+1,"a":1})",
+	                               R"({"b":[01],"a":1})",
 	                               R"({"b":[+1],"a":1})",
 	                               R"({"b":{"c":-00.5e+1},"a":1})",
-	                               R"({"b":01,"a":1})",
 	                               R"({"a":1,"b":[007]})" } ) {
 		check_parse( json, true );
-		check_parse<options::AllowLeadingZeroPlus::no>( json, false );
 	}
+
+	// Mapped numbers never allow leading zeros, in or out of order
+	for( std::string_view json : { R"({"a":01})",
+	                               R"({"a":-01})",
+	                               R"({"a":+1})",
+	                               R"({"b":1,"a":+1})",
+	                               R"({"b":1,"a":01})",
+	                               R"({"b":1,"a":-01})" } ) {
+		check_parse( json, false );
+	}
+
+	// json_value treats a leading plus as the start of a number, like the skips
+	{
+		auto count = 0;
+		for( auto jp : json_value( "[1,+2,3]" ) ) {
+			test_assert( jp.value.type( ) == JsonBaseParseTypes::Number,
+			             "expected a number in json_value" );
+			++count;
+		}
+		test_assert( count == 3, "expected json_value to walk 3 numbers" );
+	}
+
+	// An exponent sign must be followed by a digit
+	check_parse( R"({"b":1e+,"a":1})", false );
+	check_parse( R"({"b":1e-x,"a":1})", false );
 
 	// After the mapped members, the rest of the class is a comma separated list
 	// of members

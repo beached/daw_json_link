@@ -163,7 +163,8 @@ namespace daw::json {
 			}
 			/***
 			 * Skip a number and store the position of it's components in the returned
-			 * ParseState
+			 * ParseState.  This only finds the extent of the number; rules such as
+			 * no leading '+' or zeros are checked by the number parsers
 			 */
 			template<typename ParseState>
 			[[nodiscard]] static constexpr ParseState
@@ -175,27 +176,8 @@ namespace daw::json {
 				auto result = parse_state;
 				daw::not_null<char const *> first = parse_state.first;
 				daw::not_null<char const *> const last = parse_state.last;
-				if constexpr( ParseState::allow_leading_zero_plus ) {
-					if( *first == '-' ) {
-						++first;
-					}
-				} else {
-					switch( *first ) {
-					case '-':
-						++first;
-						break;
-					case '+':
-						daw_json_error(
-						  true, ErrorReason::InvalidNumberStart, parse_state );
-					case '0':
-						if( last - first > 1 ) {
-							daw_json_ensure(
-							  not parse_policy_details::is_number( *std::next( first ) ),
-							  ErrorReason::InvalidNumberStart,
-							  parse_state );
-						}
-						break;
-					}
+				if( daw::nsc_or( *first == '-', *first == '+' ) ) {
+					++first;
 				}
 
 				// A number has digits after its sign
@@ -205,7 +187,9 @@ namespace daw::json {
 				                      parse_state );
 				if( DAW_LIKELY( first < last ) ) {
 					DAW_LIKELY_BRANCH
-					first = skip_digits<ParseState::is_unchecked_input>( first, last );
+					first =
+					  skip_digits<( ParseState::is_zero_terminated_string or
+					                ParseState::is_unchecked_input )>( first, last );
 				}
 
 				char const *decimal = nullptr;
@@ -252,7 +236,13 @@ namespace daw::json {
 						++first;
 					}
 					daw_json_assert_weak( first < last and parse_digit( *first ) < 10U,
-					                      ErrorReason::InvalidNumber );
+					                      ErrorReason::InvalidNumber,
+					                      [&] {
+						                      auto r = parse_state;
+						                      r.first =
+						                        input_pointer( r.first, first.get( ) );
+						                      return r;
+					                      }( ) );
 
 					if( DAW_LIKELY( first < last ) ) {
 						DAW_LIKELY_BRANCH
@@ -298,6 +288,7 @@ namespace daw::json {
 				case 'n':
 					return skip_null( parse_state );
 				case '-':
+				case '+':
 				case '0':
 				case '1':
 				case '2':
@@ -387,6 +378,7 @@ namespace daw::json {
 				case 'n':
 					return skip_null( parse_state );
 				case '-':
+				case '+':
 				case '0':
 				case '1':
 				case '2':

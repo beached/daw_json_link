@@ -269,6 +269,7 @@ namespace daw::json {
 				case '{':
 				case '"':
 				case '-':
+				case '+':
 				case '0':
 				case '1':
 				case '2':
@@ -612,6 +613,7 @@ namespace daw::json {
 				case '[':
 					return JsonBaseParseTypes::Array;
 				case '-':
+				case '+':
 				case '0':
 				case '1':
 				case '2':

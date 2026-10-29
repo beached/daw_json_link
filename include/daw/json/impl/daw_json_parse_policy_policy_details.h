@@ -160,8 +160,9 @@ namespace daw::json {
 
 			/// Check the literal or number that starts at first and return its
 			/// end.  The bracket skips use this for the scalars they pass over.
-			/// Numbers follow the JSON grammar, with a leading '+' and leading
-			/// zeros also allowed when ParseState::allow_leading_zero_plus is set.
+			/// Numbers follow the JSON grammar, except that a leading '+' and
+			/// leading zeros are allowed.  Skipped values may never be parsed, the
+			/// number parsers check the spelling of the numbers they parse.
 			/// A token has to end at the end of the data, whitespace, a structural
 			/// character, a quote or, when CommentStart is not '\0', the start of a
 			/// comment
@@ -197,30 +198,15 @@ namespace daw::json {
 					literal( "null", 4, ErrorReason::InvalidNull );
 					break;
 				default:
-					if constexpr( ParseState::allow_leading_zero_plus ) {
-						daw_json_ensure( *first == '-' or *first == '+' or
-						                   is_number( *first ),
-						                 ErrorReason::InvalidStartOfValue,
-						                 parse_state );
-						if( *first == '-' or *first == '+' ) {
-							++first;
-						}
-						daw_json_ensure(
-						  digits( ), ErrorReason::InvalidNumberStart, parse_state );
-					} else {
-						daw_json_ensure( *first == '-' or is_number( *first ),
-						                 ErrorReason::InvalidStartOfValue,
-						                 parse_state );
-						if( *first == '-' ) {
-							++first;
-						}
-						if( first < last and *first == '0' ) {
-							++first;
-						} else {
-							daw_json_ensure(
-							  digits( ), ErrorReason::InvalidNumberStart, parse_state );
-						}
+					daw_json_ensure( *first == '-' or *first == '+' or
+					                   is_number( *first ),
+					                 ErrorReason::InvalidStartOfValue,
+					                 parse_state );
+					if( *first == '-' or *first == '+' ) {
+						++first;
 					}
+					daw_json_ensure(
+					  digits( ), ErrorReason::InvalidNumberStart, parse_state );
 					if( first < last and *first == '.' ) {
 						++first;
 						daw_json_ensure(

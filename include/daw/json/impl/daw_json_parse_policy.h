@@ -126,13 +126,6 @@ namespace daw::json {
 			    PolicyFlags ) == options::ExcludeSpecialEscapes::yes;
 
 			/***
-			 * See options::AllowLeadingZeroPlus
-			 */
-			static constexpr bool allow_leading_zero_plus =
-			  json_details::get_bits_for<options::AllowLeadingZeroPlus>(
-			    PolicyFlags ) == options::AllowLeadingZeroPlus::yes;
-
-			/***
 			 * See options::StrictSkipChecks
 			 */
 			static constexpr bool strict_skip_checks =

@@ -178,16 +178,6 @@ namespace daw::json {
 				}; // 4bits
 
 				///
-				/// @brief Allow skipped numbers to start with a '+' and to have
-				/// leading zeros, e.g. +1 and 007.  These are not valid JSON.  This
-				/// applies to members that are not mapped and to the contents of
-				/// skipped classes and arrays, mapped numbers are always checked
-				///
-				/// default: yes
-				///
-				enum class AllowLeadingZeroPlus : unsigned { no, yes }; // 1bit
-
-				///
 				/// @brief How the SIMD parsers, from_json_simd and
 				/// json_simd_block_iterator, check the classes and arrays they skip.
 				/// With no, like simdjson's On-Demand, only the depth is counted: {
