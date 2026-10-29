@@ -23,15 +23,29 @@
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_bit_cast.h>
 #include <daw/daw_cxmath.h>
-#include <daw/daw_likely.h>
 #include <daw/daw_ensure.h>
+#include <daw/daw_likely.h>
 #include <daw/daw_restrict.h>
 #include <daw/daw_utility.h>
 
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <limits>
 #include <type_traits>
+
+// The digit tail of a known bounds number is read with one 8 byte load that
+// can extend past the number.  It never crosses a page so it cannot fault, but
+// sanitizers report the bytes outside the number.  Under a sanitizer only the
+// digits are copied
+#if defined( __SANITIZE_ADDRESS__ ) or defined( __SANITIZE_HWADDRESS__ )
+#define DAW_JSON_NO_OVERREAD 1
+#elif defined( __has_feature )
+#if __has_feature( address_sanitizer ) or \
+  __has_feature( hwaddress_sanitizer ) or __has_feature( memory_sanitizer )
+#define DAW_JSON_NO_OVERREAD 1
+#endif
+#endif
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -61,10 +75,11 @@ namespace daw::json {
 			  ( is_lemire_capable_v<Real> or has_precise_fallback_v<Real> );
 
 			template<typename Result, typename Signed>
-			[[nodiscard]] DAW_ATTRIB_INLINE constexpr Result parse_truncated_lemire(
-			  bool negative, Signed exponent, std::uint64_t significant_digits,
-			  bool discarded_nonzero, char const *number_first,
-			  char const *number_last ) {
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr Result
+			parse_truncated_lemire( bool negative, Signed exponent,
+			                        std::uint64_t significant_digits,
+			                        bool discarded_nonzero, char const *number_first,
+			                        char const *number_last ) {
 				daw_dbg_ensure( number_first != nullptr and number_last != nullptr );
 				auto const lower = json_details::parse_real_eisellemire<Result>(
 				  negative, exponent, significant_digits );
@@ -241,9 +256,10 @@ namespace daw::json {
 						    exponent <= sp::max_exact_power10<Result> and
 						    exponent >= -sp::max_exact_power10<Result> ) {
 							return sp::apply_sign(
-							  sign, power10<Result>( ParseState::exec_tag,
-							                         static_cast<Result>( mantissa ),
-							                         exponent ) );
+							  sign,
+							  power10<Result>( ParseState::exec_tag,
+							                   static_cast<Result>( mantissa ),
+							                   exponent ) );
 						}
 						return static_cast<Result>(
 						  parse_truncated_lemire<compute_t>( sign < 0,
@@ -258,9 +274,10 @@ namespace daw::json {
 						    exponent <= sp::max_exact_power10<Result> and
 						    exponent >= -sp::max_exact_power10<Result> ) {
 							return sp::apply_sign(
-							  sign, power10<Result>( ParseState::exec_tag,
-							                         static_cast<Result>( mantissa ),
-							                         exponent ) );
+							  sign,
+							  power10<Result>( ParseState::exec_tag,
+							                   static_cast<Result>( mantissa ),
+							                   exponent ) );
 						}
 						return parse_with_strtod<Result>( number_first, number_last );
 					}
@@ -307,20 +324,22 @@ namespace daw::json {
 						                exponent <= sp::max_exact_power10<Result> and
 						                exponent >= -sp::max_exact_power10<Result> ) ) {
 							return sp::apply_sign(
-							  sign, power10<Result>( ParseState::exec_tag,
-							                         static_cast<Result>( mantissa ),
-							                         exponent ) );
+							  sign,
+							  power10<Result>( ParseState::exec_tag,
+							                   static_cast<Result>( mantissa ),
+							                   exponent ) );
 						}
-						return static_cast<Result>(
-						  parse_real_eisellemire<compute_t>( sign < 0, exponent, mantissa ) );
+						return static_cast<Result>( parse_real_eisellemire<compute_t>(
+						  sign < 0, exponent, mantissa ) );
 					} else {
 						// Exact when 10^exponent is exact in Result
 						if( DAW_LIKELY( exponent <= sp::max_exact_power10<Result> and
 						                exponent >= -sp::max_exact_power10<Result> ) ) {
 							return sp::apply_sign(
-							  sign, power10<Result>( ParseState::exec_tag,
-							                         static_cast<Result>( mantissa ),
-							                         exponent ) );
+							  sign,
+							  power10<Result>( ParseState::exec_tag,
+							                   static_cast<Result>( mantissa ),
+							                   exponent ) );
 						}
 						return parse_with_strtod<Result>( number_first, number_last );
 					}
@@ -435,6 +454,44 @@ namespace daw::json {
 			}
 
 			namespace single_pass_details {
+#if defined( DAW_HAS_SIMD )
+				/// Accumulate the n < 8 digits at first when it can be done with one
+				/// 8 byte conversion.  Returns false when the caller must use the
+				/// digit loop
+				[[nodiscard]] DAW_ATTRIB_INLINE bool
+				try_parse_digit_tail( char const *first, std::size_t const n,
+				                      std::uint64_t &value ) {
+					// Up to three digits are cheaper in the loop
+					if( n < 4 ) {
+						return false;
+					}
+					// The n digits are the low bytes of word.  The bytes past them are
+					// don't care, they are shifted out below
+					std::uint64_t word = 0;
+#if defined( DAW_JSON_NO_OVERREAD )
+					// Sanitizers report the bytes past the digits, copy only the digits
+					std::memcpy( &word, first, n );
+#else
+					// An 8 byte load that stays within the page cannot fault
+					if( DAW_UNLIKELY(
+					      ( reinterpret_cast<std::uintptr_t>( first ) & 4095U ) >
+					      4096U - 8U ) ) {
+						return false;
+					}
+					std::memcpy( &word, first, 8 );
+#endif
+					// Subtract first; borrows only reach the bytes shifted out.  The
+					// shift moves the digits to the high lanes, the low lanes are
+					// leading zeros
+					word -= 0x3030'3030'3030'3030ULL;
+					word <<= 64U - 8U * n;
+					using v8 = daw::simd::vec128<std::uint8_t>;
+					value = value * daw::cxmath::pow10( n ) +
+					        simd_digits_details::combine_8_digits( v8::load_low( &word ) );
+					return true;
+				}
+#endif
+
 				/// Accumulate exactly [first, last), which is known to be digits
 				template<typename Accumulator, typename Iterator>
 				DAW_ATTRIB_INLINE constexpr void
@@ -446,6 +503,16 @@ namespace daw::json {
 						          static_cast<std::uint64_t>( parse_8_digits( first ) ) );
 						first += 8;
 					}
+#if defined( DAW_HAS_SIMD )
+					if constexpr( std::is_same_v<Accumulator, std::uint64_t> ) {
+						if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) and
+						    try_parse_digit_tail( &*first,
+						                          static_cast<std::size_t>( last - first ),
+						                          value ) ) {
+							return;
+						}
+					}
+#endif
 					for( ; first < last; ++first ) {
 						value = value * static_cast<Accumulator>( 10U ) +
 						        static_cast<Accumulator>( parse_digit( *first ) );
@@ -453,32 +520,29 @@ namespace daw::json {
 				}
 			} // namespace single_pass_details
 
-			/// @brief Parse a number whose bounds are already known, e.g. from
-			/// skip_number or the SIMD number iterator.  [first, last) is exactly
-			/// the number, class_first is the decimal point and class_last the
-			/// exponent marker, or null when absent.  With the digit counts known
-			/// up front, the digit runs are parsed without checking each character
-			/// or searching for the decimal point and exponent.
+			/// @brief Parse a number whose bounds are already known.  [number_first,
+			/// last) is exactly the number, decimal_point and exponent_marker are
+			/// their positions, or null when absent.  With the digit counts known up
+			/// front, the digit runs are parsed without checking each character or
+			/// searching for the decimal point and exponent.  The positions are
+			/// taken by value so they arrive in registers instead of being reloaded
+			/// from a state the caller just wrote
 			template<typename Result, typename ParseState>
-			[[nodiscard]] constexpr Result
-			parse_real_known_bounds( ParseState &parse_state ) {
-				namespace sp = single_pass_details;
-				daw_json_assert_weak(
-				  parse_state.has_more( ) and
-				    parse_policy_details::is_number_start( parse_state.front( ) ),
-				  ErrorReason::InvalidNumberStart,
-				  parse_state );
+			[[nodiscard]] constexpr Result parse_real_known_bounds_values(
+			  typename ParseState::iterator const number_first,
+			  typename ParseState::iterator const last,
+			  typename ParseState::iterator const decimal_point,
+			  typename ParseState::iterator const exponent_marker ) {
+				// Only for validate_signed_first and error reporting
+				auto parse_state = ParseState( number_first, last );
 
 				using iterator_t = typename ParseState::iterator;
+				namespace sp = single_pass_details;
 				constexpr bool integer_accumulator =
 				  sp::max_u64_digits >= daw::max_digits10<Result> + 1;
 				using accumulator_t =
 				  std::conditional_t<integer_accumulator, std::uint64_t, Result>;
 
-				iterator_t const number_first = parse_state.first;
-				iterator_t const last = parse_state.last;
-				iterator_t const decimal_point = parse_state.class_first;
-				iterator_t const exponent_marker = parse_state.class_last;
 				auto const sign =
 				  parse_policy_details::validate_signed_first( parse_state );
 
@@ -491,14 +555,11 @@ namespace daw::json {
 				iterator_t const fract_last =
 				  decimal_point ? ( exponent_marker ? exponent_marker : last )
 				                : whole_last;
-				// Same rules as parse_real_single_pass: at least one whole digit, no
-				// leading zeros, and at least one digit after the decimal point
+				// Same rules as parse_real_single_pass: at least one whole digit and
+				// at least one digit after the decimal point.  validate_signed_first
+				// rejected a non number start and leading zeros
 				daw_json_assert_weak( whole_first < whole_last,
 				                      ErrorReason::InvalidNumber,
-				                      parse_state.copy( whole_first ) );
-				daw_json_assert_weak( *whole_first != '0' or
-				                        whole_last - whole_first == 1,
-				                      ErrorReason::InvalidNumberStart,
 				                      parse_state.copy( whole_first ) );
 				daw_json_assert_weak( decimal_point == nullptr or
 				                        fract_first < fract_last,
@@ -528,8 +589,6 @@ namespace daw::json {
 						explicit_exponent = -explicit_exponent;
 					}
 				}
-				parse_state.first = last;
-
 				accumulator_t mantissa = accumulator_t( );
 				// More than 19 digits overflow the integer accumulator, and
 				// finish_real rescans those
@@ -549,6 +608,22 @@ namespace daw::json {
 				                                        fract_last,
 				                                        number_first,
 				                                        last );
+			}
+
+			/// @brief Parse a number whose bounds are already known, e.g. from
+			/// skip_number or the SIMD number iterator.  [first, last) is exactly
+			/// the number, class_first is the decimal point and class_last the
+			/// exponent marker, or null when absent
+			template<typename Result, typename ParseState>
+			[[nodiscard]] DAW_ATTRIB_INLINE constexpr Result
+			parse_real_known_bounds( ParseState &parse_state ) {
+				auto const first = parse_state.first;
+				auto const last = parse_state.last;
+				auto const decimal_point = parse_state.class_first;
+				auto const exponent_marker = parse_state.class_last;
+				parse_state.first = last;
+				return parse_real_known_bounds_values<Result, ParseState>(
+				  first, last, decimal_point, exponent_marker );
 			}
 
 			template<typename Result, bool KnownRange, typename ParseState>

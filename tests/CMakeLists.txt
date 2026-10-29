@@ -1448,6 +1448,18 @@ add_test( NAME simd_digits_test COMMAND simd_digits_test )
 add_dependencies( ci_tests simd_digits_test )
 add_dependencies( full simd_digits_test )
 
+add_executable( parse_real_known_bounds_reject_test src/parse_real_known_bounds_reject_test.cpp )
+target_link_libraries( parse_real_known_bounds_reject_test PRIVATE json_test )
+add_test( NAME parse_real_known_bounds_reject_test COMMAND parse_real_known_bounds_reject_test )
+add_dependencies( ci_tests parse_real_known_bounds_reject_test )
+add_dependencies( full parse_real_known_bounds_reject_test )
+
+add_executable( parse_real_known_bounds_tail_test src/parse_real_known_bounds_tail_test.cpp )
+target_link_libraries( parse_real_known_bounds_tail_test PRIVATE json_test )
+add_test( NAME parse_real_known_bounds_tail_test COMMAND parse_real_known_bounds_tail_test )
+add_dependencies( ci_tests parse_real_known_bounds_tail_test )
+add_dependencies( full parse_real_known_bounds_tail_test )
+
 add_executable( daw_json_writer_mapping_test
 								src/daw_json_writer_mapping_test.cpp )
 target_link_libraries( daw_json_writer_mapping_test json_test )
