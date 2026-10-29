@@ -174,8 +174,14 @@ namespace daw::json {
 				                      parse_state );
 
 				auto result = parse_state;
-				daw::not_null<char const *> first = parse_state.first;
-				daw::not_null<char const *> const last = parse_state.last;
+				daw_json_dbg_ensure( parse_state.first != nullptr,
+				                     ErrorReason::UnexpectedEndOfData );
+				auto first =
+				  daw::not_null<char const *>( daw::never_null, parse_state.first );
+				daw_json_dbg_ensure( parse_state.last != nullptr,
+				                     ErrorReason::UnexpectedEndOfData );
+				auto const last =
+				  daw::not_null<char const *>( daw::never_null, parse_state.last );
 				if( daw::nsc_or( *first == '-', *first == '+' ) ) {
 					++first;
 				}
