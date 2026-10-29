@@ -250,6 +250,41 @@ namespace {
 		daw_ensure( result.in_string == ref.ends_in_string );
 	}
 
+	// Index the document a chunk at a time, chunks being 1 to 4 blocks so that
+	// steps of two blocks, a block left over and a partial last block are all
+	// seen, and the carries continue between them
+	template<typename Rng>
+	void check_structural_chunks( std::string const &doc, char const *data,
+	                              reference_tokens const &ref, Rng &rng ) {
+		auto expected_offsets = std::vector<std::size_t>{ };
+		for( auto const &event : ref.events ) {
+			expected_offsets.push_back( event.pos );
+		}
+		std::sort( expected_offsets.begin( ), expected_offsets.end( ) );
+
+		auto choose_blocks = std::uniform_int_distribution<std::size_t>( 1, 4 );
+		auto offsets = std::vector<std::uint32_t>(
+		  4U * lexer_cursor::block_size +
+		  lexer_cursor::structural_index_padding );
+		auto carry = lexer_cursor::chunk_carry{ };
+		auto found = std::size_t{ 0 };
+		for( std::size_t pos = 0; pos < doc.size( ); ) {
+			auto const chunk_size = choose_blocks( rng ) * lexer_cursor::block_size;
+			auto const count =
+			  doc.size( ) - pos < chunk_size ? doc.size( ) - pos : chunk_size;
+			auto const size = lexer_cursor::build_structural_chunk(
+			  data + pos, count, carry, offsets.data( ) );
+			for( std::uint32_t n = 0; n < size; ++n ) {
+				daw_ensure( found < expected_offsets.size( ) );
+				daw_ensure( pos + offsets[n] == expected_offsets[found] );
+				++found;
+			}
+			pos += count;
+		}
+		daw_ensure( found == expected_offsets.size( ) );
+		daw_ensure( ( carry.in_string != 0 ) == ref.ends_in_string );
+	}
+
 	// Move first around like a parser.  peek( first ) gives the first event at
 	// or after first, whatever was popped, and peek( ) continues after the
 	// popped events.  A first that is not at a value boundary, just past an
@@ -351,6 +386,7 @@ int main( ) {
 		std::copy( doc.begin( ), doc.end( ), buffer.get( ) );
 		auto const ref = tokenize( doc );
 		check_structural_index( doc, buffer.get( ), ref );
+		check_structural_chunks( doc, buffer.get( ), ref, rng );
 		check_all_events( doc, buffer.get( ), ref, 0 );
 		if( not ref.boundaries.empty( ) ) {
 			auto const start =

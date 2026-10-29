@@ -243,9 +243,20 @@ namespace daw::json {
 					carry_state carry;
 				};
 
+				// Whether blocks with no backslash, and nothing escaped by the one
+				// before, branch around the escape math.  With AVX-512 that is faster
+				// unless backslashes are common, gsoc-2018 being 3% slower.  Without
+				// it the branch costs more than the math it skips on such documents,
+				// 9% on gsoc-2018
+#if defined( __AVX512VBMI2__ )
+				static constexpr bool skip_clean_escapes = true;
+#else
+				static constexpr bool skip_clean_escapes = false;
+#endif
+
 				template<bool TrackStringMetadata = true>
 				[[nodiscard]] DAW_ATTRIB_INLINE static classified_block
-				classify_block( char const *first, std::size_t count,
+				classify_block(char const *first, std::size_t count,
 				                carry_state carry ) {
 					using namespace lexer_cursor_details;
 
@@ -285,20 +296,26 @@ namespace daw::json {
 
 					auto const previous_escaped = carry.escaped;
 
-					auto const potential_escape = backslash_bits & ~previous_escaped;
+					// Most blocks have no backslash and nothing escaped by the last one,
+					// so nothing is escaped and carry.escaped stays 0
+					auto escaped_bits = std::uint64_t{ 0 };
+					if( not skip_clean_escapes or
+					    DAW_UNLIKELY( ( backslash_bits | previous_escaped ) != 0 ) ) {
+						auto const potential_escape = backslash_bits & ~previous_escaped;
 
-					auto const maybe_escaped = potential_escape << 1U;
+						auto const maybe_escaped = potential_escape << 1U;
 
-					auto const escape_and_terminal =
-					  ( ( maybe_escaped | odd_bits ) - potential_escape ) ^ odd_bits;
+						auto const escape_and_terminal =
+						  ( ( maybe_escaped | odd_bits ) - potential_escape ) ^ odd_bits;
 
-					auto const escaped_bits =
-					  ( escape_and_terminal ^ ( backslash_bits | previous_escaped ) ) &
-					  valid_bits;
+						escaped_bits =
+						  ( escape_and_terminal ^ ( backslash_bits | previous_escaped ) ) &
+						  valid_bits;
 
-					auto const escape_bits = escape_and_terminal & backslash_bits;
+						auto const escape_bits = escape_and_terminal & backslash_bits;
 
-					carry.escaped = last_bit( escape_bits, count );
+						carry.escaped = last_bit( escape_bits, count );
+					}
 
 					auto const quote_bits = raw_quote_bits & ~escaped_bits;
 
@@ -455,10 +472,41 @@ namespace daw::json {
 					auto token_count = std::uint32_t{ 0 };
 					auto const full_end = count - count % block_size;
 					auto block_offset = std::size_t{ 0 };
+#if defined( __AVX512VBMI2__ )
+					// Two blocks a step, with each block's offsets written while the
+					// next is classified.  With the compress of flatten_bits this is
+					// faster, with its scalar loop it is slower
+					auto previous_events = std::uint64_t{ 0 };
+					auto previous_offset = std::uint32_t{ 0 };
+					auto const lagged_block = [&]( std::size_t offset ) {
+						auto const classified =
+						  classify_block<false>( first + offset, block_size, carry );
+						carry = classified.carry;
+						token_count += static_cast<std::uint32_t>(
+						  daw::simd_impl::flatten_bits( previous_events,
+						                                previous_offset,
+						                                &offsets[token_count] ) );
+						previous_events = classified.events;
+						previous_offset = static_cast<std::uint32_t>( offset );
+					};
+					for( ; block_offset + 2U * block_size <= full_end;
+					     block_offset += 2U * block_size ) {
+						lagged_block( block_offset );
+						lagged_block( block_offset + block_size );
+					}
+					if( block_offset < full_end ) {
+						lagged_block( block_offset );
+						block_offset += block_size;
+					}
+					token_count +=
+					  static_cast<std::uint32_t>( daw::simd_impl::flatten_bits(
+					    previous_events, previous_offset, &offsets[token_count] ) );
+#else
 					for( ; block_offset < full_end; block_offset += block_size ) {
 						token_count += index_block(
 						  first, block_offset, block_size, carry, &offsets[token_count] );
 					}
+#endif
 					if( block_offset < count ) {
 						token_count += index_block( first,
 						                            block_offset,
