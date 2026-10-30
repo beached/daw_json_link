@@ -99,9 +99,9 @@ namespace daw::json {
 		static constexpr char const x[] = "x";
 		static constexpr char const y[] = "y";
 		static constexpr char const z[] = "z";
-		using type = json_member_list<json_number<x, double>,
-		                              json_number<y, double>,
-		                              json_number<z, double>>;
+		using type =
+		  json_member_list<json_number<x, double>, json_number<y, double>,
+		                   json_number<z, double>>;
 	};
 } // namespace daw::json
 
@@ -121,43 +121,49 @@ namespace {
 	                    std::declval<T>( ).escape_characters );
 	DAW_MAKE_REQ_TRAIT( has_boolean_values, std::declval<T>( ).boolean_values );
 
-	using iterator =
-	  daw::json::experimental::json_simd_block_iterator<daw::json::json_number_no_name<double>>;
+	using iterator = daw::json::experimental::json_simd_block_iterator<
+	  daw::json::json_number_no_name<double>>;
 	using signed_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_number_no_name<std::int64_t>>;
 	using unsigned_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_number_no_name<std::uint64_t>>;
-	using unchecked_signed_iterator = daw::json::experimental::json_simd_block_iterator<
-	  daw::json::json_number_no_name<std::int64_t>, char,
-	  daw::json::options::CheckedParseMode::no,
-	  daw::json::options::ExecModeTypes::compile_time>;
-	using bool_iterator =
-	  daw::json::experimental::json_simd_block_iterator<daw::json::json_bool_no_name<bool>>;
+	using unchecked_signed_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_number_no_name<std::int64_t>, char,
+	    daw::json::options::CheckedParseMode::no,
+	    daw::json::options::ExecModeTypes::compile_time>;
+	using bool_iterator = daw::json::experimental::json_simd_block_iterator<
+	  daw::json::json_bool_no_name<bool>>;
 	using string_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_string_no_name<std::string>>;
-	using unchecked_string_iterator = daw::json::experimental::json_simd_block_iterator<
-	  daw::json::json_string_no_name<std::string>, char,
-	  daw::json::options::CheckedParseMode::no,
-	  daw::json::options::ExecModeTypes::compile_time>;
+	using unchecked_string_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_string_no_name<std::string>, char,
+	    daw::json::options::CheckedParseMode::no,
+	    daw::json::options::ExecModeTypes::compile_time>;
 	using raw_string_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_string_raw_no_name<std::string_view>>;
 	using class_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_class_no_name<simd_iterator_class_value>>;
-	using unchecked_class_iterator = daw::json::experimental::json_simd_block_iterator<
-	  daw::json::json_class_no_name<simd_iterator_class_value>, char,
-	  daw::json::options::CheckedParseMode::no,
-	  daw::json::options::ExecModeTypes::compile_time>;
-	using empty_class_iterator = daw::json::experimental::json_simd_block_iterator<
-	  daw::json::json_class_no_name<simd_iterator_empty_class>>;
-	using container_class_iterator = daw::json::experimental::json_simd_block_iterator<
-	  daw::json::json_class_no_name<simd_iterator_container_value>>;
+	using unchecked_class_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_class_no_name<simd_iterator_class_value>, char,
+	    daw::json::options::CheckedParseMode::no,
+	    daw::json::options::ExecModeTypes::compile_time>;
+	using empty_class_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_class_no_name<simd_iterator_empty_class>>;
+	using container_class_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_class_no_name<simd_iterator_container_value>>;
 	using real_class_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_class_no_name<simd_iterator_real_value>>;
 	using point_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_class_no_name<simd_iterator_point>>;
-	using strict_point_iterator = daw::json::experimental::json_simd_block_iterator<
-	  daw::json::json_class_no_name<simd_iterator_point>, char,
-	  daw::json::options::StrictSkipChecks::yes>;
+	using strict_point_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_class_no_name<simd_iterator_point>, char,
+	    daw::json::options::StrictSkipChecks::yes>;
 	using scalar_point_iterator = daw::json::json_array_iterator<
 	  daw::json::json_class_no_name<simd_iterator_point>>;
 
@@ -407,24 +413,27 @@ namespace {
 		using unchecked_range_t =
 		  simd_range<point, daw::json::options::CheckedParseMode::no>;
 		using scalar_range_t = daw::json::json_array_range<point>;
-		static_assert( std::is_same_v<typename range_t::iterator,
-		                              daw::json::experimental::json_simd_block_iterator<point>> );
+		static_assert( std::is_same_v<
+		               typename range_t::iterator,
+		               daw::json::experimental::json_simd_block_iterator<point>> );
 		static_assert( std::is_same_v<typename range_t::ParsePolicy,
 		                              typename scalar_range_t::ParsePolicy> );
-		static_assert( std::is_same_v<typename unchecked_range_t::ParsePolicy,
-		                              typename daw::json::json_array_range<
-		                                point, daw::json::options::CheckedParseMode::no>::ParsePolicy> );
+		static_assert( std::is_same_v<
+		               typename unchecked_range_t::ParsePolicy,
+		               typename daw::json::json_array_range<
+		                 point,
+		                 daw::json::options::CheckedParseMode::no>::ParsePolicy> );
 
 		auto const document = std::string(
 		  R"json({"payload":{"points":[{"x":1,"y":2,"z":3},{"z":6,"name":"n","x":4,"y":5}]},"numbers":[1.5,-2.5],"flags":[true,false,true],"names":["alpha","beta"],"none":[ ]})json" );
 
 		auto simd_points = std::vector<simd_iterator_point>{ };
-		for( auto const &p : range_t( document, "payload.points" ) ) {
-			simd_points.push_back( p );
+		for( auto &&p : range_t( document, "payload.points" ) ) {
+			simd_points.push_back( std::move( p ) );
 		}
 		auto scalar_points = std::vector<simd_iterator_point>{ };
-		for( auto const &p : scalar_range_t( document, "payload.points" ) ) {
-			scalar_points.push_back( p );
+		for( auto &&p : scalar_range_t( document, "payload.points" ) ) {
+			scalar_points.push_back( std::move( p ) );
 		}
 		daw_ensure( simd_points.size( ) == 2U );
 		daw_ensure( simd_points.size( ) == scalar_points.size( ) );
@@ -1096,7 +1105,6 @@ namespace {
 #endif
 	}
 
-
 	/// "A count sum" when the whole array is accepted, "R" when rejected
 	template<typename Iterator>
 	[[nodiscard]] std::string summarize_points( std::string_view document ) {
@@ -1155,10 +1163,10 @@ namespace {
 			auto const scalar = summarize_points<scalar_point_iterator>( document );
 			auto const simd = summarize_points<strict_point_iterator>( document );
 			if( scalar != simd ) {
-				daw_ensure_error( true,
-				                  "SIMD class iterator differs from json_array_iterator on " +
-				                    std::string( document ) + " scalar: " + scalar +
-				                    " simd: " + simd );
+				daw_ensure_error(
+				  true,
+				  "SIMD class iterator differs from json_array_iterator on " +
+				    std::string( document ) + " scalar: " + scalar + " simd: " + simd );
 			}
 		}
 
@@ -1198,15 +1206,15 @@ namespace {
 
 		// Only strict skips limit the depth, to DAW_JSON_STRICT_SKIP_MAX_DEPTH
 		auto const nested = []( std::size_t depth ) {
-			return R"json([{"x":1,"y":2,"z":3,"o":)json" +
-			       std::string( depth, '[' ) + std::string( depth, ']' ) + "}]";
+			return R"json([{"x":1,"y":2,"z":3,"o":)json" + std::string( depth, '[' ) +
+			       std::string( depth, ']' ) + "}]";
 		};
 		daw_ensure( summarize_points<point_iterator>( nested( 100'000 ) ) ==
 		            "A 1 28" );
-		daw_ensure( summarize_points<strict_point_iterator>( nested(
-		              DAW_JSON_STRICT_SKIP_MAX_DEPTH ) ) == "A 1 28" );
-		daw_ensure( summarize_points<strict_point_iterator>( nested(
-		              DAW_JSON_STRICT_SKIP_MAX_DEPTH + 1 ) ) == "R" );
+		daw_ensure( summarize_points<strict_point_iterator>(
+		              nested( DAW_JSON_STRICT_SKIP_MAX_DEPTH ) ) == "A 1 28" );
+		daw_ensure( summarize_points<strict_point_iterator>(
+		              nested( DAW_JSON_STRICT_SKIP_MAX_DEPTH + 1 ) ) == "R" );
 
 		// A kostya style document found by its path, searched with find_if
 		auto document = std::string{ R"json({"info":"x","coordinates":[)json" };
@@ -1216,20 +1224,20 @@ namespace {
 			}
 			auto const v = std::to_string( n );
 			if( n % 2 == 0 ) {
-				document += R"json({"z":3,"name":"n )json" + v +
-				            R"json(","x":)json" + v +
-				            R"json(,"opts":{"1":[1,true]},"y":2.5})json";
+				document += R"json({"z":3,"name":"n )json" + v + R"json(","x":)json" +
+				            v + R"json(,"opts":{"1":[1,true]},"y":2.5})json";
 			} else {
-				document += R"json({ "y" : 2.5 , "x" : )json" + v +
-				            R"json( , "z" : 3 })json";
+				document +=
+				  R"json({ "y" : 2.5 , "x" : )json" + v + R"json( , "z" : 3 })json";
 			}
 		}
 		document += R"json(],"after":1})json";
 		using path_iterator = point_iterator;
-		auto found =
-		  std::find_if( path_iterator( document, "coordinates" ),
-		                path_iterator::end( ),
-		                []( simd_iterator_point const &p ) { return p.x == 151.0; } );
+		auto found = std::find_if( path_iterator( document, "coordinates" ),
+		                           path_iterator::end( ),
+		                           []( simd_iterator_point const &p ) {
+			                           return p.x == 151.0;
+		                           } );
 		daw_ensure( found != path_iterator::end( ) );
 		daw_ensure( ( *found ).y == 2.5 and ( *found ).z == 3.0 );
 		++found;
