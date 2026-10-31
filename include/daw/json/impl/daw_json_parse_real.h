@@ -127,7 +127,8 @@ namespace daw::json {
 				parse_digit_run( Iterator first, Iterator const last,
 				                 Accumulator &value ) {
 					std::uint32_t eight = 0;
-					while( last - first >= 8 and try_parse_8_digits( first, eight ) ) {
+					auto num_runs = static_cast<std::size_t>( last - first ) / 8U;
+					while( num_runs-- > 0 and try_parse_8_digits( first, eight ) ) {
 						value = value * static_cast<Accumulator>( 100'000'000U ) +
 						        static_cast<Accumulator>( eight );
 						first += 8;
@@ -160,35 +161,41 @@ namespace daw::json {
 				                        Iterator fract_first,
 				                        Iterator const fract_last ) {
 					significand_t result{ };
-					bool seen_nonzero = false;
-					for( ; whole_first < whole_last; ++whole_first ) {
-						auto const digit = parse_digit( *whole_first );
-						seen_nonzero |= digit != 0;
-						if( not seen_nonzero ) {
-							continue;
-						}
-						++result.significant_digits;
-						if( result.significant_digits <= max_u64_digits ) {
-							result.mantissa = result.mantissa * 10U + digit;
-						} else {
-							++result.exponent;
-							result.discarded_nonzero |= digit != 0;
+					// Leading zeros are not significant.  A JSON whole part is either
+					// a lone 0 or starts with a nonzero digit
+					while( whole_first < whole_last and parse_digit( *whole_first ) == 0 ) {
+						++whole_first;
+					}
+					if( whole_first == whole_last ) {
+						while( fract_first < fract_last and
+						       parse_digit( *fract_first ) == 0 ) {
+							--result.exponent;
+							++fract_first;
 						}
 					}
+					// The first 19 significant digits are kept, the rest only scale the
+					// value or mark that a nonzero digit was dropped
+					auto const whole_count = whole_last - whole_first;
+					auto const fract_count = fract_last - fract_first;
+					result.significant_digits = whole_count + fract_count;
+					auto const whole_kept =
+					  whole_count < max_u64_digits ? whole_count : max_u64_digits;
+					auto const fract_kept = fract_count < max_u64_digits - whole_kept
+					                          ? fract_count
+					                          : max_u64_digits - whole_kept;
+					auto const whole_kept_last = whole_first + whole_kept;
+					whole_first =
+					  parse_digit_run<false>( whole_first, whole_kept_last, result.mantissa );
+					result.exponent += whole_count - whole_kept;
+					for( ; whole_first < whole_last; ++whole_first ) {
+						result.discarded_nonzero |= parse_digit( *whole_first ) != 0;
+					}
+					auto const fract_kept_last = fract_first + fract_kept;
+					fract_first =
+					  parse_digit_run<false>( fract_first, fract_kept_last, result.mantissa );
+					result.exponent -= fract_kept;
 					for( ; fract_first < fract_last; ++fract_first ) {
-						auto const digit = parse_digit( *fract_first );
-						seen_nonzero |= digit != 0;
-						if( not seen_nonzero ) {
-							--result.exponent;
-							continue;
-						}
-						++result.significant_digits;
-						if( result.significant_digits <= max_u64_digits ) {
-							result.mantissa = result.mantissa * 10U + digit;
-							--result.exponent;
-						} else {
-							result.discarded_nonzero |= digit != 0;
-						}
+						result.discarded_nonzero |= parse_digit( *fract_first ) != 0;
 					}
 					return result;
 				}
