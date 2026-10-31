@@ -369,26 +369,52 @@ namespace daw::json {
 				  std::conditional_t<integer_accumulator, std::uint64_t, Result>;
 
 				iterator_t const number_first = parse_state.first;
-				// The number start, at least one whole digit and no leading zeros,
-				// e.g. "-", "-.1" and "01" are invalid.  The caller checked that
-				// there is data and that it starts a number
-				auto const sign =
-				  parse_policy_details::validate_signed_first( parse_state );
 				iterator_t first = parse_state.first;
 				iterator_t const last = parse_state.last;
-
+				// The number start, at least one whole digit and no leading zeros,
+				// e.g. "-", "-.1" and "01" are invalid.  Checked here instead of by
+				// validate_signed_first so that the first digit is read once
+				daw_json_assert_weak( skip_end_check or first < last,
+				                      ErrorReason::UnexpectedEndOfData,
+				                      parse_state );
+				int sign = 1;
+				if( *first == '-' ) {
+					++first;
+					sign = -1;
+					daw_json_assert_weak( ( skip_end_check or first < last ) and
+					                        parse_digit( *first ) < 10U,
+					                      ErrorReason::InvalidNumber,
+					                      parse_state.copy( first ) );
+				}
 				accumulator_t mantissa = accumulator_t( );
 				iterator_t const whole_first = first;
 				// Whole parts are usually short, often a single 0, so the eight digit
-				// blocks are only used for the fraction
-				while( skip_end_check or first < last ) {
-					auto const digit = parse_digit( *first );
-					if( digit >= 10U ) {
-						break;
-					}
-					mantissa = mantissa * static_cast<accumulator_t>( 10U ) +
-					           static_cast<accumulator_t>( digit );
+				// blocks are only used for the fraction.  A 0 is the whole part
+				auto const lead = parse_digit( *first );
+				if( lead == 0U ) {
 					++first;
+					daw_json_assert_weak( not( ( skip_end_check or first < last ) and
+					                           parse_digit( *first ) < 10U ),
+					                      ErrorReason::InvalidNumberStart,
+					                      parse_state.copy( first ) );
+				} else {
+					if( DAW_UNLIKELY( lead >= 10U ) ) {
+						DAW_UNLIKELY_BRANCH
+						daw_json_error( true,
+						                ErrorReason::InvalidNumberStart,
+						                parse_state.copy( first ) );
+					}
+					mantissa = static_cast<accumulator_t>( lead );
+					++first;
+					while( skip_end_check or first < last ) {
+						auto const digit = parse_digit( *first );
+						if( digit >= 10U ) {
+							break;
+						}
+						mantissa = mantissa * static_cast<accumulator_t>( 10U ) +
+						           static_cast<accumulator_t>( digit );
+						++first;
+					}
 				}
 				iterator_t const whole_last = first;
 				iterator_t fract_first = first;

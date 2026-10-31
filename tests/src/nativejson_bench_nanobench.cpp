@@ -7,6 +7,7 @@
 //
 
 #include "citm_test_json.h"
+#include "daw_json_benchmark.h"
 #include "geojson_json.h"
 #include "twitter_test_json.h"
 
@@ -14,12 +15,18 @@
 #include <daw/json/daw_json_link.h>
 
 #include <cstdlib>
-#include <fmt/format.h>
-#include <fstream>
 #include <iostream>
-#include <nanobench.h>
 #include <string>
 #include <string_view>
+
+#if not defined( DAW_NUM_RUNS )
+#if not defined( DEBUG ) or defined( NDEBUG )
+static inline constexpr std::size_t DAW_NUM_RUNS = 100;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 2;
+#endif
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
 
 using namespace daw::json::options;
 using constexpr_checked_pol = parse_flags_t<ExecModeTypes::compile_time>;
@@ -33,13 +40,13 @@ struct parser_t {
 	constexpr parser_t( ) = default;
 
 	bool operator( )( std::string_view jd ) const {
-		ankerl::nanobench::doNotOptimizeAway(
+		daw::do_not_optimize(
 		  daw::json::from_json<ParseObj>( jd, ParsePolicy{ } ) );
 		return true;
 	}
 
 	bool operator( )( PPair const &jd ) const {
-		ankerl::nanobench::doNotOptimizeAway(
+		daw::do_not_optimize(
 		  daw::json::from_json<ParseObj>( jd.first, jd.second, ParsePolicy{ } ) );
 		return true;
 	}
@@ -57,34 +64,39 @@ static void do_test( JsonDocs const &...jds ) try {
 }
 
 template<typename ParsePolicy>
-void bench( ankerl::nanobench::Bench &b, std::string_view title,
-            std::string const &twitter_doc, std::string const &citm_doc,
-            std::string const &canada_doc ) {
+void bench( std::string_view title, std::string const &twitter_doc,
+            std::string const &citm_doc, std::string const &canada_doc ) {
+	using daw::json::benchmark::benchmark;
 
 	// Constexpr Checked
-	b.batch( twitter_doc.size( ) );
-	b.run( fmt::format( "twitter {}", title ).c_str( ), [&]( ) {
+	auto const twitter_title = std::string( "twitter " ) + std::string( title );
+	(void)benchmark( DAW_NUM_RUNS, twitter_doc.size( ), twitter_title, [&]( ) {
 		do_test<ParsePolicy, daw::twitter::twitter_object_t>( twitter_doc );
 	} );
 
-	b.batch( citm_doc.size( ) );
-	b.run( fmt::format( "citm {}", title ).c_str( ), [&]( ) {
+	auto const citm_title = std::string( "citm " ) + std::string( title );
+	(void)benchmark( DAW_NUM_RUNS, citm_doc.size( ), citm_title, [&]( ) {
 		do_test<ParsePolicy, daw::citm::citm_object_t>( citm_doc );
 	} );
 
-	b.batch( canada_doc.size( ) );
-	b.run( fmt::format( "canada {}", title ).c_str( ), [&]( ) {
+	auto const canada_title = std::string( "canada " ) + std::string( title );
+	(void)benchmark( DAW_NUM_RUNS, canada_doc.size( ), canada_title, [&] {
 		do_test<ParsePolicy, daw::geojson::Polygon>(
 		  PPair{ canada_doc, "features[0].geometry" } );
 	} );
 
-	b.batch( twitter_doc.size( ) + citm_doc.size( ) + canada_doc.size( ) );
-	b.run( fmt::format( "nativejson {0}", title ).c_str( ), [&]( ) {
-		do_test<ParsePolicy, daw::twitter::twitter_object_t>( twitter_doc );
-		do_test<ParsePolicy, daw::citm::citm_object_t>( citm_doc );
-		do_test<ParsePolicy, daw::geojson::Polygon>(
-		  PPair{ canada_doc, "features[0].geometry" } );
-	} );
+	auto const nativejson_title =
+	  std::string( "nativejson " ) + std::string( title );
+	(void)benchmark( DAW_NUM_RUNS,
+	                 twitter_doc.size( ) + citm_doc.size( ) + canada_doc.size( ),
+	                 nativejson_title,
+	                 [&] {
+		                 do_test<ParsePolicy, daw::twitter::twitter_object_t>(
+		                   twitter_doc );
+		                 do_test<ParsePolicy, daw::citm::citm_object_t>( citm_doc );
+		                 do_test<ParsePolicy, daw::geojson::Polygon>(
+		                   PPair{ canada_doc, "features[0].geometry" } );
+	                 } );
 	// Constexpr Unchecked
 	// Runtime Checked
 	// Runtime Unchecked
@@ -99,45 +111,12 @@ int main( int argc, char **argv ) {
 		exit( 1 );
 	}
 
-	auto b1 = ankerl::nanobench::Bench( )
-	            .title( "nativejson parts" )
-	            .unit( "byte" )
-	            .warmup( 100 )
-	            .minEpochIterations( 100 );
-
 	std::string const twitter_doc = daw::read_file( argv[1] ).value( );
 	std::string const citm_doc = daw::read_file( argv[2] ).value( );
 	std::string const canada_doc = daw::read_file( argv[3] ).value( );
 
 	bench<constexpr_checked_pol>(
-	  b1, "constexpr checked", twitter_doc, citm_doc, canada_doc );
+	  "constexpr checked", twitter_doc, citm_doc, canada_doc );
 	bench<constexpr_unchecked_pol>(
-	  b1, "constexpr unchecked", twitter_doc, citm_doc, canada_doc );
-
-	if( argc > 4 ) {
-		std::string_view const fname = argv[4];
-		std::ofstream ofile = std::ofstream( argv[4] );
-		if( not ofile ) {
-			std::cerr << "Could not open output file '" << fname << "'\n";
-			exit( 1 );
-		}
-		if( fname.size( ) > 5 ) {
-			auto const ext = fname.substr( fname.size( ) - 4 );
-			if( ext == "json" ) {
-				b1.render( ankerl::nanobench::templates::json( ), ofile );
-				return 0;
-			} else if( ext == "html" ) {
-				b1.render( ankerl::nanobench::templates::htmlBoxplot( ), ofile );
-				return 0;
-			}
-		}
-		if( fname.size( ) > 4 and fname.substr( fname.size( ) - 3 ) == "csv" ) {
-			static constexpr char const csvout_template[] =
-			  R"DELIM("title", "name", "unit", "batch", "minimum time", "median time", "iterations", "error %", "instructions", "branches", "branch misses", "total"
-{{#result}}"{{title}}", "{{name}}", "{{unit}}", {{batch}}, {{minimum(elapsed)}}, {{median(elapsed)}}, {{median(iterations)}}, {{medianAbsolutePercentError(elapsed)}}, {{median(instructions)}}, {{median(branchinstructions)}}, {{median(branchmisses)}}, {{sumProduct(iterations, elapsed)}}
-{{/result}})DELIM";
-			b1.render( csvout_template, ofile );
-			return 0;
-		}
-	}
+	  "constexpr unchecked", twitter_doc, citm_doc, canada_doc );
 }

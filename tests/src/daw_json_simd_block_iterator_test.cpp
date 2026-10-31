@@ -526,10 +526,11 @@ namespace {
 	}
 
 	void test_iterator_semantics( ) {
-		auto empty = iterator( std::string_view{ } );
+		// A default constructed iterator is the end, an empty document is
+		// rejected, see test_invalid_array_grammar
+		auto empty = iterator{ };
 		daw_ensure( not empty );
 		daw_ensure( empty.begin( ) == empty.end( ) );
-		daw_ensure( empty == iterator{ } );
 
 		auto const document = std::string{ "[1.25, -2.5, 3.75]" };
 		auto range = iterator( document );
@@ -877,11 +878,55 @@ namespace {
 		                                           R"json(["a" "b"])json",
 		                                           R"json(["unterminated])json" } );
 
+		// The brackets are required, an empty document is not an array and the
+		// closing bracket is needed even with nothing after the opening one
+		for( auto const document : { std::string_view{ },
+		                             std::string_view( "" ),
+		                             std::string_view( " \n" ),
+		                             std::string_view( "[" ),
+		                             std::string_view( "[ " ),
+		                             std::string_view( " [\n" ) } ) {
+			daw_ensure( rejects_array<iterator>( document ) );
+			daw_ensure( rejects_array<bool_iterator>( document ) );
+			daw_ensure( rejects_array<string_iterator>( document ) );
+			daw_ensure( rejects_array<class_iterator>( document ) );
+		}
+
 		ensure_boundary_rejections<iterator>( block::block_size, "1", "2" );
 		ensure_boundary_rejections<bool_iterator>(
 		  bool_block::block_size, "true", "false" );
 		ensure_boundary_rejections<string_iterator>(
 		  string_block::block_size, R"json("a")json", R"json("b")json" );
+	}
+
+	/// Every proper prefix of a class array is rejected.  Cut right after a
+	/// '{', ':' or ',' outside of a string the data ends where more is
+	/// expected, in mapped and skipped members alike
+	void test_truncated_class_documents( ) {
+		auto const document = std::string_view(
+		  R"json([{"id":1,"ignored":{"nested":[1,{"x":"}"}]},"text":"t","enabled":true,"child":{"value":11}},{"id":2,"text":"u","enabled":false,"child":{"value":22}}])json" );
+		auto in_string = false;
+		for( std::size_t n = 1; n < document.size( ); ++n ) {
+			auto const last = document[n - 1U];
+			if( last == '"' ) {
+				in_string = not in_string;
+			}
+			auto const prefix = std::string( document.substr( 0, n ) );
+			auto reason = std::optional<daw::json::ErrorReason>{ };
+			try {
+				auto values = class_iterator( prefix );
+				while( values != values.end( ) ) {
+					(void)*values;
+					++values;
+				}
+			} catch( daw::json::json_exception const &ex ) {
+				reason = ex.reason_type( );
+			}
+			daw_ensure( reason.has_value( ) );
+			if( not in_string and ( last == '{' or last == ':' or last == ',' ) ) {
+				daw_ensure( *reason == daw::json::ErrorReason::UnexpectedEndOfData );
+			}
+		}
 	}
 
 #endif
@@ -1305,6 +1350,7 @@ int main( ) {
 	test_stops_at_array_end( );
 #if defined( DAW_USE_EXCEPTIONS )
 	test_invalid_array_grammar( );
+	test_truncated_class_documents( );
 #endif
 	test_separate_base_type_paths( );
 	test_class_iterator( );

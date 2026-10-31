@@ -231,8 +231,7 @@ namespace {
 
 	void check_structural_index( std::string const &doc, char const *data,
 	                             reference_tokens const &ref ) {
-		auto const capacity =
-		  doc.size( ) + lexer_cursor::structural_index_padding;
+		auto const capacity = doc.size( ) + lexer_cursor::structural_index_padding;
 		auto offsets = std::vector<std::uint32_t>( capacity );
 		auto const result = lexer_cursor::build_structural_index(
 		  std::string_view( data, doc.size( ) ), offsets.data( ) );
@@ -264,8 +263,7 @@ namespace {
 
 		auto choose_blocks = std::uniform_int_distribution<std::size_t>( 1, 4 );
 		auto offsets = std::vector<std::uint32_t>(
-		  4U * lexer_cursor::block_size +
-		  lexer_cursor::structural_index_padding );
+		  4U * lexer_cursor::block_size + lexer_cursor::structural_index_padding );
 		auto carry = lexer_cursor::chunk_carry{ };
 		auto found = std::size_t{ 0 };
 		for( std::size_t pos = 0; pos < doc.size( ); ) {
@@ -334,8 +332,10 @@ namespace {
 				  std::lower_bound( boundaries.begin( ), boundaries.end( ), first );
 				if( lo != boundaries.end( ) ) {
 					auto const span = static_cast<std::size_t>( boundaries.end( ) - lo );
-					first = lo[std::uniform_int_distribution<std::size_t>( 0, span - 1U )(
-					  rng )];
+					auto dist =
+					  std::uniform_int_distribution<std::size_t>( 0, span - 1U );
+					auto idx = static_cast<std::ptrdiff_t>( dist( rng ) );
+					first = lo[idx];
 				}
 				break;
 			}

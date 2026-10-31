@@ -8,13 +8,14 @@
 
 #include "defines.h"
 
+#include "daw_json_benchmark.h"
+
 #include "daw/json/daw_json_iterator.h"
 
 #include <daw/daw_do_n.h>
 #include <daw/daw_random.h>
 
 #include <iostream>
-#include <nanobench.h>
 #include <streambuf>
 #include <string_view>
 
@@ -37,7 +38,7 @@ Float rand_float( ) {
 }
 
 template<size_t NUMVALUES>
-void test_func( ankerl::nanobench::Bench &b ) {
+void test_func( ) {
 	using namespace daw::json;
 	using iterator_t = daw::json::json_array_iterator<float>;
 
@@ -54,12 +55,18 @@ void test_func( ankerl::nanobench::Bench &b ) {
 	auto const json_sv =
 	  daw::string_view( json_data3.data( ), json_data3.size( ) );
 	auto const data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
-	b.batch( sizeof( float ) * NUMVALUES );
-	b.run( "float", [&]( ) noexcept {
-		auto *ptr = std::copy( iterator_t( json_sv ), iterator_t( ), data2.get( ) );
-		ankerl::nanobench::doNotOptimizeAway( data2 );
-		ankerl::nanobench::doNotOptimizeAway( ptr );
-	} );
+	(void)daw::json::benchmark::benchmark_items(
+	  DAW_NUM_RUNS,
+	  sizeof( float ) * NUMVALUES,
+	  NUMVALUES,
+	  "float",
+	  "float array iterator",
+	  [&]( ) noexcept {
+		  auto *ptr =
+		    std::copy( iterator_t( json_sv ), iterator_t( ), data2.get( ) );
+		  daw::do_not_optimize( data2 );
+		  daw::do_not_optimize( ptr );
+	  } );
 }
 
 int main( int argc, char ** )
@@ -67,16 +74,10 @@ int main( int argc, char ** )
   try
 #endif
 {
-
-	auto b1 = ankerl::nanobench::Bench( )
-	            .title( "nativejson parts" )
-	            .unit( "byte" )
-	            .warmup( 3000 )
-	            .minEpochIterations( DAW_NUM_RUNS );
 	if( argc > 1 ) {
-		test_func<1'000'000ULL>( b1 );
+		test_func<1'000'000ULL>( );
 	} else {
-		test_func<1'000ULL>( b1 );
+		test_func<1'000ULL>( );
 	}
 }
 #if defined( DAW_USE_EXCEPTIONS )

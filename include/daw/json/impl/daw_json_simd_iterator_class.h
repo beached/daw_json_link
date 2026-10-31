@@ -60,16 +60,16 @@ namespace daw::json {
 
 				/// first must be outside of a string
 				void reset( char const *first, char const *last_ptr ) {
-					chunk_first = first;
 					next_chunk = first;
 					last = last_ptr;
-					position = 0U;
-					size = 0U;
 					carry = { };
+					refill( );
 				}
 
-				/// Index the next chunk that has events.  false at the end of the data
-				DAW_ATTRIB_NOINLINE bool refill( ) {
+				/// Index the next chunk that has events.  At the end of the data the
+				/// buffer holds only the end event
+				DAW_ATTRIB_NOINLINE void refill( ) {
+					position = 0U;
 					while( next_chunk < last ) {
 						auto const remaining =
 						  static_cast<std::size_t>( last - next_chunk );
@@ -77,23 +77,50 @@ namespace daw::json {
 						chunk_first = next_chunk;
 						size = lexer_cursor::build_structural_chunk(
 						  next_chunk, count, carry, offsets );
-						position = 0U;
 						next_chunk += count;
 						if( size != 0U ) {
-							return true;
+							return;
 						}
 					}
-					return false;
+					chunk_first = &end_event;
+					offsets[0] = 0U;
+					size = 1U;
 				}
 
-				/// The next event, nullptr at the end of the data
-				[[nodiscard]] DAW_ATTRIB_INLINE char const *next( ) {
-					if( DAW_UNLIKELY( position == size ) ) {
-						if( not refill( ) ) {
-							return nullptr;
-						}
+				/// The event of an exhausted buffer, a closing bracket outside of the
+				/// data.  Skips end on it without checking for the end, and every
+				/// other expected character differs from it
+				static constexpr char end_event = ']';
+
+				[[nodiscard]] static constexpr bool
+				is_end( char const *event ) noexcept {
+					return event == &end_event;
+				}
+
+				/// UnexpectedEndOfData when event is the end event, otherwise reason
+				[[nodiscard]] static constexpr ErrorReason
+				event_reason( char const *event, ErrorReason reason ) noexcept {
+					return is_end( event ) ? ErrorReason::UnexpectedEndOfData : reason;
+				}
+
+				/// The current event, the end event once the data is exhausted
+				[[nodiscard]] DAW_ATTRIB_INLINE char const *operator*( ) const {
+					return chunk_first + offsets[position];
+				}
+
+				/// Move to the next event.  Past the end it stays on the end event
+				DAW_ATTRIB_INLINE simd_class_event_buffer &operator++( ) {
+					if( DAW_UNLIKELY( ++position == size ) ) {
+						refill( );
 					}
-					return chunk_first + offsets[position++];
+					return *this;
+				}
+
+				/// The current event, moving past it
+				[[nodiscard]] DAW_ATTRIB_INLINE char const *take( ) {
+					auto const event = operator*( );
+					operator++( );
+					return event;
 				}
 			};
 
@@ -153,32 +180,32 @@ namespace daw::json {
 				switch( *value_first ) {
 				case '{':
 				case '[': {
-					// Strings and scalars are one event, so only the brackets matter
+					// Strings and scalars are one event, so only the brackets matter.
+					// The end event is a closing bracket, so the walk ends there too
 					auto depth = std::size_t{ 1 };
-					auto event = events.next( );
-					while( event != nullptr ) {
+					while( true ) {
+						auto const event = events.take( );
 						auto const c = *event;
 						if( c == '{' or c == '[' ) {
 							++depth;
-						} else if( c == '}' or c == ']' ) {
-							if( --depth == 0U ) {
-								break;
-							}
+						} else if( ( c == '}' or c == ']' ) and --depth == 0U ) {
+							daw_json_assert_weak( not simd_class_event_buffer::is_end( event ),
+							                      ErrorReason::UnexpectedEndOfData,
+							                      parse_state );
+							break;
 						}
-						event = events.next( );
 					}
-					daw_json_assert_weak(
-					  event != nullptr, ErrorReason::UnexpectedEndOfData, parse_state );
-					return events.next( );
+					return events.take( );
 				}
 				case 't':
 				case 'f':
 				case 'n': {
-					auto const delimiter = events.next( );
+					auto const delimiter = events.take( );
 					if constexpr( not ParseState::is_unchecked_input ) {
 						auto const value_last = trim_value_right(
 						  value_first,
-						  delimiter == nullptr ? parse_state.last : delimiter );
+						  simd_class_event_buffer::is_end( delimiter ) ? parse_state.last
+						                                               : delimiter );
 						switch( *value_first ) {
 						case 't':
 							daw_json_assert_weak(
@@ -204,7 +231,7 @@ namespace daw::json {
 				}
 				default:
 					// A string or a number ends before the next event
-					return events.next( );
+					return events.take( );
 				}
 			}
 
@@ -221,18 +248,19 @@ namespace daw::json {
 			                       simd_class_event_buffer &events ) {
 				if constexpr( ParseState::is_unchecked_input or
 				              not ParseState::strict_skip_checks ) {
+					// The end event is a closing bracket, so the walk ends there too
 					auto depth = std::size_t{ 1 };
 					while( true ) {
-						auto const event = events.next( );
-						if( DAW_UNLIKELY( event == nullptr ) ) {
-							DAW_UNLIKELY_BRANCH
-							daw_json_error(
-							  false, ErrorReason::UnexpectedEndOfData, value_state );
-						}
+						auto const event = events.take( );
 						auto const c = *event;
 						if( c == '{' or c == '[' ) {
 							++depth;
 						} else if( ( c == '}' or c == ']' ) and --depth == 0U ) {
+							if( DAW_UNLIKELY( simd_class_event_buffer::is_end( event ) ) ) {
+								DAW_UNLIKELY_BRANCH
+								daw_json_error(
+								  false, ErrorReason::UnexpectedEndOfData, value_state );
+							}
 							return event;
 						}
 					}
@@ -242,9 +270,10 @@ namespace daw::json {
 					(void)brackets.push( *value_state.first == '{' );
 					auto state = expect::first_item;
 					while( true ) {
-						auto event = events.next( );
-						daw_json_assert_weak(
-						  event != nullptr, ErrorReason::UnexpectedEndOfData, value_state );
+						auto event = events.take( );
+						daw_json_assert_weak( not simd_class_event_buffer::is_end( event ),
+						                      ErrorReason::UnexpectedEndOfData,
+						                      value_state );
 						auto c = *event;
 						auto const in_class = brackets.in_class( );
 						if( state == expect::separator and c == ',' ) {
@@ -271,12 +300,14 @@ namespace daw::json {
 						if( in_class ) {
 							daw_json_assert_weak(
 							  c == '"', ErrorReason::InvalidMemberName, value_state );
-							auto const colon = events.next( );
-							daw_json_assert_weak( colon != nullptr and *colon == ':',
-							                      ErrorReason::InvalidMemberName,
-							                      value_state );
-							event = events.next( );
-							daw_json_assert_weak( event != nullptr,
+							auto const colon = events.take( );
+							daw_json_assert_weak(
+							  *colon == ':',
+							  simd_class_event_buffer::event_reason(
+							    colon, ErrorReason::InvalidMemberName ),
+							  value_state );
+							event = events.take( );
+							daw_json_assert_weak( not simd_class_event_buffer::is_end( event ),
 							                      ErrorReason::UnexpectedEndOfData,
 							                      value_state );
 							c = *event;
@@ -315,7 +346,7 @@ namespace daw::json {
 				if( c == '{' or c == '[' ) {
 					(void)skip_container_events( value_state, events );
 				}
-				return events.next( );
+				return events.take( );
 			}
 
 			template<typename JsonMemberList>
@@ -356,29 +387,31 @@ namespace daw::json {
 
 					auto const class_first = parse_state.first;
 					auto const last = parse_state.last;
-					auto event = events.next( );
+					// The end event, a ']', fails each of the checks below, which only
+					// look at it to name the error
+					using events_t = simd_class_event_buffer;
+					auto event = events.take( );
 					while( true ) {
-						daw_json_assert_weak(
-						  event != nullptr, ErrorReason::UnexpectedEndOfData, parse_state );
 						if( *event == '}' ) {
 							break;
 						}
 						daw_json_assert_weak(
-						  *event == '"', ErrorReason::InvalidMemberName, parse_state );
-						auto const colon = events.next( );
-						daw_json_assert_weak( colon != nullptr and *colon == ':',
-						                      ErrorReason::InvalidMemberName,
-						                      parse_state );
+						  *event == '"',
+						  events_t::event_reason( event, ErrorReason::InvalidMemberName ),
+						  parse_state );
+						auto const colon = events.take( );
+						daw_json_assert_weak(
+						  *colon == ':',
+						  events_t::event_reason( colon, ErrorReason::InvalidMemberName ),
+						  parse_state );
 						auto const name = scan_member_name( event + 1, colon, parse_state );
-						auto const value_first = events.next( );
-						daw_json_assert_weak( value_first != nullptr,
-						                      ErrorReason::UnexpectedEndOfData,
-						                      parse_state );
-						daw_json_assert_weak( *value_first != ',' and
-						                        *value_first != '}' and
-						                        *value_first != ']' and *value_first != ':',
-						                      ErrorReason::InvalidStartOfValue,
-						                      parse_state );
+						auto const value_first = events.take( );
+						daw_json_assert_weak(
+						  *value_first != ',' and *value_first != '}' and
+						    *value_first != ']' and *value_first != ':',
+						  events_t::event_reason( value_first,
+						                          ErrorReason::InvalidStartOfValue ),
+						  parse_state );
 
 						auto const name_pos = locations.template find_name<0>( name );
 						char const *delimiter = nullptr;
@@ -395,18 +428,17 @@ namespace daw::json {
 							  ParseState( value_first, last, class_first, last ), events );
 						}
 
-						daw_json_assert_weak( delimiter != nullptr,
-						                      ErrorReason::UnexpectedEndOfData,
-						                      parse_state );
 						if( *delimiter == '}' ) {
 							event = delimiter;
 							break;
 						}
-						daw_json_assert_weak( *delimiter == ',',
-						                      ErrorReason::ExpectedTokenNotFound,
-						                      parse_state );
-						event = events.next( );
-						if( event != nullptr and *event == '}' ) {
+						daw_json_assert_weak(
+						  *delimiter == ',',
+						  events_t::event_reason( delimiter,
+						                          ErrorReason::ExpectedTokenNotFound ),
+						  parse_state );
+						event = events.take( );
+						if( *event == '}' ) {
 							daw_json_assert_weak( simd_class_allows_trailing_comma,
 							                      ErrorReason::TrailingComma,
 							                      parse_state );
@@ -433,11 +465,29 @@ namespace daw::json {
 						return parse_class_member_impl<JsonMember, false>(
 						  parse_state, find_result<ParseState>{ member_state, true } );
 					}
+					constexpr auto type = JsonMember::expected_type;
+					if constexpr( ( type == JsonParseTypes::Real or
+					                type == JsonParseTypes::Signed or
+					                type == JsonParseTypes::Unsigned ) and
+					              not ParseState::is_zero_terminated_string and
+					              not ParseState::is_unchecked_input and
+					              not ParseState::has_allocator ) {
+						// The scan found the closing brace of the class, so a ',' or '}' in
+						// the data follows every member value.  Like from_json_simd, a
+						// number is scanned with the zero-terminated policy up to that
+						// non-digit without checking for the end of the data
+						using number_state = zstring_policy_t<ParseState>;
+						auto state = number_state( member_state.first,
+						                           member_state.last,
+						                           member_state.class_first,
+						                           member_state.class_last,
+						                           member_state.counter );
+						return parse_value<without_name<JsonMember>, false, type>( state );
+					}
 					// The value is parsed in place, as the scalar parser does for a
 					// member in order
-					return parse_value<without_name<JsonMember>,
-					                   false,
-					                   JsonMember::expected_type>( member_state );
+					return parse_value<without_name<JsonMember>, false, type>(
+					  member_state );
 				}
 
 				template<typename JsonClass, typename ParseState, std::size_t... Is>
@@ -491,10 +541,12 @@ namespace daw::json {
 				            simd_class_event_buffer &events ) {
 					using result_t = json_result_t<JsonClass>;
 					if constexpr( all_json_members_must_exist_v<result_t, ParseState> ) {
-						auto const event = events.next( );
-						daw_json_assert_weak( event != nullptr and *event == '}',
-						                      ErrorReason::UnknownMember,
-						                      parse_state );
+						auto const event = events.take( );
+						daw_json_assert_weak(
+						  *event == '}',
+						  simd_class_event_buffer::event_reason(
+						    event, ErrorReason::UnknownMember ),
+						  parse_state );
 						return event + 1;
 					} else {
 						// Every member is skipped, see skip_container_events
@@ -550,6 +602,7 @@ namespace daw::json {
 				using iterator_category = std::input_iterator_tag;
 
 			private:
+				// nullptr once the closing bracket of the array was taken
 				char const *m_first = nullptr;
 				char const *m_last = nullptr;
 				bool m_previous_value = false;
@@ -562,35 +615,46 @@ namespace daw::json {
 				void move_to_next_value( ) {
 					m_current.first = nullptr;
 					m_current.last = nullptr;
-					if( m_first == nullptr or m_first == m_last ) {
+					if( m_first == nullptr ) {
 						return;
 					}
+					using events_t = simd_class_event_buffer;
 					auto const error_state = ParseState( m_first, m_last );
-					auto event = m_events.next( );
-					daw_json_assert_weak(
-					  event != nullptr, ErrorReason::UnexpectedEndOfData, error_state );
+					// Whether event closes the array.  The end event is a ']' too, the
+					// data ended before the array did
+					auto const closes_array = [&]( char const *e ) {
+						if( *e != ']' ) {
+							return false;
+						}
+						daw_json_assert_weak( not events_t::is_end( e ),
+						                      ErrorReason::UnexpectedEndOfData,
+						                      error_state );
+						return true;
+					};
+					auto event = m_events.take( );
 					if( m_previous_value ) {
-						if( *event == ']' ) {
-							m_first = m_last;
+						if( closes_array( event ) ) {
+							m_first = nullptr;
 							return;
 						}
 						daw_json_assert_weak(
-						  *event == ',', ErrorReason::InvalidEndOfValue, error_state );
-						event = m_events.next( );
-						daw_json_assert_weak(
-						  event != nullptr, ErrorReason::UnexpectedEndOfData, error_state );
-						if( *event == ']' ) {
+						  *event == ',',
+						  events_t::event_reason( event, ErrorReason::InvalidEndOfValue ),
+						  error_state );
+						event = m_events.take( );
+						if( closes_array( event ) ) {
 							daw_json_assert_weak( simd_class_allows_trailing_comma,
 							                      ErrorReason::TrailingComma,
 							                      error_state );
-							m_first = m_last;
+							m_first = nullptr;
 							return;
 						}
-					} else if( *event == ']' ) {
-						m_first = m_last;
+					} else if( closes_array( event ) ) {
+						m_first = nullptr;
 						return;
 					}
 
+					// event is in the data, the end event is a ']'
 					auto parse_state = ParseState( event, m_last );
 					daw_json_assert_weak(
 					  *event == '{', ErrorReason::InvalidClassStart, parse_state );
@@ -609,16 +673,17 @@ namespace daw::json {
 				  : m_first( document.data( ) )
 				  , m_last( std::next( document.data( ), static_cast<std::ptrdiff_t>(
 				                                           document.size( ) ) ) ) {
-					if( m_first != m_last ) {
-						auto parse_state = ParseState( m_first, m_last );
-						parse_state.trim_left( );
-						daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
-						                      ErrorReason::InvalidArrayStart,
-						                      parse_state );
-						parse_state.remove_prefix( );
-						m_first = parse_state.data( );
-						m_events.reset( m_first, m_last );
-					}
+					// An empty document is not an array either
+					daw_json_assert_weak( m_first != m_last, ErrorReason::InvalidArrayStart );
+					auto parse_state = ParseState( m_first, m_last );
+					parse_state.trim_left( );
+					daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
+					                      ErrorReason::InvalidArrayStart,
+					                      parse_state );
+					parse_state.remove_prefix( );
+					m_first = parse_state.data( );
+					// Even with no data left the closing bracket is looked for
+					m_events.reset( m_first, m_last );
 					move_to_next_value( );
 				}
 

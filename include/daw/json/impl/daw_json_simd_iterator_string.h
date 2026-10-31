@@ -143,16 +143,16 @@ namespace daw::json {
 				  : m_first( document.data( ) )
 				  , m_last( std::next( document.data( ), static_cast<std::ptrdiff_t>(
 				                                           document.size( ) ) ) ) {
-					if( m_first != m_last ) {
-						auto parse_state = ParseState( m_first, m_last );
-						parse_state.trim_left( );
-						daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
-						                      ErrorReason::InvalidArrayStart,
-						                      parse_state );
-						parse_state.remove_prefix( );
-						m_first = parse_state.data( );
-						m_grammar_state.started = true;
-					}
+					// An empty document is not an array either
+					daw_json_assert_weak( m_first != m_last, ErrorReason::InvalidArrayStart );
+					auto parse_state = ParseState( m_first, m_last );
+					parse_state.trim_left( );
+					daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
+					                      ErrorReason::InvalidArrayStart,
+					                      parse_state );
+					parse_state.remove_prefix( );
+					m_first = parse_state.data( );
+					m_grammar_state.started = true;
 					move_to_next_value( );
 				}
 
