@@ -231,6 +231,147 @@ namespace daw::json {
 					}
 					return true;
 				}
+
+				/// @brief Takes decoded chars and checks them against expected.  Stops
+				/// the decode at the first char that differs, or once expected is used
+				/// up
+				struct name_matcher {
+					char const *first;
+					char const *last;
+
+					[[nodiscard]] constexpr bool operator( )( char c ) {
+						if( first == last or *first != c ) {
+							return false;
+						}
+						++first;
+						return true;
+					}
+				};
+
+				/// @brief Whether the member name raw, as written between its quotes in
+				/// the document, decodes to exactly decoded.  Names without escapes are
+				/// compared as is.  Decoding never lengthens a name, so a raw name
+				/// shorter than decoded cannot match.  The decode stops at the first
+				/// char that differs
+				template<typename ParseState>
+				[[nodiscard]] constexpr bool
+				decoded_name_equal( daw::string_view raw, daw::string_view decoded,
+				                    ParseState const &parse_state ) {
+					if( not raw.contains( '\\' ) ) {
+						return raw == decoded;
+					}
+					if( std::size( raw ) < std::size( decoded ) ) {
+						return false;
+					}
+					auto matcher =
+					  name_matcher{ std::data( decoded ), daw::data_end( decoded ) };
+					return decode_name( raw, matcher, parse_state ) and
+					       matcher.first == matcher.last;
+				}
+
+				/// @brief The value of the hex digit c, or 16 when c is not one
+				[[nodiscard]] constexpr unsigned path_hex_value( char c ) {
+					if( '0' <= c and c <= '9' ) {
+						return static_cast<unsigned>( c - '0' );
+					}
+					if( 'a' <= c and c <= 'f' ) {
+						return static_cast<unsigned>( c - 'a' ) + 10U;
+					}
+					if( 'A' <= c and c <= 'F' ) {
+						return static_cast<unsigned>( c - 'A' ) + 10U;
+					}
+					return 16U;
+				}
+
+				/// @brief Read the UTF-16 escape "\uXXXX" at first, which has at least
+				/// 6 chars, into cp.  Returns false when it is not one
+				[[nodiscard]] constexpr bool path_utf16_unit( char const *first,
+				                                              UInt32 &cp ) {
+					if( first[0] != '\\' or first[1] != 'u' ) {
+						return false;
+					}
+					unsigned value = 0;
+					for( int n = 2; n < 6; ++n ) {
+						unsigned const digit = path_hex_value( first[n] );
+						if( digit > 15U ) {
+							return false;
+						}
+						value = ( value << 4U ) | digit;
+					}
+					cp = to_uint32( value );
+					return true;
+				}
+
+				/// @brief Writes chars forward from p
+				struct char_writer {
+					char *p;
+
+					[[nodiscard]] constexpr bool operator( )( char c ) {
+						*p = c;
+						++p;
+						return true;
+					}
+				};
+
+				/// @brief Decode the member name component of a JSON path in
+				/// [first, last) in place.  The escapes are those of a JSON string,
+				/// plus "\.", "\[" and "\]" for the path delimiters.  An escape is
+				/// never shorter than what it decodes to, so the decoded chars are
+				/// written behind the ones still to be read.  Paths are user input, not
+				/// document text, so an invalid escape or an unpaired surrogate returns
+				/// nullptr instead of being a parse error
+				/// @return The end of the decoded name, which starts at first, or
+				/// nullptr
+				[[nodiscard]] constexpr char *
+				decode_path_component_in_place( char *first, char *const last ) {
+					auto out = char_writer{ first };
+					while( first < last ) {
+						if( *first != '\\' ) {
+							(void)out( *first );
+							++first;
+							continue;
+						}
+						if( last - first < 2 ) {
+							return nullptr;
+						}
+						char const e = first[1];
+						if( e == '.' or e == '[' or e == ']' ) {
+							(void)out( e );
+							first += 2;
+							continue;
+						}
+						if( e != 'u' ) {
+							char const c = escaped_char( e );
+							if( c == 0 ) {
+								return nullptr;
+							}
+							(void)out( c );
+							first += 2;
+							continue;
+						}
+						UInt32 cp{ };
+						if( last - first < 6 or not path_utf16_unit( first, cp ) ) {
+							return nullptr;
+						}
+						first += 6;
+						if( 0xDC00U <= cp and cp <= 0xDFFFU ) {
+							return nullptr; // Unpaired low surrogate
+						}
+						if( 0xD800U <= cp and cp <= 0xDBFFU ) {
+							UInt32 trailing{ };
+							if( last - first < 6 or not path_utf16_unit( first, trailing ) or
+							    trailing < 0xDC00U or trailing > 0xDFFFU ) {
+								return nullptr;
+							}
+							first += 6;
+							cp = 0x10000U + ( ( cp - 0xD800U ) * 0x400U ) +
+							     ( trailing - 0xDC00U );
+						}
+						// At least 6 chars were read and at most 4 are written
+						(void)append_utf8( cp, out );
+					}
+					return out.p;
+				}
 			} // namespace name
 
 			struct pop_json_path_result {

@@ -541,6 +541,87 @@ namespace daw::json {
 				return jv;
 			}
 
+			/// @brief Query the current class for the member whose decoded name is
+			/// decoded_name.  Escapes in the document's names are decoded as they
+			/// are compared, stopping at the first char that differs, so "a\"b" and
+			/// "a" in the document match a"b and a.  decoded_name is literal
+			/// text and has no escapes of its own
+			/// @return The first member with matching name or an empty
+			/// basic_json_value
+			[[nodiscard]] constexpr basic_json_value
+			find_class_member_decoded( daw::string_view decoded_name ) const {
+				if( type( ) != JsonBaseParseTypes::Class ) {
+					return basic_json_value{ };
+				}
+				auto const &parse_state = m_parse_state;
+				auto pos = daw::algorithm::find_if(
+				  begin( ), end( ), [&]( auto const &jp ) {
+					  assert( jp.name );
+					  return json_details::name::decoded_name_equal(
+					    daw::string_view( std::data( *jp.name ), std::size( *jp.name ) ),
+					    decoded_name,
+					    parse_state );
+				  } );
+				if( pos == end( ) ) {
+					return basic_json_value( );
+				}
+				return ( *pos ).value;
+			}
+
+			/// @brief find a class member/array element as specified by the
+			/// json_path, comparing member names by their decoded text.  Path
+			/// components use the escapes of a JSON string, plus "\.", "\[" and "\]"
+			/// for the path delimiters, so a name can be given escaped or as is,
+			/// e.g. a\"b, a"b and \u0061\"b all find the member a"b.  The path is
+			/// taken by value and each component is decoded once, in place, in its
+			/// storage.  A component with an invalid escape finds nothing
+			/// @return The member/element found or an empty basic_json_value
+			[[nodiscard]] DAW_CPP20_CX_ALLOC basic_json_value
+			find_member_decoded( std::string json_path ) const {
+				auto jv = *this;
+				char *first = std::data( json_path );
+				char *const last = first + std::size( json_path );
+				auto const remaining = [&] {
+					return daw::string_view(
+					  first, static_cast<std::size_t>( last - first ) );
+				};
+				while( first != last and jv ) {
+					if( *first == '[' ) {
+						auto rest = remaining( );
+						rest.remove_prefix( );
+						auto const index_str = rest.pop_front_until( ']' );
+						first = last - std::size( rest );
+						auto index_ps =
+						  TryDefaultParsePolicy<BasicParsePolicy<PolicyFlags>>(
+						    std::data( index_str ), daw::data_end( index_str ) )
+						    .with_allocator( m_parse_state.get_allocator( ) );
+						auto const index =
+						  json_details::unsigned_parser<std::size_t,
+						                                options::JsonRangeCheck::Never,
+						                                true>( index_ps );
+						jv = jv.find_element( index );
+					} else {
+						auto rest = remaining( );
+						auto const raw =
+						  rest.pop_front_until( escaped_any_of<'.', '['>{ }, nodiscard );
+						char *const raw_last = first + std::size( raw );
+						char *const name_last =
+						  json_details::name::decode_path_component_in_place( first,
+						                                                      raw_last );
+						if( name_last == nullptr ) {
+							return basic_json_value( );
+						}
+						jv = jv.find_class_member_decoded( daw::string_view(
+						  first, static_cast<std::size_t>( name_last - first ) ) );
+						first = raw_last;
+					}
+					if( first != last and *first == '.' ) {
+						++first;
+					}
+				}
+				return jv;
+			}
+
 			/// @brief Parse the current json member as a Result.  The Result type
 			/// must be supported or mapped via a json_data_contract
 			template<typename Result>

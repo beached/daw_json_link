@@ -1310,6 +1310,12 @@ add_test( NAME decode_member_name_test COMMAND decode_member_name_test )
 add_dependencies( ci_tests decode_member_name_test )
 add_dependencies( full decode_member_name_test )
 
+add_executable( json_value_find_member_decoded_test src/json_value_find_member_decoded_test.cpp )
+target_link_libraries( json_value_find_member_decoded_test PRIVATE json_test )
+add_test( NAME json_value_find_member_decoded_test COMMAND json_value_find_member_decoded_test )
+add_dependencies( ci_tests json_value_find_member_decoded_test )
+add_dependencies( full json_value_find_member_decoded_test )
+
 add_executable( deduced_string_escaping_test src/deduced_string_escaping_test.cpp )
 target_link_libraries( deduced_string_escaping_test PRIVATE json_test )
 add_test( NAME deduced_string_escaping_test COMMAND deduced_string_escaping_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
