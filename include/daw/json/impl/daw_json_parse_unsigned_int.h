@@ -64,9 +64,10 @@ namespace daw::json {
 
 			// Constexpr'ified version from
 			// https://kholdstare.github.io/technical/2020/05/26/faster-integer-parsing.html
+			template<typename ExecTag = default_exec_tag>
 			constexpr UInt64 parse_8_digits( daw::not_null<char const *> const str ) {
 #if defined( DAW_HAS_SIMD )
-				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+				if( not use_constexpr_exec_mode<ExecTag>( ) ) {
 					return UInt64( simd_parse_8_digits( str.get( ) ) );
 				}
 #endif
@@ -100,11 +101,12 @@ namespace daw::json {
 
 			/// When the 8 characters at ptr are all digits, set value to their
 			/// value and return true
+			template<typename ExecTag = default_exec_tag>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
 			try_parse_8_digits( daw::not_null<char const *> const ptr,
 			                    std::uint32_t &value ) {
 #if defined( DAW_HAS_SIMD )
-				if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+				if( not use_constexpr_exec_mode<ExecTag>( ) ) {
 					return simd_try_parse_8_digits( ptr.get( ), value );
 				}
 #endif
@@ -112,14 +114,15 @@ namespace daw::json {
 					return false;
 				}
 				value = static_cast<std::uint32_t>(
-				  static_cast<std::uint64_t>( parse_8_digits( ptr ) ) );
+				  static_cast<std::uint64_t>( parse_8_digits<ExecTag>( ptr ) ) );
 				return true;
 			}
 
+			template<typename ExecTag = default_exec_tag>
 			constexpr UInt64
 			parse_16_digits( daw::not_null<char const *> const str ) {
-				auto const upper = parse_8_digits( str );
-				auto const lower = parse_8_digits( str + 8 );
+				auto const upper = parse_8_digits<ExecTag>( str );
+				auto const lower = parse_8_digits<ExecTag>( str + 8 );
 				return upper * daw::UInt64{ 100'000'000ULL } + lower;
 			}
 
@@ -215,7 +218,8 @@ namespace daw::json {
 						                 parse_state );
 					}
 					result *= static_cast<uresult_t>( 10'000'000'000'000'000ULL );
-					result += static_cast<uresult_t>( parse_16_digits( first ) );
+					result += static_cast<uresult_t>(
+					  parse_16_digits<typename ParseState::exec_tag_t>( first ) );
 					first += 16;
 				}
 				if( last - first >= 8 ) {
@@ -225,7 +229,8 @@ namespace daw::json {
 						                 parse_state );
 					}
 					result *= static_cast<uresult_t>( 100'000'000ULL );
-					result += static_cast<uresult_t>( parse_8_digits( first ) );
+					result += static_cast<uresult_t>(
+					  parse_8_digits<typename ParseState::exec_tag_t>( first ) );
 					first += 8;
 				}
 				if constexpr( ParseState::is_zero_terminated_string ) {
@@ -314,7 +319,8 @@ namespace daw::json {
 					bool has_sixteen = is_made_of_eight_digits_cx( first + 8 );
 					while( has_sixteen ) {
 						result *= static_cast<uresult_t>( 10'000'000'000'000'000ULL );
-						result += static_cast<uresult_t>( parse_16_digits( first ) );
+						result += static_cast<uresult_t>(
+					  parse_16_digits<typename ParseState::exec_tag_t>( first ) );
 						first += 16;
 						has_eight =
 						  last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
@@ -326,7 +332,8 @@ namespace daw::json {
 				}
 				if( has_eight ) {
 					result *= static_cast<uresult_t>( 100'000'000ULL );
-					result += static_cast<uresult_t>( parse_8_digits( first ) );
+					result += static_cast<uresult_t>(
+					  parse_8_digits<typename ParseState::exec_tag_t>( first ) );
 					first += 8;
 				}
 				if constexpr( ParseState::is_zero_terminated_string ) {

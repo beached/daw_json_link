@@ -325,10 +325,10 @@ int main( int argc, char **argv )
 	}( );
 	test<options::ExecModeTypes::compile_time>( argv, do_asserts );
 
-	if constexpr( not std::is_same_v<simd_exec_tag, runtime_exec_tag> ) {
-		test<options::ExecModeTypes::runtime>( argv, do_asserts );
+	test<options::ExecModeTypes::runtime>( argv, do_asserts );
+	if constexpr( daw::json::has_simd_exec_mode ) {
+		test<options::ExecModeTypes::simd>( argv, do_asserts );
 	}
-	test<options::ExecModeTypes::simd>( argv, do_asserts );
 }
 #if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {

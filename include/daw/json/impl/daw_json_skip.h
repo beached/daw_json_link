@@ -130,9 +130,8 @@ namespace daw::json {
 					                 parse_state );
 					parse_state.remove_prefix( 3 );
 				}
-				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData,
-				                      parse_state );
+				// The data may end after a null, e.g. a root value or one bounded
+				// to its own bytes
 				parse_state.trim_left( );
 				daw_json_assert_weak( not parse_state.has_more( ) or
 				                        parse_state.is_at_token_after_value( ),

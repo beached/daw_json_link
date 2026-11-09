@@ -11,6 +11,7 @@
 #include "daw/json/impl/version.h"
 
 #include "daw/json/impl/daw_json_assert.h"
+#include "daw/json/impl/daw_json_bracket_kinds.h"
 #include "daw/json/impl/daw_json_parse_common.h"
 #include "daw/json/impl/daw_json_parse_policy_policy_details.h"
 #include "daw/json/impl/daw_json_string_util.h"
@@ -81,8 +82,9 @@ namespace daw::json {
 				}
 				auto result = parse_state;
 				std::size_t cnt = 0;
-				// Bit n is set when depth n + 1 is a class
-				std::uint64_t kinds = is_class ? 1U : 0U;
+				// Level n is the bracket at depth n + 1
+				auto kinds = bracket_kinds{ };
+				kinds.set( 0U, is_class );
 				std::size_t depth = 1;
 				unsigned char state = resume;
 
@@ -92,7 +94,7 @@ namespace daw::json {
 				}
 				while( DAW_LIKELY( ptr_first < ptr_last ) ) {
 					char const c = *ptr_first;
-					bool const at_class = ( ( kinds >> ( depth - 1U ) ) & 1U ) != 0;
+					bool const at_class = kinds.is_class( depth - 1U );
 					// Where a value may start: after a colon, at the start of an array
 					// or after its commas, or when resuming in an array
 					bool const value_allowed = ( state == value ) |
@@ -137,13 +139,14 @@ namespace daw::json {
 						                 state == colon ? ErrorReason::ExpectedTokenNotFound
 						                                : ErrorReason::MissingMemberName,
 						                 parse_state );
-						daw_json_ensure(
-						  depth < 64, ErrorReason::MaxDepthExceeded, parse_state );
+						daw_json_ensure( depth < bracket_kinds::max_depth,
+						                   ErrorReason::MaxDepthExceeded,
+						                   parse_state );
 						if( c == '{' ) {
-							kinds |= std::uint64_t{ 1 } << depth;
+							kinds.set( depth, true );
 							state = name_or_end;
 						} else {
-							kinds &= ~( std::uint64_t{ 1 } << depth );
+							kinds.set( depth, false );
 							state = value_or_end;
 						}
 						++depth;

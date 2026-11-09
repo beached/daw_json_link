@@ -122,13 +122,14 @@ namespace daw::json {
 				                                                    : 22;
 
 				/// Accumulate a run of digits into value, 8 at a time when possible
-				template<bool SkipEndCheck, typename Accumulator, typename Iterator>
+				template<bool SkipEndCheck, typename ExecTag, typename Accumulator,
+				         typename Iterator>
 				[[nodiscard]] DAW_ATTRIB_INLINE constexpr Iterator
 				parse_digit_run( Iterator first, Iterator const last,
 				                 Accumulator &value ) {
 					std::uint32_t eight = 0;
 					auto num_runs = static_cast<std::size_t>( last - first ) / 8U;
-					while( num_runs-- > 0 and try_parse_8_digits( first, eight ) ) {
+					while( num_runs-- > 0 and try_parse_8_digits<ExecTag>( first, eight ) ) {
 						value = value * static_cast<Accumulator>( 100'000'000U ) +
 						        static_cast<Accumulator>( eight );
 						first += 8;
@@ -155,7 +156,7 @@ namespace daw::json {
 
 				/// Rescan a number with more than 19 digits.  Leading zeros do not
 				/// count, and only the first 19 significant digits are kept.
-				template<typename Iterator>
+				template<typename ExecTag, typename Iterator>
 				[[nodiscard]] constexpr significand_t
 				parse_long_significand( Iterator whole_first, Iterator const whole_last,
 				                        Iterator fract_first,
@@ -185,14 +186,14 @@ namespace daw::json {
 					                          : max_u64_digits - whole_kept;
 					auto const whole_kept_last = whole_first + whole_kept;
 					whole_first =
-					  parse_digit_run<false>( whole_first, whole_kept_last, result.mantissa );
+					  parse_digit_run<false, ExecTag>( whole_first, whole_kept_last, result.mantissa );
 					result.exponent += whole_count - whole_kept;
 					for( ; whole_first < whole_last; ++whole_first ) {
 						result.discarded_nonzero |= parse_digit( *whole_first ) != 0;
 					}
 					auto const fract_kept_last = fract_first + fract_kept;
 					fract_first =
-					  parse_digit_run<false>( fract_first, fract_kept_last, result.mantissa );
+					  parse_digit_run<false, ExecTag>( fract_first, fract_kept_last, result.mantissa );
 					result.exponent -= fract_kept;
 					for( ; fract_first < fract_last; ++fract_first ) {
 						result.discarded_nonzero |= parse_digit( *fract_first ) != 0;
@@ -242,7 +243,7 @@ namespace daw::json {
 				namespace sp = single_pass_details;
 				constexpr bool integer_accumulator =
 				  std::is_same_v<Accumulator, std::uint64_t>;
-				auto const sig = sp::parse_long_significand(
+				auto const sig = sp::parse_long_significand<typename ParseState::exec_tag_t>(
 				  whole_first, whole_last, fract_first, fract_last );
 				std::int64_t exponent =
 				  explicit_exponent -
@@ -428,7 +429,8 @@ namespace daw::json {
 				if( ( skip_end_check or first < last ) and *first == '.' ) {
 					++first;
 					fract_first = first;
-					first = sp::parse_digit_run<skip_end_check>( first, last, mantissa );
+					first = sp::parse_digit_run<skip_end_check,
+					                              typename ParseState::exec_tag_t>( first, last, mantissa );
 					// and at least one digit after the decimal point, e.g. "1." is
 					// invalid
 					daw_json_assert_weak( fract_first < first,
@@ -526,19 +528,19 @@ namespace daw::json {
 #endif
 
 				/// Accumulate exactly [first, last), which is known to be digits
-				template<typename Accumulator, typename Iterator>
+				template<typename ExecTag, typename Accumulator, typename Iterator>
 				DAW_ATTRIB_INLINE constexpr void
 				parse_known_digits( Iterator first, Iterator const last,
 				                    Accumulator &value ) {
 					while( last - first >= 8 ) {
 						value = value * static_cast<Accumulator>( 100'000'000U ) +
 						        static_cast<Accumulator>(
-						          static_cast<std::uint64_t>( parse_8_digits( first ) ) );
+						          static_cast<std::uint64_t>( parse_8_digits<ExecTag>( first ) ) );
 						first += 8;
 					}
 #if defined( DAW_HAS_SIMD )
 					if constexpr( std::is_same_v<Accumulator, std::uint64_t> ) {
-						if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) and
+						if( not use_constexpr_exec_mode<ExecTag>( ) and
 						    try_parse_digit_tail( &*first,
 						                          static_cast<std::size_t>( last - first ),
 						                          value ) ) {
@@ -629,8 +631,8 @@ namespace daw::json {
 				    DAW_LIKELY( ( whole_last - whole_first ) +
 				                  ( fract_last - fract_first ) <=
 				                sp::max_u64_digits ) ) {
-					sp::parse_known_digits( whole_first, whole_last, mantissa );
-					sp::parse_known_digits( fract_first, fract_last, mantissa );
+					sp::parse_known_digits<typename ParseState::exec_tag_t>( whole_first, whole_last, mantissa );
+					sp::parse_known_digits<typename ParseState::exec_tag_t>( fract_first, fract_last, mantissa );
 				}
 				return finish_real<Result, ParseState>( sign,
 				                                        mantissa,

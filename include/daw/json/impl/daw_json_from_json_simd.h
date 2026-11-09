@@ -655,14 +655,31 @@ namespace daw::json {
 				                         static_cast<std::size_t>( last - first - 2 ) );
 			}
 
+			/// With options::StrictSkipChecks::yes, check the spelling of the
+			/// skipped number or literal entry token, as the scalar checked skips do
+			/// with skip_scalar_token_checked.  The entry after it bounds it, only
+			/// whitespace is between them.  A string is not checked
+			template<typename State>
+			DAW_ATTRIB_INLINE void check_skipped_scalar( reader<State> const &r,
+			                                            index_type token ) {
+				auto const bounds = r.bounds( token );
+				if( *bounds.first == '"' ) {
+					return;
+				}
+				// The entry after the last one is the end of the document
+				(void)parse_policy_details::skip_scalar_token_checked(
+				  bounds.first, bounds.last, error_state_at( r, bounds.first ) );
+			}
+
 			/// Skip a value.  By default, like simdjson's On-Demand, a class or
 			/// array only has its depth counted: { and [ add one, } and ] take one
 			/// away.  With options::StrictSkipChecks::yes the bracket kinds, member
 			/// names, colons and commas are checked too, nesting at most
-			/// DAW_JSON_STRICT_SKIP_MAX_DEPTH deep.  A string, number or literal is
-			/// one entry and its spelling is not checked.  Both are loops, so deep
-			/// input cannot exhaust the stack.  CheckGrammar is false when the value
-			/// is checked after, so only its depth is counted
+			/// DAW_JSON_STRICT_SKIP_MAX_DEPTH deep, and so is the spelling of the
+			/// numbers and literals.  A string is one entry and its spelling is not
+			/// checked.  Both are loops, so deep input cannot exhaust the stack.
+			/// CheckGrammar is false when the value is checked after, so only its
+			/// depth is counted
 			template<bool CheckGrammar = true, typename State>
 			inline void skip_indexed_value( reader<State> &r ) {
 				auto event = r.peek( );
@@ -673,6 +690,9 @@ namespace daw::json {
 				}
 				r.pop( );
 				if( *event != '{' and *event != '[' ) {
+					if constexpr( CheckGrammar and State::strict_skip_checks ) {
+						check_skipped_scalar( r, static_cast<index_type>( r.position - 1U ) );
+					}
 					return;
 				}
 				if constexpr( not( CheckGrammar and State::strict_skip_checks ) ) {
@@ -727,6 +747,9 @@ namespace daw::json {
 						}
 						r.pop( );
 						item_start = *event == '{' or *event == '[';
+						if( not item_start ) {
+							check_skipped_scalar( r, static_cast<index_type>( r.position - 1U ) );
+						}
 						if( item_start and
 						    DAW_UNLIKELY( not brackets.push( *event == '{' ) ) ) {
 							DAW_UNLIKELY_BRANCH
@@ -1503,6 +1526,27 @@ namespace daw::json {
 			}
 #endif
 
+			/// Reject a byte below 0x20 in [first, last), the inside of a string.
+			/// Without an early exit the loop vectorizes; the error path finds the
+			/// byte to report
+			template<typename State>
+			DAW_ATTRIB_INLINE void check_no_control_chars( reader<State> const &r,
+			                                              char const *first,
+			                                              char const *const last ) {
+				unsigned found = 0;
+				for( auto p = first; p < last; ++p ) {
+					found |= static_cast<unsigned>( static_cast<unsigned char>( *p ) <
+					                                0x20U );
+				}
+				if( DAW_UNLIKELY( found != 0 ) ) {
+					DAW_UNLIKELY_BRANCH
+					while( static_cast<unsigned char>( *first ) >= 0x20U ) {
+						++first;
+					}
+					error_at( r, first, ErrorReason::InvalidString );
+				}
+			}
+
 			template<typename JsonMember, typename ParseState>
 			inline json_result_t<JsonMember> consume_value( reader<ParseState> &r ) {
 				constexpr auto type = JsonMember::expected_type;
@@ -1586,6 +1630,12 @@ namespace daw::json {
 						do {
 							--state.last;
 						} while( *state.last != '"' );
+						if constexpr( ParseState::exclude_special_escapes ) {
+							// As the scalar string scan does in the strict modes, a
+							// control char must be escaped.  The index gives the bounds,
+							// so that scan never runs
+							check_no_control_chars( r, state.first, state.last );
+						}
 						if constexpr( type != JsonParseTypes::StringRaw ) {
 							auto const slash = static_cast<char const *>( std::memchr(
 							  +state.first,

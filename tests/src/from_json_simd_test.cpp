@@ -581,11 +581,28 @@ int main( ) {
 		check( from_json_simd<scan_record>( balanced ).id == 4 );
 		check( strict_rejects( balanced ) );
 	}
+	// Strict skips check the spelling of skipped numbers and literals too, as
+	// the scalar checked skips do
 	for( auto const &unspelled :
 	     { R"({"id":4,"o":{"a":[tru,-,{"b":nul},],},"points":[]})",
-	       R"({"id":4,"o":x,"points":[]})" } ) {
+	       R"({"id":4,"o":x,"points":[]})", R"({"id":4,"o":tru,"points":[]})",
+	       R"({"id":4,"points":[],"o":nul})", R"({"id":4,"o":[falsey],"points":[]})",
+	       R"({"id":4,"o":[truex],"points":[]})", R"({"id":4,"o":[1.],"points":[]})",
+	       R"({"id":4,"o":[.5],"points":[]})", R"({"id":4,"o":[-],"points":[]})",
+	       R"({"id":4,"o":[+],"points":[]})", R"({"id":4,"o":[1e],"points":[]})",
+	       R"({"id":4,"o":1e+,"points":[]})", R"({"id":4,"o":1e-x,"points":[]})",
+	       R"({"id":4,"o":[1x],"points":[]})", R"({"id":4,"o":[0x1],"points":[]})",
+	       R"({"id":4,"o":{"c":1.5.5},"points":[]})" } ) {
 		check( from_json_simd<scan_record>( unspelled ).id == 4 );
-		check( from_json_simd<scan_record>( unspelled, strict ).id == 4 );
+		check( strict_rejects( unspelled ) );
+	}
+	// Like the scalar skips, a leading + and leading zeros are allowed in
+	// skipped numbers, the number parsers check them
+	for( auto const &spelled :
+	     { R"({"id":4,"o":[1e+5,-0.5E-3,0,-0,true,false,null,"x"],"points":[]})",
+	       R"({"id":4,"o":+1,"points":[]})", R"({"id":4,"o":[01,-00.5e+1],"points":[]})",
+	       R"({"id":4,"points":[],"o":007})", R"({"id":4,"points":[],"o":true})" } ) {
+		check( from_json_simd<scan_record>( spelled, strict ).id == 4 );
 	}
 	reject<std::vector<int>>( "[1,2" );
 	for( auto padding : { 0, 55, 63, 64, 250, 255, 256, 511 } ) {

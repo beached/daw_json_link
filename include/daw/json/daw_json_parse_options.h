@@ -16,22 +16,28 @@ namespace daw::json {
 			/// @brief Options used in from_json/json_iterator/json_range to control
 			/// global parsing options
 			inline namespace parser_options {
-				/// @brief Allow for different optimizations.  Currently only the
-				/// compile_time path is fully supported. The others may offer faster
-				/// parsing. The default is compile_time, it provides constexpr parsing
-				/// and generally is faster currently.
+				/// @brief Select the code paths used when parsing.  When the compiler
+				/// can detect constant evaluation, default_mode, runtime and simd all
+				/// use the constexpr code paths during constant evaluation and the
+				/// fastest available ones, including SIMD, at runtime.  compile_time
+				/// always uses the constexpr code paths, even at runtime.  Without
+				/// detection, default_mode and compile_time use the constexpr code
+				/// paths, runtime adds the non-constexpr ones and simd adds SIMD.
 				///
-				/// default: compile_time
+				/// default: default_mode
 				///
 				enum class ExecModeTypes : unsigned {
 					/// @brief Use the best available code path that can be detected
 					default_mode,
-					/// @brief Only use code paths that can run at compile time
+					/// @brief Only use code paths that can run at compile time, even at
+					/// runtime
 					compile_time,
-					/// @brief *testing* Allow code paths that use non-compile time
-					/// methods
+					/// @brief Allow code paths that use non-compile time methods.  Only
+					/// differs from default_mode when constant evaluation cannot be
+					/// detected
 					runtime,
-					/// @brief *testing* Allow code paths that use SIMD intrinsics
+					/// @brief Allow code paths that use SIMD intrinsics.  Only differs
+					/// from default_mode when constant evaluation cannot be detected
 					simd
 				}; // 2bits
 
@@ -165,8 +171,9 @@ namespace daw::json {
 
 				///
 				/// @brief Elements to reserve up front for arrays parsed into
-				/// std::vector when their size is not known.  Arrays that were
-				/// skipped before being parsed reserve their exact size instead.
+				/// std::vector when their size is not known.  When a parser already
+				/// knows an array's element count, e.g. it was skipped before being
+				/// parsed, that count can be used to reserve the exact size instead.
 				///
 				/// default: none
 				///
@@ -182,10 +189,12 @@ namespace daw::json {
 				/// json_simd_block_iterator, check the classes and arrays they skip.
 				/// With no, like simdjson's On-Demand, only the depth is counted: {
 				/// and [ add one, } and ] take one away.  With yes, the bracket
-				/// kinds, member names, colons and commas are checked too, and
-				/// nesting is limited to DAW_JSON_STRICT_SKIP_MAX_DEPTH (1024 by
-				/// default).  The spelling of skipped strings, numbers and literals is
-				/// not checked either way
+				/// kinds, member names, colons and commas are checked too, as is the
+				/// spelling of skipped numbers and literals, and nesting is limited to
+				/// DAW_JSON_STRICT_SKIP_MAX_DEPTH (64 by default).  As in the checked
+				/// scalar skips, which have the same depth limit, skipped numbers may
+				/// have a leading + or leading zeros.  The contents of skipped strings
+				/// are not checked either way
 				///
 				/// default: no
 				///

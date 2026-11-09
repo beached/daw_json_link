@@ -29,8 +29,8 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details::simd_details {
 			/// Whether a comma may come before the closing bracket of a class or of
-			/// the array.  The scalar parser accepts them and there is no parse
-			/// option for it yet
+			/// the array.  Trailing commas are always allowed, as in the scalar
+			/// parser
 			inline constexpr bool simd_class_allows_trailing_comma = true;
 
 			/**
@@ -235,13 +235,33 @@ namespace daw::json {
 				}
 			}
 
+			/// With options::StrictSkipChecks::yes, check the spelling of the
+			/// skipped number or literal at event, whose event has been taken, as the
+			/// scalar checked skips do with skip_scalar_token_checked.  The next
+			/// event, or the end of the data, bounds it.  A string is not checked
+			template<typename ParseState>
+			DAW_ATTRIB_INLINE void
+			check_skipped_scalar_event( char const *event,
+			                            simd_class_event_buffer const &events,
+			                            ParseState const &value_state ) {
+				if( *event == '"' ) {
+					return;
+				}
+				auto const next = *events;
+				auto const last =
+				  simd_class_event_buffer::is_end( next ) ? value_state.last : next;
+				(void)parse_policy_details::skip_scalar_token_checked(
+				  event, last, value_state.copy( event ) );
+			}
+
 			/// Walk the events of the class or array at value_state.first, whose
 			/// event has been taken, to its closing bracket, which is returned.  By
 			/// default, like simdjson's On-Demand, only the depth is counted.  With
 			/// options::StrictSkipChecks::yes the bracket kinds, member names, colons
 			/// and commas are checked too, nesting at most
-			/// DAW_JSON_STRICT_SKIP_MAX_DEPTH deep.  A string, number or literal is
-			/// one event and its spelling is not checked
+			/// DAW_JSON_STRICT_SKIP_MAX_DEPTH deep, and so is the spelling of the
+			/// numbers and literals.  A string is one event and its spelling is not
+			/// checked
 			template<typename ParseState>
 			[[nodiscard]] char const *
 			skip_container_events( ParseState const &value_state,
@@ -330,6 +350,7 @@ namespace daw::json {
 							  true, ErrorReason::InvalidStartOfValue, value_state );
 						default:
 							// A string, number or literal
+							check_skipped_scalar_event( event, events, value_state );
 							break;
 						}
 					}
@@ -345,6 +366,9 @@ namespace daw::json {
 				auto const c = *value_state.first;
 				if( c == '{' or c == '[' ) {
 					(void)skip_container_events( value_state, events );
+				} else if constexpr( not ParseState::is_unchecked_input and
+				                     ParseState::strict_skip_checks ) {
+					check_skipped_scalar_event( value_state.first, events, value_state );
 				}
 				return events.take( );
 			}

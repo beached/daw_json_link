@@ -120,7 +120,6 @@ namespace daw::json {
 
 			struct simd_array_grammar_state {
 				bool previous_event_was_value = false;
-				bool saw_value = false;
 				bool started = false;
 				bool ended = false;
 			};
@@ -154,10 +153,9 @@ namespace daw::json {
 					  daw::cxmath::count_trailing_zeros( events ) );
 					auto const bit = std::uint64_t{ 1 } << lane;
 					if( ( array_end & bit ) != 0 ) {
-						if( state.saw_value and not state.previous_event_was_value ) {
-							auto error_state = ParseState( data + lane, last );
-							daw_json_error( true, ErrorReason::TrailingComma, error_state );
-						}
+						// A trailing comma before the ] is allowed, as in the scalar
+						// parser.  A comma without a value before it was already
+						// rejected when it was seen
 						state.ended = true;
 					} else if( ( commas & bit ) != 0 ) {
 						if( not state.previous_event_was_value ) {
@@ -173,7 +171,6 @@ namespace daw::json {
 							  true, ErrorReason::InvalidEndOfValue, error_state );
 						}
 						state.previous_event_was_value = true;
-						state.saw_value = true;
 					}
 					events = daw::cxmath::blsr( events );
 				}

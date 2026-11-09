@@ -829,6 +829,48 @@ namespace {
 		return false;
 	}
 
+	/// The number of values, -1 when the array is rejected
+	template<typename Iterator>
+	[[nodiscard]] int count_values( std::string_view document ) {
+		try {
+			auto count = 0;
+			auto values = Iterator( document );
+			while( values != values.end( ) ) {
+				(void)*values;
+				++values;
+				++count;
+			}
+			return count;
+		} catch( daw::json::json_exception const & ) { return -1; }
+	}
+
+	/// A trailing comma before the closing bracket is allowed, as in the scalar
+	/// parser, also when it is the last lane of a block
+	template<typename Iterator>
+	void ensure_trailing_comma_allowed( std::size_t block_size,
+	                                    std::string_view value ) {
+		auto const one = "[" + std::string( value ) + ",]";
+		daw_ensure( count_values<Iterator>( one ) == 1 );
+		auto const two =
+		  "[" + std::string( value ) + "," + std::string( value ) + " , ]";
+		daw_ensure( count_values<Iterator>( two ) == 2 );
+		auto at_lane = std::string{ "[" };
+		at_lane += value;
+		at_lane.append( padding_to_last_lane( at_lane.size( ), block_size ), ' ' );
+		at_lane += ",]";
+		daw_ensure( count_values<Iterator>( at_lane ) == 1 );
+		auto after_lane = std::string{ "[" };
+		after_lane += value;
+		after_lane.append( padding_to_last_lane( after_lane.size( ), block_size ),
+		                   ' ' );
+		after_lane += ", ]";
+		daw_ensure( count_values<Iterator>( after_lane ) == 1 );
+		// Only one, and not without a value
+		daw_ensure( count_values<Iterator>( "[" + std::string( value ) + ",,]" ) ==
+		            -1 );
+		daw_ensure( count_values<Iterator>( "[,]" ) == -1 );
+	}
+
 	template<typename Iterator>
 	void
 	ensure_rejected_arrays( std::initializer_list<std::string_view> documents ) {
@@ -865,7 +907,6 @@ namespace {
 		ensure_rejected_arrays<bool_iterator>( { "[,]",
 		                                         "[,,]",
 		                                         "[,true]",
-		                                         "[true,]",
 		                                         "[true,,false]",
 		                                         "[true false]",
 		                                         "[true",
@@ -873,7 +914,6 @@ namespace {
 		ensure_rejected_arrays<string_iterator>( { "[,]",
 		                                           "[,,]",
 		                                           R"json([,"a"])json",
-		                                           R"json(["a",])json",
 		                                           R"json(["a",,"b"])json",
 		                                           R"json(["a" "b"])json",
 		                                           R"json(["unterminated])json" } );
@@ -891,6 +931,16 @@ namespace {
 			daw_ensure( rejects_array<string_iterator>( document ) );
 			daw_ensure( rejects_array<class_iterator>( document ) );
 		}
+
+		ensure_trailing_comma_allowed<iterator>( block::block_size, "1.5" );
+		ensure_trailing_comma_allowed<signed_iterator>( block::block_size, "-1" );
+		ensure_trailing_comma_allowed<unsigned_iterator>( block::block_size, "1" );
+		ensure_trailing_comma_allowed<bool_iterator>( bool_block::block_size,
+		                                              "true" );
+		ensure_trailing_comma_allowed<string_iterator>( string_block::block_size,
+		                                                R"json("a")json" );
+		ensure_trailing_comma_allowed<point_iterator>(
+		  block::block_size, R"json({"x":1,"y":2,"z":3})json" );
 
 		ensure_boundary_rejections<iterator>( block::block_size, "1", "2" );
 		ensure_boundary_rejections<bool_iterator>(
@@ -1171,10 +1221,10 @@ namespace {
 	}
 
 	/// With options::StrictSkipChecks::yes the class iterator accepts and
-	/// rejects what json_array_iterator does, except that the strings, numbers
-	/// and literals of skipped members are not checked.  By default, like
-	/// simdjson's On-Demand, only the depth of a skipped class or array is
-	/// counted.  Members come in any order
+	/// rejects what json_array_iterator does, except that the strings of
+	/// skipped members are not checked.  By default, like simdjson's On-Demand,
+	/// only the depth of a skipped class or array is counted and the spelling of
+	/// skipped numbers and literals is not checked.  Members come in any order
 	void test_class_iterator_matches_scalar( ) {
 		constexpr std::string_view documents[] = {
 		  R"json([{"x":1,"y":2,"z":3}])json",
@@ -1215,20 +1265,48 @@ namespace {
 			}
 		}
 
-		// The spelling of a skipped string, number or literal is not checked
-		constexpr std::string_view structurally_valid[] = {
+		// By default the spelling of a skipped number or literal is not
+		// checked.  Strict skips check it, as json_array_iterator does
+		constexpr std::string_view misspelled[] = {
 		  R"json([{"x":1,"y":2,"z":3,"o":[nulll]}])json",
 		  R"json([{"x":1,"y":2,"z":3,"o":tru}])json",
 		  R"json([{"x":1,"y":2,"z":3,"o":-}])json",
 		  R"json([{"x":1,"y":2,"z":3,"o":x}])json",
 		  R"json([{"o":1.2.3,"x":1,"y":2,"z":3}])json",
 		  R"json([{"o":{"a":[+1,{"b":nul}]},"x":1,"y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[1.]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[1e+]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":falsey}])json",
+		};
+		for( auto const document : misspelled ) {
+			daw_ensure( summarize_points<point_iterator>( document ) == "A 1 28" );
+			daw_ensure( summarize_points<strict_point_iterator>( document ) == "R" );
+			daw_ensure( summarize_points<scalar_point_iterator>( document ) == "R" );
+		}
+
+		// The spelling of a skipped string is not checked
+		constexpr std::string_view escaped_names[] = {
 		  R"json([{"x\"":1,"x":1,"y":2,"z":3}])json",
 		  R"json([{"x":1,"y":2,"z":3,"a\"b":{}}])json",
 		};
-		for( auto const document : structurally_valid ) {
+		for( auto const document : escaped_names ) {
 			daw_ensure( summarize_points<point_iterator>( document ) == "A 1 28" );
 			daw_ensure( summarize_points<strict_point_iterator>( document ) ==
+			            "A 1 28" );
+		}
+
+		// A leading + and leading zeros are allowed in skipped numbers, as in
+		// json_array_iterator's skips
+		constexpr std::string_view spelled[] = {
+		  R"json([{"o":{"a":[+1,{"b":null}]},"x":1,"y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[01,-00.5e+1,true,false]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":007}])json",
+		};
+		for( auto const document : spelled ) {
+			daw_ensure( summarize_points<point_iterator>( document ) == "A 1 28" );
+			daw_ensure( summarize_points<strict_point_iterator>( document ) ==
+			            "A 1 28" );
+			daw_ensure( summarize_points<scalar_point_iterator>( document ) ==
 			            "A 1 28" );
 		}
 

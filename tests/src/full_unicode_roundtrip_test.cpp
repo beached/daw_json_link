@@ -63,7 +63,9 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	  daw::json::from_json_array<unicode_data, std::vector<unicode_data>>(
 	    json_str_escaped,
 	    daw::json::options::parse_flags<
-	      daw::json::options::ExecModeTypes::simd> );
+	      daw::json::has_simd_exec_mode
+	        ? daw::json::options::ExecModeTypes::simd
+	        : daw::json::options::ExecModeTypes::runtime> );
 
 	test_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
 	             "Expected same size" );
@@ -159,8 +161,7 @@ int main( int argc, char **argv )
 
 	test<options::ExecModeTypes::compile_time>( json_str, json_str_escaped );
 	test<options::ExecModeTypes::runtime>( json_str, json_str_escaped );
-	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-	                                 daw::json::runtime_exec_tag> ) {
+	if constexpr( daw::json::has_simd_exec_mode ) {
 		test<options::ExecModeTypes::simd>( json_str, json_str_escaped );
 	}
 }

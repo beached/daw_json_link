@@ -10,6 +10,7 @@
 
 #include "daw/json/daw_json_switches.h"
 #include "daw/json/impl/version.h"
+#include "daw/json/impl/daw_json_bracket_kinds.h"
 
 #include "daw/simd/daw_simd.h"
 
@@ -134,33 +135,27 @@ namespace daw::json {
 				}
 			} // namespace lexer_cursor_details
 
-			/// The kinds of the open brackets of a skip with
-			/// options::StrictSkipChecks::yes, a bit for each that is set for a
-			/// class.  At most DAW_JSON_STRICT_SKIP_MAX_DEPTH brackets are open
+			/// The open brackets of a skip with options::StrictSkipChecks::yes.  At
+			/// most DAW_JSON_STRICT_SKIP_MAX_DEPTH brackets are open, as in the
+			/// checked scalar skips
 			class strict_skip_brackets {
-				static constexpr std::size_t max_depth = DAW_JSON_STRICT_SKIP_MAX_DEPTH;
-				static_assert( max_depth > 0U );
-
-				std::uint64_t m_kinds[( max_depth + 63U ) / 64U] = { };
+				bracket_kinds m_kinds{ };
 				std::size_t m_depth = 0;
 
 			public:
 				/// false when max_depth brackets are open already
 				[[nodiscard]] DAW_ATTRIB_INLINE bool push( bool is_class ) {
-					if( m_depth == max_depth ) {
+					if( m_depth == bracket_kinds::max_depth ) {
 						return false;
 					}
-					auto &kinds = m_kinds[m_depth / 64U];
-					auto const bit = std::uint64_t{ 1 } << ( m_depth % 64U );
-					kinds = is_class ? ( kinds | bit ) : ( kinds & ~bit );
+					m_kinds.set( m_depth, is_class );
 					++m_depth;
 					return true;
 				}
 
 				/// Whether the innermost open bracket is a class.  One must be open
 				[[nodiscard]] DAW_ATTRIB_INLINE bool in_class( ) const {
-					auto const top = m_depth - 1U;
-					return ( ( m_kinds[top / 64U] >> ( top % 64U ) ) & 1U ) != 0U;
+					return m_kinds.is_class( m_depth - 1U );
 				}
 
 				/// Close the innermost bracket, returning whether none are left open

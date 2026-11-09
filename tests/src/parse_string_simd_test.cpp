@@ -19,11 +19,17 @@
 
 namespace {
 	using namespace daw::json;
+
+	std::size_t failures = 0;
+
+#if defined( DAW_HAS_SIMD )
+	// The scans are called with simd_exec_tag directly.  Without SIMD they fall
+	// back to the runtime scans, which do not return last for an unterminated
+	// string, so these checks only run with SIMD
 	using daw::json::json_details::mem_move_to_next_of;
 	using daw::json::json_details::mem_skip_until_end_of_string;
 
 	constexpr std::size_t max_block_size = 64;
-	std::size_t failures = 0;
 
 	struct skip_result {
 		char const *pos;
@@ -103,6 +109,15 @@ namespace {
 		}
 	}
 
+	std::uint32_t rng_state = 0x1234'5678U;
+	std::uint32_t next_random( ) {
+		rng_state ^= rng_state << 13U;
+		rng_state ^= rng_state >> 17U;
+		rng_state ^= rng_state << 5U;
+		return rng_state;
+	}
+#endif
+
 #if defined( DAW_USE_EXCEPTIONS )
 	// Strict parsing must reject a raw control character in every exec mode,
 	// the SIMD string scan does not validate so strict parsing must not use it
@@ -123,17 +138,10 @@ namespace {
 		}
 	}
 #endif
-
-	std::uint32_t rng_state = 0x1234'5678U;
-	std::uint32_t next_random( ) {
-		rng_state ^= rng_state << 13U;
-		rng_state ^= rng_state >> 17U;
-		rng_state ^= rng_state << 5U;
-		return rng_state;
-	}
 } // namespace
 
 int main( ) {
+#if defined( DAW_HAS_SIMD )
 	check_all_offsets( "" );
 	check_all_offsets( "\"" );
 	check_all_offsets( "\\" );
@@ -162,6 +170,7 @@ int main( ) {
 		}
 		check_all_offsets( s );
 	}
+#endif
 
 #if defined( DAW_USE_EXCEPTIONS )
 	check_strict_rejects_raw_newline<options::ExecModeTypes::default_mode>(
@@ -170,7 +179,9 @@ int main( ) {
 	  "compile_time" );
 	check_strict_rejects_raw_newline<options::ExecModeTypes::runtime>(
 	  "runtime" );
-	check_strict_rejects_raw_newline<options::ExecModeTypes::simd>( "simd" );
+	if constexpr( daw::json::has_simd_exec_mode ) {
+		check_strict_rejects_raw_newline<options::ExecModeTypes::simd>( "simd" );
+	}
 #endif
 
 	if( failures != 0 ) {

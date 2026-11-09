@@ -121,8 +121,7 @@ int main( int argc, char **argv )
 	          << " exec model\n*********************************************\n";
 	test<options::PolicyCommentTypes::hash, options::ExecModeTypes::runtime>(
 	  json_sv1 );
-	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-	                                 daw::json::runtime_exec_tag> ) {
+	if constexpr( daw::json::has_simd_exec_mode ) {
 		std::cout << "Using " << daw::json::simd_exec_tag::name
 		          << " exec model\n*********************************************\n";
 		test<options::PolicyCommentTypes::hash, options::ExecModeTypes::simd>(

@@ -115,9 +115,11 @@
 #endif
 #endif
 
-// The deepest nesting the SIMD parsers skip with options::StrictSkipChecks::yes
+// The deepest nesting of a skipped value whose brackets are checked: by the
+// checked scalar skips, and by the SIMD skips with
+// options::StrictSkipChecks::yes.  Skips that only count the depth have no limit
 #if not defined( DAW_JSON_STRICT_SKIP_MAX_DEPTH )
-#define DAW_JSON_STRICT_SKIP_MAX_DEPTH 1024
+#define DAW_JSON_STRICT_SKIP_MAX_DEPTH 64
 #endif
 
 // Use strtod instead of from_chars when avialable by defining

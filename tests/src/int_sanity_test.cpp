@@ -70,8 +70,7 @@ int main( )
 {
 	test<ExecModeTypes::compile_time, 1000>( );
 	test<ExecModeTypes::runtime, 1000>( );
-	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-	                                 daw::json::runtime_exec_tag> ) {
+	if constexpr( daw::json::has_simd_exec_mode ) {
 		test<ExecModeTypes::simd, 1000>( );
 	}
 }

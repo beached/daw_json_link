@@ -74,6 +74,12 @@ namespace daw::json {
 			    PolicyFlags ),
 			  default_exec_tag, constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
 
+			static_assert( has_simd_exec_mode or
+			                 not std::is_same_v<exec_tag_t, simd_exec_tag>,
+			               "options::ExecModeTypes::simd was requested but this "
+			               "build has no SIMD support.  Enable a SIMD instruction "
+			               "set, e.g. -march, or use another exec mode" );
+
 			static constexpr auto exec_tag = exec_tag_t{ };
 
 			/***

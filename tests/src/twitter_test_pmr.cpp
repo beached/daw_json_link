@@ -289,7 +289,7 @@ int main( int argc, char **argv )
 	          << '\n';
 	test<ExecModeTypes::compile_time>( json_data, alloc );
 	test<ExecModeTypes::runtime>( json_data, alloc );
-	if constexpr( not std::is_same_v<runtime_exec_tag, simd_exec_tag> ) {
+	if constexpr( daw::json::has_simd_exec_mode ) {
 		test<ExecModeTypes::simd>( json_data, alloc );
 	}
 
