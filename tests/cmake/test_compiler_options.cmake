@@ -279,6 +279,7 @@ elseif( MSVC )
 	add_compile_options( "/wd4146" )
 	add_compile_options( "/w14296" )
 	add_compile_options( "/w14296" )
+	add_compile_options("/wd5240")
 	add_compile_options( "/Zc:preprocessor" )
 	# Ensure that string pooling is enabled. Otherwise it breaks constexpr string literals.
 	# This affects debug modes by default, but optionally Release
