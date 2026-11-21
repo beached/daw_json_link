@@ -49,7 +49,7 @@ namespace daw::json {
 				               "T is expected to be default constructible" );
 
 				using i_am_a_json_type = void;
-				using i_am_a_deduced_empty_class = void;
+				using i_am_a_json_deduced_empty_class = void;
 				using wrapped_type = T;
 
 				using constructor_t = default_constructor<T>;
@@ -63,7 +63,7 @@ namespace daw::json {
 			struct json_ordered_class {
 				static_assert( can_convert_to_tuple_v<T>, "T is expected to empty" );
 				using i_am_a_json_type = void;
-				using i_am_a_deduced_ordered_class = void;
+				using i_am_a_json_deduced_ordered_class = void;
 				using wrapped_type = T;
 
 				using constructor_t = default_constructor<T>;

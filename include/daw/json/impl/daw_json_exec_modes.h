@@ -13,12 +13,15 @@
 
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_is_constant_evaluated.h>
+#include <daw/simd/daw_simd.h>
 
 #include <string_view>
 #include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		// These are used when the system cannot doesn't have is_constexpr or if
+		// consteval or a builtin prior to C++20.
 		struct default_exec_tag {
 			static constexpr std::string_view name = "default_mode";
 		};
@@ -28,24 +31,34 @@ namespace daw::json {
 		struct runtime_exec_tag : constexpr_exec_tag {
 			static constexpr std::string_view name = "runtime";
 		};
-#if defined( DAW_ALLOW_SSE42 )
-		struct sse42_exec_tag : runtime_exec_tag {
-			static constexpr std::string_view name = "sse4.2";
-		};
-		using simd_exec_tag = sse42_exec_tag;
-#else
 		struct simd_exec_tag : runtime_exec_tag {
 			static constexpr std::string_view name = "simd";
 		};
+		using sse42_exec_tag [[deprecated( "use simd_exec_tag" )]] = simd_exec_tag;
+
+		/// Whether this build has the SIMD code paths that
+		/// options::ExecModeTypes::simd asks for.  Without them, parsing with
+		/// that exec mode does not compile
+		inline constexpr bool has_simd_exec_mode =
+#if defined( DAW_HAS_SIMD )
+		  true;
+#else
+		  false;
 #endif
 
 		namespace json_details {
-			/// The exec tags exist for compilers that cannot detect constant
-			/// evaluation.  When it can be detected the tag does not matter: the
-			/// constexpr code paths are used during constant evaluation and the
-			/// fastest ones at runtime.
+			/// Whether the constexpr code paths must be used.  The constexpr exec
+			/// tag, ExecModeTypes::compile_time, always uses them.  Otherwise, when
+			/// constant evaluation can be detected, the constexpr code paths are
+			/// used during constant evaluation and the fastest ones at runtime.
+			/// Without detection only the runtime and simd exec tags leave them.
 			template<typename ExecTag>
 			DAW_ATTRIB_INLINE constexpr bool use_constexpr_exec_mode( ) {
+				// The runtime and simd tags derive from constexpr_exec_tag, so only
+				// the exact tag forces the constexpr code paths
+				if constexpr( std::is_same_v<ExecTag, constexpr_exec_tag> ) {
+					return true;
+				} else {
 #if defined( DAW_HAS_IF_CONSTEVAL )
 				if consteval {
 					return true;
@@ -59,12 +72,13 @@ namespace daw::json {
 				// paths when the runtime or simd exec mode was asked for
 				return not std::is_base_of_v<runtime_exec_tag, ExecTag>;
 #endif
+				}
 			}
 
 			/// Whether a runtime only search may use SIMD.  Call only after
 			/// use_constexpr_exec_mode returned false.  With detection of constant
-			/// evaluation every exec tag uses SIMD at runtime, without it only the
-			/// simd exec tag does.
+			/// evaluation every exec tag but the constexpr one uses SIMD at runtime,
+			/// without it only the simd exec tag does.
 			template<typename ExecTag>
 			DAW_ATTRIB_INLINE constexpr bool use_simd_exec_mode( ) {
 #if defined( DAW_HAS_IF_CONSTEVAL ) or defined( DAW_HAS_IS_CONSTANT_EVALUATED )

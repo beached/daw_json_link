@@ -138,8 +138,7 @@ int main( int argc, char **argv )
 	test<daw::json::options::ExecModeTypes::compile_time>( json_data1,
 	                                                       do_asserts );
 	test<daw::json::options::ExecModeTypes::runtime>( json_data1, do_asserts );
-	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-	                                 daw::json::runtime_exec_tag> ) {
+	if constexpr( daw::json::has_simd_exec_mode ) {
 		test<daw::json::options::ExecModeTypes::simd>( json_data1, do_asserts );
 	}
 

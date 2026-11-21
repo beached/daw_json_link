@@ -520,6 +520,34 @@ namespace daw::json {
 				using type = typename json_data_contract_trait_t<JsonType>::json_member;
 			};
 
+			/// @brief A mapping parsed from a JSON object by its members
+			template<typename JsonMember>
+			inline constexpr bool is_json_class_mapping_v =
+			  JsonMember::expected_type == JsonParseTypes::Class
+#if defined( DAW_JSON_HAS_REFLECTION )
+			  or JsonMember::expected_type == JsonParseTypes::ReflectedClass
+#endif
+			  ;
+
+			/// @brief The members of a class mapping.  A mapping can give its own,
+			/// as json_reflected_class does, otherwise they are its
+			/// json_data_contract's
+			template<typename JsonMember, typename = void>
+			struct json_class_member_list {
+				using type =
+				  json_data_contract_trait_t<typename JsonMember::wrapped_type>;
+			};
+
+			template<typename JsonMember>
+			struct json_class_member_list<
+			  JsonMember, std::void_t<typename JsonMember::json_member_list_t>> {
+				using type = typename JsonMember::json_member_list_t;
+			};
+
+			template<typename JsonMember>
+			using json_class_member_list_t =
+			  typename json_class_member_list<JsonMember>::type;
+
 			template<typename>
 			struct is_json_class_map : std::false_type {};
 

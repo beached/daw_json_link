@@ -6,15 +6,20 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
+#include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
 #include <daw/json/daw_json_simd_iterator.h>
 
 #include <daw/daw_ensure.h>
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
 #include <initializer_list>
 #include <optional>
 #include <string>
@@ -42,6 +47,12 @@ struct simd_iterator_container_value {
 
 struct simd_iterator_real_value {
 	double value;
+};
+
+struct simd_iterator_point {
+	double x;
+	double y;
+	double z;
 };
 
 namespace daw::json {
@@ -82,6 +93,16 @@ namespace daw::json {
 		static constexpr char const value[] = "value";
 		using type = json_member_list<json_number<value, double>>;
 	};
+
+	template<>
+	struct json_data_contract<simd_iterator_point> {
+		static constexpr char const x[] = "x";
+		static constexpr char const y[] = "y";
+		static constexpr char const z[] = "z";
+		using type =
+		  json_member_list<json_number<x, double>, json_number<y, double>,
+		                   json_number<z, double>>;
+	};
 } // namespace daw::json
 
 namespace {
@@ -100,38 +121,51 @@ namespace {
 	                    std::declval<T>( ).escape_characters );
 	DAW_MAKE_REQ_TRAIT( has_boolean_values, std::declval<T>( ).boolean_values );
 
-	using iterator =
-	  daw::json::json_simd_block_iterator<daw::json::json_number_no_name<double>>;
-	using signed_iterator = daw::json::json_simd_block_iterator<
+	using iterator = daw::json::experimental::json_simd_block_iterator<
+	  daw::json::json_number_no_name<double>>;
+	using signed_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_number_no_name<std::int64_t>>;
-	using unsigned_iterator = daw::json::json_simd_block_iterator<
+	using unsigned_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_number_no_name<std::uint64_t>>;
-	using unchecked_signed_iterator = daw::json::json_simd_block_iterator<
-	  daw::json::json_number_no_name<std::int64_t>, char,
-	  daw::json::options::CheckedParseMode::no,
-	  daw::json::options::ExecModeTypes::compile_time>;
-	using bool_iterator =
-	  daw::json::json_simd_block_iterator<daw::json::json_bool_no_name<bool>>;
-	using string_iterator = daw::json::json_simd_block_iterator<
+	using unchecked_signed_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_number_no_name<std::int64_t>, char,
+	    daw::json::options::CheckedParseMode::no,
+	    daw::json::options::ExecModeTypes::compile_time>;
+	using bool_iterator = daw::json::experimental::json_simd_block_iterator<
+	  daw::json::json_bool_no_name<bool>>;
+	using string_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_string_no_name<std::string>>;
-	using unchecked_string_iterator = daw::json::json_simd_block_iterator<
-	  daw::json::json_string_no_name<std::string>, char,
-	  daw::json::options::CheckedParseMode::no,
-	  daw::json::options::ExecModeTypes::compile_time>;
-	using raw_string_iterator = daw::json::json_simd_block_iterator<
+	using unchecked_string_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_string_no_name<std::string>, char,
+	    daw::json::options::CheckedParseMode::no,
+	    daw::json::options::ExecModeTypes::compile_time>;
+	using raw_string_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_string_raw_no_name<std::string_view>>;
-	using class_iterator = daw::json::json_simd_block_iterator<
+	using class_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_class_no_name<simd_iterator_class_value>>;
-	using unchecked_class_iterator = daw::json::json_simd_block_iterator<
-	  daw::json::json_class_no_name<simd_iterator_class_value>, char,
-	  daw::json::options::CheckedParseMode::no,
-	  daw::json::options::ExecModeTypes::compile_time>;
-	using empty_class_iterator = daw::json::json_simd_block_iterator<
-	  daw::json::json_class_no_name<simd_iterator_empty_class>>;
-	using container_class_iterator = daw::json::json_simd_block_iterator<
-	  daw::json::json_class_no_name<simd_iterator_container_value>>;
-	using real_class_iterator = daw::json::json_simd_block_iterator<
+	using unchecked_class_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_class_no_name<simd_iterator_class_value>, char,
+	    daw::json::options::CheckedParseMode::no,
+	    daw::json::options::ExecModeTypes::compile_time>;
+	using empty_class_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_class_no_name<simd_iterator_empty_class>>;
+	using container_class_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_class_no_name<simd_iterator_container_value>>;
+	using real_class_iterator = daw::json::experimental::json_simd_block_iterator<
 	  daw::json::json_class_no_name<simd_iterator_real_value>>;
+	using point_iterator = daw::json::experimental::json_simd_block_iterator<
+	  daw::json::json_class_no_name<simd_iterator_point>>;
+	using strict_point_iterator =
+	  daw::json::experimental::json_simd_block_iterator<
+	    daw::json::json_class_no_name<simd_iterator_point>, char,
+	    daw::json::options::StrictSkipChecks::yes>;
+	using scalar_point_iterator = daw::json::json_array_iterator<
+	  daw::json::json_class_no_name<simd_iterator_point>>;
 
 	struct parsed_number {
 		double value;
@@ -147,7 +181,7 @@ namespace {
 	  daw::json::json_number_no_name<double, daw::json::number_opts_def,
 	                                 parsed_number_constructor>;
 	using constructed_iterator =
-	  daw::json::json_simd_block_iterator<constructed_number>;
+	  daw::json::experimental::json_simd_block_iterator<constructed_number>;
 
 	struct parsed_bool {
 		bool value;
@@ -163,7 +197,7 @@ namespace {
 	  daw::json::json_bool_no_name<bool, daw::json::bool_opts_def,
 	                               parsed_bool_constructor>;
 	using constructed_bool_iterator =
-	  daw::json::json_simd_block_iterator<constructed_bool>;
+	  daw::json::experimental::json_simd_block_iterator<constructed_bool>;
 
 	[[nodiscard]] constexpr std::size_t
 	padding_to_last_lane( std::size_t prefix_size,
@@ -172,7 +206,7 @@ namespace {
 		       block_size;
 	}
 
-	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool test_constexpr_number_iterator( ) {
+	[[nodiscard]] DAW_SIMD_CONSTEXPR bool test_constexpr_number_iterator( ) {
 		auto empty = iterator{ };
 		if( empty or empty.begin( ) != empty.end( ) ) {
 			return false;
@@ -196,8 +230,7 @@ namespace {
 		return first == values.end( );
 	}
 
-	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool
-	test_constexpr_integer_iterators( ) {
+	[[nodiscard]] DAW_SIMD_CONSTEXPR bool test_constexpr_integer_iterators( ) {
 		auto signed_values = signed_iterator( "[-42, 0, 123456]" );
 		if( *signed_values != -42 ) {
 			return false;
@@ -231,11 +264,7 @@ namespace {
 		return unsigned_values == unsigned_values.end( );
 	}
 
-	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool test_constexpr_bool_iterator( ) {
-		if( daw::simd_impl::compress_bits( 0b10010010U, 0b10010010U ) != 0b111U or
-		    daw::simd_impl::compress_bits( 0b10000010U, 0b10010010U ) != 0b101U ) {
-			return false;
-		}
+	[[nodiscard]] DAW_SIMD_CONSTEXPR bool test_constexpr_bool_iterator( ) {
 		auto values = bool_iterator( "[true, false, true, false]" );
 		if( not *values ) {
 			return false;
@@ -283,8 +312,7 @@ namespace {
 		return unchecked_values == unchecked_values.end( );
 	}
 
-	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool
-	test_constexpr_raw_string_iterator( ) {
+	[[nodiscard]] DAW_SIMD_CONSTEXPR bool test_constexpr_raw_string_iterator( ) {
 		auto values =
 		  raw_string_iterator( R"json(["plain", "escaped \" quote"])json" );
 		if( *values != "plain" ) {
@@ -312,8 +340,7 @@ namespace {
 		return nested == nested.end( );
 	}
 
-	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool
-	test_constexpr_custom_constructors( ) {
+	[[nodiscard]] DAW_SIMD_CONSTEXPR bool test_constexpr_custom_constructors( ) {
 		auto numbers = constructed_iterator( "[4.5]" );
 		auto booleans = constructed_bool_iterator( "[true]" );
 		return ( *numbers ).value == 4.5 and ( *booleans ).value;
@@ -366,7 +393,96 @@ namespace {
 #endif
 	}
 
-	[[nodiscard]] DAW_JSON_SIMD_CONSTEXPR bool test_constexpr_classifiers( ) {
+	template<typename JsonElement, auto... PolicyFlags>
+	using simd_range =
+	  daw::json::experimental::json_simd_array_range<JsonElement, PolicyFlags...>;
+
+	[[nodiscard]] DAW_SIMD_CONSTEXPR bool test_constexpr_array_range( ) {
+		auto const values = simd_range<bool>( "[true, false, true]" );
+		auto count = 0;
+		for( bool b : values ) {
+			count += b ? 1 : 0;
+		}
+		return count == 2 and not values.empty( ) and
+		       simd_range<bool>( "[]" ).empty( );
+	}
+
+	void test_array_range( ) {
+		using point = daw::json::json_class_no_name<simd_iterator_point>;
+		using range_t = simd_range<point>;
+		using unchecked_range_t =
+		  simd_range<point, daw::json::options::CheckedParseMode::no>;
+		using scalar_range_t = daw::json::json_array_range<point>;
+		static_assert( std::is_same_v<
+		               typename range_t::iterator,
+		               daw::json::experimental::json_simd_block_iterator<point>> );
+		static_assert( std::is_same_v<typename range_t::ParsePolicy,
+		                              typename scalar_range_t::ParsePolicy> );
+		static_assert( std::is_same_v<
+		               typename unchecked_range_t::ParsePolicy,
+		               typename daw::json::json_array_range<
+		                 point,
+		                 daw::json::options::CheckedParseMode::no>::ParsePolicy> );
+
+		auto const document = std::string(
+		  R"json({"payload":{"points":[{"x":1,"y":2,"z":3},{"z":6,"name":"n","x":4,"y":5}]},"numbers":[1.5,-2.5],"flags":[true,false,true],"names":["alpha","beta"],"none":[ ]})json" );
+
+		auto simd_points = std::vector<simd_iterator_point>{ };
+		for( auto &&p : range_t( document, "payload.points" ) ) {
+			simd_points.push_back( std::move( p ) );
+		}
+		auto scalar_points = std::vector<simd_iterator_point>{ };
+		for( auto &&p : scalar_range_t( document, "payload.points" ) ) {
+			scalar_points.push_back( std::move( p ) );
+		}
+		daw_ensure( simd_points.size( ) == 2U );
+		daw_ensure( simd_points.size( ) == scalar_points.size( ) );
+		for( std::size_t n = 0; n < simd_points.size( ); ++n ) {
+			daw_ensure( simd_points[n].x == scalar_points[n].x );
+			daw_ensure( simd_points[n].y == scalar_points[n].y );
+			daw_ensure( simd_points[n].z == scalar_points[n].z );
+		}
+		daw_ensure( simd_points[1].x == 4.0 and simd_points[1].z == 6.0 );
+
+		auto sum = 0.0;
+		for( double d : simd_range<double>( document, "numbers" ) ) {
+			sum += d;
+		}
+		daw_ensure( sum == -1.0 );
+
+		auto flags = simd_range<bool>( document, "flags" );
+		daw_ensure( std::count( flags.begin( ), flags.end( ), true ) == 2 );
+
+		auto names = std::string{ };
+		for( auto const &s : simd_range<std::string>( document, "names" ) ) {
+			names += s;
+		}
+		daw_ensure( names == "alphabeta" );
+
+		daw_ensure( range_t( document, "none" ).empty( ) );
+		daw_ensure( not range_t( document, "payload.points" ).empty( ) );
+		daw_ensure( range_t( ).empty( ) );
+		daw_ensure( range_t( ).begin( ) == range_t( ).end( ) );
+
+		auto const root = unchecked_range_t( R"json([{"x":7,"y":8,"z":9}])json" );
+		auto first = root.begin( );
+		daw_ensure( first != root.end( ) );
+		daw_ensure( ( *first ).y == 8.0 );
+		++first;
+		daw_ensure( first == root.end( ) );
+
+#if defined( DAW_USE_EXCEPTIONS )
+		auto rejected_missing_path = false;
+		try {
+			(void)range_t( document, "missing" );
+		} catch( daw::json::json_exception const & ) {
+			rejected_missing_path = true;
+		}
+		daw_ensure( rejected_missing_path );
+#endif
+	}
+
+	[[nodiscard]] DAW_SIMD_CONSTEXPR bool test_constexpr_classifiers( ) {
 		using number_classifier = daw::json::json_details::simd_details::
 		  simd_json_classifier<daw::json::JsonBaseParseTypes::Number, char>;
 		using bool_classifier = daw::json::json_details::simd_details::
@@ -410,10 +526,11 @@ namespace {
 	}
 
 	void test_iterator_semantics( ) {
-		auto empty = iterator( std::string_view{ } );
+		// A default constructed iterator is the end, an empty document is
+		// rejected, see test_invalid_array_grammar
+		auto empty = iterator{ };
 		daw_ensure( not empty );
 		daw_ensure( empty.begin( ) == empty.end( ) );
-		daw_ensure( empty == iterator{ } );
 
 		auto const document = std::string{ "[1.25, -2.5, 3.75]" };
 		auto range = iterator( document );
@@ -712,6 +829,48 @@ namespace {
 		return false;
 	}
 
+	/// The number of values, -1 when the array is rejected
+	template<typename Iterator>
+	[[nodiscard]] int count_values( std::string_view document ) {
+		try {
+			auto count = 0;
+			auto values = Iterator( document );
+			while( values != values.end( ) ) {
+				(void)*values;
+				++values;
+				++count;
+			}
+			return count;
+		} catch( daw::json::json_exception const & ) { return -1; }
+	}
+
+	/// A trailing comma before the closing bracket is allowed, as in the scalar
+	/// parser, also when it is the last lane of a block
+	template<typename Iterator>
+	void ensure_trailing_comma_allowed( std::size_t block_size,
+	                                    std::string_view value ) {
+		auto const one = "[" + std::string( value ) + ",]";
+		daw_ensure( count_values<Iterator>( one ) == 1 );
+		auto const two =
+		  "[" + std::string( value ) + "," + std::string( value ) + " , ]";
+		daw_ensure( count_values<Iterator>( two ) == 2 );
+		auto at_lane = std::string{ "[" };
+		at_lane += value;
+		at_lane.append( padding_to_last_lane( at_lane.size( ), block_size ), ' ' );
+		at_lane += ",]";
+		daw_ensure( count_values<Iterator>( at_lane ) == 1 );
+		auto after_lane = std::string{ "[" };
+		after_lane += value;
+		after_lane.append( padding_to_last_lane( after_lane.size( ), block_size ),
+		                   ' ' );
+		after_lane += ", ]";
+		daw_ensure( count_values<Iterator>( after_lane ) == 1 );
+		// Only one, and not without a value
+		daw_ensure( count_values<Iterator>( "[" + std::string( value ) + ",,]" ) ==
+		            -1 );
+		daw_ensure( count_values<Iterator>( "[,]" ) == -1 );
+	}
+
 	template<typename Iterator>
 	void
 	ensure_rejected_arrays( std::initializer_list<std::string_view> documents ) {
@@ -748,7 +907,6 @@ namespace {
 		ensure_rejected_arrays<bool_iterator>( { "[,]",
 		                                         "[,,]",
 		                                         "[,true]",
-		                                         "[true,]",
 		                                         "[true,,false]",
 		                                         "[true false]",
 		                                         "[true",
@@ -756,16 +914,69 @@ namespace {
 		ensure_rejected_arrays<string_iterator>( { "[,]",
 		                                           "[,,]",
 		                                           R"json([,"a"])json",
-		                                           R"json(["a",])json",
 		                                           R"json(["a",,"b"])json",
 		                                           R"json(["a" "b"])json",
 		                                           R"json(["unterminated])json" } );
+
+		// The brackets are required, an empty document is not an array and the
+		// closing bracket is needed even with nothing after the opening one
+		for( auto const document : { std::string_view{ },
+		                             std::string_view( "" ),
+		                             std::string_view( " \n" ),
+		                             std::string_view( "[" ),
+		                             std::string_view( "[ " ),
+		                             std::string_view( " [\n" ) } ) {
+			daw_ensure( rejects_array<iterator>( document ) );
+			daw_ensure( rejects_array<bool_iterator>( document ) );
+			daw_ensure( rejects_array<string_iterator>( document ) );
+			daw_ensure( rejects_array<class_iterator>( document ) );
+		}
+
+		ensure_trailing_comma_allowed<iterator>( block::block_size, "1.5" );
+		ensure_trailing_comma_allowed<signed_iterator>( block::block_size, "-1" );
+		ensure_trailing_comma_allowed<unsigned_iterator>( block::block_size, "1" );
+		ensure_trailing_comma_allowed<bool_iterator>( bool_block::block_size,
+		                                              "true" );
+		ensure_trailing_comma_allowed<string_iterator>( string_block::block_size,
+		                                                R"json("a")json" );
+		ensure_trailing_comma_allowed<point_iterator>(
+		  block::block_size, R"json({"x":1,"y":2,"z":3})json" );
 
 		ensure_boundary_rejections<iterator>( block::block_size, "1", "2" );
 		ensure_boundary_rejections<bool_iterator>(
 		  bool_block::block_size, "true", "false" );
 		ensure_boundary_rejections<string_iterator>(
 		  string_block::block_size, R"json("a")json", R"json("b")json" );
+	}
+
+	/// Every proper prefix of a class array is rejected.  Cut right after a
+	/// '{', ':' or ',' outside of a string the data ends where more is
+	/// expected, in mapped and skipped members alike
+	void test_truncated_class_documents( ) {
+		auto const document = std::string_view(
+		  R"json([{"id":1,"ignored":{"nested":[1,{"x":"}"}]},"text":"t","enabled":true,"child":{"value":11}},{"id":2,"text":"u","enabled":false,"child":{"value":22}}])json" );
+		auto in_string = false;
+		for( std::size_t n = 1; n < document.size( ); ++n ) {
+			auto const last = document[n - 1U];
+			if( last == '"' ) {
+				in_string = not in_string;
+			}
+			auto const prefix = std::string( document.substr( 0, n ) );
+			auto reason = std::optional<daw::json::ErrorReason>{ };
+			try {
+				auto values = class_iterator( prefix );
+				while( values != values.end( ) ) {
+					(void)*values;
+					++values;
+				}
+			} catch( daw::json::json_exception const &ex ) {
+				reason = ex.reason_type( );
+			}
+			daw_ensure( reason.has_value( ) );
+			if( not in_string and ( last == '{' or last == ':' or last == ',' ) ) {
+				daw_ensure( *reason == daw::json::ErrorReason::UnexpectedEndOfData );
+			}
+		}
 	}
 
 #endif
@@ -936,15 +1147,12 @@ namespace {
 		} catch( daw::json::json_exception const & ) { rejected_non_class = true; }
 		daw_ensure( rejected_non_class );
 
-		auto rejected_trailing_comma = false;
-		try {
-			auto trailing = class_iterator(
-			  R"json([{"id":1,"text":"value","enabled":true},])json" );
-			++trailing;
-		} catch( daw::json::json_exception const & ) {
-			rejected_trailing_comma = true;
-		}
-		daw_ensure( rejected_trailing_comma );
+		// Trailing commas are accepted, like the scalar parser does
+		auto trailing = class_iterator(
+		  R"json([{"id":1,"text":"value","enabled":true,"child":{"value":1},},])json" );
+		daw_ensure( ( *trailing ).id == 1 );
+		++trailing;
+		daw_ensure( trailing == trailing.end( ) );
 
 		auto rejected_missing_member = false;
 		try {
@@ -992,18 +1200,180 @@ namespace {
 #endif
 	}
 
+	/// "A count sum" when the whole array is accepted, "R" when rejected
+	template<typename Iterator>
+	[[nodiscard]] std::string summarize_points( std::string_view document ) {
+#if defined( DAW_USE_EXCEPTIONS )
+		try {
+#endif
+			auto count = 0;
+			auto sum = 0.0;
+			for( auto const point : Iterator( document ) ) {
+				sum += point.x + 3.0 * point.y + 7.0 * point.z;
+				++count;
+			}
+			char buffer[64];
+			(void)std::snprintf( buffer, sizeof( buffer ), "A %d %.17g", count, sum );
+			return buffer;
+#if defined( DAW_USE_EXCEPTIONS )
+		} catch( daw::json::json_exception const & ) { return "R"; }
+#endif
+	}
+
+	/// With options::StrictSkipChecks::yes the class iterator accepts and
+	/// rejects what json_array_iterator does, except that the strings of
+	/// skipped members are not checked.  By default, like simdjson's On-Demand,
+	/// only the depth of a skipped class or array is counted and the spelling of
+	/// skipped numbers and literals is not checked.  Members come in any order
+	void test_class_iterator_matches_scalar( ) {
+		constexpr std::string_view documents[] = {
+		  R"json([{"x":1,"y":2,"z":3}])json",
+		  R"json([{"z":0.25,"name":"a\"b}","x":1,"opts":{"1":[1,true,null,{"k":[]}]},"y":2}])json",
+		  R"json([ { "y" : 4 , "x" : 5 , "z" : 6 , "o" : [ "]" , false ] } ])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[[[[{"a":[1,{"b":"}"}]}]]]]}])json",
+		  R"json([{"x":1,"y":2,"z":3,},])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a":1,}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[1,]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":01}])json",
+		  R"json([{"x":1 "y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3,"n":"a" "o":1}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a" 1}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[1 2]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[,1]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{,}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a":}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{1:2}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a":1]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":1 2}])json",
+		  R"json([{"x":1x2,"y":2,"z":3}])json",
+		  R"json([{"x":1 2,"y":2,"z":3}])json",
+		  R"json([{"x":1.,"y":2,"z":3}])json",
+		  R"json([{"x":"1","y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2}])json",
+		  R"json([{"x":1,"y":2,"z":3},,{"x":1,"y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3}{"x":1,"y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":"unterminated}])json",
+		};
+		for( auto const document : documents ) {
+			auto const scalar = summarize_points<scalar_point_iterator>( document );
+			auto const simd = summarize_points<strict_point_iterator>( document );
+			if( scalar != simd ) {
+				daw_ensure_error(
+				  true,
+				  "SIMD class iterator differs from json_array_iterator on " +
+				    std::string( document ) + " scalar: " + scalar + " simd: " + simd );
+			}
+		}
+
+		// By default the spelling of a skipped number or literal is not
+		// checked.  Strict skips check it, as json_array_iterator does
+		constexpr std::string_view misspelled[] = {
+		  R"json([{"x":1,"y":2,"z":3,"o":[nulll]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":tru}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":-}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":x}])json",
+		  R"json([{"o":1.2.3,"x":1,"y":2,"z":3}])json",
+		  R"json([{"o":{"a":[+1,{"b":nul}]},"x":1,"y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[1.]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[1e+]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":falsey}])json",
+		};
+		for( auto const document : misspelled ) {
+			daw_ensure( summarize_points<point_iterator>( document ) == "A 1 28" );
+			daw_ensure( summarize_points<strict_point_iterator>( document ) == "R" );
+			daw_ensure( summarize_points<scalar_point_iterator>( document ) == "R" );
+		}
+
+		// The spelling of a skipped string is not checked
+		constexpr std::string_view escaped_names[] = {
+		  R"json([{"x\"":1,"x":1,"y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3,"a\"b":{}}])json",
+		};
+		for( auto const document : escaped_names ) {
+			daw_ensure( summarize_points<point_iterator>( document ) == "A 1 28" );
+			daw_ensure( summarize_points<strict_point_iterator>( document ) ==
+			            "A 1 28" );
+		}
+
+		// A leading + and leading zeros are allowed in skipped numbers, as in
+		// json_array_iterator's skips
+		constexpr std::string_view spelled[] = {
+		  R"json([{"o":{"a":[+1,{"b":null}]},"x":1,"y":2,"z":3}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[01,-00.5e+1,true,false]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":007}])json",
+		};
+		for( auto const document : spelled ) {
+			daw_ensure( summarize_points<point_iterator>( document ) == "A 1 28" );
+			daw_ensure( summarize_points<strict_point_iterator>( document ) ==
+			            "A 1 28" );
+			daw_ensure( summarize_points<scalar_point_iterator>( document ) ==
+			            "A 1 28" );
+		}
+
+		// By default only the depth of a skipped class or array is counted
+		constexpr std::string_view balanced[] = {
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a" 1}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[1 2]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[,1]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{,}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{1:2}}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":{"a":1]}])json",
+		  R"json([{"x":1,"y":2,"z":3,"o":[[[}]]}])json",
+		};
+		for( auto const document : balanced ) {
+			daw_ensure( summarize_points<point_iterator>( document ) == "A 1 28" );
+			daw_ensure( summarize_points<strict_point_iterator>( document ) == "R" );
+		}
+		daw_ensure( summarize_points<point_iterator>(
+		              R"json([{"x":1,"y":2,"z":3,"o":[[]}])json" ) == "R" );
+
+		// Only strict skips limit the depth, to DAW_JSON_STRICT_SKIP_MAX_DEPTH
+		auto const nested = []( std::size_t depth ) {
+			return R"json([{"x":1,"y":2,"z":3,"o":)json" + std::string( depth, '[' ) +
+			       std::string( depth, ']' ) + "}]";
+		};
+		daw_ensure( summarize_points<point_iterator>( nested( 100'000 ) ) ==
+		            "A 1 28" );
+		daw_ensure( summarize_points<strict_point_iterator>(
+		              nested( DAW_JSON_STRICT_SKIP_MAX_DEPTH ) ) == "A 1 28" );
+		daw_ensure( summarize_points<strict_point_iterator>(
+		              nested( DAW_JSON_STRICT_SKIP_MAX_DEPTH + 1 ) ) == "R" );
+
+		// A kostya style document found by its path, searched with find_if
+		auto document = std::string{ R"json({"info":"x","coordinates":[)json" };
+		for( int n = 0; n < 200; ++n ) {
+			if( n != 0 ) {
+				document += ",\n";
+			}
+			auto const v = std::to_string( n );
+			if( n % 2 == 0 ) {
+				document += R"json({"z":3,"name":"n )json" + v + R"json(","x":)json" +
+				            v + R"json(,"opts":{"1":[1,true]},"y":2.5})json";
+			} else {
+				document +=
+				  R"json({ "y" : 2.5 , "x" : )json" + v + R"json( , "z" : 3 })json";
+			}
+		}
+		document += R"json(],"after":1})json";
+		using path_iterator = point_iterator;
+		auto found = std::find_if( path_iterator( document, "coordinates" ),
+		                           path_iterator::end( ),
+		                           []( simd_iterator_point const &p ) {
+			                           return p.x == 151.0;
+		                           } );
+		daw_ensure( found != path_iterator::end( ) );
+		daw_ensure( ( *found ).y == 2.5 and ( *found ).z == 3.0 );
+		++found;
+		daw_ensure( ( *found ).x == 152.0 );
+		daw_ensure( std::count_if( path_iterator( document, "coordinates" ),
+		                           path_iterator::end( ),
+		                           []( simd_iterator_point const &p ) {
+			                           return p.z == 3.0;
+		                           } ) == 200 );
+	}
 } // namespace
 
 int main( ) {
-#if defined( DAW_JSON_HAS_STD_SIMD )
-	static_assert( test_constexpr_number_iterator( ) );
-	static_assert( test_constexpr_integer_iterators( ) );
-	static_assert( test_constexpr_bool_iterator( ) );
-	static_assert( test_constexpr_string_iterator( ) );
-	static_assert( test_constexpr_raw_string_iterator( ) );
-	static_assert( test_constexpr_custom_constructors( ) );
-	static_assert( test_constexpr_classifiers( ) );
-#else
 	daw_ensure( test_constexpr_number_iterator( ) );
 	daw_ensure( test_constexpr_integer_iterators( ) );
 	daw_ensure( test_constexpr_bool_iterator( ) );
@@ -1011,7 +1381,7 @@ int main( ) {
 	daw_ensure( test_constexpr_raw_string_iterator( ) );
 	daw_ensure( test_constexpr_custom_constructors( ) );
 	daw_ensure( test_constexpr_classifiers( ) );
-#endif
+	daw_ensure( test_constexpr_array_range( ) );
 
 	static_assert( std::is_same_v<iterator::reference, iterator::value_type> );
 	static_assert( std::is_same_v<iterator::value_type, double> );
@@ -1023,7 +1393,9 @@ int main( ) {
 	static_assert( sizeof( unsigned_iterator ) == sizeof( signed_iterator ) );
 	static_assert( block::block_size > 0U );
 	static_assert( block::block_size <= 64U );
-#if defined( DAW_JSON_HAS_AVX2_SIMD ) and not defined( DAW_JSON_HAS_STD_SIMD )
+#if defined( DAW_HAS_AVX512_SIMD )
+	static_assert( block::block_size == 64U );
+#elif defined( DAW_HAS_AVX2_SIMD )
 	static_assert( block::block_size == 32U );
 #endif
 	static_assert( sizeof( daw::json::json_details::integer_span ) * 2U ==
@@ -1056,9 +1428,12 @@ int main( ) {
 	test_stops_at_array_end( );
 #if defined( DAW_USE_EXCEPTIONS )
 	test_invalid_array_grammar( );
+	test_truncated_class_documents( );
 #endif
 	test_separate_base_type_paths( );
 	test_class_iterator( );
+	test_class_iterator_matches_scalar( );
+	test_array_range( );
 }
 
 #else

@@ -68,6 +68,312 @@ namespace daw::json {
 				}
 			} // namespace name::name_parser
 
+			namespace name {
+				/// @brief Receives a decoded member name in a fixed buffer.  A name
+				/// longer than MaxSize cannot be any of the mapped names, so the
+				/// decode stops once the buffer is full
+				template<std::size_t MaxSize>
+				struct name_buffer {
+					char data[MaxSize > 0 ? MaxSize : 1]{ };
+					std::size_t size = 0;
+
+					[[nodiscard]] constexpr bool operator( )( char c ) {
+						if( size == MaxSize ) {
+							return false;
+						}
+						data[size] = c;
+						++size;
+						return true;
+					}
+
+					[[nodiscard]] constexpr daw::string_view view( ) const {
+						return daw::string_view( data, size );
+					}
+				};
+
+				/// @brief Receives a decoded member name in a string, with no limit
+				template<typename String>
+				struct name_string_appender {
+					String *str;
+
+					[[nodiscard]] constexpr bool operator( )( char c ) const {
+						str->push_back( c );
+						return true;
+					}
+				};
+
+				template<typename Appender>
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
+				append_utf8( UInt32 cp, Appender &app ) {
+					if( cp < 0x80U ) {
+						return app( u32toC( cp ) );
+					}
+					if( cp < 0x800U ) {
+						return app( u32toC( ( cp >> 6U ) | 0b1100'0000U ) ) and
+						       app( u32toC( ( cp & 0b0011'1111U ) | 0b1000'0000U ) );
+					}
+					if( cp < 0x10000U ) {
+						return app( u32toC( ( cp >> 12U ) | 0b1110'0000U ) ) and
+						       app( u32toC( ( ( cp >> 6U ) & 0b0011'1111U ) |
+						                    0b1000'0000U ) ) and
+						       app( u32toC( ( cp & 0b0011'1111U ) | 0b1000'0000U ) );
+					}
+					return app( u32toC( ( cp >> 18U ) | 0b1111'0000U ) ) and
+					       app( u32toC( ( ( cp >> 12U ) & 0b0011'1111U ) |
+					                    0b1000'0000U ) ) and
+					       app( u32toC( ( ( cp >> 6U ) & 0b0011'1111U ) |
+					                    0b1000'0000U ) ) and
+					       app( u32toC( ( cp & 0b0011'1111U ) | 0b1000'0000U ) );
+				}
+
+				/// @brief The 4 hex digits of the UTF-16 escape at first
+				template<typename ParseState>
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32
+				parse_utf16_unit( char const *first ) {
+					auto pos = daw::not_null<char const *>( daw::never_null, first + 2 );
+					UInt32 cp =
+					  to_uint32(
+					    byte_from_nibbles<ParseState::is_unchecked_input>( pos ) )
+					  << 8U;
+					cp |= byte_from_nibbles<ParseState::is_unchecked_input>( pos );
+					return cp;
+				}
+
+				/// @brief The char a two char escape stands for, or 0 when c does not
+				/// follow a backslash in JSON.  UTF-16 escapes are decoded separately
+				[[nodiscard]] DAW_ATTRIB_INLINE constexpr char escaped_char( char c ) {
+					switch( c ) {
+					case '"':
+					case '\\':
+					case '/':
+						return c;
+					case 'b':
+						return '\b';
+					case 'f':
+						return '\f';
+					case 'n':
+						return '\n';
+					case 'r':
+						return '\r';
+					case 't':
+						return '\t';
+					default:
+						return 0;
+					}
+				}
+
+				/// @brief Decode the escapes in the name between its quotes, raw, and
+				/// give the result to app one char at a time.  Returns false when app
+				/// stops taking chars.  Invalid escapes and unpaired surrogates are
+				/// errors.  With unchecked input, an escape that runs past the end of
+				/// the name stops the decode instead of reading past it
+				template<typename ParseState, typename Appender>
+				[[nodiscard]] constexpr bool
+				decode_name( daw::string_view raw, Appender &app,
+				             ParseState const &parse_state ) {
+					(void)parse_state;
+					char const *first = std::data( raw );
+					char const *const last = daw::data_end( raw );
+					while( first < last ) {
+						if( *first != '\\' ) {
+							if( not app( *first ) ) {
+								return false;
+							}
+							++first;
+							continue;
+						}
+						daw_json_assert_weak(
+						  last - first >= 2, ErrorReason::InvalidString, parse_state );
+						if( last - first < 2 ) {
+							return false;
+						}
+						if( first[1] != 'u' ) {
+							char const c = escaped_char( first[1] );
+							daw_json_assert_weak(
+							  c != 0, ErrorReason::InvalidString, parse_state );
+							if( not app( c ) ) {
+								return false;
+							}
+							first += 2;
+							continue;
+						}
+						daw_json_assert_weak(
+						  last - first >= 6, ErrorReason::InvalidUTFEscape, parse_state );
+						if( last - first < 6 ) {
+							return false;
+						}
+						UInt32 cp = parse_utf16_unit<ParseState>( first );
+						first += 6;
+						daw_json_assert_weak( cp < 0xDC00U or cp > 0xDFFFU,
+						                      ErrorReason::InvalidUTFEscape,
+						                      parse_state ); // Unpaired low surrogate
+						if( 0xD800U <= cp and cp <= 0xDBFFU ) {
+							// A high surrogate must be followed by a low one
+							daw_json_assert_weak( last - first >= 6 and first[0] == '\\' and
+							                        first[1] == 'u',
+							                      ErrorReason::InvalidUTFEscape,
+							                      parse_state );
+							if( last - first < 6 ) {
+								return false;
+							}
+							UInt32 const trailing = parse_utf16_unit<ParseState>( first );
+							first += 6;
+							daw_json_assert_weak( 0xDC00U <= trailing and
+							                        trailing <= 0xDFFFU,
+							                      ErrorReason::InvalidUTFEscape,
+							                      parse_state );
+							cp = 0x10000U + ( ( cp - 0xD800U ) * 0x400U ) +
+							     ( trailing - 0xDC00U );
+						}
+						if( not append_utf8( cp, app ) ) {
+							return false;
+						}
+					}
+					return true;
+				}
+
+				/// @brief Takes decoded chars and checks them against expected.  Stops
+				/// the decode at the first char that differs, or once expected is used
+				/// up
+				struct name_matcher {
+					char const *first;
+					char const *last;
+
+					[[nodiscard]] constexpr bool operator( )( char c ) {
+						if( first == last or *first != c ) {
+							return false;
+						}
+						++first;
+						return true;
+					}
+				};
+
+				/// @brief Whether the member name raw, as written between its quotes in
+				/// the document, decodes to exactly decoded.  Names without escapes are
+				/// compared as is.  Decoding never lengthens a name, so a raw name
+				/// shorter than decoded cannot match.  The decode stops at the first
+				/// char that differs
+				template<typename ParseState>
+				[[nodiscard]] constexpr bool
+				decoded_name_equal( daw::string_view raw, daw::string_view decoded,
+				                    ParseState const &parse_state ) {
+					if( not raw.contains( '\\' ) ) {
+						return raw == decoded;
+					}
+					if( std::size( raw ) < std::size( decoded ) ) {
+						return false;
+					}
+					auto matcher =
+					  name_matcher{ std::data( decoded ), daw::data_end( decoded ) };
+					return decode_name( raw, matcher, parse_state ) and
+					       matcher.first == matcher.last;
+				}
+
+				/// @brief The value of the hex digit c, or 16 when c is not one
+				[[nodiscard]] constexpr unsigned path_hex_value( char c ) {
+					if( '0' <= c and c <= '9' ) {
+						return static_cast<unsigned>( c - '0' );
+					}
+					if( 'a' <= c and c <= 'f' ) {
+						return static_cast<unsigned>( c - 'a' ) + 10U;
+					}
+					if( 'A' <= c and c <= 'F' ) {
+						return static_cast<unsigned>( c - 'A' ) + 10U;
+					}
+					return 16U;
+				}
+
+				/// @brief Read the UTF-16 escape "\uXXXX" at first, which has at least
+				/// 6 chars, into cp.  Returns false when it is not one
+				[[nodiscard]] constexpr bool path_utf16_unit( char const *first,
+				                                              UInt32 &cp ) {
+					if( first[0] != '\\' or first[1] != 'u' ) {
+						return false;
+					}
+					unsigned value = 0;
+					for( int n = 2; n < 6; ++n ) {
+						unsigned const digit = path_hex_value( first[n] );
+						if( digit > 15U ) {
+							return false;
+						}
+						value = ( value << 4U ) | digit;
+					}
+					cp = to_uint32( value );
+					return true;
+				}
+
+				/// @brief Writes chars forward from p
+				struct char_writer {
+					char *p;
+
+					[[nodiscard]] constexpr bool operator( )( char c ) {
+						*p = c;
+						++p;
+						return true;
+					}
+				};
+
+				/// @brief Decode the member name component of a JSON path in
+				/// [first, last) in place.  The escapes are those of a JSON string,
+				/// plus "\.", "\[" and "\]" for the path delimiters.  An escape is
+				/// never shorter than what it decodes to, so the decoded chars are
+				/// written behind the ones still to be read.  Paths are user input, not
+				/// document text, so an invalid escape or an unpaired surrogate returns
+				/// nullptr instead of being a parse error
+				/// @return The end of the decoded name, which starts at first, or
+				/// nullptr
+				[[nodiscard]] constexpr char *
+				decode_path_component_in_place( char *first, char *const last ) {
+					auto out = char_writer{ first };
+					while( first < last ) {
+						if( *first != '\\' ) {
+							(void)out( *first );
+							++first;
+							continue;
+						}
+						if( last - first < 2 ) {
+							return nullptr;
+						}
+						char const e = first[1];
+						if( e == '.' or e == '[' or e == ']' ) {
+							(void)out( e );
+							first += 2;
+							continue;
+						}
+						if( e != 'u' ) {
+							char const c = escaped_char( e );
+							if( c == 0 ) {
+								return nullptr;
+							}
+							(void)out( c );
+							first += 2;
+							continue;
+						}
+						UInt32 cp{ };
+						if( last - first < 6 or not path_utf16_unit( first, cp ) ) {
+							return nullptr;
+						}
+						first += 6;
+						if( 0xDC00U <= cp and cp <= 0xDFFFU ) {
+							return nullptr; // Unpaired low surrogate
+						}
+						if( 0xD800U <= cp and cp <= 0xDBFFU ) {
+							UInt32 trailing{ };
+							if( last - first < 6 or not path_utf16_unit( first, trailing ) or
+							    trailing < 0xDC00U or trailing > 0xDFFFU ) {
+								return nullptr;
+							}
+							first += 6;
+							cp = 0x10000U + ( ( cp - 0xD800U ) * 0x400U ) +
+							     ( trailing - 0xDC00U );
+						}
+						// At least 6 chars were read and at most 4 are written
+						(void)append_utf8( cp, out );
+					}
+					return out.p;
+				}
+			} // namespace name
+
 			struct pop_json_path_result {
 				daw::string_view current{ };
 				char found_char = 0;

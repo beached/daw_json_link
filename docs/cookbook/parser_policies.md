@@ -98,8 +98,9 @@ How many elements to reserve up front when parsing a JSON array into a `std::vec
 Reserving avoids the first few reallocations as the vector grows, at the cost of unused capacity for small arrays. The
 amount is in elements, not bytes, and applies to every such array in the parse.
 
-When an array was skipped before being parsed, e.g. a member that appears out of order in the document, its element
-count is already known and exactly that many are reserved instead.
+When the parser already knows an array's element count, e.g. the scalar parser skipped a member that appears out of
+order in the document before parsing it, that count can be used to reserve exactly that many elements instead. This is
+an optimization, not a guarantee; the SIMD parser does not count the elements of out of order members.
 
 This only affects the default constructor for `std::vector`. Custom constructors are not changed.
 

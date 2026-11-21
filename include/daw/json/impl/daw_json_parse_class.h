@@ -93,47 +93,53 @@ namespace daw::json {
 			///@param parse_state JSON data
 			///@return parsed value from JSON data
 			///
+			/// @param member_parser parses the member's value
 			template<typename JsonMember, bool NeedsClassPositions,
-			         typename ParseState>
-			[[nodiscard]] constexpr json_result_t<JsonMember>
-			parse_class_member_impl( ParseState &parse_state,
-			                         find_result<ParseState> fr ) {
+			         typename ParseState,
+			         typename MemberParser = value_parser<without_name<JsonMember>>>
+			[[nodiscard]] constexpr json_result_t<JsonMember> parse_class_member_impl(
+			  ParseState &parse_state, find_result<ParseState> fr,
+			  MemberParser const &member_parser = MemberParser{ } ) {
 
 				auto [loc, known] = fr;
 
 				// If the member was found loc will have it's position
 				if( not known ) {
-					if constexpr( NeedsClassPositions ) {
-						auto const cf = parse_state.class_first;
-						auto const cl = parse_state.class_last;
-						if constexpr( is_pinned_type_v<
-						                json_result_t<without_name<JsonMember>>> ) {
-							auto const after_parse = daw::on_scope_exit( [&] {
-								parse_state.class_first = cf;
-								parse_state.class_last = cl;
-							} );
-							return parse_value<without_name<JsonMember>,
-							                   false,
-							                   JsonMember::expected_type>( parse_state );
-						} else {
-							auto result =
-							  parse_value<without_name<JsonMember>,
-							              false,
-							              JsonMember::expected_type>( parse_state );
+					// When checked, the value is followed by a comma or the end of the
+					// class.  The comma is moved past so the next member starts at its
+					// name
+					constexpr bool check_after = not ParseState::is_unchecked_input;
+					[[maybe_unused]] auto const cf = parse_state.class_first;
+					[[maybe_unused]] auto const cl = parse_state.class_last;
+					[[maybe_unused]] auto const after_value = [&] {
+						if constexpr( NeedsClassPositions ) {
 							parse_state.class_first = cf;
 							parse_state.class_last = cl;
-							return result;
 						}
+						if constexpr( check_after ) {
+							parse_state.move_next_member_or_end_after_value( );
+						}
+					};
+					if constexpr( is_pinned_type_v<
+					                json_result_t<without_name<JsonMember>>> ) {
+						if constexpr( NeedsClassPositions or check_after ) {
+							auto const after_parse = daw::on_exit_success( after_value );
+							return member_parser.template parse<false>( parse_state );
+						} else {
+							return member_parser.template parse<false>( parse_state );
+						}
+					} else if constexpr( NeedsClassPositions or check_after ) {
+						auto result = member_parser.template parse<false>( parse_state );
+						after_value( );
+						return result;
 					} else {
-						return parse_value<without_name<JsonMember>,
-						                   false,
-						                   JsonMember::expected_type>( parse_state );
+						return member_parser.template parse<false>( parse_state );
 					}
 				}
 				// We cannot find the member, check if the member is nullable
 				if( loc.is_null( ) ) {
 					if constexpr( is_json_nullable_v<JsonMember> ) {
-						return parse_value_null<without_name<JsonMember>, true>( loc );
+						return member_parser.template parse<true>( loc );
 					} else {
 						daw_json_ensure( not loc.is_null( ),
 						                 missing_member( std::string_view(
@@ -144,31 +150,125 @@ namespace daw::json {
 				}
 
 				// Member was previously skipped
-				return parse_value<without_name<JsonMember>,
-				                   true,
-				                   JsonMember::expected_type>( loc );
+				return member_parser.template parse<true>( loc );
+			}
+
+			/// @brief Parse the member that JsonMember depends on, the tag of a
+			/// tagged variant or the size of a sized array.  Its position was
+			/// recorded when its name was passed, or the class is scanned forward
+			/// until it is.  It is never decoded in place, as its bytes are read
+			/// again when the class is parsed
+			template<typename JsonMember, AllMembersMustExist must_exist,
+			         typename ParseState, std::size_t N, typename Names>
+			[[nodiscard]] constexpr auto parse_class_dependent(
+			  ParseState &parse_state,
+			  locations_info_t<N, typename ParseState::iterator, Names> &locations ) {
+				using dependent_member =
+				  typename class_dependent_member<JsonMember>::dependent_member;
+				using dependent_t = without_name<dependent_member>;
+				constexpr std::size_t dependent_pos =
+				  Names::template dependent_index<JsonMember>( );
+
+				if( locations.dependent_first[dependent_pos] == nullptr ) {
+					find_class_dependent<dependent_pos, must_exist>( parse_state,
+					                                                 locations );
+				}
+				auto dependent_state = parse_state.without_string_mutation( );
+				dependent_state.first = locations.dependent_first[dependent_pos];
+				if( dependent_state.first == nullptr ) {
+					if constexpr( is_json_nullable_v<dependent_t> ) {
+						dependent_state.last = nullptr;
+						return parse_value_null<dependent_t, true>( dependent_state );
+					} else {
+						daw_json_error( true,
+						                missing_member( std::string_view(
+						                  std::data( dependent_member::name ),
+						                  std::size( dependent_member::name ) ) ),
+						                parse_state );
+					}
+				}
+				return parse_value<dependent_t, false, dependent_t::expected_type>(
+				  dependent_state );
+			}
+
+			/// @brief The parser of a member that depends on another member,
+			/// get_dependent parses that member
+			template<typename JsonMember, typename GetDependent>
+			[[nodiscard]] constexpr auto
+			make_dependent_parser( GetDependent const &get_dependent ) {
+				using base_member =
+				  typename class_dependent_member<JsonMember>::base_member;
+				if constexpr( base_member::expected_type ==
+				              JsonParseTypes::VariantTagged ) {
+					auto const get_index = [get_dependent] {
+						return static_cast<std::size_t>(
+						  typename base_member::switcher{ }( get_dependent( ) ) );
+					};
+					return tagged_variant_parser<without_name<JsonMember>,
+					                             decltype( get_index )>{ get_index };
+				} else {
+					return sized_array_parser<without_name<JsonMember>, GetDependent>{
+					  get_dependent };
+				}
 			}
 
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, bool NeedsClassPositions,
-			         typename ParseState, std::size_t N>
+			         typename ParseState, std::size_t N, typename Names>
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr json_result_t<JsonMember>
-			parse_class_member( ParseState &parse_state,
-			                    locations_info_t<N, typename ParseState::iterator> &locations ) {
-				parse_state.move_next_member_or_end( );
+			parse_class_member(
+			  ParseState &parse_state,
+			  locations_info_t<N, typename ParseState::iterator, Names> &locations ) {
+				if constexpr( ParseState::is_unchecked_input ) {
+					parse_state.move_next_member_or_end( );
+				} else {
+					// The previous member, if any, moved past its comma
+					parse_state.trim_left_checked( );
+				}
 
 				daw_json_assert_weak( not parse_state.empty( ) and
 				                        parse_state.is_at_next_class_member( ),
 				                      ErrorReason::MissingMemberNameOrEndOfClass,
 				                      parse_state );
 
-				return parse_class_member_impl<JsonMember, NeedsClassPositions>(
-				  parse_state,
-				  find_class_member<member_position, must_exist>(
-				    parse_state,
-				    locations,
-				    is_json_nullable_v<JsonMember>,
-				    JsonMember::name ) );
+				if constexpr( has_class_dependent_v<JsonMember> ) {
+					constexpr std::size_t dependent_pos =
+					  Names::template dependent_index<JsonMember>( );
+					auto fr = find_class_member<member_position, must_exist>(
+					  parse_state,
+					  locations,
+					  is_json_nullable_v<JsonMember>,
+					  JsonMember::name );
+					if( not fr.known and
+					    locations.dependent_first[dependent_pos] == nullptr ) {
+						// The value comes before the member it depends on.  Keep its
+						// position, that member is looked for if the value is not null
+						locations[member_position].set_range( skip_value( parse_state ) );
+						parse_state.move_next_member_or_end_after_value( );
+						fr = find_result<ParseState>{
+						  locations[member_position].template get_range<ParseState>( ),
+						  true };
+						if constexpr( ParseState::has_allocator ) {
+							fr.location = fr.location.with_allocator( parse_state );
+						}
+					}
+					auto const get_dependent = [&] {
+						return parse_class_dependent<JsonMember, must_exist>( parse_state,
+						                                                      locations );
+					};
+					return parse_class_member_impl<JsonMember, NeedsClassPositions>(
+					  parse_state,
+					  fr,
+					  make_dependent_parser<JsonMember>( get_dependent ) );
+				} else {
+					return parse_class_member_impl<JsonMember, NeedsClassPositions>(
+					  parse_state,
+					  find_class_member<member_position, must_exist>(
+					    parse_state,
+					    locations,
+					    is_json_nullable_v<JsonMember>,
+					    JsonMember::name ) );
+				}
 			}
 
 			template<bool IsExactClass, typename ParseState, typename OldClassPos>
@@ -178,9 +278,20 @@ namespace daw::json {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData,
 				                      parse_state );
-				parse_state.move_next_member_or_end( );
-				// If we fulfill the contract before all values are parses
-				parse_state.move_to_next_class_member( );
+				if constexpr( ParseState::is_unchecked_input ) {
+					parse_state.move_next_member_or_end( );
+					// If we fulfill the contract before all values are parses
+					parse_state.move_to_next_class_member( );
+				} else {
+					// The last member parsed moved past its comma, so a member name or
+					// the end of the class is next
+					parse_state.trim_left_checked( );
+					daw_json_assert_weak(
+					  parse_state.has_more( ) and
+					    ( parse_state.front( ) == '"' or parse_state.front( ) == '}' ),
+					  ErrorReason::MissingMemberNameOrEndOfClass,
+					  parse_state );
+				}
 				if constexpr( IsExactClass ) {
 					daw_json_assert_weak( parse_state.front( ) == '}',
 					                      ErrorReason::UnknownMember,

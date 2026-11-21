@@ -119,12 +119,13 @@ int main( int argc, char **argv )
 	auto const h1 =
 	  test<daw::json::options::ExecModeTypes::runtime>( json_string );
 	test_assert( h0 == h1, "constexpr/runtime exec model hashes do not match" );
-	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-	                                 daw::json::runtime_exec_tag> ) {
-		auto const h2 =
-		  test<daw::json::options::ExecModeTypes::simd>( json_string );
-		test_assert( h0 == h2, "constexpr/fast exec model hashes do not match" );
-	}
+	// test's deduced return type would instantiate it even in a discarded
+	// if constexpr branch
+#if defined( DAW_HAS_SIMD )
+	auto const h2 =
+	  test<daw::json::options::ExecModeTypes::simd>( json_string );
+	test_assert( h0 == h2, "constexpr/fast exec model hashes do not match" );
+#endif
 }
 #if defined( DAW_USE_EXCEPTIONS )
 catch( daw::json::json_exception const &jex ) {

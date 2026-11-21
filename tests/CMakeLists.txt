@@ -13,7 +13,9 @@ if( CYGWIN )
 else()
 	set( CMAKE_CXX_EXTENSIONS OFF )
 endif()
-add_compile_definitions( DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD} )
+if( CMAKE_CXX_STANDARD )
+	add_compile_definitions( DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD} )
+endif()
 
 option( DAW_USE_ALMOST_EQUAL "When doing FP equal use an almost equal method" OFF )
 if( DAW_USE_ALMOST_EQUAL )
@@ -149,6 +151,15 @@ add_test( NAME float_array_test COMMAND float_array_test )
 add_dependencies( ci_tests float_array_test )
 add_dependencies( full float_array_test )
 
+if( DAW_JSON_FULL_TESTS )
+	add_executable( float_array_basic_test src/float_array_basic_test.cpp )
+	add_test( NAME float_array_basic_test COMMAND float_array_basic_test )
+else()
+	add_executable( float_array_basic_test EXCLUDE_FROM_ALL src/float_array_basic_test.cpp )
+endif()
+target_link_libraries( float_array_basic_test PRIVATE json_test )
+add_dependencies( full float_array_basic_test )
+
 add_executable( simple_test src/simple_test.cpp )
 target_link_libraries( simple_test PRIVATE json_test )
 add_test( NAME simple_test COMMAND simple_test ./cities.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
@@ -190,6 +201,15 @@ else()
 endif()
 target_link_libraries( nativejson_bench PRIVATE json_test )
 add_dependencies( full nativejson_bench )
+
+if( DAW_JSON_FULL_TESTS )
+	add_executable( nativejson_bench_nanobench src/nativejson_bench_nanobench.cpp )
+	add_test( NAME nativejson_bench_nanobench COMMAND nativejson_bench_nanobench ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+else()
+	add_executable( nativejson_bench_nanobench EXCLUDE_FROM_ALL src/nativejson_bench_nanobench.cpp )
+endif()
+target_link_libraries( nativejson_bench_nanobench PRIVATE json_test )
+add_dependencies( full nativejson_bench_nanobench )
 
 add_executable( nativejson_bench_alloc EXCLUDE_FROM_ALL src/nativejson_bench_alloc.cpp )
 target_link_libraries( nativejson_bench_alloc PRIVATE json_test )
@@ -1284,6 +1304,12 @@ add_test( NAME issue_496_test COMMAND issue_496_test WORKING_DIRECTORY "${CMAKE_
 add_dependencies( ci_tests issue_496_test )
 add_dependencies( full issue_496_test )
 
+add_executable( decode_member_name_test src/decode_member_name_test.cpp )
+target_link_libraries( decode_member_name_test PRIVATE json_test )
+add_test( NAME decode_member_name_test COMMAND decode_member_name_test )
+add_dependencies( ci_tests decode_member_name_test )
+add_dependencies( full decode_member_name_test )
+
 add_executable( deduced_string_escaping_test src/deduced_string_escaping_test.cpp )
 target_link_libraries( deduced_string_escaping_test PRIVATE json_test )
 add_test( NAME deduced_string_escaping_test COMMAND deduced_string_escaping_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
@@ -1404,6 +1430,18 @@ add_test( NAME visited_members_test COMMAND visited_members_test )
 add_dependencies( ci_tests visited_members_test )
 add_dependencies( full visited_members_test )
 
+add_executable( skip_validation_test src/skip_validation_test.cpp )
+target_link_libraries( skip_validation_test PRIVATE json_test )
+add_test( NAME skip_validation_test COMMAND skip_validation_test )
+add_dependencies( ci_tests skip_validation_test )
+add_dependencies( full skip_validation_test )
+
+add_executable( dependent_member_order_test src/dependent_member_order_test.cpp )
+target_link_libraries( dependent_member_order_test PRIVATE json_test )
+add_test( NAME dependent_member_order_test COMMAND dependent_member_order_test )
+add_dependencies( ci_tests dependent_member_order_test )
+add_dependencies( full dependent_member_order_test )
+
 add_executable( string_writer_test src/string_writer_test.cpp )
 target_link_libraries( string_writer_test PRIVATE json_test )
 add_test( NAME string_writer_test COMMAND string_writer_test )
@@ -1416,26 +1454,29 @@ add_test( NAME span_output_test COMMAND span_output_test )
 add_dependencies( ci_tests span_output_test )
 add_dependencies( full span_output_test )
 
-# The same tests with std::simd capped at 256 bits
-add_executable( serialize_string_simd_max_256_test src/serialize_string_simd_test.cpp )
-target_compile_definitions( serialize_string_simd_max_256_test PRIVATE DAW_JSON_SIMD_MAX_256 )
-target_link_libraries( serialize_string_simd_max_256_test PRIVATE json_test )
-add_test( NAME serialize_string_simd_max_256_test COMMAND serialize_string_simd_max_256_test )
-add_dependencies( ci_tests serialize_string_simd_max_256_test )
-add_dependencies( full serialize_string_simd_max_256_test )
-
-add_executable( parse_string_simd_max_256_test src/parse_string_simd_test.cpp )
-target_compile_definitions( parse_string_simd_max_256_test PRIVATE DAW_JSON_SIMD_MAX_256 )
-target_link_libraries( parse_string_simd_max_256_test PRIVATE json_test )
-add_test( NAME parse_string_simd_max_256_test COMMAND parse_string_simd_max_256_test )
-add_dependencies( ci_tests parse_string_simd_max_256_test )
-add_dependencies( full parse_string_simd_max_256_test )
-
 add_executable( parse_string_simd_test src/parse_string_simd_test.cpp )
 target_link_libraries( parse_string_simd_test PRIVATE json_test )
 add_test( NAME parse_string_simd_test COMMAND parse_string_simd_test )
 add_dependencies( ci_tests parse_string_simd_test )
 add_dependencies( full parse_string_simd_test )
+
+add_executable( simd_digits_test src/simd_digits_test.cpp )
+target_link_libraries( simd_digits_test PRIVATE json_test )
+add_test( NAME simd_digits_test COMMAND simd_digits_test )
+add_dependencies( ci_tests simd_digits_test )
+add_dependencies( full simd_digits_test )
+
+add_executable( parse_real_known_bounds_reject_test src/parse_real_known_bounds_reject_test.cpp )
+target_link_libraries( parse_real_known_bounds_reject_test PRIVATE json_test )
+add_test( NAME parse_real_known_bounds_reject_test COMMAND parse_real_known_bounds_reject_test )
+add_dependencies( ci_tests parse_real_known_bounds_reject_test )
+add_dependencies( full parse_real_known_bounds_reject_test )
+
+add_executable( parse_real_known_bounds_tail_test src/parse_real_known_bounds_tail_test.cpp )
+target_link_libraries( parse_real_known_bounds_tail_test PRIVATE json_test )
+add_test( NAME parse_real_known_bounds_tail_test COMMAND parse_real_known_bounds_tail_test )
+add_dependencies( ci_tests parse_real_known_bounds_tail_test )
+add_dependencies( full parse_real_known_bounds_tail_test )
 
 add_executable( daw_json_writer_mapping_test
 								src/daw_json_writer_mapping_test.cpp )
@@ -1452,6 +1493,13 @@ add_test( NAME daw_json_simd_block_iterator_test
 					COMMAND daw_json_simd_block_iterator_test )
 add_dependencies( ci_tests daw_json_simd_block_iterator_test )
 add_dependencies( full daw_json_simd_block_iterator_test )
+
+add_executable( lexer_cursor_test src/lexer_cursor_test.cpp )
+target_link_libraries( lexer_cursor_test PRIVATE json_test )
+add_test( NAME lexer_cursor_test COMMAND lexer_cursor_test )
+add_dependencies( ci_tests lexer_cursor_test )
+add_dependencies( full lexer_cursor_test )
+
 
 set( DAW_JSON_HEADER_SELF_CONTAINMENT_TESTS
 		 daw_from_json
@@ -1566,3 +1614,24 @@ if( GIT_FOUND )
 endif()
 # **************************************************
  
+
+add_executable( fast_path_benchmark EXCLUDE_FROM_ALL src/fast_path_benchmark.cpp )
+target_link_libraries( fast_path_benchmark PRIVATE json_test )
+target_compile_features( fast_path_benchmark PRIVATE cxx_std_20 )
+
+add_executable( from_json_simd_twitter_profile_test
+                src/from_json_simd_twitter_profile_test.cpp )
+target_link_libraries( from_json_simd_twitter_profile_test PRIVATE json_test )
+target_compile_features( from_json_simd_twitter_profile_test PRIVATE cxx_std_20 )
+add_test( NAME from_json_simd_twitter_profile_test
+          COMMAND from_json_simd_twitter_profile_test ./twitter.json
+          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies( ci_tests from_json_simd_twitter_profile_test )
+add_dependencies( full from_json_simd_twitter_profile_test )
+
+add_executable( from_json_simd_test src/from_json_simd_test.cpp )
+target_link_libraries( from_json_simd_test PRIVATE json_test )
+target_compile_features( from_json_simd_test PRIVATE cxx_std_20 )
+add_test( NAME from_json_simd_test COMMAND from_json_simd_test )
+add_dependencies( ci_tests from_json_simd_test )
+add_dependencies( full from_json_simd_test )

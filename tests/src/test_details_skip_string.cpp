@@ -87,54 +87,50 @@ bool test_missing_quotes_003( ) {
 	return false;
 }
 
-template<daw::json::options::ExecModeTypes ExecMode>
 bool test_escaped_quote_001( ) {
 	std::string_view sv =
 	  R"( "abcdefghijklmnop\"qrstuvwxyz"                                        )";
 	std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto rng = BasicParsePolicy<parse_options( ExecMode )>(
+	auto rng = BasicParsePolicy(
 	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	auto const sz = v.size( );
 	return sz == 28;
 }
 
-template<daw::json::options::ExecModeTypes ExecMode>
 bool test_escaped_quote_002( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "abcdefghijklmnop\"qrstuvwxy\\"                                        )";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto rng = BasicParsePolicy<parse_options( ExecMode )>(
+	auto rng = BasicParsePolicy(
 	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 29;
 }
 
-template<daw::json::options::ExecModeTypes ExecMode>
 bool test_escaped_quote_003( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "abcdefghijklmn\\\"qrstuvwxy\\"                                        )";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto rng = BasicParsePolicy<parse_options( ExecMode )>(
+	auto rng = BasicParsePolicy(
 	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 29;
 }
 
-template<daw::json::options::ExecModeTypes ExecMode>
 bool test_escaped_quote_004( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "<a href=\"http://twittbot.net/\" rel=\"nofollow\">twittbot.net</a>"                                 )";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto rng = BasicParsePolicy<parse_options( ExecMode )>(
+	auto rng = BasicParsePolicy(
 	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 66;
@@ -173,28 +169,10 @@ int main( int, char ** )
 	do_test( test_quoted_number( ) );
 	do_test( test_empty_quoted( ) );
 	do_test( test_embedded_quotes( ) );
-	do_test( test_escaped_quote_001<
-	         daw::json::options::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_002<
-	         daw::json::options::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_003<
-	         daw::json::options::ExecModeTypes::compile_time>( ) );
-	do_test( test_escaped_quote_004<
-	         daw::json::options::ExecModeTypes::compile_time>( ) );
-	do_test(
-	  test_escaped_quote_001<daw::json::options::ExecModeTypes::runtime>( ) );
-	do_test(
-	  test_escaped_quote_002<daw::json::options::ExecModeTypes::runtime>( ) );
-	do_test(
-	  test_escaped_quote_003<daw::json::options::ExecModeTypes::runtime>( ) );
-	do_test(
-	  test_escaped_quote_004<daw::json::options::ExecModeTypes::runtime>( ) );
-#if defined( DAW_ALLOW_SSE42 )
-	do_test( test_escaped_quote_001<daw::json::options::ExecModeTypes::simd>( ) );
-	do_test( test_escaped_quote_002<daw::json::options::ExecModeTypes::simd>( ) );
-	do_test( test_escaped_quote_003<daw::json::options::ExecModeTypes::simd>( ) );
-	do_test( test_escaped_quote_004<daw::json::options::ExecModeTypes::simd>( ) );
-#endif
+	do_test( test_escaped_quote_001( ) );
+	do_test( test_escaped_quote_002( ) );
+	do_test( test_escaped_quote_003( ) );
+	do_test( test_escaped_quote_004( ) );
 	do_fail_test( test_missing_quotes_001( ) );
 	do_fail_test( test_missing_quotes_002( ) );
 	do_fail_test( test_missing_quotes_003( ) );

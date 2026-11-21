@@ -50,7 +50,7 @@ namespace daw::json {
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 
-			using i_am_a_parse_policy = void;
+			using i_am_a_json_parse_policy = void;
 			static constexpr bool is_default_parse_policy =
 			  PolicyFlags == json_details::default_policy_flag and
 			  std::is_same_v<Allocator, json_details::NoAllocator>;
@@ -73,6 +73,12 @@ namespace daw::json {
 			  json_details::get_bits_for<options::ExecModeTypes, std::size_t>(
 			    PolicyFlags ),
 			  default_exec_tag, constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
+
+			static_assert( has_simd_exec_mode or
+			                 not std::is_same_v<exec_tag_t, simd_exec_tag>,
+			               "options::ExecModeTypes::simd was requested but this "
+			               "build has no SIMD support.  Enable a SIMD instruction "
+			               "set, e.g. -march, or use another exec mode" );
 
 			static constexpr auto exec_tag = exec_tag_t{ };
 
@@ -125,8 +131,12 @@ namespace daw::json {
 			  json_details::get_bits_for<options::ExcludeSpecialEscapes>(
 			    PolicyFlags ) == options::ExcludeSpecialEscapes::yes;
 
-			/// @brief Allow numbers with leading zeros and pluses when parsing
-			static constexpr bool allow_leading_zero_plus = true;
+			/***
+			 * See options::StrictSkipChecks
+			 */
+			static constexpr bool strict_skip_checks =
+			  json_details::get_bits_for<options::StrictSkipChecks>( PolicyFlags ) ==
+			  options::StrictSkipChecks::yes;
 
 			static constexpr bool use_exact_mappings_by_default =
 			  json_details::get_bits_for<options::UseExactMappingsByDefault>(
@@ -175,6 +185,12 @@ namespace daw::json {
 			using SetPolicyOptions = BasicParsePolicy<
 			  json_details::set_bits( PolicyFlags, PolicyOptions... ), Allocator>;
 
+			/// @brief This policy without string mutation.  Members that other
+			/// members depend on, like the tag of a variant or the size of a sized
+			/// array, are parsed with it so they are never decoded in place
+			using without_string_mutation_type =
+			  SetPolicyOptions<options::AllowStringMutation::no>;
+
 			explicit BasicParsePolicy( ) = default;
 
 			explicit constexpr BasicParsePolicy( iterator f, iterator l )
@@ -213,6 +229,20 @@ namespace daw::json {
 			  , last( l )
 			  , class_first( cf )
 			  , class_last( cl ) {}
+
+			[[nodiscard]] constexpr without_string_mutation_type
+			without_string_mutation( ) const {
+				if constexpr( json_details::AllocatorWrapper<
+				                Allocator>::has_allocator ) {
+					auto result = without_string_mutation_type(
+					  first, last, class_first, class_last, this->get_allocator( ) );
+					result.counter = counter;
+					return result;
+				} else {
+					return without_string_mutation_type(
+					  first, last, class_first, class_last, counter );
+				}
+			}
 
 			[[nodiscard]] constexpr BasicParsePolicy
 			copy( iterator f = iterator{ }, iterator l = iterator{ },
@@ -434,10 +464,6 @@ namespace daw::json {
 				return CommentPolicy::trim_left_unchecked( *this );
 			}
 
-			[[nodiscard]] constexpr bool is_literal_end( ) const {
-				return CommentPolicy::is_literal_end( *first );
-			}
-
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr bool
 			is_space_unchecked( ) const {
 				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
@@ -499,6 +525,24 @@ namespace daw::json {
 				}
 			}
 
+			/// Like move_next_member_or_end, when a value has just been skipped.
+			/// Without a comma the value has to be the last in its class or array
+			DAW_ATTRIB_INLINE constexpr void move_next_member_or_end_after_value( ) {
+				if constexpr( is_unchecked_input ) {
+					move_next_member_or_end_unchecked( );
+				} else {
+					trim_left_checked( );
+					if( DAW_LIKELY( first < last ) and *first == ',' ) {
+						++first;
+						trim_left( );
+						return;
+					}
+					daw_json_ensure( empty( ) or *first == '}' or *first == ']',
+					                 ErrorReason::ExpectedTokenNotFound,
+					                 *this );
+				}
+			}
+
 			DAW_ATTRIB_INLINE constexpr void move_next_member( ) {
 				if constexpr( is_unchecked_input ) {
 					CommentPolicy::move_next_member_unchecked( *this );
@@ -539,20 +583,22 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy skip_class( ) {
-#if defined( DAW_JSON_HAS_STD_SIMD )
+#if defined( DAW_HAS_SIMD )
+				// SIMD is slower than the scalar skip during constant evaluation
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
-					return json_details::skip_bracketed_item_simd<
-					  json_details::SkipBracketedType::Class>( *this );
-				} else
-#elif defined( DAW_JSON_HAS_SIMD )
-				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
-					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
-						return json_details::skip_bracketed_item_simd<
-						  json_details::SkipBracketedType::Class>( *this );
+					if( not json_details::use_constexpr_exec_mode<exec_tag_t>( ) and
+					    json_details::use_simd_exec_mode<exec_tag_t>( ) ) {
+						if constexpr( is_unchecked_input ) {
+							return json_details::skip_bracketed_item_simd<
+							  json_details::SkipBracketedType::Class>( *this );
+						} else {
+							return json_details::skip_bracketed_item_simd_validated<
+							  json_details::SkipBracketedType::Class>( *this );
+						}
 					}
 				}
 #endif
-				  if constexpr( is_unchecked_input ) {
+				if constexpr( is_unchecked_input ) {
 					return skip_bracketed_item_unchecked<
 					  json_details::SkipBracketedType::Class>( );
 				} else {
@@ -562,20 +608,22 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIB_INLINE constexpr BasicParsePolicy skip_array( ) {
-#if defined( DAW_JSON_HAS_STD_SIMD )
+#if defined( DAW_HAS_SIMD )
+				// SIMD is slower than the scalar skip during constant evaluation
 				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
-					return json_details::skip_bracketed_item_simd<
-					  json_details::SkipBracketedType::Array>( *this );
-				} else
-#elif defined( DAW_JSON_HAS_SIMD )
-				if constexpr( std::is_same_v<CommentPolicy, NoCommentSkippingPolicy> ) {
-					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
-						return json_details::skip_bracketed_item_simd<
-						  json_details::SkipBracketedType::Array>( *this );
+					if( not json_details::use_constexpr_exec_mode<exec_tag_t>( ) and
+					    json_details::use_simd_exec_mode<exec_tag_t>( ) ) {
+						if constexpr( is_unchecked_input ) {
+							return json_details::skip_bracketed_item_simd<
+							  json_details::SkipBracketedType::Array>( *this );
+						} else {
+							return json_details::skip_bracketed_item_simd_validated<
+							  json_details::SkipBracketedType::Array>( *this );
+						}
 					}
 				}
 #endif
-				  if constexpr( is_unchecked_input ) {
+				if constexpr( is_unchecked_input ) {
 					return skip_bracketed_item_unchecked<
 					  json_details::SkipBracketedType::Array>( );
 				} else {

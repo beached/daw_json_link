@@ -17,9 +17,17 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			/// @brief The parse options of a json_value made from JSON text.  It
+			/// has no mapped names to compare member names with, so they can have
+			/// escapes.  A json_value made from a parse state has its options
+			inline constexpr json_options_t json_value_policy_flag =
+			  parse_options( options::AllowEscapedNames::yes );
+		} // namespace json_details
+
 		/// @brief A container for arbitrary JSON values
 		/// @tparam ParseState see IteratorRange
-		template<json_options_t PolicyFlags = json_details::default_policy_flag,
+		template<json_options_t PolicyFlags = json_details::json_value_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct basic_json_value;
 

@@ -69,11 +69,14 @@ namespace daw::json {
 		namespace json_details {
 #if defined( DAW_ATTRIB_ENABLE_IF )
 #if defined( DAW_HAS_CPP26_DELETED_REASON )
+			_Pragma( "clang diagnostic push" );
+			_Pragma( "clang diagnostic ignored \"-Wc++26-extensions\"" );
 			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 			handle_error( bool b, json_exception &&jex )
 			  DAW_ATTRIB_ENABLE_IF( __builtin_constant_p( b ) and b,
 			                        "daw_json_ensure check failed" ) =
 			    delete( "daw_json_ensure check failed" );
+			_Pragma( "clang diagnostic pop" );
 #endif
 			[[noreturn]] DAW_ATTRIB_NOINLINE inline void
 			handle_error( bool b, json_exception &&jex )
@@ -211,6 +214,17 @@ namespace daw::json {
 			}                                                                        \
 		}                                                                          \
 	} while( false )
+
+#define daw_json_error_weak( ... )                         \
+	do {                                                     \
+		if consteval {                                         \
+			daw_json_error( false, __VA_ARGS__ );                \
+		} else {                                               \
+			if constexpr( not ParseState::is_unchecked_input ) { \
+				daw_json_error( false, __VA_ARGS__ );              \
+			}                                                    \
+		}                                                      \
+	} while( false )
 #elif defined( DAW_HAS_IS_CONSTANT_EVALUATED )
 #define daw_json_assert_weak( Bool, ... )                                      \
 	do {                                                                         \
@@ -228,6 +242,16 @@ namespace daw::json {
 			}                                                                        \
 		}                                                                          \
 	} while( false )
+#define daw_json_error_weak( ... )                         \
+	do {                                                     \
+		if( DAW_IS_CONSTANT_EVALUATED( ) ) {                   \
+			daw_json_error( false, __VA_ARGS__ );                \
+		} else {                                               \
+			if constexpr( not ParseState::is_unchecked_input ) { \
+				daw_json_error( false, __VA_ARGS__ );              \
+			}                                                    \
+		}                                                      \
+	} while( false )
 #else
 #define daw_json_assert_weak( Bool, ... )                                    \
 	do {                                                                       \
@@ -238,6 +262,12 @@ namespace daw::json {
 				daw_json_error( not( Bool ), __VA_ARGS__ );                          \
 			}                                                                      \
 		}                                                                        \
+	} while( false )
+#define daw_json_error_weak( ... )                       \
+	do {                                                   \
+		if constexpr( not ParseState::is_unchecked_input ) { \
+			daw_json_error( false, __VA_ARGS__ );              \
+		}                                                    \
 	} while( false )
 #endif
 

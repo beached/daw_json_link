@@ -1,0 +1,5 @@
+    29.23%  kb_clang++  kb_clang++            [.] daw::json::v3_44_0::json_details::lexer_cursor::build_structural_chunk(char const*, unsigned long, daw::json::v3_44_0::json_details::lexer_cursor::car
+    29.18%  kb_clang++  kb_clang++            [.] double daw::json::v3_44_0::json_details::parse_real_single_pass<double, daw::json::v3_44_0::BasicParsePolicy<256u, daw::json::v3_44_0::json_details::N
+    29.17%  kb_clang++  kb_clang++            [.] daw::json::v3_44_0::json_details::simd_details::json_simd_block_iterator_class<daw::json::v3_44_0::json_base::json_class<coordinate_t, daw::use_defaul
+     5.53%  kb_clang++  kb_clang++            [.] run(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string_view<char, std::char_traits<char> >)
+     5.26%  kb_clang++  kb_clang++            [.] double daw::json::v3_44_0::json_details::parse_real_eisellemire<double>(bool, long, unsigned long)

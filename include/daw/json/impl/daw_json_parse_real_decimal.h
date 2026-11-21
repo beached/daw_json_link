@@ -15,7 +15,7 @@
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_bit_cast.h>
-#include <daw/daw_not_null.h>
+#include <daw/daw_ensure.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -39,12 +39,29 @@ namespace daw::json {
 					std::int32_t decimal_point = 0;
 					bool truncated = false;
 
-					constexpr void push_digit( unsigned digit ) {
-						if( digit_count < max_digits ) {
+					/// Append the digit run at first and return its end.  Digits past
+					/// max_digits only mark the value as truncated
+					[[nodiscard]] constexpr char const *
+					push_digits( char const *first, char const *const last ) {
+						auto const room = max_digits - digit_count;
+						auto const room_last =
+						  static_cast<std::size_t>( last - first ) > room ? first + room
+						                                                  : last;
+						for( ; first < room_last; ++first ) {
+							auto const digit = parse_digit( *first );
+							if( digit >= 10U ) {
+								return first;
+							}
 							digits[digit_count++] = static_cast<std::uint8_t>( digit );
-						} else {
+						}
+						for( ; first < last; ++first ) {
+							auto const digit = parse_digit( *first );
+							if( digit >= 10U ) {
+								break;
+							}
 							truncated |= digit != 0;
 						}
+						return first;
 					}
 
 					constexpr void trim( ) {
@@ -237,43 +254,40 @@ namespace daw::json {
 				}
 
 				[[nodiscard]] constexpr decimal_sequence
-				parse_json_decimal( daw::not_null<char const *> first,
-				                    daw::not_null<char const *> const last ) {
+				parse_json_decimal( char const *first, char const *const last ) {
+					daw_dbg_ensure( first != nullptr and last != nullptr );
 					decimal_sequence result{ };
 					if( *first == '-' ) {
 						++first;
 					}
 
-					std::int64_t decimal_point = 0;
-					bool seen_nonzero = false;
-					while( first < last and parse_digit( *first ) < 10U ) {
-						auto const digit = parse_digit( *first++ );
-						if( seen_nonzero or digit != 0 ) {
-							seen_nonzero = true;
-							result.push_digit( digit );
-							++decimal_point;
-						}
+					// Leading zeros are not significant, and the first digit kept is
+					// nonzero, so digit_count stays 0 until one is seen
+					while( first < last and parse_digit( *first ) == 0 ) {
+						++first;
 					}
+					auto const whole_first = first;
+					first = result.push_digits( first, last );
+					std::int64_t decimal_point = first - whole_first;
 
 					if( first < last and *first == '.' ) {
 						++first;
-						while( first < last and parse_digit( *first ) < 10U ) {
-							auto const digit = parse_digit( *first++ );
-							if( seen_nonzero or digit != 0 ) {
-								seen_nonzero = true;
-								result.push_digit( digit );
-							} else {
+						if( result.digit_count == 0 ) {
+							while( first < last and parse_digit( *first ) == 0 ) {
 								--decimal_point;
+								++first;
 							}
 						}
+						first = result.push_digits( first, last );
 					}
+					bool const seen_nonzero = result.digit_count != 0;
 
 					char const *exponent_first = nullptr;
 					if( first < last and ( *first == 'e' or *first == 'E' ) ) {
 						exponent_first = ++first;
 					}
 					decimal_point = saturating_add(
-					  decimal_point, parse_exponent( exponent_first, last.get( ) ) );
+					  decimal_point, parse_exponent( exponent_first, last ) );
 
 					if( not seen_nonzero ) {
 						result.digit_count = 0;
@@ -320,8 +334,9 @@ namespace daw::json {
 
 			template<typename Real>
 			[[nodiscard]] constexpr Real
-			parse_json_real_exact( bool negative, daw::not_null<char const *> first,
-			                       daw::not_null<char const *> last ) {
+			parse_json_real_exact( bool negative, char const *first,
+			                       char const *last ) {
+				daw_dbg_ensure( first != nullptr and last != nullptr );
 				using format = eisellemire_details::binary_format<Real>;
 				auto decimal = decimal_details::parse_json_decimal( first, last );
 

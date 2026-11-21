@@ -59,7 +59,7 @@ namespace daw::json {
 
 			DAW_JSON_MAKE_REQ_TYPE_ALIAS_TRAIT(
 			  is_submember_tagged_variant_v,
-			  json_data_contract<T>::type::i_am_a_submember_tagged_variant );
+			  json_data_contract<T>::type::i_am_a_json_submember_tagged_variant );
 		} // namespace json_details
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

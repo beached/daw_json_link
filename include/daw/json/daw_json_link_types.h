@@ -241,7 +241,7 @@ namespace daw::json {
 		 */
 		template<std::size_t Index, typename JsonMember>
 		struct json_tuple_member {
-			using i_am_an_ordered_member = void;
+			using i_am_a_json_ordered_member = void;
 			using i_am_a_json_type = void;
 			static constexpr std::size_t member_index = Index;
 			static_assert(
@@ -358,7 +358,7 @@ namespace daw::json {
 		template<typename TagMember, typename Switcher, typename... JsonClasses>
 		struct json_submember_tagged_variant {
 			using i_am_a_json_member_list = void;
-			using i_am_a_submember_tagged_variant = void;
+			using i_am_a_json_submember_tagged_variant = void;
 
 			/**
 			 * Serialize a C++ class to JSON data
@@ -1323,16 +1323,25 @@ namespace daw::json {
 				using parse_to_t = T;
 
 				static constexpr auto expected_type = JsonParseTypes::ReflectedClass;
-				using constructor_t = use_default;
+				using constructor_t = default_constructor<T>;
 
 				static constexpr auto underlying_json_type = JsonBaseParseTypes::Class;
 
 				template<JSONNAMETYPE NewName>
 				using with_name = daw::json::json_reflected_class<NewName, T>;
 
+				static constexpr std::size_t member_count =
+				  refl_details::get_non_ignored_reflectible_members<T>( ).size( );
+
+				/// The member links parse_to_class parses with
+				using json_member_list_t =
+				  typename decltype( []<std::size_t... Idx>(
+				                       std::index_sequence<Idx...> ) {
+					  return daw::traits::identity<
+					    json_member_list<refl_details::get_member_link_t<T, Idx>...>>{ };
+				  }( std::make_index_sequence<member_count>{ } ) )::type;
+
 				[[nodiscard]] static constexpr T parse_to_class( auto &parse_state ) {
-					static constexpr auto member_count =
-					  refl_details::get_non_ignored_reflectible_members<T>( ).size( );
 					return [&]<std::size_t... Idx>( std::index_sequence<Idx...> seq ) {
 						return json_details::parse_json_reflected_class<
 						  json_reflected_class,
@@ -1472,7 +1481,7 @@ namespace daw::json {
 			         typename JsonElements, typename Constructor>
 			struct json_tagged_variant {
 				using i_am_a_json_type = void;
-				using i_am_a_tagged_variant = void;
+				using i_am_a_json_tagged_variant = void;
 
 				using json_elements = typename daw::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,
@@ -2100,7 +2109,7 @@ namespace daw::json {
 			         typename Constructor = use_default>
 			struct json_intrusive_variant {
 				using i_am_a_json_type = void;
-				using i_am_a_tagged_variant = void;
+				using i_am_a_json_tagged_variant = void;
 
 				using json_elements = typename daw::conditional_t<
 				  std::is_same_v<JsonElements, use_default>,

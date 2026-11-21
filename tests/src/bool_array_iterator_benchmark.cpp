@@ -30,12 +30,12 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 
 namespace {
 	using namespace daw::json;
 	using scalar_iterator = json_array_iterator<bool>;
-	using simd_iterator = json_simd_block_iterator<bool>;
+	using simd_iterator = experimental::json_simd_block_iterator<bool>;
 
 	[[nodiscard]] std::string make_bool_array( std::size_t element_count ) {
 		auto result = std::string{ "[" };
@@ -109,7 +109,7 @@ int main( int argc, char **argv ) {
 
 int main( ) {
 	std::cerr
-	  << "This benchmark requires a standard library with <simd> support.\n";
+	  << "This benchmark requires a supported daw::simd backend.\n";
 	return EXIT_FAILURE;
 }
 

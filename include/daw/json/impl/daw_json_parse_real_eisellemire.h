@@ -23,7 +23,8 @@
 #include <limits>
 #include <type_traits>
 
-#if defined( DAW_HAS_MSVC ) and defined( _M_X64 )
+#if not defined( DAW_HAS_INT128 ) and defined( DAW_HAS_MSVC ) and \
+  ( defined( _M_X64 ) or defined( _M_ARM64 ) )
 #include <intrin.h>
 #endif
 
@@ -39,7 +40,7 @@ namespace daw::json {
 				[[nodiscard]] constexpr bool
 				try_append_digit( std::uint64_t &value, unsigned digit ) noexcept {
 					DAW_CPP23_STATIC_LOCAL constexpr auto max_value =
-				  daw::max_value<std::uint64_t>;
+					  daw::max_value<std::uint64_t>;
 					if( digit > 9U or value > ( max_value - digit ) / 10U ) {
 						return false;
 					}
@@ -117,31 +118,56 @@ namespace daw::json {
 					return { low, high };
 				}
 
+				/// The 128 bit product lhs * rhs.  A native 128 bit integer is usable
+				/// during constant evaluation too, so it is the only path when there
+				/// is one
 				[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr uint128
 				full_multiplication( std::uint64_t lhs, std::uint64_t rhs ) noexcept {
-#if ( defined( __GNUC__ ) or defined( __clang__ ) ) and \
-  defined( __SIZEOF_INT128__ )
-					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+#if defined( DAW_HAS_INT128 )
+					// __uint128_t with GCC/Clang, std::_Unsigned128 with MSVC's STL
+					auto const result =
+					  static_cast<daw::uint128_t>( lhs ) * static_cast<daw::uint128_t>( rhs );
+					return { static_cast<std::uint64_t>( result ),
+					         static_cast<std::uint64_t>( result >> 64U ) };
+#elif not defined( DAW_NO_INT128 ) and defined( __SIZEOF_INT128__ ) and \
+  ( defined( __GNUC__ ) or defined( __clang__ ) )
+					// e.g. clang-cl with an STL that has no std::_Unsigned128.  It does
+					// not have DAW_HAS_INT128 because 128 bit division needs runtime
+					// helpers it may not link, a multiply does not
 #if defined( __GNUC__ )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
-						auto const result = static_cast<unsigned __int128>( lhs ) * rhs;
-						return { static_cast<std::uint64_t>( result ),
-						         static_cast<std::uint64_t>( result >> 64U ) };
+					auto const result = static_cast<unsigned __int128>( lhs ) * rhs;
+					return { static_cast<std::uint64_t>( result ),
+					         static_cast<std::uint64_t>( result >> 64U ) };
 #if defined( __GNUC__ )
 #pragma GCC diagnostic pop
 #endif
-					}
-#elif defined( DAW_HAS_MSVC ) and defined( _M_X64 )
+#else
+#if defined( DAW_HAS_MSVC ) and defined( _M_X64 )
+					// Older MSVC, or C++17.  _umul128 cannot be constant evaluated
 					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
 						uint128 result{ };
 						result.low = _umul128( lhs, rhs, &result.high );
 						return result;
 					}
+#elif defined( DAW_HAS_MSVC ) and defined( _M_ARM64 )
+					if( not DAW_IS_CONSTANT_EVALUATED_COMPAT( ) ) {
+						return { lhs * rhs, __umulh( lhs, rhs ) };
+					}
 #endif
 					return full_multiplication_generic( lhs, rhs );
+#endif
 				}
+
+				static_assert( full_multiplication( 0xFFFF'FFFF'FFFF'FFFFULL,
+				                                    0xFFFF'FFFF'FFFF'FFFFULL )
+				                   .low == 1U and
+				                 full_multiplication( 0xFFFF'FFFF'FFFF'FFFFULL,
+				                                      0xFFFF'FFFF'FFFF'FFFFULL )
+				                     .high == 0xFFFF'FFFF'FFFF'FFFEULL,
+				               "128 bit multiplication does not work on this platform" );
 
 				template<typename Real>
 				[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr uint128
@@ -181,8 +207,7 @@ namespace daw::json {
 			inline constexpr bool is_double_sized_long_double_v =
 			  std::is_same_v<Real, long double> and
 			  sizeof( long double ) == sizeof( double ) and
-			  daw::digits<long double> ==
-			    daw::digits<double> and
+			  daw::digits<long double> == daw::digits<double> and
 			  std::numeric_limits<long double>::max_exponent ==
 			    std::numeric_limits<double>::max_exponent;
 
@@ -233,8 +258,11 @@ namespace daw::json {
 			/// compare the conversions of significant_digits and
 			/// significant_digits + 1. If those conversions differ, the caller must
 			/// resolve the result using the original decimal digits.
+			///
+			/// Out of line so the 128 bit multiply and rounding do not add to the
+			/// register pressure of the number parsers that call it.
 			template<typename Real = double>
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr Real
+			[[nodiscard]] DAW_ATTRIB_FLATTEN DAW_ATTRIB_NOINLINE constexpr Real
 			parse_real_eisellemire( bool negative, std::int64_t exponent,
 			                        std::uint64_t significant_digits ) noexcept {
 				static_assert( std::is_same_v<Real, float> or

@@ -1,0 +1,5 @@
+    31.24%  kb_g++   kb_g++                [.] daw::json::v3_44_0::json_details::lexer_cursor::build_structural_chunk(char const*, unsigned long, daw::json::v3_44_0::json_details::lexer_cursor::carry_
+    28.39%  kb_g++   kb_g++                [.] double daw::json::v3_44_0::json_details::parse_real_single_pass<double, daw::json::v3_44_0::BasicParsePolicy<256u, daw::json::v3_44_0::json_details::NoAl
+    27.88%  kb_g++   kb_g++                [.] char const* daw::json::v3_44_0::json_details::simd_details::simd_class_parser<daw::json::v3_44_0::json_member_list<daw::json::v3_44_0::json_number<daw::j
+     7.59%  kb_g++   kb_g++                [.] acc sum_range<daw::json::v3_44_0::json_details::simd_details::json_simd_block_iterator_class<daw::json::v3_44_0::json_base::json_class<coordinate_t, daw:
+     3.20%  kb_g++   kb_g++                [.] double daw::json::v3_44_0::json_details::parse_real_eisellemire<double>(bool, long, unsigned long)

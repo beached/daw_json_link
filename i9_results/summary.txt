@@ -1,0 +1,80 @@
+== machine
+model name	: Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
+flags: pclmulqdq avx2 bmi2 
+kernel: 7.3.0-2-t2-resolute
+governor: powersave
+
+== sources
+/root/github/daw_json_link: 7847efa4 v3 dirty: 
+/root/github/header_libraries: dfe37ed7 v2 dirty: 
+utf_range: /root/github/utf_range/include/
+flags: -std=c++20 -O3 -march=native -flto=auto -Wa,-mbranches-within-32B-boundaries -DNDEBUG
+
+data: e3a51948889b8903f024b5cc86bdff49 fixed.json (expect e3a51948889b8903f024b5cc86bdff49)
+
+== clang++: Ubuntu clang version 22.1.8 (++20260714015917+ca7933e47d3a-1~exp1~20260714135927.17)
+-- fixed.json, 20 parses
+iter_unchecked  min   22.667 ms  median   23.485 ms  n=200000  chk 0.499303 0.499394 0.499504
+iter            min   37.143 ms  median   37.401 ms  n=200000  chk 0.499303 0.499394 0.499504
+simd_iter       min   31.261 ms  median   31.394 ms  n=200000  chk 0.499303 0.499394 0.499504
+sj              min   22.020 ms  median   23.295 ms  n=200000  chk 0.499303 0.499394 0.499504  simdjson=haswell
+-- shuffle.json, 20 parses
+iter_unchecked  min   39.864 ms  median   40.130 ms  n=200000  chk 0.498829 0.500198 0.500181
+iter            min   51.586 ms  median   51.796 ms  n=200000  chk 0.498829 0.500198 0.500181
+simd_iter       min   36.544 ms  median   36.847 ms  n=200000  chk 0.498829 0.500198 0.500181
+sj              min   37.262 ms  median   37.601 ms  n=200000  chk 0.498829 0.500198 0.500181  simdjson=haswell
+-- counters per parse (fixed.json, difference of 21 and 1 parses)
+iter_unchecked  cycles=97.89M instructions=285.02M branch-misses=0.37M mem_inst_retired.all_stores=22.23M
+iter            cycles=155.50M instructions=473.05M branch-misses=0.39M mem_inst_retired.all_stores=34.83M
+simd_iter       cycles=130.36M instructions=366.14M branch-misses=0.62M mem_inst_retired.all_stores=32.27M
+sj              cycles=95.96M instructions=229.02M branch-misses=0.49M mem_inst_retired.all_stores=11.64M
+-- top-down level 1 (60 parses, includes file load)
+iter_unchecked:  17123726728 INST_RETIRED.ANY:u # 66.1 % tma_retiring (62.49%)| 2222460806 IDQ_UOPS_NOT_DELIVERED.CORE:u # 9.3 % tma_frontend_bound | # nan % tma_backend_bound (62.51%)| <not supported> INT_MISC.RECOVERY_CYCLES_ANY:u # nan % tma_bad_speculation |
+simd_iter:  22021502367 INST_RETIRED.ANY:u # 61.9 % tma_retiring (62.44%)| 6425140108 IDQ_UOPS_NOT_DELIVERED.CORE:u # 20.3 % tma_frontend_bound | # nan % tma_backend_bound (62.48%)| <not supported> INT_MISC.RECOVERY_CYCLES_ANY:u # nan % tma_bad_speculation |
+sj:  13770555343 INST_RETIRED.ANY:u # 55.7 % tma_retiring (62.45%)| 3961004450 IDQ_UOPS_NOT_DELIVERED.CORE:u # 17.1 % tma_frontend_bound | # nan % tma_backend_bound (62.45%)| <not supported> INT_MISC.RECOVERY_CYCLES_ANY:u # nan % tma_bad_speculation |
+top functions simd_iter (see /root/otherppl/kostya_i9/results/perf_clang++_simd_iter.txt):
+    29.23%  kb_clang++  kb_clang++            [.] daw::json::v3_44_0::json_details::lexer_cursor::build_structural_chunk(char const*, unsigned long, daw::json::v3_44_0::json_details::lexer_cursor::car
+    29.18%  kb_clang++  kb_clang++            [.] double daw::json::v3_44_0::json_details::parse_real_single_pass<double, daw::json::v3_44_0::BasicParsePolicy<256u, daw::json::v3_44_0::json_details::N
+    29.17%  kb_clang++  kb_clang++            [.] daw::json::v3_44_0::json_details::simd_details::json_simd_block_iterator_class<daw::json::v3_44_0::json_base::json_class<coordinate_t, daw::use_defaul
+     5.53%  kb_clang++  kb_clang++            [.] run(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string_view<char, std::char_traits<char> >)
+     5.26%  kb_clang++  kb_clang++            [.] double daw::json::v3_44_0::json_details::parse_real_eisellemire<double>(bool, long, unsigned long)
+top functions iter_unchecked (see /root/otherppl/kostya_i9/results/perf_clang++_iter_unchecked.txt):
+    47.76%  kb_clang++  kb_clang++            [.] coordinate_t daw::json::v3_44_0::json_array_iterator_t<daw::json::v3_44_0::json_base::json_class<coordinate_t, daw::use_default>, daw::json::v3_44_0::
+    33.62%  kb_clang++  kb_clang++            [.] double daw::json::v3_44_0::json_details::parse_real_single_pass<double, daw::json::v3_44_0::BasicParsePolicy<320u, daw::json::v3_44_0::json_details::N
+     8.32%  kb_clang++  kb_clang++            [.] double daw::json::v3_44_0::json_details::parse_real_eisellemire<double>(bool, long, unsigned long)
+     4.57%  kb_clang++  kb_clang++            [.] void daw::json::v3_44_0::json_array_iterator_t<daw::json::v3_44_0::json_base::json_class<coordinate_t, daw::use_default>, daw::json::v3_44_0::BasicPar
+     4.13%  kb_clang++  kb_clang++            [.] run(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string_view<char, std::char_traits<char> >)
+
+== g++: g++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+-- fixed.json, 20 parses
+iter_unchecked  min   23.078 ms  median   23.490 ms  n=200000  chk 0.499303 0.499394 0.499504
+iter            min   36.732 ms  median   37.016 ms  n=200000  chk 0.499303 0.499394 0.499504
+simd_iter       min   32.108 ms  median   32.353 ms  n=200000  chk 0.499303 0.499394 0.499504
+sj              min   23.103 ms  median   23.439 ms  n=200000  chk 0.499303 0.499394 0.499504  simdjson=haswell
+-- shuffle.json, 20 parses
+iter_unchecked  min   39.470 ms  median   39.742 ms  n=200000  chk 0.498829 0.500198 0.500181
+iter            min   54.003 ms  median   54.206 ms  n=200000  chk 0.498829 0.500198 0.500181
+simd_iter       min   38.748 ms  median   39.218 ms  n=200000  chk 0.498829 0.500198 0.500181
+sj              min   39.345 ms  median   39.619 ms  n=200000  chk 0.498829 0.500198 0.500181  simdjson=haswell
+-- counters per parse (fixed.json, difference of 21 and 1 parses)
+iter_unchecked  cycles=95.58M instructions=279.07M branch-misses=0.38M mem_inst_retired.all_stores=12.84M
+iter            cycles=149.15M instructions=457.10M branch-misses=0.40M mem_inst_retired.all_stores=29.44M
+simd_iter       cycles=130.05M instructions=409.57M branch-misses=0.59M mem_inst_retired.all_stores=32.91M
+sj              cycles=99.63M instructions=243.31M branch-misses=0.51M mem_inst_retired.all_stores=8.61M
+-- top-down level 1 (60 parses, includes file load)
+iter_unchecked:  16769106043 INST_RETIRED.ANY:u # 65.4 % tma_retiring (62.44%)| 946350554 IDQ_UOPS_NOT_DELIVERED.CORE:u # 4.1 % tma_frontend_bound | # nan % tma_backend_bound (62.44%)| <not supported> INT_MISC.RECOVERY_CYCLES_ANY:u # nan % tma_bad_speculation |
+simd_iter:  24592165081 INST_RETIRED.ANY:u # 69.9 % tma_retiring (62.49%)| 3657316642 IDQ_UOPS_NOT_DELIVERED.CORE:u # 11.6 % tma_frontend_bound | # nan % tma_backend_bound (62.49%)| <not supported> INT_MISC.RECOVERY_CYCLES_ANY:u # nan % tma_bad_speculation |
+sj:  14625228248 INST_RETIRED.ANY:u # 55.3 % tma_retiring (62.48%)| 1168045942 IDQ_UOPS_NOT_DELIVERED.CORE:u # 4.8 % tma_frontend_bound | # nan % tma_backend_bound (62.54%)| <not supported> INT_MISC.RECOVERY_CYCLES_ANY:u # nan % tma_bad_speculation |
+top functions simd_iter (see /root/otherppl/kostya_i9/results/perf_g++_simd_iter.txt):
+    31.24%  kb_g++   kb_g++                [.] daw::json::v3_44_0::json_details::lexer_cursor::build_structural_chunk(char const*, unsigned long, daw::json::v3_44_0::json_details::lexer_cursor::carry_
+    28.39%  kb_g++   kb_g++                [.] double daw::json::v3_44_0::json_details::parse_real_single_pass<double, daw::json::v3_44_0::BasicParsePolicy<256u, daw::json::v3_44_0::json_details::NoAl
+    27.88%  kb_g++   kb_g++                [.] char const* daw::json::v3_44_0::json_details::simd_details::simd_class_parser<daw::json::v3_44_0::json_member_list<daw::json::v3_44_0::json_number<daw::j
+     7.59%  kb_g++   kb_g++                [.] acc sum_range<daw::json::v3_44_0::json_details::simd_details::json_simd_block_iterator_class<daw::json::v3_44_0::json_base::json_class<coordinate_t, daw:
+     3.20%  kb_g++   kb_g++                [.] double daw::json::v3_44_0::json_details::parse_real_eisellemire<double>(bool, long, unsigned long)
+top functions iter_unchecked (see /root/otherppl/kostya_i9/results/perf_g++_iter_unchecked.txt):
+    55.48%  kb_g++   kb_g++                [.] coordinate_t daw::json::v3_44_0::json_array_iterator_t<daw::json::v3_44_0::json_base::json_class<coordinate_t, daw::use_default>, daw::json::v3_44_0::Bas
+    31.39%  kb_g++   kb_g++                [.] double daw::json::v3_44_0::json_details::parse_real_single_pass<double, daw::json::v3_44_0::BasicParsePolicy<320u, daw::json::v3_44_0::json_details::NoAl
+     7.19%  kb_g++   kb_g++                [.] run(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string_view<char, std::char_traits<char> >)
+     4.31%  kb_g++   kb_g++                [.] double daw::json::v3_44_0::json_details::parse_real_eisellemire<double>(bool, long, unsigned long)
+
+done: send /root/otherppl/kostya_i9/results/summary.txt (and results/*.txt if you can)

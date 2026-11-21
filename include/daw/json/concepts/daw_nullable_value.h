@@ -28,6 +28,10 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace concepts {
+#if defined( __clang__ )
+			_Pragma( "clang diagnostic push" );
+			_Pragma( "clang diagnostic ignored \"-Wc++23-extensions\"" );
+#endif
 			template<typename T>
 			struct nullable_value_traits<std::optional<T>> {
 				using value_type = T;
@@ -265,6 +269,9 @@ namespace daw::json {
 					return static_cast<bool>( val );
 				}
 			};
+#if defined( __clang__ )
+			_Pragma( "clang diagnostic pop" );
+#endif
 		} // namespace concepts
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

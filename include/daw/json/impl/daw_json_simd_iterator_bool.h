@@ -10,7 +10,7 @@
 
 #include "daw/json/impl/daw_json_simd_iterator_common.h"
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -29,6 +29,7 @@ namespace daw::json {
 				using json_member = JsonMember;
 				using value_type = typename json_member::parse_to_t;
 				using reference = value_type;
+				using pointer = void;
 				using difference_type = std::ptrdiff_t;
 				using iterator_category = std::input_iterator_tag;
 
@@ -124,7 +125,7 @@ namespace daw::json {
 								  daw::cxmath::count_trailing_zeros( validation_starts ) );
 								validate_boolean( block.data + lane,
 								                  ( values & std::uint64_t{ 1 } ) != 0 );
-								validation_starts &= validation_starts - 1U;
+								validation_starts = daw::cxmath::blsr( validation_starts );
 								values >>= 1U;
 							}
 						}
@@ -151,16 +152,16 @@ namespace daw::json {
 				  : m_first( document.data( ) )
 				  , m_last( std::next( document.data( ), static_cast<std::ptrdiff_t>(
 				                                           document.size( ) ) ) ) {
-					if( m_first != m_last ) {
-						auto parse_state = ParseState( m_first, m_last );
-						parse_state.trim_left( );
-						daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
-						                      ErrorReason::InvalidArrayStart,
-						                      parse_state );
-						parse_state.remove_prefix( );
-						m_first = parse_state.data( );
-						m_grammar_state.started = true;
-					}
+					// An empty document is not an array either
+					daw_json_assert_weak( m_first != m_last, ErrorReason::InvalidArrayStart );
+					auto parse_state = ParseState( m_first, m_last );
+					parse_state.trim_left( );
+					daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
+					                      ErrorReason::InvalidArrayStart,
+					                      parse_state );
+					parse_state.remove_prefix( );
+					m_first = parse_state.data( );
+					m_grammar_state.started = true;
 					fill_buffer( );
 				}
 

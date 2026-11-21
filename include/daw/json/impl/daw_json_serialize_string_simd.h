@@ -10,7 +10,7 @@
 
 #include "daw/json/impl/version.h"
 
-#include "daw/json/impl/daw_json_simd.h"
+#include "daw/simd/daw_simd.h"
 
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_span.h>
@@ -22,7 +22,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#if defined( DAW_JSON_HAS_SIMD )
+#if defined( DAW_HAS_SIMD )
 
 #define DAW_JSON_HAS_SERIALIZE_STRING_SIMD 1
 
@@ -60,8 +60,8 @@ namespace daw::json {
 			[[nodiscard]] inline std::uint64_t
 			escape_mask( std::uintptr_t block_addr,
 			             std::uintptr_t first_addr, std::uintptr_t last_addr ) {
-				auto const block =
-				  load_aligned_block<byte_simd_t>( block_addr, first_addr, last_addr );
+				auto const block = daw::simd::load_aligned_block<byte_simd_t>(
+				  block_addr, first_addr, last_addr );
 				auto const needs_escape =
 				  ( block == byte_simd_t( static_cast<unsigned char>( '"' ) ) ) |
 				  ( block == byte_simd_t( static_cast<unsigned char>( '\\' ) ) ) |

@@ -1,0 +1,20 @@
+
+ Performance counter stats for '/root/otherppl/kostya_i9/bin/kb_g++ /root/otherppl/kostya_i9/data/fixed.json 60 iter_unchecked':
+
+       16769106043      INST_RETIRED.ANY:u               #     65.4 %  tma_retiring             (62.44%)
+          33104488      CPU_CLK_UNHALTED.REF_XCLK:u                                             (62.44%)
+         946350554      IDQ_UOPS_NOT_DELIVERED.CORE:u    #      4.1 %  tma_frontend_bound     
+                                                         #      nan %  tma_backend_bound        (62.44%)
+   <not supported>      INT_MISC.RECOVERY_CYCLES_ANY:u   #      nan %  tma_bad_speculation    
+          33073374      CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE:u                                        (62.48%)
+        5810848150      CPU_CLK_UNHALTED.THREAD:u                                               (62.55%)
+        1937212377      UOPS_RETIRED.MACRO_FUSED:u                                              (50.08%)
+       15192576328      UOPS_RETIRED.RETIRE_SLOTS:u                                             (50.04%)
+       16713511796      UOPS_ISSUED.ANY:u                                                       (49.97%)
+
+       1.429918948 seconds time elapsed
+
+       1.395799000 seconds user
+       0.033995000 seconds sys
+
+

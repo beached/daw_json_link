@@ -14,7 +14,7 @@
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_cpp_feature_check.h>
-#include <daw/daw_not_null.h>
+#include <daw/daw_ensure.h>
 
 #include <cstdlib>
 #include <string>
@@ -48,8 +48,8 @@ namespace daw::json {
 			/// via ADL
 			template<typename Real>
 			DAW_ATTRIB_NOINLINE [[nodiscard]] Real
-			parse_with_strtod( daw::not_null<char const *> first,
-			                   daw::not_null<char const *> last ) {
+			parse_with_strtod( char const *first, char const *last ) {
+				daw_dbg_ensure( first != nullptr and last != nullptr );
 				static_assert( std::is_floating_point_v<Real>,
 				               "Unexpected type passed to parse_with_strtod" );
 #if defined( DAW_JSON_USE_STRTOD )
@@ -69,7 +69,7 @@ namespace daw::json {
 					// from_chars reports the same error for overflow and underflow.
 					// Retry this cold path with a bounded, null-terminated token so
 					// subnormal values are not incorrectly returned as infinity.
-					auto const token = std::string( first.get( ), last.get( ) );
+					auto const token = std::string( first, last );
 					if constexpr( std::is_same_v<Real, float> ) {
 						return std::strtof( token.c_str( ), nullptr );
 					} else if constexpr( std::is_same_v<Real, double> ) {

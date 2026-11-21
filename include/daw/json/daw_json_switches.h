@@ -16,13 +16,9 @@
 #include <daw/daw_is_detected.h>
 #include <daw/stdinc/enable_if.h>
 
-/// DAW_NO_FLATTEN disables any flatten attributes in code.  This is disabled in
-/// GCC by default as it cannot handle it
-#if defined( DAW_HAS_GCC ) and not defined( DAW_JSON_FLATTEN )
-#if not defined( DAW_NO_FLATTEN )
-#define DAW_NO_FLATTEN
-#endif
-#endif
+// Define DAW_NO_FLATTEN or DAW_NO_FORCED_INLINE to opt out of the
+// corresponding attributes. CI uses these switches to bound compile cost.
+// Client builds leave the attributes enabled, including on GCC.
 
 // Does json_link throw itself.  Other things like constructors for the user
 // types may.
@@ -110,12 +106,20 @@
 
 // Allow experimental SIMD paths, if available
 // by defining DAW_ALLOW_SSE42 and using the parser policy ExecModeType simd
+// This flag is not necessary any longer.
 #if not defined( DAW_JSON_NO_SSE42 )
 #if defined( __SSE4_2__ ) or defined( __AVX__ ) or defined( __AVX2__ )
 #if not defined( DAW_ALLOW_SSE42 )
 #define DAW_ALLOW_SSE42 1
 #endif
 #endif
+#endif
+
+// The deepest nesting of a skipped value whose brackets are checked: by the
+// checked scalar skips, and by the SIMD skips with
+// options::StrictSkipChecks::yes.  Skips that only count the depth have no limit
+#if not defined( DAW_JSON_STRICT_SKIP_MAX_DEPTH )
+#define DAW_JSON_STRICT_SKIP_MAX_DEPTH 64
 #endif
 
 // Use strtod instead of from_chars when avialable by defining

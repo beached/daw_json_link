@@ -55,12 +55,16 @@ int main( int argc, char **argv )
 	for( std::size_t n = 0; n < DAW_NUM_RUNS; ++n ) {
 		[&]( auto f1, auto f2, auto f3 ) {
 			using namespace daw::json::options;
+			// SIMD when this build has it
+			constexpr auto best_exec_mode = daw::json::has_simd_exec_mode
+			                                  ? ExecModeTypes::simd
+			                                  : ExecModeTypes::runtime;
 			auto const j1 = daw::json::from_json<daw::twitter::twitter_object_t>(
-			  f1, parse_flags<ExecModeTypes::simd> );
+			  f1, parse_flags<best_exec_mode> );
 			auto const j2 = daw::json::from_json<daw::citm::citm_object_t>(
-			  f2, parse_flags<ExecModeTypes::simd> );
+			  f2, parse_flags<best_exec_mode> );
 			auto const j3 = daw::json::from_json<daw::geojson::Polygon>(
-			  f3, "features[0].geometry", parse_flags<ExecModeTypes::simd> );
+			  f3, "features[0].geometry", parse_flags<best_exec_mode> );
 			daw::do_not_optimize( sv_twitter );
 			daw::do_not_optimize( sv_citm );
 			daw::do_not_optimize( sv_canada );

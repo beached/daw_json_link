@@ -271,8 +271,10 @@ int main( ) {
 	string_mapping_tests( daw::json::options::parse_flags<> );
 	string_mapping_tests( daw::json::options::parse_flags<
 	                      daw::json::options::ExecModeTypes::runtime> );
-	string_mapping_tests(
-	  daw::json::options::parse_flags<daw::json::options::ExecModeTypes::simd> );
+	if constexpr( daw::json::has_simd_exec_mode ) {
+		string_mapping_tests(
+		  daw::json::options::parse_flags<daw::json::options::ExecModeTypes::simd> );
+	}
 	string_mapping_tests(
 	  daw::json::options::parse_flags<daw::json::options::CheckedParseMode::no> );
 #if defined( DAW_USE_EXCEPTIONS )

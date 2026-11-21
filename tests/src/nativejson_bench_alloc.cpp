@@ -299,11 +299,10 @@ int main( int argc, char **argv )
 			exit( 1 );
 		}
 		test<ExecModeTypes::compile_time>( argv, alloc );
-		if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
-		                                 daw::json::runtime_exec_tag> ) {
-			test<ExecModeTypes::runtime>( argv, alloc );
+		test<ExecModeTypes::runtime>( argv, alloc );
+		if constexpr( daw::json::has_simd_exec_mode ) {
+			test<ExecModeTypes::simd>( argv, alloc );
 		}
-		test<ExecModeTypes::simd>( argv, alloc );
 #if defined( DAW_USE_EXCEPTIONS )
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';

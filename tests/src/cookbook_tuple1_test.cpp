@@ -47,7 +47,8 @@ int main( int argc, char **argv )
 	// '__builtin_array_init_helper' not being defined or constexpr during
 	// constexpr evaluation
 	// https://developercommunity.visualstudio.com/t/predefined-c-types-compiler-internal-warning-c4834/1491646
-#if defined( _MSC_VER ) and not defined( __clang__ ) and DAW_CXX_STANDARD == 20
+#if defined( _MSC_VER ) and not defined( __clang__ ) and \
+  defined( DAW_CXX_STANDARD ) and ( DAW_CXX_STANDARD + 0 ) == 20
 #if _MS_VER >= 1429
 #define NO_CX_TEST
 #endif
